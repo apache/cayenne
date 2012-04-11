@@ -155,7 +155,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         // build a DB path .. find parent node that terminates the joint group...
         PrefetchTreeNode jointRoot = this;
-        while (jointRoot.getParent() != null && !jointRoot.isDisjointPrefetch()) {
+        while (jointRoot.getParent() != null && !jointRoot.isDisjointPrefetch()
+                && !jointRoot.isDisjointByIdPrefetch()) {
             jointRoot = jointRoot.getParent();
         }
 

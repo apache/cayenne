@@ -117,7 +117,8 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
         // set "jointChildren" flag on all nodes in the same "join group"
         PrefetchProcessorNode groupNode = decorated;
-        while (groupNode.getParent() != null && !groupNode.isDisjointPrefetch()) {
+        while (groupNode.getParent() != null && !groupNode.isDisjointPrefetch()
+                && !groupNode.isDisjointByIdPrefetch()) {
             groupNode = (PrefetchProcessorNode) groupNode.getParent();
             groupNode.setJointChildren(true);
         }

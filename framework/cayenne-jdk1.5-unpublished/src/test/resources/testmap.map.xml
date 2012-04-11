@@ -747,6 +747,7 @@
 	<obj-relationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="Nullify" db-relationship-path="toExhibit"/>
 	<obj-relationship name="balls" source="Bag" target="Ball" deleteRule="Deny" db-relationship-path="BOXES.BALLS"/>
 	<obj-relationship name="boxes" source="Bag" target="Box" deleteRule="Deny" db-relationship-path="BOXES"/>
+	<obj-relationship name="things" source="Bag" target="Thing" deleteRule="Deny" db-relationship-path="BOXES.BOX_THING.THING"/>
 	<obj-relationship name="box" source="Ball" target="Box" deleteRule="Nullify" db-relationship-path="BOX"/>
 	<obj-relationship name="thing" source="Ball" target="Thing" deleteRule="Nullify" db-relationship-path="THING"/>
 	<obj-relationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" db-relationship-path="binaryPKDetails"/>

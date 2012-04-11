@@ -11,6 +11,7 @@ import org.apache.cayenne.testdo.testmap.Bag;
 import org.apache.cayenne.testdo.testmap.Ball;
 import org.apache.cayenne.testdo.testmap.Box;
 import org.apache.cayenne.testdo.testmap.BoxInfo;
+import org.apache.cayenne.testdo.testmap.Thing;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -149,7 +150,7 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
                     assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
                     names.add(b.getName());
                 }
-                
+
                 assertTrue(names.contains("Y"));
                 assertTrue(names.contains("Z"));
             }
@@ -234,6 +235,27 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         });
     }
 
+    public void testLongFlattenedRelationship() throws Exception {
+        createBagWithTwoBoxesAndPlentyOfBallsDataSet();
+
+        SelectQuery query = new SelectQuery(Bag.class);
+        query.addPrefetch(Bag.THINGS_PROPERTY)
+                .setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        final List<Bag> result = context.performQuery(query);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                assertFalse(result.isEmpty());
+                Bag b1 = result.get(0);
+                List<?> toMany = (List<?>) b1.readPropertyDirectly(Bag.THINGS_PROPERTY);
+                assertNotNull(toMany);
+                assertFalse(((ValueHolder) toMany).isFault());
+                assertEquals(6, toMany.size());
+            }
+        });
+    }
+
     public void testMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -266,6 +288,61 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
                 assertNotNull(toMany);
                 assertFalse(((ValueHolder) toMany).isFault());
                 assertEquals(2, toMany.size());
+            }
+        });
+    }
+
+    public void testJointPrefetchInParent() throws Exception {
+        createBagWithTwoBoxesAndPlentyOfBallsDataSet();
+
+        SelectQuery query = new SelectQuery(Box.class);
+        query.addPrefetch(Box.BALLS_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        query.addPrefetch(Box.BALLS_PROPERTY + "." + Ball.THING_PROPERTY)
+                .setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        final List<Box> result = context.performQuery(query);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            public void execute() {
+                assertFalse(result.isEmpty());
+                Box box = result.get(0);
+
+                List<Ball> balls = (List<Ball>) box.readPropertyDirectly(Box.BALLS_PROPERTY);
+                assertNotNull(balls);
+                assertFalse(((ValueHolder) balls).isFault());
+                assertEquals(2, balls.size());
+
+                Ball ball = balls.get(0);
+                Thing thing = (Thing) ball.readPropertyDirectly(Ball.THING_PROPERTY);
+                assertNotNull(thing);
+            }
+        });
+    }
+
+    public void testJointPrefetchInChild() throws Exception {
+        createBagWithTwoBoxesAndPlentyOfBallsDataSet();
+
+        SelectQuery query = new SelectQuery(Bag.class);
+        query.addPrefetch(Bag.BOXES_PROPERTY)
+                .setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Bag.BOXES_PROPERTY + "." + Box.BALLS_PROPERTY)
+                .setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        final List<Bag> result = context.performQuery(query);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            public void execute() {
+                assertFalse(result.isEmpty());
+
+                Bag bag = result.get(0);
+                List<Box> boxes = (List<Box>) bag.readPropertyDirectly(Bag.BOXES_PROPERTY);
+                assertNotNull(boxes);
+                assertFalse(((ValueHolder) boxes).isFault());
+                assertEquals(2, boxes.size());
+
+                Box box = boxes.get(0);
+                List<Ball> balls = (List<Ball>) box.readPropertyDirectly(Box.BALLS_PROPERTY);
+                assertNotNull(balls);
+                assertFalse(((ValueHolder) balls).isFault());
+                assertEquals(2, balls.size());
             }
         });
     }
