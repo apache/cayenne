@@ -27,6 +27,7 @@ CAY-1581 Not-Escaping <> during serialization to *.map.xml
 CAY-1583 context.getObjectStore() returning null causing NullpointerException in DataMergeHandler
 CAY-1585 SelectQuery automatic cache key needs FetchOffset
 CAY-1596 setFetchOffset & setFetchLimit issue under SQL Server 2008 R2 64Bit
+CAY-1696 Undo/Redo stop working after deleting several project items at once
 
 ----------------------------------
 Release: 3.0.2
