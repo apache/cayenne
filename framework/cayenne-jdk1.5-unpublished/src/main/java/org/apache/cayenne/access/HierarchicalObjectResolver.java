@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -163,9 +162,12 @@ class HierarchicalObjectResolver {
                 pathPrefix = buffer.append(".").toString();
             }
 
-            List parentDataRows = parentProcessorNode.getDataRows();
+            List<?> parentDataRows;
             if (parentProcessorNode instanceof PrefetchProcessorJointNode) {
                 parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode).getResolvedRows();
+            }
+            else {
+                parentDataRows = parentProcessorNode.getDataRows();
             }
 
             for (Object dataRow : parentDataRows) {
