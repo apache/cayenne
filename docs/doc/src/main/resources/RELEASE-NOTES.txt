@@ -49,6 +49,7 @@ CAY-1674 Error generating classes with invalid path in the query qualifier
 CAY-1675 [PATCH] add .first(List<T>) method to Expression to enhance in-memory filtering
 CAY-1679 A notion of default node
 CAY-1680 Get rid of shared locks in DataDomain metadata lookups
+CAY-1681 Third prefetch kind - DISJOINT_BY_ID
 CAY-1684 Upgrade commons-collections dependency to 3.2.1
 CAY-1686 StringIdQuery - a query providing an optimized fetch for objects based on 1..N String IDs. 
 CAY-1688 [PATCH] rename DataDomain.getNode to getDataNode
