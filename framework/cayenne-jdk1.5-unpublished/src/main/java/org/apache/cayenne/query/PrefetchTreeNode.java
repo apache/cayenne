@@ -33,7 +33,7 @@ import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * Defines a node in a prefetch tree.
- * 
+ *
  * @since 1.2
  */
 public class PrefetchTreeNode implements Serializable, XMLSerializable {
@@ -164,6 +164,34 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     }
 
     /**
+     * Returns a clone of subtree that includes all joint children
+     * starting from this node itself and till the first occurrence of non-joint node
+     *
+     * @since 3.1
+     */
+    public PrefetchTreeNode cloneJointSubtree() {
+        return cloneJointSubtree(null);
+    }
+
+    private PrefetchTreeNode cloneJointSubtree(PrefetchTreeNode parent) {
+        PrefetchTreeNode cloned = new PrefetchTreeNode(parent, getName());
+        if (parent != null) {
+            cloned.setSemantics(getSemantics());
+            cloned.setPhantom(isPhantom());
+        }
+
+        if (children != null) {
+            for (PrefetchTreeNode child : children) {
+                if (child.isJointPrefetch()) {
+                    cloned.addChild(child.cloneJointSubtree(cloned));
+                }
+            }
+        }
+
+        return cloned;
+    }
+
+    /**
      * Traverses the tree depth-first, invoking callback methods of the processor when
      * passing through the nodes.
      */
@@ -220,7 +248,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     /**
      * Adds a "path" with specified semantics to this prefetch node. All yet non-existent
      * nodes in the created path will be marked as phantom.
-     * 
+     *
      * @return the last segment in the created path.
      */
     public PrefetchTreeNode addPath(String path) {
@@ -375,11 +403,11 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
     public String getEntityName() {
         return entityName;
     }
-    
+
     public void setEntityName(String entityName) {
         this.entityName = entityName;
     }
-    
+
 
     // **** custom serialization that supports serializing subtrees...
 

@@ -187,9 +187,11 @@ class HierarchicalObjectResolver {
                 query.orQualifier(allJoinsQualifier);
             }
 
-            // TODO: need to pass the remaining tree to make joint prefetches work
-            // but not sure is it a good idea to do it in that way
-            query.setPrefetchTree(node);
+            // need to pass the remaining tree to make joint prefetches work
+            PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
+            if (jointSubtree.hasChildren()) {
+                query.setPrefetchTree(jointSubtree);
+            }
 
             query.setFetchingDataRows(true);
             if (relationship.isSourceIndependentFromTargetChange()) {

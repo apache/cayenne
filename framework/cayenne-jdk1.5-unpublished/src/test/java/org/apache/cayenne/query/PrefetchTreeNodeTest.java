@@ -140,4 +140,34 @@ public class PrefetchTreeNodeTest extends TestCase {
         assertSame(nc2, nc3.getParent());
         assertEquals("xyz", nc3.getName());
     }
+
+    public void testCloneJointSubtree() throws Exception {
+        PrefetchTreeNode root = new PrefetchTreeNode(null, "root");
+        root.setPhantom(false);
+        PrefetchTreeNode joint1 = root.addPath("joint1");
+        joint1.setPhantom(false);
+        joint1.setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        PrefetchTreeNode joint2 = root.addPath("joint2");
+        joint2.setPhantom(false);
+        joint2.setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        PrefetchTreeNode disjoint = joint1.addPath("disjoint1");
+        disjoint.setPhantom(false);
+        disjoint.setSemantics(PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+
+        PrefetchTreeNode cloned = root.cloneJointSubtree();
+        assertEquals("root", cloned.getName());
+
+        assertEquals(2, cloned.getChildren().size());
+
+        PrefetchTreeNode joint1Clone = cloned.getChild("joint1");
+        assertNotNull(joint1Clone);
+        assertEquals("joint1", joint1.getPath());
+        assertEquals(0, joint1Clone.getChildren().size());
+
+        PrefetchTreeNode joint2Clone = cloned.getChild("joint2");
+        assertNotNull(joint2Clone);
+        assertEquals("joint2", joint2.getPath());
+        assertEquals(0, joint2Clone.getChildren().size());
+
+    }
 }

@@ -18,6 +18,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.apache.cayenne.exp.ExpressionFactory.matchExp;
@@ -96,9 +98,9 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
 
     private void createBagWithTwoBoxesAndPlentyOfBallsDataSet() throws Exception {
         tBag.insert(1, null);
-        tBox.insert(1, 1, null);
+        tBox.insert(1, 1, "big");
         tBoxInfo.insert(1, 1, "red");
-        tBox.insert(2, 1, null);
+        tBox.insert(2, 1, "small");
         tBoxInfo.insert(2, 2, "green");
 
         tThing.insert(1, 10, 10);
@@ -210,6 +212,7 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
                 BoxInfo info = (BoxInfo) b1.readPropertyDirectly(Box.BOX_INFO_PROPERTY);
                 assertNotNull(info);
                 assertEquals("red", info.getColor());
+                assertEquals(PersistenceState.COMMITTED, info.getPersistenceState());
             }
         });
     }
@@ -227,10 +230,17 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
             public void execute() {
                 assertFalse(result.isEmpty());
                 Bag b1 = result.get(0);
-                List<?> toMany = (List<?>) b1.readPropertyDirectly(Bag.BALLS_PROPERTY);
-                assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
-                assertEquals(6, toMany.size());
+                List<Ball> balls = (List<Ball>) b1.readPropertyDirectly(Bag.BALLS_PROPERTY);
+                assertNotNull(balls);
+                assertFalse(((ValueHolder) balls).isFault());
+                assertEquals(6, balls.size());
+
+                List<Integer> volumes = new ArrayList<Integer>();
+                for (Ball b : balls) {
+                    assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
+                    volumes.add(b.getThingVolume());
+                }
+                assertEquals(Arrays.asList(10, 20, 30, 40, 20, 40), volumes);
             }
         });
     }
@@ -248,10 +258,17 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
             public void execute() {
                 assertFalse(result.isEmpty());
                 Bag b1 = result.get(0);
-                List<?> toMany = (List<?>) b1.readPropertyDirectly(Bag.THINGS_PROPERTY);
-                assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
-                assertEquals(6, toMany.size());
+                List<Thing> things = (List<Thing>) b1.readPropertyDirectly(Bag.THINGS_PROPERTY);
+                assertNotNull(things);
+                assertFalse(((ValueHolder) things).isFault());
+                assertEquals(6, things.size());
+
+                List<Integer> volumes = new ArrayList<Integer>();
+                for (Thing t : things) {
+                    assertEquals(PersistenceState.COMMITTED, t.getPersistenceState());
+                    volumes.add(t.getVolume());
+                }
+                assertEquals(Arrays.asList(10, 20, 20, 30, 40, 40), volumes);
             }
         });
     }
@@ -284,10 +301,17 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
             public void execute() {
                 assertFalse(result.isEmpty());
                 Box b1 = result.get(0);
-                List<?> toMany = (List<?>) b1.readPropertyDirectly(Box.THINGS_PROPERTY);
-                assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
-                assertEquals(2, toMany.size());
+                List<Thing> things = (List<Thing>) b1.readPropertyDirectly(Box.THINGS_PROPERTY);
+                assertNotNull(things);
+                assertFalse(((ValueHolder) things).isFault());
+                assertEquals(2, things.size());
+
+                List<Integer> volumes = new ArrayList<Integer>();
+                for (Thing t : things) {
+                    assertEquals(PersistenceState.COMMITTED, t.getPersistenceState());
+                    volumes.add(t.getVolume());
+                }
+                assertEquals(Arrays.asList(10, 20), volumes);
             }
         });
     }
@@ -314,6 +338,8 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
                 Ball ball = balls.get(0);
                 Thing thing = (Thing) ball.readPropertyDirectly(Ball.THING_PROPERTY);
                 assertNotNull(thing);
+                assertEquals(PersistenceState.COMMITTED, thing.getPersistenceState());
+                assertEquals(Integer.valueOf(10), thing.getVolume());
             }
         });
     }
@@ -338,11 +364,25 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
                 assertFalse(((ValueHolder) boxes).isFault());
                 assertEquals(2, boxes.size());
 
+                List<String> names = new ArrayList<String>();
+                for (Box box : boxes) {
+                    assertEquals(PersistenceState.COMMITTED, box.getPersistenceState());
+                    names.add(box.getName());
+                }
+                assertTrue(names.contains("big"));
+                assertTrue(names.contains("small"));
+
                 Box box = boxes.get(0);
                 List<Ball> balls = (List<Ball>) box.readPropertyDirectly(Box.BALLS_PROPERTY);
                 assertNotNull(balls);
                 assertFalse(((ValueHolder) balls).isFault());
                 assertEquals(2, balls.size());
+                List<Integer> volumes = new ArrayList<Integer>();
+                for (Ball ball : balls) {
+                    assertEquals(PersistenceState.COMMITTED, ball.getPersistenceState());
+                    volumes.add(ball.getThingVolume());
+                }
+                assertEquals(Arrays.asList(10, 20), volumes);
             }
         });
     }
