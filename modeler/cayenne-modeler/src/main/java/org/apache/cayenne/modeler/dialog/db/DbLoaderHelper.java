@@ -46,6 +46,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.LongRunningTask;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
@@ -424,6 +425,15 @@ public class DbLoaderHelper {
                         .getRootNode(), mediator.getCurrentDataNode()));
             }
             else {
+                DataChannelDescriptor currentDomain = (DataChannelDescriptor) mediator
+                        .getProject().getRootNode();
+                Resource baseResource = currentDomain.getConfigurationSource();
+
+                // this will be new data map so need to set configuration source for it
+                if (baseResource != null) {
+                    Resource dataMapResource = baseResource.getRelativeResource(dataMap.getName());
+                    dataMap.setConfigurationSource(dataMapResource);
+                }
                 mediator.addDataMap(Application.getFrame(), dataMap);
             }
         }

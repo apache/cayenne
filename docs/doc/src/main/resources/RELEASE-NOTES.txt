@@ -67,6 +67,7 @@ CAY-1631 Oracle - passing blobs as stored procedure parameters
 CAY-1632 CayenneModeler: flattened relationship paths are not fully displayed
 CAY-1648 [PATCH] ValidationException throws format exception if error message contains percent sign
 CAY-1696 Undo/Redo stop working after deleting several project items at once
+CAY-1697 Error on Save after importing database
 
 ----------------------------------
 Release: 3.1 M3
