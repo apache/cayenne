@@ -36,7 +36,6 @@ import org.apache.cayenne.lifecycle.changeset.ChangeSetFilter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * A {@link DataChannelFilter} that enables audit of entities annotated with
@@ -183,17 +182,23 @@ public class AuditableFilter implements DataChannelFilter {
             throw new IllegalArgumentException("No 'AuditableChild' annotation found");
         }
 
-        String propertyPath = StringUtils.isNotEmpty(annotation.value())
-                              ? annotation.value()
+        String propertyPath = annotation.value();
 
-                              : objectIdRelationshipName(annotation.objectIdRelationship());
+        if (propertyPath == null || propertyPath.equals("")) {
+            propertyPath = objectIdRelationshipName(annotation.objectIdRelationship());
+        }
+
+        if (propertyPath == null || propertyPath.equals("")) {
+            throw new IllegalStateException(
+                    "Either 'value' or 'objectIdRelationship' of @AuditableChild must be set");
+        }
+
         return dataObject.readNestedProperty(propertyPath);
     }
 
-    /**
-     * It's a temporary clone method of  {@link org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler#objectIdRelationshipName(String)}
-     * //todo Needs to be encapsulated to some separate class to avoid a code duplication
-     */
+    // TODO: It's a temporary clone method of {@link
+    // org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler#objectIdRelationshipName(String)}.
+    // Needs to be encapsulated to some separate class to avoid a code duplication
     private String objectIdRelationshipName(String uuidPropertyName) {
         return "cay:related:" + uuidPropertyName;
     }

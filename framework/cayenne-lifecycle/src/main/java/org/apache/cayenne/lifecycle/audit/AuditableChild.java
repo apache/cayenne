@@ -28,7 +28,9 @@ import java.lang.annotation.Target;
 /**
  * A built-in annotation used to tag an object that is not auditable on its own, but whose
  * changes should be tracked together with changes of another ("parent") object. This
- * annotation allows to group changes in a closely related subtree of objects.
+ * annotation allows to group changes in a closely related subtree of objects. Either
+ * {@link #value()} or {@link #objectIdRelationship()} must be set to a non-empty String,
+ * so that a processor of AuditableChild could find the parent of the annotated object.
  * 
  * @since 3.1
  */
@@ -42,9 +44,13 @@ public @interface AuditableChild {
      * Returns the name of a to-one relationship from an annotated object to the "parent"
      * object that should be audited when annotated object is changed.
      */
-    String value();
-    
-    String[] ignoredProperties() default {};
+    String value() default "";
 
+    /**
+     * Returns the name of the property of the annotated entity of the relationship that
+     * stores a String "FK" of a related "parent" entity.
+     */
     String objectIdRelationship() default "";
+
+    String[] ignoredProperties() default {};
 }

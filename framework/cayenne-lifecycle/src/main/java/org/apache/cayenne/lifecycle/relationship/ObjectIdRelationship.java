@@ -26,9 +26,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines a "virtual" read-only to-one relationship based on an FK that is a character
+ * Defines a "virtual" read-only to-one relationship based on an FK that is a String
  * representation of Cayenne ObjectId. A target object of this relationship can be of any
- * entity type. 
+ * entity type.
  * 
  * @since 3.1
  */
@@ -41,8 +41,8 @@ import java.lang.annotation.Target;
 public @interface ObjectIdRelationship {
 
     /**
-     * Returns the name of the property of the source entity of the relationship that
-     * stores a UUID "FK" of a related entity.
+     * Returns the name of the property of the annotated entity that stores a String "FK"
+     * of a related entity.
      */
     String value() default "";
 }
