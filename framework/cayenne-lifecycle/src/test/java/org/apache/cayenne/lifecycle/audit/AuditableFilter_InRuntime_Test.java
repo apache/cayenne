@@ -35,6 +35,9 @@ import org.apache.cayenne.lifecycle.db.Auditable2;
 import org.apache.cayenne.lifecycle.db.AuditableChild1;
 import org.apache.cayenne.lifecycle.db.AuditableChild2;
 import org.apache.cayenne.lifecycle.db.AuditableChild3;
+import org.apache.cayenne.lifecycle.db.AuditableChildUuid;
+import org.apache.cayenne.lifecycle.id.IdCoder;
+import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
@@ -48,6 +51,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
 
     private TableHelper auditable2;
     private TableHelper auditableChild3;
+    private TableHelper auditableChildUuid;
 
     @Override
     protected void setUp() throws Exception {
@@ -80,12 +84,20 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
                 "CHAR_PROPERTY1",
                 "CHAR_PROPERTY2");
 
+        auditableChildUuid = new TableHelper(dbHelper, "AUDITABLE_CHILD_UUID").setColumns(
+                "ID",
+                "UUID",
+                "CHAR_PROPERTY1",
+                "CHAR_PROPERTY2");
+
         auditableChild1.deleteAll();
         auditableChild2.deleteAll();
         auditable1.deleteAll();
 
         auditableChild3.deleteAll();
         auditable2.deleteAll();
+
+        auditableChildUuid.deleteAll();
     }
 
     public void testAudit_IgnoreRuntimeRelationships() throws Exception {
@@ -242,6 +254,41 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         ac1.setCharProperty2("XXXXX");
         context.commitChanges();
         assertEquals(1, processor.size);
+    }
+
+    public void testAuditableChild_objectIdRelationship() throws Exception {
+        auditable1.insert(1, "xx");
+        auditableChildUuid.insert(1, "Auditable1:1", "xxx", "yyy");
+
+        DataDomain domain = runtime.getDataDomain();
+        Processor processor = new Processor();
+
+        AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
+        domain.addFilter(filter);
+        domain.getEntityResolver().getCallbackRegistry().addListener(filter);
+
+        // prerequisite for BaseAuditableProcessor use
+        ChangeSetFilter changeSetFilter = new ChangeSetFilter();
+        domain.addFilter(changeSetFilter);
+        domain.getEntityResolver().getCallbackRegistry().addListener(changeSetFilter);
+
+        ObjectContext context = runtime.getContext();
+        AuditableChildUuid ac = Cayenne.objectForPK(context, AuditableChildUuid.class, 1);
+        Auditable1 a1 = Cayenne.objectForPK(context, Auditable1.class, 1);
+        IdCoder refHandler = new IdCoder(domain.getEntityResolver());
+        ObjectIdRelationshipHandler handler = new ObjectIdRelationshipHandler(refHandler);
+        handler.relate(ac, a1);
+
+        ac.setCharProperty1("xxxx");
+        context.commitChanges();
+        assertEquals(1, processor.size);
+        Collection<Object> auditables = processor.audited.get(AuditableOperation.UPDATE);
+        assertSame(a1, auditables.toArray()[0]);
+
+        ac.setCharProperty2("yyyy");
+        context.commitChanges();
+        assertEquals(2, processor.size);
+        assertSame(a1, auditables.toArray()[1]);
     }
 
     private final class Processor implements AuditableProcessor {

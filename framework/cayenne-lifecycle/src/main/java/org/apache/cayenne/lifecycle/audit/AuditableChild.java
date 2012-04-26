@@ -45,4 +45,6 @@ public @interface AuditableChild {
     String value();
     
     String[] ignoredProperties() default {};
+
+    String objectIdRelationship() default "";
 }

@@ -18,28 +18,35 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.lifecycle.db.Auditable1;
+import org.apache.cayenne.lifecycle.db.AuditableChildUuid;
+import org.apache.cayenne.lifecycle.id.IdCoder;
+import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipFilter;
+import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class AuditableFilterTest extends TestCase {
 
     private AuditableProcessor processor;
     private EntityResolver resolver;
+    private ServerRuntime runtime;
 
     @Override
     protected void setUp() throws Exception {
@@ -48,6 +55,17 @@ public class AuditableFilterTest extends TestCase {
         
         ObjEntity objectEntity = new ObjEntity("CayenneDataObject");
         when(resolver.lookupObjEntity(any(Object.class))).thenReturn(objectEntity);
+
+        runtime = new ServerRuntime("cayenne-lifecycle.xml");
+        // a filter is required to invalidate root objects after commit
+        ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();
+        runtime.getDataDomain().addFilter(filter);
+        runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(filter);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        runtime.shutdown();
     }
 
     public void testInsertAudit() {
@@ -91,6 +109,23 @@ public class AuditableFilterTest extends TestCase {
         filter.updateAuditChild(audited);
         filter.postSync();
 
+        verify(processor).audit(auditedParent, AuditableOperation.UPDATE);
+    }
+
+    public void testUpdateAuditChildByObjectIdRelationship() {
+
+        ObjectContext context = runtime.getContext();
+        Auditable1 auditedParent = context.newObject(Auditable1.class);
+        AuditableChildUuid audited = context.newObject(AuditableChildUuid.class);
+
+        IdCoder refHandler = new IdCoder(context.getEntityResolver());
+        ObjectIdRelationshipHandler handler = new ObjectIdRelationshipHandler(refHandler);
+        handler.relate(audited, auditedParent);
+        context.commitChanges();
+
+        AuditableFilter filter = new AuditableFilter(resolver, processor);
+        filter.updateAuditChild(audited);
+        filter.postSync();
         verify(processor).audit(auditedParent, AuditableOperation.UPDATE);
     }
 
