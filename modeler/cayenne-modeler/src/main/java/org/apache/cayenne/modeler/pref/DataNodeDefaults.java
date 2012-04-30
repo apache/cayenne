@@ -23,9 +23,9 @@ import java.util.prefs.Preferences;
 import org.apache.cayenne.pref.RenamedPreferences;
 
 public class DataNodeDefaults extends RenamedPreferences {
-    
+
     private String localDataSource;
-    
+
     public static final String LOCAL_DATA_SOURCE_PROPERTY = "localDataSource";
 
     public DataNodeDefaults(Preferences pref) {
@@ -35,12 +35,14 @@ public class DataNodeDefaults extends RenamedPreferences {
     public void setLocalDataSource(String localDataSource) {
         if (getCurrentPreference() != null) {
             this.localDataSource = localDataSource;
-            getCurrentPreference().put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
+            if (localDataSource != null) {
+                getCurrentPreference().put(LOCAL_DATA_SOURCE_PROPERTY, localDataSource);
+            }
         }
     }
 
     public String getLocalDataSource() {
-        if(localDataSource == null){
+        if (localDataSource == null) {
             localDataSource = getCurrentPreference().get(LOCAL_DATA_SOURCE_PROPERTY, "");
         }
         return localDataSource;
