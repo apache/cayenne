@@ -23,11 +23,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
@@ -90,6 +92,13 @@ public class ComboSelectionBinding extends BindingBase {
         modelUpdateDisabled = true;
         try {
             clear();
+            ItemListener[] listeners = comboBox.getItemListeners();
+            for (ItemListener itemListener : listeners) {
+                if (itemListener instanceof JComboBoxUndoListener) {
+                    //in order not to add event to undo list
+                    ((JComboBoxUndoListener) itemListener).setIsUserAction(false);
+                }
+            }
             if (value != null) {
                 this.comboBox.setSelectedItem(value.toString());
             }
