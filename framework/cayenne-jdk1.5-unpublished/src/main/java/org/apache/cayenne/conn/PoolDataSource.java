@@ -22,6 +22,8 @@ package org.apache.cayenne.conn;
 
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
@@ -71,4 +73,13 @@ public class PoolDataSource implements ConnectionPoolDataSource {
 	public PooledConnection getPooledConnection(String user, String password) throws SQLException {
 		return new PooledConnectionImpl(nonPooledDatasource, user, password);
 	}
+
+    /**
+     * @since 3.1
+     *
+     * JDBC 4.1 compatibility under Java 1.5
+     */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new UnsupportedOperationException();
+    }
 }

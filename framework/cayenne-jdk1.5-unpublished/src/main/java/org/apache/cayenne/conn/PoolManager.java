@@ -22,9 +22,11 @@ package org.apache.cayenne.conn;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 
 import javax.sql.ConnectionEvent;
 import javax.sql.ConnectionEventListener;
@@ -590,6 +592,15 @@ public class PoolManager implements DataSource, ConnectionEventListener {
      */
     // JDBC 4 compatibility under Java 1.5
     public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.1
+     *
+     * JDBC 4.1 compatibility under Java 1.5
+     */
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new UnsupportedOperationException();
     }
 }

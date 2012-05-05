@@ -36,6 +36,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * A wrapper of a JDBC connection that is attached to a transaction. The behavior of this
@@ -331,6 +332,51 @@ class TransactionConnectionDecorator implements Connection {
      */
     // JDBC 4 compatibility under Java 1.5
     public SQLXML createSQLXML() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.1
+     *
+     * JDBC 4.1 compatibility under Java 1.5
+     */
+    public void setSchema(String schema) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.1
+     *
+     * JDBC 4.1 compatibility under Java 1.5
+     */
+    public String getSchema() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.1
+     *
+     * JDBC 4.1 compatibility under Java 1.5
+     */
+    public void abort(Executor executor) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.1
+     *
+     * JDBC 4.1 compatibility under Java 1.5
+     */
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 3.1
+     *
+     * JDBC 4.1 compatibility under Java 1.5
+     */
+    public int getNetworkTimeout() throws SQLException {
         throw new UnsupportedOperationException();
     }
 }

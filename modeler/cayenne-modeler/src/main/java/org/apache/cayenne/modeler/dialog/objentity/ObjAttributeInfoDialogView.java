@@ -67,7 +67,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
     protected JLabel currentPathLabel;
     protected JLabel sourceEntityLabel;
 
-    protected JComboBox type;
+    protected JComboBox typeComboBox;
     protected JPanel typeManagerPane;
 
     protected CayenneTable overrideAttributeTable;
@@ -93,10 +93,10 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.currentPathLabel = new JLabel();
         this.sourceEntityLabel = new JLabel();
 
-        this.type = Application.getWidgetFactory().createComboBox(ModelerUtil
+        this.typeComboBox = Application.getWidgetFactory().createComboBox(ModelerUtil
                 .getRegisteredTypeNames(), false);
-        AutoCompletion.enable(type, false, true);
-        type.getRenderer();
+        AutoCompletion.enable(typeComboBox, false, true);
+        typeComboBox.getRenderer();
 
         overrideAttributeTable = new CayenneTable();
         tablePreferences = new TableColumnPreferences(getClass(), "overrideAttributeTable");
@@ -126,7 +126,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         builder.add(sourceEntityLabel, cc.xywh(3, 7, 1, 1));
 
         builder.addLabel("Type:", cc.xy(1, 9));
-        builder.add(type, cc.xywh(3, 9, 1, 1));
+        builder.add(typeComboBox, cc.xywh(3, 9, 1, 1));
 
         builder.addSeparator("Mapping to Attributes", cc.xywh(1, 11, 7, 1));
 
@@ -198,13 +198,13 @@ public class ObjAttributeInfoDialogView extends JDialog {
                 saveButton, cancelButton
         }), BorderLayout.SOUTH);
 
-        type.addActionListener(new ActionListener() {
+        typeComboBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 boolean isType = false;
                 String[] typeNames = ModelerUtil.getRegisteredTypeNames();
                 for (int i = 0; i < typeNames.length; i++) {
-                    if (type.getSelectedItem() == null || typeNames[i].equals(type.getSelectedItem().toString())) {
+                    if (typeComboBox.getSelectedItem() == null || typeNames[i].equals(typeComboBox.getSelectedItem().toString())) {
                         isType = true;
                     }
                 }
@@ -214,14 +214,13 @@ public class ObjAttributeInfoDialogView extends JDialog {
                 while (embs.hasNext()) {
                     embNames.add(embs.next().getClassName());
                 }
-                
-                if (isType || !embNames.contains(type.getSelectedItem()) ) {
+
+                if (isType || !embNames.contains(typeComboBox.getSelectedItem())) {
                     ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, FLATTENED_PANEL);
-                }
-                else {
+                } else {
                     ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, EMBEDDABLE_PANEL);
                     getCurrentPathLabel().setText("");
-                    
+
                 }
             }
 
@@ -236,8 +235,8 @@ public class ObjAttributeInfoDialogView extends JDialog {
         return tablePreferences;
     }
 
-    public JComboBox getType() {
-        return type;
+    public JComboBox getTypeComboBox() {
+        return typeComboBox;
     }
 
     public MultiColumnBrowser getPathBrowser() {

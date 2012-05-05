@@ -127,7 +127,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
     private void initController(ObjAttribute attr) {
 
         for (int i = 0; i < embeddableNames.size(); i++) {
-            ((DefaultComboBoxModel) view.getType().getModel()).addElement(embeddableNames
+            ((DefaultComboBoxModel) view.getTypeComboBox().getModel()).addElement(embeddableNames
                     .get(i)
                     .toString());
         }
@@ -169,7 +169,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
         }
         view.getSourceEntityLabel().setText(attribute.getEntity().getName());
 
-        view.getType().setSelectedItem(attribute.getType());
+        view.getTypeComboBox().setSelectedItem(attribute.getType());
 
         BindingBuilder builder = new BindingBuilder(
                 getApplication().getBindingFactory(),
@@ -238,7 +238,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
             setSelectionPath();
         }
 
-        view.getType().addItemListener(new ItemListener() {
+        view.getTypeComboBox().addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent e) {
                 if (lastObjectType != null) {
@@ -402,11 +402,11 @@ public class ObjAttributeInfoDialog extends CayenneController implements
 
         setUpTableStructure();
 
-        if (view.getType().getSelectedItem() == null) {
+        if (view.getTypeComboBox().getSelectedItem() == null) {
             lastObjectType = "";
         }
         else {
-            lastObjectType = view.getType().getSelectedItem();
+            lastObjectType = view.getTypeComboBox().getSelectedItem();
         }
     }
 
@@ -417,7 +417,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
     public boolean setPath(boolean isChange) {
 
         if (isChange()) {
-            attributeSaved.setType(view.getType().getSelectedItem().toString());
+            attributeSaved.setType(view.getTypeComboBox().getSelectedItem().toString());
             attributeSaved.setName(view.getAttributeName().getText());
         }
 
@@ -464,7 +464,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
 
             if (attribute.getDbAttributePath() != null
                     && !embeddableNames.contains(view
-                            .getType()
+                            .getTypeComboBox()
                             .getSelectedItem()
                             .toString())) {
                 if (!attribute.getDbAttributePath().equals(attributePath.toString())) {
@@ -507,11 +507,11 @@ public class ObjAttributeInfoDialog extends CayenneController implements
         return isOvverideTableChange
                 || !attribute.getName().equals(view.getAttributeName().getText())
                 || (attribute.getType() == null && view
-                        .getType()
+                        .getTypeComboBox()
                         .getSelectedItem()
                         .toString() != null)
                 || !attribute.getType().equals(
-                        view.getType().getSelectedItem().toString());
+                        view.getTypeComboBox().getSelectedItem().toString());
     }
 
     public void saveMapping() {

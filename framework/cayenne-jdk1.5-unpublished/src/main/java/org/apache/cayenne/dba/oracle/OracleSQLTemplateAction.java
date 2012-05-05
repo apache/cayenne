@@ -1100,6 +1100,24 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
                 throws SQLException {
             throw new UnsupportedOperationException();
         }
+
+        /**
+         * @since 3.1
+         *
+         * JDBC 4.1 compatibility under Java 1.5
+         */
+        public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * @since 3.1
+         *
+         * JDBC 4.1 compatibility under Java 1.5
+         */
+        public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
     }
 
     final class OracleResultSetMetadata implements ResultSetMetaData {
