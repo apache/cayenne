@@ -203,15 +203,6 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Returns runtime properties fetched from parent data domain.
-     *
-     * @since 3.1
-     */
-    public RuntimeProperties getRuntimeProperties() {
-        return getParentDataDomain().getRuntimeProperties();
-    }
-
-    /**
      * Sets a DataContextDelegate for this context. Delegate is notified of certain events
      * in the DataContext lifecycle and can customize DataContext behavior.
      * 

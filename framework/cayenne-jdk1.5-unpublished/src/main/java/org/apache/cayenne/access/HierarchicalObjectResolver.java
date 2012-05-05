@@ -162,13 +162,16 @@ class HierarchicalObjectResolver {
 
             List<?> parentDataRows;
             if (parentProcessorNode instanceof PrefetchProcessorJointNode) {
-                parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode).getResolvedRows();
+                parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode)
+                        .getResolvedRows();
             }
             else {
                 parentDataRows = parentProcessorNode.getDataRows();
             }
 
-            int maxIdQualifierSize = context.getRuntimeProperties()
+            int maxIdQualifierSize = context
+                    .getParentDataDomain()
+                    .getRuntimeProperties()
                     .getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1);
 
             List<PrefetchSelectQuery> queries = new ArrayList<PrefetchSelectQuery>();
@@ -217,7 +220,8 @@ class HierarchicalObjectResolver {
                 if (relationship.isSourceIndependentFromTargetChange()) {
                     // setup extra result columns to be able to relate result rows to the
                     // parent result objects.
-                    query.addResultPath("db:" + relationship.getReverseDbRelationshipPath());
+                    query.addResultPath("db:"
+                            + relationship.getReverseDbRelationshipPath());
                 }
                 dataRows.addAll(context.performQuery(query));
             }
@@ -288,7 +292,8 @@ class HierarchicalObjectResolver {
 
             // TODO: see TODO in ObjectResolver.relatedObjectsFromDataRows
 
-            if ((node.isDisjointPrefetch() || node.isDisjointByIdPrefetch()) && !needToSaveDuplicates) {
+            if ((node.isDisjointPrefetch() || node.isDisjointByIdPrefetch())
+                    && !needToSaveDuplicates) {
                 PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
                 if (processorNode.isJointChildren()) {
                     List<Persistent> objects = processorNode.getObjects();

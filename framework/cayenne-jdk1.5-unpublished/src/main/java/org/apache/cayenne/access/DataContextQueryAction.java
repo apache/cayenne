@@ -86,8 +86,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
                     // would be nice to implement an alternative algorithm that wouldn't
                     // require this hack.
                     if (oidQuery.isFetchingDataRows()) {
-                        object = ((DataContext) actingContext)
-                                .currentSnapshot((Persistent) object);
+                        object = actingDataContext.currentSnapshot((Persistent) object);
                     }
                     // do not return hollow objects
                     else if (((Persistent) object).getPersistenceState() == PersistenceState.HOLLOW) {
@@ -109,15 +108,21 @@ class DataContextQueryAction extends ObjectContextQueryAction {
 
             DbEntity dbEntity = metadata.getDbEntity();
             Integer maxIdQualifierSize = actingDataContext
-                    .getRuntimeProperties().getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1);
+                    .getParentDataDomain()
+                    .getRuntimeProperties()
+                    .getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1);
             List<?> paginatedList;
             if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
                 paginatedList = new SimpleIdIncrementalFaultList<Object>(
-                        (DataContext) actingContext, query, maxIdQualifierSize);
+                        actingDataContext,
+                        query,
+                        maxIdQualifierSize);
             }
             else {
                 paginatedList = new IncrementalFaultList<Object>(
-                        (DataContext) actingContext, query, maxIdQualifierSize);
+                        actingDataContext,
+                        query,
+                        maxIdQualifierSize);
             }
 
             response = new ListResponse(paginatedList);

@@ -84,6 +84,14 @@ public class IncrementalFaultList<E> implements List<E> {
     // or complexity of the where clause - e.g., PostgreSQL having a default limit of
     // 10,000 nested expressions.
 
+    
+    /**
+     * @deprecated since 3.1 use {@link #IncrementalFaultList(DataContext, Query, int)}.
+     */
+    public IncrementalFaultList(DataContext dataContext, Query query) {
+        this(dataContext, query, 10000);
+    }
+    
     /**
      * Creates a new IncrementalFaultList using a given DataContext and query.
      * 
