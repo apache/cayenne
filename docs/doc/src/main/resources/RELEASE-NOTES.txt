@@ -69,6 +69,7 @@ CAY-1628 ClassCastException when using java.util.Set or java.util.Map as collect
 CAY-1631 Oracle - passing blobs as stored procedure parameters
 CAY-1632 CayenneModeler: flattened relationship paths are not fully displayed
 CAY-1648 [PATCH] ValidationException throws format exception if error message contains percent sign
+CAY-1694 When importing an EOModel, the DataNode gets lost
 CAY-1696 Undo/Redo stop working after deleting several project items at once
 CAY-1697 Error on Save after importing database
 CAY-1702 Excessive Selection action is generated when selecting datanode

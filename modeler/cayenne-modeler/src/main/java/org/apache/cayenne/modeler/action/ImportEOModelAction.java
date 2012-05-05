@@ -182,6 +182,11 @@ public class ImportEOModelAction extends CayenneAction {
                 dsi.setUserName(keyAsString(connection, "username"));
             }
 
+            DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
+                    .getProject()
+                    .getRootNode();
+            domain.getNodeDescriptors().add(node);
+
             // send events after the node creation is complete
             getProjectController().fireDataNodeEvent(
                     new DataNodeEvent(this, node, MapEvent.ADD));
