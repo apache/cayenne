@@ -132,4 +132,11 @@ public interface Constants {
      */
     public static final String SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.server.rop_event_bridge_factory";
 
+    /**
+     * A property that defines a maximum number of ID qualifiers in where clause of queries
+     * that are generated for example in {@link org.apache.cayenne.access.IncrementalFaultList}
+     * or in DISJOINT_BY_ID prefetch processing. This is needed to avoid where
+     * clause size limitations and memory usage efficiency.
+     */
+    public static final String SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY = "cayenne.server.max_id_qualifier_size";
 }

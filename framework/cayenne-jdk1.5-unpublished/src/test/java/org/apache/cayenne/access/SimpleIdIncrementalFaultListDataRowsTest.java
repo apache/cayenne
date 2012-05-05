@@ -69,7 +69,7 @@ public class SimpleIdIncrementalFaultListDataRowsTest extends ServerCase {
         q.setFetchingDataRows(true);
         q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
 
-        list = new SimpleIdIncrementalFaultList<Object>(context, q);
+        list = new SimpleIdIncrementalFaultList<Object>(context, q, 10000);
     }
 
     protected void createArtistsDataSet() throws Exception {

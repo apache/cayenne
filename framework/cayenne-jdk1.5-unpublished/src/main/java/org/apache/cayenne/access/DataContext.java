@@ -44,6 +44,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -199,6 +200,15 @@ public class DataContext extends BaseContext {
         }
 
         return null;
+    }
+
+    /**
+     * Returns runtime properties fetched from parent data domain.
+     *
+     * @since 3.1
+     */
+    public RuntimeProperties getRuntimeProperties() {
+        return getParentDataDomain().getRuntimeProperties();
     }
 
     /**

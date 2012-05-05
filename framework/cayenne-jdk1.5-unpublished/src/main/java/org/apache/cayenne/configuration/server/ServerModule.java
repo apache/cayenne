@@ -97,6 +97,8 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class ServerModule implements Module {
 
+    private static final int DEFAULT_MAX_ID_QUALIFIER_SIZE = 10000;
+
     protected String[] configurationLocations;
 
     /**
@@ -118,8 +120,9 @@ public class ServerModule implements Module {
 
     public void configure(Binder binder) {
 
-        // configure empty global stack properties
-        binder.bindMap(Constants.PROPERTIES_MAP);
+        // configure global stack properties
+        binder.bindMap(Constants.PROPERTIES_MAP)
+            .put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
 
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
         

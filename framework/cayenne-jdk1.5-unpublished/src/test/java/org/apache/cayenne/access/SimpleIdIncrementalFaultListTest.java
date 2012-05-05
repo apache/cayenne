@@ -96,7 +96,7 @@ public class SimpleIdIncrementalFaultListTest extends ServerCase {
         query.setPageSize(10);
         SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<Artist>(
                 context,
-                query);
+                query, 10000);
 
         assertEquals(25, list.size());
 
@@ -117,7 +117,7 @@ public class SimpleIdIncrementalFaultListTest extends ServerCase {
         // by the page size, to test the last smaller page
         query.setPageSize(pageSize);
         query.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-        return new SimpleIdIncrementalFaultList<Object>(context, query);
+        return new SimpleIdIncrementalFaultList<Object>(context, query, 10000);
     }
 
     public void testSize() throws Exception {
@@ -172,7 +172,7 @@ public class SimpleIdIncrementalFaultListTest extends ServerCase {
 
         SimpleIdIncrementalFaultList<?> list = new SimpleIdIncrementalFaultList<Object>(
                 context,
-                q);
+                q, 10000);
 
         assertSame(newArtist, list.get(25));
     }

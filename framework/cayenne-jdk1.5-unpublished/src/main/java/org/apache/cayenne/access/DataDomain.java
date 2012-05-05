@@ -38,7 +38,9 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
@@ -75,6 +77,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
+
+    @Inject
+    protected RuntimeProperties runtimeProperties;
 
     /**
      * @since 3.1
@@ -935,6 +940,15 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     JdbcEventLogger getJdbcEventLogger() {
         return jdbcEventLogger;
+    }
+
+    /**
+     * Returns global runtime properties for this data domain.
+     *
+     * @since 3.1
+     */
+    public RuntimeProperties getRuntimeProperties() {
+        return runtimeProperties;
     }
 
     void refreshEntitySorter() {

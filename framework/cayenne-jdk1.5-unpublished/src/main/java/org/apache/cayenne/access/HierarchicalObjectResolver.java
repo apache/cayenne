@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Set;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbJoin;
@@ -136,10 +138,6 @@ class HierarchicalObjectResolver {
                     .getParent();
             ObjRelationship relationship = processorNode.getIncoming().getRelationship();
 
-            PrefetchSelectQuery query = new PrefetchSelectQuery(
-                    node.getPath(),
-                    relationship);
-
             List<DbRelationship> dbRelationships = relationship.getDbRelationships();
             DbRelationship lastDbRelationship = dbRelationships.get(0);
 
@@ -170,10 +168,26 @@ class HierarchicalObjectResolver {
                 parentDataRows = parentProcessorNode.getDataRows();
             }
 
-            for (Object dataRow : parentDataRows) {
+            int maxIdQualifierSize = context.getRuntimeProperties()
+                    .getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1);
 
+            List<PrefetchSelectQuery> queries = new ArrayList<PrefetchSelectQuery>();
+            int qualifiersCount = 0;
+            PrefetchSelectQuery currentQuery = null;
+
+            for (Object dataRow : parentDataRows) {
                 Expression allJoinsQualifier = null;
-                for (DbJoin join : lastDbRelationship.getJoins()) {
+                List<DbJoin> joins = lastDbRelationship.getJoins();
+
+                // handling too big qualifiers
+                if (currentQuery == null
+                        || (maxIdQualifierSize > 0 && qualifiersCount + joins.size() > maxIdQualifierSize)) {
+                    currentQuery = new PrefetchSelectQuery(node.getPath(), relationship);
+                    queries.add(currentQuery);
+                    qualifiersCount = 0;
+                }
+
+                for (DbJoin join : joins) {
 
                     Object targetValue = ((DataRow) dataRow).get(join.getSourceName());
                     Expression joinQualifier = ExpressionFactory.matchDbExp(pathPrefix
@@ -186,23 +200,27 @@ class HierarchicalObjectResolver {
                     }
                 }
 
-                query.orQualifier(allJoinsQualifier);
+                currentQuery.orQualifier(allJoinsQualifier);
+                qualifiersCount += joins.size();
             }
 
-            // need to pass the remaining tree to make joint prefetches work
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
-            if (jointSubtree.hasChildren()) {
-                query.setPrefetchTree(jointSubtree);
-            }
 
-            query.setFetchingDataRows(true);
-            if (relationship.isSourceIndependentFromTargetChange()) {
-                // setup extra result columns to be able to relate result rows to the
-                // parent result objects.
-                query.addResultPath("db:" + relationship.getReverseDbRelationshipPath());
-            }
+            List dataRows = new ArrayList();
+            for (PrefetchSelectQuery query : queries) {
+                // need to pass the remaining tree to make joint prefetches work
+                if (jointSubtree.hasChildren()) {
+                    query.setPrefetchTree(jointSubtree);
+                }
 
-            List dataRows = context.performQuery(query);
+                query.setFetchingDataRows(true);
+                if (relationship.isSourceIndependentFromTargetChange()) {
+                    // setup extra result columns to be able to relate result rows to the
+                    // parent result objects.
+                    query.addResultPath("db:" + relationship.getReverseDbRelationshipPath());
+                }
+                dataRows.addAll(context.performQuery(query));
+            }
             processorNode.setDataRows(dataRows);
 
             return startDisjointPrefetch(node);

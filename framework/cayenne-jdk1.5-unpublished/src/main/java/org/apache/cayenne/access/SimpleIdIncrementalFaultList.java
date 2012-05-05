@@ -38,8 +38,8 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
 
     protected DbAttribute pk;
 
-    SimpleIdIncrementalFaultList(DataContext dataContext, Query query) {
-        super(dataContext, query);
+    SimpleIdIncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize) {
+        super(dataContext, query, maxFetchSize);
 
         Collection<DbAttribute> pks = rootEntity.getDbEntity().getPrimaryKeys();
         if (pks.size() != 1) {

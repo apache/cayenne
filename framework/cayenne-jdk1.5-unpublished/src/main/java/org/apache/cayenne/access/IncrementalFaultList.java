@@ -76,7 +76,7 @@ public class IncrementalFaultList<E> implements List<E> {
      * Defines the upper limit on the size of fetches. This is needed to avoid where
      * clause size limitations.
      */
-    protected int maxFetchSize = 10000;
+    protected int maxFetchSize;
 
     // Don't confuse this with the JDBC ResultSet fetch size setting - this controls
     // the where clause generation that is necessary to fetch specific records a page
@@ -91,8 +91,9 @@ public class IncrementalFaultList<E> implements List<E> {
      *            objects.
      * @param query Main query used to retrieve data. Must have "pageSize" property set to
      *            a value greater than zero.
+     * @param maxFetchSize maximum number of fetches in one query
      */
-    public IncrementalFaultList(DataContext dataContext, Query query) {
+    public IncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize) {
         QueryMetadata metadata = query.getMetaData(dataContext.getEntityResolver());
         if (metadata.getPageSize() <= 0) {
             throw new CayenneRuntimeException("Not a paginated query; page size: "
@@ -121,6 +122,8 @@ public class IncrementalFaultList<E> implements List<E> {
         List<Object> elementsUnsynced = new ArrayList<Object>();
         fillIn(query, elementsUnsynced);
         this.elements = Collections.synchronizedList(elementsUnsynced);
+
+        this.maxFetchSize = maxFetchSize;
     }
 
     /**
