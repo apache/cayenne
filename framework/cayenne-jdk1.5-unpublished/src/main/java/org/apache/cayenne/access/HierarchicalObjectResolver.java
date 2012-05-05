@@ -29,7 +29,6 @@ import java.util.Set;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbJoin;
@@ -171,8 +170,7 @@ class HierarchicalObjectResolver {
 
             int maxIdQualifierSize = context
                     .getParentDataDomain()
-                    .getRuntimeProperties()
-                    .getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1);
+                    .getMaxIdQualifierSite();
 
             List<PrefetchSelectQuery> queries = new ArrayList<PrefetchSelectQuery>();
             int qualifiersCount = 0;

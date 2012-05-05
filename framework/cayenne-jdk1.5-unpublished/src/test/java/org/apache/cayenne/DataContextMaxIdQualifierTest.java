@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
@@ -29,13 +29,16 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     @Inject
     protected DataChannelInterceptor queryInterceptor;
 
+    @Inject
+    protected ServerRuntime runtime;
+
     protected TableHelper tBag;
     protected TableHelper tBox;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
 
-        System.setProperty(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, "100");
+        runtime.getDataDomain().setMaxIdQualifierSite(100);
 
         dbHelper.deleteAll("BALL");
         dbHelper.deleteAll("BOX_THING");
@@ -49,11 +52,6 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
 
         tBox = new TableHelper(dbHelper, "BOX");
         tBox.setColumns("ID", "BAG_ID", "NAME");
-    }
-
-    @Override
-    protected void tearDownBeforeInjection() throws Exception {
-        System.getProperties().remove(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY);
     }
 
     public void testDisjointByIdPrefetch() throws Exception {

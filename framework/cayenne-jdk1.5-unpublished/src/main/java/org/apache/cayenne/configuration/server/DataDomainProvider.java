@@ -37,6 +37,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -95,6 +96,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     @Inject
     protected QueryCache queryCache;
+
+    @Inject
+    protected RuntimeProperties runtimeProperties;
 
     public DataDomain get() throws ConfigurationException {
 
@@ -173,6 +177,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         DataChannelDescriptor descriptor = descriptorMerger.merge(descriptors);
         DataDomain dataDomain = createDataDomain(descriptor.getName());
+
+        dataDomain.setMaxIdQualifierSite(runtimeProperties.getInt(
+                Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY,
+                -1));
 
         dataDomain.setQueryCache(new NestedQueryCache(queryCache));
         dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));

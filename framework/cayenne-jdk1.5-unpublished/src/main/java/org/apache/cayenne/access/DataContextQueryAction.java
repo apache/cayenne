@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
@@ -109,8 +108,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             DbEntity dbEntity = metadata.getDbEntity();
             Integer maxIdQualifierSize = actingDataContext
                     .getParentDataDomain()
-                    .getRuntimeProperties()
-                    .getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1);
+                    .getMaxIdQualifierSite();
             List<?> paginatedList;
             if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
                 paginatedList = new SimpleIdIncrementalFaultList<Object>(
