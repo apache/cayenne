@@ -38,8 +38,6 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     @Override
     protected void setUpAfterInjection() throws Exception {
 
-        runtime.getDataDomain().setMaxIdQualifierSite(100);
-
         dbHelper.deleteAll("BALL");
         dbHelper.deleteAll("BOX_THING");
         dbHelper.deleteAll("THING");
@@ -55,10 +53,13 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     }
 
     public void testDisjointByIdPrefetch() throws Exception {
+
         for (int i = 0; i < 1000; i++) {
             tBag.insert(i + 1, "bag" + (i + 1));
             tBox.insert(i + 1, i + 1, "box" + (i + 1));
         }
+
+        runtime.getDataDomain().setMaxIdQualifierSite(100);
 
         final SelectQuery query = new SelectQuery(Bag.class);
         query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
@@ -74,11 +75,126 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
         assertEquals(11, queriesCount);
     }
 
-    public void testIncrementalFaultList() throws Exception {
+    public void testDisjointByIdPrefetch_Zero() throws Exception {
+        for (int i = 0; i < 1000; i++) {
+            tBag.insert(i + 1, "bag" + (i + 1));
+            tBox.insert(i + 1, i + 1, "box" + (i + 1));
+        }
+
+        runtime.getDataDomain().setMaxIdQualifierSite(0);
+        
+        final SelectQuery query = new SelectQuery(Bag.class);
+        query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+
+        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                context.performQuery(query);
+            }
+        });
+
+        assertEquals(2, queriesCount);
+    }
+    
+    public void testDisjointByIdPrefetch_Negative() throws Exception {
+        for (int i = 0; i < 1000; i++) {
+            tBag.insert(i + 1, "bag" + (i + 1));
+            tBox.insert(i + 1, i + 1, "box" + (i + 1));
+        }
+
+        runtime.getDataDomain().setMaxIdQualifierSite(-1);
+        
+        final SelectQuery query = new SelectQuery(Bag.class);
+        query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+
+        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                context.performQuery(query);
+            }
+        });
+
+        assertEquals(2, queriesCount);
+    }
+
+
+    public void testIncrementalFaultList_Lower() throws Exception {
         tBag.insert(1, "bag1");
         for (int i = 0; i < 1000; i++) {
             tBox.insert(i + 1, 1, "box" + (i + 1));
         }
+
+        runtime.getDataDomain().setMaxIdQualifierSite(50);
+
+        final SelectQuery query = new SelectQuery(Box.class);
+        query.setPageSize(100);
+        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                final List<Box> boxes = context.performQuery(query);
+                for(Box box : boxes) {
+                    box.getBag();
+                }
+            }
+        });
+
+        assertEquals(21, queriesCount);
+        
+        queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                final List<Box> boxes = context.performQuery(query);
+                List<Box> tempList = new ArrayList<Box>();
+                tempList.addAll(boxes);
+            }
+        });
+
+        assertEquals(21, queriesCount);
+    }
+    
+    public void testIncrementalFaultList_Higher() throws Exception {
+        tBag.insert(1, "bag1");
+        for (int i = 0; i < 1000; i++) {
+            tBox.insert(i + 1, 1, "box" + (i + 1));
+        }
+
+        runtime.getDataDomain().setMaxIdQualifierSite(1001);
+
+        final SelectQuery query = new SelectQuery(Box.class);
+        query.setPageSize(100);
+        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                final List<Box> boxes = context.performQuery(query);
+                for(Box box : boxes) {
+                    box.getBag();
+                }
+            }
+        });
+
+        assertEquals(11, queriesCount);
+        
+        queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                final List<Box> boxes = context.performQuery(query);
+                List<Box> tempList = new ArrayList<Box>();
+                tempList.addAll(boxes);
+            }
+        });
+
+        assertEquals(2, queriesCount);
+    }
+    
+    public void testIncrementalFaultList_Zero() throws Exception {
+        tBag.insert(1, "bag1");
+        for (int i = 0; i < 1000; i++) {
+            tBox.insert(i + 1, 1, "box" + (i + 1));
+        }
+
+        runtime.getDataDomain().setMaxIdQualifierSite(0);
 
         final SelectQuery query = new SelectQuery(Box.class);
         query.setPageSize(100);
@@ -91,6 +207,28 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
             }
         });
 
-        assertEquals(11, queriesCount);
+        assertEquals(2, queriesCount);
+    }
+    
+    public void testIncrementalFaultList_Negative() throws Exception {
+        tBag.insert(1, "bag1");
+        for (int i = 0; i < 1000; i++) {
+            tBox.insert(i + 1, 1, "box" + (i + 1));
+        }
+
+        runtime.getDataDomain().setMaxIdQualifierSite(-1);
+
+        final SelectQuery query = new SelectQuery(Box.class);
+        query.setPageSize(100);
+        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
+            public void execute() {
+                final List<Box> boxes = context.performQuery(query);
+                List<Box> tempList = new ArrayList<Box>();
+                tempList.addAll(boxes);
+            }
+        });
+
+        assertEquals(2, queriesCount);
     }
 }

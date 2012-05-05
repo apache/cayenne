@@ -254,8 +254,11 @@ public class IncrementalFaultList<E> implements List<E> {
 
             // fetch the range of objects in fetchSize chunks
             boolean fetchesDataRows = internalQuery.isFetchingDataRows();
-            List objects = new ArrayList(qualsSize);
-            int fetchEnd = Math.min(qualsSize, maxFetchSize);
+            List<?> objects = new ArrayList<Object>(qualsSize);
+            
+            int fetchSize = maxFetchSize > 0 ? maxFetchSize : Integer.MAX_VALUE;
+            
+            int fetchEnd = Math.min(qualsSize, fetchSize);
             int fetchBegin = 0;
             while (fetchBegin < qualsSize) {
                 SelectQuery query = new SelectQuery(rootEntity, ExpressionFactory
@@ -269,7 +272,7 @@ public class IncrementalFaultList<E> implements List<E> {
 
                 objects.addAll(dataContext.performQuery(query));
                 fetchBegin = fetchEnd;
-                fetchEnd += Math.min(maxFetchSize, qualsSize - fetchEnd);
+                fetchEnd += Math.min(fetchSize, qualsSize - fetchEnd);
             }
 
             // sanity check - database data may have changed
@@ -366,8 +369,6 @@ public class IncrementalFaultList<E> implements List<E> {
      * database. This setting governs the size/complexity of the where clause generated to
      * retrieve the next page of records. If the fetch size is less than the page size,
      * then multiple fetches will be made to resolve a page.
-     * 
-     * @return int
      */
     public int getMaxFetchSize() {
         return maxFetchSize;
