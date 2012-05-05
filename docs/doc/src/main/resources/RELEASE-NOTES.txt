@@ -69,6 +69,7 @@ CAY-1627 CayenneModeler: collection types for to-many relationships are not save
 CAY-1628 ClassCastException when using java.util.Set or java.util.Map as collection type for to-many relationship
 CAY-1631 Oracle - passing blobs as stored procedure parameters
 CAY-1632 CayenneModeler: flattened relationship paths are not fully displayed
+CAY-1634 [PATCH] In ChildDiffLoader.nodePropertyChanged the oldValue is not passed to writeProperty
 CAY-1648 [PATCH] ValidationException throws format exception if error message contains percent sign
 CAY-1694 When importing an EOModel, the DataNode gets lost
 CAY-1696 Undo/Redo stop working after deleting several project items at once

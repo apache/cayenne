@@ -149,7 +149,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 
         setExternalChange(Boolean.TRUE);
         try {
-            descriptor.getProperty(property).writeProperty(object, null, newValue);
+            descriptor.getProperty(property).writeProperty(object, oldValue, newValue);
         }
         catch (Exception e) {
             throw new CayenneRuntimeException("Error setting property: " + property, e);
