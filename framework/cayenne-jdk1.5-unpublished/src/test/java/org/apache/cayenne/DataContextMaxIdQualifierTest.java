@@ -1,5 +1,8 @@
 package org.apache.cayenne;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.Inject;
@@ -14,11 +17,9 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextMaxIdQualifierTest extends ServerCase {
+
     @Inject
     protected DataContext context;
 
@@ -31,12 +32,11 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     protected TableHelper tBag;
     protected TableHelper tBox;
 
-    static {
-        System.setProperty(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, "100");
-    }
-
     @Override
     protected void setUpAfterInjection() throws Exception {
+
+        System.setProperty(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, "100");
+
         dbHelper.deleteAll("BALL");
         dbHelper.deleteAll("BOX_THING");
         dbHelper.deleteAll("THING");
@@ -51,6 +51,11 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
         tBox.setColumns("ID", "BAG_ID", "NAME");
     }
 
+    @Override
+    protected void tearDownBeforeInjection() throws Exception {
+        System.getProperties().remove(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY);
+    }
+
     public void testDisjointByIdPrefetch() throws Exception {
         for (int i = 0; i < 1000; i++) {
             tBag.insert(i + 1, "bag" + (i + 1));
@@ -58,10 +63,11 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
         }
 
         final SelectQuery query = new SelectQuery(Bag.class);
-        query.addPrefetch(Bag.BOXES_PROPERTY)
-                .setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
+                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
             public void execute() {
                 context.performQuery(query);
             }
@@ -79,6 +85,7 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
         final SelectQuery query = new SelectQuery(Box.class);
         query.setPageSize(100);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+
             public void execute() {
                 final List<Box> boxes = context.performQuery(query);
                 List<Box> tempList = new ArrayList<Box>();
