@@ -73,6 +73,7 @@ CAY-1648 [PATCH] ValidationException throws format exception if error message co
 CAY-1694 When importing an EOModel, the DataNode gets lost
 CAY-1696 Undo/Redo stop working after deleting several project items at once
 CAY-1697 Error on Save after importing database
+CAY-1701 Modeler cannot undo pasting of obj (db) entity
 CAY-1702 Excessive Selection action is generated when selecting datanode
 CAY-1703 NPE on selecting default datasource value
 

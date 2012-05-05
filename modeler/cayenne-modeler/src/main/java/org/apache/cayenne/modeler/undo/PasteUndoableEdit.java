@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -109,7 +110,10 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
             }
         }
         else if (where instanceof DbEntity) {
-            if (content instanceof DbAttribute) {
+            if (content instanceof DbEntity) {
+                rAction.removeDbEntity(map, (DbEntity) content);
+            }
+            else if (content instanceof DbAttribute) {
                 rAttributeAction.removeDbAttributes(
                         map,
                         (DbEntity) where,
@@ -126,7 +130,10 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
             }
         }
         else if (where instanceof ObjEntity) {
-            if (content instanceof ObjAttribute) {
+            if (content instanceof ObjEntity) {
+                rAction.removeObjEntity(map, (ObjEntity) content);
+            }
+            else if (content instanceof ObjAttribute) {
                 rAttributeAction.removeObjAttributes(
                         (ObjEntity) where,
                         new ObjAttribute[] {
@@ -150,6 +157,9 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
                             (ProcedureParameter) content
                         });
             }
+        }
+        else if (content instanceof Embeddable) {
+            rAction.removeEmbeddable(map, (Embeddable) content);
         }
     }
 }
