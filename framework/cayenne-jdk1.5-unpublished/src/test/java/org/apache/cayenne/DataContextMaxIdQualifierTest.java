@@ -59,7 +59,7 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
             tBox.insert(i + 1, i + 1, "box" + (i + 1));
         }
 
-        runtime.getDataDomain().setMaxIdQualifierSite(100);
+        runtime.getDataDomain().setMaxIdQualifierSize(100);
 
         final SelectQuery query = new SelectQuery(Bag.class);
         query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
@@ -81,7 +81,7 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
             tBox.insert(i + 1, i + 1, "box" + (i + 1));
         }
 
-        runtime.getDataDomain().setMaxIdQualifierSite(0);
+        runtime.getDataDomain().setMaxIdQualifierSize(0);
         
         final SelectQuery query = new SelectQuery(Bag.class);
         query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
@@ -103,7 +103,7 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
             tBox.insert(i + 1, i + 1, "box" + (i + 1));
         }
 
-        runtime.getDataDomain().setMaxIdQualifierSite(-1);
+        runtime.getDataDomain().setMaxIdQualifierSize(-1);
         
         final SelectQuery query = new SelectQuery(Bag.class);
         query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
@@ -126,7 +126,7 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
             tBox.insert(i + 1, 1, "box" + (i + 1));
         }
 
-        runtime.getDataDomain().setMaxIdQualifierSite(50);
+        runtime.getDataDomain().setMaxIdQualifierSize(50);
 
         final SelectQuery query = new SelectQuery(Box.class);
         query.setPageSize(100);
@@ -160,7 +160,7 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
             tBox.insert(i + 1, 1, "box" + (i + 1));
         }
 
-        runtime.getDataDomain().setMaxIdQualifierSite(1001);
+        runtime.getDataDomain().setMaxIdQualifierSize(1001);
 
         final SelectQuery query = new SelectQuery(Box.class);
         query.setPageSize(100);
@@ -194,7 +194,7 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
             tBox.insert(i + 1, 1, "box" + (i + 1));
         }
 
-        runtime.getDataDomain().setMaxIdQualifierSite(0);
+        runtime.getDataDomain().setMaxIdQualifierSize(0);
 
         final SelectQuery query = new SelectQuery(Box.class);
         query.setPageSize(100);
@@ -216,7 +216,7 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
             tBox.insert(i + 1, 1, "box" + (i + 1));
         }
 
-        runtime.getDataDomain().setMaxIdQualifierSite(-1);
+        runtime.getDataDomain().setMaxIdQualifierSize(-1);
 
         final SelectQuery query = new SelectQuery(Box.class);
         query.setPageSize(100);

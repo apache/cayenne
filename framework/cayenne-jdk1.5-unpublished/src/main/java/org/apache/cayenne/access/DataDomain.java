@@ -80,7 +80,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * @since 3.1
      */
-    protected int maxIdQualifierSite;
+    protected int maxIdQualifierSize;
 
     /**
      * @since 3.1
@@ -1058,19 +1058,19 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Cayenne when processing paginated queries and DISJOINT_BY_ID prefetches and is
      * intended to address database limitations on the size of SQL statements as well as
      * to cap memory use in Cayenne when generating such queries. The default is 10000. It
-     * can be changed either by calling {@link #setMaxIdQualifierSite(int)} or changing
+     * can be changed either by calling {@link #setMaxIdQualifierSize(int)} or changing
      * the value for property {@link Constants#SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY}.
      * 
      * @since 3.1
      */
-    public int getMaxIdQualifierSite() {
-        return maxIdQualifierSite;
+    public int getMaxIdQualifierSize() {
+        return maxIdQualifierSize;
     }
 
     /**
      * @since 3.1
      */
-    public void setMaxIdQualifierSite(int maxIdQualifierSite) {
-        this.maxIdQualifierSite = maxIdQualifierSite;
+    public void setMaxIdQualifierSize(int maxIdQualifierSize) {
+        this.maxIdQualifierSize = maxIdQualifierSize;
     }
 }

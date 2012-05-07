@@ -170,7 +170,7 @@ class HierarchicalObjectResolver {
 
             int maxIdQualifierSize = context
                     .getParentDataDomain()
-                    .getMaxIdQualifierSite();
+                    .getMaxIdQualifierSize();
 
             List<PrefetchSelectQuery> queries = new ArrayList<PrefetchSelectQuery>();
             int qualifiersCount = 0;

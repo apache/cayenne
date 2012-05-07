@@ -178,7 +178,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         DataChannelDescriptor descriptor = descriptorMerger.merge(descriptors);
         DataDomain dataDomain = createDataDomain(descriptor.getName());
 
-        dataDomain.setMaxIdQualifierSite(runtimeProperties.getInt(
+        dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(
                 Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY,
                 -1));
 

@@ -108,7 +108,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             DbEntity dbEntity = metadata.getDbEntity();
             Integer maxIdQualifierSize = actingDataContext
                     .getParentDataDomain()
-                    .getMaxIdQualifierSite();
+                    .getMaxIdQualifierSize();
             List<?> paginatedList;
             if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
                 paginatedList = new SimpleIdIncrementalFaultList<Object>(
