@@ -21,8 +21,6 @@ package org.apache.cayenne.access;
 
 import java.util.Collection;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -30,6 +28,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -39,14 +38,14 @@ public class DbLoaderPartialTest extends ServerCase {
     private DbAdapter adapter;
 
     @Inject
-    private DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
     private DbLoader loader;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
         loader = new DbLoader(
-                dataSource.getConnection(),
+                dataSourceFactory.getSharedDataSource().getConnection(),
                 adapter,
                 new DbLoaderDelegate() {
 

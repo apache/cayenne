@@ -16,24 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.server;
+package org.apache.cayenne.di;
 
-import javax.sql.DataSource;
 
-import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
-
-public class ServerCaseSharedDataSourceProvider implements Provider<DataSource> {
-
-    protected ServerCaseDataSourceFactory dataSourceFactory;
-
-    public ServerCaseSharedDataSourceProvider(
-            @Inject ServerCaseDataSourceFactory dataSourceFactory) {
-        this.dataSourceFactory = dataSourceFactory;
-    }
-
-    public DataSource get() throws ConfigurationException {
-        return dataSourceFactory.getSharedDataSource();
-    }
+/**
+ * This interface duplicates default reflection based mechanism for receiving DI events.
+ * It is not fully supported and its usage are reserved for cases when for some reason
+ * it is not possible to use reflection. It is used for example in
+ * {@link javax.sql.DataSource} managing layer to provide compatibility with java version 5.
+ *
+ * @since 3.1
+ */
+public interface ScopeEventListener {
+    /**
+     * Similar to {@link BeforeScopeEnd}
+     */
+    void beforeScopeEnd();
 }

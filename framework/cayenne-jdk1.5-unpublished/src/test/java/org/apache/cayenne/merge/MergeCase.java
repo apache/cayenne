@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
@@ -37,6 +35,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 
 public abstract class MergeCase extends ServerCase {
 
@@ -47,7 +46,7 @@ public abstract class MergeCase extends ServerCase {
     private UnitDbAdapter accessStackAdapter;
 
     @Inject
-    private DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
     protected EntityResolver resolver;
@@ -139,7 +138,7 @@ public abstract class MergeCase extends ServerCase {
     }
 
     private void executeSql(String sql) throws Exception {
-        Connection conn = dataSource.getConnection();
+        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
 
         try {
             Statement st = conn.createStatement();

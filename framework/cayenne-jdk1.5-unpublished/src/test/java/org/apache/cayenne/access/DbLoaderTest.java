@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -38,6 +36,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -50,7 +49,7 @@ public class DbLoaderTest extends ServerCase {
     private DbAdapter adapter;
 
     @Inject
-    private DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
@@ -59,7 +58,7 @@ public class DbLoaderTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        loader = new DbLoader(dataSource.getConnection(), adapter, null);
+        loader = new DbLoader(dataSourceFactory.getSharedDataSource().getConnection(), adapter, null);
     }
 
     @Override

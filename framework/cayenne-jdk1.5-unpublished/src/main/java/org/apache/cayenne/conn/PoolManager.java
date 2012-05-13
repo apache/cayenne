@@ -19,6 +19,15 @@
 
 package org.apache.cayenne.conn;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.ScopeEventListener;
+import org.apache.cayenne.log.JdbcEventLogger;
+
+import javax.sql.ConnectionEvent;
+import javax.sql.ConnectionEventListener;
+import javax.sql.ConnectionPoolDataSource;
+import javax.sql.DataSource;
+import javax.sql.PooledConnection;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,19 +37,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
-import javax.sql.ConnectionEvent;
-import javax.sql.ConnectionEventListener;
-import javax.sql.ConnectionPoolDataSource;
-import javax.sql.DataSource;
-import javax.sql.PooledConnection;
-
-import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.log.JdbcEventLogger;
-
 /**
  * PoolManager is a Cayenne implementation of a pooling DataSource.
  */
-public class PoolManager implements DataSource, ConnectionEventListener {
+public class PoolManager implements ScopeEventListener, DataSource, ConnectionEventListener {
 
     /**
      * Defines a maximum time in milliseconds that a connection request could wait in the
@@ -188,7 +188,6 @@ public class PoolManager implements DataSource, ConnectionEventListener {
      * 
      * @since 3.1
      */
-    @BeforeScopeEnd
     public synchronized void shutdown() throws SQLException {
         
         // disposing maintenance thread first to avoid any changes to pools
@@ -219,6 +218,15 @@ public class PoolManager implements DataSource, ConnectionEventListener {
             con.close();
             // remove connection from the list
             usedIterator.remove();
+        }
+    }
+
+    public void beforeScopeEnd() {
+        try {
+            shutdown();
+        }
+        catch (SQLException e) {
+            throw new CayenneRuntimeException("Error while shutting down");
         }
     }
 

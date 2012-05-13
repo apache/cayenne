@@ -22,21 +22,20 @@ package org.apache.cayenne.dba.sqlserver;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SQLServerSnifferTest extends ServerCase {
 
     @Inject
-    private DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
@@ -49,7 +48,7 @@ public class SQLServerSnifferTest extends ServerCase {
         SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);
 
         DbAdapter adapter = null;
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
 
         try {
             adapter = sniffer.createAdapter(c.getMetaData());

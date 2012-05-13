@@ -24,8 +24,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
@@ -47,13 +45,14 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SelectTranslatorTest extends ServerCase {
 
     @Inject
-    private DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
     private DataContext context;
@@ -1099,7 +1098,7 @@ public class SelectTranslatorTest extends ServerCase {
         void test(SelectQuery q) throws Exception {
             SelectTranslator transl = makeTranslator(q);
 
-            Connection c = dataSource.getConnection();
+            Connection c = dataSourceFactory.getSharedDataSource().getConnection();
             try {
 
                 transl.setConnection(c);

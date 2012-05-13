@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.MockOperationObserver;
@@ -43,6 +41,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 /**
@@ -52,7 +51,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class BindDirectiveTest extends ServerCase {
 
     @Inject
-    private DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
     private JdbcAdapter adapter;
@@ -234,7 +233,7 @@ public class BindDirectiveTest extends ServerCase {
                 adapter,
                 context.getEntityResolver());
 
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
         try {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);

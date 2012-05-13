@@ -43,6 +43,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
@@ -68,6 +69,7 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -86,7 +88,7 @@ public class DataContextTest extends ServerCase {
     protected DataChannelInterceptor queryInterceptor;
 
     @Inject
-    protected DataSource dataSource;
+    protected ServerCaseDataSourceFactory dataSourceFactory;
 
     protected TableHelper tArtist;
     protected TableHelper tExhibit;
@@ -762,7 +764,7 @@ public class DataContextTest extends ServerCase {
     }
 
     private void changeMaxConnections(int delta) {
-        PoolManager manager = (PoolManager) dataSource;
+        PoolManager manager = (PoolManager) dataSourceFactory.getSharedDataSource();
         manager.setMaxConnections(manager.getMaxConnections() + delta);
     }
 }

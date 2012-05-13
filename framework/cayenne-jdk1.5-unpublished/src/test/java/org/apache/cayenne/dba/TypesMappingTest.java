@@ -28,16 +28,15 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.MockSerializable;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 
 public class TypesMappingTest extends ServerCase {
 
     @Inject
-    private DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
 
     public void testGetSqlTypeByJava() throws Exception {
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(String.class));
@@ -107,7 +106,7 @@ public class TypesMappingTest extends ServerCase {
     public void testTypeInfoCompleteness() throws Exception {
         // check counts
         // since more then 1 database type can map to a single JDBC type
-        Connection conn = dataSource.getConnection();
+        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
         int len = 0;
         try {
             DatabaseMetaData md = conn.getMetaData();
@@ -139,7 +138,7 @@ public class TypesMappingTest extends ServerCase {
     }
 
     TypesMapping createTypesMapping() throws Exception {
-        Connection conn = dataSource.getConnection();
+        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
 
         try {
             DatabaseMetaData md = conn.getMetaData();

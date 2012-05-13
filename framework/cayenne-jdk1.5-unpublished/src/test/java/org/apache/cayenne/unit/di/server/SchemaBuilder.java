@@ -81,16 +81,16 @@ public class SchemaBuilder {
         "CLOB_DETAIL"
     };
 
-    private DataSource dataSource;
+    private ServerCaseDataSourceFactory dataSourceFactory;
     private UnitDbAdapter unitDbAdapter;
     private DbAdapter dbAdapter;
     private DataDomain domain;
     private JdbcEventLogger jdbcEventLogger;
 
-    public SchemaBuilder(@Inject DataSource dataSource,
+    public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory,
             @Inject UnitDbAdapter unitDbAdapter, @Inject DbAdapter dbAdapter,
             @Inject JdbcEventLogger jdbcEventLogger) {
-        this.dataSource = dataSource;
+        this.dataSourceFactory = dataSourceFactory;
         this.unitDbAdapter = unitDbAdapter;
         this.dbAdapter = dbAdapter;
         this.jdbcEventLogger = jdbcEventLogger;
@@ -146,7 +146,7 @@ public class SchemaBuilder {
         DataNode node = new DataNode(map.getName());
         node.setJdbcEventLogger(jdbcEventLogger);
         node.setAdapter(dbAdapter);
-        node.setDataSource(dataSource);
+        node.setDataSource(dataSourceFactory.getSharedDataSource());
 
         // setup test extended types
         node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());
@@ -264,7 +264,7 @@ public class SchemaBuilder {
     }
 
     private void dropSchema(DataNode node, DataMap map) throws Exception {
-        Connection conn = dataSource.getConnection();
+        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
         List<DbEntity> list = dbEntitiesInInsertOrder(node, map);
 
         try {
@@ -326,7 +326,7 @@ public class SchemaBuilder {
     }
 
     private void createSchema(DataNode node, DataMap map) throws Exception {
-        Connection conn = dataSource.getConnection();
+        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
 
         try {
             unitDbAdapter.willCreateTables(conn, map);

@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
@@ -43,6 +41,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
@@ -50,7 +49,7 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 public class SQLTemplateActionTest extends ServerCase {
 
     @Inject
-    protected DataSource dataSource;
+    protected ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
     protected DataNode node;
@@ -118,7 +117,7 @@ public class SQLTemplateActionTest extends ServerCase {
         assertTrue(plan instanceof SQLTemplateAction);
 
         MockOperationObserver observer = new MockOperationObserver();
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
 
         try {
             plan.performAction(c, observer);
@@ -157,7 +156,7 @@ public class SQLTemplateActionTest extends ServerCase {
         SQLAction plan = adapter.getAction(template, node);
 
         MockOperationObserver observer = new MockOperationObserver();
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
 
         try {
             plan.performAction(c, observer);
@@ -190,7 +189,7 @@ public class SQLTemplateActionTest extends ServerCase {
         SQLAction plan = adapter.getAction(template, node);
 
         MockOperationObserver observer = new MockOperationObserver();
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
 
         try {
             plan.performAction(c, observer);
@@ -223,7 +222,7 @@ public class SQLTemplateActionTest extends ServerCase {
         SQLAction plan = adapter.getAction(template, node);
 
         MockOperationObserver observer = new MockOperationObserver();
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
 
         try {
             plan.performAction(c, observer);
@@ -255,7 +254,7 @@ public class SQLTemplateActionTest extends ServerCase {
 
         SQLAction action = adapter.getAction(template, node);
 
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
         try {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
@@ -283,7 +282,7 @@ public class SQLTemplateActionTest extends ServerCase {
 
         SQLAction action = adapter.getAction(template, node);
 
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
         try {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
@@ -323,7 +322,7 @@ public class SQLTemplateActionTest extends ServerCase {
         assertSame(adapter, action.getAdapter());
         assertSame(template, action.getQuery());
 
-        Connection c = dataSource.getConnection();
+        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
         try {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);

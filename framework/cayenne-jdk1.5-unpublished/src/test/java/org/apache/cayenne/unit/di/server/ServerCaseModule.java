@@ -52,6 +52,7 @@ import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
@@ -181,9 +182,7 @@ public class ServerCaseModule implements Module {
 
         binder.bind(DataSourceInfo.class).toProvider(
                 ServerCaseDataSourceInfoProvider.class);
-        binder
-                .bind(DataSource.class)
-                .toProvider(ServerCaseSharedDataSourceProvider.class);
+        binder.bind(DataSourceFactory.class).to(ServerCaseSharedDataSourceFactory.class);
         binder.bind(DbAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(JdbcAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(UnitDbAdapter.class).toProvider(UnitDbAdapterProvider.class);

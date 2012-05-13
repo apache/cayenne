@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -31,9 +25,13 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.spi.ScopeEventBinding;
+import org.apache.cayenne.di.ScopeEventListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.sql.DataSource;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A {@link DataSourceFactory} that delegates DataSource creation to another factory,
@@ -59,10 +57,10 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     @Inject
     protected RuntimeProperties properties;
 
-    protected Map<DataSource, ScopeEventBinding> managedDataSources;
+    protected Map<DataSource, ScopeEventListener> managedDataSources;
 
     public DelegatingDataSourceFactory() {
-        managedDataSources = new ConcurrentHashMap<DataSource, ScopeEventBinding>();
+        managedDataSources = new ConcurrentHashMap<DataSource, ScopeEventListener>();
     }
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
@@ -74,8 +72,8 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
 
     @BeforeScopeEnd
     public void shutdown() {
-        for (ScopeEventBinding binding : managedDataSources.values()) {
-            binding.onScopeEvent();
+        for (ScopeEventListener listener : managedDataSources.values()) {
+            listener.beforeScopeEnd();
         }
 
         managedDataSources.clear();
@@ -87,25 +85,9 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
      */
     protected void attachToScope(DataSource dataSource) {
 
-        // no real thread-safety here, just checking to speed up processing... in the
-        // worst case we'll replace event binding for the same pool with an equivalent one
         if (!managedDataSources.containsKey(dataSource)) {
-
-            Class<BeforeScopeEnd> annotationType = BeforeScopeEnd.class;
-
-            // note that checking for class directly prevents wrapping... will wait till
-            // Java6/JDBC4 upgrade to check for wrappers
-            for (Method method : dataSource.getClass().getMethods()) {
-
-                if (method.isAnnotationPresent(annotationType)) {
-                    managedDataSources.put(dataSource, new ScopeEventBinding(
-                            dataSource,
-                            method));
-
-                    // no need to look further as we are supporting only a single scope
-                    // method
-                    break;
-                }
+            if (dataSource instanceof ScopeEventListener) {
+                managedDataSources.put(dataSource, (ScopeEventListener) dataSource);
             }
         }
     }
