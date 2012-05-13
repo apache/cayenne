@@ -40,7 +40,8 @@ import java.util.logging.Logger;
 /**
  * PoolManager is a Cayenne implementation of a pooling DataSource.
  */
-public class PoolManager implements ScopeEventListener, DataSource, ConnectionEventListener {
+public class PoolManager implements ScopeEventListener, DataSource,
+        ConnectionEventListener {
 
     /**
      * Defines a maximum time in milliseconds that a connection request could wait in the
@@ -61,7 +62,7 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
     protected List<PooledConnection> usedPool;
 
     private PoolMaintenanceThread poolMaintenanceThread;
-    
+
     private boolean shuttingDown;
 
     /**
@@ -75,8 +76,7 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
     }
 
     public PoolManager(String jdbcDriver, String dataSourceUrl, int minCons, int maxCons,
-            String userName, String password, JdbcEventLogger logger)
-            throws SQLException {
+            String userName, String password, JdbcEventLogger logger) throws SQLException {
 
         if (logger != null) {
             DataSourceInfo info = new DataSourceInfo();
@@ -189,14 +189,14 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
      * @since 3.1
      */
     public synchronized void shutdown() throws SQLException {
-        
+
         // disposing maintenance thread first to avoid any changes to pools
         // during shutdown
         disposeOfMaintenanceThread();
-        
+
         // using boolean variable instead of locking PoolManager instance due to
         // possible deadlock during shutdown when one of connections locks its
-        // event listeners list trying to invoke locked PoolManager's listener methods 
+        // event listeners list trying to invoke locked PoolManager's listener methods
         shuttingDown = true;
 
         ListIterator<PooledConnection> unusedIterator = unusedPool.listIterator();
@@ -221,6 +221,12 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
         }
     }
 
+    /**
+     * An implementation of {@link ScopeEventListener} that simply calls
+     * {@link #shutdown()}.
+     * 
+     * @since 3.1
+     */
     public void beforeScopeEnd() {
         try {
             shutdown();
@@ -367,7 +373,7 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
     /** Returns connection from the pool. */
     public synchronized Connection getConnection(String userName, String password)
             throws SQLException {
-        
+
         if (shuttingDown) {
             throw new SQLException("Pool manager is shutting down.");
         }
@@ -472,11 +478,11 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
      * Returns closed connection to the pool.
      */
     public synchronized void connectionClosed(ConnectionEvent event) {
-        
+
         if (shuttingDown) {
             return;
         }
-        
+
         // return connection to the pool
         PooledConnection closedConn = (PooledConnection) event.getSource();
 
@@ -502,11 +508,11 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
      * is in invalid state.
      */
     public synchronized void connectionErrorOccurred(ConnectionEvent event) {
-        
+
         if (shuttingDown) {
             return;
         }
-        
+
         // later on we should analyze the error to see if this
         // is fatal... right now just kill this PooledConnection
 
@@ -558,7 +564,7 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
                     // TODO: implement a smarter algorithm for pool management...
                     // right now it will simply close one connection if the count is
                     // above median and there are any idle connections.
-                    
+
                     if (shouldDie) {
                         break;
                     }
@@ -604,9 +610,7 @@ public class PoolManager implements ScopeEventListener, DataSource, ConnectionEv
     }
 
     /**
-     * @since 3.1
-     *
-     * JDBC 4.1 compatibility under Java 1.5
+     * @since 3.1 JDBC 4.1 compatibility under Java 1.5
      */
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new UnsupportedOperationException();
