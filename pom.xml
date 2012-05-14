@@ -179,6 +179,14 @@
 				<role>Committer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>johnthuss</id>
+			<name>John Huss</name>
+			<email>johnthuss@apache.org</email>
+			<roles>
+				<role>Committer</role>
+			</roles>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
