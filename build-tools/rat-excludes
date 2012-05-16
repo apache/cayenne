@@ -1,0 +1,5 @@
+**/*.plist
+**/*.graffle
+**/.*
+**/.*/**
+CLOVER.txt
