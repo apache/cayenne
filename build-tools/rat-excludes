@@ -2,4 +2,7 @@
 **/*.graffle
 **/.*
 **/.*/**
-CLOVER.txt
+**/CLOVER.txt
+**/*.map.xml
+**/*.css
+**/*.properties
