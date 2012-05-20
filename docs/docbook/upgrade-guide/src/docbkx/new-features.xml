@@ -3,9 +3,9 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Guide to 3.1 Features</title>
     <para>This guide highlights the new features and changes introduced in 3.1 release. It is a
-        high-level overview and as such is by no means complete. Consult <emphasis role="bold"
+        high-level overview. For more details consult <emphasis role="bold"
             >RELEASE-NOTES.txt</emphasis> file included in each release for the full list of
-        changes, and <emphasis role="bold">UPGRADE.txt</emphasis> for the upgrade
+        changes, and <emphasis role="bold">UPGRADE.txt</emphasis> for the release-specific upgrade
         instructions.</para>
     <section xml:id="ditribution-content-structure">
         <title>Distribution Contents Structure</title>
@@ -63,10 +63,9 @@
         </section>
         <section>
             <title>Bootstrapping Cayenne in Various Environments</title>
-            <para><emphasis role="italic">TODO... For now read the UPGRADE.txt file and check the
-                    tutorials source code for bootstrap examples.</emphasis> Here is a simple
-                example of starting a server-side Cayenne stack:</para>
+            <para> Here is a simple example of starting a server-side Cayenne stack:</para>
             <programlisting>ServerRuntime runtime = new ServerRuntime("cayenne-UntitledDomain.xml");</programlisting>
+            <para>For more detailed examples check the tutorials and other documentation.</para>
         </section>
         <section>
             <title>Configuring Local DataSources, Removal of JNDI Hack</title>
@@ -156,8 +155,9 @@ runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(fi
         <title>Lifecycle Extensions</title>
         <para>Cayenne 3.1 includes an optional cayenne-lifecyle module that implements a few useful
             extensions based on DataChannelFilters and lifecycle annotations. Those include a
-            concept of UUID (which is a String URL-friendly representation of ObjectId), support for
-            (de)referencing objects by UUID, UUID-based relationships, annotation-based cache groups
-            invalidation, annotation-based audit of object changes, etc.</para>
+            concept of a String ID (which is a String URL-friendly representation of ObjectId),
+            support for (de)referencing objects by String ID, String ID-based relationships,
+            annotation-based cache groups invalidation, annotation-based audit of object changes,
+            etc.</para>
     </section>
 </article>

@@ -5,7 +5,7 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
-UPGRADING TO 3.1M4
+UPGRADING TO 3.1B1
 
 * In an attempt to better organize DI configuration and ultimately make it easier to understand, 
   all properties and DI collection keys were placed in a single Constants interface. The property and key String 
