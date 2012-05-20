@@ -2,7 +2,7 @@
 <?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
-    <title>Deleting objects...</title>
+    <title>Deleting Objects</title>
     <para>This chapter explains how to model relationship delete rules and how to delete individual
         objects as well as sets of objects. Also demonstrated the use of Cayenne class to run a
         query.</para>

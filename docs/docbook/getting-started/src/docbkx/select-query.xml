@@ -2,7 +2,7 @@
 <?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
-    <title>Selecting objects...</title>
+    <title>Selecting Objects</title>
     <para>This chapter shows how to select objects from the database using SelectQuery. </para>
     <section xml:id="introducing-select-query">
         <title>Introducing SelectQuery</title>

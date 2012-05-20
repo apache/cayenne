@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
-    <title>Porting existing code to connect to a web service instead of a database...</title>
+    <title>Porting Existing Code to Connect to a Web Service Instead of a Database</title>
     <section xml:id="starting-command-line-cliet">
         <title>Starting Command Line Client</title>
         <para>One of the benefits of ROP is that the client code is no different from the server

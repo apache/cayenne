@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
-    <title>Prerequisites...</title>
+    <title>Prerequisites</title>
     <para>This tutorial starts where "Getting Started with Cayenne" left
         off. If you have gone through the previous tutorial, and have the "tutorial" project open in
         Eclipse, you can go directly to the 

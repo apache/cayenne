@@ -2,7 +2,7 @@
 <?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
-    <title>Getting started with Object Relational Mapping (ORM)...</title>
+    <title>Getting started with Object Relational Mapping (ORM)</title>
     <para> The goal of this section is to learn how to create a simple Object-Relational model with
         CayenneModeler. We will create a complete ORM model for the following database
         schema:</para>

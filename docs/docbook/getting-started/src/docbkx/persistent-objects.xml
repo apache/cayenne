@@ -2,7 +2,7 @@
 <?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
-    <title>Getting started with persistent objects...</title>
+    <title>Getting started with persistent objects</title>
     <para>In this chapter we'll learn about persistent objects, how to customize them and how to
         create and save them in DB.</para>
     <section xml:id="customizing-persistent-objects">

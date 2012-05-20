@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
-    <title>Setting up Hessian web service...</title>
+    <title>Setting up Hessian Web Service</title>
     <section xml:id="setting-up-dependencies">
         <title>Setting up Dependencies</title>
         <para>Now lets get back to the "tutorial" project that contains a web application and set up

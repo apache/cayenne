@@ -2,7 +2,7 @@
 <?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
-    <title>Creating Java Classes...</title>
+    <title>Creating Java Classes</title>
     <para>Here we'll generate the Java classes from the model that was created in the previous
         section. CayenneModeler can be used to also generate the database schema, but since we
         specified "CreateIfNoSchemaStrategy" earlier when we created a DataNode, we'll skip the
