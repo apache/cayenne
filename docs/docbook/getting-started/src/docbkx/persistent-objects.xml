@@ -87,7 +87,7 @@ stein.setGallery(metropolitan);</programlisting>
         <programlisting>context.commitChanges();</programlisting>
         <para>Now you can run the application again as described in the previous chapter. The new
             output will show a few actual DB operations:</para>
-        <programlisting>Sep 28, 2011 1:08:23 PM org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader load
+        <programlisting>org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader load
 INFO: Loading XML configuration resource from file:cayenne-project.xml
 ... 
 INFO: Opening connection: jdbc:derby:memory:testdb;create=true

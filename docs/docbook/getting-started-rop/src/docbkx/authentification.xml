@@ -83,9 +83,9 @@
     <section xml:id="running-client">
         <title>Running Client with Basic Authentication</title>
         <para>If you run the client without any changes, you'll get the following error:</para>
-        <programlisting>Sep 29, 2011 11:58:09 AM org.apache.cayenne.remote.hessian.HessianConnection connect
+        <programlisting>org.apache.cayenne.remote.hessian.HessianConnection connect
 INFO: Connecting to [http://localhost:8080/tutorial/cayenne-service] - dedicated session.
-Sep 29, 2011 11:58:09 AM org.apache.cayenne.remote.hessian.HessianConnection connect
+org.apache.cayenne.remote.hessian.HessianConnection connect
 INFO: Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
       CAUSE - cannot retry due to server authentication, in streaming mode
 java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode

@@ -123,9 +123,9 @@
 [INFO] ------------------------------------------------------------------------
 ...
 [INFO] Starting jetty 6.1.22 ...
-2011-09-28 15:06:27.369:INFO::jetty-6.1.22
-2011-09-28 15:06:27.452:INFO::No Transaction manager found - if your webapp requires one, please configure one.
-2011-09-28 15:06:27.671:INFO::Started SelectChannelConnector@0.0.0.0:8080
+INFO::jetty-6.1.22
+INFO::No Transaction manager found - if your webapp requires one, please configure one.
+INFO::Started SelectChannelConnector@0.0.0.0:8080
 [INFO] Started Jetty Server
 INFO: Loading XML configuration resource from file:cayenne-project.xml
 INFO: loading user name and password.

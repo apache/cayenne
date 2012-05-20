@@ -226,9 +226,9 @@
 [INFO] web.xml file = /.../tutorial/src/main/webapp/WEB-INF/web.xml
 [INFO] Webapp directory = /.../tutorial/src/main/webapp
 [INFO] Starting jetty 6.1.22 ...
-2011-09-29 11:34:59.253:INFO::jetty-6.1.22
-2011-09-29 11:34:59.406:INFO::No Transaction manager found - if your webapp requires one, please configure one.
-2011-09-29 11:34:59.669:INFO::Started SelectChannelConnector@0.0.0.0:8080
+INFO::jetty-6.1.22
+INFO::No Transaction manager found - if your webapp requires one, please configure one.
+INFO::Started SelectChannelConnector@0.0.0.0:8080
 [INFO] Started Jetty Server</programlisting>
                 </listitem>
         </itemizedlist>
