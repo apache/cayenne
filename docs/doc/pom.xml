@@ -33,7 +33,7 @@
 	<packaging>jar</packaging>
 	<name>Cayenne Documentation</name>
 
-	<description>Cayenne user documentation</description>
+	<description>Cayenne documentation sans Docbook docs, including API, RELEASE-NOTES, etc.</description>
 
 	<dependencies>
 
