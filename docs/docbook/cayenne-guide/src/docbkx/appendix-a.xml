@@ -92,6 +92,14 @@
 					<td>weak</td>
 				</tr>
 				<tr>
+					<td><code>cayenne.server.max_id_qualifier_size</code> - defines a maximum number of ID
+						qualifiers in the WHERE  clause of queries that are generated for paginated
+						queries and for DISJOINT_BY_ID prefetch processing. This is needed to avoid
+						hitting WHERE clause size limitations and memory usage efficiency.</td>
+					<td>any positive int</td>
+					<td>10000</td>
+				</tr>
+				<tr>
 					<td><code>cayenne.rop.service_url</code> - defines the URL of the ROP server</td>
 					<td/>
 					<td/>
