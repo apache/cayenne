@@ -75,7 +75,7 @@ public class SelectQueryTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("CLOB_TEST_RELATION");
-        dbHelper.delete("TYPES_MAPPING_TEST1");
+        dbHelper.deleteAll("TYPES_MAPPING_TEST1");
 
         if (accessStackAdapter.supportsLobs()) {
             dbHelper.deleteAll("CLOB_TEST");
