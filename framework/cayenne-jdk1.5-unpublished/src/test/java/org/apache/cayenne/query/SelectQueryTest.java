@@ -464,7 +464,7 @@ public class SelectQueryTest extends ServerCase {
         List<ReturnTypesMap1> objects = context.performQuery(query);
         assertEquals(2, objects.size());
     }
-    
+
     public void testSelectBitwiseOr() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
@@ -487,7 +487,7 @@ public class SelectQueryTest extends ServerCase {
         List<ReturnTypesMap1> objects = context.performQuery(query);
         assertEquals(2, objects.size());
     }
-    
+
     public void testSelectBitwiseAnd() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
@@ -510,7 +510,7 @@ public class SelectQueryTest extends ServerCase {
         List<ReturnTypesMap1> objects = context.performQuery(query);
         assertEquals(3, objects.size());
     }
-    
+
     public void testSelectBitwiseXor() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
@@ -715,6 +715,26 @@ public class SelectQueryTest extends ServerCase {
         assertEquals(
                 query.getQualifier(),
                 ExpressionFactory.matchAnyExp(Arrays.asList(a1, a3)));
+    }
+
+    public void testSelect_WithOrdering() {
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("a1");
+        Artist a2 = context.newObject(Artist.class);
+        a2.setArtistName("a2");
+        Artist a3 = context.newObject(Artist.class);
+        a3.setArtistName("a3");
+        context.commitChanges();
+
+        List<Ordering> orderings = Arrays.asList(new Ordering("artistName", SortOrder.ASCENDING));
+        SelectQuery query = new SelectQuery(Artist.class, null, orderings);
+
+        List<Persistent> list = context.performQuery(query);
+        assertEquals(list.size(), 3);
+        assertSame(list.get(0), a1);
+        assertSame(list.get(1), a2);
+        assertSame(list.get(2), a3);
     }
 
     /**
