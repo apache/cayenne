@@ -58,6 +58,7 @@ CAY-1698 ObjectIdRelationship support for AuditableChild
 CAY-1700 Split long DISJOINT_BY_ID prefetch query on several smaller queries
 CAY-1705 Cayenne plugin compatibility with M2E
 CAY-1706 Build support on JDK 1.7
+CAY-1658 Add sort ordering enhancements to SelectQuery
 
 Bug Fixes Since 3.1M3:
 
