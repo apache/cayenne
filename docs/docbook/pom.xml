@@ -18,7 +18,9 @@
 	under the License.   
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<prerequisites>
@@ -28,7 +30,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.parents</groupId>
 		<artifactId>cayenne-docs-parent</artifactId>
-		<version>3.1B2-SNAPSHOT</version>
+		<version>3.1M4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	
@@ -98,9 +100,9 @@
 							<foCustomization>${project.parent.basedir}/stylesheets/pdf.xsl</foCustomization>
 							<postProcess>
 								<delete failonerror="false">
-									<fileset dir="target/site/" includes="*.fo" />
+									<fileset dir="target/site/" includes="*.fo"/>
 								</delete>
-								<move file="target/site/index.pdf" tofile="target/site/${project.artifactId}.pdf" />
+								<move file="target/site/index.pdf" tofile="target/site/${project.artifactId}.pdf"/>
 							</postProcess>
 						</configuration>
 						<phase>generate-resources</phase>
@@ -115,10 +117,10 @@
 							<chunkedOutput>true</chunkedOutput>
 							<postProcess>
 								<copy todir="${basedir}/target/site/css">
-									<fileset dir="${project.parent.basedir}/css" />
+									<fileset dir="${project.parent.basedir}/css"/>
 								</copy>
 								<copy todir="${basedir}/target/site/images">
-									<fileset dir="${basedir}/src/images" />
+									<fileset dir="${basedir}/src/images"/>
 								</copy>
 							</postProcess>
 						</configuration>
@@ -151,11 +153,11 @@
 						<configuration>
 							<target>
 								<delete failonerror="false">
-									<filelist dir="target/site/css" files="maven-base.css,maven-theme.css,print.css,site.css" />
+									<filelist dir="target/site/css" files="maven-base.css,maven-theme.css,print.css,site.css"/>
 									<!-- collapsed.gifx is deliberately mispelt since we want to leave one image behind to avoid a maven problem with deploying a completely empty site -->
-									<filelist dir="target/site/images" files="collapsed.gifx,external.png,icon_info_sml.gif,icon_warning_sml.gif,newwindow.png,expanded.gif,icon_error_sml.gif,icon_success_sml.gif" />
+									<filelist dir="target/site/images" files="collapsed.gifx,external.png,icon_info_sml.gif,icon_warning_sml.gif,newwindow.png,expanded.gif,icon_error_sml.gif,icon_success_sml.gif"/>
 								</delete>
-								<delete dir="target/site/images/logos" failonerror="false" />
+								<delete dir="target/site/images/logos" failonerror="false"/>
 							</target>
 						</configuration>
 
