@@ -56,7 +56,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Creates a SelectQuery with null qualifier, for the specifed ObjEntity
-     * 
+     *
      * @param root the ObjEntity this SelectQuery is for.
      */
     public SelectQuery(ObjEntity root) {
@@ -64,19 +64,33 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Creates a SelectQuery for the specified ObjEntity with the given qualifier
-     * 
+     * Creates a SelectQuery for the specified ObjEntity with the given qualifier.
+     *
      * @param root the ObjEntity this SelectQuery is for.
      * @param qualifier an Expression indicating which objects should be fetched
      */
     public SelectQuery(ObjEntity root, Expression qualifier) {
+        this(root, qualifier, null);
+    }
+
+    /**
+     * Creates a SelectQuery for the specified ObjEntity with the given
+     * qualifier and orderings.
+     *
+     * @param root the ObjEntity this SelectQuery is for.
+     * @param qualifier an Expression indicating which objects should be fetched.
+     * @param orderings defines how to order the results, may be null.
+     * @since 3.1
+     */
+    public SelectQuery(ObjEntity root, Expression qualifier, List<Ordering> orderings) {
         this();
         this.init(root, qualifier);
+        addOrderings(orderings);
     }
 
     /**
      * Creates a SelectQuery that selects all objects of a given persistent class.
-     * 
+     *
      * @param rootClass the Class of objects fetched by this query.
      */
     public SelectQuery(Class<?> rootClass) {
@@ -86,16 +100,31 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Creates a SelectQuery that selects objects of a given persistent class that match
      * supplied qualifier.
-     * 
+     *
      * @param rootClass the Class of objects fetched by this query.
+     * @param qualifier an Expression indicating which objects should be fetched.
      */
     public SelectQuery(Class<?> rootClass, Expression qualifier) {
+        this(rootClass, qualifier, null);
+    }
+
+    /**
+     * Creates a SelectQuery that selects objects of a given persistent class that match
+     * supplied qualifier.
+     *
+     * @param rootClass the Class of objects fetched by this query.
+     * @param qualifier an Expression indicating which objects should be fetched.
+     * @param orderings defines how to order the results, may be null.
+     * @since 3.1
+     */
+    public SelectQuery(Class<?> rootClass, Expression qualifier, List<Ordering> orderings) {
         init(rootClass, qualifier);
+        addOrderings(orderings);
     }
 
     /**
      * Creates a SelectQuery for the specified DbEntity.
-     * 
+     *
      * @param root the DbEntity this SelectQuery is for.
      * @since 1.1
      */
@@ -105,14 +134,27 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Creates a SelectQuery for the specified DbEntity with the given qualifier.
-     * 
+     *
      * @param root the DbEntity this SelectQuery is for.
-     * @param qualifier an Expression indicating which objects should be fetched
+     * @param qualifier an Expression indicating which objects should be fetched.
      * @since 1.1
      */
     public SelectQuery(DbEntity root, Expression qualifier) {
+        this(root, qualifier, null);
+    }
+
+    /**
+     * Creates a SelectQuery for the specified DbEntity with the given qualifier and orderings.
+     *
+     * @param root the DbEntity this SelectQuery is for.
+     * @param qualifier an Expression indicating which objects should be fetched.
+     * @param orderings defines how to order the results, may be null.
+     * @since 3.1
+     */
+    public SelectQuery(DbEntity root, Expression qualifier, List<Ordering> orderings) {
         this();
         this.init(root, qualifier);
+        addOrderings(orderings);
     }
 
     /**
@@ -127,7 +169,21 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * parameters.
      */
     public SelectQuery(String objEntityName, Expression qualifier) {
+        this(objEntityName, qualifier, null);
+    }
+
+    /**
+     * Creates a SelectQuery that selects objects of a given persistent class that match
+     * supplied qualifier.
+     *
+     * @param objEntityName the name of the ObjEntity to fetch from.
+     * @param qualifier an Expression indicating which objects should be fetched.
+     * @param orderings defines how to order the results, may be null.
+     * @since 3.1
+     */
+    public SelectQuery(String objEntityName, Expression qualifier, List<Ordering> orderings) {
         init(objEntityName, qualifier);
+        addOrderings(orderings);
     }
 
     private void init(Object root, Expression qualifier) {
@@ -156,7 +212,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Routes itself and if there are any prefetches configured, creates prefetch queries
      * and routes them as well.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -172,7 +228,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Creates and routes extra disjoint prefetch queries.
-     * 
+     *
      * @since 1.2
      */
     void routePrefetches(QueryRouter router, EntityResolver resolver) {
@@ -181,7 +237,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Calls "makeSelect" on the visitor.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -191,7 +247,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Initializes query parameters using a set of properties.
-     * 
+     *
      * @since 1.1
      */
     public void initWithProperties(Map<String, ?> properties) {
@@ -213,7 +269,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Prints itself as XML to the provided PrintWriter.
-     * 
+     *
      * @since 1.1
      */
     public void encodeAsXML(XMLEncoder encoder) {
@@ -293,7 +349,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Returns a query built using this query as a prototype, using a set of parameters to
      * build the qualifier.
-     * 
+     *
      * @see org.apache.cayenne.exp.Expression#expWithParameters(java.util.Map, boolean)
      *      parameter substitution.
      */
@@ -320,7 +376,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Creates and returns a new SelectQuery built using this query as a prototype and
      * substituting qualifier parameters with the values from the map.
-     * 
+     *
      * @since 1.1
      */
     public Query createQuery(Map<String, ?> parameters) {
@@ -338,12 +394,15 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * Adds a list of orderings.
      */
     public void addOrderings(List<Ordering> orderings) {
-        nonNullOrderings().addAll(orderings);
+        // If the supplied list of orderings is null, do not attempt to add
+        // to the collection (addAll() will NPE otherwise).
+        if (orderings != null)
+            nonNullOrderings().addAll(orderings);
     }
 
     /**
      * Adds ordering specification to this query orderings.
-     * 
+     *
      * @since 3.0
      */
     public void addOrdering(String sortPathSpec, SortOrder order) {
@@ -352,7 +411,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Removes ordering.
-     * 
+     *
      * @since 1.1
      */
     public void removeOrdering(Ordering ordering) {
@@ -395,7 +454,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * instruct Cayenne to generate separate sets of joins for overlapping paths, that
      * maybe needed for complex conditions. An example of an <i>implicit<i> splits is this
      * method: {@link ExpressionFactory#matchAllExp(String, Object...)}.
-     * 
+     *
      * @since 3.0
      */
     public void aliasPathSplits(String path, String... aliases) {
@@ -418,7 +477,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Adds a prefetch with specified relationship path to the query.
-     * 
+     *
      * @since 1.2 signature changed to return created PrefetchTreeNode.
      */
     public PrefetchTreeNode addPrefetch(String prefetchPath) {
@@ -434,7 +493,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Removes prefetch.
-     * 
+     *
      * @since 1.1
      */
     public void removePrefetch(String prefetchPath) {
@@ -492,7 +551,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Returns the fetchOffset.
-     * 
+     *
      * @since 3.0
      */
     public int getFetchOffset() {
@@ -529,7 +588,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Sets <code>pageSize</code> property.
-     * 
+     *
      * By setting a page size, the Collection returned by performing a query will return
      * <i>hollow</i> DataObjects. This is considerably faster and uses a tiny fraction of the memory
      * compared to a non-paged query when large numbers of objects are returned in the result.
@@ -537,7 +596,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * memory. There will be a small delay when faulting objects while the data is fetched
      * from the data source, but otherwise you do not need to do anything special to access data
      * in hollow objects. The first page is always faulted into memory immediately.
-     * 
+     *
      * @param pageSize The pageSize to set
      */
     public void setPageSize(int pageSize) {
@@ -546,7 +605,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Returns a list that internally stores orderings, creating it on demand.
-     * 
+     *
      * @since 1.2
      */
     List<Ordering> nonNullOrderings() {
@@ -559,7 +618,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
 
     /**
      * Sets statement's fetch size (0 for no default size)
-     * 
+     *
      * @since 3.0
      */
     public void setStatementFetchSize(int size) {
