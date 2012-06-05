@@ -10,8 +10,7 @@
 					<para><emphasis role="italic">Java</emphasis>: Cayenne runtime framework and
 						CayenneModeler GUI tool are written in 100% Java, and run on any
 						Java-compatible platform. Required JDK version is 1.5 or higher. The last
-						version of Cayenne compatible with JDK 1.4 is 1.2.x/2.0.x; JDK 1.3 -
-						1.1.x)</para>
+						version of Cayenne compatible with JDK 1.4 is 1.2.x/2.0.x and JDK 1.3 is 1.1.x</para>
 				</listitem>
 			</itemizedlist>
 			<itemizedlist>
@@ -24,7 +23,7 @@
 			<itemizedlist>
 				<listitem>
 					<para><emphasis role="italic">Third-party Libraries:</emphasis> Cayenne runtime
-						framework has a minimal set of required and a fe more optional dependencies
+						framework has a minimal set of required and a few more optional dependencies
 						on third-party open source packages. See "Including Cayenne in a Project"
 						chapter for details.</para>
 				</listitem>
@@ -49,7 +48,7 @@
 			executed either by double-clicking, or if the environment is not configured to execute
 			jars, by running from command-line:</para>
 		<programlisting>java -jar CayenneModeler.jar</programlisting>
-		<para>The Modeler can alo be started from Maven. While it may look like an exotic way to start a
+		<para>The Modeler can also be started from Maven. While it may look like an exotic way to start a
 			GUI application, it has its benefits - no need to download Cayenne distribution, the
 			version of the Modeler always matches the version of the framework, the plugin can find
 			mapping files in the project automatically. So is an attractive option to some
