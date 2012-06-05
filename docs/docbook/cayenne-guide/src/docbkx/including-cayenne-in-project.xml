@@ -210,7 +210,7 @@
 								package.</td>
 						</tr>
 					</tbody>
-				</table>Example - a typical class generatio scenario, where pairs of classes are
+				</table>Example - a typical class generation scenario, where pairs of classes are
 				generated, and superclasses are placed in a separate package:
 				<programlisting>&lt;plugin>
 	&lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
