@@ -8,8 +8,8 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
-Release: 3.1M4
-Date:
+Release: 3.1B1
+Date: 10 June 2012
 ----------------------------------
 Changes/New Features Since 3.1M3:
 
@@ -81,7 +81,7 @@ CAY-1703 NPE on selecting default datasource value
 
 ----------------------------------
 Release: 3.1 M3
-Date: 
+Date: 26 September 2011
 ----------------------------------
 Changes/New Features Since 3.1M2:
 
@@ -127,7 +127,7 @@ CAY-1602 OSCache clustering should be shared per JVM - @CacheGroup annotation ca
 
 ----------------------------------
 Release: 3.1 M2
-Date: 
+Date: 8 March 2011
 ----------------------------------
 Changes/New Features Since 3.1M1:
 
@@ -230,7 +230,7 @@ CAY-1596 setFetchOffset & setFetchLimit issue under SQL Server 2008 R2 64Bit
 
 ----------------------------------
 Release: 3.0.2
-Date: 
+Date: 21 June 2011
 ----------------------------------
 
 Improvements Since 3.0.1
