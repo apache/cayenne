@@ -27,7 +27,7 @@ GUI TOOLS
 (http://www.jgoodies.com/)
 
 5. CayenneModeler includes OGNL library developed by Drew Davidson and Luke Blanshard
-(http://www.ognl.org/)
+(http://commons.apache.org/ognl/)
 
 6. CayenneModeler includes GIF binary images developed by Eclipse Foundation. 
 (http://www.eclipse.org/).
