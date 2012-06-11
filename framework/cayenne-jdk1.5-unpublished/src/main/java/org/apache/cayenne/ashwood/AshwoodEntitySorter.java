@@ -77,6 +77,7 @@ public class AshwoodEntitySorter implements EntitySorter {
      * @deprecated since 3.1. Use {@link #AshwoodEntitySorter()} constructor together with
      *             {@link #setDataMaps(Collection)} instead.
      */
+    @Deprecated
     public AshwoodEntitySorter(Collection<DataMap> dataMaps) {
         this();
         setDataMaps(dataMaps);
@@ -190,6 +191,7 @@ public class AshwoodEntitySorter implements EntitySorter {
      * @since 1.1
      * @deprecated since 3.1, {@link #setEntityResolver(EntityResolver)} is used instead.
      */
+    @Deprecated
     public void setDataMaps(Collection<DataMap> dataMaps) {
         setEntityResolver(new EntityResolver(dataMaps != null
                 ? dataMaps

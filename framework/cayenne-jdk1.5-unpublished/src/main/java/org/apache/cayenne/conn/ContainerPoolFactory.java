@@ -93,6 +93,7 @@ import javax.naming.spi.ObjectFactory;
  *             and should use their container's preferred approach to map a DataSource
  *             instead.
  */
+@Deprecated
 public class ContainerPoolFactory implements ObjectFactory {
 
     /**

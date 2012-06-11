@@ -52,6 +52,7 @@ import org.xml.sax.InputSource;
  *             implement XML serialization of persistent objects based JAXB, XStream or
  *             other similar frameworks.
  */
+@Deprecated
 public class XMLDecoder {
 
     static final Map<String, Class<?>> classMapping = new HashMap<String, Class<?>>();

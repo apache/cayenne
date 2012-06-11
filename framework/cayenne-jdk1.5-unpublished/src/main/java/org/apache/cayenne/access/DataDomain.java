@@ -121,6 +121,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
      */
+    @Deprecated
     private BatchQueryBuilderFactory queryBuilderFactory;
 
     /**
@@ -392,6 +393,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @deprecated since 3.1 use a more consistently named {@link #addDataMap(DataMap)}.
      */
+    @Deprecated
     public void addMap(DataMap map) {
         addDataMap(map);
     }
@@ -423,6 +425,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @deprecated since 3.1 use a more consistently named {@link #removeDataMap(String)}.
      */
+    @Deprecated
     public void removeMap(String mapName) {
         removeDataMap(mapName);
     }
@@ -600,6 +603,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @deprecated since 3.1, use a more consistently named {@link #getDataNode(String)}.
      */
+    @Deprecated
     public DataNode getNode(String nodeName) {
         return getDataNode(nodeName);
     }
@@ -924,6 +928,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
      */
+    @Deprecated
     public void setQueryBuilderFactory(BatchQueryBuilderFactory queryBuilderFactory) {
         this.queryBuilderFactory = queryBuilderFactory;
     }
@@ -932,6 +937,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @return factory for creating QueryBuilders. Might be null
      * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
      */
+    @Deprecated
     public BatchQueryBuilderFactory getQueryBuilderFactory() {
         return queryBuilderFactory;
     }

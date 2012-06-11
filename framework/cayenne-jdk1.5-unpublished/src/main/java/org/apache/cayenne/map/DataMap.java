@@ -308,6 +308,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      * @deprecated since 3.1, as {@link XMLSerializable} objects should only save XML
      *             segments. Saving full XML files is responsibilty of the callers.
      */
+    @Deprecated
     public void encodeAsXML(PrintWriter pw) {
         XMLEncoder encoder = new XMLEncoder(pw, "\t");
         encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");

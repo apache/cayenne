@@ -130,6 +130,7 @@ public class Util {
      * 
      * @deprecated since 3.1 this method is not used by Cayenne
      */
+    @Deprecated
     public static boolean copy(File source, File destination) {
         BufferedInputStream fin = null;
         BufferedOutputStream fout = null;
@@ -169,6 +170,7 @@ public class Util {
      * 
      * @deprecated since 3.1 this method is not used by Cayenne.
      */
+    @Deprecated
     public static boolean copy(URL from, File to) {
         BufferedInputStream urlin = null;
         BufferedOutputStream fout = null;
@@ -211,6 +213,7 @@ public class Util {
      * 
      * @deprecated since 3.1 this method is unused by Cayenne.
      */
+    @Deprecated
     public static void copyPipe(InputStream in, OutputStream out, int bufSizeHint)
             throws IOException {
         int read = -1;
@@ -227,6 +230,7 @@ public class Util {
      * 
      * @deprecated since 3.1 this method is unused by Cayenne.
      */
+    @Deprecated
     public static boolean delete(String filePath, boolean recursive) {
         File file = new File(filePath);
         if (!file.exists()) {

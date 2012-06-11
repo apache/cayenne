@@ -78,6 +78,7 @@ public interface ObjectContext extends Serializable {
      *             internal code has been refactored to avoid using this method all
      *             together.
      */
+    @Deprecated
     Persistent localObject(ObjectId id, Object prototype);
 
     /**
@@ -117,6 +118,7 @@ public interface ObjectContext extends Serializable {
      * @deprecated since 3.1 use {@link #deleteObjects(Object...)} method instead. This
      *             method is redundant.
      */
+    @Deprecated
     void deleteObject(Object object) throws DeleteDenyException;
 
     /**

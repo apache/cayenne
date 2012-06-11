@@ -48,6 +48,7 @@ import org.w3c.dom.Node;
  *             implement XML serialization of persistent objects based JAXB, XStream or
  *             other similar frameworks.
  */
+@Deprecated
 public class XMLEncoder {
 
     private XMLMappingDescriptor mappingDescriptor;

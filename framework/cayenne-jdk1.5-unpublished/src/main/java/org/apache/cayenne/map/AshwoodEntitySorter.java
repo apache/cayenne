@@ -24,6 +24,7 @@ import java.util.Collection;
  * @deprecated since 3.1 moved to "org.apache.cayenne.ashwood" package.
  * @since 1.1
  */
+@Deprecated
 public class AshwoodEntitySorter extends org.apache.cayenne.ashwood.AshwoodEntitySorter {
 
     public AshwoodEntitySorter() {

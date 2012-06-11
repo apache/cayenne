@@ -34,6 +34,7 @@ import java.util.List;
  *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured via
  *             dependency injection.
  */
+@Deprecated
 class DbAdapterFactoryChain implements DbAdapterFactory {
 
     List<DbAdapterFactory> factories;

@@ -27,6 +27,7 @@ import java.util.Map;
  * @since 3.0
  * @deprecated since 3.1 OSQueryCacheFactory and QueryCacheFactory are unused.
  */
+@Deprecated
 public class OSQueryCacheFactory implements QueryCacheFactory {
 
     /**

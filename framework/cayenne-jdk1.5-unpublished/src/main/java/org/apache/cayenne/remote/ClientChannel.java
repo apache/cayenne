@@ -68,6 +68,7 @@ public class ClientChannel implements DataChannel {
      * @deprecated since 3.1 use
      *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
      */
+    @Deprecated
     public ClientChannel(ClientConnection connection) {
         this(connection, false);
     }
@@ -76,6 +77,7 @@ public class ClientChannel implements DataChannel {
      * @deprecated since 3.1 use
      *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
      */
+    @Deprecated
     public ClientChannel(ClientConnection connection, boolean channelEventsEnabled) {
         this(connection, channelEventsEnabled, new DefaultEventManager(2));
     }
@@ -84,6 +86,7 @@ public class ClientChannel implements DataChannel {
      * @deprecated since 3.1 use
      *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
      */
+    @Deprecated
     public ClientChannel(ClientConnection connection, boolean channelEventsEnabled,
             EventManager eventManager) throws CayenneRuntimeException {
         this(connection, channelEventsEnabled, eventManager, false);

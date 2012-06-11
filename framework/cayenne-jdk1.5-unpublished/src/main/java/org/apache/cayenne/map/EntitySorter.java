@@ -35,6 +35,7 @@ public interface EntitySorter {
      * @deprecated since 3.1 {@link #setEntityResolver(EntityResolver)} is used, and this
      *             method is never called.
      */
+    @Deprecated
     void setDataMaps(Collection<DataMap> dataMaps);
 
     /**

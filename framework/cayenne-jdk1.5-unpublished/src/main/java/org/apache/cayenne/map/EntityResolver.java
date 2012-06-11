@@ -657,6 +657,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * 
      * @deprecated since 3.1 use {@link #lookupInheritanceTree(String)}.
      */
+    @Deprecated
     public EntityInheritanceTree lookupInheritanceTree(ObjEntity entity) {
         return lookupInheritanceTree(entity.getName());
     }

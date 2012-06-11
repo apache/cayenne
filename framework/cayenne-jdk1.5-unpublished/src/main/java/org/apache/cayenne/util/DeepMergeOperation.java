@@ -58,6 +58,7 @@ public class DeepMergeOperation {
     /**
      * @deprecated since 3.1 - unused as the object is now stateless
      */
+    @Deprecated
     public void reset() {
         // noop
     }
@@ -65,6 +66,7 @@ public class DeepMergeOperation {
     /**
      * @deprecated since 3.1 use {@link #merge(Persistent)}.
      */
+    @Deprecated
     public Object merge(Object object, ClassDescriptor descriptor) {
 
         if (!(object instanceof Persistent)) {

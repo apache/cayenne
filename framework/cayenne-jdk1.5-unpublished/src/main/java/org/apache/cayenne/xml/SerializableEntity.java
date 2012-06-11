@@ -37,6 +37,7 @@ import org.w3c.dom.Element;
  *             implement XML serialization of persistent objects based JAXB, XStream or
  *             other similar frameworks.
  */
+@Deprecated
 class SerializableEntity implements XMLSerializable {
 
     Element descriptor;

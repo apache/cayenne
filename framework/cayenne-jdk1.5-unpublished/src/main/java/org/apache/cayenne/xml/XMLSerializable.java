@@ -30,6 +30,7 @@ package org.apache.cayenne.xml;
  *             implement XML serialization of persistent objects based JAXB, XStream or
  *             other similar frameworks.
  */
+@Deprecated
 public interface XMLSerializable {
 
     /**

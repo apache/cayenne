@@ -32,6 +32,7 @@ import java.sql.SQLException;
  *             {@link org.apache.cayenne.configuration.server.DbAdapterFactory} configured via
  *             dependency injection.
  */
+@Deprecated
 public interface DbAdapterFactory {
 
     /**
