@@ -179,6 +179,7 @@ public class PoolManager implements ScopeEventListener, DataSource,
      * @deprecated since 3.1 replaced with {@link #shutdown()} method for naming
      *             consistency.
      */
+    @Deprecated
     public void dispose() throws SQLException {
         shutdown();
     }

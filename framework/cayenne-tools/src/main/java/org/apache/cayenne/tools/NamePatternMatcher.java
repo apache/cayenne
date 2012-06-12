@@ -54,6 +54,7 @@ public class NamePatternMatcher {
      * @deprecated since 3.0 still used by AntDataPortDelegate, which itself should
      *             probably be deprecated
      */
+    @Deprecated
     List<?> filter(List<?> items) {
         if (items == null || items.isEmpty()) {
             return items;
@@ -87,6 +88,7 @@ public class NamePatternMatcher {
      * @deprecated since 3.0. still used by AntDataPortDelegate, which itself should
      *             probably be deprecated
      */
+    @Deprecated
     private boolean passedIncludeFilter(CayenneMapEntry item) {
         if (itemIncludeFilters.length == 0) {
             return true;
@@ -108,6 +110,7 @@ public class NamePatternMatcher {
      * 
      * @deprecated since 3.0
      */
+    @Deprecated
     private boolean passedExcludeFilter(CayenneMapEntry item) {
         if (itemExcludeFilters.length == 0) {
             return true;

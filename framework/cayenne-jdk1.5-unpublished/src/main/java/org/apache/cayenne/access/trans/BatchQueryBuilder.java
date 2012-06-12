@@ -42,6 +42,7 @@ public abstract class BatchQueryBuilder {
     /**
      * @deprecated since 3.1 unused
      */
+    @Deprecated
     public BatchQueryBuilder() {
     }
 

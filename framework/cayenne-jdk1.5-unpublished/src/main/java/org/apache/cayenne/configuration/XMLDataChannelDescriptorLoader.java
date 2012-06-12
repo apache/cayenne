@@ -57,6 +57,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
      *             the password on the spot. For one thing this can be used in the Modeler
      *             and no password may be available.
      */
+    @Deprecated
     private static String passwordFromURL(URL url) {
         InputStream inputStream = null;
         String password = null;
@@ -79,6 +80,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
      *             the password on the spot. For one thing this can be used in the Modeler
      *             and no password may be available.
      */
+    @Deprecated
     private static String passwordFromInputStream(InputStream inputStream) {
         BufferedReader bufferedReader = null;
         String password = null;

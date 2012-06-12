@@ -171,6 +171,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         /**
          * @deprecated
          */
+        @Deprecated
         public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
             return delegate.getBigDecimal(columnIndex, scale);
         }
@@ -182,6 +183,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         /**
          * @deprecated
          */
+        @Deprecated
         public BigDecimal getBigDecimal(String columnName, int scale) throws SQLException {
             return delegate.getBigDecimal(columnName, scale);
         }
@@ -400,6 +402,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         /**
          * @deprecated
          */
+        @Deprecated
         public InputStream getUnicodeStream(int columnIndex) throws SQLException {
             return delegate.getUnicodeStream(columnIndex);
         }
@@ -407,6 +410,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         /**
          * @deprecated
          */
+        @Deprecated
         public InputStream getUnicodeStream(String columnName) throws SQLException {
             return delegate.getUnicodeStream(columnName);
         }

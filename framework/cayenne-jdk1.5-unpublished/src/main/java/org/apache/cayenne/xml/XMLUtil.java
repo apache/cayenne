@@ -45,6 +45,7 @@ import org.w3c.dom.NodeList;
  *             implement XML serialization of persistent objects based JAXB, XStream or
  *             other similar frameworks.
  */
+@Deprecated
 class XMLUtil {
 
     // note that per CAY-792, to be locale-safe the format must not contain literal parts

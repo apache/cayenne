@@ -276,6 +276,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      *             internal code has been refactored to avoid using this method all
      *             together.
      */
+    @Deprecated
     public Persistent localObject(ObjectId id, Object prototype) {
 
         if (id == null) {
@@ -680,6 +681,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * @deprecated since 3.1 use {@link #deleteObjects(Object...)} method instead. This
      *             method is redundant.
      */
+    @Deprecated
     public void deleteObject(Object object) {
         deleteObjects(object);
     }

@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
  * @since 1.2
  * @deprecated since 3.0 {@link CayenneFilter} should be used.
  */
+@Deprecated
 public class WebApplicationContextFilter extends CayenneFilter {
 
     private Log logger;

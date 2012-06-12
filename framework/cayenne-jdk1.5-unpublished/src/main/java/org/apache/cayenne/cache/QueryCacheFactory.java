@@ -29,6 +29,7 @@ import org.apache.cayenne.di.Provider;
  * @deprecated since 3.1 QueryCacheFactory is unused and replaced by corresponding
  *             {@link Provider} implementation for various types of QueryCache.
  */
+@Deprecated
 public interface QueryCacheFactory {
 
     /**

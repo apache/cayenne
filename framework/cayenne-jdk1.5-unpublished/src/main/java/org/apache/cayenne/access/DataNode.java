@@ -326,6 +326,7 @@ public class DataNode implements QueryEngine {
      * @deprecated since 3.1 does nothing as pool shutdown is performed by the DI
      *             container.
      */
+    @Deprecated
     public void shutdown() {
         // noop
     }

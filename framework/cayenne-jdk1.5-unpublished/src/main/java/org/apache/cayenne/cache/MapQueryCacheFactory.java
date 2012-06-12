@@ -25,6 +25,7 @@ import java.util.Map;
  * @deprecated since 3.1 MapQueryCacheFactory and QueryCacheFactory are unused. Analog of
  *             MapQueryCacheFactory is DI-friendly {@link MapQueryCacheProvider}.
  */
+@Deprecated
 public class MapQueryCacheFactory implements QueryCacheFactory {
 
     public static final String CACHE_SIZE_PROPERTY = "cayenne.MapQueryCacheFactory.cacheSize";

@@ -46,6 +46,7 @@ import org.w3c.dom.NamedNodeMap;
  *             implement XML serialization of persistent objects based JAXB, XStream or
  *             other similar frameworks.
  */
+@Deprecated
 final class XMLMappingDescriptor {
 
     private SerializableEntity rootEntity;

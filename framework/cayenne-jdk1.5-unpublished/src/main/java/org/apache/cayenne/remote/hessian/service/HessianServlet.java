@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
  * @deprecated since 3.1 use {@link ROPHessianServlet}.
  * @since 1.2
  */
+@Deprecated
 public class HessianServlet extends ROPHessianServlet {
 
     private Log logger;

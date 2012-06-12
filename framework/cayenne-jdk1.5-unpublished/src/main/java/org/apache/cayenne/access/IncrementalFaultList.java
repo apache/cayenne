@@ -88,6 +88,7 @@ public class IncrementalFaultList<E> implements List<E> {
     /**
      * @deprecated since 3.1 use {@link #IncrementalFaultList(DataContext, Query, int)}.
      */
+    @Deprecated
     public IncrementalFaultList(DataContext dataContext, Query query) {
         this(dataContext, query, 10000);
     }
