@@ -116,7 +116,7 @@ public interface Constants {
 
     public static final String ROP_SERVICE_SHARED_SESSION_PROPERTY = "cayenne.rop.shared_session_name";
 
-    public static final String ROP_SERVICE_TIMEOUT_PROPERTY = "cayenne.rop.service.timeout";
+    public static final String ROP_SERVICE_TIMEOUT_PROPERTY = "cayenne.rop.service_timeout";
 
     public static final String ROP_CHANNEL_EVENTS_PROPERTY = "cayenne.rop.channel_events";
 
