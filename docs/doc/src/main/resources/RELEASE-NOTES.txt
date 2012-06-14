@@ -8,6 +8,14 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.1B2
+Date: 2012
+----------------------------------
+Changes/New Features Since 3.1B1:
+
+CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
+
+----------------------------------
 Release: 3.1B1
 Date: 10 June 2012
 ----------------------------------
