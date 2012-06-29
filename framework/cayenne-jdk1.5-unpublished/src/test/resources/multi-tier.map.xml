@@ -242,6 +242,10 @@
 	<query name="MtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 	</query>
+	<query name="ParameterizedEJBQLMtQuery" factory="org.apache.cayenne.map.EjbqlBuilder">
+		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
+		<ejbql><![CDATA[select a from MtTable1 a where a.globalAttribute1 = :g]]></ejbql>
+	</query>
 	<query name="ParameterizedMtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 		<qualifier><![CDATA[globalAttribute1 = $g]]></qualifier>
