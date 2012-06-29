@@ -22,6 +22,7 @@ package org.apache.cayenne.query;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -126,6 +127,13 @@ public class NamedQuery extends IndirectQuery {
 
         if (query instanceof ParameterizedQuery) {
             query = ((ParameterizedQuery) query).createQuery(normalizedParameters());
+        } else if (query instanceof EJBQLQuery) {
+            
+            Iterator it = normalizedParameters().entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pairs = (Map.Entry)it.next();
+                ((EJBQLQuery)query).setParameter((String) pairs.getKey(), pairs.getValue());
+            }
         }
 
         return query;
