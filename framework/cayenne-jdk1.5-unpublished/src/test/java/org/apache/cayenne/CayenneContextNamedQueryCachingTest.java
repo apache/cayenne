@@ -122,7 +122,7 @@ public class CayenneContextNamedQueryCachingTest extends ClientCase {
     
     }
     
-    public void testLocalCacheEJBQLQueryParameterized() throws Exception {
+    public void testParameterizedMappedToEJBQLQueries() throws Exception {
         
         createThreeMtTable1sDataSet();
         NamedQuery query = new NamedQuery("ParameterizedEJBQLMtQuery", Collections.singletonMap("g", "g1"));

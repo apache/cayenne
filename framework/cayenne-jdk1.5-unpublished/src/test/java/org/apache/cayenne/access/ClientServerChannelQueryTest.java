@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
@@ -103,6 +104,16 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(results.get(3) instanceof ClientMtTable1);
     }
 
+    public void testParameterizedMappedToEJBQLQueries() throws Exception {
+        createTwoMtTable1sAnd2sDataSet();
+
+        NamedQuery query = new NamedQuery("ParameterizedEJBQLMtQuery", Collections.singletonMap("g", "g1"));
+        
+        List<?> r1 = context.performQuery(query);
+        assertEquals(1, r1.size());
+        assertTrue(r1.get(0) instanceof ClientMtTable1);
+    }
+    
     public void testNamedQuery() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
