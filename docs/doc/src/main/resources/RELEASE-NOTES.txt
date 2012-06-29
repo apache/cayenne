@@ -14,6 +14,7 @@ Date: 2012
 Changes/New Features Since 3.1B1:
 
 CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
+CAY-1715 Passing parameters to mapped EJBQL queries
 
 ----------------------------------
 Release: 3.1B1
