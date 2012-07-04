@@ -8,6 +8,15 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.2M1
+Date: 
+----------------------------------
+Changes/New Features Since 3.1
+
+CAY-1717 [PATCH] Implement JDBC compatibility layer methods
+
+
+----------------------------------
 Release: 3.1B1
 Date: 10 June 2012
 ----------------------------------

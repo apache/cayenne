@@ -406,7 +406,7 @@ public class DataNode implements QueryEngine {
          */
         // JDBC 4 compatibility under Java 1.5
         public boolean isWrapperFor(Class<?> iface) throws SQLException {
-            throw new UnsupportedOperationException();
+            return iface.isAssignableFrom(dataSource.getClass());
         }
 
         /**
@@ -414,7 +414,11 @@ public class DataNode implements QueryEngine {
          */
         // JDBC 4 compatibility under Java 1.5
         public <T> T unwrap(Class<T> iface) throws SQLException {
-            throw new UnsupportedOperationException();
+            try {
+                return iface.cast(dataSource);
+            } catch (ClassCastException e) {
+                throw new SQLException(e);
+            }
         }
 
         /**
@@ -423,7 +427,7 @@ public class DataNode implements QueryEngine {
          * JDBC 4.1 compatibility under Java 1.5
          */
         public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-            throw new UnsupportedOperationException();
+            throw new SQLFeatureNotSupportedException();
         }
     }
 }
