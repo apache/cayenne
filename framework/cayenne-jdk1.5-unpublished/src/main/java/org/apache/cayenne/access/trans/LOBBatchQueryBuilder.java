@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
@@ -52,12 +53,22 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
             List selectedLOBAttributes,
             List qualifierAttributes) {
 
-        StringBuffer buf = new StringBuffer();
-        buf.append("SELECT ");
+        boolean status;
+        if (updateQuery.getDbEntity().getDataMap() != null
+                && updateQuery.getDbEntity().getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
+            status = false;
+        }
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+
+		StringBuffer buf = new StringBuffer();
+		buf.append("SELECT ");
 
         Iterator it = selectedLOBAttributes.iterator();
         while (it.hasNext()) {
-            buf.append(((DbAttribute) it.next()).getName());
+            buf.append(strategy.quoteString(((DbAttribute) it.next()).getName()));
 
             if (it.hasNext()) {
                 buf.append(", ");
@@ -66,7 +77,7 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
 
         buf
                 .append(" FROM ")
-                .append(updateQuery.getDbEntity().getFullyQualifiedName())
+                .append(strategy.quoteFullyQualifiedName(updateQuery.getDbEntity()))
                 .append(" WHERE ");
 
         it = qualifierAttributes.iterator();

@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
@@ -64,11 +65,22 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
     @Override
     public String createSqlString(BatchQuery batch) {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
-        String table = batch.getDbEntity().getFullyQualifiedName();
         List<DbAttribute> idDbAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
+		
+		boolean status;
+        if (batch.getDbEntity().getDataMap() != null
+                && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()) {
+            status = true;
+        }
+        else {
+            status = false;
+        }
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+		
         StringBuffer query = new StringBuffer("UPDATE ");
-        query.append(table).append(" SET ");
+		query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+		query.append(" SET ");
 
         int len = updatedDbAttributes.size();
         for (int i = 0; i < len; i++) {
@@ -77,7 +89,8 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
             }
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            query.append(attribute.getName()).append(" = ");
+            query.append(strategy.quoteString(attribute.getName()));
+			query.append(" = ");
             appendUpdatedParameter(query, attribute, batch.getValue(i));
         }
 
