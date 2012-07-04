@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 
@@ -53,31 +54,41 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
         return values;
     }
 
-    @Override
-    public String createSqlString(BatchQuery batch) {
-        String table = batch.getDbEntity().getFullyQualifiedName();
-        List<DbAttribute> dbAttributes = batch.getDbAttributes();
-        StringBuffer query = new StringBuffer("INSERT INTO ");
-        query.append(table).append(" (");
-        for (Iterator<DbAttribute> i = dbAttributes.iterator(); i.hasNext();) {
-            DbAttribute attribute = i.next();
-            query.append(attribute.getName());
-            if (i.hasNext()) {
-                query.append(", ");
-            }
-        }
-        query.append(") VALUES (");
-        for (int i = 0; i < dbAttributes.size(); i++) {
-            if (i > 0) {
-                query.append(", ");
-            }
+	@Override
+	public String createSqlString(BatchQuery batch) {
+		String table = batch.getDbEntity().getFullyQualifiedName();
+		List<DbAttribute> dbAttributes = batch.getDbAttributes();
+		boolean status;
+		if (batch.getDbEntity().getDataMap() != null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()) {
+			status = true;
+		} else {
+			status = false;
+		}
+		QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
 
-            appendUpdatedParameter(
-                query,
-                dbAttributes.get(i),
-                batch.getValue(i));
-        }
-        query.append(')');
-        return query.toString();
-    }
+		StringBuffer query = new StringBuffer("INSERT INTO ");
+		query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+		query.append(" (");
+
+		for (Iterator<DbAttribute> i = dbAttributes.iterator(); i.hasNext();) {
+			DbAttribute attribute = i.next();
+			query.append(strategy.quoteString(attribute.getName()));
+			if (i.hasNext()) {
+				query.append(", ");
+			}
+		}
+		query.append(") VALUES (");
+		for (int i = 0; i < dbAttributes.size(); i++) {
+			if (i > 0) {
+				query.append(", ");
+			}
+
+			appendUpdatedParameter(
+					query,
+					dbAttributes.get(i),
+					batch.getValue(i));
+		}
+		query.append(')');
+		return query.toString();
+	}
 }
