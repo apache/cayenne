@@ -11,8 +11,9 @@ http://issues.apache.org/cayenne/
 Release: 3.1B2
 Date: 2012
 ----------------------------------
-Changes/New Features Since 3.1B1:
+Bug Fixes Since 3.1B1:
 
+CAY-1689 CAY-1689 [PATCH] LOB*QueryBuilders do not check isQuotingSQLIdentifiers
 CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
 CAY-1715 Passing parameters to mapped EJBQL queries
 
