@@ -29,8 +29,6 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 
-/**
- */
 public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
 
     public LOBInsertBatchQueryBuilder(DbAdapter adapter) {
@@ -56,7 +54,6 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
 
 	@Override
 	public String createSqlString(BatchQuery batch) {
-		String table = batch.getDbEntity().getFullyQualifiedName();
 		List<DbAttribute> dbAttributes = batch.getDbAttributes();
 		boolean status;
 		if (batch.getDbEntity().getDataMap() != null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()) {
@@ -64,6 +61,7 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
 		} else {
 			status = false;
 		}
+		
 		QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
 
 		StringBuffer query = new StringBuffer("INSERT INTO ");
