@@ -115,7 +115,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor
 
     public void focusLost(FocusEvent e) {
         if (e.getOppositeComponent() != null) {
-            stopCellEditing(); // Commented out to fix CAY-1719
+            //stopCellEditing(); // Commented out to fix CAY-1719
         }
     }
 }
