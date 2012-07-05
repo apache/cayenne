@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,15 +27,6 @@ import java.util.List;
  * @since 1.1
  */
 public interface EntitySorter {
-
-    /**
-     * Initializes a list of DataMaps used by the sorter.
-     * 
-     * @deprecated since 3.1 {@link #setEntityResolver(EntityResolver)} is used, and this
-     *             method is never called.
-     */
-    @Deprecated
-    void setDataMaps(Collection<DataMap> dataMaps);
 
     /**
      * Sets EntityResolver for this sorter. All entities present in the resolver will be

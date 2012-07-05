@@ -37,7 +37,6 @@ import org.apache.cayenne.ashwood.graph.Digraph;
 import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
 import org.apache.cayenne.ashwood.graph.MapDigraph;
 import org.apache.cayenne.ashwood.graph.StrongConnection;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -71,16 +70,6 @@ public class AshwoodEntitySorter implements EntitySorter {
         dbEntityComparator = new DbEntityComparator();
         objEntityComparator = new ObjEntityComparator();
         dirty = true;
-    }
-
-    /**
-     * @deprecated since 3.1. Use {@link #AshwoodEntitySorter()} constructor together with
-     *             {@link #setDataMaps(Collection)} instead.
-     */
-    @Deprecated
-    public AshwoodEntitySorter(Collection<DataMap> dataMaps) {
-        this();
-        setDataMaps(dataMaps);
     }
 
     /**
@@ -188,17 +177,6 @@ public class AshwoodEntitySorter implements EntitySorter {
     }
 
     /**
-     * @since 1.1
-     * @deprecated since 3.1, {@link #setEntityResolver(EntityResolver)} is used instead.
-     */
-    @Deprecated
-    public void setDataMaps(Collection<DataMap> dataMaps) {
-        setEntityResolver(new EntityResolver(dataMaps != null
-                ? dataMaps
-                : Collections.EMPTY_LIST));
-    }
-
-    /**
      * @since 3.1
      */
     public void setEntityResolver(EntityResolver entityResolver) {
@@ -291,7 +269,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
                 Persistent masterCandidate = persistent.get(j);
                 for (Object master : masters) {
-//                    if (masterCandidate.equals(master)) {
+                    // if (masterCandidate.equals(master)) {
                     if (masterCandidate == master) {
                         objectDependencyGraph.putArc(
                                 masterCandidate,
