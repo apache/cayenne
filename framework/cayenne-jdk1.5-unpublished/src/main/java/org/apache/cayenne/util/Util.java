@@ -19,20 +19,14 @@
 
 package org.apache.cayenne.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
@@ -122,137 +116,6 @@ public class Util {
             in.close();
         }
         return buf.toString();
-    }
-
-    /**
-     * Copies file contents from source to destination. Makes up for the lack of file
-     * copying utilities in Java
-     * 
-     * @deprecated since 3.1 this method is not used by Cayenne
-     */
-    @Deprecated
-    public static boolean copy(File source, File destination) {
-        BufferedInputStream fin = null;
-        BufferedOutputStream fout = null;
-        try {
-            int bufSize = 8 * 1024;
-            fin = new BufferedInputStream(new FileInputStream(source), bufSize);
-            fout = new BufferedOutputStream(new FileOutputStream(destination), bufSize);
-            copyPipe(fin, fout, bufSize);
-        }
-        catch (IOException ioex) {
-            return false;
-        }
-        catch (SecurityException sx) {
-            return false;
-        }
-        finally {
-            if (fin != null) {
-                try {
-                    fin.close();
-                }
-                catch (IOException cioex) {
-                }
-            }
-            if (fout != null) {
-                try {
-                    fout.close();
-                }
-                catch (IOException cioex) {
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Save URL contents to a file.
-     * 
-     * @deprecated since 3.1 this method is not used by Cayenne.
-     */
-    @Deprecated
-    public static boolean copy(URL from, File to) {
-        BufferedInputStream urlin = null;
-        BufferedOutputStream fout = null;
-        try {
-            int bufSize = 8 * 1024;
-            urlin = new BufferedInputStream(
-                    from.openConnection().getInputStream(),
-                    bufSize);
-            fout = new BufferedOutputStream(new FileOutputStream(to), bufSize);
-            copyPipe(urlin, fout, bufSize);
-        }
-        catch (IOException ioex) {
-            return false;
-        }
-        catch (SecurityException sx) {
-            return false;
-        }
-        finally {
-            if (urlin != null) {
-                try {
-                    urlin.close();
-                }
-                catch (IOException cioex) {
-                }
-            }
-            if (fout != null) {
-                try {
-                    fout.close();
-                }
-                catch (IOException cioex) {
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Reads data from the input and writes it to the output, until the end of the input
-     * stream.
-     * 
-     * @deprecated since 3.1 this method is unused by Cayenne.
-     */
-    @Deprecated
-    public static void copyPipe(InputStream in, OutputStream out, int bufSizeHint)
-            throws IOException {
-        int read = -1;
-        byte[] buf = new byte[bufSizeHint];
-        while ((read = in.read(buf, 0, bufSizeHint)) >= 0) {
-            out.write(buf, 0, read);
-        }
-        out.flush();
-    }
-
-    /**
-     * Deletes a file or directory, allowing recursive directory deletion. This is an
-     * improved version of File.delete() method.
-     * 
-     * @deprecated since 3.1 this method is unused by Cayenne.
-     */
-    @Deprecated
-    public static boolean delete(String filePath, boolean recursive) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            return true;
-        }
-
-        if (!recursive || !file.isDirectory())
-            return file.delete();
-
-        String[] contents = file.list();
-
-        // list can be null if directory doesn't have an 'x' permission bit set for the
-        // user
-        if (contents != null) {
-            for (String item : contents) {
-                if (!delete(filePath + File.separator + item, true)) {
-                    return false;
-                }
-            }
-        }
-
-        return file.delete();
     }
 
     /**
@@ -464,39 +327,6 @@ public class Util {
         // if dot is in the first position,
         // we are dealing with a hidden file rather than an extension
         return (dotInd > 0) ? fileName.substring(0, dotInd) : fileName;
-    }
-
-    /**
-     * @deprecated since 3.1 in favor of {@link #stripLineBreaks(String, char)}.
-     * @since 1.2
-     */
-    @Deprecated
-    public static String stripLineBreaks(String string, String replaceWith) {
-        if (isEmptyString(string)) {
-            return string;
-        }
-
-        int len = string.length();
-        StringBuilder buffer = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            char c = string.charAt(i);
-
-            // skip \n, \r, \r\n
-            switch (c) {
-                case '\n':
-                case '\r': // do lookahead
-                    if (i + 1 < len && string.charAt(i + 1) == '\n') {
-                        i++;
-                    }
-
-                    buffer.append(replaceWith);
-                    break;
-                default:
-                    buffer.append(c);
-            }
-        }
-
-        return buffer.toString();
     }
 
     /**

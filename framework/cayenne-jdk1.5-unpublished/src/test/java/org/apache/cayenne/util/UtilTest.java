@@ -21,9 +21,6 @@ package org.apache.cayenne.util;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -66,8 +63,9 @@ public class UtilTest extends TestCase {
         assertEquals(String[].class.getName(), Util
                 .getJavaClass("java.lang.String[]")
                 .getName());
-        assertEquals(new UtilTest[0].getClass().getName(), Util.getJavaClass(
-                getClass().getName() + "[]").getName());
+        assertEquals(
+                new UtilTest[0].getClass().getName(),
+                Util.getJavaClass(getClass().getName() + "[]").getName());
     }
 
     public void testToMap() {
@@ -107,99 +105,20 @@ public class UtilTest extends TestCase {
     public void testStripLineBreaks() {
 
         // no breaks
-        assertEquals("PnMusdkams34 H AnYtk M", Util.stripLineBreaks(
+        assertEquals(
                 "PnMusdkams34 H AnYtk M",
-                'A'));
+                Util.stripLineBreaks("PnMusdkams34 H AnYtk M", 'A'));
 
         // Windows
-        assertEquals("TyusdsdsdQaAbAc", Util
-                .stripLineBreaks("TyusdsdsdQa\r\nb\r\nc", 'A'));
+        assertEquals(
+                "TyusdsdsdQaAbAc",
+                Util.stripLineBreaks("TyusdsdsdQa\r\nb\r\nc", 'A'));
 
         // Mac
         assertEquals("aBbBc", Util.stripLineBreaks("a\rb\rc", 'B'));
 
         // UNIX
         assertEquals("aCbCc", Util.stripLineBreaks("a\nb\nc", 'C'));
-    }
-
-    public void testCopyFile() throws java.lang.Exception {
-        assertFalse("Temp file "
-                + fTmpFileCopy
-                + " is on the way, please delete it manually.", fTmpFileCopy.exists());
-        assertTrue(Util.copy(fTmpFileInCurrentDir, fTmpFileCopy));
-        assertTrue(fTmpFileCopy.exists());
-        assertEquals(fTmpFileCopy.length(), fTmpFileInCurrentDir.length());
-    }
-
-    public void testCopyFileUrl() throws java.lang.Exception {
-        assertFalse("Temp file "
-                + fTmpFileCopy
-                + " is on the way, please delete it manually.", fTmpFileCopy.exists());
-        assertTrue(Util.copy(fTmpFileInCurrentDir.toURL(), fTmpFileCopy));
-        assertTrue(fTmpFileCopy.exists());
-        assertEquals(fTmpFileCopy.length(), fTmpFileInCurrentDir.length());
-    }
-
-    public void testCopyJarUrl() throws Exception {
-        URL fileInJar = getClass().getClassLoader().getResource("testfile1.txt");
-        assertNotNull(fileInJar);
-
-        // skipping test if file not in jar
-        if (!fileInJar.toExternalForm().startsWith("jar:")) {
-            return;
-        }
-
-        assertTrue(Util.copy(fileInJar, fTmpFileCopy));
-        assertTrue(fTmpFileCopy.exists());
-
-        // check file size in a jar
-        InputStream in = null;
-        try {
-            in = fileInJar.openConnection().getInputStream();
-            int len = 0;
-            while (in.read() >= 0) {
-                len++;
-            }
-            assertEquals(len, fTmpFileCopy.length());
-        }
-        catch (IOException ioex) {
-            fail();
-        }
-        finally {
-            if (in != null)
-                in.close();
-        }
-
-    }
-
-    public void testDeleteFile() throws Exception {
-        // delete file
-        assertFalse("Temp file "
-                + fTmpFileCopy
-                + " is on the way, please delete it manually.", fTmpFileCopy.exists());
-        Util.copy(fTmpFileInCurrentDir, fTmpFileCopy);
-        assertTrue(Util.delete(fTmpFileCopy.getPath(), false));
-
-        // delete empty dir with no recursion
-        String tmpDirName = "tmpdir_" + System.currentTimeMillis();
-        File tmpDir = new File(tmpDirName);
-        assertTrue(tmpDir.mkdir());
-        assertTrue(Util.delete(tmpDirName, false));
-        assertFalse(tmpDir.exists());
-
-        // delete dir with files with recurions
-        assertTrue(tmpDir.mkdir());
-        assertTrue(new File(tmpDir, "aaa").createNewFile());
-        assertTrue(Util.delete(tmpDirName, true));
-        assertFalse(tmpDir.exists());
-
-        // fail delete dir with files with no recurions
-        assertTrue(tmpDir.mkdir());
-        assertTrue(new File(tmpDir, "aaa").createNewFile());
-        assertFalse(Util.delete(tmpDirName, false));
-        assertTrue(tmpDir.exists());
-        assertTrue(Util.delete(tmpDirName, true));
-        assertFalse(tmpDir.exists());
     }
 
     public void testCloneViaSerialization() throws Exception {
