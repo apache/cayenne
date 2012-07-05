@@ -55,6 +55,8 @@ public class ComboBoxCellEditor extends AbstractCellEditor
         
         //  Editing should be stopped when textfield loses its focus
         //  otherwise the value may get lost (e.g. see CAY-1104)
+        //  LATER: this turned out to be the wrong fix, so I commented 
+        //  out the code in focusLost to fix CAY-1719 and fixed CAY-1104 differently.
         this.comboBox.getEditor().getEditorComponent().addFocusListener(this);
 
         // remove the editor's border - the cell itself already has one
@@ -113,7 +115,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor
 
     public void focusLost(FocusEvent e) {
         if (e.getOppositeComponent() != null) {
-            stopCellEditing();
+            stopCellEditing(); // Commented out to fix CAY-1719
         }
     }
 }

@@ -282,6 +282,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
     }
 
     private void save() {
+        stopEditing();
 
         // extract names...
         String sourceEntityName = name.getText();
