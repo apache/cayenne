@@ -252,7 +252,7 @@ class OracleLOBBatchAction implements SQLAction {
     protected void writeBlob(Blob blob, byte[] value) {
 
         try {
-            OutputStream out = blob.setBinaryStream(0);
+            OutputStream out = blob.setBinaryStream(1);
             try {
                 out.write(value);
                 out.flush();
@@ -299,7 +299,7 @@ class OracleLOBBatchAction implements SQLAction {
     protected void writeClob(Clob clob, String value) {
         try {
 
-            Writer out = clob.setCharacterStream(0);
+            Writer out = clob.setCharacterStream(1);
             try {
                 out.write(value);
                 out.flush();
