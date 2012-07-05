@@ -420,20 +420,6 @@ public class DataContext extends BaseContext {
     /**
      * Creates a DataObject from DataRow.
      * 
-     * @deprecated Use objectFromDataRow(Class<T> objectClass, DataRow dataRow) instead.
-     * @see DataRow
-     */
-    @Deprecated
-    public <T extends DataObject> T objectFromDataRow(
-            Class<T> objectClass,
-            DataRow dataRow,
-            boolean refresh) {
-        return objectFromDataRow(objectClass, dataRow);
-    }
-
-    /**
-     * Creates a DataObject from DataRow.
-     * 
      * @see DataRow
      * @since 3.1
      */
@@ -450,22 +436,6 @@ public class DataContext extends BaseContext {
                 entity.getName());
         List<T> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
         return list.get(0);
-    }
-
-    /**
-     * Creates a DataObject from DataRow. This variety of the 'objectFromDataRow' method
-     * is normally used for generic classes.
-     * 
-     * @deprecated Use objectFromDataRow(String entityName, DataRow dataRow) instead.
-     * @see DataRow
-     * @since 3.0
-     */
-    @Deprecated
-    public DataObject objectFromDataRow(
-            String entityName,
-            DataRow dataRow,
-            boolean refresh) {
-        return objectFromDataRow(entityName, dataRow);
     }
 
     /**
