@@ -29,7 +29,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
@@ -59,38 +58,6 @@ public class ClientChannel implements DataChannel {
     protected GraphDiffCompressor diffCompressor;
 
     EventBridge remoteChannelListener;
-
-    /**
-     * Creates a new channel accessing remote server via provided connection. Channel
-     * created using this constructor will post no events of its own and provide its users
-     * with a multithreaded EventManager.
-     * 
-     * @deprecated since 3.1 use
-     *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
-     */
-    @Deprecated
-    public ClientChannel(ClientConnection connection) {
-        this(connection, false);
-    }
-
-    /**
-     * @deprecated since 3.1 use
-     *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
-     */
-    @Deprecated
-    public ClientChannel(ClientConnection connection, boolean channelEventsEnabled) {
-        this(connection, channelEventsEnabled, new DefaultEventManager(2));
-    }
-
-    /**
-     * @deprecated since 3.1 use
-     *             {@link #ClientChannel(ClientConnection, boolean, EventManager, boolean)}
-     */
-    @Deprecated
-    public ClientChannel(ClientConnection connection, boolean channelEventsEnabled,
-            EventManager eventManager) throws CayenneRuntimeException {
-        this(connection, channelEventsEnabled, eventManager, false);
-    }
 
     /**
      * @param remoteEventsOptional if true, failure to start an EventBridge will not
