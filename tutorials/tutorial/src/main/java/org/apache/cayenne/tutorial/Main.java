@@ -107,7 +107,7 @@ public class Main {
 				selectToDelete);
 
 		if (picasso != null) {
-			context.deleteObject(picasso);
+			context.deleteObjects(picasso);
 			context.commitChanges();
 		}
 	}
