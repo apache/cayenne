@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.cache.NestedQueryCache;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -365,7 +366,9 @@ public class CayenneContext extends BaseContext {
      * Creates and returns a new child ObjectContext.
      * 
      * @since 3.0
+     * @deprecated Since 3.1 replaced by {@link CayenneRuntime#getContext(DataChannel)}
      */
+    @Deprecated
     public ObjectContext createChildContext() {
         CayenneContext child = new CayenneContext(
                 this,

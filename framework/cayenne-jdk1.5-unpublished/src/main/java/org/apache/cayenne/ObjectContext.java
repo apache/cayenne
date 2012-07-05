@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -211,7 +212,9 @@ public interface ObjectContext extends Serializable {
      * Creates and returns a new child ObjectContext.
      * 
      * @since 3.0
+     * @deprecated Since 3.1 replaced by {@link CayenneRuntime#getContext(DataChannel)}
      */
+    @Deprecated
     ObjectContext createChildContext();
 
     /**
