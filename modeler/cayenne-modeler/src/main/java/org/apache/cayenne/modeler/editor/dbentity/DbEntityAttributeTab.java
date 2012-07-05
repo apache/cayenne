@@ -30,6 +30,7 @@ import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -241,7 +242,11 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
     }
 
     protected void rebuildTable(DbEntity ent) {
-
+        if (table.getEditingRow() != -1 && table.getEditingColumn() != -1) {
+            TableCellEditor cellEditor = table.getCellEditor(table.getEditingRow(), table.getEditingColumn());
+            cellEditor.stopCellEditing();
+        }
+        
         DbAttributeTableModel model = new DbAttributeTableModel(ent, mediator, this);
         table.setModel(model);
         table.setRowHeight(25);

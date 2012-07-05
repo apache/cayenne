@@ -45,6 +45,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -333,6 +334,10 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     protected void rebuildTable(ObjEntity entity) {
+        if (table.getEditingRow() != -1 && table.getEditingColumn() != -1) {
+            TableCellEditor cellEditor = table.getCellEditor(table.getEditingRow(), table.getEditingColumn());
+            cellEditor.stopCellEditing();
+        }
         ObjAttributeTableModel model = new ObjAttributeTableModel(entity, mediator, this);
         table.setModel(model);
         table.setRowHeight(25);
