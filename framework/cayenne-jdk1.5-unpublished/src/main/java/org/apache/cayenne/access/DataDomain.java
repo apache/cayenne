@@ -35,11 +35,8 @@ import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.DataChannelSyncCallbackAction;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
-import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
@@ -114,15 +111,6 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected EntitySorter entitySorter;
 
     protected boolean stopped;
-
-    /**
-     * Factory for creating QueryBuilders. Might be null, then default one will be used.
-     * Server-only.
-     * 
-     * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
-     */
-    @Deprecated
-    private BatchQueryBuilderFactory queryBuilderFactory;
 
     /**
      * Creates a DataDomain and assigns it a name.
@@ -388,29 +376,9 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
     }
 
-    /**
-     * Registers new DataMap with this domain.
-     * 
-     * @deprecated since 3.1 use a more consistently named {@link #addDataMap(DataMap)}.
-     */
-    @Deprecated
-    public void addMap(DataMap map) {
-        addDataMap(map);
-    }
-
     public void addDataMap(DataMap dataMap) {
         getEntityResolver().addDataMap(dataMap);
         refreshEntitySorter();
-    }
-
-    /**
-     * Returns DataMap matching <code>name</code> parameter.
-     * 
-     * @deprecated since 3.1 use a more consistently named {@link #getDataMap(String)}.
-     */
-    @Deprecated
-    public DataMap getMap(String mapName) {
-        return getEntityResolver().getDataMap(mapName);
     }
 
     /**
@@ -418,17 +386,6 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public DataMap getDataMap(String mapName) {
         return getEntityResolver().getDataMap(mapName);
-    }
-
-    /**
-     * Removes named DataMap from this DataDomain and any underlying DataNodes that
-     * include it.
-     * 
-     * @deprecated since 3.1 use a more consistently named {@link #removeDataMap(String)}.
-     */
-    @Deprecated
-    public void removeMap(String mapName) {
-        removeDataMap(mapName);
     }
 
     /**
@@ -490,33 +447,6 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Closes all data nodes, removes them from the list of available nodes.
-     * 
-     * @deprecated since 3.1 unused and unneeded
-     */
-    @Deprecated
-    public void reset() {
-
-        nodes.clear();
-        nodesByDataMapName.clear();
-
-        if (entityResolver != null) {
-            entityResolver.clearCache();
-            entityResolver = null;
-        }
-    }
-
-    /**
-     * Clears the list of internal DataMaps.
-     * 
-     * @deprecated since 3.1 unused and unneeded
-     */
-    @Deprecated
-    public void clearDataMaps() {
-        getEntityResolver().setDataMaps(Collections.EMPTY_LIST);
-    }
-
-    /**
      * Adds new DataNode.
      */
     public void addNode(DataNode node) {
@@ -530,47 +460,6 @@ public class DataDomain implements QueryEngine, DataChannel {
             addDataMap(map);
             nodesByDataMapName.put(map.getName(), node);
         }
-    }
-
-    /**
-     * Creates and returns a new DataContext. If this DataDomain is configured to use
-     * shared cache, returned DataContext will use shared cache as well. Otherwise a new
-     * instance of DataRowStore will be used as its local cache.
-     * 
-     * @deprecated since 3.1 as context creation is done via {@link ObjectContextFactory}
-     *             and injection.
-     */
-    @Deprecated
-    public DataContext createDataContext() {
-        return createDataContext(isSharedCacheEnabled());
-    }
-
-    /**
-     * Creates a new DataContext.
-     * 
-     * @param useSharedCache determines whether resulting DataContext should use shared
-     *            vs. local cache. This setting overrides default behavior configured for
-     *            this DataDomain via {@link #SHARED_CACHE_ENABLED_PROPERTY}.
-     * @since 1.1
-     * @deprecated since 3.1 as context creation is done via {@link ObjectContextFactory}
-     *             and injection.
-     */
-    @Deprecated
-    public DataContext createDataContext(boolean useSharedCache) {
-        // for new dataRowStores use the same name for all stores
-        // it makes it easier to track the event subject
-        DataRowStore snapshotCache = (useSharedCache)
-                ? nonNullSharedSnapshotCache()
-                : new DataRowStore(name, properties, eventManager);
-
-        DataContext context = new DataContext(this, new ObjectStore(snapshotCache));
-
-        if (queryCache != null) {
-            context.setQueryCache(new NestedQueryCache(queryCache));
-        }
-
-        context.setValidatingObjectsOnCommit(isValidatingObjectsOnCommit());
-        return context;
     }
 
     /**
@@ -602,37 +491,10 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Returns registered DataNode whose name matches <code>name</code> parameter.
      * 
-     * @deprecated since 3.1, use a more consistently named {@link #getDataNode(String)}.
-     */
-    @Deprecated
-    public DataNode getNode(String nodeName) {
-        return getDataNode(nodeName);
-    }
-
-    /**
-     * Returns registered DataNode whose name matches <code>name</code> parameter.
-     * 
      * @since 3.1
      */
     public DataNode getDataNode(String nodeName) {
         return nodes.get(nodeName);
-    }
-
-    /**
-     * Updates internal index of DataNodes stored by the entity name.
-     * 
-     * @deprecated since 3.1 - unneeded and unused.
-     */
-    @Deprecated
-    public void reindexNodes() {
-        nodesByDataMapName.clear();
-
-        for (DataNode node : getDataNodes()) {
-            for (DataMap map : node.getDataMaps()) {
-                addDataMap(map);
-                nodesByDataMapName.put(map.getName(), node);
-            }
-        }
     }
 
     /**
@@ -922,25 +784,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     public void setQueryCache(QueryCache queryCache) {
         this.queryCache = queryCache;
-    }
-
-    /**
-     * Sets factory for creating QueryBuilders
-     * 
-     * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
-     */
-    @Deprecated
-    public void setQueryBuilderFactory(BatchQueryBuilderFactory queryBuilderFactory) {
-        this.queryBuilderFactory = queryBuilderFactory;
-    }
-
-    /**
-     * @return factory for creating QueryBuilders. Might be null
-     * @deprecated since 3.1 BatchQueryBuilderFactory is injected into JdbcAdapter.
-     */
-    @Deprecated
-    public BatchQueryBuilderFactory getQueryBuilderFactory() {
-        return queryBuilderFactory;
     }
 
     /**

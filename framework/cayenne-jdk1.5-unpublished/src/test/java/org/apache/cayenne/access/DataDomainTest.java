@@ -133,25 +133,6 @@ public class DataDomainTest extends ServerCase {
         assertNull(d1.getDataMap(m1.getName()));
     }
 
-    @Deprecated
-    public void testReindexNodes() throws Exception {
-        DataDomain domain = new DataDomain("dom1");
-        DataMap map = new DataMap("map");
-        DataNode node = new DataNode("1");
-        node.setJdbcEventLogger(logger);
-
-        domain.addNode(node);
-
-        assertNull(domain.nodesByDataMapName.get("map"));
-        node.addDataMap(map);
-        assertNull(domain.nodesByDataMapName.get("map"));
-
-        // testing this
-        domain.reindexNodes();
-
-        assertSame(node, domain.nodesByDataMapName.get("map"));
-    }
-
     public void testEntityResolverRefresh() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         org.apache.cayenne.map.EntityResolver resolver = domain.getEntityResolver();

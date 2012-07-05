@@ -220,7 +220,7 @@ public class DataDomainProviderTest extends TestCase {
         assertNotNull(node1.getAdapter());
         assertEquals(OracleAdapter.class, node1.getAdapter().getClass());
 
-        DataNode node2 = domain.getNode("node2");
+        DataNode node2 = domain.getDataNode("node2");
         assertNotNull(node2);
         assertEquals(1, node2.getDataMaps().size());
         assertSame(map2, node2.getDataMaps().iterator().next());
