@@ -20,7 +20,6 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.Property;
 import org.apache.cayenne.reflect.ToManyMapProperty;
@@ -123,17 +122,5 @@ public abstract class PersistentObject implements Persistent {
                 .append(">");
 
         return buffer.toString();
-    }
-    
-    /**
-     * Returns mapped ObjEntity for this object. If an object is transient or is not
-     * mapped returns null.
-     * 
-     * @since 1.2
-     * @deprecated since 3.1 {@link org.apache.cayenne.Cayenne#getObjEntity(Persistent)} is used
-     */
-    @Deprecated
-    public ObjEntity getObjEntity() {
-        return Cayenne.getObjEntity(this);
     }
 }

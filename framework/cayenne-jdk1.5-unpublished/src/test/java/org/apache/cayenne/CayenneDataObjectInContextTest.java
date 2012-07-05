@@ -25,12 +25,10 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -85,26 +83,6 @@ public class CayenneDataObjectInContextTest extends ServerCase {
         catch (IllegalStateException e) {
             // expected
         }
-    }
-
-    @Deprecated
-    public void testObjEntity() {
-
-        Artist a = new Artist();
-        assertNull(a.getObjEntity());
-
-        context.registerNewObject(a);
-        ObjEntity e = a.getObjEntity();
-        assertNotNull(e);
-        assertEquals("Artist", e.getName());
-
-        Painting p = new Painting();
-        assertNull(p.getObjEntity());
-
-        context.registerNewObject(p);
-        ObjEntity e1 = p.getObjEntity();
-        assertNotNull(e1);
-        assertEquals("Painting", e1.getName());
     }
 
     public void testCommitChangesInBatch() {

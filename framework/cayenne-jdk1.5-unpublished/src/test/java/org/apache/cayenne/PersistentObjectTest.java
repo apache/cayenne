@@ -19,16 +19,11 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class PersistentObjectTest extends ServerCase {
-
-    @Inject
-    private ObjectContext context;
 
     public void testObjectContext() {
         MockObjectContext context = new MockObjectContext();
@@ -56,12 +51,4 @@ public class PersistentObjectTest extends ServerCase {
         assertSame(id, object.getObjectId());
     }
 
-    @Deprecated
-    public void testGetObjEntity() throws Exception {
-        PersistentObject a = new Artist();
-        assertEquals(a.getObjEntity(), null);
-
-        context.registerNewObject(a);
-        assertEquals(a.getObjEntity().getName(), "Artist");
-    }
 }
