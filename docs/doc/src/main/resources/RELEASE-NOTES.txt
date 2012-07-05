@@ -232,12 +232,14 @@ CAY-1605 Switch Cayenne to use unified Maven repository
 Bug Fixes Since 3.0.2:
 
 CAY-1469 Modeler: dbRelationships renaming problem
+CAY-1513 Deadlock in PoolManager
 CAY-1514 ClassCastException when EJQLQuery parameters is null.
 CAY-1577 SQL queries for LIKE expressions with escape character generated with syntax errors
 CAY-1581 Not-Escaping <> during serialization to *.map.xml
 CAY-1583 context.getObjectStore() returning null causing NullpointerException in DataMergeHandler
 CAY-1585 SelectQuery automatic cache key needs FetchOffset
 CAY-1596 setFetchOffset & setFetchLimit issue under SQL Server 2008 R2 64Bit
+CAY-1696 Undo/Redo stop working after deleting several project items at once
 CAY-1721 Writing blobs fails (Oracle)
 
 ----------------------------------
