@@ -101,16 +101,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     }
 
     /**
-     * @since 1.2
-     * @deprecated since 3.1, use SQLTemplate(DataMap rootMap, String defaultTemplate,
-     *             boolean isFetchingDataRows) instead
-     */
-    @Deprecated
-    public SQLTemplate(DataMap rootMap, String defaultTemplate) {
-        this(rootMap, defaultTemplate, false);
-    }
-
-    /**
      * @since 3.1
      */
     public SQLTemplate(DataMap rootMap, String defaultTemplate, boolean isFetchingDataRows) {
