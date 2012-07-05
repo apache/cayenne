@@ -21,6 +21,7 @@ package org.apache.cayenne;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
@@ -44,6 +45,9 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class NestedCayenneContextTest extends RemoteCayenneCase {
 
     @Inject
+    private ClientRuntime runtime;
+    
+    @Inject
     private DBHelper dbHelper;
 
     @Inject
@@ -58,20 +62,20 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
     }
 
     public void testChannels() {
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         assertNotNull(child);
         assertSame(clientContext, child.getChannel());
 
         // second level of nesting
-        ObjectContext grandchild = child.createChildContext();
+        ObjectContext grandchild = runtime.getContext((DataChannel) child);
 
         assertNotNull(grandchild);
         assertSame(child, grandchild.getChannel());
     }
 
     public void testSelect() throws Exception {
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         ClientMtTable1 committed = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable1 deleted = clientContext.newObject(ClientMtTable1.class);
@@ -118,7 +122,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
         clientContext.commitChanges();
 
-        final ObjectContext child = clientContext.createChildContext();
+        final ObjectContext child = runtime.getContext(clientContext);
 
         SelectQuery q = new SelectQuery(ClientMtTable2.class);
         q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
@@ -160,7 +164,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
         clientContext.commitChanges();
 
-        final ObjectContext child = clientContext.createChildContext();
+        final ObjectContext child = runtime.getContext(clientContext);
 
         SelectQuery q = new SelectQuery(ClientMtTable1.class);
         q.addOrdering("globalAttribute1", SortOrder.ASCENDING);
@@ -199,7 +203,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
     }
 
     public void testDeleteNew() throws Exception {
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
         clientContext.commitChanges();
@@ -229,8 +233,8 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
         clientContext.commitChanges();
 
-        final ObjectContext child = clientContext.createChildContext();
-        ObjectContext childPeer = clientContext.createChildContext();
+        final ObjectContext child = runtime.getContext(clientContext);
+        ObjectContext childPeer = runtime.getContext(clientContext);
 
         final ClientMtTable2 childP1 = (ClientMtTable2) Cayenne.objectForPK(
                 child,
@@ -305,7 +309,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         clientContext.newObject(ClientMtTable1.class);
         clientContext.commitChanges();
 
-        final ObjectContext child = clientContext.createChildContext();
+        final ObjectContext child = runtime.getContext(clientContext);
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         List<?> objects = child.performQuery(query);
@@ -427,7 +431,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         clientContext.newObject(ClientMtTable1.class);
         clientContext.commitChanges();
 
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
@@ -471,7 +475,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         A.setToDependent(B);
         clientContext.commitChanges();
 
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         SelectQuery query = new SelectQuery(ClientMtTooneMaster.class);
         List<?> objects = child.performQuery(query);
@@ -509,7 +513,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         A.setToDependent(B);
         clientContext.commitChanges();
 
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         SelectQuery queryB = new SelectQuery(ClientMtTooneDep.class);
         List<?> objectsB = child.performQuery(queryB);
@@ -553,7 +557,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         clientContext.newObject(ClientMtTable1.class);
         clientContext.commitChanges();
 
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
@@ -618,7 +622,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
     }
 
     public void testAddRemove() throws Exception {
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         ClientMtTable1 a = child.newObject(ClientMtTable1.class);
         a.setGlobalAttribute1("X");
@@ -642,7 +646,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
     }
 
     public void testChangeRel() throws Exception {
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         ClientMtTable1 a = child.newObject(ClientMtTable1.class);
         ClientMtTable2 b = child.newObject(ClientMtTable2.class);
@@ -677,7 +681,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
         clientContext.commitChanges();
 
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
         ClientMtTable1 childMt = (ClientMtTable1) Cayenne.objectForPK(
                 child,
                 parentMt.getObjectId());
@@ -694,7 +698,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
 
     public void testCAY1194() throws Exception {
         ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
         childMt2.setGlobalAttribute("222");
@@ -716,7 +720,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
     }
 
     public void testCommitChangesToParentOneToMany() throws Exception {
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         ClientMtTable1 master = child.newObject(ClientMtTable1.class);
         ClientMtTable2 dep = child.newObject(ClientMtTable2.class);
@@ -777,7 +781,7 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
     }
 
     public void testCommitChangesToParentOneToOne() throws Exception {
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         ClientMtTooneMaster master = child.newObject(ClientMtTooneMaster.class);
         ClientMtTooneDep dep = child.newObject(ClientMtTooneDep.class);

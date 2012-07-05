@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
@@ -33,6 +34,9 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextLocalCacheTest extends ServerCase {
 
+    @Inject
+    protected ServerRuntime runtime;
+    
     @Inject
     private DataContext context;
 
@@ -55,7 +59,7 @@ public class NestedDataContextLocalCacheTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        ObjectContext child1 = context.createChildContext();
+        ObjectContext child1 = runtime.getContext(context);
 
         assertNull(((BaseContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));

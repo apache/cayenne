@@ -21,6 +21,7 @@ package org.apache.cayenne.remote;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -31,6 +32,9 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
 
+    @Inject
+    private ClientRuntime runtime;
+    
     @Inject
     private DBHelper dbHelper;
 
@@ -43,12 +47,12 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
     }
 
     public void testPeerObjectUpdatedTempOID() throws Exception {
-        ObjectContext peer1 = clientContext.createChildContext();
+        ObjectContext peer1 = runtime.getContext(clientContext);
         ClientMtTable1 a1 = peer1.newObject(ClientMtTable1.class);
         a1.setGlobalAttribute1("Y");
         ObjectId a1TempId = a1.getObjectId();
 
-        ObjectContext peer2 = clientContext.createChildContext();
+        ObjectContext peer2 = runtime.getContext(clientContext);
         ClientMtTable1 a2 = peer2.localObject(a1);
 
         assertEquals(a1TempId, a2.getObjectId());
@@ -64,10 +68,10 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
         a.setGlobalAttribute1("X");
         clientContext.commitChanges();
 
-        ObjectContext peer1 = clientContext.createChildContext();
+        ObjectContext peer1 = runtime.getContext(clientContext);
         ClientMtTable1 a1 = peer1.localObject(a);
 
-        ObjectContext peer2 = clientContext.createChildContext();
+        ObjectContext peer2 = runtime.getContext(clientContext);
         ClientMtTable1 a2 = peer2.localObject(a);
 
         a1.setGlobalAttribute1("Y");
@@ -91,11 +95,11 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
         altA.setGlobalAttribute1("Y");
         clientContext.commitChanges();
 
-        ObjectContext peer1 = clientContext.createChildContext();
+        ObjectContext peer1 = runtime.getContext(clientContext);
         ClientMtTable2 p1 = peer1.localObject(p);
         ClientMtTable1 altA1 = peer1.localObject(altA);
 
-        ObjectContext peer2 = clientContext.createChildContext();
+        ObjectContext peer2 = runtime.getContext(clientContext);
         ClientMtTable2 p2 = peer2.localObject(p);
         ClientMtTable1 altA2 = peer2.localObject(altA);
         ClientMtTable1 a2 = peer2.localObject(a);
@@ -123,11 +127,11 @@ public class NestedObjectContextPeerEventsTest extends RemoteCayenneCase {
 
         clientContext.commitChanges();
 
-        ObjectContext peer1 = clientContext.createChildContext();
+        ObjectContext peer1 = runtime.getContext(clientContext);
         ClientMtTable2 py1 = peer1.localObject(py);
         ClientMtTable1 a1 = peer1.localObject(a);
 
-        ObjectContext peer2 = clientContext.createChildContext();
+        ObjectContext peer2 = runtime.getContext(clientContext);
         ClientMtTable2 py2 = peer2.localObject(py);
         ClientMtTable1 a2 = peer2.localObject(a);
 

@@ -23,7 +23,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,7 +45,6 @@ import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.GenericResponse;
@@ -70,61 +68,6 @@ public class CayenneContextTest extends ClientCase {
         MockDataChannel channel = new MockDataChannel();
         context.setChannel(channel);
         assertSame(channel, context.getChannel());
-    }
-
-    @Deprecated
-    public void testLocalObject() {
-
-        DataChannel channel = mock(DataChannel.class);
-
-        CayenneContext src = new CayenneContext(channel);
-        src
-                .setEntityResolver(serverContext
-                        .getEntityResolver()
-                        .getClientEntityResolver());
-
-        List<Persistent> sources = new ArrayList<Persistent>();
-
-        ClientMtTable1 s1 = new ClientMtTable1();
-        s1.setPersistenceState(PersistenceState.COMMITTED);
-        s1.setObjectId(new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 1));
-        s1.setGlobalAttribute1("abc");
-        s1.setObjectContext(src);
-        src.getGraphManager().registerNode(s1.getObjectId(), s1);
-        sources.add(s1);
-
-        ClientMtTable1 s2 = new ClientMtTable1();
-        s2.setPersistenceState(PersistenceState.COMMITTED);
-        s2.setObjectId(new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 2));
-        s2.setGlobalAttribute1("xyz");
-        s2.setObjectContext(src);
-        src.getGraphManager().registerNode(s2.getObjectId(), s2);
-        sources.add(s2);
-
-        ClientMtTable1 s3 = new ClientMtTable1();
-        s3.setPersistenceState(PersistenceState.HOLLOW);
-        s3.setObjectId(new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 3));
-        s3.setObjectContext(src);
-        src.getGraphManager().registerNode(s3.getObjectId(), s3);
-        sources.add(s3);
-
-        CayenneContext target = new CayenneContext(channel);
-        target.setEntityResolver(serverContext
-                .getEntityResolver()
-                .getClientEntityResolver());
-
-        for (int i = 0; i < sources.size(); i++) {
-            Persistent srcObject = sources.get(i);
-            Persistent targetObject = target.localObject(
-                    srcObject.getObjectId(),
-                    srcObject);
-
-            assertSame(target, targetObject.getObjectContext());
-            assertSame(src, srcObject.getObjectContext());
-            assertEquals(srcObject.getObjectId(), targetObject.getObjectId());
-            assertSame(targetObject, target.getGraphManager().getNode(
-                    targetObject.getObjectId()));
-        }
     }
 
     public void testChannel() {
@@ -262,8 +205,10 @@ public class CayenneContextTest extends ClientCase {
         context.deleteObjects(newObject);
         assertNull(newObject.getObjectContext());
         assertEquals(PersistenceState.TRANSIENT, newObject.getPersistenceState());
-        assertFalse(context.internalGraphManager().dirtyNodes().contains(
-                newObject.getObjectId()));
+        assertFalse(context
+                .internalGraphManager()
+                .dirtyNodes()
+                .contains(newObject.getObjectId()));
 
         // see CAY-547 for details...
         assertFalse(context.internalGraphManager().dirtyNodes().contains(null));
@@ -352,8 +297,9 @@ public class CayenneContextTest extends ClientCase {
                         false);
         assertTrue(selectExecuted[0]);
         assertSame(hollow, context.getGraphManager().getNode(gid));
-        assertEquals(inflated.getGlobalAttribute1Direct(), hollow
-                .getGlobalAttribute1Direct());
+        assertEquals(
+                inflated.getGlobalAttribute1Direct(),
+                hollow.getGlobalAttribute1Direct());
         assertEquals(PersistenceState.COMMITTED, hollow.getPersistenceState());
     }
 
@@ -396,8 +342,9 @@ public class CayenneContextTest extends ClientCase {
         // testing this...
         context.deleteObjects(hollow);
         assertSame(hollow, context.getGraphManager().getNode(gid));
-        assertEquals(inflated.getGlobalAttribute1Direct(), hollow
-                .getGlobalAttribute1Direct());
+        assertEquals(
+                inflated.getGlobalAttribute1Direct(),
+                hollow.getGlobalAttribute1Direct());
         assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());
     }
 

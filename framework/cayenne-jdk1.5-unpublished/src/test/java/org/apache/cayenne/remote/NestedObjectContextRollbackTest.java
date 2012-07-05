@@ -19,15 +19,20 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class NestedObjectContextRollbackTest extends RemoteCayenneCase {
+    
+    @Inject
+    private ClientRuntime runtime;
 
     public void testRollbackChanges() {
-        ObjectContext child1 = clientContext.createChildContext();
+        ObjectContext child1 = runtime.getContext(clientContext);
         
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
@@ -46,7 +51,7 @@ public class NestedObjectContextRollbackTest extends RemoteCayenneCase {
     }
     
     public void testRollbackChangesLocally() {
-        ObjectContext child1 = clientContext.createChildContext();
+        ObjectContext child1 = runtime.getContext(clientContext);
         
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());

@@ -46,7 +46,7 @@ public class DataContextSerializationTest extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
-    
+
     @Inject
     protected JdbcEventLogger logger;
 
@@ -93,7 +93,7 @@ public class DataContextSerializationTest extends ServerCase {
 
     public void testSerializeNestedChannel() throws Exception {
 
-        ObjectContext child = context.createChildContext();
+        ObjectContext child = runtime.getContext(context);
 
         ObjectContext deserializedContext = Util.cloneViaSerialization(child);
 
@@ -109,8 +109,9 @@ public class DataContextSerializationTest extends ServerCase {
 
         assertNotSame(context, deserializedContext);
         assertNotSame(context.getObjectStore(), deserializedContext.getObjectStore());
-        assertSame(context.getParentDataDomain(), deserializedContext
-                .getParentDataDomain());
+        assertSame(
+                context.getParentDataDomain(),
+                deserializedContext.getParentDataDomain());
         assertSame(context.getObjectStore().getDataRowCache(), deserializedContext
                 .getObjectStore()
                 .getDataRowCache());
@@ -133,8 +134,10 @@ public class DataContextSerializationTest extends ServerCase {
 
         // manually assemble a DataContext with local cache....
         DataDomain domain = context.getParentDataDomain();
-        DataRowStore snapshotCache = new DataRowStore(domain.getName(), domain
-                .getProperties(), domain.getEventManager());
+        DataRowStore snapshotCache = new DataRowStore(
+                domain.getName(),
+                domain.getProperties(),
+                domain.getEventManager());
 
         DataContext localCacheContext = new DataContext(domain, new ObjectStore(
                 snapshotCache));
@@ -149,11 +152,13 @@ public class DataContextSerializationTest extends ServerCase {
         DataContext deserializedContext = Util.cloneViaSerialization(localCacheContext);
 
         assertNotSame(localCacheContext, deserializedContext);
-        assertNotSame(localCacheContext.getObjectStore(), deserializedContext
-                .getObjectStore());
+        assertNotSame(
+                localCacheContext.getObjectStore(),
+                deserializedContext.getObjectStore());
 
-        assertSame(localCacheContext.getParentDataDomain(), deserializedContext
-                .getParentDataDomain());
+        assertSame(
+                localCacheContext.getParentDataDomain(),
+                deserializedContext.getParentDataDomain());
         assertNotSame(
                 localCacheContext.getObjectStore().getDataRowCache(),
                 deserializedContext.getObjectStore().getDataRowCache());
@@ -176,8 +181,9 @@ public class DataContextSerializationTest extends ServerCase {
         assertNotNull(artist.getObjectId());
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
-        assertSame(context.getParentDataDomain(), deserializedContext
-                .getParentDataDomain());
+        assertSame(
+                context.getParentDataDomain(),
+                deserializedContext.getParentDataDomain());
 
         // there should be only one object registered
         Artist deserializedArtist = (Artist) deserializedContext
@@ -201,8 +207,9 @@ public class DataContextSerializationTest extends ServerCase {
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
-        assertSame(context.getParentDataDomain(), deserializedContext
-                .getParentDataDomain());
+        assertSame(
+                context.getParentDataDomain(),
+                deserializedContext.getParentDataDomain());
 
         // there should be only one object registered
         Artist deserializedArtist = (Artist) deserializedContext
@@ -234,8 +241,9 @@ public class DataContextSerializationTest extends ServerCase {
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
 
-        assertSame(context.getParentDataDomain(), deserializedContext
-                .getParentDataDomain());
+        assertSame(
+                context.getParentDataDomain(),
+                deserializedContext.getParentDataDomain());
 
         // there should be only one object registered
         Artist deserializedArtist = (Artist) deserializedContext

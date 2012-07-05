@@ -52,11 +52,6 @@ public class MockBaseContext extends BaseContext {
     }
 
     @Override
-    public Persistent localObject(ObjectId id, Object prototype) {
-        return null;
-    }
-
-    @Override
     public Collection<?> modifiedObjects() {
         return null;
     }

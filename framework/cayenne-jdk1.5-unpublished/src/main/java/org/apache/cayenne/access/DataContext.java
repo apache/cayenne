@@ -42,9 +42,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
-import org.apache.cayenne.cache.NestedQueryCache;
-import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -110,32 +107,6 @@ public class DataContext extends BaseContext {
             this.usingSharedSnaphsotCache = domain != null
                     && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
         }
-    }
-
-    /**
-     * Creates and returns a new child ObjectContext.
-     * 
-     * @since 3.0
-     * @deprecated Since 3.1 replaced by {@link CayenneRuntime#getContext(DataChannel)}
-     */
-    @Deprecated
-    public ObjectContext createChildContext() {
-
-        // child ObjectStore should not have direct access to snapshot cache, so do not
-        // pass it in constructor.
-        ObjectStore objectStore = new ObjectStore();
-
-        DataContext child = new DataContext(this, objectStore);
-
-        // TODO: This method should be deprecated and child context should be created via
-        // DI with all proper injection, so won't have to guess how to handle query cache.
-        if (queryCache != null) {
-            child.setQueryCache(new NestedQueryCache(queryCache));
-        }
-
-        child.setValidatingObjectsOnCommit(isValidatingObjectsOnCommit());
-        child.usingSharedSnaphsotCache = isUsingSharedSnapshotCache();
-        return child;
     }
 
     /**

@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -129,7 +130,7 @@ public class NestedDataContextReadTest extends ServerCase {
         assertFalse(((DataContext) child2).isValidatingObjectsOnCommit());
 
         // second level of nesting
-        ObjectContext child21 = child2.createChildContext();
+        ObjectContext child21 = runtime.getContext((DataChannel) child2);
 
         assertNotNull(child21);
         assertSame(child2, child21.getChannel());

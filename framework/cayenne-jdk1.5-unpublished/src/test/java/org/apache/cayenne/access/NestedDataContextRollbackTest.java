@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -28,10 +29,13 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class NestedDataContextRollbackTest extends ServerCase {
 
     @Inject
-    private ObjectContext context;
+    protected ServerRuntime runtime;
+    
+    @Inject
+    private DataContext context;
 
     public void testRollbackChanges() {
-        ObjectContext child1 = context.createChildContext();
+        ObjectContext child1 = runtime.getContext(context);
 
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());
@@ -48,7 +52,7 @@ public class NestedDataContextRollbackTest extends ServerCase {
     }
 
     public void testRollbackChangesLocally() {
-        ObjectContext child1 = context.createChildContext();
+        ObjectContext child1 = runtime.getContext(context);
 
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());

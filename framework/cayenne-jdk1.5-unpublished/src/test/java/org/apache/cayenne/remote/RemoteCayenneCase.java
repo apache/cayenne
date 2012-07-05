@@ -66,7 +66,7 @@ public abstract class RemoteCayenneCase extends ClientCase {
                 serializationPolicy);
         ClientChannel channel = new ClientChannel(connection, false,
         // we want events, but we don't want thread leaks, so creating single threaded EM.
-                // TODO: replace with container managed ClientCase.
+        // TODO: replace with container managed ClientCase.
                 new DefaultEventManager(0),
                 false);
         CayenneContext context = new CayenneContext(channel, true, true);

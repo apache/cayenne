@@ -21,6 +21,8 @@ package org.apache.cayenne.remote;
 import java.util.List;
 
 import org.apache.cayenne.BaseContext;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -29,13 +31,16 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class NestedObjectContextLocalTest extends RemoteCayenneCase {
+    
+    @Inject
+    private ClientRuntime runtime;
 
     public void testLocalCacheStaysLocal() {
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        BaseContext child1 = (BaseContext) clientContext.createChildContext();
+        BaseContext child1 = (BaseContext) runtime.getContext(clientContext);
 
         assertNull(child1.getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));

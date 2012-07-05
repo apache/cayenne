@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -359,26 +358,6 @@ public class CayenneContext extends BaseContext {
         }
 
         return object;
-    }
-
-    /**
-     * Creates and returns a new child ObjectContext.
-     * 
-     * @since 3.0
-     */
-    public ObjectContext createChildContext() {
-        CayenneContext child = new CayenneContext(
-                this,
-                graphManager.changeEventsEnabled,
-                graphManager.lifecycleEventsEnabled);
-
-        // TODO: This method should be deprecated and child context should be created via
-        // DI with all proper injection, so won't have to guess how to handle query cache.
-        if (queryCache != null) {
-            child.setQueryCache(new NestedQueryCache(queryCache));
-        }
-
-        return child;
     }
 
     @Override

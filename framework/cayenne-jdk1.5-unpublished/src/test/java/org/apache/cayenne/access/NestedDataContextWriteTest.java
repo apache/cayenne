@@ -28,6 +28,7 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -47,6 +48,9 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 @UseServerRuntime("cayenne-small-testmap.xml")
 public class NestedDataContextWriteTest extends ServerCase {
 
+    @Inject
+    private ServerRuntime runtime;
+    
     @Inject
     private DataContext context;
 
@@ -129,7 +133,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         createSingleArtistDataSet();
 
         DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildContext();
+        ObjectContext childContext = runtime.getContext(context);
 
         Artist a = Cayenne.objectForPK(childContext, Artist.class, 33001);
         Painting p = childContext.newObject(Painting.class);
@@ -151,8 +155,8 @@ public class NestedDataContextWriteTest extends ServerCase {
         createNullifyToOneDataSet();
 
         final DataContext context = createDataContext();
-        final ObjectContext childContext = context.createChildContext();
-        ObjectContext childContextPeer = context.createChildContext();
+        final ObjectContext childContext = runtime.getContext(context);
+        ObjectContext childContextPeer = runtime.getContext(context);
 
         final Painting childP1 = Cayenne.objectForPK(childContext, Painting.class, 33001);
 
@@ -180,7 +184,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         createArtistsDataSet();
 
         final DataContext context = createDataContext();
-        final ObjectContext childContext = context.createChildContext();
+        final ObjectContext childContext = runtime.getContext(context);
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
@@ -254,7 +258,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         createArtistsDataSet();
 
         DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildContext();
+        ObjectContext childContext = runtime.getContext(context);
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
@@ -290,7 +294,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         createArtistsDataSet();
 
         DataContext context = createDataContext();
-        ObjectContext childContext = context.createChildContext();
+        ObjectContext childContext = runtime.getContext(context);
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
@@ -356,7 +360,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         createMixedDataSet();
 
         final DataContext context = createDataContext();
-        final ObjectContext childContext = context.createChildContext();
+        final ObjectContext childContext = runtime.getContext(context);
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Painting.class);
@@ -434,7 +438,7 @@ public class NestedDataContextWriteTest extends ServerCase {
 
     public void testCommitChangesToParentPropagatedKey() throws Exception {
         final DataContext context = createDataContext();
-        final ObjectContext childContext = context.createChildContext();
+        final ObjectContext childContext = runtime.getContext(context);
 
         final Painting childMaster = childContext.newObject(Painting.class);
         childMaster.setPaintingTitle("Master");
@@ -475,7 +479,7 @@ public class NestedDataContextWriteTest extends ServerCase {
     public void testCommitChangesToParentFlattened() throws Exception {
 
         final DataContext context = createDataContext();
-        final ObjectContext childContext = context.createChildContext();
+        final ObjectContext childContext = runtime.getContext(context);
 
         final Artist childO1 = childContext.newObject(Artist.class);
         childO1.setArtistName("Master");
@@ -523,7 +527,7 @@ public class NestedDataContextWriteTest extends ServerCase {
 
     public void testCommitChangesToParentFlattenedMultipleFlush() throws Exception {
         final DataContext context = createDataContext();
-        final ObjectContext childContext = context.createChildContext();
+        final ObjectContext childContext = runtime.getContext(context);
 
         final Artist childO1 = childContext.newObject(Artist.class);
         childO1.setArtistName("o1");
@@ -621,7 +625,7 @@ public class NestedDataContextWriteTest extends ServerCase {
     public void testAddRemove() {
 
         DataContext context = createDataContext();
-        ObjectContext child = context.createChildContext();
+        ObjectContext child = runtime.getContext(context);
 
         Artist a = child.newObject(Artist.class);
         a.setArtistName("X");
@@ -649,7 +653,7 @@ public class NestedDataContextWriteTest extends ServerCase {
 
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("111");
-        ObjectContext child = context.createChildContext();
+        ObjectContext child = runtime.getContext(context);
 
         Painting painting = child.newObject(Painting.class);
         painting.setPaintingTitle("222");

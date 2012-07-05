@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -30,6 +31,9 @@ import org.apache.cayenne.validation.ValidationException;
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextValidationTest extends ServerCase {
 
+    @Inject
+    protected ServerRuntime runtime;
+    
     @Inject
     private DataContext context;
 
@@ -48,7 +52,7 @@ public class NestedDataContextValidationTest extends ServerCase {
     public void testValidateOnCommitToParent() {
         context.setValidatingObjectsOnCommit(true);
 
-        ObjectContext childContext = context.createChildContext();
+        ObjectContext childContext = runtime.getContext(context);
         assertTrue(
                 "Child context must have inherited the validation flag from parent",
                 ((DataContext) childContext).isValidatingObjectsOnCommit());

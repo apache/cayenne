@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -29,10 +30,13 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class NestedDataContextParentEventsTest extends ServerCase {
 
     @Inject
+    protected ServerRuntime runtime;
+    
+    @Inject
     private DataContext context;
 
     public void testParentUpdatedId() {
-        ObjectContext child1 = context.createChildContext();
+        ObjectContext child1 = runtime.getContext(context);
 
         Artist ac = child1.newObject(Artist.class);
         ac.setArtistName("X");

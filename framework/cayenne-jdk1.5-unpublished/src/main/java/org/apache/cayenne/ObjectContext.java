@@ -65,23 +65,6 @@ public interface ObjectContext extends Serializable {
     Collection<?> uncommittedObjects();
 
     /**
-     * Returns an object local to this ObjectContext and matching the ObjectId. If
-     * <code>prototype</code> is not null, local object is refreshed with the prototype
-     * values.
-     * <p>
-     * This method can do both "mapping" (i.e. finding an object with the same id in this
-     * context) and "synchronization" (i.e. updating the state of the found object with
-     * the state of the prototype object).
-     * </p>
-     * 
-     * @deprecated since 3.1 Cayenne users should use {@link #localObject(Object)}; the
-     *             internal code has been refactored to avoid using this method all
-     *             together.
-     */
-    @Deprecated
-    Persistent localObject(ObjectId id, Object prototype);
-
-    /**
      * Returns a local copy of 'objectFromAnotherContext' object. "Local" means that the
      * returned object is registered in this context. If the local object hasn't been
      * previously cached in this context, a hollow object is created and returned to the
@@ -109,17 +92,6 @@ public interface ObjectContext extends Serializable {
      * @since 3.0
      */
     void registerNewObject(Object object);
-
-    /**
-     * Schedules a persistent object for deletion on next commit.
-     * 
-     * @throws DeleteDenyException if a {@link org.apache.cayenne.map.DeleteRule#DENY}
-     *             delete rule is applicable for object deletion.
-     * @deprecated since 3.1 use {@link #deleteObjects(Object...)} method instead. This
-     *             method is redundant.
-     */
-    @Deprecated
-    void deleteObject(Object object) throws DeleteDenyException;
 
     /**
      * Schedules deletion of a collection of persistent objects.
@@ -206,13 +178,6 @@ public interface ObjectContext extends Serializable {
      * Returns an DataChannel used by this context.
      */
     DataChannel getChannel();
-
-    /**
-     * Creates and returns a new child ObjectContext.
-     * 
-     * @since 3.0
-     */
-    ObjectContext createChildContext();
 
     /**
      * Returns <code>true</code> if there are any modified, deleted or new objects

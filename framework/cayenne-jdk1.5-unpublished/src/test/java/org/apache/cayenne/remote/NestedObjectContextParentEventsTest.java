@@ -20,6 +20,7 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -31,6 +32,9 @@ public class NestedObjectContextParentEventsTest extends RemoteCayenneCase {
 
     @Inject
     private DBHelper dbHelper;
+    
+    @Inject
+    private ClientRuntime runtime;
 
     @Override
     public void setUpAfterInjection() throws Exception {
@@ -41,7 +45,7 @@ public class NestedObjectContextParentEventsTest extends RemoteCayenneCase {
     }
 
     public void testParentUpdatedId() throws Exception {
-        ObjectContext child = clientContext.createChildContext();
+        ObjectContext child = runtime.getContext(clientContext);
 
         ClientMtTable1 ac = child.newObject(ClientMtTable1.class);
         ac.setGlobalAttribute1("X");

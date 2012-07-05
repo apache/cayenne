@@ -271,87 +271,6 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     public abstract GraphManager getGraphManager();
 
-    /**
-     * @deprecated since 3.1 Cayenne users should use {@link #localObject(Object)}; the
-     *             internal code has been refactored to avoid using this method all
-     *             together.
-     */
-    @Deprecated
-    public Persistent localObject(ObjectId id, Object prototype) {
-
-        if (id == null) {
-            throw new IllegalArgumentException("Null ObjectId");
-        }
-
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                id.getEntityName());
-
-        // have to synchronize almost the entire method to prevent multiple threads from
-        // messing up dataobjects per CAY-845. Originally only parts of "else" were
-        // synchronized, but we had to expand the lock scope to ensure consistent
-        // behavior.
-        synchronized (getGraphManager()) {
-            Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
-
-            // merge into an existing object
-            if (cachedObject != null) {
-
-                // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
-                if (cachedObject != prototype
-                        && cachedObject.getPersistenceState() != PersistenceState.MODIFIED
-                        && cachedObject.getPersistenceState() != PersistenceState.DELETED) {
-
-                    if (prototype != null
-                            && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
-
-                        descriptor.shallowMerge(prototype, cachedObject);
-
-                        if (cachedObject.getPersistenceState() == PersistenceState.HOLLOW) {
-                            cachedObject.setPersistenceState(PersistenceState.COMMITTED);
-                        }
-                    }
-                }
-
-                return cachedObject;
-            }
-            // create and merge into a new object
-            else {
-
-                // Andrus, 1/26/2006 - note that there is a tricky case of a temporary
-                // object
-                // passed from peer DataContext... In the past we used to throw an
-                // exception
-                // or return null. Now that we can have a valid (but generally
-                // indistinguishible) case of such object passed from parent, we let it
-                // slip... Not sure what's the best way of handling it that does not
-                // involve
-                // breaking encapsulation of the DataChannel to detect where in the
-                // hierarchy
-                // this context is.
-
-                Persistent localObject;
-
-                localObject = (Persistent) descriptor.createObject();
-
-                localObject.setObjectContext(this);
-                localObject.setObjectId(id);
-
-                getGraphManager().registerNode(id, localObject);
-
-                if (prototype != null
-                        && ((Persistent) prototype).getPersistenceState() != PersistenceState.HOLLOW) {
-                    localObject.setPersistenceState(PersistenceState.COMMITTED);
-                    descriptor.shallowMerge(prototype, localObject);
-                }
-                else {
-                    localObject.setPersistenceState(PersistenceState.HOLLOW);
-                }
-
-                return localObject;
-            }
-        }
-    }
-
     public abstract Collection<?> modifiedObjects();
 
     public abstract <T> T newObject(Class<T> persistentClass);
@@ -666,24 +585,6 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         getEntityResolver().getCallbackRegistry().performCallbacks(
                 LifecycleEvent.POST_ADD,
                 object);
-    }
-
-    /**
-     * Schedules an object for deletion on the next commit of this context. Object's
-     * persistence state is changed to PersistenceState.DELETED; objects related to this
-     * object are processed according to delete rules, i.e. relationships can be unset
-     * ("nullify" rule), deletion operation is cascaded (cascade rule).
-     * 
-     * @param object a persistent object that we want to delete.
-     * @throws DeleteDenyException if a DENY delete rule is applicable for object
-     *             deletion.
-     * @throws NullPointerException if object is null.
-     * @deprecated since 3.1 use {@link #deleteObjects(Object...)} method instead. This
-     *             method is redundant.
-     */
-    @Deprecated
-    public void deleteObject(Object object) {
-        deleteObjects(object);
     }
 
     /**

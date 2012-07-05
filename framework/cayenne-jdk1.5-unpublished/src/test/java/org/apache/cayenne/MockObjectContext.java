@@ -53,14 +53,6 @@ public class MockObjectContext implements ObjectContext {
         return graphManager;
     }
 
-    /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
-    public Persistent localObject(ObjectId id, Object prototype) {
-        return null;
-    }
-
     public <T> T localObject(T objectFromAnotherContext) {
         return null;
     }
@@ -96,13 +88,6 @@ public class MockObjectContext implements ObjectContext {
 
     public void commitChanges() {
 
-    }
-
-    /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
-    public void deleteObject(Object object) {
     }
 
     public void deleteObjects(Collection<?> objects) {
