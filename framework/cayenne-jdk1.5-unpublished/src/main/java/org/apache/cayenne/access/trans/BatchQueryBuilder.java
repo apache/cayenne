@@ -39,13 +39,6 @@ public abstract class BatchQueryBuilder {
     protected DbAdapter adapter;
     protected String trimFunction;
 
-    /**
-     * @deprecated since 3.1 unused
-     */
-    @Deprecated
-    public BatchQueryBuilder() {
-    }
-
     public BatchQueryBuilder(DbAdapter adapter) {
         this.adapter = adapter;
     }
@@ -116,8 +109,12 @@ public abstract class BatchQueryBuilder {
         for (int i = 0; i < attributeCount; i++) {
             Object value = query.getValue(i);
             DbAttribute attribute = dbAttributes.get(i);
-            adapter.bindParameter(statement, value, i + 1, attribute.getType(), attribute
-                    .getScale());
+            adapter.bindParameter(
+                    statement,
+                    value,
+                    i + 1,
+                    attribute.getType(),
+                    attribute.getScale());
 
         }
     }

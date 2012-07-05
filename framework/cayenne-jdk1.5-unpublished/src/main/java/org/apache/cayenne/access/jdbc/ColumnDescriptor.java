@@ -61,20 +61,6 @@ public class ColumnDescriptor implements Serializable {
     /**
      * Creates a column descriptor with user-specified parameters.
      * 
-     * @since 1.2
-     * @deprecated since 3.1 use ColumnDescriptor(String columnName, int jdbcType) instead
-     */
-    @Deprecated
-    public ColumnDescriptor(String columnName, int jdbcType, String javaClass) {
-        this.name = columnName;
-        this.dataRowKey = columnName;
-        this.jdbcType = jdbcType;
-        this.javaClass = javaClass;
-    }
-
-    /**
-     * Creates a column descriptor with user-specified parameters.
-     * 
      * @since 3.1
      */
     public ColumnDescriptor(String columnName, int jdbcType) {
@@ -166,11 +152,13 @@ public class ColumnDescriptor implements Serializable {
         }
 
         ColumnDescriptor rhs = (ColumnDescriptor) o;
-        return new EqualsBuilder().append(name, rhs.name).append(
-                namePrefix,
-                rhs.namePrefix).append(procedureName, rhs.procedureName).append(
-                dataRowKey,
-                rhs.dataRowKey).append(tableName, rhs.tableName).isEquals();
+        return new EqualsBuilder()
+                .append(name, rhs.name)
+                .append(namePrefix, rhs.namePrefix)
+                .append(procedureName, rhs.procedureName)
+                .append(dataRowKey, rhs.dataRowKey)
+                .append(tableName, rhs.tableName)
+                .isEquals();
     }
 
     /**
@@ -178,8 +166,13 @@ public class ColumnDescriptor implements Serializable {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(23, 43).append(name).append(namePrefix).append(
-                procedureName).append(tableName).append(dataRowKey).toHashCode();
+        return new HashCodeBuilder(23, 43)
+                .append(name)
+                .append(namePrefix)
+                .append(procedureName)
+                .append(tableName)
+                .append(dataRowKey)
+                .toHashCode();
     }
 
     /**
@@ -196,17 +189,6 @@ public class ColumnDescriptor implements Serializable {
         builder.append("javaClass", getJavaClass());
         builder.append("jdbcType", getJdbcType());
         return builder.toString();
-    }
-
-    /**
-     * Returns a default Java class for an internal JDBC type.
-     * 
-     * @since 1.2
-     * @deprecated use TypesMapping.getJavaBySqlType(int type) instead
-     */
-    @Deprecated
-    public String getDefaultJavaClass(int size, int scale) {
-        return TypesMapping.getJavaBySqlType(getJdbcType(), size, scale);
     }
 
     /**
