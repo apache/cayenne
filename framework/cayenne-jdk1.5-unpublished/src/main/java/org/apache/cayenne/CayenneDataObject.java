@@ -29,8 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -43,16 +41,12 @@ import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
-import org.apache.cayenne.xml.XMLDecoder;
-import org.apache.cayenne.xml.XMLEncoder;
-import org.apache.cayenne.xml.XMLSerializable;
 
 /**
  * A default implementation of DataObject interface. It is normally used as a superclass
  * of Cayenne persistent objects.
  */
-public class CayenneDataObject extends PersistentObject implements DataObject,
-        Validating, XMLSerializable {
+public class CayenneDataObject extends PersistentObject implements DataObject, Validating {
 
     protected long snapshotVersion = DEFAULT_VERSION;
 
@@ -107,7 +101,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * <br>
      * </li>
      * </ul>
-     *
+     * 
      * @since 1.0.5
      */
     public Object readNestedProperty(String path) {
@@ -298,7 +292,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * by reachability" logic, pulling one of the two objects to a DataConext of another
      * object in case one of the objects is transient. If both objects are persistent, and
      * they don't have the same DataContext, CayenneRuntimeException is thrown.
-     *
+     * 
      * @since 1.2
      */
     protected void willConnect(String relationshipName, Persistent object) {
@@ -323,7 +317,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
 
     /**
      * Initializes reverse relationship from object <code>val</code> to this object.
-     *
+     * 
      * @param relName name of relationship from this object to <code>val</code>.
      */
     protected void setReverseRelationship(String relName, DataObject val) {
@@ -463,7 +457,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
 
     /**
      * Returns a version of a DataRow snapshot that was used to create this object.
-     *
+     * 
      * @since 1.1
      */
     public long getSnapshotVersion() {
@@ -478,14 +472,14 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
     }
 
     /**
-     * Convenience method to invoke {@link Cayenne#makePath(String...)} from
-     * within a DataObject subclass to create a dotted path using the generated
-     * string constants for attributes and relationships.
-     *
+     * Convenience method to invoke {@link Cayenne#makePath(String...)} from within a
+     * DataObject subclass to create a dotted path using the generated string constants
+     * for attributes and relationships.
+     * 
      * @see Cayenne#makePath(String...)
      * @since 3.1
      */
-    public static String makePath(String...pathParts) {
+    public static String makePath(String... pathParts) {
         return Cayenne.makePath(pathParts);
     }
 
@@ -495,7 +489,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * before committing a NEW or MODIFIED object to the database. Validation includes
      * checking for null values and value sizes. CayenneDataObject subclasses may override
      * this method, calling super.
-     *
+     * 
      * @since 1.1
      */
     protected void validateForSave(ValidationResult validationResult) {
@@ -657,7 +651,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * Calls {@link #validateForSave(ValidationResult)}. CayenneDataObject subclasses may
      * override it providing validation logic that should be executed for the newly
      * created objects before saving them.
-     *
+     * 
      * @since 1.1
      */
     public void validateForInsert(ValidationResult validationResult) {
@@ -668,7 +662,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * Calls {@link #validateForSave(ValidationResult)}. CayenneDataObject subclasses may
      * override it providing validation logic that should be executed for the modified
      * objects before saving them.
-     *
+     * 
      * @since 1.1
      */
     public void validateForUpdate(ValidationResult validationResult) {
@@ -679,64 +673,11 @@ public class CayenneDataObject extends PersistentObject implements DataObject,
      * This implementation does nothing. CayenneDataObject subclasses may override it
      * providing validation logic that should be executed for the deleted objects before
      * committing them.
-     *
+     * 
      * @since 1.1
      */
     public void validateForDelete(ValidationResult validationResult) {
         // does nothing
-    }
-
-    /**
-     * Encodes object to XML using provided encoder.
-     *
-     * @since 1.2
-     * @deprecated since 3.1 XML serialization package is deprecated and will be removed
-     *             in the following releases. It has a number of functional and
-     *             performance limitations that make it impossible to evolve further. A
-     *             replacement may be provided in an undefined future. For now we
-     *             recommend the users to implement XML serialization of persistent
-     *             objects based JAXB, XStream or other similar frameworks.
-     */
-    @Deprecated
-    public void encodeAsXML(XMLEncoder encoder) {
-        EntityResolver er = getObjectContext().getEntityResolver();
-        ObjEntity objectEntity = er.lookupObjEntity(getClass());
-
-        String[] fields = this.getClass().getName().split("\\.");
-        encoder.setRoot(fields[fields.length - 1], this.getClass().getName());
-
-        for (final ObjAttribute att : objectEntity.getDeclaredAttributes()) {
-            String name = att.getName();
-            encoder.encodeProperty(name, readNestedProperty(name));
-        }
-    }
-
-    /**
-     * @deprecated since 3.1 XML serialization package is deprecated and will be removed
-     *             in the following releases. It has a number of functional and
-     *             performance limitations that make it impossible to evolve further. A
-     *             replacement may be provided in an undefined future. For now we
-     *             recommend the users to implement XML serialization of persistent
-     *             objects based JAXB, XStream or other similar frameworks.
-     */
-    @Deprecated
-    public void decodeFromXML(XMLDecoder decoder) {
-
-        Injector injector = CayenneRuntime.getThreadInjector();
-        if (injector == null) {
-            throw new IllegalStateException("Can't perform deserialization - "
-                    + "no Injector bound to the current thread.");
-        }
-
-        EntityResolver resolver = injector
-                .getInstance(DataChannel.class)
-                .getEntityResolver();
-        ObjEntity objectEntity = resolver.lookupObjEntity(getClass());
-
-        for (final ObjAttribute att : objectEntity.getDeclaredAttributes()) {
-            String name = att.getName();
-            writeProperty(name, decoder.decodeObject(name));
-        }
     }
 
     /**
