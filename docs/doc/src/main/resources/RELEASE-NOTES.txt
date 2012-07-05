@@ -16,6 +16,7 @@ Bug Fixes Since 3.1B1:
 CAY-1689 CAY-1689 [PATCH] LOB*QueryBuilders do not check isQuotingSQLIdentifiers
 CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
 CAY-1715 Passing parameters to mapped EJBQL queries
+CAY-1721 Writing blobs fails (Oracle)
 
 ----------------------------------
 Release: 3.1B1
@@ -227,7 +228,6 @@ Changes/New Features Since 3.0.2:
 CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
 CAY-1590 DDL generation without a live datasource
 CAY-1605 Switch Cayenne to use unified Maven repository
-CAY-1721 Writing blobs fails (Oracle)
 
 Bug Fixes Since 3.0.2:
 
@@ -238,6 +238,7 @@ CAY-1581 Not-Escaping <> during serialization to *.map.xml
 CAY-1583 context.getObjectStore() returning null causing NullpointerException in DataMergeHandler
 CAY-1585 SelectQuery automatic cache key needs FetchOffset
 CAY-1596 setFetchOffset & setFetchLimit issue under SQL Server 2008 R2 64Bit
+CAY-1721 Writing blobs fails (Oracle)
 
 ----------------------------------
 Release: 3.0.2
