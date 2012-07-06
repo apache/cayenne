@@ -45,12 +45,14 @@ public class TypesMappingTest extends ServerCase {
         assertEquals(Types.BINARY, TypesMapping.getSqlTypeByJava(byte[].class));
 
         assertEquals(Types.TIMESTAMP, TypesMapping.getSqlTypeByJava(Calendar.class));
-        assertEquals(Types.TIMESTAMP, TypesMapping
-                .getSqlTypeByJava(GregorianCalendar.class));
+        assertEquals(
+                Types.TIMESTAMP,
+                TypesMapping.getSqlTypeByJava(GregorianCalendar.class));
         assertEquals(Types.BIGINT, TypesMapping.getSqlTypeByJava(BigInteger.class));
 
-        assertEquals(Types.VARBINARY, TypesMapping
-                .getSqlTypeByJava(MockSerializable.class));
+        assertEquals(
+                Types.VARBINARY,
+                TypesMapping.getSqlTypeByJava(MockSerializable.class));
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(char[].class));
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(Character[].class));
         assertEquals(Types.VARBINARY, TypesMapping.getSqlTypeByJava(Byte[].class));
@@ -62,45 +64,30 @@ public class TypesMappingTest extends ServerCase {
         // make sure we can handle arrays...
         assertEquals(Types.BINARY, TypesMapping.getSqlTypeByJava("byte[]"));
 
-        assertEquals(Types.TIMESTAMP, TypesMapping.getSqlTypeByJava(Calendar.class
-                .getName()));
-        assertEquals(Types.TIMESTAMP, TypesMapping
-                .getSqlTypeByJava(GregorianCalendar.class.getName()));
-        assertEquals(Types.BIGINT, TypesMapping.getSqlTypeByJava(BigInteger.class
-                .getName()));
+        assertEquals(
+                Types.TIMESTAMP,
+                TypesMapping.getSqlTypeByJava(Calendar.class.getName()));
+        assertEquals(
+                Types.TIMESTAMP,
+                TypesMapping.getSqlTypeByJava(GregorianCalendar.class.getName()));
+        assertEquals(
+                Types.BIGINT,
+                TypesMapping.getSqlTypeByJava(BigInteger.class.getName()));
 
-        assertEquals(Types.VARBINARY, TypesMapping
-                .getSqlTypeByJava(MockSerializable.class.getName()));
+        assertEquals(
+                Types.VARBINARY,
+                TypesMapping.getSqlTypeByJava(MockSerializable.class.getName()));
 
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava("char[]"));
-        assertEquals(Types.VARCHAR, TypesMapping
-                .getSqlTypeByJava("java.lang.Character[]"));
+        assertEquals(
+                Types.VARCHAR,
+                TypesMapping.getSqlTypeByJava("java.lang.Character[]"));
         assertEquals(Types.VARBINARY, TypesMapping.getSqlTypeByJava("java.lang.Byte[]"));
     }
 
     public void testGetSqlTypeByJavaPrimitive() throws Exception {
         assertEquals(Types.INTEGER, TypesMapping.getSqlTypeByJava(Integer.TYPE));
         assertEquals(Types.BIGINT, TypesMapping.getSqlTypeByJava(Long.TYPE));
-    }
-
-    @Deprecated
-    public void testGetJavaBySqlType() {
-        assertEquals(TypesMapping.JAVA_INTEGER, TypesMapping.getJavaBySqlType(
-                Types.NUMERIC,
-                5,
-                0));
-        assertEquals(TypesMapping.JAVA_LONG, TypesMapping.getJavaBySqlType(
-                Types.NUMERIC,
-                15,
-                0));
-        assertEquals(TypesMapping.JAVA_BIGDECIMAL, TypesMapping.getJavaBySqlType(
-                Types.NUMERIC,
-                25,
-                0));
-        assertEquals(TypesMapping.JAVA_BIGDECIMAL, TypesMapping.getJavaBySqlType(
-                Types.NUMERIC,
-                25,
-                5));
     }
 
     public void testTypeInfoCompleteness() throws Exception {
