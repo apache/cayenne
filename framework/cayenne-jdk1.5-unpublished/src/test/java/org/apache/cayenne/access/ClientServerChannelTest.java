@@ -27,6 +27,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.MockGraphDiff;
 import org.apache.cayenne.graph.NodeCreateOperation;
@@ -67,6 +68,9 @@ public class ClientServerChannelTest extends ClientCase {
     
     @Inject
     protected JdbcEventLogger logger;
+    
+    @Inject
+    private ServerRuntime runtime;
 
     private TableHelper tMtTable1;
     private TableHelper tMtTable2;
@@ -210,8 +214,7 @@ public class ClientServerChannelTest extends ClientCase {
                 return super.onQuery(context, query);
             }
         };
-        DataContext context = new DataContext(parent, new ObjectStore(
-                new MockDataRowStore()));
+        DataContext context = (DataContext) runtime.getContext(parent);
 
         QueryMessage message = new QueryMessage(new MockQuery());
         new ClientServerChannel(context).onQuery(null, message.getQuery());

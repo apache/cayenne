@@ -103,22 +103,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     protected DataContext context;
 
     /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
-    public ObjectStore() {
-        this(null);
-    }
-
-    /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
-    public ObjectStore(DataRowStore dataRowCache) {
-        this(dataRowCache, createObjectMap());
-    }
-
-    /**
      * Creates an ObjectStore with {@link DataRowStore} and a map to use for storing
      * registered objects. Passed map doesn't require any special synchronization
      * behavior, as ObjectStore is synchronized itself.

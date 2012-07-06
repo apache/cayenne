@@ -59,8 +59,7 @@ public class DataContextDecoratedStackTest extends ServerCase {
     public void testCommitDecorated() {
         DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = new DataContext(decorator, new ObjectStore(dd
-                .getSharedSnapshotCache()));
+        DataContext context = (DataContext) runtime.getContext(decorator);
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");
@@ -84,8 +83,7 @@ public class DataContextDecoratedStackTest extends ServerCase {
     public void testGetParentDataDomain() {
         DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = new DataContext(decorator, new ObjectStore(dd
-                .getSharedSnapshotCache()));
+        DataContext context = (DataContext) runtime.getContext(decorator);
 
         assertSame(dd, context.getParentDataDomain());
     }

@@ -19,11 +19,14 @@
 
 package org.apache.cayenne.access;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -139,8 +142,11 @@ public class DataContextSerializationTest extends ServerCase {
                 domain.getProperties(),
                 domain.getEventManager());
 
+        Map<Object, Persistent> map = new HashMap<Object, Persistent>();
+
         DataContext localCacheContext = new DataContext(domain, new ObjectStore(
-                snapshotCache));
+                snapshotCache,
+                map));
         localCacheContext.setValidatingObjectsOnCommit(domain
                 .isValidatingObjectsOnCommit());
         localCacheContext.setUsingSharedSnapshotCache(false);

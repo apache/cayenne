@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Collections;
 
 import junit.framework.TestCase;
@@ -26,8 +28,6 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -45,8 +45,9 @@ public class ClientLocalRuntimeTest extends TestCase {
             }
         };
 
-        ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap
-                .createInjector(serverModule), Collections.EMPTY_MAP);
+        ClientLocalRuntime runtime = new ClientLocalRuntime(
+                DIBootstrap.createInjector(serverModule),
+                Collections.EMPTY_MAP);
         assertEquals(2, runtime.getModules().length);
 
         Module m0 = runtime.getModules()[0];
@@ -55,7 +56,7 @@ public class ClientLocalRuntimeTest extends TestCase {
 
     public void testGetConnection() {
 
-        final DataChannel channel = new DataDomain("xMn2");
+        final DataContext serverContext = mock(DataContext.class);
 
         Module serverModule = new Module() {
 
@@ -68,14 +69,15 @@ public class ClientLocalRuntimeTest extends TestCase {
                             }
 
                             public ObjectContext createContext() {
-                                return new DataContext(channel, new ObjectStore());
+                                return serverContext;
                             }
                         });
             }
         };
 
-        ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap
-                .createInjector(serverModule), Collections.EMPTY_MAP);
+        ClientLocalRuntime runtime = new ClientLocalRuntime(
+                DIBootstrap.createInjector(serverModule),
+                Collections.EMPTY_MAP);
 
         ClientConnection connection = runtime.getConnection();
         assertNotNull(connection);
@@ -85,7 +87,6 @@ public class ClientLocalRuntimeTest extends TestCase {
         assertTrue(localConnection.getChannel() instanceof ClientServerChannel);
         ClientServerChannel clientServerChannel = (ClientServerChannel) localConnection
                 .getChannel();
-        assertSame(channel, ((DataContext) clientServerChannel.getParentChannel())
-                .getChannel());
+        assertSame(serverContext, clientServerChannel.getParentChannel());
     }
 }
