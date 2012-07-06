@@ -22,6 +22,9 @@ package org.apache.cayenne.modeler.action;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -34,9 +37,9 @@ import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.util.NamedObjectFactory;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xml.sax.InputSource;
 
 /**
  * Modeler action that imports a DataMap into a project from an arbitrary location.
@@ -65,23 +68,30 @@ public class ImportDataMapAction extends CayenneAction {
             return;
         }
 
+        DataMap newMap;
+
         try {
-            // configure resource locator to take absolute path
-            MapLoader mapLoader = new MapLoader() {
 
-                @Deprecated
-                protected ResourceLocator configLocator() {
-                    ResourceLocator locator = new ResourceLocator();
-                    locator.setSkipAbsolutePath(false);
-                    locator.setSkipClasspath(true);
-                    locator.setSkipCurrentDirectory(true);
-                    locator.setSkipHomeDirectory(true);
-                    return locator;
+            URL url = dataMapFile.toURI().toURL();
+
+            InputStream in = url.openStream();
+
+            try {
+                InputSource inSrc = new InputSource(in);
+                inSrc.setSystemId(dataMapFile.getAbsolutePath());
+                newMap = new MapLoader().loadDataMap(inSrc);
+            }
+            finally {
+                try {
+                    in.close();
                 }
-            };
+                catch (IOException ioex) {
+                }
+            }
 
-            DataMap newMap = mapLoader.loadDataMap(dataMapFile.getAbsolutePath());
-            DataChannelDescriptor domain = (DataChannelDescriptor)getProjectController().getProject().getRootNode();
+            DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
+                    .getProject()
+                    .getRootNode();
 
             if (newMap.getName() != null) {
                 newMap.setName(NamedObjectFactory.createName(

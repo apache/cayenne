@@ -19,18 +19,13 @@
 
 package org.apache.cayenne.map;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +44,7 @@ public class MapLoader extends DefaultHandler {
     // TODO: andrus, 7/17/2006 - move upgrade logic out of here
     final static String _1_2_PACKAGE_PREFIX = "org.objectstyle.cayenne.";
     final static String _2_0_PACKAGE_PREFIX = "org.apache.cayenne.";
-    
+
     private static Log logger = LogFactory.getLog(MapLoader.class);
 
     public static final String DATA_MAP_TAG = "data-map";
@@ -601,7 +596,8 @@ public class MapLoader extends DefaultHandler {
         }
         else if (dataMap != null) {
             // we are inside of datamap tag
-            logger.warn("DataMap listeners are no longer supported. See UPGRADE.txt for more information.");
+            logger
+                    .warn("DataMap listeners are no longer supported. See UPGRADE.txt for more information.");
         }
     }
 
@@ -634,8 +630,10 @@ public class MapLoader extends DefaultHandler {
 
             if (entityListener != null) {
                 // new "entity-listener" tag as a child of "obj-entity"
-                entityListener.getCallbackMap().getPrePersist().addCallbackMethod(
-                        methodName);
+                entityListener
+                        .getCallbackMap()
+                        .getPrePersist()
+                        .addCallbackMethod(methodName);
             }
             else if (objEntity != null) {
                 // new callback tags - children of "obj-entity"
@@ -766,43 +764,6 @@ public class MapLoader extends DefaultHandler {
     }
 
     /**
-     * Loads DataMap from file specified by <code>uri</code> parameter.
-     * 
-     * @throws CayenneRuntimeException if source URI does not resolve to a valid map files
-     * @deprecated since 3.1 {@link #loadDataMap(InputSource)} should be used.
-     */
-    @Deprecated
-    public DataMap loadDataMap(String uri) throws CayenneRuntimeException {
-        // configure resource locator
-        ResourceFinder locator = createResourceFinder();
-        URL url = locator.getResource(uri);
-        if (url == null) {
-            throw new CayenneRuntimeException("Can't find data map " + uri);
-        }
-
-        InputStream in;
-        try {
-            in = url.openStream();
-        }
-        catch (IOException e) {
-            throw new CayenneRuntimeException(e);
-        }
-
-        try {
-            InputSource inSrc = new InputSource(in);
-            inSrc.setSystemId(uri);
-            return loadDataMap(inSrc);
-        }
-        finally {
-            try {
-                in.close();
-            }
-            catch (IOException ioex) {
-            }
-        }
-    }
-
-    /**
      * Helper method to guess the map name from its location.
      */
     protected String mapNameFromLocation(String location) {
@@ -820,32 +781,12 @@ public class MapLoader extends DefaultHandler {
         }
 
         if (location.endsWith(DATA_MAP_LOCATION_SUFFIX)) {
-            location = location.substring(0, location.length()
-                    - DATA_MAP_LOCATION_SUFFIX.length());
+            location = location.substring(
+                    0,
+                    location.length() - DATA_MAP_LOCATION_SUFFIX.length());
         }
 
         return location;
-    }
-
-    /**
-     * Creates, configures and returns a default ResourceFinder.
-     * 
-     * @since 3.0
-     * @deprecated since 3.1 as MapLoader should not bother itself with looking up
-     *             resources.
-     */
-    @Deprecated
-    protected ResourceFinder createResourceFinder() {
-        ResourceLocator locator = new ResourceLocator();
-
-        // absolute paths are usually passed by the Modeler
-        // while runtime would use classpath
-
-        locator.setSkipAbsolutePath(false);
-        locator.setSkipClasspath(false);
-        locator.setSkipCurrentDirectory(false);
-        locator.setSkipHomeDirectory(true);
-        return locator;
     }
 
     @Override
@@ -1119,8 +1060,8 @@ public class MapLoader extends DefaultHandler {
         objRelationship.setSourceEntity(source);
         objRelationship.setTargetEntityName(atts.getValue("", "target"));
         objRelationship.setDeleteRule(deleteRule);
-        objRelationship.setUsedForLocking(TRUE
-                .equalsIgnoreCase(atts.getValue("", "lock")));
+        objRelationship
+                .setUsedForLocking(TRUE.equalsIgnoreCase(atts.getValue("", "lock")));
         objRelationship.setDeferredDbRelationshipPath((atts.getValue(
                 "",
                 "db-relationship-path")));
@@ -1402,8 +1343,12 @@ public class MapLoader extends DefaultHandler {
         for (int i = 0; i < atts.getLength(); i++) {
             value = atts.getQName(i);
             name = atts.getValue(i);
-            sb.append("Name: ").append(name).append("\tValue: ").append(value).append(
-                    "\n");
+            sb
+                    .append("Name: ")
+                    .append(name)
+                    .append("\tValue: ")
+                    .append(value)
+                    .append("\n");
         }
         return sb;
     }
