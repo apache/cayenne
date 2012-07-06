@@ -21,6 +21,7 @@ package org.apache.cayenne.wocompat;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,15 +29,15 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-/**
- */
 public class EOModelHelperTest extends TestCase {
 
     protected EOModelHelper helper;
 
     @Override
     protected void setUp() throws Exception {
-        helper = new EOModelHelper("wotests/art.eomodeld");
+        URL url = getClass().getClassLoader().getResource("wotests/art.eomodeld/");
+        assertNotNull(url);
+        helper = new EOModelHelper(url);
     }
 
     public void testModelNames() throws Exception {

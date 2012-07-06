@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.wocompat;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
@@ -68,30 +69,29 @@ public class EOModelProcessor {
     }
 
     /**
+     * @deprecated since 3.2 in favor of {@link #loadModeIndex(URL)}.
+     */
+    public Map loadModeIndex(String path) throws Exception {
+        return loadModeIndex(new File(path).toURI().toURL());
+    }
+
+    /**
      * Returns index.eomodeld contents as a Map.
      * 
-     * @since 1.1
+     * @since 3.2
      */
     // TODO: refactor EOModelHelper to provide a similar method without loading
     // all entity files in memory... here we simply copied stuff from EOModelHelper
-    public Map loadModeIndex(String path) throws Exception {
+    public Map loadModeIndex(URL url) throws Exception {
 
-        ResourceLocator locator = new ResourceLocator();
-        locator.setSkipClasspath(false);
-        locator.setSkipCurrentDirectory(false);
-        locator.setSkipAbsolutePath(false);
+        String urlString = url.toExternalForm();
 
-        if (!path.endsWith(".eomodeld")) {
-            path += ".eomodeld";
-        }
-
-        URL base = locator.findDirectoryResource(path);
-        if (base == null) {
-            throw new FileNotFoundException("Can't find EOModel: " + path);
+        if (!urlString.endsWith(".eomodeld")) {
+            url = new URL(urlString + ".eomodeld");
         }
 
         Parser plistParser = new Parser();
-        InputStream in = new URL(base, "index.eomodeld").openStream();
+        InputStream in = new URL(url, "index.eomodeld").openStream();
 
         try {
             plistParser.ReInit(in);
@@ -103,26 +103,40 @@ public class EOModelProcessor {
     }
 
     /**
-     * Performs EOModel loading.
-     * 
-     * @param path A path to ".eomodeld" directory. If path doesn't end with ".eomodeld",
-     *            ".eomodeld" suffix is automatically assumed.
+     * @deprecated since 3.2 in favor of {@link #loadEOModel(URL)}.
      */
+    @Deprecated
     public DataMap loadEOModel(String path) throws Exception {
         return loadEOModel(path, false);
     }
 
     /**
+     * @deprecated since 3.2 in favor of {@link #loadEOModel(URL, boolean)}.
+     */
+    @Deprecated
+    public DataMap loadEOModel(String path, boolean generateClientClass) throws Exception {
+        return loadEOModel(new File(path).toURI().toURL(), generateClientClass);
+    }
+
+    /**
      * Performs EOModel loading.
      * 
-     * @param path A path to ".eomodeld" directory. If path doesn't end with ".eomodeld",
-     *            ".eomodeld" suffix is automatically assumed.
+     * @param url URL of ".eomodeld" directory.
+     */
+    public DataMap loadEOModel(URL url) throws Exception {
+        return loadEOModel(url, false);
+    }
+
+    /**
+     * Performs EOModel loading.
+     * 
+     * @param url URL of ".eomodeld" directory.
      * @param generateClientClass if true then loading of EOModel is java client classes
      *            aware and the following processing will work with Java client class
      *            settings of the EOModel.
      */
-    public DataMap loadEOModel(String path, boolean generateClientClass) throws Exception {
-        EOModelHelper helper = makeHelper(path, generateClientClass);
+    public DataMap loadEOModel(URL url, boolean generateClientClass) throws Exception {
+        EOModelHelper helper = makeHelper(url);
 
         // create empty map
         DataMap dataMap = helper.getDataMap();
@@ -208,9 +222,8 @@ public class EOModelProcessor {
      * Creates an returns new EOModelHelper to process EOModel. Exists mostly for the
      * benefit of subclasses.
      */
-    protected EOModelHelper makeHelper(String path, boolean genereateClientClass)
-            throws Exception {
-        return new EOModelHelper(path);
+    protected EOModelHelper makeHelper(URL url) throws Exception {
+        return new EOModelHelper(url);
     }
 
     /**

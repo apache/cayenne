@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.wocompat;
 
+import java.net.URL;
 import java.sql.Types;
 
 import junit.framework.TestCase;
@@ -31,8 +32,16 @@ import org.apache.cayenne.map.ObjEntity;
 
 public class EOModelPrototypesTest extends TestCase {
 
+    private URL url;
+
+    @Override
+    protected void setUp() throws Exception {
+        url = getClass().getClassLoader().getResource("prototypes.eomodeld/");
+        assertNotNull(url);
+    }
+
     public void testSkipPrototypes() throws Exception {
-        DataMap map = new EOModelProcessor().loadEOModel("prototypes.eomodeld");
+        DataMap map = new EOModelProcessor().loadEOModel(url);
 
         assertNotNull(map.getObjEntity("Document"));
         assertNull(map.getObjEntity("EOPrototypes"));
@@ -40,7 +49,7 @@ public class EOModelPrototypesTest extends TestCase {
     }
 
     public void testDbAttributeType() throws Exception {
-        DataMap map = new EOModelProcessor().loadEOModel("prototypes.eomodeld");
+        DataMap map = new EOModelProcessor().loadEOModel(url);
 
         DbEntity dbe = map.getDbEntity("DOCUMENT");
         assertNotNull(dbe);
@@ -62,7 +71,7 @@ public class EOModelPrototypesTest extends TestCase {
     // nothing
     // to do with prototypes...
     public void testSameColumnMapping() throws Exception {
-        DataMap map = new EOModelProcessor().loadEOModel("prototypes.eomodeld");
+        DataMap map = new EOModelProcessor().loadEOModel(url);
 
         ObjEntity estimateOE = map.getObjEntity("Estimate");
         ObjEntity invoiceOE = map.getObjEntity("Invoice");
@@ -85,9 +94,8 @@ public class EOModelPrototypesTest extends TestCase {
     // TODO: move this test to EOModelProcessorInheritanceTst. The original problem had
     // nothing to do with prototypes...
     public void testOverridingAttributes() throws Exception {
-        DataMap map = new EOModelProcessor().loadEOModel("prototypes.eomodeld");
+        DataMap map = new EOModelProcessor().loadEOModel(url);
 
-        ObjEntity documentOE = map.getObjEntity("Document");
         ObjEntity estimateOE = map.getObjEntity("Estimate");
 
         assertSame(estimateOE, estimateOE.getAttribute("created").getEntity());

@@ -20,6 +20,7 @@
 package org.apache.cayenne.wocompat;
 
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Collection;
 
 import junit.framework.TestCase;
@@ -45,7 +46,11 @@ public class EOModelProcessorTest extends TestCase {
     }
 
     public void testLoadModel() throws Exception {
-        DataMap map = processor.loadEOModel("wotests/art.eomodeld");
+        URL url = getClass().getClassLoader().getResource("wotests/art.eomodeld/");
+        assertNotNull(url);
+
+        
+        DataMap map = processor.loadEOModel(url);
         assertLoaded("art", map);
         assertLoadedQueries(map);
         assertOneWayRelationships(map);
@@ -53,7 +58,11 @@ public class EOModelProcessorTest extends TestCase {
     }
 
     public void testLoadModelWithDependencies() throws Exception {
-        DataMap map = processor.loadEOModel("wotests/cross-model-relationships.eomodeld");
+        URL url = getClass().getClassLoader().getResource(
+                "wotests/cross-model-relationships.eomodeld/");
+        assertNotNull(url);
+
+        DataMap map = processor.loadEOModel(url);
 
         ObjEntity entity = map.getObjEntity("CrossModelRelTest");
         assertNotNull(entity);
@@ -72,7 +81,10 @@ public class EOModelProcessorTest extends TestCase {
     }
 
     public void testLoadBrokenModel() throws Exception {
-        DataMap map = processor.loadEOModel("art-with-errors.eomodeld");
+        URL url = getClass().getClassLoader().getResource("art-with-errors.eomodeld/");
+        assertNotNull(url);
+
+        DataMap map = processor.loadEOModel(url);
         assertLoaded("art-with-errors", map);
     }
 

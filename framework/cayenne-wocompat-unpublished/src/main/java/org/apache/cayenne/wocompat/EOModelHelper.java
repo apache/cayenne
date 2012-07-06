@@ -17,9 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.wocompat;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -31,17 +31,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.wocompat.parser.Parser;
+import org.apache.commons.collections.IteratorUtils;
 
 /**
  * Helper class used by EOModelProcessor. EOModelHelper loads an EOModel from the
  * specified location and gives its users access to the untyped EOModel information.
  */
 public class EOModelHelper {
-
-    private static final ResourceLocator locator = new ResourceLocator();
 
     private Parser plistParser = new Parser();
     protected URL modelUrl;
@@ -52,20 +50,20 @@ public class EOModelHelper {
     protected DataMap dataMap;
     private Map prototypeValues;
 
-    static {
-        // configure locator
-        locator.setSkipClasspath(false);
-        locator.setSkipCurrentDirectory(false);
-        locator.setSkipAbsolutePath(false);
-    }
-
     /**
      * Creates helper instance and tries to locate EOModel and load index file.
+     * 
+     * @deprecated since 3.2, use {@link #EOModelHelper(URL)}.
      */
+    @Deprecated
     public EOModelHelper(String path) throws Exception {
+        this(new File(path).toURI().toURL());
+    }
 
-        this.modelUrl = findModelUrl(path);
-        this.dataMap = new DataMap(findModelName(path));
+    public EOModelHelper(URL modelUrl) throws Exception {
+
+        this.modelUrl = modelUrl;
+        this.dataMap = new DataMap(findModelName(modelUrl.toExternalForm()));
 
         // load index file
         List modelIndex = (List) loadModelIndex().get("entities");
@@ -102,7 +100,7 @@ public class EOModelHelper {
             String name = (String) info.get("name");
             Map entityPlistMap = entityPListMap(name);
             List classProperties = (List) entityPlistMap.get("classProperties");
-            if(classProperties == null) {
+            if (classProperties == null) {
                 classProperties = Collections.EMPTY_LIST;
             }
 
@@ -198,8 +196,10 @@ public class EOModelHelper {
                 }
                 catch (ClassNotFoundException yetAnotherClassNotFoundException) {
                     try {
-                        return ClassLoader.getSystemClassLoader().loadClass(
-                                valueClassName).getName();
+                        return ClassLoader
+                                .getSystemClassLoader()
+                                .loadClass(valueClassName)
+                                .getName();
                     }
                     catch (ClassNotFoundException e) {
                         // likely a custom class
@@ -217,23 +217,32 @@ public class EOModelHelper {
     protected Class numericAttributeClass(String valueType) {
         if (valueType == null) {
             return null;
-        } else if ("b".equals(valueType)) {
+        }
+        else if ("b".equals(valueType)) {
             return Byte.class;
-        } else if ("s".equals(valueType)) {
+        }
+        else if ("s".equals(valueType)) {
             return Short.class;
-        } else if ("i".equals(valueType)) {
+        }
+        else if ("i".equals(valueType)) {
             return Integer.class;
-        } else if ("l".equals(valueType)) {
+        }
+        else if ("l".equals(valueType)) {
             return Long.class;
-        } else if ("f".equals(valueType)) {
+        }
+        else if ("f".equals(valueType)) {
             return Float.class;
-        } else if ("d".equals(valueType)) {
+        }
+        else if ("d".equals(valueType)) {
             return Double.class;
-        } else if ("B".equals(valueType)) {
+        }
+        else if ("B".equals(valueType)) {
             return BigDecimal.class;
-        } else if ("c".equals(valueType)) {
+        }
+        else if ("c".equals(valueType)) {
             return Boolean.class;
-        } else {
+        }
+        else {
             return null;
         }
     }
@@ -248,13 +257,13 @@ public class EOModelHelper {
         return modelUrl;
     }
 
-    /** 
-     * Returns an iterator of model names. 
+    /**
+     * Returns an iterator of model names.
      */
     public Iterator modelNames() {
         return entityClassIndex.keySet().iterator();
     }
-    
+
     /**
      * Returns a list of model entity names.
      * 
@@ -272,7 +281,8 @@ public class EOModelHelper {
             // no prototypes
             if (eoPrototypesEntityMap == null) {
                 prototypeValues = Collections.EMPTY_MAP;
-            } else {
+            }
+            else {
                 List eoPrototypeAttributes = (List) eoPrototypesEntityMap
                         .get("attributes");
 
@@ -283,7 +293,8 @@ public class EOModelHelper {
 
                     String attrName = (String) attrMap.get("name");
 
-                    // TODO: why are we copying the original map? can we just use it as is?
+                    // TODO: why are we copying the original map? can we just use it as
+                    // is?
                     Map prototypeAttrMap = new HashMap();
                     prototypeValues.put(attrName, prototypeAttrMap);
 
@@ -343,7 +354,8 @@ public class EOModelHelper {
     public String entityClass(String entityName, boolean getClientClass) {
         if (getClientClass) {
             return (String) entityClientClassIndex.get(entityName);
-        } else {
+        }
+        else {
             return (String) entityClassIndex.get(entityName);
         }
     }
@@ -421,21 +433,6 @@ public class EOModelHelper {
     }
 
     /**
-     * Returns a URL of the EOModel directory. Throws exception if it can't be found.
-     */
-    protected URL findModelUrl(String path) {
-        if (!path.endsWith(".eomodeld")) {
-            path += ".eomodeld";
-        }
-
-        URL base = locator.findDirectoryResource(path);
-        if (base == null) {
-            throw new IllegalArgumentException("Can't find EOModel: " + path);
-        }
-        return base;
-    }
-
-    /**
      * Returns InputStream to read an EOModel index file.
      */
     protected InputStream openIndexStream() throws Exception {
@@ -445,8 +442,7 @@ public class EOModelHelper {
     /**
      * Returns InputStream to read an EOEntity plist file.
      * 
-     * @param entityName
-     *            name of EOEntity to be loaded.
+     * @param entityName name of EOEntity to be loaded.
      * @return InputStream to read an EOEntity plist file or null if
      *         <code>entityname.plist</code> file can not be located.
      */
@@ -457,8 +453,7 @@ public class EOModelHelper {
     /**
      * Returns InputStream to read an EOFetchSpecification plist file.
      * 
-     * @param entityName
-     *            name of EOEntity to be loaded.
+     * @param entityName name of EOEntity to be loaded.
      * @return InputStream to read an EOEntity plist file or null if
      *         <code>entityname.plist</code> file can not be located.
      */

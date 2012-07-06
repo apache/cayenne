@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -109,17 +110,17 @@ public class ImportEOModelAction extends CayenneAction {
             DataMap currentMap = getProjectController().getCurrentDataMap();
 
             try {
-                String path = file.getCanonicalPath();
+                URL url = file.toURI().toURL();
 
                 EOModelProcessor processor = new EOModelProcessor();
 
                 // load DataNode if we are not merging with an existing map
                 if (currentMap == null) {
-                    loadDataNode(processor.loadModeIndex(path));
+                    loadDataNode(processor.loadModeIndex(url));
                 }
 
                 // load DataMap
-                DataMap map = processor.loadEOModel(path);
+                DataMap map = processor.loadEOModel(url);
                 addDataMap(map, currentMap);
 
             }

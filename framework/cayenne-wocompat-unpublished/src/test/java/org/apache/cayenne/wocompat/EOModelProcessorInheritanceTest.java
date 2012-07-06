@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.wocompat;
 
+import java.net.URL;
+
 import junit.framework.TestCase;
 
 import org.apache.cayenne.map.DataMap;
@@ -27,15 +29,19 @@ import org.apache.cayenne.map.ObjRelationship;
 
 public class EOModelProcessorInheritanceTest extends TestCase {
 
+    private URL url;
     protected EOModelProcessor processor;
 
     @Override
     public void setUp() throws Exception {
         processor = new EOModelProcessor();
+
+        url = getClass().getClassLoader().getResource("inheritance.eomodeld/");
+        assertNotNull(url);
     }
 
     public void testLoadAbstractEntity() throws Exception {
-        DataMap map = processor.loadEOModel("inheritance.eomodeld");
+        DataMap map = processor.loadEOModel(url);
 
         ObjEntity abstractE = map.getObjEntity("AbstractEntity");
         assertNotNull(abstractE);
@@ -44,7 +50,7 @@ public class EOModelProcessorInheritanceTest extends TestCase {
     }
 
     public void testLoadConcreteEntity() throws Exception {
-        DataMap map = processor.loadEOModel("inheritance.eomodeld");
+        DataMap map = processor.loadEOModel(url);
 
         ObjEntity concreteE = map.getObjEntity("ConcreteEntityOne");
         assertNotNull(concreteE);
@@ -56,7 +62,7 @@ public class EOModelProcessorInheritanceTest extends TestCase {
     }
 
     public void testLoadFlattenedRelationship() throws Exception {
-        DataMap map = processor.loadEOModel("inheritance.eomodeld");
+        DataMap map = processor.loadEOModel(url);
 
         ObjEntity e1 = map.getObjEntity("HelperFlatEntity");
         assertNotNull(e1);

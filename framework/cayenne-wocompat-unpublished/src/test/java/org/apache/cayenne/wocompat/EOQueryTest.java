@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.wocompat;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
@@ -30,9 +31,12 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 public class EOQueryTest extends TestCase {
 
     public void testConstructor() throws Exception {
+        
+        URL url = getClass().getClassLoader().getResource("wotests/fetchspec.eomodeld/");
+        assertNotNull(url);
 
         EOModelProcessor processor = new EOModelProcessor();
-        DataMap map = processor.loadEOModel("wotests/fetchspec.eomodeld");
+        DataMap map = processor.loadEOModel(url);
 
         Map fspecMap = (Map) PropertyListSerialization.propertyListFromStream(getClass()
                 .getClassLoader()
