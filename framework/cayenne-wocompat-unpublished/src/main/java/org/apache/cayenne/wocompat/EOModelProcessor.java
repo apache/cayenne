@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.wocompat;
 
 import java.io.FileNotFoundException;
@@ -42,7 +41,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.NamedObjectFactory;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.wocompat.parser.Parser;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -81,7 +79,6 @@ public class EOModelProcessor {
         ResourceLocator locator = new ResourceLocator();
         locator.setSkipClasspath(false);
         locator.setSkipCurrentDirectory(false);
-        locator.setSkipHomeDirectory(true);
         locator.setSkipAbsolutePath(false);
 
         if (!path.endsWith(".eomodeld")) {
@@ -228,16 +225,17 @@ public class EOModelProcessor {
         if (queryPlist == null) {
             return null;
         }
-        
+
         AbstractQuery query;
         if (queryPlist.containsKey("hints")) { // just a predefined SQL query
-        		query = new EOSQLQuery(entity, queryPlist);
-        } else {
-        		query = new EOQuery(entity, queryPlist);
+            query = new EOSQLQuery(entity, queryPlist);
+        }
+        else {
+            query = new EOQuery(entity, queryPlist);
         }
         query.setName(entity.qualifiedQueryName(queryName));
         dataMap.addQuery(query);
-        
+
         return query;
     }
 
@@ -416,8 +414,10 @@ public class EOModelProcessor {
                         dbAttrName = dbAttributeBaseName + i++;
                     }
 
-                    dbAttr = new EODbAttribute(dbAttrName, TypesMapping
-                            .getSqlTypeByJava(javaType), dbEntity);
+                    dbAttr = new EODbAttribute(
+                            dbAttrName,
+                            TypesMapping.getSqlTypeByJava(javaType),
+                            dbEntity);
                     dbAttr.setEoAttributeName(attrName);
                     dbEntity.addAttribute(dbAttr);
 
@@ -425,7 +425,7 @@ public class EOModelProcessor {
                     if (width >= 0) {
                         dbAttr.setMaxLength(width);
                     }
-                    
+
                     int scale = getInt("scale", attrMap, prototypeAttrMap, -1);
                     if (scale >= 0) {
                         dbAttr.setScale(scale);
@@ -461,7 +461,7 @@ public class EOModelProcessor {
             }
         }
     }
-    
+
     int getInt(String key, Map map, Map prototypes, int defaultValue) {
 
         Object value = map.get(key);
@@ -481,7 +481,7 @@ public class EOModelProcessor {
             try {
                 return Integer.parseInt(value.toString());
             }
-            catch(NumberFormatException nfex) {
+            catch (NumberFormatException nfex) {
                 return defaultValue;
             }
         }
@@ -617,8 +617,10 @@ public class EOModelProcessor {
             if (relationship.getReverseRelationship() == null) {
                 DbRelationship reverse = relationship.createReverseRelationship();
 
-                String name = NamedObjectFactory.createName(DbRelationship.class, reverse
-                        .getSourceEntity(), relationship.getName() + "Reverse");
+                String name = NamedObjectFactory.createName(
+                        DbRelationship.class,
+                        reverse.getSourceEntity(),
+                        relationship.getName() + "Reverse");
                 reverse.setName(name);
                 relationship.getTargetEntity().addRelationship(reverse);
             }
@@ -677,11 +679,10 @@ public class EOModelProcessor {
                     }
                 }
             }
-            
-            if(entityInfo != null) {
+
+            if (entityInfo != null) {
                 flatRel.setTargetEntityName((String) entityInfo.get("name"));
             }
-            
 
             e.addRelationship(flatRel);
         }

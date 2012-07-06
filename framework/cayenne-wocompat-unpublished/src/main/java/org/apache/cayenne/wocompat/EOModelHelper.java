@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.util.ResourceLocator;
 import org.apache.cayenne.wocompat.parser.Parser;
 
 /**
@@ -57,7 +56,6 @@ public class EOModelHelper {
         // configure locator
         locator.setSkipClasspath(false);
         locator.setSkipCurrentDirectory(false);
-        locator.setSkipHomeDirectory(true);
         locator.setSkipAbsolutePath(false);
     }
 
