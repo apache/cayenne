@@ -84,15 +84,6 @@ public class IncrementalFaultList<E> implements List<E> {
     // or complexity of the where clause - e.g., PostgreSQL having a default limit of
     // 10,000 nested expressions.
 
-    
-    /**
-     * @deprecated since 3.1 use {@link #IncrementalFaultList(DataContext, Query, int)}.
-     */
-    @Deprecated
-    public IncrementalFaultList(DataContext dataContext, Query query) {
-        this(dataContext, query, 10000);
-    }
-    
     /**
      * Creates a new IncrementalFaultList using a given DataContext and query.
      * 
@@ -178,8 +169,9 @@ public class IncrementalFaultList<E> implements List<E> {
             }
         }
         catch (CayenneException e) {
-            throw new CayenneRuntimeException("Error performing query.", Util
-                    .unwindException(e));
+            throw new CayenneRuntimeException(
+                    "Error performing query.",
+                    Util.unwindException(e));
         }
 
         unfetchedObjects = elementsList.size();
@@ -256,14 +248,17 @@ public class IncrementalFaultList<E> implements List<E> {
             // fetch the range of objects in fetchSize chunks
             boolean fetchesDataRows = internalQuery.isFetchingDataRows();
             List<?> objects = new ArrayList<Object>(qualsSize);
-            
+
             int fetchSize = maxFetchSize > 0 ? maxFetchSize : Integer.MAX_VALUE;
-            
+
             int fetchEnd = Math.min(qualsSize, fetchSize);
             int fetchBegin = 0;
             while (fetchBegin < qualsSize) {
-                SelectQuery query = new SelectQuery(rootEntity, ExpressionFactory
-                        .joinExp(Expression.OR, quals.subList(fetchBegin, fetchEnd)));
+                SelectQuery query = new SelectQuery(
+                        rootEntity,
+                        ExpressionFactory.joinExp(
+                                Expression.OR,
+                                quals.subList(fetchBegin, fetchEnd)));
 
                 query.setFetchingDataRows(fetchesDataRows);
 
@@ -313,8 +308,11 @@ public class IncrementalFaultList<E> implements List<E> {
             // find missing ids
             StringBuilder buffer = new StringBuilder();
             buffer.append("Some ObjectIds are missing from the database. ");
-            buffer.append("Expected ").append(ids.size()).append(", fetched ").append(
-                    objects.size());
+            buffer
+                    .append("Expected ")
+                    .append(ids.size())
+                    .append(", fetched ")
+                    .append(objects.size());
 
             boolean first = true;
             for (Object id : ids) {
@@ -719,8 +717,10 @@ public class IncrementalFaultList<E> implements List<E> {
                 return object == objectInTheList;
             }
             else {
-                return ((Persistent) object).getObjectId().getIdSnapshot().equals(
-                        objectInTheList);
+                return ((Persistent) object)
+                        .getObjectId()
+                        .getIdSnapshot()
+                        .equals(objectInTheList);
             }
         }
 
