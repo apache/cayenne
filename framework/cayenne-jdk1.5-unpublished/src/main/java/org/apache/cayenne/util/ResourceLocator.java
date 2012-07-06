@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.conf.ResourceFinder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  *             org.apache.cayenne.resource.ResourceLocator.
  */
 @Deprecated
-public class ResourceLocator implements ResourceFinder {
+public class ResourceLocator {
 
     private static Log logObj = LogFactory.getLog(ResourceLocator.class);
 
