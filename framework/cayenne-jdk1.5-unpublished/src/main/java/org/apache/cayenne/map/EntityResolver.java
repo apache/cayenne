@@ -227,8 +227,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         for (String method : callback.getCallbackMethods()) {
 
                             // note that callbacks[i].getCallbackType() == i
-                            callbackRegistry.addDefaultListener(callback
-                                    .getCallbackType(), listenerInstance, method);
+                            callbackRegistry.addDefaultListener(
+                                    callback.getCallbackType(),
+                                    listenerInstance,
+                                    method);
                         }
                     }
                 }
@@ -649,17 +651,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public Collection<DataMap> getDataMaps() {
         return Collections.unmodifiableCollection(maps);
-    }
-
-    /**
-     * Returns EntityInheritanceTree representing inheritance hierarchy that starts with a
-     * given ObjEntity as root, and includes all its subentities.
-     * 
-     * @deprecated since 3.1 use {@link #lookupInheritanceTree(String)}.
-     */
-    @Deprecated
-    public EntityInheritanceTree lookupInheritanceTree(ObjEntity entity) {
-        return lookupInheritanceTree(entity.getName());
     }
 
     /**

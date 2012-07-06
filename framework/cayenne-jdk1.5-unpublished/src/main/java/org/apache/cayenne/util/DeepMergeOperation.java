@@ -55,27 +55,6 @@ public class DeepMergeOperation {
         this.shallowMergeOperation = new ShallowMergeOperation(context);
     }
 
-    /**
-     * @deprecated since 3.1 - unused as the object is now stateless
-     */
-    @Deprecated
-    public void reset() {
-        // noop
-    }
-
-    /**
-     * @deprecated since 3.1 use {@link #merge(Persistent)}.
-     */
-    @Deprecated
-    public Object merge(Object object, ClassDescriptor descriptor) {
-
-        if (!(object instanceof Persistent)) {
-            throw new CayenneRuntimeException("Expected Persistent, got: " + object);
-        }
-
-        return merge((Persistent) object);
-    }
-
     public <T extends Persistent> T merge(T peerInParentContext) {
         ClassDescriptor descriptor = entityResolver
                 .getClassDescriptor(peerInParentContext.getObjectId().getEntityName());
