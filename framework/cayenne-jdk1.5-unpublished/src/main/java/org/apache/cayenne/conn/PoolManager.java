@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.conn;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.di.ScopeEventListener;
-import org.apache.cayenne.log.JdbcEventLogger;
-
-import javax.sql.ConnectionEvent;
-import javax.sql.ConnectionEventListener;
-import javax.sql.ConnectionPoolDataSource;
-import javax.sql.DataSource;
-import javax.sql.PooledConnection;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,6 +27,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
+
+import javax.sql.ConnectionEvent;
+import javax.sql.ConnectionEventListener;
+import javax.sql.ConnectionPoolDataSource;
+import javax.sql.DataSource;
+import javax.sql.PooledConnection;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.ScopeEventListener;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * PoolManager is a Cayenne implementation of a pooling DataSource.
@@ -171,17 +172,6 @@ public class PoolManager implements ScopeEventListener, DataSource,
                 .getPooledConnection();
         connection.addConnectionEventListener(this);
         return connection;
-    }
-
-    /**
-     * Closes all existing connections, removes them from the pool.
-     * 
-     * @deprecated since 3.1 replaced with {@link #shutdown()} method for naming
-     *             consistency.
-     */
-    @Deprecated
-    public void dispose() throws SQLException {
-        shutdown();
     }
 
     /**

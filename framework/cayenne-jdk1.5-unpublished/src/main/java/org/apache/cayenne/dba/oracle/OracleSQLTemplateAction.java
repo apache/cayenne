@@ -169,7 +169,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         }
 
         /**
-         * @deprecated
+         * @deprecated to mirror deprecation in the ResultSet interface
          */
         @Deprecated
         public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
@@ -181,7 +181,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         }
 
         /**
-         * @deprecated
+         * @deprecated to mirror deprecation in the ResultSet interface
          */
         @Deprecated
         public BigDecimal getBigDecimal(String columnName, int scale) throws SQLException {
@@ -1106,18 +1106,14 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         }
 
         /**
-         * @since 3.1
-         *
-         * JDBC 4.1 compatibility under Java 1.5
+         * @since 3.1 JDBC 4.1 compatibility under Java 1.5
          */
         public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
         /**
-         * @since 3.1
-         *
-         * JDBC 4.1 compatibility under Java 1.5
+         * @since 3.1 JDBC 4.1 compatibility under Java 1.5
          */
         public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
             throw new UnsupportedOperationException();
