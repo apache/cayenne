@@ -222,21 +222,9 @@ public class DataDomainTest extends ServerCase {
 
         final boolean[] nodeShutdown = new boolean[2];
 
-        DataNode n1 = new DataNode("N1") {
+        DataNode n1 = new DataNode("N1");
 
-            @Override
-            public synchronized void shutdown() {
-                nodeShutdown[0] = true;
-            }
-        };
-
-        DataNode n2 = new DataNode("N2") {
-
-            @Override
-            public synchronized void shutdown() {
-                nodeShutdown[1] = true;
-            }
-        };
+        DataNode n2 = new DataNode("N2");
         n1.setJdbcEventLogger(logger);
 
         domain.addNode(n1);

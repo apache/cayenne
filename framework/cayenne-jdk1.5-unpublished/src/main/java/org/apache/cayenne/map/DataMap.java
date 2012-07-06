@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -297,22 +296,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         }
 
         return clientMap;
-    }
-
-    /**
-     * Prints itself as a well-formed complete XML document. In comparison,
-     * {@link #encodeAsXML(XMLEncoder)}stores DataMap assuming it is a part of a bigger
-     * document.
-     * 
-     * @since 1.1
-     * @deprecated since 3.1, as {@link XMLSerializable} objects should only save XML
-     *             segments. Saving full XML files is responsibilty of the callers.
-     */
-    @Deprecated
-    public void encodeAsXML(PrintWriter pw) {
-        XMLEncoder encoder = new XMLEncoder(pw, "\t");
-        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        encodeAsXML(encoder);
     }
 
     /**

@@ -36,6 +36,7 @@ import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.util.XMLEncoder;
 import org.xml.sax.InputSource;
 
 public class MapLoaderLoadTest extends TestCase {
@@ -90,10 +91,10 @@ public class MapLoaderLoadTest extends TestCase {
         // test procedures
         Procedure procedure = map.getProcedure("cayenne_tst_upd_proc");
         assertNotNull(procedure);
-        List params = procedure.getCallParameters();
+        List<ProcedureParameter> params = procedure.getCallParameters();
         assertNotNull(params);
         assertEquals(1, params.size());
-        ProcedureParameter param = (ProcedureParameter) params.get(0);
+        ProcedureParameter param = params.get(0);
         assertNotNull(param);
         assertEquals("paintingPrice", param.getName());
         assertEquals(ProcedureParameter.IN_PARAMETER, param.getDirection());
@@ -122,7 +123,7 @@ public class MapLoaderLoadTest extends TestCase {
         // encode map
         File file = new File(FileUtil.baseTestDirectory(), "testmap_generated.map.xml");
         PrintWriter pw = new PrintWriter(new FileOutputStream(file));
-        map.encodeAsXML(pw);
+        map.encodeAsXML(new XMLEncoder(pw));
         pw.close();
     }
 

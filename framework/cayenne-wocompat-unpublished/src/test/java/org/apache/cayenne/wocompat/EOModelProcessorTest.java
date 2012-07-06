@@ -33,6 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.util.XMLEncoder;
 
 public class EOModelProcessorTest extends TestCase {
 
@@ -103,7 +104,7 @@ public class EOModelProcessorTest extends TestCase {
 
         assertSame(map.getObjEntity("ExhibitType"), eoQuery.getRoot());
 
-        Collection bindings = eoQuery.getBindingNames();
+        Collection<?> bindings = eoQuery.getBindingNames();
         assertNotNull(bindings);
         assertEquals(3, bindings.size());
         assertEquals("java.lang.String", eoQuery.bindingClass("x"));
@@ -167,7 +168,7 @@ public class EOModelProcessorTest extends TestCase {
 
         // storing data map may uncover some inconsistencies
         PrintWriter mockupWriter = new NullPrintWriter();
-        map.encodeAsXML(mockupWriter);
+        map.encodeAsXML(new XMLEncoder(mockupWriter));
     }
 
     class NullPrintWriter extends PrintWriter {

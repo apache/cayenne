@@ -187,11 +187,6 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public void shutdown() {
-        node.shutdown();
-    }
-
-    @Override
     public String toString() {
         return node.toString();
     }

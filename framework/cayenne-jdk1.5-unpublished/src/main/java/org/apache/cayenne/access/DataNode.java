@@ -322,15 +322,6 @@ public class DataNode implements QueryEngine {
         this.entityResolver = entityResolver;
     }
 
-    /**
-     * @deprecated since 3.1 does nothing as pool shutdown is performed by the DI
-     *             container.
-     */
-    @Deprecated
-    public void shutdown() {
-        // noop
-    }
-
     // a read-through DataSource that ensures returning the same connection within
     // transaction.
     final class TransactionDataSource implements DataSource {
