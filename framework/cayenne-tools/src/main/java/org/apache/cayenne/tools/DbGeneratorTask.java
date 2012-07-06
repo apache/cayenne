@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.tools;
 
+import java.sql.Driver;
+import java.util.Collections;
+
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.conn.DriverDataSource;
@@ -27,12 +30,12 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-
-import java.sql.Driver;
 
 /**
  * An Ant Task that is a frontend to Cayenne DbGenerator allowing schema generation from
@@ -53,30 +56,49 @@ public class DbGeneratorTask extends CayenneTask {
 
     @Override
     public void execute() {
-        
+
         Injector injector = DIBootstrap.createInjector(new ToolModule());
         AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
         // prepare defaults
         if (adapter == null) {
-            adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+            adapter = objectFactory.newInstance(
+                    DbAdapter.class,
+                    JdbcAdapter.class.getName());
         }
-        
-        log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName), Project.MSG_VERBOSE);
 
-        log(String.format("generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
-                dropTables, dropPK, createTables, createPK, createFK), Project.MSG_VERBOSE);
+        log(String.format(
+                "connection settings - [driver: %s, url: %s, username: %s]",
+                driver,
+                url,
+                userName), Project.MSG_VERBOSE);
+
+        log(
+                String.format(
+                        "generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
+                        dropTables,
+                        dropPK,
+                        createTables,
+                        createPK,
+                        createFK),
+                Project.MSG_VERBOSE);
 
         validateAttributes();
-        
+
         ClassLoader loader = null;
         try {
             loader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
+            Thread.currentThread().setContextClassLoader(
+                    DbGeneratorTask.class.getClassLoader());
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();
-            DbGenerator generator = new DbGenerator(adapter, dataMap);
+            DbGenerator generator = new DbGenerator(
+                    adapter,
+                    dataMap,
+                    Collections.<DbEntity> emptyList(),
+                    null,
+                    NoopJdbcEventLogger.getInstance());
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
             generator.setShouldCreateTables(createTables);
@@ -101,7 +123,7 @@ public class DbGeneratorTask extends CayenneTask {
             log(message, Project.MSG_ERR);
             throw new BuildException(message, th);
         }
-        finally{
+        finally {
             Thread.currentThread().setContextClassLoader(loader);
         }
     }

@@ -41,7 +41,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -91,31 +90,6 @@ public class DbGenerator {
     protected boolean shouldCreateFKConstraints;
 
     protected ValidationResult failures;
-
-    /**
-     * Creates and initializes new DbGenerator.
-     * 
-     * @deprecated since 3.1 use {@link #DbGenerator(DbAdapter, DataMap, JdbcEventLogger)}
-     */
-    @Deprecated
-    public DbGenerator(DbAdapter adapter, DataMap map) {
-        this(adapter, map, Collections.<DbEntity> emptyList());
-    }
-
-    /**
-     * Creates and initializes new DbGenerator instance.
-     * 
-     * @param adapter DbAdapter corresponding to the database
-     * @param map DataMap whose entities will be used in schema generation
-     * @param excludedEntities entities that should be ignored during schema generation
-     * @deprecated since 3.1 use
-     *             {@link #DbGenerator(DbAdapter, DataMap, Collection, DataDomain, JdbcEventLogger)}
-     */
-    @Deprecated
-    public DbGenerator(DbAdapter adapter, DataMap map,
-            Collection<DbEntity> excludedEntities) {
-        this(adapter, map, excludedEntities, null, NoopJdbcEventLogger.getInstance());
-    }
 
     /**
      * @since 3.1
@@ -281,8 +255,11 @@ public class DbGenerator {
         }
 
         Driver driver = (Driver) Class.forName(dsi.getJdbcDriver()).newInstance();
-        DataSource dataSource = new DriverDataSource(driver, dsi.getDataSourceUrl(), dsi
-                .getUserName(), dsi.getPassword());
+        DataSource dataSource = new DriverDataSource(
+                driver,
+                dsi.getDataSourceUrl(),
+                dsi.getUserName(),
+                dsi.getPassword());
 
         runGenerator(dataSource);
     }
@@ -570,8 +547,8 @@ public class DbGenerator {
 
             // create a copy of the original PK list,
             // since the list will be modified locally
-            List<DbAttribute> pkAttributes = new ArrayList<DbAttribute>(nextEntity
-                    .getPrimaryKeys());
+            List<DbAttribute> pkAttributes = new ArrayList<DbAttribute>(
+                    nextEntity.getPrimaryKeys());
             while (pkAttributes.size() > 0 && relationships.hasNext()) {
                 DbRelationship nextRelationship = relationships.next();
                 if (!nextRelationship.isToMasterPK()) {

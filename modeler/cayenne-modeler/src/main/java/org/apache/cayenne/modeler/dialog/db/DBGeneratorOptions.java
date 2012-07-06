@@ -36,6 +36,7 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
@@ -64,8 +65,7 @@ public class DBGeneratorOptions extends CayenneController {
 
     protected TableSelectorController tables;
 
-    public DBGeneratorOptions(ProjectController parent, String title,
-            DataMap dataMap) {
+    public DBGeneratorOptions(ProjectController parent, String title, DataMap dataMap) {
         super(parent);
 
         this.dataMap = dataMap;
@@ -78,7 +78,7 @@ public class DBGeneratorOptions extends CayenneController {
 
         this.view.setTitle(title);
         initController();
-        connectionInfo.setDbAdapter((String)view.getAdapters().getSelectedItem());
+        connectionInfo.setDbAdapter((String) view.getAdapters().getSelectedItem());
 
         tables.updateTables(dataMap);
         prepareGenerator();
@@ -101,19 +101,19 @@ public class DBGeneratorOptions extends CayenneController {
 
     protected void initController() {
 
-        DefaultComboBoxModel adapterModel = new DefaultComboBoxModel(DbAdapterInfo
-                .getStandardAdapters());
+        DefaultComboBoxModel adapterModel = new DefaultComboBoxModel(
+                DbAdapterInfo.getStandardAdapters());
         view.getAdapters().setModel(adapterModel);
         view.getAdapters().setSelectedIndex(0);
-        
+
         BindingBuilder builder = new BindingBuilder(
                 getApplication().getBindingFactory(),
                 this);
 
         sqlBinding = builder.bindToTextArea(view.getSql(), "textForSQL");
         adapterBinding = builder.bindToComboSelection(
-                view.getAdapters(), 
-                "connectionInfo.dbAdapter", 
+                view.getAdapters(),
+                "connectionInfo.dbAdapter",
                 "refreshSQLAction()",
                 "org.apache.cayenne.dba.JdbcAdapter");
 
@@ -163,7 +163,12 @@ public class DBGeneratorOptions extends CayenneController {
         try {
             DbAdapter adapter = connectionInfo.makeAdapter(getApplication()
                     .getClassLoadingService());
-            this.generator = new DbGenerator(adapter, dataMap, tables.getExcludedTables());
+            this.generator = new DbGenerator(
+                    adapter,
+                    dataMap,
+                    tables.getExcludedTables(),
+                    null,
+                    NoopJdbcEventLogger.getInstance());
         }
         catch (Exception ex) {
             reportError("Error loading adapter", ex);
@@ -176,7 +181,7 @@ public class DBGeneratorOptions extends CayenneController {
     protected void createSQL() {
         // convert them to string representation for display
         StringBuffer buf = new StringBuffer();
-        Iterator it = generator.configuredStatements().iterator();
+        Iterator<String> it = generator.configuredStatements().iterator();
         String batchTerminator = generator.getAdapter().getBatchTerminator();
 
         String lineEnd = (batchTerminator != null)
@@ -227,7 +232,7 @@ public class DBGeneratorOptions extends CayenneController {
     public void refreshSQLAction() {
         // sync generator with defaults, make SQL, then sync the view...
         adapterBinding.updateView();
-        connectionInfo.setDbAdapter((String)view.getAdapters().getSelectedItem());
+        connectionInfo.setDbAdapter((String) view.getAdapters().getSelectedItem());
         prepareGenerator();
         generatorDefaults.configureGenerator(generator);
         createSQL();
@@ -238,7 +243,7 @@ public class DBGeneratorOptions extends CayenneController {
      * Performs configured schema operations via DbGenerator.
      */
     public void generateSchemaAction() {
-        
+
         DataSourceWizard connectWizard = new DataSourceWizard(
                 this.getParent(),
                 "Generate DB Schema: Connect to Database",
@@ -249,9 +254,9 @@ public class DBGeneratorOptions extends CayenneController {
             // canceled
             return;
         }
-        
+
         this.connectionInfo = connectWizard.getConnectionInfo();
-        
+
         refreshGeneratorAction();
 
         // sanity check...
@@ -261,7 +266,7 @@ public class DBGeneratorOptions extends CayenneController {
         }
 
         try {
-            
+
             DataSource dataSource = connectionInfo.makeDataSource(getApplication()
                     .getClassLoadingService());
             generator.runGenerator(dataSource);
@@ -322,11 +327,11 @@ public class DBGeneratorOptions extends CayenneController {
     public void closeAction() {
         view.dispose();
     }
-    
+
     public DBConnectionInfo getConnectionInfo() {
         return this.connectionInfo;
     }
-    
+
     public void setConnectionInfo(DBConnectionInfo connectionInfo) {
         this.connectionInfo = connectionInfo;
         refreshView();
