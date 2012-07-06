@@ -20,7 +20,6 @@
 package org.apache.cayenne.wocompat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -71,6 +70,7 @@ public class EOModelProcessor {
     /**
      * @deprecated since 3.2 in favor of {@link #loadModeIndex(URL)}.
      */
+    @Deprecated
     public Map loadModeIndex(String path) throws Exception {
         return loadModeIndex(new File(path).toURI().toURL());
     }
