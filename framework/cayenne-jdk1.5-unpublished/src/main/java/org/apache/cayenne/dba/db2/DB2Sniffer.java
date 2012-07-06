@@ -24,17 +24,16 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 /**
  * @since 1.2
  */
-public class DB2Sniffer implements DbAdapterFactory, DbAdapterDetector {
-    
+public class DB2Sniffer implements DbAdapterDetector {
+
     protected AdhocObjectFactory objectFactory;
-    
+
     public DB2Sniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
@@ -42,7 +41,9 @@ public class DB2Sniffer implements DbAdapterFactory, DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("DB2")
-                ? (DbAdapter)objectFactory.newInstance(DbAdapter.class, DB2Adapter.class.getName())
+                ? (DbAdapter) objectFactory.newInstance(
+                        DbAdapter.class,
+                        DB2Adapter.class.getName())
                 : null;
     }
 }

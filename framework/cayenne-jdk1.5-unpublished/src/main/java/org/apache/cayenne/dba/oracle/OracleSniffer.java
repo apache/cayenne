@@ -24,17 +24,16 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 /**
  * @since 1.2
  */
-public class OracleSniffer implements DbAdapterFactory, DbAdapterDetector {
-    
+public class OracleSniffer implements DbAdapterDetector {
+
     protected AdhocObjectFactory objectFactory;
-    
+
     public OracleSniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
@@ -45,8 +44,10 @@ public class OracleSniffer implements DbAdapterFactory, DbAdapterDetector {
             return null;
         }
 
-        return (md.getDriverMajorVersion() <= 8)
-                ? (DbAdapter)objectFactory.newInstance(DbAdapter.class, Oracle8Adapter.class.getName())
-                : (DbAdapter)objectFactory.newInstance(DbAdapter.class, OracleAdapter.class.getName());
+        return (md.getDriverMajorVersion() <= 8) ? (DbAdapter) objectFactory.newInstance(
+                DbAdapter.class,
+                Oracle8Adapter.class.getName()) : (DbAdapter) objectFactory.newInstance(
+                DbAdapter.class,
+                OracleAdapter.class.getName());
     }
 }

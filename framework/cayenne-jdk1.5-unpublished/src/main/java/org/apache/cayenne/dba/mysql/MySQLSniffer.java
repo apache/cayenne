@@ -26,7 +26,6 @@ import java.sql.Statement;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
@@ -35,10 +34,10 @@ import org.apache.cayenne.di.Inject;
  * 
  * @since 1.2
  */
-public class MySQLSniffer implements DbAdapterFactory, DbAdapterDetector {
-    
+public class MySQLSniffer implements DbAdapterDetector {
+
     protected AdhocObjectFactory objectFactory;
-    
+
     public MySQLSniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
@@ -78,7 +77,7 @@ public class MySQLSniffer implements DbAdapterFactory, DbAdapterDetector {
         }
 
         MySQLAdapter adapter = objectFactory.newInstance(
-                MySQLAdapter.class, 
+                MySQLAdapter.class,
                 MySQLAdapter.class.getName());
         adapter.setSupportsFkConstraints(supportFK);
         adapter.setStorageEngine(adapterStorageEngine);

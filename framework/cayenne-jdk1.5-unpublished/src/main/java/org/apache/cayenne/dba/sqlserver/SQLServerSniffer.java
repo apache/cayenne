@@ -24,7 +24,6 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
@@ -33,10 +32,10 @@ import org.apache.cayenne.di.Inject;
  * 
  * @since 1.2
  */
-public class SQLServerSniffer implements DbAdapterFactory, DbAdapterDetector {
-    
+public class SQLServerSniffer implements DbAdapterDetector {
+
     protected AdhocObjectFactory objectFactory;
-    
+
     public SQLServerSniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
@@ -48,7 +47,7 @@ public class SQLServerSniffer implements DbAdapterFactory, DbAdapterDetector {
         }
 
         SQLServerAdapter adapter = objectFactory.newInstance(
-                SQLServerAdapter.class, 
+                SQLServerAdapter.class,
                 SQLServerAdapter.class.getName());
 
         // detect whether generated keys are supported

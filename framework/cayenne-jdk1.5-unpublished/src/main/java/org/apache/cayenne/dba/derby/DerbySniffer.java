@@ -24,7 +24,6 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
@@ -33,10 +32,10 @@ import org.apache.cayenne.di.Inject;
  * 
  * @since 1.2
  */
-public class DerbySniffer implements DbAdapterFactory, DbAdapterDetector {
-    
+public class DerbySniffer implements DbAdapterDetector {
+
     protected AdhocObjectFactory objectFactory;
-    
+
     public DerbySniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
@@ -44,7 +43,8 @@ public class DerbySniffer implements DbAdapterFactory, DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("APACHE DERBY")
-                ? (DbAdapter)objectFactory.newInstance(DbAdapter.class, DerbyAdapter.class.getName())
-                : null;
+                ? (DbAdapter) objectFactory.newInstance(
+                        DbAdapter.class,
+                        DerbyAdapter.class.getName()) : null;
     }
 }
