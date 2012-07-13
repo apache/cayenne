@@ -37,6 +37,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.util.Util;
 
 /**
  * A holder of flattened relationship modification data.
@@ -202,6 +203,19 @@ final class FlattenedArcKey {
                     @Override
                     public void nextRows(Query query, List dataRows) {
                         result[0] = dataRows;
+                    }
+                    
+                    @Override
+                    public void nextQueryException(Query query, Exception ex) {
+                        throw new CayenneRuntimeException("Raising from query exception.", Util
+                                .unwindException(ex));
+                    }
+
+                    @Override
+                    public void nextGlobalException(Exception ex) {
+                        throw new CayenneRuntimeException(
+                                "Raising from underlyingQueryEngine exception.",
+                                Util.unwindException(ex));
                     }
                 });
 
