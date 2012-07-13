@@ -38,6 +38,7 @@ ${importUtils.setPackage($subPackageName)}##
 ${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType("org.apache.cayenne.Persistent")}##
+${importUtils.addType('org.apache.cayenne.exp.Property')}##
 #foreach( $attr in ${object.Attributes} )
 $importUtils.addType(${attr.Type})##
 #end
@@ -48,6 +49,11 @@ public abstract class ${subClassName} extends ${baseClassName} {
 ## Create property names
 #foreach( $attr in ${object.Attributes} )
     public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
+#end
+
+## Create Properties
+#foreach( $attr in ${object.Attributes} )
+    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<$importUtils.formatJavaType(${attr.Type}, false)>(${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY);
 #end
 
     // special properties injected by Cayenne

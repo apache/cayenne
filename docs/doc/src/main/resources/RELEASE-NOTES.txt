@@ -15,8 +15,11 @@ Changes/New Features:
 
 CAY-1717 [PATCH] Implement JDBC compatibility layer methods
 CAY-1718 Remove everything deprecated in 3.1
+CAY-1724 Add 'Property' class for easier and better Expression creation
 
 Bug Fixes:
 
 CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
+CAY-1719 Modeler - Obj Attribute Java Type editor won't focus sometimes
+CAY-1677 Modeler: text fields discard input unless you press enter
