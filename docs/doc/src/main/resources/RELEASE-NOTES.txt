@@ -29,6 +29,7 @@ CAY-1585 SelectQuery automatic cache key needs FetchOffset
 CAY-1596 setFetchOffset & setFetchLimit issue under SQL Server 2008 R2 64Bit
 CAY-1696 Undo/Redo stop working after deleting several project items at once
 CAY-1721 Writing blobs fails (Oracle)
+CAY-1725 NullPointerException from call to removeToManyTarget
 
 ----------------------------------
 Release: 3.0.2
