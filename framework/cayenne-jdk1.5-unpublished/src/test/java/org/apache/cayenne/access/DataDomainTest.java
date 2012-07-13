@@ -217,25 +217,6 @@ public class DataDomainTest extends ServerCase {
         assertTrue(transaction instanceof ExternalTransaction);
     }
 
-    public void testShutdown() {
-        DataDomain domain = new DataDomain("X");
-
-        final boolean[] nodeShutdown = new boolean[2];
-
-        DataNode n1 = new DataNode("N1");
-
-        DataNode n2 = new DataNode("N2");
-        n1.setJdbcEventLogger(logger);
-
-        domain.addNode(n1);
-        domain.addNode(n2);
-
-        domain.shutdown();
-
-        assertTrue(nodeShutdown[0]);
-        assertTrue(nodeShutdown[1]);
-    }
-
     public void testShutdownCache() {
         DataDomain domain = new DataDomain("X");
 
