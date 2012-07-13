@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.tools;
 
+import java.io.File;
+import java.sql.Driver;
+
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.conn.DriverDataSource;
@@ -27,6 +30,7 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.util.Util;
@@ -35,9 +39,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.xml.sax.InputSource;
-
-import java.io.File;
-import java.sql.Driver;
 
 /**
  * Maven mojo to perform class generation from data map. This class is a Maven
@@ -153,7 +154,7 @@ public class DbGeneratorMojo extends AbstractMojo {
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();
-            DbGenerator generator = new DbGenerator(adapterInst, dataMap);
+            DbGenerator generator = new DbGenerator(adapterInst, dataMap, NoopJdbcEventLogger.getInstance());
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
             generator.setShouldCreateTables(createTables);
