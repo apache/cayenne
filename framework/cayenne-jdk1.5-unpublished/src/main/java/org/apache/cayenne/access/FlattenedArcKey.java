@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,10 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomainSyncBucket.PropagatedValueFactory;
 import org.apache.cayenne.access.util.DefaultOperationObserver;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -168,23 +172,57 @@ final class FlattenedArcKey {
         // TODO: this should be optimized in the future, but now DeleteBatchQuery
         // expects a PK snapshot, so we must provide it.
 
-        StringBuilder sql = new StringBuilder("SELECT ");
-        Collection<DbAttribute> pk = joinEntity.getPrimaryKeys();
-
-        int i = pk.size();
-        for (DbAttribute attribute : joinEntity.getPrimaryKeys()) {
-            sql.append("#result('");
-            sql.append(attribute.getName());
-            sql.append("')");
-            if (--i > 0) {
-                sql.append(", ");
-            }
+        final boolean quotesNeeded;
+        if (joinEntity.getDataMap() != null
+                && joinEntity.getDataMap().isQuotingSQLIdentifiers()) {
+            quotesNeeded = true;
+        }
+        else {
+            quotesNeeded = false;
         }
 
-        sql.append(" FROM ").append(joinEntity.getFullyQualifiedName()).append(" WHERE ");
-        i = snapshot.size();
+        QuotingStrategy quoter = node.getAdapter().getQuotingStrategy(quotesNeeded);
+
+        StringBuilder sql = new StringBuilder("SELECT ");
+        Collection<DbAttribute> pk = joinEntity.getPrimaryKeys();
+        final List<DbAttribute> pkList = pk instanceof List
+                ? (List<DbAttribute>) pk
+                : new ArrayList<DbAttribute>(pk);
+
+        for (int i = 0; i < pkList.size(); i++) {
+
+            if (i > 0) {
+                sql.append(", ");
+            }
+
+            DbAttribute attribute = pkList.get(i);
+
+            sql.append("#result('");
+            sql.append(quoter.quoteString(attribute.getName()));
+
+            if (quotesNeeded) {
+                // since the name of the column can potentially be quoted and use reserved
+                // keywords as name, let's specify
+                // generated column name parameters to ensure the query doesn't explode
+                sql.append("' '").append(
+                        TypesMapping.getJavaBySqlType(attribute.getType()));
+                sql.append("' '").append("pk").append(i);
+            }
+
+            sql.append("')");
+        }
+
+        sql
+                .append(" FROM ")
+                .append(quoter.quoteFullyQualifiedName(joinEntity))
+                .append(" WHERE ");
+        int i = snapshot.size();
         for (Object key : snapshot.keySet()) {
-            sql.append(key).append(" #bindEqual($").append(key).append(")");
+            sql
+                    .append(quoter.quoteString(String.valueOf(key)))
+                    .append(" #bindEqual($")
+                    .append(key)
+                    .append(")");
 
             if (--i > 0) {
                 sql.append(" AND ");
@@ -203,13 +241,36 @@ final class FlattenedArcKey {
 
                     @Override
                     public void nextRows(Query query, List dataRows) {
+
+                        if (quotesNeeded && !dataRows.isEmpty()) {
+                            // decode results...
+
+                            List<DataRow> fixedRows = new ArrayList<DataRow>(dataRows
+                                    .size());
+                            for(Object o : dataRows) {
+                                DataRow row = (DataRow) o;
+                                
+                                DataRow fixedRow = new DataRow(2);
+                                
+                                for (int i = 0; i < pkList.size(); i++) {
+                                    DbAttribute attribute = pkList.get(i);
+                                    fixedRow.put(attribute.getName(), row.get("pk" + i));
+                                }
+                                
+                                fixedRows.add(fixedRow);
+                            }
+                            
+                            dataRows = fixedRows;
+                        }
+
                         result[0] = dataRows;
                     }
-                    
+
                     @Override
                     public void nextQueryException(Query query, Exception ex) {
-                        throw new CayenneRuntimeException("Raising from query exception.", Util
-                                .unwindException(ex));
+                        throw new CayenneRuntimeException(
+                                "Raising from query exception.",
+                                Util.unwindException(ex));
                     }
 
                     @Override
