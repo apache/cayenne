@@ -19,3 +19,4 @@ CAY-1718 Remove everything deprecated in 3.1
 Bug Fixes:
 
 CAY-1721 Writing blobs fails (Oracle)
+CAY-1725 NullPointerException from call to removeToManyTarget
