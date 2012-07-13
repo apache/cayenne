@@ -21,7 +21,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToManyMapProperty;
 
 /**
@@ -93,7 +93,7 @@ public abstract class PersistentObject implements Persistent {
                     + objectId);
         }
 
-        Property property = descriptor.getProperty(relationshipName);
+        PropertyDescriptor property = descriptor.getProperty(relationshipName);
         if (property instanceof ToManyMapProperty) {
             return ((ToManyMapProperty) property).getMapKey(value);
         }

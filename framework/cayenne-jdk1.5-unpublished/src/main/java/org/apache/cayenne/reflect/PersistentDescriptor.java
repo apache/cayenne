@@ -49,8 +49,8 @@ public class PersistentDescriptor implements ClassDescriptor {
 
     // compiled properties ...
     protected Class<?> objectClass;
-    protected Map<String, Property> declaredProperties;
-    protected Map<String, Property> superProperties;
+    protected Map<String, PropertyDescriptor> declaredProperties;
+    protected Map<String, PropertyDescriptor> superProperties;
     protected Map<String, ClassDescriptor> subclassDescriptors;
     protected Accessor persistenceStateAccessor;
 
@@ -72,8 +72,8 @@ public class PersistentDescriptor implements ClassDescriptor {
      * Creates a PersistentDescriptor.
      */
     public PersistentDescriptor() {
-        this.declaredProperties = new HashMap<String, Property>();
-        this.superProperties = new HashMap<String, Property>();
+        this.declaredProperties = new HashMap<String, PropertyDescriptor>();
+        this.superProperties = new HashMap<String, PropertyDescriptor>();
         this.subclassDescriptors = new HashMap<String, ClassDescriptor>();
 
         // must be a set as duplicate addition attempts are expected...
@@ -92,7 +92,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     /**
      * Registers a superclass property.
      */
-    public void addSuperProperty(Property property) {
+    public void addSuperProperty(PropertyDescriptor property) {
         superProperties.put(property.getName(), property);
         indexAddedProperty(property);
     }
@@ -101,7 +101,7 @@ public class PersistentDescriptor implements ClassDescriptor {
      * Registers a property. This method is useful to customize default ClassDescriptor
      * generated from ObjEntity by adding new properties or overriding the standard ones.
      */
-    public void addDeclaredProperty(Property property) {
+    public void addDeclaredProperty(PropertyDescriptor property) {
         declaredProperties.put(property.getName(), property);
         indexAddedProperty(property);
     }
@@ -113,7 +113,7 @@ public class PersistentDescriptor implements ClassDescriptor {
         this.rootDbEntities.add(dbEntity);
     }
 
-    void indexAddedProperty(Property property) {
+    void indexAddedProperty(PropertyDescriptor property) {
         if (property instanceof AttributeProperty) {
 
             AttributeProperty attributeProperty = (AttributeProperty) property;
@@ -250,8 +250,8 @@ public class PersistentDescriptor implements ClassDescriptor {
      * Recursively looks up property descriptor in this class descriptor and all
      * superclass descriptors.
      */
-    public Property getProperty(String propertyName) {
-        Property property = getDeclaredProperty(propertyName);
+    public PropertyDescriptor getProperty(String propertyName) {
+        PropertyDescriptor property = getDeclaredProperty(propertyName);
 
         if (property == null && superclassDescriptor != null) {
             property = superclassDescriptor.getProperty(propertyName);
@@ -260,7 +260,7 @@ public class PersistentDescriptor implements ClassDescriptor {
         return property;
     }
 
-    public Property getDeclaredProperty(String propertyName) {
+    public PropertyDescriptor getDeclaredProperty(String propertyName) {
         return declaredProperties.get(propertyName);
     }
 
@@ -302,7 +302,7 @@ public class PersistentDescriptor implements ClassDescriptor {
             getSuperclassDescriptor().injectValueHolders(object);
         }
 
-        for (Property property : declaredProperties.values()) {
+        for (PropertyDescriptor property : declaredProperties.values()) {
             property.injectValueHolder(object);
         }
     }
@@ -338,7 +338,7 @@ public class PersistentDescriptor implements ClassDescriptor {
      * @since 3.0
      */
     boolean visitSuperProperties(PropertyVisitor visitor) {
-        for (Property next : superProperties.values()) {
+        for (PropertyDescriptor next : superProperties.values()) {
             if (!next.visit(visitor)) {
                 return false;
             }
@@ -352,7 +352,7 @@ public class PersistentDescriptor implements ClassDescriptor {
      */
     public boolean visitDeclaredProperties(PropertyVisitor visitor) {
 
-        for (Property next : declaredProperties.values()) {
+        for (PropertyDescriptor next : declaredProperties.values()) {
             if (!next.visit(visitor)) {
                 return false;
             }

@@ -30,7 +30,7 @@ import org.apache.cayenne.reflect.ClassDescriptorFactory;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.PersistentDescriptorFactory;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 
 /**
  * A {@link ClassDescriptorFactory} for Persistent objects that implement relationship
@@ -86,7 +86,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
         String reverseName = relationship.getReverseRelationshipName();
         Accessor accessor = createAccessor(descriptor, relationship.getName(), Map.class);
         Accessor mapKeyAccessor = createMapKeyAccessor(relationship, targetDescriptor);
-        Property property = new ValueHolderMapProperty(
+        PropertyDescriptor property = new ValueHolderMapProperty(
                 descriptor,
                 targetDescriptor,
                 accessor,
@@ -124,7 +124,7 @@ public class ValueHolderDescriptorFactory extends PersistentDescriptorFactory {
                 descriptor,
                 relationship.getName(),
                 ValueHolder.class);
-        Property property = new ValueHolderProperty(
+        PropertyDescriptor property = new ValueHolderProperty(
                 descriptor,
                 targetDescriptor,
                 accessor,

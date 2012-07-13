@@ -91,7 +91,7 @@ public class MockClassDescriptor implements ClassDescriptor {
     public void shallowMerge(Object from, Object to) throws PropertyException {
     }
 
-    public Property getDeclaredProperty(String propertyName) {
+    public PropertyDescriptor getDeclaredProperty(String propertyName) {
         return null;
     }
 
@@ -99,7 +99,7 @@ public class MockClassDescriptor implements ClassDescriptor {
         return null;
     }
 
-    public Property getProperty(String propertyName) {
+    public PropertyDescriptor getProperty(String propertyName) {
         return null;
     }
 

@@ -35,7 +35,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -214,7 +214,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
-        Property property = descriptor.getProperty(arcId.toString());
+        PropertyDescriptor property = descriptor.getProperty(arcId.toString());
 
         setExternalChange(Boolean.TRUE);
         try {

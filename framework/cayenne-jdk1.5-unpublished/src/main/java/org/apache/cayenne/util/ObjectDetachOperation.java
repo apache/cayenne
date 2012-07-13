@@ -32,7 +32,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.reflect.ToManyProperty;
@@ -172,7 +172,7 @@ public class ObjectDetachOperation {
             }
 
             public boolean visitAttribute(AttributeProperty property) {
-                Property targetProperty = targetDescriptor
+                PropertyDescriptor targetProperty = targetDescriptor
                         .getProperty(property.getName());
                 targetProperty.writeProperty(target, null, property.readProperty(source));
                 return true;

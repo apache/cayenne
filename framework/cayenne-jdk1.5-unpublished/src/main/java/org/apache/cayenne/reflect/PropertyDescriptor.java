@@ -16,16 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.map.ObjAttribute;
-
 /**
- * Represents a simple object property.
+ * Defines bean property API used by Cayenne to access object data, do faulting and graph
+ * maintenance tasks.
  * 
- * @since 3.0
+ * @since 3.2
  */
-public interface AttributeProperty extends PropertyDescriptor {
+public interface PropertyDescriptor extends Property {
 
-    ObjAttribute getAttribute();
 }

@@ -51,7 +51,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 
 /**
  * @since 3.0
@@ -864,7 +864,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                 }
                 String pathChunk = translator.lastPathComponent;
 
-                Property property = descriptor.getProperty(pathChunk);
+                PropertyDescriptor property = descriptor.getProperty(pathChunk);
                 if (property instanceof AttributeProperty) {
                     String atrType = ((AttributeProperty) property)
                             .getAttribute()

@@ -29,7 +29,7 @@ import org.apache.cayenne.CayenneRuntimeException;
  */
 public class PropertyException extends CayenneRuntimeException {
 
-    protected Property property;
+    protected PropertyDescriptor property;
     protected Accessor accessor;
     protected Object source;
 
@@ -54,12 +54,12 @@ public class PropertyException extends CayenneRuntimeException {
         this.source = source;
     }
 
-    public PropertyException(String messageFormat, Property property, Object source,
+    public PropertyException(String messageFormat, PropertyDescriptor property, Object source,
             Object... messageArgs) {
         this(messageFormat, property, source, (Throwable) null, messageArgs);
     }
 
-    public PropertyException(String messageFormat, Property property, Object source,
+    public PropertyException(String messageFormat, PropertyDescriptor property, Object source,
             Throwable cause, Object... messageArgs) {
         super(messageFormat, cause, messageArgs);
 
@@ -74,7 +74,7 @@ public class PropertyException extends CayenneRuntimeException {
         return accessor;
     }
 
-    public Property getProperty() {
+    public PropertyDescriptor getProperty() {
         return property;
     }
 

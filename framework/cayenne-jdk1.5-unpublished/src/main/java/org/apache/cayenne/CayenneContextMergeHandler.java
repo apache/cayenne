@@ -24,7 +24,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.util.Util;
 
@@ -156,7 +156,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
         if (object != null) {
 
             // do not override local changes....
-            Property p = propertyForId(nodeId, property);
+            PropertyDescriptor p = propertyForId(nodeId, property);
             if (Util.nullSafeEquals(p.readPropertyDirectly(object), oldValue)) {
 
                 p.writePropertyDirectly(object, oldValue, newValue);
@@ -233,7 +233,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
         }
     }
 
-    private Property propertyForId(Object nodeId, String propertyName) {
+    private PropertyDescriptor propertyForId(Object nodeId, String propertyName) {
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
         return descriptor.getProperty(propertyName);

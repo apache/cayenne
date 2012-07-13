@@ -107,7 +107,7 @@ public interface ClassDescriptor {
      * descriptors. Returned property can be any one of {@link AttributeProperty},
      * {@link ToManyProperty}, {@link ToOneProperty}.
      */
-    Property getProperty(String propertyName);
+    PropertyDescriptor getProperty(String propertyName);
 
     /**
      * Returns a Java Bean property descriptor matching property name or null if no such
@@ -115,7 +115,7 @@ public interface ClassDescriptor {
      * descriptors. Returned property can be any one of {@link AttributeProperty},
      * {@link ToManyProperty}, {@link ToOneProperty}.
      */
-    Property getDeclaredProperty(String propertyName);
+    PropertyDescriptor getDeclaredProperty(String propertyName);
 
     /**
      * Returns a collection of the properties mapped to id columns.

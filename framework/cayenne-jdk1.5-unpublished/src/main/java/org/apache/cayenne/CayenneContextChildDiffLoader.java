@@ -22,7 +22,7 @@ import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -98,7 +98,7 @@ class CayenneContextChildDiffLoader extends ChildDiffLoader {
 
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
-        Property property = descriptor.getProperty(arcId.toString());
+        PropertyDescriptor property = descriptor.getProperty(arcId.toString());
 
         final Persistent[] target = new Persistent[1];
         target[0] = findObject(targetNodeId);

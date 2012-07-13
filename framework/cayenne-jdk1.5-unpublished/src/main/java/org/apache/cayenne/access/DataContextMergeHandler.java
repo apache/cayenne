@@ -30,7 +30,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -80,7 +80,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         // extra safegurad
     }
 
-    private Property propertyForId(Object nodeId, String propertyName) {
+    private PropertyDescriptor propertyForId(Object nodeId, String propertyName) {
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 ((ObjectId) nodeId).getEntityName());
         return descriptor.getProperty(propertyName);
@@ -155,7 +155,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
 
             // do not override local changes....
-            Property p = propertyForId(nodeId, property);
+            PropertyDescriptor p = propertyForId(nodeId, property);
             if (Util.nullSafeEquals(p.readPropertyDirectly(object), oldValue)) {
                 p.writePropertyDirectly(object, oldValue, newValue);
             }
@@ -178,7 +178,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
             final int state = source.getPersistenceState();
 
-            Property p = propertyForId(nodeId, arcId.toString());
+            PropertyDescriptor p = propertyForId(nodeId, arcId.toString());
             p.visit(new PropertyVisitor() {
 
                 public boolean visitAttribute(AttributeProperty property) {

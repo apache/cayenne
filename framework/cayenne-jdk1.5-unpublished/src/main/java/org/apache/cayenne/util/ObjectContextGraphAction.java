@@ -25,7 +25,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 
 /**
  * A base implementation of a helper class to handle
@@ -59,7 +59,7 @@ public class ObjectContextGraphAction implements Serializable {
 
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 object.getObjectId().getEntityName());
-        Property property = descriptor.getProperty(propertyName);
+        PropertyDescriptor property = descriptor.getProperty(propertyName);
 
         if (property instanceof ArcProperty) {
             handleArcPropertyChange(object, (ArcProperty) property, oldValue, newValue);

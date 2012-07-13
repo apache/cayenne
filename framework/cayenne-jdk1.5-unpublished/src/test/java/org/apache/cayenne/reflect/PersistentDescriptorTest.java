@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.reflect.FieldAccessor;
 import org.apache.cayenne.reflect.PersistentDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.SimpleAttributeProperty;
 import org.apache.cayenne.unit.util.TestBean;
 
@@ -43,7 +43,7 @@ public class PersistentDescriptorTest extends TestCase {
         PersistentDescriptor d1 = new PersistentDescriptor();
 
         FieldAccessor accessor = new FieldAccessor(TestBean.class, "string", String.class);
-        Property property = new SimpleAttributeProperty(d1, accessor, null);
+        PropertyDescriptor property = new SimpleAttributeProperty(d1, accessor, null);
 
         d1.declaredProperties.put(property.getName(), property);
 

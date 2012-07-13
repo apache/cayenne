@@ -29,7 +29,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.RelationshipQuery;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 
 /**
  * An abstract superclass of lazily faulted to-one and to-many relationships.
@@ -122,7 +122,7 @@ public abstract class RelationshipFault {
         ObjRelationship reverse = relationship.getReverseRelationship();
 
         if (reverse != null && !reverse.isToMany()) {
-            Property property = resolver.getClassDescriptor(
+            PropertyDescriptor property = resolver.getClassDescriptor(
                     reverse.getSourceEntity().getName()).getProperty(reverse.getName());
 
             Iterator it = resolved.iterator();

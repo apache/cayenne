@@ -43,7 +43,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -326,7 +326,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         if (lazyFaulting && property != null) {
             ClassDescriptor classDescriptor = getEntityResolver().getClassDescriptor(
                     object.getObjectId().getEntityName());
-            Property propertyDescriptor = classDescriptor.getProperty(property);
+            PropertyDescriptor propertyDescriptor = classDescriptor.getProperty(property);
 
             // If we don't have a property descriptor, there's not much we can do.
             // Let the caller know that the specified property could not be found and list

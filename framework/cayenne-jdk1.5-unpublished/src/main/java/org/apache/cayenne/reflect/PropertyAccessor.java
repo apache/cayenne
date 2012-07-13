@@ -25,9 +25,9 @@ package org.apache.cayenne.reflect;
  */
 public class PropertyAccessor implements Accessor {
 
-    protected Property property;
+    protected PropertyDescriptor property;
 
-    public PropertyAccessor(Property property) {
+    public PropertyAccessor(PropertyDescriptor property) {
         if (property == null) {
             throw new NullPointerException("Null property");
         }

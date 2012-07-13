@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyUtils;
 
 /**
@@ -87,7 +87,7 @@ public final class Cayenne {
      * @param properyName path to the property
      * @return property descriptor, <code>null</code> if not found
      */
-    public static Property getProperty(Persistent object, String properyName) {
+    public static PropertyDescriptor getProperty(Persistent object, String properyName) {
         ClassDescriptor descriptor = getClassDescriptor(object);
         if (descriptor == null) {
             return null;
@@ -221,7 +221,7 @@ public final class Cayenne {
     private static final Object readSimpleProperty(Object o, String propertyName) {
         if (o instanceof Persistent) {
 
-            Property property = getProperty((Persistent) o, propertyName);
+            PropertyDescriptor property = getProperty((Persistent) o, propertyName);
 
             if (property != null) {
                 return property.readProperty(o);

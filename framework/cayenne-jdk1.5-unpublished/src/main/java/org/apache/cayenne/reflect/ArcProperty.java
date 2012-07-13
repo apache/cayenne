@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjRelationship;
  * 
  * @since 1.2
  */
-public interface ArcProperty extends Property {
+public interface ArcProperty extends PropertyDescriptor {
 
     /**
      * Returns a relationship associated with this arc.

@@ -37,7 +37,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -188,7 +188,7 @@ class ObjectDiff extends NodeDiff {
             Object targetId = arcDiff.getTargetNodeId();
             String arcId = arcDiff.getArcId().toString();
 
-            Property property = getClassDescriptor().getProperty(arcId);
+            PropertyDescriptor property = getClassDescriptor().getProperty(arcId);
 
             // note that some collection properties implement 'SingleObjectArcProperty',
             // so we cant't do 'instanceof SingleObjectArcProperty'

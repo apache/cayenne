@@ -25,7 +25,7 @@ package org.apache.cayenne.reflect;
  * 
  * @since 3.0
  */
-public abstract class BaseProperty implements Property {
+public abstract class BaseProperty implements PropertyDescriptor {
 
     protected ClassDescriptor owner;
     protected Accessor accessor;

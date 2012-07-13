@@ -24,6 +24,9 @@ package org.apache.cayenne.reflect;
  * maintenance tasks.
  * 
  * @since 1.2
+ * 
+ * @deprecated renamed to PropertyDescriptor in 3.2
+ * 
  */
 public interface Property {
 

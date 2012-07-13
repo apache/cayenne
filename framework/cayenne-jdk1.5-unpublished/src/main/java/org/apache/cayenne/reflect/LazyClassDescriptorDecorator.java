@@ -73,7 +73,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.createObject();
     }
 
-    public Property getDeclaredProperty(String propertyName) {
+    public PropertyDescriptor getDeclaredProperty(String propertyName) {
         checkDescriptorInitialized();
         return descriptor.getDeclaredProperty(propertyName);
     }
@@ -134,7 +134,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         return descriptor.getMapArcProperties();
     }
 
-    public Property getProperty(String propertyName) {
+    public PropertyDescriptor getProperty(String propertyName) {
         checkDescriptorInitialized();
         return descriptor.getProperty(propertyName);
     }

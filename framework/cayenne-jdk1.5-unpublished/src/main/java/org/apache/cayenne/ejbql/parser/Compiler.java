@@ -43,7 +43,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -149,7 +149,7 @@ class Compiler {
                     String pathChunk = path.getChild(i).getText();
                     buffer.append('.').append(pathChunk);
 
-                    Property property = descriptor.getProperty(pathChunk);
+                    PropertyDescriptor property = descriptor.getProperty(pathChunk);
 
                     if (property instanceof ArcProperty) {
                         incoming = ((ArcProperty) property).getRelationship();
@@ -543,7 +543,7 @@ class Compiler {
 
         @Override
         public boolean visitIdentificationVariable(EJBQLExpression expression) {
-            Property property = descriptor.getProperty(expression.getText());
+            PropertyDescriptor property = descriptor.getProperty(expression.getText());
             if (property instanceof ArcProperty) {
                 incoming = ((ArcProperty) property).getRelationship();
                 descriptor = ((ArcProperty) property).getTargetDescriptor();

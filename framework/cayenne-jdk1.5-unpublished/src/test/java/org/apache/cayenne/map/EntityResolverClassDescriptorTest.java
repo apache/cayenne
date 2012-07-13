@@ -26,7 +26,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
 import org.apache.cayenne.reflect.MockClassDescriptor;
 import org.apache.cayenne.reflect.MockClassDescriptorFactory;
-import org.apache.cayenne.reflect.Property;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
@@ -78,7 +78,7 @@ public class EntityResolverClassDescriptorTest extends ClientCase {
         ClassDescriptor descriptor = resolver.getClassDescriptor("MtTable1");
         assertNotNull(descriptor);
 
-        Property p = descriptor.getProperty(MtTable1.TABLE2ARRAY_PROPERTY);
+        PropertyDescriptor p = descriptor.getProperty(MtTable1.TABLE2ARRAY_PROPERTY);
         assertTrue(p instanceof ArcProperty);
 
         ClassDescriptor target = ((ArcProperty) p).getTargetDescriptor();
