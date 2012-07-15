@@ -63,6 +63,7 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeAction;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CutAttributeAction;
+import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
@@ -105,6 +106,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
         toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
         toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton());
+        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton());
         toolBar.addSeparator();
 
         Icon ico = ModelerUtil.buildIcon("icon-info.gif");

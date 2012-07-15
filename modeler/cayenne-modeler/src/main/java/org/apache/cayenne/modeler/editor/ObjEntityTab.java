@@ -53,6 +53,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
+import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.dialog.objentity.ClassNameUpdater;
 import org.apache.cayenne.modeler.dialog.validator.DuplicatedAttributesDialog;
@@ -141,6 +142,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                         .buildButton());
         toolBar.addSeparator();
         toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
+        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton());
         add(toolBar, BorderLayout.NORTH);
 
         // create widgets

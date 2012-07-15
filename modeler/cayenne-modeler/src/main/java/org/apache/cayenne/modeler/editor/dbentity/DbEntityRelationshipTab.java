@@ -57,6 +57,7 @@ import org.apache.cayenne.modeler.action.CopyRelationshipAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.CutRelationshipAction;
+import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
@@ -129,6 +130,7 @@ public class DbEntityRelationshipTab extends JPanel implements DbEntityDisplayLi
                         .getAction(CreateRelationshipAction.class)
                         .buildButton());
         toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton());
+        toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton());
 
         toolBar.addSeparator();
 

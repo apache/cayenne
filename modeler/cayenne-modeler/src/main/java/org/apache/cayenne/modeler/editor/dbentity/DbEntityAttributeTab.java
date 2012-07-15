@@ -45,6 +45,7 @@ import org.apache.cayenne.modeler.action.CopyAttributeAction;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CutAttributeAction;
+import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
@@ -55,7 +56,6 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
-import org.apache.cayenne.modeler.util.WidgetFactory;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -99,7 +99,10 @@ public class DbEntityAttributeTab extends JPanel implements DbEntityDisplayListe
                 .getActionManager()
                 .getAction(DbEntitySyncAction.class)
                 .buildButton());
-
+        toolBar.add(app
+                .getActionManager()
+                .getAction(DbEntityCounterpartAction.class)
+                .buildButton());
         toolBar.addSeparator();
 
         toolBar.addSeparator();

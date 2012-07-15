@@ -62,6 +62,7 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyRelationshipAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.CutRelationshipAction;
+import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
@@ -125,6 +126,7 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
                         .getAction(CreateRelationshipAction.class)
                         .buildButton());
         toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton());
+        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton());
 
         toolBar.addSeparator();
 

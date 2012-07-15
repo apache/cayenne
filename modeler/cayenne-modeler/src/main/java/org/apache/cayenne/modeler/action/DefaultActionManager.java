@@ -94,6 +94,8 @@ public class DefaultActionManager implements ActionManager {
         // end callback-related actions
         registerAction(new DbEntitySyncAction(application));
         registerAction(new ObjEntitySyncAction(application));
+        registerAction(new DbEntityCounterpartAction(application));
+        registerAction(new ObjEntityCounterpartAction(application));
         registerAction(new ImportDBAction(application));
         registerAction(new InferRelationshipsAction(application));
         registerAction(new ImportEOModelAction(application));
@@ -178,6 +180,7 @@ public class DefaultActionManager implements ActionManager {
                 ObjEntitySyncAction.class.getName(),
                 CreateAttributeAction.class.getName(),
                 CreateRelationshipAction.class.getName(),
+                ObjEntityCounterpartAction.class.getName(),
                 ShowGraphEntityAction.class.getName()));
 
         DB_ENTITY_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
@@ -186,6 +189,7 @@ public class DefaultActionManager implements ActionManager {
                 CreateAttributeAction.class.getName(),
                 CreateRelationshipAction.class.getName(),
                 DbEntitySyncAction.class.getName(),
+                DbEntityCounterpartAction.class.getName(),
                 ShowGraphEntityAction.class.getName()));
 
         EMBEDDABLE_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
