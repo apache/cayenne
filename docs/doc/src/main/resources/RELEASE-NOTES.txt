@@ -16,6 +16,7 @@ Changes/New Features:
 CAY-1717 [PATCH] Implement JDBC compatibility layer methods
 CAY-1718 Remove everything deprecated in 3.1
 CAY-1724 Add 'Property' class for easier and better Expression creation
+CAY-1646 Synchronize tabs in Modeler between ObjEntity and DbEntity editor panes
 
 Bug Fixes:
 

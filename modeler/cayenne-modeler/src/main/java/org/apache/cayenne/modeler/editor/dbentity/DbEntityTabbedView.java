@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.Component;
 
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
@@ -33,6 +34,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
@@ -90,6 +92,9 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
     public void stateChanged(ChangeEvent e) {
         resetRemoveButtons();
 
+        CayenneModelerFrame frame = (CayenneModelerFrame) getRootPane().getParent();
+        frame.selectedTaxIndex = getSelectedIndex();
+        
         // find source view
         Component selected = getSelectedComponent();
         while (selected instanceof JScrollPane) {
@@ -112,6 +117,13 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
 
         resetRemoveButtons();
         setVisible(e.getEntity() != null);
+        
+        if (getRootPane() != null) {
+            CayenneModelerFrame frame = (CayenneModelerFrame) getRootPane().getParent();
+            if (frame.selectedTaxIndex < getTabCount()) {
+                setSelectedIndex(frame.selectedTaxIndex);
+            }
+        }
     }
 
     public void currentDbRelationshipChanged(RelationshipDisplayEvent e) {

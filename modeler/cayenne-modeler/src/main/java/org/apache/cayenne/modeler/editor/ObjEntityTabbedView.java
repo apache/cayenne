@@ -34,6 +34,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
@@ -106,6 +107,10 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
 
             public void stateChanged(ChangeEvent e) {
                 resetRemoveButtons();
+                
+                CayenneModelerFrame frame = (CayenneModelerFrame) getRootPane().getParent();
+                frame.selectedTaxIndex = getSelectedIndex();
+                
                 Component selected = getSelectedComponent();
                 while (selected instanceof JScrollPane) {
                     selected = ((JScrollPane) selected).getViewport().getView();
@@ -139,6 +144,13 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
 
         resetRemoveButtons();
         setVisible(e.getEntity() != null);
+        
+        if (getRootPane() != null) {
+            CayenneModelerFrame frame = (CayenneModelerFrame) getRootPane().getParent();
+            if (frame.selectedTaxIndex < getTabCount()) {
+                setSelectedIndex(frame.selectedTaxIndex);
+            }
+        }
     }
 
     public void currentObjRelationshipChanged(RelationshipDisplayEvent e) {
