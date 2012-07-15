@@ -153,6 +153,12 @@ public class CayenneTest extends ServerCase {
                 object instanceof Number);
         assertEquals(2, ((Number) object).intValue());
     }
+    
+    public void testMakePath() {
+        assertEquals("", Cayenne.makePath());
+        assertEquals("a", Cayenne.makePath("a"));
+        assertEquals("a.b", Cayenne.makePath("a", "b"));
+    }
 
     public void testObjectForQuery() throws Exception {
         createOneArtist();
