@@ -479,6 +479,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
      * @see Cayenne#makePath(String...)
      * @since 3.1
      */
+    // TODO: should we deprecate this one? After all the purpose of "Cayenne" class is to
+    // get rid of utility methods elsewhere..  
     public static String makePath(String... pathParts) {
         return Cayenne.makePath(pathParts);
     }
