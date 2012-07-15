@@ -122,9 +122,23 @@ artist.setName("Picasso");</programlisting>Once
 			internally generates a minimal set of SQL statements to synchronize the database with
 			the in-memory state of all changed objects and sends them to DB in a single
 			transaction.</para>
+		<para>Finally ObjectContext provides access to all the mapping metadata that can often be
+			useful to the application. Metadata is accessed via EntityResolver
+			object:<programlisting>EntityResolver resolver = objectContext.getEntityResolver();</programlisting></para>
 	</section>
 	<section xml:id="cayenne-helper-class">
 		<title>Cayenne Helper Class</title>
+		<para>There is a useful helper class called "Cayenne" (fully-qualified name
+				<code>"org.apache.cayenne.Cayenne"</code>) that builds on ObjectContext API to
+			provide a number of very common operations. E.g. get a primary key (most entities do not
+			model PK as an object property)
+			:<programlisting>long pk = Cayenne.longPKForObject(artist);</programlisting></para>
+		<para>It also provides the reverse operation - finding an object given a known
+			PK:<programlisting>Artist artist = Cayenne.objectForPK(context, Artist.class, 34579);</programlisting></para>
+		<para>If a query is expected to return 0 or 1 object, Cayenne helper class can be used
+			tofind this object. It throws an exception if more than one object matched the
+			query:<programlisting>Artist artist = (Artist) Cayenne.objectForQuery(context, new SelectQuery(Artist.class));</programlisting></para>
+		<para>Feel free to explore Cayenne class API for other useful methods.</para>
 	</section>
 	<section xml:id="objectcontext-nesting">
 		<title>ObjectContext Nesting</title>
