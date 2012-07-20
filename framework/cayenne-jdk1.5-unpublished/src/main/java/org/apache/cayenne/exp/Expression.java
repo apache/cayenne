@@ -347,9 +347,24 @@ public abstract class Expression implements Serializable, XMLSerializable {
      * expressions, like long AND or OR statements.
      */
     public Expression joinExp(int type, Expression exp) {
+        return joinExp(type, exp, new Expression[0]);
+    }
+    
+    /**
+     * Creates a new expression that joins this object with other expressions, using
+     * specified join type. It is very useful for incrementally building chained
+     * expressions, like long AND or OR statements.
+     * 
+     * @since 3.2
+     */
+    public Expression joinExp(int type, Expression exp, Expression... expressions) {
         Expression join = ExpressionFactory.expressionOfType(type);
         join.setOperand(0, this);
         join.setOperand(1, exp);
+        for (int i = 0; i < expressions.length; i++) {
+            Expression expressionInArray = expressions[i];
+            join.setOperand(2+i, expressionInArray);
+        }
         join.flattenTree();
         return join;
     }
@@ -362,12 +377,30 @@ public abstract class Expression implements Serializable, XMLSerializable {
     }
 
     /**
+     * Chains this expression with other expressions using "and".
+     * 
+     * @since 3.2
+     */
+    public Expression andExp(Expression exp, Expression... expressions) {
+        return joinExp(Expression.AND, exp, expressions);
+    }
+    
+    /**
      * Chains this expression with another expression using "or".
      */
     public Expression orExp(Expression exp) {
         return joinExp(Expression.OR, exp);
     }
 
+    /**
+     * Chains this expression with other expressions using "or".
+     * 
+     * @since 3.2
+     */
+    public Expression orExp(Expression exp, Expression... expressions) {
+        return joinExp(Expression.OR, exp, expressions);
+    }
+    
     /**
      * Returns a logical NOT of current expression.
      * 

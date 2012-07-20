@@ -30,6 +30,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -317,6 +318,46 @@ public class ExpressionTest extends ServerCase {
 
         Expression e4 = ExpressionFactory.matchExp("paintingTitle", "x4");
         assertNull(e4.first(paintingList));
+    }
+
+    public void testAndExp() {
+        Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
+        Expression e2 = ExpressionFactory.matchExp("age", 30);
+
+        Expression exp = e1.andExp(e2);
+        assertEquals(exp.getType(), Expression.AND);
+        assertEquals(2, ((SimpleNode)exp).jjtGetNumChildren());
+    }
+
+    public void testOrExp() {
+        Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
+        Expression e2 = ExpressionFactory.matchExp("age", 30);
+
+        Expression exp = e1.orExp(e2);
+        assertEquals(exp.getType(), Expression.OR);
+        assertEquals(2, ((SimpleNode)exp).jjtGetNumChildren());
+    }
+
+    public void testAndExpVarArgs() {
+        Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
+        Expression e2 = ExpressionFactory.matchExp("age", 30);
+        Expression e3 = ExpressionFactory.matchExp("height", 5.5);
+        Expression e4 = ExpressionFactory.matchExp("numEars", 1);
+
+        Expression exp = e1.andExp(e2, e3, e4);
+        assertEquals(exp.getType(), Expression.AND);
+        assertEquals(4, ((SimpleNode)exp).jjtGetNumChildren());
+    }
+
+    public void testOrExpVarArgs() {
+        Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
+        Expression e2 = ExpressionFactory.matchExp("age", 30);
+        Expression e3 = ExpressionFactory.matchExp("height", 5.5);
+        Expression e4 = ExpressionFactory.matchExp("numEars", 1);
+
+        Expression exp = e1.orExp(e2, e3, e4);
+        assertEquals(exp.getType(), Expression.OR);
+        assertEquals(4, ((SimpleNode)exp).jjtGetNumChildren());
     }
 
 }
