@@ -160,7 +160,7 @@ public class OrderingTest extends TestCase {
         list.add(new TestBean("b", 2));
         list.add(new TestBean("b", 5));
 
-        List orderings = new ArrayList(2);
+        List<Ordering> orderings = new ArrayList<Ordering>(2);
         orderings.add(new Ordering("string", SortOrder.ASCENDING));
         orderings.add(new Ordering("integer", SortOrder.DESCENDING));
 
