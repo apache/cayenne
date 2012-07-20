@@ -40,6 +40,7 @@ import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * An abstraction of a single physical data storage. This is usually a database server,
@@ -320,6 +321,11 @@ public class DataNode implements QueryEngine {
      */
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("name", getName()).toString();
     }
 
     // a read-through DataSource that ensures returning the same connection within
