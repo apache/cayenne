@@ -424,7 +424,8 @@ public class DataNode implements QueryEngine {
          * JDBC 4.1 compatibility under Java 1.5
          */
         public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-            throw new SQLFeatureNotSupportedException();
+            // don't throw SQLFeatureNotSupported - this will break JDK 1.5 runtime
+            throw new UnsupportedOperationException();
         }
     }
 }
