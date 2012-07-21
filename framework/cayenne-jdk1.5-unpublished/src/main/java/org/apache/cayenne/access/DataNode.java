@@ -414,7 +414,7 @@ public class DataNode implements QueryEngine {
             try {
                 return iface.cast(dataSource);
             } catch (ClassCastException e) {
-                throw new SQLException("Not a DataSource", e);
+                throw new SQLException("Not a DataSource: " + e.getMessage());
             }
         }
 
