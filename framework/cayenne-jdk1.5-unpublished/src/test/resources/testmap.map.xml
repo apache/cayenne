@@ -310,6 +310,9 @@
 		<db-attribute name="LONGVARBINARY_COLUMN" type="LONGVARBINARY"/>
 		<db-attribute name="VARBINARY_COLUMN" type="VARBINARY" length="1000"/>
 	</db-entity>
+	<db-entity name="UUID_PK_ENTITY">
+		<db-attribute name="ID" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
+	</db-entity>
 	<db-entity name="UUID_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="UUID" type="VARCHAR" length="100"/>
@@ -574,6 +577,9 @@
 	</obj-entity>
 	<obj-entity name="TinyintTestEntity" className="org.apache.cayenne.testdo.testmap.TinyintTestEntity" dbEntityName="TINYINT_TEST">
 		<obj-attribute name="tinyintCol" type="java.lang.Byte" db-attribute-path="TINYINT_COL"/>
+	</obj-entity>
+	<obj-entity name="UuidPkEntity" className="org.apache.cayenne.testdo.testmap.UuidPkEntity" dbEntityName="UUID_PK_ENTITY">
+		<obj-attribute name="id" type="java.util.UUID" db-attribute-path="ID"/>
 	</obj-entity>
 	<obj-entity name="UuidTestEntity" className="org.apache.cayenne.testdo.testmap.UuidTestEntity" dbEntityName="UUID_TEST">
 		<obj-attribute name="uuid" type="java.util.UUID" db-attribute-path="UUID"/>
