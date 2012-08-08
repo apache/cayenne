@@ -17,6 +17,7 @@ import org.apache.cayenne.query.SortOrder;
  * <p>Instances of this class are immutable</p>
  * 
  * @param <E> The type this property returns.
+ * @since 3.2
  */
 public class Property<E> {
 
