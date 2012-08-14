@@ -39,8 +39,9 @@ import org.apache.cayenne.util.Util;
  */
 public class DriverDataSource implements DataSource {
 
-    protected Driver driver;
-
+    protected Driver _driver;
+    protected String driverClassName;
+    
     protected String connectionUrl;
     protected String userName;
     protected String password;
@@ -82,8 +83,7 @@ public class DriverDataSource implements DataSource {
      * null, a user must take care of registering the driver. "connectionUrl" on the other
      * hand must NOT be null.
      */
-    public DriverDataSource(String driverClassName, String connectionUrl)
-            throws SQLException {
+    public DriverDataSource(String driverClassName, String connectionUrl) {
         this(driverClassName, connectionUrl, null, null);
     }
 
@@ -96,7 +96,7 @@ public class DriverDataSource implements DataSource {
      * @since 3.0
      */
     public DriverDataSource(String driverClassName, String connectionUrl,
-            String userName, String password) throws SQLException {
+            String userName, String password) {
 
         setDriverClassName(driverClassName);
 
@@ -116,7 +116,8 @@ public class DriverDataSource implements DataSource {
     public DriverDataSource(Driver driver, String connectionUrl, String userName,
             String password) {
 
-        this.driver = driver;
+        this._driver = driver;
+        this.driverClassName = driver.getClass().getName();
         this.connectionUrl = connectionUrl;
         this.userName = userName;
         this.password = password;
@@ -143,7 +144,7 @@ public class DriverDataSource implements DataSource {
 
             Connection c = null;
 
-            if (driver == null) {
+            if (getDriver() == null) {
                 c = DriverManager.getConnection(connectionUrl, userName, password);
             }
             else {
@@ -156,7 +157,7 @@ public class DriverDataSource implements DataSource {
                 if (password != null) {
                     connectProperties.put("password", password);
                 }
-                c = driver.connect(connectionUrl, connectProperties);
+                c = getDriver().connect(connectionUrl, connectProperties);
             }
 
             // some drivers (Oracle) return null connections instead of throwing
@@ -248,13 +249,24 @@ public class DriverDataSource implements DataSource {
     }
 
     public String getDriverClassName() {
-        return driver != null ? driver.getClass().getName() : null;
+        return driverClassName;
     }
 
-    public void setDriverClassName(String driverClassName) throws SQLException {
+    public void setDriverClassName(String driverClassName) {
         if (!Util.nullSafeEquals(getDriverClassName(), driverClassName)) {
-            this.driver = driverClassName != null ? loadDriver(driverClassName) : null;
+            this.driverClassName = driverClassName;
+            this._driver = null; // force reload
         }
+    }
+    
+    /**
+     * Lazily instantiate the driver class to prevent errors for connections that are never opened
+     */
+    private Driver getDriver() throws SQLException {
+        if (_driver == null && driverClassName != null) {
+            _driver = loadDriver(driverClassName);
+        }
+        return _driver;
     }
     
     /**
