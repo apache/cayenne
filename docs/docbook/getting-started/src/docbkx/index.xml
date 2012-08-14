@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
     xml:id="getting-started" xmlns:xi="http://www.w3.org/2001/XInclude">
-    <info>
+    <bookinfo>
         <title>Getting Started with Cayenne</title>
         <copyright>
             <year>2011-2012</year>
@@ -21,7 +21,7 @@
                 CONDITIONS OF ANY KIND, either express or implied. See the License for the specific
                 language governing permissions and limitations under the License.</para>
         </legalnotice>
-    </info>
+    </bookinfo>
     <xi:include href="part1.xml"/>
     <xi:include href="part2.xml"/>
     <xi:include href="part3.xml"/>

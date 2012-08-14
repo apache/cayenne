@@ -241,11 +241,12 @@
 			<title>cdbgen</title>
 			<para><code>cdbgen</code> is a <code>maven-cayenne-plugin</code> goal that drops and/or generates
 				tables in a database on Cayenne DataMap. By default, it is bound to the
-				pre-integration-test phase.<table frame="void">
+				pre-integration-test phase.
+				<table frame="void">
 					<caption>cdbgen required parameters</caption>
 					<col width="14%"/>
-					<col width="6%"/>
-					<col width="80%"/>
+					<col width="8%"/>
+					<col width="78%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -275,11 +276,11 @@
 					</tbody>
 				</table></para>
 			<para>
-				<table frame="void" width="792">
+				<table frame="void">
 					<caption>cdbgen optional parameters</caption>
 					<col width="18%"/>
-					<col width="7%"/>
-					<col width="79%"/>
+					<col width="8%"/>
+					<col width="74%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -365,12 +366,12 @@
 			<para><code>cdbimport</code> is a <code>maven-cayenne-plugin</code> goal that generates
 				a DataMap based on an existing database schema. By default, it is bound to the
 				generate-sources phase. This allows you to generate your DataMap prior to building
-				your project, which may be necessary if you are also using the cgen task.<table
-					frame="void">
+				your project, which may be necessary if you are also using the cgen task.
+				<table frame="void">
 					<caption>cdbimport required parameters</caption>
 					<col width="14%"/>
-					<col width="6%"/>
-					<col width="80%"/>
+					<col width="7%"/>
+					<col width="79%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -401,11 +402,11 @@
 					</tbody>
 				</table></para>
 			<para>
-				<table frame="void" width="822">
+				<table frame="void">
 					<caption>cdbimport optional parameters</caption>
 					<col width="24%"/>
-					<col width="7%"/>
-					<col width="79%"/>
+					<col width="8%"/>
+					<col width="68%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
