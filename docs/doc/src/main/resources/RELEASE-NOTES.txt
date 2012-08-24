@@ -18,6 +18,7 @@ CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
 CAY-1715 Passing parameters to mapped EJBQL queries
 CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
+CAY-1735 Serializable IncrementalFaultList
 
 ----------------------------------
 Release: 3.1B1

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +56,7 @@ import org.apache.cayenne.util.Util;
  * fetch.
  * </p>
  */
-public class IncrementalFaultList<E> implements List<E> {
+public class IncrementalFaultList<E> implements List<E>, Serializable {
 
     protected int pageSize;
     protected List elements;
@@ -627,7 +628,7 @@ public class IncrementalFaultList<E> implements List<E> {
         return unfetchedObjects;
     }
 
-    abstract class IncrementalListHelper {
+    abstract class IncrementalListHelper implements Serializable {
 
         int indexOfObject(Object object) {
             if (unresolvedSuspect(object)) {
