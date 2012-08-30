@@ -36,6 +36,7 @@ import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.dba.nuodb.NuodbAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
@@ -55,7 +56,8 @@ public final class DbAdapterInfo {
             HSQLDBAdapter.class.getName(), DB2Adapter.class.getName(),
             SQLServerAdapter.class.getName(), FrontBaseAdapter.class.getName(),
             OpenBaseAdapter.class.getName(), DerbyAdapter.class.getName(),
-            IngresAdapter.class.getName(), SQLiteAdapter.class.getName()
+            IngresAdapter.class.getName(), SQLiteAdapter.class.getName(),
+            NuodbAdapter.class.getName()
     };
 
     private static final Map<String, String> IMMUTABLE_LABELS = Collections
@@ -78,6 +80,7 @@ public final class DbAdapterInfo {
         DEFAULT_ADAPTER_LABELS.put(DerbyAdapter.class.getName(), "Derby Adapter");
         DEFAULT_ADAPTER_LABELS.put(IngresAdapter.class.getName(), "Ingres Adapter");
         DEFAULT_ADAPTER_LABELS.put(SQLiteAdapter.class.getName(), "SQLite Adapter");
+        DEFAULT_ADAPTER_LABELS.put(NuodbAdapter.class.getName(), "Nuodb Adapter");
     }
 
     public static Map getStandardAdapterLabels() {

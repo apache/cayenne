@@ -29,6 +29,7 @@ import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.dba.nuodb.NuodbAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
@@ -85,6 +86,7 @@ public class AdapterMapping {
         jdbcDriverToAdapterMap.put("com.ingres.jdbc.IngresDriver", IngresAdapter.class
                 .getName());
         jdbcDriverToAdapterMap.put("org.sqlite.JDBC", SQLiteAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("com.nuodb.jdbc.Driver", NuodbAdapter.class.getName());
 
         // urls
         adapterToJDBCURLMap.put(
@@ -116,6 +118,7 @@ public class AdapterMapping {
                         SQLServerAdapter.class.getName(),
                         "jdbc:microsoft:sqlserver://host;databaseName=database;SelectMethod=cursor");
         adapterToJDBCURLMap.put(SQLiteAdapter.class.getName(), "jdbc:sqlite:testdb");
+        adapterToJDBCURLMap.put(NuodbAdapter.class.getName(), "jdbc:com.nuodb://localhost/database");
 
         // TODO: embedded Derby Mode... change to client-server once we figure it out
         adapterToJDBCURLMap.put(
@@ -164,6 +167,7 @@ public class AdapterMapping {
                 IngresAdapter.class.getName(),
                 "com.ingres.jdbc.IngresDriver");
         adapterToJDBCDriverMap.put(SQLiteAdapter.class.getName(), "org.sqlite.JDBC");
+        adapterToJDBCDriverMap.put(NuodbAdapter.class.getName(), "com.nuodb.jdbc.Driver");
 
         // EOF plugins...
         eofPluginToAdapterMap.put(
