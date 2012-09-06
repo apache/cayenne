@@ -60,27 +60,29 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 ## Create ivars names
 #foreach( $attr in ${object.DeclaredAttributes} )
+    @Deprecated
     public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
+    @Deprecated
     public static final String ${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY = "${rel.Name}";
 #end
 
 ## Create Properties
 #foreach( $attr in ${object.DeclaredAttributes} )
-    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<$importUtils.formatJavaType(${attr.Type}, false)>(${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY);
+    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<$importUtils.formatJavaType(${attr.Type}, false)>("${attr.Name}");
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
 #if ( ${rel.CollectionType} == "java.util.Map")
     #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>("${rel.Name}");
 #else
     #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>("${rel.Name}");
 #end
 #else
-    public static final Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})>(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+    public static final Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})>("${rel.Name}");
 #end
 #end
 

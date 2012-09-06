@@ -57,9 +57,11 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 ## Create property names
 #foreach( $attr in ${object.DeclaredAttributes} )
+    @Deprecated
     public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
+    @Deprecated
     public static final String ${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY = "${rel.Name}";
 #end
 
@@ -71,19 +73,19 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 ## Create Properties
 #foreach( $attr in ${object.DeclaredAttributes} )
-    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<$importUtils.formatJavaType(${attr.Type}, false)>(${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY);
+    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<$importUtils.formatJavaType(${attr.Type}, false)>("${attr.Name}");
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
 #if ( ${rel.CollectionType} == "java.util.Map")
     #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>("${rel.Name}");
 #else
     #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>("${rel.Name}");
 #end
 #else
-    public static final Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})>(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+    public static final Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})>("${rel.Name}");
 #end
 #end
 
@@ -91,22 +93,22 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #foreach( $attr in ${object.DeclaredAttributes} )
 #if ("true" != "${object.isReadOnly()}")
     public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $stringUtils.formatVariableName(${attr.Name})) {
-        writeProperty(${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY, $stringUtils.formatVariableName(${attr.Name}));
+        writeProperty("${attr.Name}", $stringUtils.formatVariableName(${attr.Name}));
     }
 #end
 #if ( $importUtils.isBoolean(${attr.Type}) )
 	public boolean is${stringUtils.capitalized($attr.Name)}() {
-        Boolean value = (Boolean)readProperty(${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY);
+        Boolean value = (Boolean)readProperty("${attr.Name}");
         return (value != null) ? value.booleanValue() : false;
     }
 #elseif ( $importUtils.isNonBooleanPrimitive(${attr.Type}) )
     public ${importUtils.formatJavaType($attr.Type)} get${stringUtils.capitalized($attr.Name)}() {
-        Object value = readProperty(${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY);
+        Object value = readProperty("${attr.Name}");
         return (value != null) ? ($importUtils.formatJavaTypeAsNonBooleanPrimitive(${attr.Type})) value : 0;
     }
 #else
     public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
-        return ($importUtils.formatJavaType(${attr.Type}))readProperty(${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY);
+        return ($importUtils.formatJavaType(${attr.Type}))readProperty("${attr.Name}");
     }
 #end
 
@@ -117,31 +119,31 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #if( $rel.ToMany )
 #if ( ! $rel.ReadOnly )
     public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) obj) {
-        addToManyTarget(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY, obj, true);
+        addToManyTarget("${rel.Name}", obj, true);
     }
     public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) obj) {
-        removeToManyTarget(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY, obj, true);
+        removeToManyTarget("${rel.Name}", obj, true);
     }
 #end
     @SuppressWarnings("unchecked")
 #if ( ${rel.CollectionType} == "java.util.Map")
     public $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)> get${stringUtils.capitalized($rel.Name)}() {
-        return ($importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)>)readProperty(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+        return ($importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)>)readProperty("${rel.Name}");
     }
 #else
     public $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClassName)> get${stringUtils.capitalized($rel.Name)}() {
-        return ($importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClassName)>)readProperty(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+        return ($importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClassName)>)readProperty("${rel.Name}");
     }
 #end
 #else
 #if ( !${object.isReadOnly()} && !$rel.ReadOnly )
     public void set${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) $stringUtils.formatVariableName(${rel.name})) {
-        setToOneTarget(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY, $stringUtils.formatVariableName(${rel.name}), true);
+        setToOneTarget("${rel.Name}", $stringUtils.formatVariableName(${rel.name}), true);
     }
 #end
 
     public $importUtils.formatJavaType(${rel.TargetEntity.ClassName}) get${stringUtils.capitalized($rel.Name)}() {
-        return ($importUtils.formatJavaType(${rel.TargetEntity.ClassName}))readProperty(${stringUtils.capitalizedAsConstant($rel.Name)}_PROPERTY);
+        return ($importUtils.formatJavaType(${rel.TargetEntity.ClassName}))readProperty("${rel.Name}");
     }
 #end
 
