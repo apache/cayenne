@@ -20,7 +20,7 @@
 	<section xml:id="modeling-inheritance">
 		<title>Modeling Inheritance</title>
 	</section>
-	<section xml:id="generating-java-classes">
+	<section xml:id="modeling-generic-persistence-classes">
 		<title>Modeling Generic Persistent Classes</title>
 		<para>Normally each ObjEntity is mapped to a specific Java class (such as Artist or
 			Painting) that explicitly declare all entity properties as pairs of getters and setters.

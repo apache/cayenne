@@ -229,5 +229,57 @@ generic.writeProperty("name", "New Name");</programlisting>This
 	</section>
 	<section xml:id="transactions">
 		<title>Transactions</title>
+		<para>Considering how much attention is given to managing transactions in most other ORMs,
+			transactions have been conspicuously absent from the ObjectContext discussion till now.
+			The reason is that transactions are seamless in Cayenne in all but a few special cases.
+			ObjectContext is an in-memory container of objects that is disconnected from the
+			database, except when it needs to run an operation. So it does not care about any
+			surrounding transaction scope. Sure enough all database operations are transactional, so
+			when an application does a commit, all SQL execution is wrapped in a database
+			transaction. But this is done behind the scenes and is rarely a concern to the
+			application code.</para>
+		<para>Two cases where transactions need to be taken into consideration are container-managed
+			and application-managed transactions. </para>
+		<para>If you are using an EJB container (or some other JTA environment), you'll likely need
+			to switch Cayenne runtime into "external transactions mode".  This is either done in the
+			Modeler (check DataDomain > 'Container-Managed Transactions' checkbox), or in the
+			code:<programlisting>runtime.getDataDomain().setUsingExternalTransactions(true);</programlisting>In
+			this case Cayenne assumes that JDBC Connections obtained by runtime whenever that might
+			happen are all coming from a transactional DataSource managed by the container. In this
+			case Cayenne does not attempt to commit or rollback the connections, leaving it up to
+			the container to do that when appropriate.</para>
+		<para>In the second scenario, an application might need to define its own transaction scope
+			that spans more than one Cayenne operation. E.g. two sequential commits that need to be
+			rolled back together in case of failure. This can be done with an explicit thread-bound
+			transaction that surrounds a set of operations. Application is responsible for
+			committing or rolling it
+			back:<programlisting>Transaction tx = runtime.getDataDomain().createTransaction();
+Transaction.bindThreadTransaction(tx);
+
+try {
+    // commit one or more contexts
+    context1.commitChanges();
+    context2.commitChanges();
+    ....
+    // after changing some objects in context1, commit again
+    context1.commitChnages();
+    ....
+    // if no failures, commit
+    tx.commit();
+}
+catch (Exception ex) {
+    tx.setRollbackOnly();
+}
+finally {
+    Transaction.bindThreadTransaction(null);
+ 
+    if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
+        try {
+           tx.rollback();
+        }
+        catch (Exception rollbackEx) {
+        }
+    }
+} </programlisting></para>
 	</section>
 </chapter>
