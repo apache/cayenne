@@ -205,6 +205,27 @@ nested.rollbackChanges();</programlisting></para>
 	</section>
 	<section xml:id="generic-persistent-objects">
 		<title>Generic Persistent Objects</title>
+		<para>As described in the CayenneModeler chapter, Cayenne supports mapping of completely
+			generic classes to specific entities. Although for conveniece most applications should
+			stick with entity-specific class mappings, the generic feature offers some interesting
+			possibilities, such as creating mappings completely on the fly in a running application,
+			etc.</para>
+		<para>Generic objects are first class citizens in Cayenne, and all common persistent
+			operations apply to them as well. There are some pecularities however, described
+			below.</para>
+		<para>When creating a new generic object, either cast your ObjectContext to DataContext
+			(that provides "newObject(String)" API), or provide your object with an explicit
+			ObjectId:<programlisting>DataObject generic = ((DataContext) context).newObject("GenericEntity");</programlisting><programlisting>DataObject generic = new CayenneDataObject();
+generic.setObjectId(new ObjectId("GenericEntity"));
+context.registerNewObject(generic);</programlisting>SelectQuery
+			for generic object should be created passing entity name String in constructor, instead
+			of a Java
+			class:<programlisting>SelectQuery query = new SelectQuery("GenericEntity");</programlisting>Use
+			DataObject API to access and modify properties of a generic
+			object:<programlisting>String name = (String) generic.readProperty("name");
+generic.writeProperty("name", "New Name");</programlisting>This
+			is how an application can obtain entity name of a generic
+			object:<programlisting>String entityName = generic.getObjectId().getEntityName();</programlisting></para>
 	</section>
 	<section xml:id="transactions">
 		<title>Transactions</title>
