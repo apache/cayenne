@@ -33,8 +33,8 @@
 	<section xml:id="persistent-lifecycle">
 		<title>Persistent Object and its Lifecycle</title>
 		<para>Cayenne can persist Java objects that implement <code>org.apache.cayenne.Persistent</code>
-			interface. Generally persistent objects are created from the model via class generation
-			as described above, so users do not have to worry about implementation details. </para>
+			interface. Generally persistent classes are generated from the model as described above,
+			so users do not have to worry about superclass and property implementation details. </para>
 		<para>Persistent interface provides access to 3 persistence-related properties - objectId,
 			persistenceState and objectContext. All 3 are initialized by Cayenne runtime framework.
 			Application code should not attempt to change them them. However it is allowed to read
@@ -92,39 +92,57 @@
 	<section xml:id="persistent-operations">
 		<title>ObjectContext Persistence API</title>
 		<para>One of the first things users usually want to do with an ObjectContext is to select
-			some objects from an existing database. This is done by calling "<emphasis role="italic"
+			some objects from a database. This is done by calling "<emphasis role="italic"
 				>performQuery</emphasis>"
 			method:<programlisting>SelectQuery query = new SelectQuery(Artist.class);
 List&lt;Artist> artists = context.performQuery(query);</programlisting>We'll
 			discuss queries in some detail in the following chapters. The example above is
 			self-explanatory - we create a SelectQuery that matches all Artist objects present in
-			the database, and then call "performQuery",  getting a list of Artist objects.</para>
-		<para>In some cases queries can be quite complex, returning multiple result sets, and even
-			updating the database. For such queries ObjectContext provides "<emphasis role="italic"
-				>performGenericQuery</emphasis>"method. While not nearly as common as
+			the database, and then call "performQuery", getting a list of Artist objects.</para>
+		<para>Some queries can be quite complex, returning multiple result sets or even updating the
+			database. For such queries ObjectContext provides "<emphasis role="italic"
+				>performGenericQuery</emphasis>"method. While not nearly as commonly-used as
 			"performQuery", it is nevertheless important in some situations.
-			E.g.:<programlisting>Collection&lt;Query> queries = ... // some queries
+			E.g.:<programlisting>Collection&lt;Query> queries = ... // multiple queries that need to be run together
 QueryChain query = new QueryChain(queries);
 
 QueryResponse response = context.performGenericQuery(query);</programlisting></para>
-		<para>The "<emphasis role="italic">newObject</emphasis>" method call creates a new
-			persistent object setting its state to
-			NEW:<programlisting>Artist artist = context.newObject(Artist.class);
-artist.setName("Picasso");</programlisting>Once
-			a new object is created, its properties can be modified by the application in memory
-			without affecting the database. To ensure the object is saved to the database,
-			application must call "<emphasis role="italic">commitChanges</emphasis>":
-			<programlisting>context.commitChanges();</programlisting>In our case "commitChanges"
-			commits just this one artist object, but in fact it commits all in-memory changes to all
-			objects registered in this ObjectContext (it just happens that we didn't have any more
-			objects to commit). I.e. anything that has changed since the previous commit or rollback
-			(or since the context creation if there were no previous commits or rollbacks). Commit
-			internally generates a minimal set of SQL statements to synchronize the database with
-			the in-memory state of all changed objects and sends them to DB in a single
-			transaction.</para>
-		<para>Finally ObjectContext provides access to all the mapping metadata that can often be
-			useful to the application. Metadata is accessed via EntityResolver
-			object:<programlisting>EntityResolver resolver = objectContext.getEntityResolver();</programlisting></para>
+		<para>An application might modify selected objects. E.g.:</para>
+		<programlisting>Artist selectedArtist = artists.get(0);
+selectedArtist.setName("Dali");</programlisting>
+		<para>The first time the object property is changed, the object's state is automatically set
+			to "MODIFIED" by Cayenne. Cayenne tracks all in-memory changes until a user calls
+				"<emphasis role="italic"
+			>commitChanges</emphasis>":<programlisting>context.commitChanges();</programlisting>At
+			this point all in-memory changes are analyzed and a minimal set of SQL statements is
+			issued in a single transaction to synchronize the database with the in-memory state. In
+			our example "commitChanges" commits just one object, but generally it can be any number
+			of objects. </para>
+		<para>If instead of commit, we wanted to reset all changed objects to the previously
+			committed state, we'd call <emphasis>rollbackChanges</emphasis>
+			instead:<programlisting>context.rollbackChanges();</programlisting></para>
+		<para>"<emphasis role="italic">newObject</emphasis>" method call creates a persistent object
+			and sets its state to
+			"NEW":<programlisting>Artist newArtist = context.newObject(Artist.class);
+newArtist.setName("Picasso");</programlisting></para>
+		<para>It will only exist in memory until "commitChanges" is issued. On commit Cayenne might
+			generate a new primary key (unless a user set it explicitly, or a PK was inferred from a
+			relationship) and issue an INSERT SQL statement to permanently store the object.</para>
+		<para><emphasis>deleteObjects</emphasis> method takes one or more Persistent objects and
+			marks them as
+			"DELETED":<programlisting>context.deleteObjects(artist1);
+context.deleteObjects(artist2, artist3, artist4);</programlisting>Additionally
+			"deleteObjects" processes all  delete rules modeled for the affected objects. This may
+			result in implicitly deleting or modifying extra related objects. Same as insert and
+			update, delete operations are sent to the database only when "commitChanges" is called.
+			Similarly "rollbackChanges" will undo the effect of "newObject" and
+			"deleteObjects".</para>
+		<para>Often an appliction needs to inspect mapping metadata. This information is stored in
+			the EntityResolver object, accessible via the
+			ObjectContext:<programlisting>EntityResolver resolver = objectContext.getEntityResolver();</programlisting></para>
+		<para>Here we discussed the most commonly used subset of the ObjectContext API. There are
+			other useful methods, e.g. those allowing to inspect registered objects state en bulk,
+			etc. Check the latest JavaDocs for details.</para>
 	</section>
 	<section xml:id="cayenne-helper-class">
 		<title>Cayenne Helper Class</title>
@@ -135,8 +153,8 @@ artist.setName("Picasso");</programlisting>Once
 			:<programlisting>long pk = Cayenne.longPKForObject(artist);</programlisting></para>
 		<para>It also provides the reverse operation - finding an object given a known
 			PK:<programlisting>Artist artist = Cayenne.objectForPK(context, Artist.class, 34579);</programlisting></para>
-		<para>If a query is expected to return 0 or 1 object, Cayenne helper class can be used
-			tofind this object. It throws an exception if more than one object matched the
+		<para>If a query is expected to return 0 or 1 object, Cayenne helper class can be used to find
+			this object. It throws an exception if more than one object matched the
 			query:<programlisting>Artist artist = (Artist) Cayenne.objectForQuery(context, new SelectQuery(Artist.class));</programlisting></para>
 		<para>Feel free to explore Cayenne class API for other useful methods.</para>
 	</section>
