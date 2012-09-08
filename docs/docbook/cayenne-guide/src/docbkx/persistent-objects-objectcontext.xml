@@ -137,6 +137,14 @@ context.deleteObjects(artist2, artist3, artist4);</programlisting>Additionally
 			update, delete operations are sent to the database only when "commitChanges" is called.
 			Similarly "rollbackChanges" will undo the effect of "newObject" and
 			"deleteObjects".</para>
+		<para><emphasis>localObject</emphasis> returns a copy of a given persistent object that is
+			"local" to a given ObjectContext:</para>
+		<para>Since an application often works with more than one context, "localObject" is a rather
+			common operation. E.g. to improve performance a user might utilize a single shared
+			context to select and cache data, and then occasionally transfer some selected objects
+			to another context to modify and commit
+			them:<programlisting>ObjectContext editingContext = runtime.getContext();
+Artist localArtist = editingContext.localObject(artist);</programlisting></para>
 		<para>Often an appliction needs to inspect mapping metadata. This information is stored in
 			the EntityResolver object, accessible via the
 			ObjectContext:<programlisting>EntityResolver resolver = objectContext.getEntityResolver();</programlisting></para>
