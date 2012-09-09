@@ -87,7 +87,20 @@ public class EventUtil {
             String fqSubject = subject.getSubjectName();
             String method = fqSubject.substring(fqSubject.lastIndexOf('/') + 1);
 
-            manager.addListener(listener, method, GraphEvent.class, subject, sender);
+            // use non-blocking listeners for multi-threaded EM; blocking for single
+            // threaded...
+
+            if (manager.isSingleThreaded()) {
+                manager.addListener(listener, method, GraphEvent.class, subject, sender);
+            }
+            else {
+                manager.addNonBlockingListener(
+                        listener,
+                        method,
+                        GraphEvent.class,
+                        subject,
+                        sender);
+            }
         }
     }
 
