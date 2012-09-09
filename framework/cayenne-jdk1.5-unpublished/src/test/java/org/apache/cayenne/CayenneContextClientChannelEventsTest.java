@@ -176,6 +176,9 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
 
         o1.setGlobalAttribute1("X");
         c1.commitChanges();
+        
+        // let the events propagate to peers
+        Thread.sleep(500);
 
         assertEquals("X", o2.getGlobalAttribute1());
         assertFalse(c1.internalGraphManager().hasChanges());
@@ -207,6 +210,9 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 2)));
         o1.setTable1(o1r);
         c1.commitChanges();
+        
+        // let the events propagate to peers
+        Thread.sleep(500);
 
         assertEquals("g2", o2.getTable1().getGlobalAttribute1());
         assertEquals(o1r.getObjectId(), o2.getTable1().getObjectId());
@@ -237,6 +243,9 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         o1.addToTable2Array(o1r);
 
         c1.commitChanges();
+        
+        // let the events propagate to peers
+        Thread.sleep(500);
 
         assertEquals(2, o1.getTable2Array().size());
         assertEquals(2, o2.getTable2Array().size());
@@ -304,6 +313,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         o1.removeFromTable5s(o1r);
 
         c1.commitChanges();
+        // let the events propagate to peers
+        Thread.sleep(500);
 
         assertEquals(1, o1.getTable5s().size());
         assertEquals(1, o2.getTable5s().size());
