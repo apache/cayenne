@@ -4,12 +4,92 @@
 	<title>Expressions</title>
 	<section xml:id="expressions-overview">
 		<title>Expressions Overview</title>
+		<para>Cayenne provides a simple yet powerful object-based expression language. The most common
+			usese of expressions are to build qualifiers and orderings of queries that are later
+			converted to SQL by Cayenne and to evaluate in-memory against specific objects (to
+			access certain values in the object graph or to perform in-memory object filtering and
+			sorting). Cayenne provides API to build expressions in the code and a parser to create
+			expressions from strings.</para>
 	</section>
 	<section xml:id="path-expressions">
 		<title>Path Expressions</title>
+		<para>Before discussing how to build expressions, it is important to understand one group of
+			expressions widely used in Cayenne - path expressions. There are two types of path
+			expressions - object and database, used for navigating graphs of connected objects or
+			joined DB tables respectively. Object paths are much more commonly used, as after all
+			Cayenne is supposed to provide a degree of isolation of the object model from the
+			database. However database paths are helpful in certain situations. General structure of
+			path expressions is the following:<programlisting> [db:]segment[+][.segment[+]...]</programlisting><itemizedlist>
+				<listitem>
+					<para>"db:" is an optional prefix indicating that the following path is a DB
+						path. Otherwise it is an object path.</para>
+				</listitem>
+				<listitem>
+					<para>"segment" is a name of a property (relationship or attribute in Cayenne
+						terms) in the path. Path must have at least one segment; segments are
+						separated by dot (".").</para>
+				</listitem>
+				<listitem>
+					<para>"+" An "OUTER JOIN" path component. Currently "+" only has effect when
+						translated to SQL as OUTER JOIN. When evaluating expressions in memory, it
+						is ignored.</para>
+				</listitem>
+			</itemizedlist></para>
+		<para>An object path expression represents a chain of property names rooted in a certain
+			(unspecified during expression creation) object and "navigating" to its related value.
+			E.g. a path expression "artist.name" might be a property path starting from a Painting
+			object, pointing to the related Artist object, and then to its name attribute. A few
+			more examples:</para>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>"name" - can be used to navigate (read) the "name" property of a Person
+						(or any other type of object that has a "name" property).</para>
+				</listitem>
+				<listitem>
+					<para>"artist.exhibits.closingDate" - can be used to navigate to a closing date
+						of any of the exhibits of a Painting's Artist object.</para>
+				</listitem>
+				<listitem>
+					<para>"artist.exhibits+.closingDate" - same as the previous example, but when
+						translated into SQL, an OUTER JOIN will be used for "exhibits".</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+		<para>Similarly a database path expression is a dot-separated path through DB table joins
+			and columns. In Cayenne joins are mapped as DbRelationships with some symbolic names
+			(the closest concept to DbRelationship name in the DB world is a named foreign key
+			constraint. But DbRelationship names are usually chosen arbitrarily, without regard to
+			constraints naming or even constraints presence). A database path therefore might look
+			like this -  "db:dbrelationshipX.dbrelationshipY.COLUMN_Z". More specific examples:<itemizedlist>
+				<listitem>
+					<para>"db:NAME" - can be used to navigate to the value of "NAME" column of some
+						unspecified table.</para>
+				</listitem>
+				<listitem>
+					<para>"db:artist.artistExhibits.exhibit.CLOSING_DATE" - can be used to match a
+						closing date of any of the exhibits of a related artist record.</para>
+				</listitem>
+			</itemizedlist></para>
+		<para>Cayenne supports "aliases" in path Expressions. E.g. the same expression can be
+			written using explicit path or an alias:<itemizedlist>
+				<listitem>
+					<para>"artist.exhibits.closingDate" - full path</para>
+				</listitem>
+				<listitem>
+					<para>"e.closingDate" - alias "e" is used for "artist.exhibits".</para>
+				</listitem>
+			</itemizedlist>SelectQuery using the second form of the path expression must be made
+			aware of the alias via <emphasis role="italic"
+				>"SelectQuery.aliasPathSplits(..)"</emphasis>, otherwise an Exception will be
+			thrown. The main use of aliases is to allow users to control how SQL joins are generated
+			if the same path is encountered more than once in any given Expression. Each alias for
+			any given path would result in a separate join. Without aliases, a single join will be
+			used for a group of matching paths.</para>
 	</section>
 	<section xml:id="expressions-from-strings">
 		<title>Creating Expressions from Strings</title>
+		<para>For a full grammar check Appendix C.</para>
 	</section>
 	<section xml:id="expressions-with-expressionfactory">
 		<title>Creating Expressions with ExpressionFactory</title>
