@@ -45,6 +45,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextWithDataContextTest extends ClientCase {
@@ -199,7 +200,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
 
     public void testPostAddOnObjectCallback() throws Exception {
 
-        DataContext serverContext = (DataContext) clientServerChannel.getParentChannel();
+        final DataContext serverContext = (DataContext) clientServerChannel.getParentChannel();
 
         LifecycleCallbackRegistry callbackRegistry = serverContext
                 .getEntityResolver()
@@ -211,15 +212,23 @@ public class CayenneContextWithDataContextTest extends ClientCase {
                     MtTable1.class,
                     "prePersistMethod");
 
-            Persistent clientObject = clientContext.newObject(ClientMtTable1.class);
+            final Persistent clientObject = clientContext.newObject(ClientMtTable1.class);
             clientContext.commitChanges();
 
-            // find peer
-            MtTable1 peer = (MtTable1) serverContext.getGraphManager().getNode(
+        new ThreadedTestHelper() {
+
+            @Override
+            protected void assertResult() throws Exception {
+            	// find peer
+            	MtTable1 peer = (MtTable1) serverContext.getGraphManager().getNode(
                     clientObject.getObjectId());
 
-            assertNotNull(peer);
-            assertTrue(peer.isPrePersisted());
+            	assertNotNull(peer);
+            	assertTrue(peer.isPrePersisted());
+            }
+        }.assertWithTimeout(1000);
+
+
         }
         finally {
             callbackRegistry.clear();
