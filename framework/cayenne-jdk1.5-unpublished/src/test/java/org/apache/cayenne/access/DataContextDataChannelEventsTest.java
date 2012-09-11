@@ -46,44 +46,57 @@ public class DataContextDataChannelEventsTest extends ServerCase {
     @Inject
     private ServerRuntime runtime;
 
-    public void testCommitEvent() {
+    public void testCommitEvent() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
-        MockChannelListener listener = new MockChannelListener();
+        final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
         a.setArtistName("Y");
         context.commitChanges();
 
-        assertTrue(listener.graphCommitted);
-        assertFalse(listener.graphChanged);
-        assertFalse(listener.graphRolledBack);
+        new ThreadedTestHelper() {
+
+            @Override
+            protected void assertResult() throws Exception {
+                assertTrue(listener.graphCommitted);
+                assertFalse(listener.graphChanged);
+                assertFalse(listener.graphRolledBack);
+            }
+        }.assertWithTimeout(1000);
+
     }
 
-    public void testRollbackEvent() {
+    public void testRollbackEvent() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
-        MockChannelListener listener = new MockChannelListener();
+        final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
         a.setArtistName("Y");
         context.rollbackChanges();
 
-        assertFalse(listener.graphCommitted);
-        assertFalse(listener.graphChanged);
-        assertTrue(listener.graphRolledBack);
+        new ThreadedTestHelper() {
+
+            @Override
+            protected void assertResult() throws Exception {
+                assertFalse(listener.graphCommitted);
+                assertFalse(listener.graphChanged);
+                assertTrue(listener.graphRolledBack);
+            }
+        }.assertWithTimeout(1000);
     }
 
-    public void testChangeEventOnChildChange() {
+    public void testChangeEventOnChildChange() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
 
-        MockChannelListener listener = new MockChannelListener();
+        final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
         ObjectContext childContext = runtime.getContext(context);
@@ -93,9 +106,15 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         a1.setArtistName("Y");
         childContext.commitChangesToParent();
 
-        assertFalse(listener.graphCommitted);
-        assertTrue(listener.graphChanged);
-        assertFalse(listener.graphRolledBack);
+        new ThreadedTestHelper() {
+
+            @Override
+            protected void assertResult() throws Exception {
+                assertFalse(listener.graphCommitted);
+                assertTrue(listener.graphChanged);
+                assertFalse(listener.graphRolledBack);
+            }
+        }.assertWithTimeout(1000);
     }
 
     public void testChangeEventOnPeerChange() throws Exception {

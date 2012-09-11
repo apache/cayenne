@@ -37,7 +37,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
     @Inject
     private ServerRuntime runtime;
 
-    public void testPeerObjectUpdatedTempOID() {
+    public void testPeerObjectUpdatedTempOID() throws Exception {
 
         ObjectContext peer1 = runtime.getContext(context);
         Artist a1 = peer1.newObject(Artist.class);
@@ -52,12 +52,16 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         assertEquals(a1TempId, a2.getObjectId());
 
         peer1.commitChanges();
+
+        // pause to let the context events propagate
+        Thread.sleep(500);
+
         assertFalse(a1.getObjectId().isTemporary());
         assertFalse(a2.getObjectId().isTemporary());
         assertEquals(a2.getObjectId(), a1.getObjectId());
     }
 
-    public void testPeerObjectUpdatedSimpleProperty() {
+    public void testPeerObjectUpdatedSimpleProperty() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
         context.commitChanges();
@@ -71,6 +75,9 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         a1.setArtistName("Y");
         assertEquals("X", a2.getArtistName());
         peer1.commitChangesToParent();
+
+        // pause to let the context events propagate
+        Thread.sleep(500);
         assertEquals("Y", a2.getArtistName());
 
         assertFalse(
@@ -78,7 +85,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
                 peer2.hasChanges());
     }
 
-    public void testPeerObjectUpdatedToOneRelationship() {
+    public void testPeerObjectUpdatedToOneRelationship() throws Exception {
 
         Artist a = context.newObject(Artist.class);
         Artist altA = context.newObject(Artist.class);
@@ -102,6 +109,9 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         p1.setToArtist(altA1);
         assertSame(a2, p2.getToArtist());
         peer1.commitChangesToParent();
+        // pause to let the context events propagate
+        Thread.sleep(500);
+
         assertEquals(altA2, p2.getToArtist());
 
         assertFalse(
@@ -109,7 +119,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
                 peer2.hasChanges());
     }
 
-    public void testPeerObjectUpdatedToManyRelationship() {
+    public void testPeerObjectUpdatedToManyRelationship() throws Exception {
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -122,6 +132,8 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         py.setPaintingTitle("PY");
 
         context.commitChanges();
+        // pause to let the context events propagate
+        Thread.sleep(500);
 
         ObjectContext peer1 = runtime.getContext(context);
         Painting py1 = peer1.localObject(py);
@@ -135,6 +147,9 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
         assertEquals(1, a2.getPaintingArray().size());
         assertFalse(a2.getPaintingArray().contains(py2));
         peer1.commitChangesToParent();
+        // pause to let the context events propagate
+        Thread.sleep(500);
+
         assertEquals(2, a2.getPaintingArray().size());
         assertTrue(a2.getPaintingArray().contains(py2));
 

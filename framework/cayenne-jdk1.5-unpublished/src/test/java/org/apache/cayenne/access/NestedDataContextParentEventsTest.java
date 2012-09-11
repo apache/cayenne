@@ -20,31 +20,42 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextParentEventsTest extends ServerCase {
 
     @Inject
+    protected ServerRuntime runtime;
+
+    @Inject
     private DataContext context;
 
-    public void testParentUpdatedId() {
-        ObjectContext child1 = context.createChildContext();
+    public void testParentUpdatedId() throws Exception {
+        ObjectContext child1 = runtime.getContext(context);
 
-        Artist ac = child1.newObject(Artist.class);
+        final Artist ac = child1.newObject(Artist.class);
         ac.setArtistName("X");
         child1.commitChangesToParent();
 
-        Artist ap = (Artist) context.getGraphManager().getNode(ac.getObjectId());
+        final Artist ap = (Artist) context.getGraphManager().getNode(ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());
         context.commitChanges();
 
-        assertFalse(ap.getObjectId().isTemporary());
-        assertEquals(ap.getObjectId(), ac.getObjectId());
+        new ThreadedTestHelper() {
+
+            @Override
+            protected void assertResult() throws Exception {
+                assertFalse(ap.getObjectId().isTemporary());
+                assertEquals(ap.getObjectId(), ac.getObjectId());
+            }
+        }.assertWithTimeout(1000);
     }
 }
