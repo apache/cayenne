@@ -16,11 +16,13 @@ Changes/New Features:
 CAY-1717 [PATCH] Implement JDBC compatibility layer methods
 CAY-1718 Remove everything deprecated in 3.1
 CAY-1724 Add 'Property' class for easier and better Expression creation
+CAY-1737 ObjectContexts listening to DataChannel events must be non-blocking
 CAY-1646 Synchronize tabs in Modeler between ObjEntity and DbEntity editor panes
 CAY-1647 Easily switch to/from ObjEntity and DbEntity in Modeler
 
 Bug Fixes:
 
+CAY-957 Deadlock in nested contexts
 CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
 CAY-1719 Modeler - Obj Attribute Java Type editor won't focus sometimes
