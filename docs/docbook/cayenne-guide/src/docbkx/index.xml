@@ -27,4 +27,5 @@
 	<xi:include href="part3.xml"/>
 	<xi:include href="appendix-a.xml"/>
 	<xi:include href="appendix-b.xml"/>
+	<xi:include href="appendix-c.xml"/>
 </book>
