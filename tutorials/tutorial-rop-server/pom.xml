@@ -19,6 +19,7 @@
 	<artifactId>tutorial-rop-server</artifactId>
 	<name>Cayenne ROP Server Tutorial</name>
 	<version>3.1B2-SNAPSHOT</version>
+    <packaging>war</packaging>
 
 	<dependencies>
 		<dependency>
