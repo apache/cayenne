@@ -82,7 +82,7 @@ public class UUIDTest extends ServerCase {
     public void testUUIDMeaningfulPkSelect() throws Exception {
         UUID id = UUID.randomUUID();
 
-        uuidPkEntity.insert(id);
+        uuidPkEntity.insert(id.toString());
 
         UuidPkEntity o1 = Cayenne.objectForPK(context, UuidPkEntity.class, id);
 
