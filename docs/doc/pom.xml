@@ -219,34 +219,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<!--  Optionally update docs from Wiki -->
-	<profiles>
-		<profile>
-			<id>wiki-docs</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.cayenne.build-tools</groupId>
-						<artifactId>maven-cayenne-doc-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>docs</id>
-								<phase>generate-resources</phase>
-								<goals>
-									<goal>confluence-export</goal>
-								</goals>
-								<configuration>
-									<outputDirectory>src/main/resources/doc</outputDirectory>
-									<baseUrl>https://cwiki.apache.org/confluence/</baseUrl>
-									<startPage>Documentation</startPage>
-									<spaceName>CAYDOC</spaceName>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>
