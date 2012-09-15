@@ -1,0 +1,8 @@
+<!-- 
+ This piece of configuration is needed for deployment on Tomcat 6 or 7
+ to prevent ROP client from losing its server-side session between requests.
+-->
+<Context>
+	<Valve className="org.apache.catalina.authenticator.BasicAuthenticator" 
+		changeSessionIdOnAuthentication="false" />
+</Context>
