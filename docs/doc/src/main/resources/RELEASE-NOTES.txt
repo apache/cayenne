@@ -25,6 +25,7 @@ CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
 CAY-1735 Serializable IncrementalFaultList
 CAY-1738 Tutorial cayenne-rop-server should be packaged as a war
+CAY-1739 Cayenne ROP server resets session on every request if BASIC auth is used
 
 ----------------------------------
 Release: 3.1B1
