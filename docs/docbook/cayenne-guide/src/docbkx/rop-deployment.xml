@@ -12,7 +12,7 @@
 			resulting in MissingSessionExceptions. To solve that you will need to either switch to
 			an alternative security mechanism, or disable "session fixation problem" protections of
 			the container. E.g. the later can be achieved in Tomcat 7 by adding the following
-				<emphasis>context.cml</emphasis> file to the webapp's META-INF/ directory:
+				<emphasis>context.xml</emphasis> file to the webapp's META-INF/ directory:
 			<programlisting>&lt;Context>
 	&lt;Valve className="org.apache.catalina.authenticator.BasicAuthenticator" 
 			changeSessionIdOnAuthentication="false" />
