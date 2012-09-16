@@ -30,96 +30,99 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContext_DeadlockTest extends ServerCase {
 
-    @Inject
-    private DataContext parent;
+	@Inject
+	private DataContext parent;
 
-    @Inject
-    private ServerRuntime runtime;
+	@Inject
+	private ServerRuntime runtime;
 
-    @Inject
-    protected DBHelper dbHelper;
+	@Inject
+	protected DBHelper dbHelper;
 
-    protected TableHelper tArtist;
+	protected TableHelper tArtist;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
+	@Override
+	protected void setUpAfterInjection() throws Exception {
+		dbHelper.deleteAll("PAINTING_INFO");
+		dbHelper.deleteAll("PAINTING");
+		dbHelper.deleteAll("ARTIST_EXHIBIT");
+		dbHelper.deleteAll("ARTIST_GROUP");
+		dbHelper.deleteAll("ARTIST");
 
-        tArtist = new TableHelper(dbHelper, "ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
-    }
+		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+	}
 
-    private void createArtists() throws Exception {
-        for (int i = 0; i < 300; i++) {
-            tArtist.insert(i + 1, "X" + i);
-        }
-    }
+	private void createArtists() throws Exception {
+		for (int i = 0; i < 300; i++) {
+			tArtist.insert(i + 1, "X" + i);
+		}
+	}
 
-    public void testDeadlock() throws Exception {
+	public void testDeadlock() throws Exception {
 
-        createArtists();
+		createArtists();
 
-        Thread[] threads = new Thread[2];
+		final Thread[] threads = new Thread[2];
 
-        Random rnd = new Random(System.currentTimeMillis());
-        for (int i = 0; i < threads.length; i++) {
-            threads[i] = new UpdateThread(
-                    "UpdateThread-" + i,
-                    runtime.getContext(parent),
-                    rnd);
-        }
+		Random rnd = new Random(System.currentTimeMillis());
+		for (int i = 0; i < threads.length; i++) {
+			threads[i] = new UpdateThread("UpdateThread-" + i,
+					runtime.getContext(parent), rnd);
+		}
 
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].start();
-        }
+		for (int i = 0; i < threads.length; i++) {
+			threads[i].start();
+		}
 
-        synchronized (parent) {
-            parent.wait(10000);
-        }
+		new ThreadedTestHelper() {
 
-        for (int i = 0; i < threads.length; i++) {
-            // unfortunately here we'll have to leave some dead threads behind... Of
-            // course if there's no deadlock, there won't be a leak either
-            assertTrue("Deadlocked thread", !threads[i].isAlive());
-        }
-    }
+			@Override
+			protected void assertResult() throws Exception {
+				for (int i = 0; i < threads.length; i++) {
+					// unfortunately here we'll have to leave some dead threads
+					// behind... Of course if there's no deadlock, there won't
+					// be a leak either
+					assertTrue("Deadlocked thread", !threads[i].isAlive());
+				}
+			}
+		}.assertWithTimeout(2000);
 
-    static class UpdateThread extends Thread {
+	}
 
-        protected ObjectContext nestedContext;
-        protected Random rnd;
+	static class UpdateThread extends Thread {
 
-        UpdateThread(String name, ObjectContext nestedContext, Random rnd) {
-            super(name);
-            setDaemon(true);
-            this.nestedContext = nestedContext;
-            this.rnd = rnd;
-        }
+		protected ObjectContext nestedContext;
+		protected Random rnd;
 
-        @Override
-        public void run() {
+		UpdateThread(String name, ObjectContext nestedContext, Random rnd) {
+			super(name);
+			setDaemon(true);
+			this.nestedContext = nestedContext;
+			this.rnd = rnd;
+		}
 
-            List<Artist> artists = nestedContext.performQuery(new EJBQLQuery(
-                    "select a FROM Artist a"));
+		@Override
+		public void run() {
 
-            for (int i = 0; i < 100; i++) {
+			List<Artist> artists = nestedContext.performQuery(new EJBQLQuery(
+					"select a FROM Artist a"));
 
-                for (int j = 0; j < 5; j++) {
-                    int index = rnd.nextInt(artists.size());
-                    Artist a = artists.get(index);
-                    a.setArtistName("Y" + rnd.nextInt());
-                }
+			for (int i = 0; i < 100; i++) {
 
-                nestedContext.commitChanges();
-            }
-        }
-    }
+				for (int j = 0; j < 5; j++) {
+					int index = rnd.nextInt(artists.size());
+					Artist a = artists.get(index);
+					a.setArtistName("Y" + rnd.nextInt());
+				}
+
+				nestedContext.commitChanges();
+			}
+		}
+	}
 }
