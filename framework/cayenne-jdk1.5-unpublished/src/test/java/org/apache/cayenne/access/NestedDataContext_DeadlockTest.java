@@ -27,10 +27,10 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContext_DeadlockTest extends ServerCase {
@@ -80,7 +80,7 @@ public class NestedDataContext_DeadlockTest extends ServerCase {
 			threads[i].start();
 		}
 
-		new ThreadedTestHelper() {
+		new ParallelTestContainer() {
 
 			@Override
 			protected void assertResult() throws Exception {
@@ -91,7 +91,7 @@ public class NestedDataContext_DeadlockTest extends ServerCase {
 					assertTrue("Deadlocked thread", !threads[i].isAlive());
 				}
 			}
-		}.assertWithTimeout(2000);
+		}.runTest(2000);
 
 	}
 

@@ -23,159 +23,159 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextPeerEventsTest extends ServerCase {
 
-    @Inject
-    private DataContext context;
+	@Inject
+	private DataContext context;
 
-    @Inject
-    private ServerRuntime runtime;
+	@Inject
+	private ServerRuntime runtime;
 
-    public void testPeerObjectUpdatedTempOID() throws Exception {
+	public void testPeerObjectUpdatedTempOID() throws Exception {
 
-        ObjectContext peer1 = runtime.getContext(context);
-        final Artist a1 = peer1.newObject(Artist.class);
-        a1.setArtistName("Y");
+		ObjectContext peer1 = runtime.getContext(context);
+		final Artist a1 = peer1.newObject(Artist.class);
+		a1.setArtistName("Y");
 
-        ObjectId a1TempId = a1.getObjectId();
-        assertTrue(a1TempId.isTemporary());
+		ObjectId a1TempId = a1.getObjectId();
+		assertTrue(a1TempId.isTemporary());
 
-        ObjectContext peer2 = runtime.getContext(context);
-        final Artist a2 = peer2.localObject(a1);
+		ObjectContext peer2 = runtime.getContext(context);
+		final Artist a2 = peer2.localObject(a1);
 
-        assertEquals(a1TempId, a2.getObjectId());
+		assertEquals(a1TempId, a2.getObjectId());
 
-        peer1.commitChanges();
+		peer1.commitChanges();
 
-        // pause to let the context events propagate
-        new ThreadedTestHelper() {
+		// pause to let the context events propagate
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertFalse(a1.getObjectId().isTemporary());
-                assertFalse(a2.getObjectId().isTemporary());
-                assertEquals(a2.getObjectId(), a1.getObjectId());
-            }
-        }.assertWithTimeout(2000);
-    }
+			@Override
+			protected void assertResult() throws Exception {
+				assertFalse(a1.getObjectId().isTemporary());
+				assertFalse(a2.getObjectId().isTemporary());
+				assertEquals(a2.getObjectId(), a1.getObjectId());
+			}
+		}.runTest(2000);
+	}
 
-    public void testPeerObjectUpdatedSimpleProperty() throws Exception {
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("X");
-        context.commitChanges();
+	public void testPeerObjectUpdatedSimpleProperty() throws Exception {
+		Artist a = context.newObject(Artist.class);
+		a.setArtistName("X");
+		context.commitChanges();
 
-        ObjectContext peer1 = runtime.getContext(context);
-        Artist a1 = peer1.localObject(a);
+		ObjectContext peer1 = runtime.getContext(context);
+		Artist a1 = peer1.localObject(a);
 
-        final ObjectContext peer2 = runtime.getContext(context);
-        final Artist a2 = peer2.localObject(a);
+		final ObjectContext peer2 = runtime.getContext(context);
+		final Artist a2 = peer2.localObject(a);
 
-        a1.setArtistName("Y");
-        assertEquals("X", a2.getArtistName());
-        peer1.commitChangesToParent();
+		a1.setArtistName("Y");
+		assertEquals("X", a2.getArtistName());
+		peer1.commitChangesToParent();
 
-        // pause to let the context events propagate
-        new ThreadedTestHelper() {
+		// pause to let the context events propagate
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertEquals("Y", a2.getArtistName());
-                assertFalse(
-                        "Peer data context became dirty on event processing",
-                        peer2.hasChanges());
-            }
-        }.assertWithTimeout(2000);
+			@Override
+			protected void assertResult() throws Exception {
+				assertEquals("Y", a2.getArtistName());
+				assertFalse(
+						"Peer data context became dirty on event processing",
+						peer2.hasChanges());
+			}
+		}.runTest(2000);
 
-    }
+	}
 
-    public void testPeerObjectUpdatedToOneRelationship() throws Exception {
+	public void testPeerObjectUpdatedToOneRelationship() throws Exception {
 
-        Artist a = context.newObject(Artist.class);
-        Artist altA = context.newObject(Artist.class);
+		Artist a = context.newObject(Artist.class);
+		Artist altA = context.newObject(Artist.class);
 
-        Painting p = context.newObject(Painting.class);
-        p.setToArtist(a);
-        p.setPaintingTitle("PPP");
-        a.setArtistName("X");
-        altA.setArtistName("Y");
-        context.commitChanges();
+		Painting p = context.newObject(Painting.class);
+		p.setToArtist(a);
+		p.setPaintingTitle("PPP");
+		a.setArtistName("X");
+		altA.setArtistName("Y");
+		context.commitChanges();
 
-        ObjectContext peer1 = runtime.getContext(context);
-        Painting p1 = peer1.localObject(p);
-        Artist altA1 = peer1.localObject(altA);
+		ObjectContext peer1 = runtime.getContext(context);
+		Painting p1 = peer1.localObject(p);
+		Artist altA1 = peer1.localObject(altA);
 
-        final ObjectContext peer2 = runtime.getContext(context);
-        final Painting p2 = peer2.localObject(p);
-        final Artist altA2 = peer2.localObject(altA);
-        Artist a2 = peer2.localObject(a);
+		final ObjectContext peer2 = runtime.getContext(context);
+		final Painting p2 = peer2.localObject(p);
+		final Artist altA2 = peer2.localObject(altA);
+		Artist a2 = peer2.localObject(a);
 
-        p1.setToArtist(altA1);
-        assertSame(a2, p2.getToArtist());
-        peer1.commitChangesToParent();
+		p1.setToArtist(altA1);
+		assertSame(a2, p2.getToArtist());
+		peer1.commitChangesToParent();
 
-        // pause to let the context events propagate
-        new ThreadedTestHelper() {
+		// pause to let the context events propagate
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertEquals(altA2, p2.getToArtist());
+			@Override
+			protected void assertResult() throws Exception {
+				assertEquals(altA2, p2.getToArtist());
 
-                assertFalse(
-                        "Peer data context became dirty on event processing",
-                        peer2.hasChanges());
-            }
-        }.assertWithTimeout(2000);
+				assertFalse(
+						"Peer data context became dirty on event processing",
+						peer2.hasChanges());
+			}
+		}.runTest(2000);
 
-    }
+	}
 
-    public void testPeerObjectUpdatedToManyRelationship() throws Exception {
+	public void testPeerObjectUpdatedToManyRelationship() throws Exception {
 
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("X");
+		Artist a = context.newObject(Artist.class);
+		a.setArtistName("X");
 
-        Painting px = context.newObject(Painting.class);
-        px.setToArtist(a);
-        px.setPaintingTitle("PX");
+		Painting px = context.newObject(Painting.class);
+		px.setToArtist(a);
+		px.setPaintingTitle("PX");
 
-        Painting py = context.newObject(Painting.class);
-        py.setPaintingTitle("PY");
+		Painting py = context.newObject(Painting.class);
+		py.setPaintingTitle("PY");
 
-        context.commitChanges();
-        // pause to let the context events propagate
-        Thread.sleep(500);
+		context.commitChanges();
+		// pause to let the context events propagate
+		Thread.sleep(500);
 
-        ObjectContext peer1 = runtime.getContext(context);
-        Painting py1 = peer1.localObject(py);
-        Artist a1 = peer1.localObject(a);
+		ObjectContext peer1 = runtime.getContext(context);
+		Painting py1 = peer1.localObject(py);
+		Artist a1 = peer1.localObject(a);
 
-        final ObjectContext peer2 = runtime.getContext(context);
-        final Painting py2 = peer2.localObject(py);
-        final Artist a2 = peer2.localObject(a);
+		final ObjectContext peer2 = runtime.getContext(context);
+		final Painting py2 = peer2.localObject(py);
+		final Artist a2 = peer2.localObject(a);
 
-        a1.addToPaintingArray(py1);
-        assertEquals(1, a2.getPaintingArray().size());
-        assertFalse(a2.getPaintingArray().contains(py2));
-        peer1.commitChangesToParent();
-        // pause to let the context events propagate
-        new ThreadedTestHelper() {
+		a1.addToPaintingArray(py1);
+		assertEquals(1, a2.getPaintingArray().size());
+		assertFalse(a2.getPaintingArray().contains(py2));
+		peer1.commitChangesToParent();
+		// pause to let the context events propagate
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertEquals(2, a2.getPaintingArray().size());
-                assertTrue(a2.getPaintingArray().contains(py2));
+			@Override
+			protected void assertResult() throws Exception {
+				assertEquals(2, a2.getPaintingArray().size());
+				assertTrue(a2.getPaintingArray().contains(py2));
 
-                assertFalse(
-                        "Peer data context became dirty on event processing",
-                        peer2.hasChanges());
-            }
-        }.assertWithTimeout(2000);
+				assertFalse(
+						"Peer data context became dirty on event processing",
+						peer2.hasChanges());
+			}
+		}.runTest(2000);
 
-    }
+	}
 }

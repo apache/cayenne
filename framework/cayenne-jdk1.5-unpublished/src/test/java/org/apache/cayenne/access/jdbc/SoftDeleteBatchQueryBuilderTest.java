@@ -36,10 +36,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.locking.SoftTest;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.LOCKING_PROJECT)
 public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
@@ -170,7 +170,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
             final SelectQuery query = new SelectQuery(SoftTest.class);
 
-            new ThreadedTestHelper() {
+            new ParallelTestContainer() {
 
                 @Override
                 protected void assertResult() throws Exception {
@@ -182,13 +182,13 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
                     query.andQualifier(ExpressionFactory.matchDbExp("DELETED", true));
                     assertEquals(0, context.performQuery(query).size());
                 }
-            }.assertWithTimeout(200);
+            }.runTest(200);
 
             context.deleteObjects(test);
             assertEquals(test.getPersistenceState(), PersistenceState.DELETED);
             context.commitChanges();
 
-            new ThreadedTestHelper() {
+            new ParallelTestContainer() {
 
                 @Override
                 protected void assertResult() throws Exception {
@@ -203,7 +203,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
                     template.setFetchingDataRows(true);
                     assertEquals(1, context.performQuery(template).size());
                 }
-            }.assertWithTimeout(200);
+            }.runTest(200);
         }
         finally {
             context.performQuery(new SQLTemplate(entity, "DELETE FROM SOFT_TEST"));

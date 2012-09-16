@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.unit.util;
+package org.apache.cayenne.test.parallel;
 
 /**
  * Helper class allowing unit tests to wait till a code in question executes in
@@ -32,11 +32,11 @@ package org.apache.cayenne.unit.util;
  * </p>
  * 
  */
-public abstract class ThreadedTestHelper {
+public abstract class ParallelTestContainer {
 
 	protected abstract void assertResult() throws Exception;
 
-	public void assertWithTimeout(long timeoutMs) throws Exception {
+	public void runTest(long timeoutMs) throws Exception {
 		long checkEveryXMs;
 		int maxMumberOfChecks;
 

@@ -34,12 +34,12 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 /**
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
@@ -118,7 +118,7 @@ public class DataContextSharedCacheTest extends ServerCase {
         // check both artists
         assertEquals(newName, altArtist.getArtistName());
 
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -128,7 +128,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                         artist.getArtistName());
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
     }
 
     /**
@@ -162,14 +162,14 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertEquals(newName, freshSnapshot.get("ARTIST_NAME"));
 
         // check peer artist
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 assertEquals(newName, altArtist.getArtistName());
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
     }
 
     /**
@@ -210,7 +210,7 @@ public class DataContextSharedCacheTest extends ServerCase {
         assertEquals(newDate, freshSnapshot.get("DATE_OF_BIRTH"));
 
         // check peer artist
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -219,7 +219,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 assertEquals(PersistenceState.MODIFIED, altArtist.getPersistenceState());
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
 
     }
 
@@ -249,7 +249,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 .getCachedSnapshot(altArtist.getObjectId()));
 
         // check peer artist
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -257,7 +257,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 assertNull(altArtist.getObjectContext());
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
     }
 
     /**
@@ -286,7 +286,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 .getCachedSnapshot(altArtist.getObjectId()));
 
         // check peer artist
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -294,7 +294,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 assertNull(altArtist.getObjectContext());
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
     }
 
     /**
@@ -326,14 +326,14 @@ public class DataContextSharedCacheTest extends ServerCase {
                 .getCachedSnapshot(altArtist.getObjectId()));
 
         // check peer artist
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 assertEquals(PersistenceState.NEW, altArtist.getPersistenceState());
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
 
         // check if now we can save this object again, and with the original
         // ObjectId
@@ -377,7 +377,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 .getCachedSnapshot(altArtist.getObjectId()));
 
         // check peer artist
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -385,7 +385,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 assertNull(altArtist.getObjectContext());
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
 
         assertFalse(context1.hasChanges());
     }
@@ -441,7 +441,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 .getCachedSnapshot(painting1.getObjectId()));
 
         // check peer artist
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -455,7 +455,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 assertFalse(list.contains(altPainting1));
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
     }
 
     /**
@@ -496,7 +496,7 @@ public class DataContextSharedCacheTest extends ServerCase {
 
         // use threaded helper as a barrier, to avoid triggering faults earlier than
         // needed
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -505,7 +505,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 assertTrue(((ToManyList) value).isFault());
             }
         };
-        helper.assertWithTimeout(2000);
+        helper.runTest(2000);
         List<Painting> list = altArtist.getPaintingArray();
         assertEquals(2, list.size());
     }
@@ -596,7 +596,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                 .getCachedSnapshot(artist.getObjectId()));
 
         // alternate context
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -606,7 +606,7 @@ public class DataContextSharedCacheTest extends ServerCase {
                         .getDataRowCache()
                         .getCachedSnapshot(altArtist.getObjectId()));
             }
-        }.assertWithTimeout(5000);
+        }.runTest(5000);
 
         // resolve object
         assertEquals(originalName, altArtist.getArtistName());

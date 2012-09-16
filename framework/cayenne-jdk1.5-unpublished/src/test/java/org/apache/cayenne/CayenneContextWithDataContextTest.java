@@ -35,6 +35,7 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.RemoteIncrementalFaultList;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.mt.ClientMtMeaningfulPk;
 import org.apache.cayenne.testdo.mt.ClientMtReflexive;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -45,7 +46,6 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextWithDataContextTest extends ClientCase {
@@ -215,7 +215,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
             final Persistent clientObject = clientContext.newObject(ClientMtTable1.class);
             clientContext.commitChanges();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -226,7 +226,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
             	assertNotNull(peer);
             	assertTrue(peer.isPrePersisted());
             }
-        }.assertWithTimeout(1000);
+        }.runTest(1000);
 
 
         }

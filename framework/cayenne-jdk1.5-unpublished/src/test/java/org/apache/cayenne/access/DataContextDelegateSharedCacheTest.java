@@ -25,10 +25,10 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextDelegateSharedCacheTest extends ServerCase {
@@ -83,14 +83,14 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
 
         // assert that delegate was consulted when an object store
         // was refreshed
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 assertTrue("Delegate was not consulted", methodInvoked[0]);
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
     }
 
     /**
@@ -159,14 +159,14 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
 
         // assert that delegate was consulted when an object store
         // was refreshed
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 assertTrue("Delegate was not consulted", methodInvoked[0]);
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
     }
 
     /**
@@ -202,14 +202,14 @@ public class DataContextDelegateSharedCacheTest extends ServerCase {
 
         // assert that delegate was consulted when an object store
         // was refreshed, and actually blocked object expulsion
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 assertTrue("Delegate was not consulted", methodInvoked[0]);
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
         assertNotNull(altArtist.getObjectContext());
     }

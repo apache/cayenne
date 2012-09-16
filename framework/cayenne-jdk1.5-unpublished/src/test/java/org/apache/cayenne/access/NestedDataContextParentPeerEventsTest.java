@@ -22,11 +22,11 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.relationship.Child;
 import org.apache.cayenne.testdo.relationship.Master;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
 public class NestedDataContextParentPeerEventsTest extends ServerCase {
@@ -54,7 +54,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         assertEquals("X", a2.getName());
         parentContext2.commitChangesToParent();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -64,7 +64,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
                         "Peer data context became dirty on event processing",
                         child.hasChanges());
             }
-        }.assertWithTimeout(2000);
+        }.runTest(2000);
     }
 
     public void testPeerObjectUpdatedToOneRelationship() throws Exception {
@@ -90,7 +90,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         assertNotSame(altA2, p2.getMaster());
         parentContext2.commitChanges();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -99,7 +99,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
                         "Peer data context became dirty on event processing",
                         childContext1.hasChanges());
             }
-        }.assertWithTimeout(2000);
+        }.runTest(2000);
     }
 
     public void testPeerObjectUpdatedToManyRelationship() throws Exception {
@@ -125,7 +125,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         assertFalse(a2.getChildren().contains(py2));
         parentContext2.commitChangesToParent();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -136,6 +136,6 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
                         "Peer data context became dirty on event processing",
                         peer2.hasChanges());
             }
-        }.assertWithTimeout(2000);
+        }.runTest(2000);
     }
 }

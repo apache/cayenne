@@ -25,10 +25,10 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 import org.apache.cayenne.util.EventUtil;
 
 /**
@@ -57,7 +57,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         a.setArtistName("Y");
         context.commitChanges();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -65,7 +65,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertFalse(listener.graphChanged);
                 assertFalse(listener.graphRolledBack);
             }
-        }.assertWithTimeout(1000);
+        }.runTest(1000);
 
     }
 
@@ -80,7 +80,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         a.setArtistName("Y");
         context.rollbackChanges();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -88,7 +88,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertFalse(listener.graphChanged);
                 assertTrue(listener.graphRolledBack);
             }
-        }.assertWithTimeout(1000);
+        }.runTest(1000);
     }
 
     public void testChangeEventOnChildChange() throws Exception {
@@ -106,7 +106,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         a1.setArtistName("Y");
         childContext.commitChangesToParent();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -114,7 +114,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertTrue(listener.graphChanged);
                 assertFalse(listener.graphRolledBack);
             }
-        }.assertWithTimeout(1000);
+        }.runTest(1000);
     }
 
     public void testChangeEventOnPeerChange() throws Exception {
@@ -130,7 +130,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         a1.setArtistName("Y");
         peer.commitChangesToParent();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -138,7 +138,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertTrue(listener.graphChanged);
                 assertFalse(listener.graphRolledBack);
             }
-        }.assertWithTimeout(1000);
+        }.runTest(1000);
     }
 
     public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
@@ -158,7 +158,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         a1.setArtistName("Y");
         childPeer2.commitChangesToParent();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -166,7 +166,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertTrue(listener.graphChanged);
                 assertFalse(listener.graphRolledBack);
             }
-        }.assertWithTimeout(1000);
+        }.runTest(1000);
     }
 
     class MockChannelListener implements DataChannelListener {

@@ -23,10 +23,10 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ObjectStoreGCTest extends ServerCase {
@@ -56,14 +56,14 @@ public class ObjectStoreGCTest extends ServerCase {
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // allow for slow GC
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(0, context.getObjectStore().registeredObjectsCount());
             }
-        }.assertWithTimeout(2000);
+        }.runTest(2000);
     }
 
     public void testRetainUnreferencedNew() throws Exception {
@@ -74,25 +74,25 @@ public class ObjectStoreGCTest extends ServerCase {
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // allow for slow GC
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(1, context.getObjectStore().registeredObjectsCount());
             }
-        }.assertWithTimeout(2000);
+        }.runTest(2000);
 
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
         context.commitChanges();
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(0, context.getObjectStore().registeredObjectsCount());
             }
-        }.assertWithTimeout(2000);
+        }.runTest(2000);
 
     }
 
@@ -107,24 +107,24 @@ public class ObjectStoreGCTest extends ServerCase {
         a = null;
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(1, context.getObjectStore().registeredObjectsCount());
             }
-        }.assertWithTimeout(2000);
+        }.runTest(2000);
 
         context.commitChanges();
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 System.gc();
                 assertEquals(0, context.getObjectStore().registeredObjectsCount());
             }
-        }.assertWithTimeout(2000);
+        }.runTest(2000);
 
     }
 }

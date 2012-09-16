@@ -30,10 +30,10 @@ import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextSharedCacheEmpiricTest extends ServerCase {
@@ -144,7 +144,7 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
         assertEquals(NEW_NAME, freshSnapshot.get("ARTIST_NAME"));
 
         // check peer artist
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -154,6 +154,6 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
                         a2.getArtistName());
             }
         };
-        helper.assertWithTimeout(3000);
+        helper.runTest(3000);
     }
 }

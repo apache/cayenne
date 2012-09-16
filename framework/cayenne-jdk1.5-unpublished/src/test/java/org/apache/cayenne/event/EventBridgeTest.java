@@ -24,7 +24,7 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.access.event.SnapshotEvent;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 
 /**
  */
@@ -104,7 +104,7 @@ public class EventBridgeTest extends TestCase {
 
         // since bridge is notified asynchronously by default,
         // we must wait till notification is received
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -113,7 +113,7 @@ public class EventBridgeTest extends TestCase {
             }
         };
 
-        helper.assertWithTimeout(5000);
+        helper.runTest(5000);
 
         final SnapshotEvent eventWithSubject = new SnapshotEvent(
                 this,
@@ -129,7 +129,7 @@ public class EventBridgeTest extends TestCase {
 
         // since bridge is notified asynchronously by default,
         // we must wait till notification is received
-        ThreadedTestHelper helper1 = new ThreadedTestHelper() {
+        ParallelTestContainer helper1 = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
@@ -138,7 +138,7 @@ public class EventBridgeTest extends TestCase {
             }
         };
 
-        helper1.assertWithTimeout(5000);
+        helper1.runTest(5000);
     }
 
     class TestBridge extends EventBridge {

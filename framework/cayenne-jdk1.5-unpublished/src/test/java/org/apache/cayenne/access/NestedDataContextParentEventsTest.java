@@ -22,10 +22,10 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextParentEventsTest extends ServerCase {
@@ -49,13 +49,13 @@ public class NestedDataContextParentEventsTest extends ServerCase {
         assertTrue(ap.getObjectId().isTemporary());
         context.commitChanges();
 
-        new ThreadedTestHelper() {
+        new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 assertFalse(ap.getObjectId().isTemporary());
                 assertEquals(ap.getObjectId(), ac.getObjectId());
             }
-        }.assertWithTimeout(1000);
+        }.runTest(1000);
     }
 }

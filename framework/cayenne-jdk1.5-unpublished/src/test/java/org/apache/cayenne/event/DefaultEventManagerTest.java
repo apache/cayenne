@@ -25,7 +25,7 @@ import java.util.EventObject;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.apache.cayenne.unit.util.ThreadedTestHelper;
+import org.apache.cayenne.test.parallel.ParallelTestContainer;
 
 public class DefaultEventManagerTest extends TestCase implements EventListener {
 
@@ -397,26 +397,26 @@ public class DefaultEventManagerTest extends TestCase implements EventListener {
             final int expected,
             final DefaultEventManagerTest listener) throws Exception {
 
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 assertEquals(expected, listener.numberOfReceivedEvents);
             }
         };
-        helper.assertWithTimeout(5000);
+        helper.runTest(5000);
     }
 
     // allows just enough time for the event threads to run
     private static void assertReceivedEventsForClass(final int expected) throws Exception {
-        ThreadedTestHelper helper = new ThreadedTestHelper() {
+        ParallelTestContainer helper = new ParallelTestContainer() {
 
             @Override
             protected void assertResult() throws Exception {
                 assertEquals(expected, numberOfReceivedEventsForClass);
             }
         };
-        helper.assertWithTimeout(5000);
+        helper.runTest(5000);
     }
 
 }
