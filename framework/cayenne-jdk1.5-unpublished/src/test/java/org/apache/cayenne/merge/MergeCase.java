@@ -33,194 +33,196 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 
 public abstract class MergeCase extends ServerCase {
 
-    @Inject
-    private ServerRuntime runtime;
+	@Inject
+	private DBHelper dbHelper;
 
-    @Inject
-    private UnitDbAdapter accessStackAdapter;
+	@Inject
+	private ServerRuntime runtime;
 
-    @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+	@Inject
+	private UnitDbAdapter accessStackAdapter;
 
-    @Inject
-    protected EntityResolver resolver;
+	@Inject
+	private ServerCaseDataSourceFactory dataSourceFactory;
 
-    @Inject
-    protected DataNode node;
+	@Inject
+	protected EntityResolver resolver;
 
-    protected DataMap map;
+	@Inject
+	protected DataNode node;
 
-    private static List<String> TABLE_NAMES = Arrays.asList(
-            "ARTIST",
-            "PAINTING",
-            "NEW_TABLE",
-            "NEW_TABLE2");
+	protected DataMap map;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+	private static List<String> TABLE_NAMES = Arrays.asList("ARTIST",
+			"PAINTING", "NEW_TABLE", "NEW_TABLE2");
 
-        // this map can't be safely modified in this test, as it is reset by DI container
-        // on every test
-        map = runtime.getDataDomain().getDataMap("testmap");
+	@Override
+	protected void setUpAfterInjection() throws Exception {
 
-        filterDataMap();
+		dbHelper.deleteAll("ARTGROUP");
+		dbHelper.deleteAll("PAINTING_INFO");
+		dbHelper.deleteAll("PAINTING");
+		dbHelper.deleteAll("ARTIST_EXHIBIT");
+		dbHelper.deleteAll("ARTIST_GROUP");
+		dbHelper.deleteAll("ARTIST");
+		dbHelper.deleteAll("EXHIBIT");
+		dbHelper.deleteAll("GALLERY");
 
-        List<MergerToken> tokens = createMergeTokens();
-        execute(tokens);
+		// this map can't be safely modified in this test, as it is reset by DI
+		// container
+		// on every test
+		map = runtime.getDataDomain().getDataMap("testmap");
 
-        assertTokensAndExecute(0, 0);
-    }
+		filterDataMap();
 
-    protected DbMerger createMerger() {
-        return new DbMerger() {
+		List<MergerToken> tokens = createMergeTokens();
+		execute(tokens);
 
-            @Override
-            public boolean includeTableName(String tableName) {
-                return TABLE_NAMES.contains(tableName.toUpperCase());
-            }
-        };
-    }
+		assertTokensAndExecute(0, 0);
+	}
 
-    protected List<MergerToken> createMergeTokens() {
-        return createMerger().createMergeTokens(node, map);
-    }
+	protected DbMerger createMerger() {
+		return new DbMerger() {
 
-    /**
-     * Remote binary pk {@link DbEntity} for {@link DbAdapter} not supporting that and so
-     * on.
-     */
-    private void filterDataMap() {
-        // copied from AbstractAccessStack.dbEntitiesInInsertOrder
-        boolean excludeBinPK = accessStackAdapter.supportsBinaryPK();
+			@Override
+			public boolean includeTableName(String tableName) {
+				return TABLE_NAMES.contains(tableName.toUpperCase());
+			}
+		};
+	}
 
-        if (!excludeBinPK) {
-            return;
-        }
+	protected List<MergerToken> createMergeTokens() {
+		return createMerger().createMergeTokens(node, map);
+	}
 
-        List<DbEntity> entitiesToRemove = new ArrayList<DbEntity>();
+	/**
+	 * Remote binary pk {@link DbEntity} for {@link DbAdapter} not supporting
+	 * that and so on.
+	 */
+	private void filterDataMap() {
+		// copied from AbstractAccessStack.dbEntitiesInInsertOrder
+		boolean excludeBinPK = accessStackAdapter.supportsBinaryPK();
 
-        for (DbEntity ent : map.getDbEntities()) {
-            for (DbAttribute attr : ent.getAttributes()) {
-                // check for BIN PK or FK to BIN Pk
-                if (attr.getType() == Types.BINARY
-                        || attr.getType() == Types.VARBINARY
-                        || attr.getType() == Types.LONGVARBINARY) {
+		if (!excludeBinPK) {
+			return;
+		}
 
-                    if (attr.isPrimaryKey() || attr.isForeignKey()) {
-                        entitiesToRemove.add(ent);
-                        break;
-                    }
-                }
-            }
-        }
+		List<DbEntity> entitiesToRemove = new ArrayList<DbEntity>();
 
-        for (DbEntity e : entitiesToRemove) {
-            map.removeDbEntity(e.getName(), true);
-        }
-    }
+		for (DbEntity ent : map.getDbEntities()) {
+			for (DbAttribute attr : ent.getAttributes()) {
+				// check for BIN PK or FK to BIN Pk
+				if (attr.getType() == Types.BINARY
+						|| attr.getType() == Types.VARBINARY
+						|| attr.getType() == Types.LONGVARBINARY) {
 
-    protected void execute(List<MergerToken> tokens) throws Exception {
-        MergerContext mergerContext = new ExecutingMergerContext(map, node);
-        for (MergerToken tok : tokens) {
-            tok.execute(mergerContext);
-        }
-    }
+					if (attr.isPrimaryKey() || attr.isForeignKey()) {
+						entitiesToRemove.add(ent);
+						break;
+					}
+				}
+			}
+		}
 
-    protected void execute(MergerToken token) throws Exception {
-        MergerContext mergerContext = new ExecutingMergerContext(map, node);
-        token.execute(mergerContext);
-    }
+		for (DbEntity e : entitiesToRemove) {
+			map.removeDbEntity(e.getName(), true);
+		}
+	}
 
-    private void executeSql(String sql) throws Exception {
-        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
+	protected void execute(List<MergerToken> tokens) throws Exception {
+		MergerContext mergerContext = new ExecutingMergerContext(map, node);
+		for (MergerToken tok : tokens) {
+			tok.execute(mergerContext);
+		}
+	}
 
-        try {
-            Statement st = conn.createStatement();
+	protected void execute(MergerToken token) throws Exception {
+		MergerContext mergerContext = new ExecutingMergerContext(map, node);
+		token.execute(mergerContext);
+	}
 
-            try {
-                st.execute(sql);
-            }
-            finally {
-                st.close();
-            }
-        }
+	private void executeSql(String sql) throws Exception {
+		Connection conn = dataSourceFactory.getSharedDataSource()
+				.getConnection();
 
-        finally {
-            conn.close();
-        }
-    }
+		try {
+			Statement st = conn.createStatement();
 
-    protected void assertTokens(
-            List<MergerToken> tokens,
-            int expectedToDb,
-            int expectedToModel) {
-        int actualToDb = 0;
-        int actualToModel = 0;
-        for (MergerToken token : tokens) {
-            if (token.getDirection().isToDb()) {
-                actualToDb++;
-            }
-            else if (token.getDirection().isToModel()) {
-                actualToModel++;
-            }
-        }
+			try {
+				st.execute(sql);
+			} finally {
+				st.close();
+			}
+		}
 
-        assertEquals("tokens to db", expectedToDb, actualToDb);
-        assertEquals("tokens to model", expectedToModel, actualToModel);
-    }
+		finally {
+			conn.close();
+		}
+	}
 
-    protected void assertTokensAndExecute(
-            DataNode node,
-            DataMap map,
-            int expectedToDb,
-            int expectedToModel) {
-        List<MergerToken> tokens = createMergeTokens();
+	protected void assertTokens(List<MergerToken> tokens, int expectedToDb,
+			int expectedToModel) {
+		int actualToDb = 0;
+		int actualToModel = 0;
+		for (MergerToken token : tokens) {
+			if (token.getDirection().isToDb()) {
+				actualToDb++;
+			} else if (token.getDirection().isToModel()) {
+				actualToModel++;
+			}
+		}
 
-        assertTokens(tokens, expectedToDb, expectedToModel);
-        if (!tokens.isEmpty()) {
-            try {
-                execute(tokens);
-            }
-            catch (Exception e) {
-                fail(e.getMessage());
-            }
-        }
-    }
+		assertEquals("tokens to db", expectedToDb, actualToDb);
+		assertEquals("tokens to model", expectedToModel, actualToModel);
+	}
 
-    protected void assertTokensAndExecute(int expectedToDb, int expectedToModel) {
-        List<MergerToken> tokens = createMergeTokens();
+	protected void assertTokensAndExecute(DataNode node, DataMap map,
+			int expectedToDb, int expectedToModel) {
+		List<MergerToken> tokens = createMergeTokens();
 
-        assertTokens(tokens, expectedToDb, expectedToModel);
-        if (!tokens.isEmpty()) {
-            try {
-                execute(tokens);
-            }
-            catch (Exception e) {
-                fail(e.getMessage());
-            }
-        }
-    }
+		assertTokens(tokens, expectedToDb, expectedToModel);
+		if (!tokens.isEmpty()) {
+			try {
+				execute(tokens);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
 
-    protected MergerFactory mergerFactory() {
-        return node.getAdapter().mergerFactory();
-    }
+	protected void assertTokensAndExecute(int expectedToDb, int expectedToModel) {
+		List<MergerToken> tokens = createMergeTokens();
 
-    protected void dropTableIfPresent(DataNode node, String tableName) {
-        DbEntity entity = new DbEntity(tableName);
-        AbstractToDbToken t = (AbstractToDbToken) mergerFactory().createDropTableToDb(
-                entity);
-        try {
-            for (String sql : t.createSql(node.getAdapter())) {
-                executeSql(sql);
-            }
-        }
-        catch (Exception e) {
-        }
-    }
+		assertTokens(tokens, expectedToDb, expectedToModel);
+		if (!tokens.isEmpty()) {
+			try {
+				execute(tokens);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+
+	protected MergerFactory mergerFactory() {
+		return node.getAdapter().mergerFactory();
+	}
+
+	protected void dropTableIfPresent(DataNode node, String tableName) {
+		DbEntity entity = new DbEntity(tableName);
+		AbstractToDbToken t = (AbstractToDbToken) mergerFactory()
+				.createDropTableToDb(entity);
+		try {
+			for (String sql : t.createSql(node.getAdapter())) {
+				executeSql(sql);
+			}
+		} catch (Exception e) {
+		}
+	}
 }
