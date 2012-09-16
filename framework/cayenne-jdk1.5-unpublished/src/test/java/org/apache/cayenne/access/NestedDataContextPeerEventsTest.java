@@ -63,7 +63,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
                 assertFalse(a2.getObjectId().isTemporary());
                 assertEquals(a2.getObjectId(), a1.getObjectId());
             }
-        }.assertWithTimeout(1000);
+        }.assertWithTimeout(2000);
     }
 
     public void testPeerObjectUpdatedSimpleProperty() throws Exception {
@@ -91,7 +91,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
                         "Peer data context became dirty on event processing",
                         peer2.hasChanges());
             }
-        }.assertWithTimeout(1000);
+        }.assertWithTimeout(2000);
 
     }
 
@@ -131,7 +131,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
                         "Peer data context became dirty on event processing",
                         peer2.hasChanges());
             }
-        }.assertWithTimeout(1000);
+        }.assertWithTimeout(2000);
 
     }
 
@@ -175,7 +175,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
                         "Peer data context became dirty on event processing",
                         peer2.hasChanges());
             }
-        }.assertWithTimeout(1000);
+        }.assertWithTimeout(2000);
 
     }
 }
