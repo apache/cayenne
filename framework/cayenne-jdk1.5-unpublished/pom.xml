@@ -149,45 +149,15 @@
 						</goals>
 					</execution>
 					<!--
-						Commented out expression executions, as exp/parser package is not
-						properly setup - it stores generated parser in SVN in
-						src/main/java. So the executions below are used for manual
-						generation TODO: make it a profile.
+						src/main/jjtree/org/apache/cayenne/exp/parser for now is generated outside of
+						Maven with JavaCC command line tools (maybe we should do the same for EJBQL) :
+
+						# Parser grammar out of tree grammar:
+						$ ./javacc-5.0/bin/jjtree src/main/jjtree/org/apache/cayenne/exp/parser/ExpressionParser.jjt
+
+						# docs
+						$ ./javacc-5.0/bin/jjdoc -TEXT=true ExpressionParser.jj
 					-->
-					<!-- 
-					<execution>
-						<id>jjtree-exp</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<sourceDirectory>
-								${basedir}/src/main/jjtree/org/apache/cayenne/exp/parser
-						</sourceDirectory>
-							<outputDirectory>
-								${basedir}/src/main/java
-						</outputDirectory>
-							<buildNodeFiles>true</buildNodeFiles>
-						</configuration>
-						<goals>
-							<goal>jjtree</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>javacc-exp</id>
-						<phase>generate-sources</phase>
-						<configuration>
-							<buildParser>true</buildParser>
-							<sourceDirectory>
-								${basedir}/src/main/java
-						</sourceDirectory>
-							<outputDirectory>
-								${basedir}/src/main/java
-						</outputDirectory>
-						</configuration>
-						<goals>
-							<goal>javacc</goal>
-						</goals>
-					</execution>
- -->
 				</executions>
 			</plugin>
 			<plugin>
