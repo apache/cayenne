@@ -6,6 +6,7 @@
 	<xi:include href="starting-cayenne.xml"/>
 	<xi:include href="persistent-objects-objectcontext.xml"/>
 	<xi:include href="expressions.xml"/>
+	<xi:include href="orderings.xml"/>
 	<xi:include href="queries.xml"/>
 	<xi:include href="lifecycle-events.xml"/>
 	<xi:include href="performance-tuning.xml"/>
