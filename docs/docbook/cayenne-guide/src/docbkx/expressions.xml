@@ -89,20 +89,22 @@
 	</section>
 	<section xml:id="expressions-from-strings">
 		<title>Creating Expressions from Strings </title>
-		<para>While in most cases users are likely to rely on API for expressions creation, as described
-			in the following chapter, we'll start by discussing String expressions, as this will
-			help to understand the expressions structure. Expressions can be created using
-				<code>Expression.fromString</code> method. Here is an
-			example:<programlisting>Expression e = Expression.fromString("name like 'A%' and price &lt; 1000");</programlisting>This
-			expression may be used to match Paintings with names that start with "A" and a price
-			less than $1000. While this example is pretty self-explanatory, there are a few points
-			worth mentioning. "name" and "price" here are object paths discussed earlier. As always,
-			paths themselves are not attached to a specific root entity and can be applied to any
-			entity that has similarly named attributes or relationships. So when we are saying that
-			this expression "may be used to match Paintings", we are implying that there may be
-			other entities, for which this expression is valid. Now the expression details... </para>
-		<para><emphasis role="italic">Character constants</emphasis> that are not paths should be
-			enclosed in single or double quotes. Two of the expressions below are
+		<para>While in most cases users are likely to rely on API from the following section for
+			expression creation, we'll start by showing String expressions, as this will help
+			understanding the semantics. A Cayenne expression can be represented as a String, which
+			can be later converted to an expression object using <code>Expression.fromString</code>
+			static method. Here is an
+			example:<programlisting>String expString = "name like 'A%' and price &lt; 1000";
+Expression exp = Expression.fromString(expString);</programlisting>This
+			particular expression may be used to match Paintings with names that start with "A" and
+			a price less than $1000. While this example is pretty self-explanatory, there are a few
+			points worth mentioning. "name" and "price" here are object paths discussed earlier. As
+			always, paths themselves are not attached to a specific root entity and can be applied
+			to any entity that has similarly named attributes or relationships. So when we are
+			saying that this expression "may be used to match Paintings", we are implying that there
+			may be other entities, for which this expression is valid. Now the expression details... </para>
+		<para><emphasis role="italic">Character constants</emphasis> that are not paths or numeric values
+			should be enclosed in single or double quotes. Two of the expressions below are
 			equivalent:<programlisting>name = 'ABC'
 
 // double quotes are escaped inside Java Strings of course
@@ -141,8 +143,10 @@ name = enum:org.foo.EnumClass.VALUE1</programlisting></para>
 				SelectQueries:<programlisting>name like 'A%'</programlisting><emphasis role="italic"
 				>Named parameters.</emphasis> Expressions can have named parameters (names that
 			start with "$"). Parameterized expressions allow to create reusable expression
-			templates. This warrants a full code
-			example:<programlisting>Expression template = Expression.fromString("name = $name");
+			templates. Also if an Expression contains a complex object that doesn't have a simple
+			String representation (e.g. a Date, a DataObject, an ObjectId), parameterizing such
+			expression is the only way to represent it as String. Here are some
+			examples:<programlisting>Expression template = Expression.fromString("name = $name");
 ...
 Map p1 = Collections.singletonMap("name", "Salvador Dali");
 Expression qualifier1 = template.expWithParameters(p1);
@@ -162,21 +166,84 @@ Artist dali = // asume we fetched this one already
 Map p1 = Collections.singletonMap("artist", dali);
 Expression qualifier1 = template.expWithParameters(p1);</programlisting>Uninitialized
 			parameters will be automatically pruned from expressions, so a user can omit some
-			parameters when creating an expression from a parameterized template:<programlisting>Expression template = Expression.fromString("name like $name and dateOfBirth > $date");
+			parameters when creating an expression from a parameterized
+			template:<programlisting>Expression template = Expression.fromString("name like $name and dateOfBirth > $date");
 ...
 Map p1 = Collections.singletonMap("name", "Salvador%");
 Expression qualifier1 = template.expWithParameters(p1);
 
 // qualifier1 is now equals to "name like 'Salvador%'", the 'dateOfBirth' condition was 
-// pruned, as no value was specified for the $date parameter</programlisting><note>
+// pruned, as no value was specified for the $date parameter</programlisting></para>
+		<para><emphasis role="italic">Null handling.</emphasis> Handling of Java nulls as operands
+			is no different from normal values. Instead of using special conditional operators, like
+			SQL does (IS NULL, IS NOT NULL), "=" and "!=" expressions can be used directly with null
+			values. It is up to Cayenne to translate expressions with nulls to the valid SQL.</para>
+		<para>
+			<note>
 				<para>A formal definition of all possible valid expressions in a form of JavaCC
 					grammar is provided in Appendix C</para>
-			</note></para>
+			</note>
+		</para>
 	</section>
 	<section xml:id="expressions-with-expressionfactory">
-		<title>Creating Expressions with ExpressionFactory</title>
+		<title>Creating Expressions with API</title>
+		<para>Creating expressions from Strings is a powerful and dynamic approach, however a safer
+			alternative is to use Java API. It provides some degree of compile-time checking of
+			expressions validity. The API is cenetred around ExpressionFactory class, and the
+			Expression class. ExpressionFactory contains a number of rather self-explanatory factory
+			methods. We won't be going over all of them in detail, but will rather show a few
+			general examples and some gotchas. </para>
+		<para>The following code recreates the expression from the previous chapter, but now using
+			expression
+			API:<programlisting>// String expression: name like 'A%' and price &lt; 1000
+Expression e1 = ExpressionFactory.likeExp(Painting.NAME_PROPERTY, "A%");
+Expression e2 = ExpressionFactory.lessExp(Painting.PRICE_PROPERTY, 1000);
+Expression finalExp = e1.andExp(e2); </programlisting>This
+			is more verbose than creating it from String, but it is also more resilient to the
+			entity properties renaming and precludes semantic errors in the expression String.<note>
+				<para>The last line in the example above shows how to create a new expression by
+					"chaining" 2 other epxressions. A common error when chaining expressions is to
+					assume that "andExp" and "orExp" append another expression to the current
+					expression. In fact a new expression is created. I.e. Expression API treats
+					existing expressions as immutable.</para>
+			</note></para>
+		<para>As discussed earlier, Cayenne supports aliases in path Expressions, allowing to
+			control how SQL joins are generated if the same path is encountered more than once in
+			the same Expression. Two ExpressionFactory methods allow to implicitly generate aliases
+			to "split" match paths into individual joins if
+			needed:<programlisting>Expression matchAllExp(String path, Collection values)
+Expression matchAllExp(String path, Object... values)</programlisting></para>
+		<para>"Path" argument to both of these methods can use a split character (a pipe symbol '|')
+			instead of dot to indicate that relationship following a path should be split into a
+			separate set of joins, one per collection value. There can only be one split at most in
+			any given path. Split must always precede a relationship. E.g. "|exhibits.paintings",
+			"exhibits|paintings", etc. Internally Cayenne would generate distinct aliases for each
+			of the split expressions, forcing separate joins.</para>
 	</section>
 	<section xml:id="expressions-in-memory">
 		<title>Evaluating Expressions in Memory</title>
+		<para>When used in a query, an expression is converted to SQL WHERE clause (or ORDER BY
+			clause) by Cayenne during query execution. Thus the actual evaluation against the data
+			is done by the database engine. However the same expressions can also be used for
+			accessing object properties, calculating values, in-memory filtering. </para>
+		<para>Checking whether an object satisfies an
+			expression:<programlisting>Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, "John", "Bob");
+User user = ...
+if(e.match(user)) {
+   ...
+}</programlisting>Reading
+			property
+			value:<programlisting>Expression e = Expression.fromString(User.NAME_PROPERTY);
+String name = e.evaluate(user);</programlisting></para>
+		<para>Filtering a list of
+			objects:<programlisting>Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, "John", "Bob");
+List&lt;User> unfiltered = ...
+List&lt;User> filtered = e.filterObjects(unfiltered);</programlisting></para>
+		<para>
+			<note>
+				<para>Current limitation of in-memory expressions is that no collections are
+					permitted in the property path.</para>
+			</note>
+		</para>
 	</section>
 </chapter>
