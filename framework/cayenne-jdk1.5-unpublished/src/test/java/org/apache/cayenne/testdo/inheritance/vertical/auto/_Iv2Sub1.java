@@ -15,6 +15,9 @@ public abstract class _Iv2Sub1 extends Iv2Root {
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public void setX(Iv2X x) {
+        setToOneTarget(X_PROPERTY, x, true);
+    }
 
     public Iv2X getX() {
         return (Iv2X)readProperty(X_PROPERTY);
