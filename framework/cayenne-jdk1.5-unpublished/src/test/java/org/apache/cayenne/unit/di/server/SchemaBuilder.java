@@ -32,8 +32,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
