@@ -2,6 +2,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 
@@ -18,23 +19,23 @@ final class DbArcId {
 
     private DbEntity entity;
     private ObjectId sourceId;
-    private String incomingArc;
+    private DbRelationship incomingArc;
 
-    DbArcId(DbEntity entity, ObjectId sourceId, String incomingArc) {
+    DbArcId(DbEntity entity, ObjectId sourceId, DbRelationship incomingArc) {
         this.entity = entity;
         this.sourceId = sourceId;
         this.incomingArc = incomingArc;
     }
-    
+
     DbEntity getEntity() {
         return entity;
     }
-    
+
     ObjectId getSourceId() {
         return sourceId;
     }
-    
-    String getIncominArc() {
+
+    DbRelationship getIncominArc() {
         return incomingArc;
     }
 
@@ -44,7 +45,7 @@ final class DbArcId {
         if (this.hashCode == 0) {
             HashCodeBuilder builder = new HashCodeBuilder(3, 5);
             builder.append(sourceId);
-            builder.append(incomingArc);
+            builder.append(incomingArc.getName());
             this.hashCode = builder.toHashCode();
         }
 
@@ -65,6 +66,7 @@ final class DbArcId {
         DbArcId id = (DbArcId) object;
 
         return new EqualsBuilder().append(sourceId, id.sourceId)
-                .append(incomingArc, id.incomingArc).isEquals();
+                .append(incomingArc.getName(), id.incomingArc.getName())
+                .isEquals();
     }
 }

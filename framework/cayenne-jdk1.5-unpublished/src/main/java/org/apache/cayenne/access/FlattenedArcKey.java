@@ -78,9 +78,8 @@ final class FlattenedArcKey {
                             + dbRelationships.get(1));
         }
 
-        id1 = new DbArcId((DbEntity) r1.getTargetEntity(), sourceId,
-                r1.getName());
-        id2 = new DbArcId(id1.getEntity(), destinationId, r2.getName());
+        id1 = new DbArcId((DbEntity) r1.getTargetEntity(), sourceId, r1);
+        id2 = new DbArcId(id1.getEntity(), destinationId, r2);
     }
 
     /**
@@ -282,7 +281,8 @@ final class FlattenedArcKey {
                 .compareTo(id2.getSourceId().getEntityName());
 
         if (compare == 0) {
-            compare = id1.getIncominArc().compareTo(id2.getIncominArc());
+            compare = id1.getIncominArc().getName()
+                    .compareTo(id2.getIncominArc().getName());
 
             if (compare == 0) {
                 // since ordering is mostly important for detecting equivalent
