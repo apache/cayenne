@@ -19,44 +19,76 @@
 
 package org.apache.cayenne.access;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.MockObjRelationship;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.testdo.relationship.FlattenedTest1;
+import org.apache.cayenne.testdo.relationship.FlattenedTest3;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-/**
- */
-public class FlattenedArcKeyTest extends TestCase {
+@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+public class FlattenedArcKeyTest extends ServerCase {
+
+    @Inject
+    private EntityResolver entityResolver;
 
     public void testAttributes() {
         ObjectId src = new ObjectId("X");
         ObjectId target = new ObjectId("Y");
-        MockObjRelationship r1 = new MockObjRelationship("r1");
-        r1.setReverseRelationship(new MockObjRelationship("r2"));
+        ObjRelationship r1 = (ObjRelationship) entityResolver.lookupObjEntity(
+                FlattenedTest3.class).getRelationship(
+                FlattenedTest3.TO_FT1_PROPERTY);
 
         FlattenedArcKey update = new FlattenedArcKey(src, target, r1);
 
-        assertSame(src, update.sourceId);
-        assertSame(target, update.destinationId);
+        assertSame(src, update.id1.getSourceId());
+        assertSame(target, update.id2.getSourceId());
         assertSame(r1, update.relationship);
-        assertSame(r1.getReverseRelationship(), update.reverseRelationship);
-        assertTrue(update.isBidirectional());
+    }
+    
+    public void testHashCode() {
+        ObjectId src = new ObjectId("X");
+        ObjectId target = new ObjectId("Y");
+        ObjRelationship r1 = (ObjRelationship) entityResolver.lookupObjEntity(
+                FlattenedTest3.class).getRelationship(
+                FlattenedTest3.TO_FT1_PROPERTY);
+
+        FlattenedArcKey update = new FlattenedArcKey(src, target, r1);
+        FlattenedArcKey update1 = new FlattenedArcKey(target, src,
+                r1.getReverseRelationship());
+
+        ObjRelationship r3 = (ObjRelationship) entityResolver.lookupObjEntity(
+                FlattenedTest1.class).getRelationship(
+                FlattenedTest1.FT3OVER_COMPLEX_PROPERTY);
+
+        FlattenedArcKey update2 = new FlattenedArcKey(target, src, r3);
+
+        int h = update.hashCode();
+        int h1 = update1.hashCode();
+        int h2 = update2.hashCode();
+        assertTrue(h == h1);
+        assertTrue(h == update.hashCode());
+        assertFalse(h == h2);
     }
 
     public void testEquals() {
         ObjectId src = new ObjectId("X");
         ObjectId target = new ObjectId("Y");
-        MockObjRelationship r1 = new MockObjRelationship("r1");
-        r1.setReverseRelationship(new MockObjRelationship("r2"));
+        ObjRelationship r1 = (ObjRelationship) entityResolver.lookupObjEntity(
+                FlattenedTest3.class).getRelationship(
+                FlattenedTest3.TO_FT1_PROPERTY);
 
         FlattenedArcKey update = new FlattenedArcKey(src, target, r1);
-        FlattenedArcKey update1 = new FlattenedArcKey(target, src, r1
-                .getReverseRelationship());
+        FlattenedArcKey update1 = new FlattenedArcKey(target, src,
+                r1.getReverseRelationship());
 
-        FlattenedArcKey update2 = new FlattenedArcKey(
-                target,
-                src,
-                new MockObjRelationship("r3"));
+        ObjRelationship r3 = (ObjRelationship) entityResolver.lookupObjEntity(
+                FlattenedTest1.class).getRelationship(
+                FlattenedTest1.FT3OVER_COMPLEX_PROPERTY);
+
+        FlattenedArcKey update2 = new FlattenedArcKey(target, src, r3);
 
         assertTrue(update.equals(update1));
         assertFalse(update.equals(update2));
