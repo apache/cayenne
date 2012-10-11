@@ -78,8 +78,8 @@ final class FlattenedArcKey {
                             + dbRelationships.get(1));
         }
 
-        id1 = new DbArcId((DbEntity) r1.getTargetEntity(), sourceId, r1);
-        id2 = new DbArcId(id1.getEntity(), destinationId, r2);
+        id1 = new DbArcId(sourceId, r1);
+        id2 = new DbArcId(destinationId, r2);
     }
 
     /**

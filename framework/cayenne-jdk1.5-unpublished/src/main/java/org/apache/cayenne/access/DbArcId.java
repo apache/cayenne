@@ -17,17 +17,21 @@ final class DbArcId {
 
     private int hashCode;
 
-    private DbEntity entity;
     private ObjectId sourceId;
     private DbRelationship incomingArc;
 
-    DbArcId(DbEntity entity, ObjectId sourceId, DbRelationship incomingArc) {
-        this.entity = entity;
+    private DbEntity entity;
+
+    DbArcId(ObjectId sourceId, DbRelationship incomingArc) {
         this.sourceId = sourceId;
         this.incomingArc = incomingArc;
     }
 
     DbEntity getEntity() {
+        if (entity == null) {
+            entity = (DbEntity) incomingArc.getTargetEntity();
+        }
+
         return entity;
     }
 
