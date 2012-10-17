@@ -32,7 +32,12 @@ public class BasePropertyTest extends TestCase {
         Accessor accessor = mock(Accessor.class);
         when(accessor.getName()).thenReturn("xyz");
 
-        BaseProperty p = new MockBaseProperty(owner, accessor);
+        BaseProperty p = new BaseProperty(owner, accessor) {
+            @Override
+            public boolean visit(PropertyVisitor visitor) {
+                return true;
+            }
+        };
 
         assertEquals("xyz", p.getName());
     }
