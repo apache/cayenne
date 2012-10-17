@@ -23,6 +23,7 @@ CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
 CAY-1715 Passing parameters to mapped EJBQL queries
 CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
+CAY-1729 PersistentDescriptor must have predictable property iteration order
 CAY-1735 Serializable IncrementalFaultList
 CAY-1738 Tutorial cayenne-rop-server should be packaged as a war
 CAY-1739 Cayenne ROP server resets session on every request if BASIC auth is used
