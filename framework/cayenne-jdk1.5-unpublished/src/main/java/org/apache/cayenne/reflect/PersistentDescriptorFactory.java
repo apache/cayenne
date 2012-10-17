@@ -132,6 +132,8 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         indexRootDbEntities(descriptor, inheritanceTree);
 
         indexSuperclassProperties(descriptor);
+        
+        descriptor.sortProperties();
 
         return descriptor;
     }

@@ -23,7 +23,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
@@ -50,7 +53,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     // compiled properties ...
     protected Class<?> objectClass;
     protected Map<String, Property> declaredProperties;
-    protected Map<String, Property> superProperties;
+    protected Map<String, Property> properties;
     protected Map<String, ClassDescriptor> subclassDescriptors;
     protected Accessor persistenceStateAccessor;
 
@@ -73,7 +76,7 @@ public class PersistentDescriptor implements ClassDescriptor {
      */
     public PersistentDescriptor() {
         this.declaredProperties = new HashMap<String, Property>();
-        this.superProperties = new HashMap<String, Property>();
+        this.properties = new HashMap<String, Property>();
         this.subclassDescriptors = new HashMap<String, ClassDescriptor>();
 
         // must be a set as duplicate addition attempts are expected...
@@ -93,7 +96,7 @@ public class PersistentDescriptor implements ClassDescriptor {
      * Registers a superclass property.
      */
     public void addSuperProperty(Property property) {
-        superProperties.put(property.getName(), property);
+        properties.put(property.getName(), property);
         indexAddedProperty(property);
     }
 
@@ -103,6 +106,7 @@ public class PersistentDescriptor implements ClassDescriptor {
      */
     public void addDeclaredProperty(Property property) {
         declaredProperties.put(property.getName(), property);
+        properties.put(property.getName(), property);
         indexAddedProperty(property);
     }
 
@@ -112,7 +116,39 @@ public class PersistentDescriptor implements ClassDescriptor {
     public void addRootDbEntity(DbEntity dbEntity) {
         this.rootDbEntities.add(dbEntity);
     }
+    
+    void sortProperties() {
 
+       // ensure properties are stored in predictable order per CAY-1729
+
+        // 'properties' is a superset of 'declaredProperties', so let's sort all
+        // properties, and populated both ordered collections at once
+        if (properties.size() > 1) {
+
+            List<Entry<String, Property>> entries = new ArrayList<Entry<String, Property>>(
+                    properties.entrySet());
+
+            Collections.sort(entries, PropertyComparator.comparator);
+
+            Map<String, Property> orderedProperties = new LinkedHashMap<String, Property>(
+                    (int) (entries.size() / 0.75));
+
+            Map<String, Property> orderedDeclared = new LinkedHashMap<String, Property>(
+                    (int) (declaredProperties.size() / 0.75));
+
+            for (Entry<String, Property> e : entries) {
+                orderedProperties.put(e.getKey(), e.getValue());
+                
+                if (declaredProperties.containsKey(e.getKey())) {
+                    orderedDeclared.put(e.getKey(), e.getValue());
+                }
+            }
+
+            this.properties = orderedProperties;
+            this.declaredProperties = orderedDeclared;
+        }
+    }
+    
     void indexAddedProperty(Property property) {
         if (property instanceof AttributeProperty) {
 
@@ -157,6 +193,8 @@ public class PersistentDescriptor implements ClassDescriptor {
             if (mapArcProperties != null) {
                 mapArcProperties.remove(removed);
             }
+            
+            properties.remove(propertyName);
         }
     }
 
@@ -337,20 +375,7 @@ public class PersistentDescriptor implements ClassDescriptor {
     /**
      * @since 3.0
      */
-    boolean visitSuperProperties(PropertyVisitor visitor) {
-        for (Property next : superProperties.values()) {
-            if (!next.visit(visitor)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public boolean visitDeclaredProperties(PropertyVisitor visitor) {
+   public boolean visitDeclaredProperties(PropertyVisitor visitor) {
 
         for (Property next : declaredProperties.values()) {
             if (!next.visit(visitor)) {
@@ -381,11 +406,14 @@ public class PersistentDescriptor implements ClassDescriptor {
     }
 
     public boolean visitProperties(PropertyVisitor visitor) {
-        if (!visitSuperProperties(visitor)) {
-            return false;
+        
+        for (Property next : properties.values()) {
+            if (!next.visit(visitor)) {
+                return false;
+            }
         }
 
-        return visitDeclaredProperties(visitor);
+        return true;
     }
 
     public void setPersistenceStateAccessor(Accessor persistenceStateAccessor) {

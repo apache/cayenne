@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.reflect;
 
+import static org.mockito.Mockito.mock;
 import junit.framework.TestCase;
 
-import org.apache.cayenne.reflect.FieldAccessor;
-import org.apache.cayenne.reflect.PersistentDescriptor;
-import org.apache.cayenne.reflect.Property;
-import org.apache.cayenne.reflect.SimpleAttributeProperty;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.unit.util.TestBean;
 
 public class PersistentDescriptorTest extends TestCase {
@@ -42,10 +40,13 @@ public class PersistentDescriptorTest extends TestCase {
     public void testCopyObjectProperties() {
         PersistentDescriptor d1 = new PersistentDescriptor();
 
-        FieldAccessor accessor = new FieldAccessor(TestBean.class, "string", String.class);
-        Property property = new SimpleAttributeProperty(d1, accessor, null);
+        ObjAttribute attribute = mock(ObjAttribute.class);
+        FieldAccessor accessor = new FieldAccessor(TestBean.class, "string",
+                String.class);
+        Property property = new SimpleAttributeProperty(d1, accessor,
+                attribute);
 
-        d1.declaredProperties.put(property.getName(), property);
+        d1.addDeclaredProperty(property);
 
         TestBean from = new TestBean();
         from.setString("123");
@@ -55,4 +56,5 @@ public class PersistentDescriptorTest extends TestCase {
         d1.shallowMerge(from, to);
         assertEquals("123", to.getString());
     }
+
 }
