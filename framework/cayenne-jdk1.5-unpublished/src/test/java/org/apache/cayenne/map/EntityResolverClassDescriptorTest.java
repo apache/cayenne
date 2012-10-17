@@ -19,12 +19,13 @@
 
 package org.apache.cayenne.map;
 
+import static org.mockito.Mockito.mock;
+
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
-import org.apache.cayenne.reflect.MockClassDescriptor;
 import org.apache.cayenne.reflect.MockClassDescriptorFactory;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.testdo.mt.MtTable1;
@@ -56,15 +57,15 @@ public class EntityResolverClassDescriptorTest extends ClientCase {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 
-        MockClassDescriptor mockDescriptor = new MockClassDescriptor();
+        ClassDescriptor descriptor = mock(ClassDescriptor.class);
         MockClassDescriptorFactory factory = new MockClassDescriptorFactory(
-                mockDescriptor);
+                descriptor);
         resolver.getClassDescriptorMap().addFactory(factory);
         try {
-            ClassDescriptor descriptor = resolver.getClassDescriptor("MtTable1");
-            assertNotNull(descriptor);
-            descriptor = ((LazyClassDescriptorDecorator) descriptor).getDescriptor();
-            assertSame(mockDescriptor, descriptor);
+            ClassDescriptor resolved = resolver.getClassDescriptor("MtTable1");
+            assertNotNull(resolved);
+            resolved = ((LazyClassDescriptorDecorator) resolved).getDescriptor();
+            assertSame(descriptor, resolved);
         }
         finally {
             resolver.getClassDescriptorMap().removeFactory(factory);

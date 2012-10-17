@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.apache.cayenne.reflect.BaseProperty;
 
 import junit.framework.TestCase;
@@ -25,15 +28,11 @@ import junit.framework.TestCase;
 public class BasePropertyTest extends TestCase {
 
     public void testGetName() {
-        BaseProperty p = new MockBaseProperty(
-                new MockClassDescriptor(),
-                new MockAccessor() {
+        ClassDescriptor owner = mock(ClassDescriptor.class);
+        Accessor accessor = mock(Accessor.class);
+        when(accessor.getName()).thenReturn("xyz");
 
-                    @Override
-                    public String getName() {
-                        return "xyz";
-                    }
-                });
+        BaseProperty p = new MockBaseProperty(owner, accessor);
 
         assertEquals("xyz", p.getName());
     }
