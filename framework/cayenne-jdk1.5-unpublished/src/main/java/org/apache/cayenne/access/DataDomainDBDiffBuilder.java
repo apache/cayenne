@@ -70,7 +70,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     /**
      * Processes GraphDiffs of a single object, converting them to DB diff.
      */
-    Map<Object, Object> buildDBDiff(GraphDiff singleObjectDiff) {
+    Map<String, Object> buildDBDiff(GraphDiff singleObjectDiff) {
 
         reset();
         singleObjectDiff.apply(this);
@@ -79,16 +79,16 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
             return null;
         }
 
-        Map<Object, Object> dbDiff = new HashMap<Object, Object>();
+        Map<String, Object> dbDiff = new HashMap<String, Object>();
 
         appendSimpleProperties(dbDiff);
         appendForeignKeys(dbDiff);
         appendPrimaryKeys(dbDiff);
 
-        return dbDiff.isEmpty() ? null : dbDiff;
+        return dbDiff;
     }
 
-    private void appendSimpleProperties(Map<Object, Object> dbDiff) {
+    private void appendSimpleProperties(Map<String, Object> dbDiff) {
         // populate changed columns
         if (currentPropertyDiff != null) {
             for (final Map.Entry<Object, Object> entry : currentPropertyDiff.entrySet()) {
@@ -106,7 +106,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         }
     }
 
-    private void appendForeignKeys(Map<Object, Object> dbDiff) {
+    private void appendForeignKeys(Map<String, Object> dbDiff) {
         // populate changed FKs
         if (currentArcDiff != null) {
             for (final Map.Entry<Object, Object> entry : currentArcDiff.entrySet()) {
@@ -127,7 +127,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         }
     }
 
-    private void appendPrimaryKeys(Map<Object, Object> dbDiff) {
+    private void appendPrimaryKeys(Map<String, Object> dbDiff) {
 
         // populate changed PKs; note that we might end up overriding some values taken
         // from the object (e.g. zero PK's).

@@ -74,17 +74,15 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
                 checkReadOnly(descriptor.getEntity());
                 createPermIds(descriptor, objects);
-                sorter.sortObjectsForEntity(descriptor.getEntity(), objects, false);
+                sorter.sortObjectsForEntity(descriptor.getEntity(), objects,
+                        false);
 
                 for (Persistent o : objects) {
-                    Map<Object, Object> snapshot = diffBuilder.buildDBDiff(parent
-                            .objectDiff(o.getObjectId()));
+                    Map<String, Object> snapshot = diffBuilder
+                            .buildDBDiff(parent.objectDiff(o.getObjectId()));
 
-                    // we need to insert even if there is no changes to default values
-                    // so creating an empty changes map
-                    if (snapshot == null) {
-                        snapshot = new HashMap<Object, Object>();
-                    }
+                    // we need to insert even if there is no changes to default
+                    // values, so keep even an empty changes map
 
                     batch.add(snapshot, o.getObjectId());
                 }
@@ -94,7 +92,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         }
     }
 
-    void createPermIds(DbEntityClassDescriptor descriptor, Collection<Persistent> objects) {
+    void createPermIds(DbEntityClassDescriptor descriptor,
+            Collection<Persistent> objects) {
 
         if (objects.isEmpty()) {
             return;
@@ -104,7 +103,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         DbEntity entity = descriptor.getDbEntity();
 
         DataNode node = parent.getDomain().lookupDataNode(entity.getDataMap());
-        boolean supportsGeneratedKeys = node.getAdapter().supportsGeneratedKeys();
+        boolean supportsGeneratedKeys = node.getAdapter()
+                .supportsGeneratedKeys();
 
         PkGenerator pkGenerator = node.getAdapter().getPkGenerator();
 
@@ -127,21 +127,22 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 }
 
                 // handle meaningful PK
-                ObjAttribute objAttr = objEntity.getAttributeForDbAttribute(dbAttr);
+                ObjAttribute objAttr = objEntity
+                        .getAttributeForDbAttribute(dbAttr);
                 if (objAttr != null) {
 
-                    Object value = descriptor.getClassDescriptor().getProperty(
-                            objAttr.getName()).readPropertyDirectly(object);
+                    Object value = descriptor.getClassDescriptor()
+                            .getProperty(objAttr.getName())
+                            .readPropertyDirectly(object);
 
                     if (value != null) {
                         Class<?> javaClass = objAttr.getJavaClass();
-                        if (javaClass.isPrimitive()
-                                && value instanceof Number
+                        if (javaClass.isPrimitive() && value instanceof Number
                                 && ((Number) value).intValue() == 0) {
-                            // primitive 0 has to be treated as NULL, or otherwise we
+                            // primitive 0 has to be treated as NULL, or
+                            // otherwise we
                             // can't generate PK for POJO's
-                        }
-                        else {
+                        } else {
 
                             idMap.put(dbAttrName, value);
                             continue;
@@ -159,7 +160,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                     continue;
                 }
 
-                // only a single key can be generated from DB... if this is done already
+                // only a single key can be generated from DB... if this is done
+                // already
                 // in this loop, we must bail out.
                 if (autoPkDone) {
                     throw new CayenneRuntimeException(
@@ -171,8 +173,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                     Object pkValue = pkGenerator.generatePk(node, dbAttr);
                     idMap.put(dbAttrName, pkValue);
                     autoPkDone = true;
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     throw new CayenneRuntimeException("Error generating PK: "
                             + ex.getMessage(), ex);
                 }
