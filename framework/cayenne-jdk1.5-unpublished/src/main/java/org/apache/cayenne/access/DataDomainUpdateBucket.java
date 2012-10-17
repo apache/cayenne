@@ -70,10 +70,10 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                     Persistent o = objects.next();
                     ObjectDiff diff = parent.objectDiff(o.getObjectId());
 
-                    Map<String, Object> snapshot = diffBuilder.buildDBDiff(diff);
+                    Map<Object, Object> snapshot = diffBuilder.buildDBDiff(diff);
 
                     // check whether MODIFIED object has real db-level modifications
-                    if (snapshot.isEmpty()) {
+                    if (snapshot == null) {
                         continue;
                     }
 
