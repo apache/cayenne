@@ -20,13 +20,14 @@
 package org.apache.cayenne.map;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.ClassDescriptorFactory;
 import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
-import org.apache.cayenne.reflect.MockClassDescriptorFactory;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
@@ -58,8 +59,9 @@ public class EntityResolverClassDescriptorTest extends ClientCase {
         resolver.getClassDescriptorMap().clearDescriptors();
 
         ClassDescriptor descriptor = mock(ClassDescriptor.class);
-        MockClassDescriptorFactory factory = new MockClassDescriptorFactory(
-                descriptor);
+        ClassDescriptorFactory factory = mock(ClassDescriptorFactory.class);
+        when(factory.getDescriptor("MtTable1")).thenReturn(descriptor);
+        
         resolver.getClassDescriptorMap().addFactory(factory);
         try {
             ClassDescriptor resolved = resolver.getClassDescriptor("MtTable1");
