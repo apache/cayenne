@@ -30,4 +30,5 @@ CAY-1719 Modeler - Obj Attribute Java Type editor won't focus sometimes
 CAY-1729 PersistentDescriptor must have predictable property iteration order
 CAY-1738 Tutorial cayenne-rop-server should be packaged as a war
 CAY-1739 Cayenne ROP server resets session on every request if BASIC auth is used
+CAY-1742 ObjRelationship inspector says "ObjAttribute Inspector"
 CAY-1744 Unexpected read-only relationships in vertical inheritance mapping
