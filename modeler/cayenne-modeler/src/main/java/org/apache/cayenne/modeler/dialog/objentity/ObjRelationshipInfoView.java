@@ -94,7 +94,7 @@ public class ObjRelationshipInfoView extends JDialog{
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
         
-        setTitle("ObjAttribute Inspector");
+        setTitle("ObjRelationship Inspector");
         setLayout(new BorderLayout());
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(
