@@ -23,10 +23,10 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -34,6 +34,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -44,6 +45,8 @@ import org.apache.cayenne.util.Util;
 public class EntityIdCoder {
 
     static final String ID_SEPARATOR = ":";
+    static final String TEMP_ID_PREFIX = ".";
+    private static final int TEMP_PREFIX_LENGTH = TEMP_ID_PREFIX.length();
 
     private String entityName;
     private SortedMap<String, Converter> converters;
@@ -55,7 +58,13 @@ public class EntityIdCoder {
             throw new IllegalArgumentException("Invalid String id: " + id);
         }
 
-        return id.substring(0, separator);
+        String name = id.substring(0, separator);
+
+        if (name.startsWith(TEMP_ID_PREFIX)) {
+            name = name.substring(TEMP_PREFIX_LENGTH);
+        }
+
+        return name;
     }
 
     public EntityIdCoder(ObjEntity entity) {
@@ -97,15 +106,37 @@ public class EntityIdCoder {
      */
     public String toStringId(ObjectId id) {
 
+        // deal with temp that have attached replacement ID as permanent IDs...
+        // AuditableFilter, etc. all rely on the ability to find the temp object
+        // after the transaction end
+
+        // TODO: support encoding format for temp+replacement
         if (id.isTemporary() && !id.isReplacementIdAttached()) {
-            throw new IllegalArgumentException(
-                    "Can't create UUID for a temporary ObjectId");
+            return toTempIdString(id);
+        } else {
+            return toPermIdString(id);
         }
+    }
 
-        Map<String, Object> idValues = id.getIdSnapshot();
+    private String toTempIdString(ObjectId id) {
+        StringBuilder buffer = new StringBuilder();
 
+        buffer.append(TEMP_ID_PREFIX);
+
+        buffer.append(id.getEntityName());
+
+        buffer.append(ID_SEPARATOR);
+
+        for (byte b : id.getKey()) {
+            IDUtil.appendFormattedByte(buffer, b);
+        }
+        return buffer.toString();
+    }
+
+    private String toPermIdString(ObjectId id) {
         StringBuilder buffer = new StringBuilder();
         buffer.append(id.getEntityName());
+        Map<String, Object> idValues = id.getIdSnapshot();
 
         for (Entry<String, Converter> entry : converters.entrySet()) {
             Object value = idValues.get(entry.getKey());
@@ -116,6 +147,12 @@ public class EntityIdCoder {
     }
 
     public ObjectId toObjectId(String stringId) {
+
+        if (stringId.startsWith(TEMP_ID_PREFIX)) {
+            String idValues = stringId.substring(entityName.length() + 1
+                    + TEMP_PREFIX_LENGTH);
+            return new ObjectId(entityName, decodeTemp(idValues));
+        }
 
         String idValues = stringId.substring(entityName.length() + 1);
 
@@ -138,7 +175,7 @@ public class EntityIdCoder {
         StringTokenizer toks = new StringTokenizer(idValues, ID_SEPARATOR);
 
         if (toks.countTokens() != converters.size()) {
-            throw new IllegalArgumentException("Invalid Strign ID for entity "
+            throw new IllegalArgumentException("Invalid String ID for entity "
                     + entityName + ": " + idValues);
         }
 
@@ -157,6 +194,23 @@ public class EntityIdCoder {
         }
 
         return new ObjectId(entityName, idMap);
+    }
+
+    private byte[] decodeTemp(String byteString) {
+
+        byte[] bytes = new byte[byteString.length() / 2];
+        for (int i = 0; i < bytes.length; i++) {
+            int index = i * 2;
+
+            // this is better than Byte.parseByte which can't parse values >=
+            // 128 as negative bytes
+            int c1 = byteString.charAt(index);
+            int c2 = byteString.charAt(index + 1);
+            bytes[i] = (byte) ((Character.digit(c1, 16) << 4) + Character
+                    .digit(c2, 16));
+        }
+
+        return bytes;
     }
 
     private Converter create(Class<?> type) {

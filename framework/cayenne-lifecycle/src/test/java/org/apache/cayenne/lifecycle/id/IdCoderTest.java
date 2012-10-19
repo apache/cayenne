@@ -52,25 +52,35 @@ public class IdCoderTest extends TestCase {
         assertEquals("E1:5", handler.getStringId(new ObjectId("E1", "ID", 5)));
     }
 
-    public void testGetStringId_TempException() {
+    public void testGetStringId_Temp() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
-        E1 e1 = new E1();
-        e1.setObjectId(new ObjectId("E1"));
+        byte[] key = new byte[] { 1, 2, 10, 100 };
 
-        try {
-            handler.getStringId(e1);
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+        E1 e1 = new E1();
+        e1.setObjectId(new ObjectId("E1", key));
+
+        assertEquals(".E1:01020A64", handler.getStringId(e1));
+    }
+
+    public void testGetObjectId_Temp() {
+        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+
+        byte[] key = new byte[] { 1, (byte) 0xD7, 10, 100 };
+
+        ObjectId decoded = handler.getObjectId(".E1:01D70A64");
+        assertEquals(new ObjectId("E1", key), decoded);
     }
 
     public void testGetSringId_TempWithReplacement() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
+        byte[] key = new byte[] { 5, 2, 11, 99 };
+        ObjectId id = new ObjectId("E1", key);
+        id.getReplacementIdMap().put("ID", 6);
+
         E1 e1 = new E1();
-        e1.setObjectId(new ObjectId("E1"));
-        e1.getObjectId().getReplacementIdMap().put("ID", 6);
+        e1.setObjectId(id);
 
         assertEquals("E1:6", handler.getStringId(e1));
     }

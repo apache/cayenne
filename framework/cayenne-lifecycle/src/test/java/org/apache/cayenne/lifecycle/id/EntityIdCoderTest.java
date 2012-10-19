@@ -28,12 +28,46 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.lifecycle.id.EntityIdCoder;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
 public class EntityIdCoderTest extends TestCase {
+
+    private ServerRuntime runtime;
+
+    @Override
+    protected void setUp() throws Exception {
+        runtime = new ServerRuntime("cayenne-lifecycle.xml");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        runtime.shutdown();
+    }
+    
+    public void testGetEntityName() {
+        assertEquals("M", EntityIdCoder.getEntityName("M:N:K"));
+        assertEquals("M", EntityIdCoder.getEntityName(".M:N:K"));
+    }
+
+    public void testTempId() {
+
+        ObjEntity e1 = runtime.getChannel().getEntityResolver()
+                .getObjEntity("E1");
+        EntityIdCoder coder = new EntityIdCoder(e1);
+
+        byte[] key = new byte[] { 2, 2, 10, 100 };
+        ObjectId encoded = new ObjectId("E1", key);
+
+        String string = coder.toStringId(encoded);
+        assertEquals(".E1:02020A64", string);
+
+        ObjectId decoded = coder.toObjectId(string);
+        assertTrue(decoded.isTemporary());
+        assertEquals(encoded, decoded);
+    }
 
     public void testSingleIntPk() {
         DbEntity dbEntity = new DbEntity("X");
