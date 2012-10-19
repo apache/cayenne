@@ -19,6 +19,7 @@ CAY-1717 [PATCH] Implement JDBC compatibility layer methods
 CAY-1718 Remove everything deprecated in 3.1
 CAY-1724 Add 'Property' class for easier and better Expression creation
 CAY-1737 ObjectContexts listening to DataChannel events must be non-blocking
+CAY-1748 IdCoder/EntityIdCoder improvements to work with ObjectIds, including temp ones
 
 Bug Fixes:
 
