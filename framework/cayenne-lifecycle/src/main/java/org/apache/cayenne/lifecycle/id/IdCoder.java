@@ -27,7 +27,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * An object to encode/decode ObjectIds for all entities found in a mapping namespace.
+ * An object to encode/decode ObjectIds for all entities found in a mapping
+ * namespace.
  * 
  * @since 3.1
  */
@@ -77,8 +78,7 @@ public class IdCoder {
     protected EntityIdCoder createCoder(String entityName) {
         ObjEntity entity = entityResolver.getObjEntity(entityName);
         if (entity == null) {
-            throw new IllegalArgumentException("Entity '"
-                    + entityName
+            throw new IllegalArgumentException("Entity '" + entityName
                     + "' is not mapped");
         }
 
