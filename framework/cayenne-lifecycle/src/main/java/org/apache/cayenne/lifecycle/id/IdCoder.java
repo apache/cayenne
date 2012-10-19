@@ -52,16 +52,22 @@ public class IdCoder {
         return coder.toObjectId(id);
     }
 
-    public String getStringId(Persistent referenceable) {
+    /**
+     * @since 3.2
+     */
+    public String getStringId(ObjectId id) {
+        EntityIdCoder coder = getCoder(id.getEntityName());
+        return coder.toStringId(id);
+    }
 
-        if (referenceable == null) {
+    public String getStringId(Persistent object) {
+
+        if (object == null) {
             throw new NullPointerException("Null object");
         }
 
-        ObjectId id = referenceable.getObjectId();
-
-        EntityIdCoder coder = getCoder(id.getEntityName());
-        return coder.toStringId(id);
+        ObjectId id = object.getObjectId();
+        return getStringId(id);
     }
 
     protected EntityIdCoder getCoder(String entityName) {

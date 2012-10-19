@@ -47,6 +47,11 @@ public class IdCoderTest extends TestCase {
         assertEquals("E1:5", handler.getStringId(e1));
     }
 
+    public void testGetStringId_ObjectId() {
+        IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
+        assertEquals("E1:5", handler.getStringId(new ObjectId("E1", "ID", 5)));
+    }
+
     public void testGetStringId_TempException() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
@@ -55,8 +60,7 @@ public class IdCoderTest extends TestCase {
 
         try {
             handler.getStringId(e1);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
