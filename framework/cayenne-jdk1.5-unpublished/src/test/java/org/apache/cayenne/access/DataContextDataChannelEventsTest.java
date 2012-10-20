@@ -65,7 +65,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertFalse(listener.graphChanged);
                 assertFalse(listener.graphRolledBack);
             }
-        }.runTest(1000);
+        }.runTest(10000);
 
     }
 
@@ -88,7 +88,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertFalse(listener.graphChanged);
                 assertTrue(listener.graphRolledBack);
             }
-        }.runTest(1000);
+        }.runTest(10000);
     }
 
     public void testChangeEventOnChildChange() throws Exception {
@@ -114,7 +114,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertTrue(listener.graphChanged);
                 assertFalse(listener.graphRolledBack);
             }
-        }.runTest(1000);
+        }.runTest(10000);
     }
 
     public void testChangeEventOnPeerChange() throws Exception {
@@ -138,7 +138,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertTrue(listener.graphChanged);
                 assertFalse(listener.graphRolledBack);
             }
-        }.runTest(1000);
+        }.runTest(10000);
     }
 
     public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
@@ -166,7 +166,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
                 assertTrue(listener.graphChanged);
                 assertFalse(listener.graphRolledBack);
             }
-        }.runTest(1000);
+        }.runTest(10000);
     }
 
     class MockChannelListener implements DataChannelListener {
