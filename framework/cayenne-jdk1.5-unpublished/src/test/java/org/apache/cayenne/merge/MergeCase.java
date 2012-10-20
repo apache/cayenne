@@ -37,8 +37,12 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public abstract class MergeCase extends ServerCase {
+
+    private Log logger = LogFactory.getLog(MergeCase.class);
 
     @Inject
     private DBHelper dbHelper;
@@ -136,7 +140,7 @@ public abstract class MergeCase extends ServerCase {
         }
     }
 
-    protected void execute(List<MergerToken> tokens) throws Exception {
+    protected void execute(List<MergerToken> tokens) {
         MergerContext mergerContext = new ExecutingMergerContext(map, node);
         for (MergerToken tok : tokens) {
             tok.execute(mergerContext);
@@ -185,30 +189,35 @@ public abstract class MergeCase extends ServerCase {
 
     protected void assertTokensAndExecute(int expectedToDb, int expectedToModel) {
         List<MergerToken> tokens = createMergeTokens();
-
         assertTokens(tokens, expectedToDb, expectedToModel);
-        if (!tokens.isEmpty()) {
-            try {
-                execute(tokens);
-            } catch (Exception e) {
-                fail(e.getMessage());
-            }
-        }
+        execute(tokens);
     }
 
     protected MergerFactory mergerFactory() {
         return node.getAdapter().mergerFactory();
     }
 
-    protected void dropTableIfPresent(DataNode node, String tableName) {
+    protected void dropTableIfPresent(DataNode node, String tableName)
+            throws Exception {
+
+        // must have a dummy datamap for the dummy table for the downstream code
+        // to work
+        DataMap map = new DataMap("dummy");
+        map.setQuotingSQLIdentifiers(map.isQuotingSQLIdentifiers());
         DbEntity entity = new DbEntity(tableName);
+        map.addDbEntity(entity);
+
         AbstractToDbToken t = (AbstractToDbToken) mergerFactory()
                 .createDropTableToDb(entity);
-        try {
-            for (String sql : t.createSql(node.getAdapter())) {
+
+        for (String sql : t.createSql(node.getAdapter())) {
+
+            try {
                 executeSql(sql);
+            } catch (Exception e) {
+                logger.info("Exception dropping table " + tableName
+                        + ", probably abscent..");
             }
-        } catch (Exception e) {
         }
     }
 }
