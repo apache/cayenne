@@ -136,10 +136,10 @@ ServerRuntime runtime =
 			ObjectContext scope, etc.</para>
 		<para>
 			<note>
-				<para>Please do not think of CayenneFilter as the only way to start and use Cayenne in a web
-					application. CayenneFilter is entirely optional. Use it if you don't have any
-					special design for application service management. If you do, simply integrate
-					Cayenne into that design.</para>
+				<para>You should not think of CayenneFilter as the only way to start and use Cayenne in a web
+					application. In fact CayenneFilter is entirely optional. Use it if you don't
+					have any special design for application service management. If you do, simply
+					integrate Cayenne into that design.</para>
 			</note>
 		</para>
 	</section>
