@@ -2,6 +2,25 @@
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
 	version="5.0" xml:id="queries">
 	<title>Queries</title>
+	<para>Queries are Java objects that can be translated into SQL statements by Cayenne. Most
+		Queries used in applications are intended to find objects matching certain criteria, but
+		there are other types of queries too. Such as those allowing to execute native SQL, invoke
+		DB stored procedures, etc. Internally when committing objects, Cayenne also uses special
+		queries to insert/update/delete rows in the dabase. In other words Queries comprise an
+		extensible protocol for communication between a Java application and a database. </para>
+	<para>There is a number of built-in queries in Cayenne, described later in this chapter. Users
+		can also create their own Query types to abstract certain DB interactions that are for
+		whatever reason can not be adequately described by the built-in set. </para>
+	<para>Queries can be roughly categorized as "object", "native". Object queries (most notably
+		SelectQuery and EJBQLQuery) are built from abstractions originating in the object model (the
+		"object" side in the "object-relational" divide). E.g. SelectQuery is assembled from a Java
+		class of the objects to fetch, a qualifier expression, orderings, etc. - all of this
+		expressed in terms of the object model.</para>
+	<para>Native queries often describe a desired DB operation using SQL (SQLTemplate) or referring
+		to stored procedures (ProcedureQuery), etc. The results of native queries are usually
+		presented as Lists of Maps, with each map representing a row in the DB. They can potentially
+		be converted to objects, however often it takes a considerable effort to do so. Native
+		queries are also less (if at all) portable across databases. </para>
 	<section xml:id="selectquery">
 		<title>SelectQuery</title>
 	</section>
