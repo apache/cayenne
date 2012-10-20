@@ -33,7 +33,7 @@ public class AddColumnToModelTest extends MergeCase {
 
     public void testAddColumn() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity = new DbEntity("NEW_TABLE");
 
@@ -49,8 +49,8 @@ public class AddColumnToModelTest extends MergeCase {
 
         map.addDbEntity(dbEntity);
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(1, 0);
+        assertTokensAndExecute(0, 0);
 
         ObjEntity objEntity = new ObjEntity("NewTable");
         objEntity.setDbEntity(dbEntity);
@@ -76,11 +76,8 @@ public class AddColumnToModelTest extends MergeCase {
         assertTrue(token instanceof AddColumnToModel);
         execute(token);
         assertEquals(1, objEntity.getAttributes().size());
-        assertEquals("java.lang.String", objEntity
-                .getAttributes()
-                .iterator()
-                .next()
-                .getType());
+        assertEquals("java.lang.String", objEntity.getAttributes().iterator()
+                .next().getType());
 
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
@@ -90,8 +87,8 @@ public class AddColumnToModelTest extends MergeCase {
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(1, 0);
+        assertTokensAndExecute(0, 0);
     }
 
 }

@@ -30,7 +30,7 @@ public class SetPrimaryKeyToDbTest extends MergeCase {
 
     public void test() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
 
@@ -40,20 +40,20 @@ public class SetPrimaryKeyToDbTest extends MergeCase {
         dbEntity1.addAttribute(e1col1);
         map.addDbEntity(dbEntity1);
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(1, 0);
+        assertTokensAndExecute(0, 0);
 
         DbAttribute e1col2 = new DbAttribute("ID2", Types.INTEGER, dbEntity1);
         e1col2.setMandatory(true);
         dbEntity1.addAttribute(e1col2);
 
-        assertTokensAndExecute(node, map, 2, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(2, 0);
+        assertTokensAndExecute(0, 0);
 
         e1col1.setPrimaryKey(false);
         e1col2.setPrimaryKey(true);
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(1, 0);
+        assertTokensAndExecute(0, 0);
     }
 }

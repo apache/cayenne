@@ -32,7 +32,7 @@ public class CreateTableToModelTest extends MergeCase {
 
     public void testAddTable() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity = new DbEntity("NEW_TABLE");
 
@@ -55,7 +55,8 @@ public class CreateTableToModelTest extends MergeCase {
         if (token.getDirection().isToDb()) {
             token = token.createReverse(mergerFactory());
         }
-        assertTrue(token.getClass().getName(), token instanceof CreateTableToModel);
+        assertTrue(token.getClass().getName(),
+                token instanceof CreateTableToModel);
 
         execute(token);
 
@@ -64,29 +65,25 @@ public class CreateTableToModelTest extends MergeCase {
             if (candiate.getDbEntity() == null) {
                 continue;
             }
-            if (candiate.getDbEntity().getName().equalsIgnoreCase(dbEntity.getName())) {
+            if (candiate.getDbEntity().getName()
+                    .equalsIgnoreCase(dbEntity.getName())) {
                 objEntity = candiate;
                 break;
             }
         }
         assertNotNull(objEntity);
 
-        assertEquals(objEntity.getClassName(), map.getDefaultPackage()
-                + "."
+        assertEquals(objEntity.getClassName(), map.getDefaultPackage() + "."
                 + objEntity.getName());
         assertEquals(objEntity.getSuperClassName(), map.getDefaultSuperclass());
-        assertEquals(objEntity.getClientClassName(), map.getDefaultClientPackage()
-                + "."
-                + objEntity.getName());
-        assertEquals(objEntity.getClientSuperClassName(), map
-                .getDefaultClientSuperclass());
+        assertEquals(objEntity.getClientClassName(),
+                map.getDefaultClientPackage() + "." + objEntity.getName());
+        assertEquals(objEntity.getClientSuperClassName(),
+                map.getDefaultClientSuperclass());
 
         assertEquals(1, objEntity.getAttributes().size());
-        assertEquals("java.lang.String", objEntity
-                .getAttributes()
-                .iterator()
-                .next()
-                .getType());
+        assertEquals("java.lang.String", objEntity.getAttributes().iterator()
+                .next().getType());
 
         // clear up
         // fix psql case issue
@@ -98,8 +95,8 @@ public class CreateTableToModelTest extends MergeCase {
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(1, 0);
+        assertTokensAndExecute(0, 0);
     }
 
 }

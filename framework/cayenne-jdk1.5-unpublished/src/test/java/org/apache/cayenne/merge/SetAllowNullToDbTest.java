@@ -40,26 +40,26 @@ public class SetAllowNullToDbTest extends MergeCase {
             column.setMandatory(true);
             column.setMaxLength(10);
             dbEntity.addAttribute(column);
-            assertTokensAndExecute(node, map, 2, 0);
+            assertTokensAndExecute(2, 0);
 
             // check that is was merged
-            assertTokensAndExecute(node, map, 0, 0);
+            assertTokensAndExecute(0, 0);
 
             // set null
             column.setMandatory(false);
 
             // merge to db
-            assertTokensAndExecute(node, map, 1, 0);
+            assertTokensAndExecute(1, 0);
 
             // check that is was merged
-            assertTokensAndExecute(node, map, 0, 0);
+            assertTokensAndExecute(0, 0);
 
             // clean up
         }
         finally {
             dbEntity.removeAttribute(column.getName());
-            assertTokensAndExecute(node, map, 1, 0);
-            assertTokensAndExecute(node, map, 0, 0);
+            assertTokensAndExecute(1, 0);
+            assertTokensAndExecute(0, 0);
         }
     }
 

@@ -68,7 +68,7 @@ public class ValueForNullTest extends MergeCase {
         dbEntity.addAttribute(column);
         assertTrue(dbEntity.getAttributes().contains(column));
         assertEquals(column, dbEntity.getAttribute(column.getName()));
-        assertTokensAndExecute(node, map, 1, 0);
+        assertTokensAndExecute(1, 0);
 
         // need obj attr to be able to query
         ObjAttribute objAttr = new ObjAttribute("newcol2");
@@ -76,16 +76,16 @@ public class ValueForNullTest extends MergeCase {
         objEntity.addAttribute(objAttr);
 
         // check that is was merged
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(0, 0);
 
         // set not null
         column.setMandatory(true);
 
         // merge to db
-        assertTokensAndExecute(node, map, 2, 0);
+        assertTokensAndExecute(2, 0);
 
         // check that is was merged
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(0, 0);
 
         // check values for null
         Expression qual = ExpressionFactory.matchExp(
@@ -97,8 +97,8 @@ public class ValueForNullTest extends MergeCase {
 
         // clean up
         dbEntity.removeAttribute(column.getName());
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(1, 0);
+        assertTokensAndExecute(0, 0);
     }
 
     @Override

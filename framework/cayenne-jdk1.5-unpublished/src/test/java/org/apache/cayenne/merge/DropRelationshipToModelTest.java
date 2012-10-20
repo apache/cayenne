@@ -38,7 +38,7 @@ public class DropRelationshipToModelTest extends MergeCase {
         dropTableIfPresent(node, "NEW_TABLE");
         dropTableIfPresent(node, "NEW_TABLE2");
 
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
 
@@ -83,8 +83,8 @@ public class DropRelationshipToModelTest extends MergeCase {
         assertSame(rel1To2, rel2To1.getReverseRelationship());
         assertSame(rel2To1, rel1To2.getReverseRelationship());
 
-        assertTokensAndExecute(node, map, 4, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(4, 0);
+        assertTokensAndExecute(0, 0);
 
         // create ObjEntities
         ObjEntity objEntity1 = new ObjEntity("NewTable");
@@ -139,7 +139,8 @@ public class DropRelationshipToModelTest extends MergeCase {
         // try do use the merger to remove the relationship in the model
         tokens = createMergeTokens();
         assertTokens(tokens, 2, 0);
-        // TODO: reversing the following two tokens should also reverse the order
+        // TODO: reversing the following two tokens should also reverse the
+        // order
         MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
         MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
         assertTrue(token0 instanceof DropColumnToModel);

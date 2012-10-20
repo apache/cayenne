@@ -37,7 +37,7 @@ public class DropColumnToModelTest extends MergeCase {
     public void testSimpleColumn() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
 
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity = new DbEntity("NEW_TABLE");
 
@@ -53,8 +53,8 @@ public class DropColumnToModelTest extends MergeCase {
 
         map.addDbEntity(dbEntity);
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(1, 0);
+        assertTokensAndExecute(0, 0);
 
         ObjEntity objEntity = new ObjEntity("NewTable");
         objEntity.setDbEntity(dbEntity);
@@ -87,15 +87,15 @@ public class DropColumnToModelTest extends MergeCase {
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
 
-        assertTokensAndExecute(node, map, 1, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(1, 0);
+        assertTokensAndExecute(0, 0);
     }
 
     public void testRemoveFKColumnWithoutRelationshipInDb() throws Exception {
         dropTableIfPresent(node, "NEW_TABLE");
         dropTableIfPresent(node, "NEW_TABLE2");
 
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
 
@@ -124,8 +124,8 @@ public class DropColumnToModelTest extends MergeCase {
 
         map.addDbEntity(dbEntity2);
 
-        assertTokensAndExecute(node, map, 2, 0);
-        assertTokensAndExecute(node, map, 0, 0);
+        assertTokensAndExecute(2, 0);
+        assertTokensAndExecute(0, 0);
 
         // force drop fk column in db
         execute(mergerFactory().createDropColumnToDb(dbEntity2, e2col2));
