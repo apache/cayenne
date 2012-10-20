@@ -197,8 +197,7 @@ public abstract class MergeCase extends ServerCase {
         return node.getAdapter().mergerFactory();
     }
 
-    protected void dropTableIfPresent(DataNode node, String tableName)
-            throws Exception {
+    protected void dropTableIfPresent(String tableName) throws Exception {
 
         // must have a dummy datamap for the dummy table for the downstream code
         // to work

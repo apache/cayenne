@@ -31,7 +31,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class CreateTableToModelTest extends MergeCase {
 
     public void testAddTable() throws Exception {
-        dropTableIfPresent(node, "NEW_TABLE");
+        dropTableIfPresent("NEW_TABLE");
         assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity = new DbEntity("NEW_TABLE");

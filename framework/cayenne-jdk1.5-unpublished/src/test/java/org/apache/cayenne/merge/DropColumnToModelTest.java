@@ -35,7 +35,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class DropColumnToModelTest extends MergeCase {
 
     public void testSimpleColumn() throws Exception {
-        dropTableIfPresent(node, "NEW_TABLE");
+        dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);
 
@@ -92,8 +92,8 @@ public class DropColumnToModelTest extends MergeCase {
     }
 
     public void testRemoveFKColumnWithoutRelationshipInDb() throws Exception {
-        dropTableIfPresent(node, "NEW_TABLE");
-        dropTableIfPresent(node, "NEW_TABLE2");
+        dropTableIfPresent("NEW_TABLE");
+        dropTableIfPresent("NEW_TABLE2");
 
         assertTokensAndExecute(0, 0);
 

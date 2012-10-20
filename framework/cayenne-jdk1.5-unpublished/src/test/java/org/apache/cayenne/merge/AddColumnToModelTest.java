@@ -32,7 +32,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class AddColumnToModelTest extends MergeCase {
 
     public void testAddColumn() throws Exception {
-        dropTableIfPresent(node, "NEW_TABLE");
+        dropTableIfPresent("NEW_TABLE");
         assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity = new DbEntity("NEW_TABLE");

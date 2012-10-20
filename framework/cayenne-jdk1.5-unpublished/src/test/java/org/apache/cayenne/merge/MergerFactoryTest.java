@@ -125,7 +125,7 @@ public class MergerFactoryTest extends MergeCase {
     }
 
     public void testAddTableToDb() throws Exception {
-        dropTableIfPresent(node, "NEW_TABLE");
+        dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);
 
@@ -174,7 +174,7 @@ public class MergerFactoryTest extends MergeCase {
     }
 
     public void testAddForeignKeyWithTable() throws Exception {
-        dropTableIfPresent(node, "NEW_TABLE");
+        dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);
 
@@ -238,7 +238,7 @@ public class MergerFactoryTest extends MergeCase {
     }
 
     public void testAddForeignKeyAfterTable() throws Exception {
-        dropTableIfPresent(node, "NEW_TABLE");
+        dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);
 
