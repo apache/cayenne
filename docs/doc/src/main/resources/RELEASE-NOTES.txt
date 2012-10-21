@@ -30,6 +30,7 @@ CAY-1739 Cayenne ROP server resets session on every request if BASIC auth is use
 CAY-1741 Serializable DataObjectBaseProperty
 CAY-1742 CAY-1742 ObjRelationship inspector says "ObjAttribute Inspector"
 CAY-1744 Unexpected read-only relationships in vertical inheritance mapping
+CAY-1749 NPE on simple nested context commit
 
 ----------------------------------
 Release: 3.1B1
