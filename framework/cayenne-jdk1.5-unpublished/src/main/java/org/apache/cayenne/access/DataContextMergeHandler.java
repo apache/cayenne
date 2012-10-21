@@ -110,9 +110,22 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     }
 
     public void graphFlushed(GraphEvent event) {
+
         // peer is committed
         if (shouldProcessEvent(event)) {
-            event.getDiff().apply(this);
+
+            // per CAY-1737 event dispatches from parent context to children are
+            // non-blocking, this causes issues like CAY-1749. so we must
+            // synchronize ObjectStore updates here.
+
+            // TODO: we can get here if a peer context is committed (ok) or
+            // if our context was committed (not ok, since parent changes are
+            // already applied in the commit thread) .. figure out an alt
+            // filtering mechanism to avoid the duplicate object processing
+
+            synchronized (context.getObjectStore()) {
+                event.getDiff().apply(this);
+            }
 
             // repost as change event for our own children
             context.fireDataChannelChanged(event.getPostedBy(), event.getDiff());
