@@ -51,6 +51,7 @@ public class DataContextEJBQLFlattenedRelationshipsTest extends ServerCase {
     @Override
     protected void setUpAfterInjection() throws Exception {
 
+        dbHelper.deleteAll("COMPLEX_JOIN");
         dbHelper.deleteAll("FLATTENED_TEST_4");
         dbHelper.deleteAll("FLATTENED_TEST_3");
         dbHelper.deleteAll("FLATTENED_TEST_2");
