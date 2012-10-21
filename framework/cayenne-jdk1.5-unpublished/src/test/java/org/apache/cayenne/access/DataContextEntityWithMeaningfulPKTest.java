@@ -49,6 +49,7 @@ public class DataContextEntityWithMeaningfulPKTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MEANINGFUL_PK_DEP");
         dbHelper.deleteAll("MEANINGFUL_PK_TEST1");
     }
 
