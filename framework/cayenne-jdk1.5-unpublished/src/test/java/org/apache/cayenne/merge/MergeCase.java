@@ -33,12 +33,16 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 
 public abstract class MergeCase extends ServerCase {
 
+    @Inject
+    private DBHelper dbHelper;
+    
     @Inject
     private ServerRuntime runtime;
 
@@ -64,6 +68,15 @@ public abstract class MergeCase extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+        
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTGROUP");
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
 
         // this map can't be safely modified in this test, as it is reset by DI container
         // on every test
