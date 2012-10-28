@@ -55,9 +55,6 @@ public class ClassGenerationAction {
     public static final String DATAMAP_SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-singleclass.vm";
     public static final String DATAMAP_SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-subclass.vm";
     public static final String DATAMAP_SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-superclass.vm";
-    
-    //light classes template - it is for server, but extends PeristentObject
-    public static final String LIGHT_SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "light-superclass.vm";
 
     public static final String SUPERCLASS_PREFIX = "_";
     private static final String WILDCARD = "*";
