@@ -21,6 +21,7 @@ CAY-1724 Add 'Property' class for easier and better Expression creation
 CAY-1737 ObjectContexts listening to DataChannel events must be non-blocking
 CAY-1748 IdCoder/EntityIdCoder improvements to work with ObjectIds, including temp ones
 CAY-1753 remove light-superclass.vm class template
+CAY-1754 Modeler suggested URL for SQLServer should start with 'jdbc:sqlserver:' instead of 'jdbc:microsoft:sqlserver:'
 
 Bug Fixes:
 
