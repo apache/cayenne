@@ -15,6 +15,7 @@ Changes/New Features Since 3.1B1:
 
 CAY-1737 ObjectContexts listening to DataChannel events must be non-blocking
 CAY-1753 remove light-superclass.vm class template
+CAY-1754 Modeler suggested URL for SQLServer should start with 'jdbc:sqlserver:' instead of 'jdbc:microsoft:sqlserver:'
 
 Bug Fixes Since 3.1B1:
 
