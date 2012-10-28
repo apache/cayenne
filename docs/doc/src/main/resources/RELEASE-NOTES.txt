@@ -14,6 +14,7 @@ Date: 2012
 Changes/New Features Since 3.1B1:
 
 CAY-1737 ObjectContexts listening to DataChannel events must be non-blocking
+CAY-1753 remove light-superclass.vm class template
 
 Bug Fixes Since 3.1B1:
 
