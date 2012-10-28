@@ -114,7 +114,7 @@ public class AdapterMapping {
         adapterToJDBCURLMap
                 .put(
                         SQLServerAdapter.class.getName(),
-                        "jdbc:microsoft:sqlserver://host;databaseName=database;SelectMethod=cursor");
+                        "jdbc:sqlserver://localhost:1433;databaseName=database;SelectMethod=cursor");
         adapterToJDBCURLMap.put(SQLiteAdapter.class.getName(), "jdbc:sqlite:testdb");
 
         // TODO: embedded Derby Mode... change to client-server once we figure it out
