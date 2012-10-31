@@ -30,8 +30,10 @@ import org.apache.cayenne.exp.parser.ASTAdd;
 import org.apache.cayenne.exp.parser.ASTAnd;
 import org.apache.cayenne.exp.parser.ASTBetween;
 import org.apache.cayenne.exp.parser.ASTBitwiseAnd;
+import org.apache.cayenne.exp.parser.ASTBitwiseLeftShift;
 import org.apache.cayenne.exp.parser.ASTBitwiseNot;
 import org.apache.cayenne.exp.parser.ASTBitwiseOr;
+import org.apache.cayenne.exp.parser.ASTBitwiseRightShift;
 import org.apache.cayenne.exp.parser.ASTBitwiseXor;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTDivide;
@@ -93,7 +95,7 @@ public class ExpressionFactory {
                 Expression.NOT_BETWEEN, Expression.NOT_IN, Expression.NOT_LIKE,
                 Expression.NOT_LIKE_IGNORE_CASE, Expression.TRUE, Expression.FALSE,
                 Expression.BITWISE_NOT, Expression.BITWISE_AND, Expression.BITWISE_OR,
-                Expression.BITWISE_XOR
+                Expression.BITWISE_XOR, Expression.BITWISE_LEFT_SHIFT, Expression.BITWISE_RIGHT_SHIFT
         };
 
         int max = 0;
@@ -153,6 +155,8 @@ public class ExpressionFactory {
         typeLookup[Expression.BITWISE_OR] = ASTBitwiseOr.class;
         typeLookup[Expression.BITWISE_AND] = ASTBitwiseAnd.class;
         typeLookup[Expression.BITWISE_XOR] = ASTBitwiseXor.class;
+        typeLookup[Expression.BITWISE_LEFT_SHIFT] = ASTBitwiseLeftShift.class;
+        typeLookup[Expression.BITWISE_RIGHT_SHIFT] = ASTBitwiseRightShift.class;
     }
 
     /**

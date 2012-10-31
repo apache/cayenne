@@ -18,43 +18,57 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
 
 /**
+ * Bitwise exclusive disjunction (XOR or '^') operation.
+ * 
  * @since 3.1
  */
 public class ASTBitwiseXor extends SimpleNode {
+	private static final long serialVersionUID = 1L;
 
-    ASTBitwiseXor(int id) {
-        super(id);
-    }
-
-    public ASTBitwiseXor() {
-
-        // TODO: parser support
-        super(-1);
-    }
-
-    public ASTBitwiseXor(SimpleNode left, SimpleNode right) {
-        // TODO: parser support
-        super(-1);
-
-        jjtAddChild(left, 0);
-        jjtAddChild(right, 1);
+	ASTBitwiseXor(int id) {
+		super(id);
+	}
+	
+	public ASTBitwiseXor() {
+		super(ExpressionParserTreeConstants.JJTBITWISEXOR);
+	}
+	
+	public ASTBitwiseXor(Object[] nodes) {
+        super(ExpressionParserTreeConstants.JJTBITWISEXOR);
+        int len = nodes.length;
+        for (int i = 0; i < len; i++) {
+            jjtAddChild(wrapChild(nodes[i]), i);
+        }
+        
         connectChildren();
+	}
+	
+    public ASTBitwiseXor(Collection<Object> nodes) {
+        super(ExpressionParserTreeConstants.JJTBITWISEXOR);
+        int len = nodes.size();
+        Iterator<Object> it = nodes.iterator();
+        for (int i = 0; i < len; i++) {
+            jjtAddChild(wrapChild(it.next()), i);
+        }
     }
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
+	
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
         int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
+        if (len == 0) {
+            return null;
         }
 
-        long result = Long.MIN_VALUE;
+        Long result = null;
         for (int i = 0; i < len; i++) {
-            long value = ConversionUtil.toLong(evaluateChild(i, o), Long.MIN_VALUE);
+            Long value = ConversionUtil.toLong(evaluateChild(i, o), Long.MIN_VALUE);
 
             if (value == Long.MIN_VALUE) {
                 return null;
@@ -64,29 +78,32 @@ public class ASTBitwiseXor extends SimpleNode {
         }
 
         return result;
-    }
+	}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "^";
+	}
+	
+	@Override
+	public int getType() {
+		return Expression.BITWISE_XOR;
+	}
+	
+	@Override
+	protected String getEJBQLExpressionOperator(int index) {
+		throw new UnsupportedOperationException(
+				"EJBQL 'bitwise not' is not supported");
+	}
+	
+	@Override
+	public Expression shallowCopy() {
+		return new ASTBitwiseXor(id);
+	}
+	
     @Override
-    public Expression shallowCopy() {
-        return new ASTBitwiseXor(id);
+    public void jjtClose() {
+        super.jjtClose();
+        flattenTree();
     }
-
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "^";
-    }
-
-    @Override
-    protected String getEJBQLExpressionOperator(int index) {
-        throw new UnsupportedOperationException("EJBQL 'bitwise xor' is not supported");
-    }
-
-    @Override
-    public int getType() {
-        return Expression.BITWISE_XOR;
-    }
-
 }

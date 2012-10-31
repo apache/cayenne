@@ -138,6 +138,16 @@ public abstract class Expression implements Serializable, XMLSerializable {
      * @since 3.1
      */
     public static final int BITWISE_XOR = 42;
+    
+    /**
+     * @since 3.2
+     */
+    public static final int BITWISE_LEFT_SHIFT = 43;
+    
+    /**
+     * @since 3.2
+     */
+    public static final int BITWISE_RIGHT_SHIFT = 44;
 
     private static final int PARSE_BUFFER_MAX_SIZE = 4096;
 

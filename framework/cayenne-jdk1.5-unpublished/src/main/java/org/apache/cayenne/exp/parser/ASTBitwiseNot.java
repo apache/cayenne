@@ -22,64 +22,63 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
 
 /**
+ * Bitwise negation (NOT i.e. inventor or '~') operation .
+ * 
  * @since 3.1
  */
 public class ASTBitwiseNot extends SimpleNode {
+	private static final long serialVersionUID = 1L;
 
-    ASTBitwiseNot(int id) {
-        super(id);
-    }
+	ASTBitwiseNot(int id) {
+		super(id);
+	}
 
-    public ASTBitwiseNot() {
+	public ASTBitwiseNot() {
+		super(ExpressionParserTreeConstants.JJTBITWISENOT);
+	}
 
-        // TODO: parser support
-        super(-1);
-    }
-
-    public ASTBitwiseNot(SimpleNode expression) {
-        // TODO: parser support
-        super(-1);
-
-        jjtAddChild(expression, 0);
+	public ASTBitwiseNot(Object node) {
+        super(ExpressionParserTreeConstants.JJTBITWISENOT);
+        jjtAddChild(wrapChild(node), 0);
         connectChildren();
-    }
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 1) {
-            return Boolean.FALSE;
-        }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
 
-        long value = ConversionUtil.toLong(evaluateChild(0, o), Long.MIN_VALUE);
+		int len = jjtGetNumChildren();
+		if (len != 1) {
+			return Boolean.FALSE;
+		}
 
-        if (value == Long.MIN_VALUE) {
-            return null;
-        }
+		long value = ConversionUtil.toLong(evaluateChild(0, o), Long.MIN_VALUE);
 
-        return ~value;
-    }
+		if (value == Long.MIN_VALUE) {
+			return null;
+		}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTBitwiseNot(id);
-    }
+		return ~value;
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "~";
-    }
+	}
 
-    @Override
-    protected String getEJBQLExpressionOperator(int index) {
-        throw new UnsupportedOperationException("EJBQL 'bitwise not' is not supported");
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "~";
+	}
+	
+	@Override
+	public int getType() {
+		return Expression.BITWISE_NOT;
+	}
 
-    @Override
-    public int getType() {
-        return Expression.BITWISE_NOT;
-    }
+	@Override
+	protected String getEJBQLExpressionOperator(int index) {
+		throw new UnsupportedOperationException(
+				"EJBQL 'bitwise not' is not supported");
+	}
+
+	@Override
+	public Expression shallowCopy() {
+		return new ASTBitwiseNot(id);
+	}
 }

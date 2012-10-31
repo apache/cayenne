@@ -308,6 +308,12 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                 case Expression.BITWISE_XOR:
                     out.append(" ").append(operandForBitwiseXor()).append(" ");
                     break;
+                case Expression.BITWISE_LEFT_SHIFT:
+                	out.append(" ").append(operandForBitwiseLeftShift()).append(" ");
+                	break;
+                case Expression.BITWISE_RIGHT_SHIFT:
+                	out.append(" ").append(operandForBitwiseRightShift()).append("" );
+                	break;
             }
         }
         catch (IOException ioex) {
@@ -346,6 +352,20 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
      */
     protected String operandForBitwiseXor() {
         return "^";
+    }
+    
+    /**
+     * @since 3.2
+     */
+    protected String operandForBitwiseLeftShift() {
+        return "<<";
+    }
+    
+    /**
+     * @since 3.2
+     */
+    protected String operandForBitwiseRightShift() {
+        return ">>";
     }
 
     public void startNode(Expression node, Expression parentNode) {

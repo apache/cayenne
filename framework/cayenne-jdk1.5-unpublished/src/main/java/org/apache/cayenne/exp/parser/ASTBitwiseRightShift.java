@@ -24,71 +24,71 @@ import java.util.Iterator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
 
-
 /**
- * Bitwise disjunction (OR or '|') expression.
+ * Bitwise right shift '>>' operation.
  * 
- * @since 3.1
+ * @since 3.2
  */
-public class ASTBitwiseOr extends SimpleNode {
+public class ASTBitwiseRightShift extends SimpleNode {
 	private static final long serialVersionUID = 1L;
 
-	ASTBitwiseOr(int id) {
+	ASTBitwiseRightShift(int id) {
 		super(id);
 	}
-	
-	public ASTBitwiseOr() {
-		super(ExpressionParserTreeConstants.JJTBITWISEOR);
+
+	public ASTBitwiseRightShift() {
+		super(ExpressionParserTreeConstants.JJTBITWISERIGHTSHIFT);
 	}
-	
-	public ASTBitwiseOr(Object[] nodes) {
-        super(ExpressionParserTreeConstants.JJTBITWISEOR);
-        int len = nodes.length;
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(nodes[i]), i);
-        }
-        
-        connectChildren();
+
+	public ASTBitwiseRightShift(Object[] nodes) {
+		super(ExpressionParserTreeConstants.JJTBITWISERIGHTSHIFT);
+		int len = nodes.length;
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(wrapChild(nodes[i]), i);
+		}
+
+		connectChildren();
 	}
-	
-    public ASTBitwiseOr(Collection<Object> nodes) {
-        super(ExpressionParserTreeConstants.JJTBITWISEOR);
-        int len = nodes.size();
-        Iterator<Object> it = nodes.iterator();
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(it.next()), i);
-        }
-    }
-	
+
+	public ASTBitwiseRightShift(Collection<Object> nodes) {
+		super(ExpressionParserTreeConstants.JJTBITWISERIGHTSHIFT);
+		int len = nodes.size();
+		Iterator<Object> it = nodes.iterator();
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(wrapChild(it.next()), i);
+		}
+	}
+
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len == 0) {
-            return null;
-        }
+		int len = jjtGetNumChildren();
+		if (len == 0) {
+			return null;
+		}
 
-        Long result = null;
-        for (int i = 0; i < len; i++) {
-            Long value = ConversionUtil.toLong(evaluateChild(i, o), Long.MIN_VALUE);
+		Long result = null;
+		for (int i = 0; i < len; i++) {
+			Long value = ConversionUtil.toLong(evaluateChild(i, o),
+					Long.MIN_VALUE);
 
-            if (value == Long.MIN_VALUE) {
-                return null;
-            }
+			if (value == Long.MIN_VALUE) {
+				return null;
+			}
 
-            result = (i == 0) ? value : result | value;
-        }
+			result = (i == 0) ? value : result >> value;
+		}
 
-        return result;
+		return result;
 	}
 
 	@Override
 	protected String getExpressionOperator(int index) {
-		return "|";
+		return ">>";
 	}
 	
 	@Override
 	public int getType() {
-		return Expression.BITWISE_OR;
+		return Expression.BITWISE_RIGHT_SHIFT;
 	}
 	
 	@Override
@@ -96,16 +96,15 @@ public class ASTBitwiseOr extends SimpleNode {
 		throw new UnsupportedOperationException(
 				"EJBQL 'bitwise not' is not supported");
 	}
-	
+
 	@Override
 	public Expression shallowCopy() {
-		return new ASTBitwiseOr(id);
+		return new ASTBitwiseRightShift(id);
 	}
-	
-    @Override
-    public void jjtClose() {
-        super.jjtClose();
-        flattenTree();
-    }
 
+	@Override
+	public void jjtClose() {
+		super.jjtClose();
+		flattenTree();
+	}
 }

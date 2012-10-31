@@ -25,14 +25,20 @@ public interface ExpressionParserTreeConstants
   public int JJTNOTBETWEEN = 19;
   public int JJTLIST = 20;
   public int JJTSCALAR = 21;
-  public int JJTADD = 22;
-  public int JJTSUBTRACT = 23;
-  public int JJTMULTIPLY = 24;
-  public int JJTDIVIDE = 25;
-  public int JJTNEGATE = 26;
-  public int JJTNAMEDPARAMETER = 27;
-  public int JJTOBJPATH = 28;
-  public int JJTDBPATH = 29;
+  public int JJTBITWISEOR = 22;
+  public int JJTBITWISEXOR = 23;
+  public int JJTBITWISEAND = 24;
+  public int JJTBITWISELEFTSHIFT = 25;
+  public int JJTBITWISERIGHTSHIFT = 26;
+  public int JJTADD = 27;
+  public int JJTSUBTRACT = 28;
+  public int JJTMULTIPLY = 29;
+  public int JJTDIVIDE = 30;
+  public int JJTBITWISENOT = 31;
+  public int JJTNEGATE = 32;
+  public int JJTNAMEDPARAMETER = 33;
+  public int JJTOBJPATH = 34;
+  public int JJTDBPATH = 35;
 
 
   public String[] jjtNodeName = {
@@ -58,14 +64,20 @@ public interface ExpressionParserTreeConstants
     "NotBetween",
     "List",
     "Scalar",
+    "BitwiseOr",
+    "BitwiseXor",
+    "BitwiseAnd",
+    "BitwiseLeftShift",
+    "BitwiseRightShift",
     "Add",
     "Subtract",
     "Multiply",
     "Divide",
+    "BitwiseNot",
     "Negate",
     "NamedParameter",
     "ObjPath",
     "DbPath",
   };
 }
-/* JavaCC - OriginalChecksum=238d7dc8bb4d7ce029d1935e3afc53f0 (do not edit this line) */
+/* JavaCC - OriginalChecksum=c9c4fb7fe11d6ed9456e027ce61531d5 (do not edit this line) */

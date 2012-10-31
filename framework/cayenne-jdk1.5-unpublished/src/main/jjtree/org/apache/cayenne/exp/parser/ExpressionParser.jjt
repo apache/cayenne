@@ -164,7 +164,7 @@ void scalarConditionExpression() : {}
 
 void scalarExpression() : {} 
 {
-  	   scalarConditionExpression() 
+  	   scalarConditionExpression()
 	|
 	  <TRUE> { jjtThis.setValue(true); }  #Scalar(0)
 	| 
@@ -190,30 +190,76 @@ void scalarConstExpression() : {}
 
 void scalarNumericExpression() : {}
 {
-	multiplySubtractExp() 
-	( 
-		"+" multiplySubtractExp() #Add(2)
-	|
-		"-" multiplySubtractExp() #Subtract(2)
-	)*
+    bitwiseOr()
+}
+
+void bitwiseOr() : {}
+{
+    bitwiseXor()
+    (
+        "|" bitwiseXor() #BitwiseOr(2)
+    )*
+}
+
+void bitwiseXor() : {}
+{
+    bitwiseAnd()
+    (
+        "^" bitwiseAnd() #BitwiseXor(2)
+    )*
+}
+
+void bitwiseAnd() : {}
+{
+    bitwiseShift()
+    (
+        "&" bitwiseShift() #BitwiseAnd(2)
+    )*
+}
+
+void bitwiseShift(): {}
+{
+    arithmeticExp()
+    (
+        "<<" arithmeticExp() #BitwiseLeftShift(2)
+      | 
+        ">>" arithmeticExp() #BitwiseRightShift(2)
+    )*
+}
+
+
+void arithmeticExp() : {}
+{
+    multiplySubtractExp() 
+    ( 
+        "+" multiplySubtractExp() #Add(2)
+    |
+        "-" multiplySubtractExp() #Subtract(2)
+    )*
 }
 
 void multiplySubtractExp() : {} 
 {
-	numericTerm() 
-	( 
-		"*" numericTerm() #Multiply(2)
-	|
-		"/" numericTerm() #Divide(2)
-	)*
+    numericTermExt() 
+    ( 
+        "*" numericTermExt() #Multiply(2)
+    |
+        "/" numericTermExt() #Divide(2)
+    )*
 }
 
+void numericTermExt() : {}
+{        numericTerm()
+    |
+        "~" numericTerm()  #BitwiseNot(1)
+}  
 void numericTerm() : {} 
 {
-		( "+" )?  numericPrimary ()
-	|
-		"-"  numericPrimary() #Negate(1)
+        ( "+" )?  numericPrimary ()
+    | 
+        "-"  numericTerm() #Negate(1)
 }
+
 
 void numericPrimary() : {} 
 {

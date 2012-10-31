@@ -31,39 +31,39 @@ public interface ExpressionParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int NULL = 32;
+  int NULL = 38;
   /** RegularExpression Id. */
-  int TRUE = 33;
+  int TRUE = 39;
   /** RegularExpression Id. */
-  int FALSE = 34;
+  int FALSE = 40;
   /** RegularExpression Id. */
-  int PROPERTY_PATH = 35;
+  int PROPERTY_PATH = 41;
   /** RegularExpression Id. */
-  int IDENTIFIER = 36;
+  int IDENTIFIER = 42;
   /** RegularExpression Id. */
-  int LETTER = 37;
+  int LETTER = 43;
   /** RegularExpression Id. */
-  int DIGIT = 38;
+  int DIGIT = 44;
   /** RegularExpression Id. */
-  int ESC = 41;
+  int ESC = 47;
   /** RegularExpression Id. */
-  int SINGLE_QUOTED_STRING = 43;
+  int SINGLE_QUOTED_STRING = 49;
   /** RegularExpression Id. */
-  int STRING_ESC = 44;
+  int STRING_ESC = 50;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTED_STRING = 46;
+  int DOUBLE_QUOTED_STRING = 52;
   /** RegularExpression Id. */
-  int INT_LITERAL = 47;
+  int INT_LITERAL = 53;
   /** RegularExpression Id. */
-  int FLOAT_LITERAL = 48;
+  int FLOAT_LITERAL = 54;
   /** RegularExpression Id. */
-  int DEC_FLT = 49;
+  int DEC_FLT = 55;
   /** RegularExpression Id. */
-  int DEC_DIGITS = 50;
+  int DEC_DIGITS = 56;
   /** RegularExpression Id. */
-  int EXPONENT = 51;
+  int EXPONENT = 57;
   /** RegularExpression Id. */
-  int FLT_SUFF = 52;
+  int FLT_SUFF = 58;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -94,10 +94,16 @@ public interface ExpressionParserConstants {
     "\")\"",
     "\"between\"",
     "\",\"",
+    "\"|\"",
+    "\"^\"",
+    "\"&\"",
+    "\"<<\"",
+    "\">>\"",
     "\"+\"",
     "\"-\"",
     "\"*\"",
     "\"/\"",
+    "\"~\"",
     "\"$\"",
     "\"obj:\"",
     "\"db:\"",
@@ -116,10 +122,10 @@ public interface ExpressionParserConstants {
     "\"\\\'\"",
     "\"\\\"\"",
     "<ESC>",
-    "<token of kind 42>",
+    "<token of kind 48>",
     "\"\\\'\"",
     "<STRING_ESC>",
-    "<token of kind 45>",
+    "<token of kind 51>",
     "\"\\\"\"",
     "<INT_LITERAL>",
     "<FLOAT_LITERAL>",

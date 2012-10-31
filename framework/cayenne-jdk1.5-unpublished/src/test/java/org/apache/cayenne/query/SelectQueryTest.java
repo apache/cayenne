@@ -36,6 +36,7 @@ import org.apache.cayenne.exp.parser.ASTBitwiseOr;
 import org.apache.cayenne.exp.parser.ASTBitwiseXor;
 import org.apache.cayenne.exp.parser.ASTEqual;
 import org.apache.cayenne.exp.parser.ASTGreater;
+import org.apache.cayenne.exp.parser.ASTNegate;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.map.DbEntity;
@@ -54,6 +55,7 @@ import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.velocity.runtime.parser.node.ASTObjectArray;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SelectQueryTest extends ServerCase {
@@ -474,8 +476,8 @@ public class SelectQueryTest extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseOr(new ASTObjPath(
-                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1));
+        Expression left = new ASTBitwiseOr(new Object[] {new ASTObjPath(
+                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1)});
         Expression right = new ASTScalar(1);
         Expression equal = new ASTEqual();
         equal.setOperand(0, left);
@@ -497,8 +499,8 @@ public class SelectQueryTest extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseAnd(new ASTObjPath(
-                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1));
+        Expression left = new ASTBitwiseAnd(new Object[] {new ASTObjPath(
+                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1)});
         Expression right = new ASTScalar(0);
         Expression equal = new ASTEqual();
         equal.setOperand(0, left);
@@ -520,8 +522,8 @@ public class SelectQueryTest extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseXor(new ASTObjPath(
-                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1));
+        Expression left = new ASTBitwiseXor(new Object[] {new ASTObjPath(
+                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1)});
         Expression right = new ASTScalar(5);
         Expression equal = new ASTEqual();
         equal.setOperand(0, left);
