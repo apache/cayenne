@@ -18,6 +18,7 @@ CAY-1647 Easily switch to/from ObjEntity and DbEntity in Modeler
 CAY-1717 [PATCH] Implement JDBC compatibility layer methods
 CAY-1718 Remove everything deprecated in 3.1
 CAY-1724 Add 'Property' class for easier and better Expression creation
+CAY-1726 Expression parser support for bit operators, support for << and >>
 CAY-1737 ObjectContexts listening to DataChannel events must be non-blocking
 CAY-1748 IdCoder/EntityIdCoder improvements to work with ObjectIds, including temp ones
 CAY-1753 remove light-superclass.vm class template
