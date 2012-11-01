@@ -33,6 +33,7 @@ CAY-1741 Serializable DataObjectBaseProperty
 CAY-1742 CAY-1742 ObjRelationship inspector says "ObjAttribute Inspector"
 CAY-1744 Unexpected read-only relationships in vertical inheritance mapping
 CAY-1749 NPE on simple nested context commit
+CAY-1755 FaultFailureException resolving relationships to UNIQUE non-PK columns
 
 ----------------------------------
 Release: 3.1B1
