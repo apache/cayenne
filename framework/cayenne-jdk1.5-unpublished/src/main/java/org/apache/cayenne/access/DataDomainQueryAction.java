@@ -204,7 +204,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // we previously checked that "!isSourceIndependentFromTargetChange"
             DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
             
-            // FK pointing to a unique field that is a 'fake' PK (CAY-1751)...
+            // FK pointing to a unique field that is a 'fake' PK (CAY-1755)...
             // It is not sufficient to generate target ObjectId.
             DbEntity targetEntity = (DbEntity) dbRelationship.getTargetEntity();
             if (dbRelationship.getJoins().size() < targetEntity
