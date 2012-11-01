@@ -40,6 +40,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
@@ -194,11 +195,23 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             ObjRelationship relationship = relationshipQuery.getRelationship(domain
                     .getEntityResolver());
 
-            // check if we can derive target PK from FK... this implies that the
-            // relationship is to-one
+            // check if we can derive target PK from FK...
             if (relationship.isSourceIndependentFromTargetChange()) {
                 return !DONE;
             }
+            
+            // we can assume that there is one and only one DbRelationship as
+            // we previously checked that "!isSourceIndependentFromTargetChange"
+            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
+            
+            // FK pointing to a unique field that is a 'fake' PK (CAY-1751)...
+            // It is not sufficient to generate target ObjectId.
+            DbEntity targetEntity = (DbEntity) dbRelationship.getTargetEntity();
+            if (dbRelationship.getJoins().size() < targetEntity
+                    .getPrimaryKeys().size()) {
+                return !DONE;
+            }
+            
 
             if (cache == null) {
                 return !DONE;
@@ -209,9 +222,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return !DONE;
             }
 
-            // we can assume that there is one and only one DbRelationship as
-            // we previously checked that "!isSourceIndependentFromTargetChange"
-            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
 
             ObjectId targetId = sourceRow.createTargetObjectId(
                     relationship.getTargetEntityName(),
