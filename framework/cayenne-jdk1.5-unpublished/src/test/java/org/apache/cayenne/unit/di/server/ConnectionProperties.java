@@ -221,9 +221,9 @@ class ConnectionProperties {
             out.newLine();
             out.write("# example1." + PASSWORD_KEY + " = some_passwd");
             out.newLine();
-            out.write("# example1." + URL_KEY + " = jdbc:mysql://noise/cayenne");
+            out.write("# example1." + URL_KEY + " = jdbc:mysql://localhost/cayenne");
             out.newLine();
-            out.write("# example1." + DRIVER_KEY + " = org.gjt.mm.mysql.Driver");
+            out.write("# example1." + DRIVER_KEY + " = com.mysql.jdbc.Driver");
             out.newLine();
 
             // example 2
@@ -237,9 +237,9 @@ class ConnectionProperties {
             out.newLine();
             out.write("# example2." + PASSWORD_KEY + " = some_passwd");
             out.newLine();
-            out.write("# example2." + URL_KEY + " = jdbc:mysql://noise/cayenne");
+            out.write("# example2." + URL_KEY + " = jdbc:mysql://localhost/cayenne");
             out.newLine();
-            out.write("# example2." + DRIVER_KEY + " = org.gjt.mm.mysql.Driver");
+            out.write("# example2." + DRIVER_KEY + " = com.mysql.jdbc.Driver");
             out.newLine();
         }
         finally {
