@@ -114,10 +114,10 @@
 							<htmlCustomization>${project.parent.basedir}/stylesheets/html.xsl</htmlCustomization>
 							<chunkedOutput>true</chunkedOutput>
 							<postProcess>
-								<copy todir="${basedir}/target/site/css">
+								<copy todir="${basedir}/target/site/index/css">
 									<fileset dir="${project.parent.basedir}/css" />
 								</copy>
-								<copy todir="${basedir}/target/site/images">
+								<copy todir="${basedir}/target/site/index/images">
 									<fileset dir="${basedir}/src/images" />
 								</copy>
 							</postProcess>
