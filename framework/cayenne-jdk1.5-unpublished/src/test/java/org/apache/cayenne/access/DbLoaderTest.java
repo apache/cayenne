@@ -248,6 +248,14 @@ public class DbLoaderTest extends ServerCase {
         DbAttribute a = getDbAttribute(dae, "ARTIST_ID");
         assertNotNull(a);
         assertTrue(a.isPrimaryKey());
+        assertFalse(a.isGenerated());
+
+        if (adapter.supportsGeneratedKeys()) {
+            DbEntity bag = getDbEntity(map, "BAG");
+            DbAttribute id = (DbAttribute) bag.getAttribute("ID");
+            assertTrue(id.isPrimaryKey());
+            assertTrue(id.isGenerated());
+        }
     }
 
     private void assertLobDbEntities(DataMap map) {

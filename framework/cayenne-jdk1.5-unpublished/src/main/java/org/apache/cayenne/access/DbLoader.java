@@ -427,6 +427,18 @@ public class DbLoader {
                     DbAttribute attr = adapter.buildAttribute(columnName,
                             typeName, columnType, columnSize, decimalDigits,
                             allowNulls);
+
+                    if (adapter.supportsGeneratedKeys()) {
+
+                        // TODO: this actually throws on some drivers... need to
+                        // ensure that 'supportsGeneratedKeys' check is enough
+                        // to prevent an exception here.
+                        String autoIncrement = rs.getString("IS_AUTOINCREMENT");
+                        if ("YES".equals(autoIncrement)) {
+                            attr.setGenerated(true);
+                        }
+                    }
+
                     attr.setEntity(dbEntity);
                     dbEntity.addAttribute(attr);
                 }
