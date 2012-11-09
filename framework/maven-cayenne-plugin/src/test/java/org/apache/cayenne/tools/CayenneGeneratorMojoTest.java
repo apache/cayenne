@@ -23,67 +23,50 @@ import java.io.File;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
-	/** {@inheritDoc} */
-	protected void setUp() throws Exception {
-		// required
-		super.setUp();
 
-	}
+    public void testCgenExecution() throws Exception {
 
-	/** {@inheritDoc} */
-	protected void tearDown() throws Exception {
-		// required
-		super.tearDown();
+        File pom = getTestFile("src/test/resources/cgen/project-to-test/pom.xml");
+        assertNotNull(pom);
+        assertTrue(pom.exists());
 
-	}
+        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen",
+                pom);
+        assertNotNull(myMojo);
+        myMojo.execute();
 
-	/**
-	 * @throws Exception
-	 *             if any
-	 */
-	public void testCgenExecution() throws Exception {
+        File superTestEntity = new File(
+                "target/cayenneGeneratedClasses/superPkg/_TestEntity.txt");
+        File testEntity = new File(
+                "target/cayenneGeneratedClasses/pack/TestEntity.txt");
 
-		File pom = getTestFile("src/test/resources/cgen/project-to-test/pom.xml");
-		assertNotNull(pom);
-		assertTrue(pom.exists());
+        File superEmbeddable = new File(
+                "target/cayenneGeneratedClasses/superPkg/_Embeddable.txt");
+        File embeddable = new File(
+                "target/cayenneGeneratedClasses/pack/Embeddable.txt");
 
-		CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen",
-				pom);
-		assertNotNull(myMojo);
-		myMojo.execute();
+        File superNotIncludedEntity = new File(
+                "target/cayenneGeneratedClasses/pack/_NotIncludedEntity.txt");
 
-		File superTestEntity = new File(
-				"target/cayenneGeneratedClasses/superPkg/_TestEntity.txt");
-		File testEntity = new File(
-				"target/cayenneGeneratedClasses/pack/TestEntity.txt");
+        File notIncludedEntity = new File(
+                "target/cayenneGeneratedClasses/pack/NotIncludedEntity.txt");
 
-		File superEmbeddable = new File(
-				"target/cayenneGeneratedClasses/superPkg/_Embeddable.txt");
-		File embeddable = new File(
-				"target/cayenneGeneratedClasses/pack/Embeddable.txt");
+        File superExcludedEntity = new File(
+                "target/cayenneGeneratedClasses/pack/_TestExcludedEntity.txt");
+        File excludedEntity = new File(
+                "target/cayenneGeneratedClasses/pack/TestExcludedEntity.txt");
 
-		File superNotIncludedEntity = new File(
-				"target/cayenneGeneratedClasses/pack/_NotIncludedEntity.txt");
+        assertTrue(superTestEntity.exists());
+        assertTrue(testEntity.exists());
 
-		File notIncludedEntity = new File(
-				"target/cayenneGeneratedClasses/pack/NotIncludedEntity.txt");
+        assertTrue(superEmbeddable.exists());
+        assertTrue(embeddable.exists());
 
-		File superExcludedEntity = new File(
-				"target/cayenneGeneratedClasses/pack/_TestExcludedEntity.txt");
-		File excludedEntity = new File(
-				"target/cayenneGeneratedClasses/pack/TestExcludedEntity.txt");
+        assertFalse(superNotIncludedEntity.exists());
+        assertFalse(notIncludedEntity.exists());
 
-		assertTrue(superTestEntity.exists());
-		assertTrue(testEntity.exists());
+        assertFalse(superExcludedEntity.exists());
+        assertFalse(excludedEntity.exists());
 
-		assertTrue(superEmbeddable.exists());
-		assertTrue(embeddable.exists());
-
-		assertFalse(superNotIncludedEntity.exists());
-		assertFalse(notIncludedEntity.exists());
-
-		assertFalse(superExcludedEntity.exists());
-		assertFalse(excludedEntity.exists());
-
-	}
+    }
 }

@@ -23,14 +23,16 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.sql.Driver;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.AbstractDbLoaderDelegate;
 import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.ToolModule;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -152,11 +154,12 @@ public class DbImporterMojo extends AbstractMojo {
     private String namingStrategy;
 
     /**
-     * Java class implementing org.apache.cayenne.dba.DbAdapter. While this
-     * attribute is optional (a generic JdbcAdapter is used if not set), it is
-     * highly recommended to specify correct target adapter.
+     * Java class implementing org.apache.cayenne.dba.DbAdapter. This attribute
+     * is optional, the default is AutoAdapter, i.e. Cayenne would try to guess
+     * the DB type.
      * 
      * @parameter expression="${cdbimport.adapter}"
+     *            default-value="org.apache.cayenne.dba.AutoAdapter"
      */
     private String adapter;
 
@@ -225,22 +228,17 @@ public class DbImporterMojo extends AbstractMojo {
         String schema = getSchema();
 
         Injector injector = DIBootstrap.createInjector(new ToolModule());
-        AdhocObjectFactory objectFactory = injector
-                .getInstance(AdhocObjectFactory.class);
-
-        DbAdapter adapterInst = (adapter == null) ? (DbAdapter) objectFactory
-                .newInstance(DbAdapter.class, JdbcAdapter.class.getName())
-                : (DbAdapter) objectFactory.newInstance(DbAdapter.class,
-                        adapter);
 
         // load driver taking custom CLASSPATH into account...
         DriverDataSource dataSource = new DriverDataSource((Driver) Class
                 .forName(driver).newInstance(), url, username, password);
 
+        DbAdapter adapter = getAdapter(injector, dataSource);
+
         // Load the data map and run the db importer.
         final LoaderDelegate loaderDelegate = new LoaderDelegate();
         final DbLoader loader = new DbLoader(dataSource.getConnection(),
-                adapterInst, loaderDelegate);
+                adapter, loaderDelegate);
         loader.setCreatingMeaningfulPK(meaningfulPk);
 
         if (namingStrategy != null) {
@@ -271,6 +269,18 @@ public class DbImporterMojo extends AbstractMojo {
         dataMap.encodeAsXML(encoder);
 
         pw.close();
+    }
+
+    DbAdapter getAdapter(Injector injector, DataSource dataSource)
+            throws Exception {
+
+        DbAdapterFactory adapterFactory = injector
+                .getInstance(DbAdapterFactory.class);
+
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setAdapterType(adapter);
+
+        return adapterFactory.createAdapter(nodeDescriptor, dataSource);
     }
 
     private String getSchema() {
