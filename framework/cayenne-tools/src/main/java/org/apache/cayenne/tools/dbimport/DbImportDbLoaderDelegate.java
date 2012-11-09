@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbimport;
+package org.apache.cayenne.tools.dbimport;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,14 +31,14 @@ import org.apache.cayenne.map.ObjEntity;
 /**
  * @since 3.2
  */
-class ImportDbLoaderDelegate implements DbLoaderDelegate {
+class DbImportDbLoaderDelegate implements DbLoaderDelegate {
 
     private List<DbEntity> addedDbEntities;
     private List<DbEntity> removedDbEntities;
     private List<ObjEntity> addedObjEntities;
     private List<ObjEntity> removedObjEntities;
 
-    ImportDbLoaderDelegate() {
+    DbImportDbLoaderDelegate() {
         addedDbEntities = new ArrayList<DbEntity>();
         removedDbEntities = new ArrayList<DbEntity>();
         addedObjEntities = new ArrayList<ObjEntity>();

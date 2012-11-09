@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbimport;
+package org.apache.cayenne.tools.dbimport;
 
 import static org.mockito.Mockito.mock;
 
@@ -31,6 +31,7 @@ import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.commons.logging.Log;
 
 public class DbImportActionTest extends TestCase {

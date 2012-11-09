@@ -21,12 +21,12 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 
-import org.apache.cayenne.dbimport.DbImportAction;
-import org.apache.cayenne.dbimport.DbImportModule;
-import org.apache.cayenne.dbimport.DbImportParameters;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.cayenne.tools.dbimport.DbImportAction;
+import org.apache.cayenne.tools.dbimport.DbImportModule;
+import org.apache.cayenne.tools.dbimport.DbImportParameters;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;

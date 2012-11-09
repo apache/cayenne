@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbimport;
+package org.apache.cayenne.tools.dbimport;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,7 +84,7 @@ public class DbImportAction {
         DbAdapter adapter = getAdapter(parameters.getAdapter(), dataSource);
         DataMap dataMap = getDataMap(parameters);
 
-        ImportDbLoaderDelegate loaderDelegate = new ImportDbLoaderDelegate();
+        DbImportDbLoaderDelegate loaderDelegate = new DbImportDbLoaderDelegate();
         DbLoader loader = new DbLoader(dataSource.getConnection(), adapter, loaderDelegate);
         loader.setCreatingMeaningfulPK(parameters.isMeaningfulPk());
 

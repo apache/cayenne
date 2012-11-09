@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbimport;
+package org.apache.cayenne.tools.dbimport;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,17 +28,18 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.tools.dbimport.DbImportDbLoaderDelegate;
 
-public class ImportDbLoaderDelegateTest extends TestCase {
+public class DbImportDbLoaderDelegateTest extends TestCase {
 
-    private ImportDbLoaderDelegate delegate;
+    private DbImportDbLoaderDelegate delegate;
     private DataMap dataMap;
     private DbEntity dbEntity;
     private ObjEntity objEntity;
 
     @Override
     public void setUp() {
-        delegate = new ImportDbLoaderDelegate();
+        delegate = new DbImportDbLoaderDelegate();
         dataMap = new DataMap();
 
         dbEntity = new DbEntity("TestDbEntity");

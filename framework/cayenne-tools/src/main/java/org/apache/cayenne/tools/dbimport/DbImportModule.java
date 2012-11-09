@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbimport;
+package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
