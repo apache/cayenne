@@ -26,7 +26,6 @@ import java.sql.Driver;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.AbstractDbLoaderDelegate;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -37,7 +36,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NamingStrategy;
@@ -78,16 +76,13 @@ public class DbImporterMojo extends AbstractMojo {
     private String defaultPackage;
 
     /**
-     * Indicates whether existing DB and object entities should be overwritten.
-     * This is an all-or-nothing setting. If you need finer granularity, please
-     * use the Cayenne Modeler.
+     * Indicates that the old mapping should be completely removed and replaced
+     * with the new data based on reverse engineering. Default is
+     * <code>true</code>.
      * 
-     * Default is <code>true</code>.
-     * 
-     * @parameter expression="${cdbimport.overwriteExisting}"
-     *            default-value="true"
+     * @parameter expression="${cdbimport.overwrite}" default-value="true"
      */
-    private boolean overwriteExisting;
+    private boolean overwrite;
 
     /**
      * DB schema to use for DB importing.
@@ -213,8 +208,8 @@ public class DbImporterMojo extends AbstractMojo {
 
         getLog().info(
                 String.format(
-                        "importer options - [map: %s, overwriteExisting: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
-                        map, overwriteExisting, getSchema(), tablePattern,
+                        "importer options - [map: %s, overwrite: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
+                        map, overwrite, getSchema(), tablePattern,
                         importProcedures, procedurePattern, meaningfulPk,
                         namingStrategy));
 
@@ -247,9 +242,10 @@ public class DbImporterMojo extends AbstractMojo {
         DbAdapter adapter = getAdapter(injector, dataSource);
 
         // Load the data map and run the db importer.
-        final LoaderDelegate loaderDelegate = new LoaderDelegate();
-        final DbLoader loader = new DbLoader(dataSource.getConnection(),
-                adapter, loaderDelegate);
+        AbstractDbLoaderDelegate loaderDelegate = new AbstractDbLoaderDelegate() {
+        };
+        DbLoader loader = new DbLoader(dataSource.getConnection(), adapter,
+                loaderDelegate);
         loader.setCreatingMeaningfulPK(meaningfulPk);
 
         if (namingStrategy != null) {
@@ -289,7 +285,16 @@ public class DbImporterMojo extends AbstractMojo {
 
         if (map.exists()) {
             InputSource in = new InputSource(map.getCanonicalPath());
-            return new MapLoader().loadDataMap(in);
+            dataMap = new MapLoader().loadDataMap(in);
+
+            if (overwrite) {
+                dataMap.clearObjEntities();
+                dataMap.clearEmbeddables();
+                dataMap.clearProcedures();
+                dataMap.clearDbEntities();
+                dataMap.clearQueries();
+                dataMap.clearResultSets();
+            }
         } else {
             dataMap = new DataMap();
         }
@@ -333,31 +338,4 @@ public class DbImporterMojo extends AbstractMojo {
         return schema != null ? schema : schemaName;
     }
 
-    final class LoaderDelegate extends AbstractDbLoaderDelegate {
-
-        public boolean overwriteDbEntity(final DbEntity ent)
-                throws CayenneException {
-            return overwriteExisting;
-        }
-
-        public void dbEntityAdded(final DbEntity ent) {
-            super.dbEntityAdded(ent);
-            getLog().info("Added DB entity: " + ent.getName());
-        }
-
-        public void dbEntityRemoved(final DbEntity ent) {
-            super.dbEntityRemoved(ent);
-            getLog().info("Removed DB entity: " + ent.getName());
-        }
-
-        public void objEntityAdded(final ObjEntity ent) {
-            super.objEntityAdded(ent);
-            getLog().info("Added obj entity: " + ent.getName());
-        }
-
-        public void objEntityRemoved(final ObjEntity ent) {
-            super.objEntityRemoved(ent);
-            getLog().info("Removed obj entity: " + ent.getName());
-        }
-    }
 }

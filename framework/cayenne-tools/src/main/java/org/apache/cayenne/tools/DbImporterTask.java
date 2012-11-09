@@ -23,14 +23,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Driver;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.AbstractDbLoaderDelegate;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NamingStrategy;
@@ -43,8 +41,7 @@ import org.xml.sax.InputSource;
 
 public class DbImporterTask extends CayenneTask {
 
-    // DbImporter options.
-    private boolean overwriteExisting = true;
+    private boolean overwrite = true;
 
     /**
      * @deprecated since 3.2 in favor of "schema"
@@ -77,10 +74,10 @@ public class DbImporterTask extends CayenneTask {
                 driver, url, userName, password), Project.MSG_VERBOSE);
 
         log(String.format(
-                "importer options - [map: %s, overwriteExisting: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
-                map, overwriteExisting, getSchema(), tablePattern,
-                importProcedures, procedurePattern, meaningfulPk,
-                namingStrategy), Project.MSG_VERBOSE);
+                "importer options - [map: %s, overwrite: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
+                map, overwrite, getSchema(), tablePattern, importProcedures,
+                procedurePattern, meaningfulPk, namingStrategy),
+                Project.MSG_VERBOSE);
 
         validateAttributes();
 
@@ -94,9 +91,10 @@ public class DbImporterTask extends CayenneTask {
             DbAdapter adapter = getAdapter(injector, dataSource);
 
             // Load the data map and run the db importer.
-            final LoaderDelegate loaderDelegate = new LoaderDelegate();
-            final DbLoader loader = new DbLoader(dataSource.getConnection(),
-                    adapter, loaderDelegate);
+            AbstractDbLoaderDelegate loaderDelegate = new AbstractDbLoaderDelegate() {
+            };
+            DbLoader loader = new DbLoader(dataSource.getConnection(), adapter,
+                    loaderDelegate);
             loader.setCreatingMeaningfulPK(meaningfulPk);
 
             if (namingStrategy != null) {
@@ -151,7 +149,17 @@ public class DbImporterTask extends CayenneTask {
 
         if (map.exists()) {
             InputSource in = new InputSource(map.getCanonicalPath());
-            return new MapLoader().loadDataMap(in);
+            dataMap = new MapLoader().loadDataMap(in);
+
+            if (overwrite) {
+                dataMap.clearObjEntities();
+                dataMap.clearEmbeddables();
+                dataMap.clearProcedures();
+                dataMap.clearDbEntities();
+                dataMap.clearQueries();
+                dataMap.clearResultSets();
+            }
+
         } else {
             dataMap = new DataMap();
         }
@@ -198,8 +206,11 @@ public class DbImporterTask extends CayenneTask {
         }
     }
 
-    public void setOverwriteExisting(boolean overwriteExisting) {
-        this.overwriteExisting = overwriteExisting;
+    /**
+     * @since 3.2
+     */
+    public void setOverwrite(boolean overwrite) {
+        this.overwrite = overwrite;
     }
 
     /**
@@ -247,38 +258,5 @@ public class DbImporterTask extends CayenneTask {
         }
 
         return schema != null ? schema : schemaName;
-    }
-
-    final class LoaderDelegate extends AbstractDbLoaderDelegate {
-
-        @Override
-        public boolean overwriteDbEntity(final DbEntity ent)
-                throws CayenneException {
-            return overwriteExisting;
-        }
-
-        @Override
-        public void dbEntityAdded(final DbEntity ent) {
-            super.dbEntityAdded(ent);
-            log("Added DB entity: " + ent.getName());
-        }
-
-        @Override
-        public void dbEntityRemoved(final DbEntity ent) {
-            super.dbEntityRemoved(ent);
-            log("Removed DB entity: " + ent.getName());
-        }
-
-        @Override
-        public void objEntityAdded(final ObjEntity ent) {
-            super.objEntityAdded(ent);
-            log("Added obj entity: " + ent.getName());
-        }
-
-        @Override
-        public void objEntityRemoved(final ObjEntity ent) {
-            super.objEntityRemoved(ent);
-            log("Removed obj entity: " + ent.getName());
-        }
     }
 }
