@@ -41,7 +41,6 @@ import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -57,237 +56,262 @@ import org.xml.sax.InputSource;
  */
 public class DbImporterMojo extends AbstractMojo {
 
-	/**
-	 * DataMap XML file to use as a base for DB importing.
-	 * 
-	 * @parameter expression="${cdbimport.map}"
-	 * @required
-	 */
-	private File map;
+    /**
+     * DataMap XML file to use as a base for DB importing.
+     * 
+     * @parameter expression="${cdbimport.map}"
+     * @required
+     */
+    private File map;
 
-	/**
-	 * Indicates whether existing DB and object entities should be overwritten.
-	 * This is an all-or-nothing setting. If you need finer granularity, please
-	 * use the Cayenne Modeler.
-	 * 
-	 * Default is <code>true</code>.
-	 * 
-	 * @parameter expression="${cdbimport.overwriteExisting}"
-	 *            default-value="true"
-	 */
-	private boolean overwriteExisting;
+    /**
+     * Indicates whether existing DB and object entities should be overwritten.
+     * This is an all-or-nothing setting. If you need finer granularity, please
+     * use the Cayenne Modeler.
+     * 
+     * Default is <code>true</code>.
+     * 
+     * @parameter expression="${cdbimport.overwriteExisting}"
+     *            default-value="true"
+     */
+    private boolean overwriteExisting;
 
-	/**
-	 * DB schema to use for DB importing.
-	 * 
-	 * @parameter expression="${cdbimport.schemaName}"
-	 */
-	private String schemaName;
+    /**
+     * DB schema to use for DB importing.
+     * 
+     * @parameter expression="${cdbimport.schemaName}"
+     * @deprecated since 3.2 renamed to "schema"
+     */
+    private String schemaName;
 
-	/**
-	 * Pattern for tables to import from DB.
-	 * 
-	 * The default is to match against all tables.
-	 * 
-	 * @parameter expression="${cdbimport.tablePattern}"
-	 */
-	private String tablePattern;
+    /**
+     * DB schema to use for DB importing.
+     * 
+     * @parameter expression="${cdbimport.catalog}"
+     * @since 3.2
+     */
+    private String catalog;
 
-	/**
-	 * Indicates whether stored procedures should be imported.
-	 * 
-	 * Default is <code>false</code>.
-	 * 
-	 * @parameter expression="${cdbimport.importProcedures}"
-	 *            default-value="false"
-	 */
-	private boolean importProcedures;
+    /**
+     * DB schema to use for DB importing.
+     * 
+     * @parameter expression="${cdbimport.schema}"
+     * @since 3.2
+     */
+    private String schema;
 
-	/**
-	 * Pattern for stored procedures to import from DB. This is only meaningful
-	 * if <code>importProcedures</code> is set to <code>true</code>.
-	 * 
-	 * The default is to match against all stored procedures.
-	 * 
-	 * @parameter expression="${cdbimport.procedurePattern}"
-	 */
-	private String procedurePattern;
+    /**
+     * Pattern for tables to import from DB.
+     * 
+     * The default is to match against all tables.
+     * 
+     * @parameter expression="${cdbimport.tablePattern}"
+     */
+    private String tablePattern;
 
-	/**
-	 * Indicates whether primary keys should be mapped as meaningful attributes
-	 * in the object entities.
-	 * 
-	 * Default is <code>false</code>.
-	 * 
-	 * @parameter expression="${cdbimport.meaningfulPk}" default-value="false"
-	 */
-	private boolean meaningfulPk;
+    /**
+     * Indicates whether stored procedures should be imported.
+     * 
+     * Default is <code>false</code>.
+     * 
+     * @parameter expression="${cdbimport.importProcedures}"
+     *            default-value="false"
+     */
+    private boolean importProcedures;
 
-	/**
-	 * Java class implementing org.apache.cayenne.map.naming.NamingStrategy.
-	 * This is used to specify how ObjEntities will be mapped from the imported
-	 * DB schema.
-	 * 
-	 * The default is a basic naming strategy.
-	 * 
-	 * @parameter expression="${cdbimport.namingStrategy}"
-	 *            default-value="org.apache.cayenne.map.naming.SmartNamingStrategy"
-	 */
-	private String namingStrategy;
+    /**
+     * Pattern for stored procedures to import from DB. This is only meaningful
+     * if <code>importProcedures</code> is set to <code>true</code>.
+     * 
+     * The default is to match against all stored procedures.
+     * 
+     * @parameter expression="${cdbimport.procedurePattern}"
+     */
+    private String procedurePattern;
 
-	/**
-	 * Java class implementing org.apache.cayenne.dba.DbAdapter. While this
-	 * attribute is optional (a generic JdbcAdapter is used if not set), it is
-	 * highly recommended to specify correct target adapter.
-	 * 
-	 * @parameter expression="${cdbimport.adapter}"
-	 */
-	private String adapter;
+    /**
+     * Indicates whether primary keys should be mapped as meaningful attributes
+     * in the object entities.
+     * 
+     * Default is <code>false</code>.
+     * 
+     * @parameter expression="${cdbimport.meaningfulPk}" default-value="false"
+     */
+    private boolean meaningfulPk;
 
-	/**
-	 * A class of JDBC driver to use for the target database.
-	 * 
-	 * @parameter expression="${cdbimport.driver}"
-	 * @required
-	 */
-	private String driver;
+    /**
+     * Java class implementing org.apache.cayenne.map.naming.NamingStrategy.
+     * This is used to specify how ObjEntities will be mapped from the imported
+     * DB schema.
+     * 
+     * The default is a basic naming strategy.
+     * 
+     * @parameter expression="${cdbimport.namingStrategy}"
+     *            default-value="org.apache.cayenne.map.naming.SmartNamingStrategy"
+     */
+    private String namingStrategy;
 
-	/**
-	 * JDBC connection URL of a target database.
-	 * 
-	 * @parameter expression="${cdbimport.url}"
-	 * @required
-	 */
-	private String url;
+    /**
+     * Java class implementing org.apache.cayenne.dba.DbAdapter. While this
+     * attribute is optional (a generic JdbcAdapter is used if not set), it is
+     * highly recommended to specify correct target adapter.
+     * 
+     * @parameter expression="${cdbimport.adapter}"
+     */
+    private String adapter;
 
-	/**
-	 * Database user name.
-	 * 
-	 * @parameter expression="${cdbimport.username}"
-	 */
-	private String username;
+    /**
+     * A class of JDBC driver to use for the target database.
+     * 
+     * @parameter expression="${cdbimport.driver}"
+     * @required
+     */
+    private String driver;
 
-	/**
-	 * Database user password.
-	 * 
-	 * @parameter expression="${cdbimport.password}"
-	 */
-	private String password;
+    /**
+     * JDBC connection URL of a target database.
+     * 
+     * @parameter expression="${cdbimport.url}"
+     * @required
+     */
+    private String url;
 
-	/**
-	 * Maven logger.
-	 */
-	private Log logger;
+    /**
+     * Database user name.
+     * 
+     * @parameter expression="${cdbimport.username}"
+     */
+    private String username;
 
-	public void execute() throws MojoExecutionException, MojoFailureException {
+    /**
+     * Database user password.
+     * 
+     * @parameter expression="${cdbimport.password}"
+     */
+    private String password;
 
-		Injector injector = DIBootstrap.createInjector(new ToolModule());
-		AdhocObjectFactory objectFactory = injector
-				.getInstance(AdhocObjectFactory.class);
+    public void execute() throws MojoExecutionException, MojoFailureException {
 
-		logger = new MavenLogger(this);
+        getLog().debug(
+                String.format(
+                        "connection settings - [driver: %s, url: %s, username: %s, password: %s]",
+                        driver, url, username, password));
 
-		logger.debug(String
-				.format("connection settings - [driver: %s, url: %s, username: %s, password: %s]",
-						driver, url, username, password));
+        getLog().info(
+                String.format(
+                        "importer options - [map: %s, overwriteExisting: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
+                        map, overwriteExisting, schema, tablePattern,
+                        importProcedures, procedurePattern, meaningfulPk,
+                        namingStrategy));
 
-		logger.info(String
-				.format("importer options - [map: %s, overwriteExisting: %s, schemaName: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
-						map, overwriteExisting, schemaName, tablePattern,
-						importProcedures, procedurePattern, meaningfulPk,
-						namingStrategy));
+        try {
+            doExecute();
+        } catch (Exception ex) {
+            Throwable th = Util.unwindException(ex);
 
-		try {
-			final DbAdapter adapterInst = (adapter == null) ? (DbAdapter) objectFactory
-					.newInstance(DbAdapter.class, JdbcAdapter.class.getName())
-					: (DbAdapter) objectFactory.newInstance(DbAdapter.class,
-							adapter);
+            String message = "Error importing database schema";
 
-			// load driver taking custom CLASSPATH into account...
-			DriverDataSource dataSource = new DriverDataSource((Driver) Class
-					.forName(driver).newInstance(), url, username, password);
+            if (th.getLocalizedMessage() != null) {
+                message += ": " + th.getLocalizedMessage();
+            }
 
-			// Load the data map and run the db importer.
-			final LoaderDelegate loaderDelegate = new LoaderDelegate();
-			final DbLoader loader = new DbLoader(dataSource.getConnection(),
-					adapterInst, loaderDelegate);
-			loader.setCreatingMeaningfulPK(meaningfulPk);
+            getLog().error(message);
+            throw new MojoExecutionException(message, th);
+        }
+    }
 
-			if (namingStrategy != null) {
-				final NamingStrategy namingStrategyInst = (NamingStrategy) Class
-						.forName(namingStrategy).newInstance();
-				loader.setNamingStrategy(namingStrategyInst);
-			}
+    private void doExecute() throws Exception {
 
-			final DataMap dataMap = map.exists() ? loadDataMap()
-					: new DataMap();
-			loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
+        String schema = getSchema();
 
-			for (ObjEntity addedObjEntity : loaderDelegate
-					.getAddedObjEntities()) {
-				DeleteRuleUpdater.updateObjEntity(addedObjEntity);
-			}
+        Injector injector = DIBootstrap.createInjector(new ToolModule());
+        AdhocObjectFactory objectFactory = injector
+                .getInstance(AdhocObjectFactory.class);
 
-			if (importProcedures) {
-				loader.loadProceduresFromDB(schemaName, procedurePattern,
-						dataMap);
-			}
+        DbAdapter adapterInst = (adapter == null) ? (DbAdapter) objectFactory
+                .newInstance(DbAdapter.class, JdbcAdapter.class.getName())
+                : (DbAdapter) objectFactory.newInstance(DbAdapter.class,
+                        adapter);
 
-			// Write the new DataMap out to disk.
-			map.delete();
+        // load driver taking custom CLASSPATH into account...
+        DriverDataSource dataSource = new DriverDataSource((Driver) Class
+                .forName(driver).newInstance(), url, username, password);
 
-			PrintWriter pw = new PrintWriter(map);
-			XMLEncoder encoder = new XMLEncoder(pw, "\t");
+        // Load the data map and run the db importer.
+        final LoaderDelegate loaderDelegate = new LoaderDelegate();
+        final DbLoader loader = new DbLoader(dataSource.getConnection(),
+                adapterInst, loaderDelegate);
+        loader.setCreatingMeaningfulPK(meaningfulPk);
 
-			encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-			dataMap.encodeAsXML(encoder);
+        if (namingStrategy != null) {
+            NamingStrategy namingStrategyInst = (NamingStrategy) Class.forName(
+                    namingStrategy).newInstance();
+            loader.setNamingStrategy(namingStrategyInst);
+        }
 
-			pw.close();
-		} catch (Exception ex) {
-			Throwable th = Util.unwindException(ex);
+        final DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
+        loader.loadDataMapFromDB(schema, tablePattern, dataMap);
 
-			String message = "Error importing database schema";
+        for (ObjEntity addedObjEntity : loaderDelegate.getAddedObjEntities()) {
+            DeleteRuleUpdater.updateObjEntity(addedObjEntity);
+        }
 
-			if (th.getLocalizedMessage() != null) {
-				message += ": " + th.getLocalizedMessage();
-			}
+        if (importProcedures) {
+            loader.loadProceduresFromDB(schema, procedurePattern, dataMap);
+        }
 
-			logger.error(message);
-			throw new MojoExecutionException(message, th);
-		}
-	}
+        // Write the new DataMap out to disk.
+        map.delete();
 
-	final class LoaderDelegate extends AbstractDbLoaderDelegate {
+        PrintWriter pw = new PrintWriter(map);
+        XMLEncoder encoder = new XMLEncoder(pw, "\t");
 
-		public boolean overwriteDbEntity(final DbEntity ent)
-				throws CayenneException {
-			return overwriteExisting;
-		}
+        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        dataMap.encodeAsXML(encoder);
 
-		public void dbEntityAdded(final DbEntity ent) {
-			super.dbEntityAdded(ent);
-			logger.info("Added DB entity: " + ent.getName());
-		}
+        pw.close();
+    }
 
-		public void dbEntityRemoved(final DbEntity ent) {
-			super.dbEntityRemoved(ent);
-			logger.info("Removed DB entity: " + ent.getName());
-		}
+    private String getSchema() {
+        if (schemaName != null) {
+            getLog().warn(
+                    "'schemaName' property is deprecated. Use 'schema' instead");
+        }
 
-		public void objEntityAdded(final ObjEntity ent) {
-			super.objEntityAdded(ent);
-			logger.info("Added obj entity: " + ent.getName());
-		}
+        return schema != null ? schema : schemaName;
+    }
 
-		public void objEntityRemoved(final ObjEntity ent) {
-			super.objEntityRemoved(ent);
-			logger.info("Removed obj entity: " + ent.getName());
-		}
-	}
+    final class LoaderDelegate extends AbstractDbLoaderDelegate {
 
-	/** Loads and returns DataMap based on <code>map</code> attribute. */
-	protected DataMap loadDataMap() throws Exception {
-		final InputSource in = new InputSource(map.getCanonicalPath());
-		return new MapLoader().loadDataMap(in);
-	}
+        public boolean overwriteDbEntity(final DbEntity ent)
+                throws CayenneException {
+            return overwriteExisting;
+        }
+
+        public void dbEntityAdded(final DbEntity ent) {
+            super.dbEntityAdded(ent);
+            getLog().info("Added DB entity: " + ent.getName());
+        }
+
+        public void dbEntityRemoved(final DbEntity ent) {
+            super.dbEntityRemoved(ent);
+            getLog().info("Removed DB entity: " + ent.getName());
+        }
+
+        public void objEntityAdded(final ObjEntity ent) {
+            super.objEntityAdded(ent);
+            getLog().info("Added obj entity: " + ent.getName());
+        }
+
+        public void objEntityRemoved(final ObjEntity ent) {
+            super.objEntityRemoved(ent);
+            getLog().info("Removed obj entity: " + ent.getName());
+        }
+    }
+
+    /** Loads and returns DataMap based on <code>map</code> attribute. */
+    protected DataMap loadDataMap() throws Exception {
+        final InputSource in = new InputSource(map.getCanonicalPath());
+        return new MapLoader().loadDataMap(in);
+    }
 }
