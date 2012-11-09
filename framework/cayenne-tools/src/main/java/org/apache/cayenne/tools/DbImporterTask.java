@@ -89,7 +89,7 @@ public class DbImporterTask extends Task {
     protected void validateAttributes() throws BuildException {
         StringBuilder error = new StringBuilder("");
 
-        if (parameters.getMap() == null) {
+        if (parameters.getDataMapFile() == null) {
             error.append("The 'map' attribute must be set.\n");
         }
 
@@ -163,7 +163,7 @@ public class DbImporterTask extends Task {
     }
 
     public void setMap(File map) {
-        parameters.setMap(map);
+        parameters.setDataMapFile(map);
     }
 
     public void setPassword(String password) {
@@ -176,5 +176,19 @@ public class DbImporterTask extends Task {
 
     public void setUserName(String username) {
         parameters.setUsername(username);
+    }
+
+    /**
+     * @since 3.2
+     */
+    public void setIncludeTables(String includeTables) {
+        parameters.setIncludeTables(includeTables);
+    }
+
+    /**
+     * @since 3.2
+     */
+    public void setExcludeTables(String excludeTables) {
+        parameters.setExcludeTables(excludeTables);
     }
 }

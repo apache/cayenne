@@ -19,12 +19,15 @@
 package org.apache.cayenne.tools.dbimport;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 
 import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
@@ -35,6 +38,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.tools.NamePatternMatcher;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.logging.Log;
@@ -67,7 +71,7 @@ public class DbImportAction {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Importer options - map: " + parameters.getMap());
+            logger.debug("Importer options - map: " + parameters.getDataMapFile());
             logger.debug("Importer options - overwrite: " + parameters.isOverwrite());
             logger.debug("Importer options - adapter: " + parameters.getAdapter());
             logger.debug("Importer options - catalog: " + parameters.getCatalog());
@@ -78,6 +82,8 @@ public class DbImportAction {
             logger.debug("Importer options - procedurePattern: " + parameters.getProcedurePattern());
             logger.debug("Importer options - meaningfulPk: " + parameters.isMeaningfulPk());
             logger.debug("Importer options - namingStrategy: " + parameters.getNamingStrategy());
+            logger.debug("Importer options - includeTables: " + parameters.getIncludeTables());
+            logger.debug("Importer options - excludeTables: " + parameters.getExcludeTables());
         }
 
         DataSourceInfo dataSourceInfo = new DataSourceInfo();
@@ -90,12 +96,68 @@ public class DbImportAction {
         nodeDescriptor.setAdapterType(parameters.getAdapter());
         nodeDescriptor.setDataSourceDescriptor(dataSourceInfo);
 
+        DataMap dataMap = load(parameters, nodeDescriptor);
+
+        saveLoaded(dataMap, parameters.getDataMapFile());
+    }
+
+    void saveLoaded(DataMap dataMap, File dataMapFile) throws FileNotFoundException {
+        dataMapFile.delete();
+
+        PrintWriter pw = new PrintWriter(dataMapFile);
+        XMLEncoder encoder = new XMLEncoder(pw, "\t");
+
+        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        dataMap.encodeAsXML(encoder);
+
+        pw.close();
+    }
+
+    DataMap load(DbImportParameters parameters, DataNodeDescriptor nodeDescriptor) throws Exception {
         DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(nodeDescriptor, dataSource);
-        DataMap dataMap = getDataMap(parameters);
+
+        DataMap dataMap = createDataMap(parameters);
 
         DbImportDbLoaderDelegate loaderDelegate = new DbImportDbLoaderDelegate();
-        DbLoader loader = new DbLoader(dataSource.getConnection(), adapter, loaderDelegate);
+
+        Connection connection = dataSource.getConnection();
+
+        try {
+            DbLoader loader = createLoader(parameters, adapter, connection, loaderDelegate);
+
+            String[] types = loader.getDefaultTableTypes();
+            loader.load(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getTablePattern(), types);
+
+            for (ObjEntity addedObjEntity : loaderDelegate.getAddedObjEntities()) {
+                DeleteRuleUpdater.updateObjEntity(addedObjEntity);
+            }
+
+            if (parameters.isImportProcedures()) {
+                loader.loadProcedures(dataMap, parameters.getCatalog(), parameters.getSchema(),
+                        parameters.getProcedurePattern());
+            }
+        } finally {
+            connection.close();
+        }
+
+        return dataMap;
+    }
+
+    DbLoader createLoader(DbImportParameters parameters, DbAdapter adapter, Connection connection,
+            DbLoaderDelegate loaderDelegate) throws InstantiationException, IllegalAccessException,
+            ClassNotFoundException {
+
+        final NamePatternMatcher nameFilter = new NamePatternMatcher(logger, parameters.getIncludeTables(),
+                parameters.getExcludeTables());
+
+        DbLoader loader = new DbLoader(connection, adapter, loaderDelegate) {
+            @Override
+            public boolean includeTableName(String tableName) {
+                return nameFilter.isIncluded(tableName);
+            }
+        };
+
         loader.setCreatingMeaningfulPK(parameters.isMeaningfulPk());
 
         // TODO: load via DI AdhocObjectFactory
@@ -105,32 +167,12 @@ public class DbImportAction {
             loader.setNamingStrategy(namingStrategyInst);
         }
 
-        String[] types = loader.getDefaultTableTypes();
-        loader.load(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getTablePattern(), types);
-
-        for (ObjEntity addedObjEntity : loaderDelegate.getAddedObjEntities()) {
-            DeleteRuleUpdater.updateObjEntity(addedObjEntity);
-        }
-
-        if (parameters.isImportProcedures()) {
-            loader.loadProcedures(dataMap, parameters.getCatalog(), parameters.getSchema(),
-                    parameters.getProcedurePattern());
-        }
-
-        parameters.getMap().delete();
-
-        PrintWriter pw = new PrintWriter(parameters.getMap());
-        XMLEncoder encoder = new XMLEncoder(pw, "\t");
-
-        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        dataMap.encodeAsXML(encoder);
-
-        pw.close();
+        return loader;
     }
 
-    DataMap getDataMap(DbImportParameters parameters) throws IOException {
+    DataMap createDataMap(DbImportParameters parameters) throws IOException {
 
-        File dataMapFile = parameters.getMap();
+        File dataMapFile = parameters.getDataMapFile();
         DataMap dataMap;
 
         if (dataMapFile.exists()) {

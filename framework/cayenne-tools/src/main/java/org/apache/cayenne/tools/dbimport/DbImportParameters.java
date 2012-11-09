@@ -28,7 +28,7 @@ public class DbImportParameters {
     /**
      * DataMap XML file to use as a base for DB importing.
      */
-    private File map;
+    private File dataMapFile;
 
     /**
      * A default package for ObjEntity Java classes.
@@ -107,12 +107,15 @@ public class DbImportParameters {
      */
     private String password;
 
-    public File getMap() {
-        return map;
+    private String includeTables;
+    private String excludeTables;
+
+    public File getDataMapFile() {
+        return dataMapFile;
     }
 
-    public void setMap(File map) {
-        this.map = map;
+    public void setDataMapFile(File map) {
+        this.dataMapFile = map;
     }
 
     public String getDefaultPackage() {
@@ -225,5 +228,21 @@ public class DbImportParameters {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getIncludeTables() {
+        return includeTables;
+    }
+
+    public void setIncludeTables(String includeTables) {
+        this.includeTables = includeTables;
+    }
+
+    public String getExcludeTables() {
+        return excludeTables;
+    }
+
+    public void setExcludeTables(String excludeTables) {
+        this.excludeTables = excludeTables;
     }
 }

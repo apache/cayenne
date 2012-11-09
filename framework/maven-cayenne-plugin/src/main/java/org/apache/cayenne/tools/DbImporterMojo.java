@@ -104,6 +104,22 @@ public class DbImporterMojo extends AbstractMojo {
     private String tablePattern;
 
     /**
+     * A comma-separated list of Perl5 regex that defines tables that should be
+     * included in import.
+     * 
+     * @parameter expression="${cdbimport.includeTables}"
+     */
+    private String includeTables;
+
+    /**
+     * A comma-separated list of Perl5 regex that defines tables that should be
+     * skipped from import.
+     * 
+     * @parameter expression="${cdbimport.excludeTables}"
+     */
+    private String excludeTables;
+
+    /**
      * Indicates whether stored procedures should be imported.
      * 
      * Default is <code>false</code>.
@@ -195,7 +211,7 @@ public class DbImporterMojo extends AbstractMojo {
         parameters.setDefaultPackage(defaultPackage);
         parameters.setDriver(driver);
         parameters.setImportProcedures(importProcedures);
-        parameters.setMap(map);
+        parameters.setDataMapFile(map);
         parameters.setMeaningfulPk(meaningfulPk);
         parameters.setNamingStrategy(namingStrategy);
         parameters.setOverwrite(overwrite);
@@ -205,6 +221,8 @@ public class DbImporterMojo extends AbstractMojo {
         parameters.setTablePattern(tablePattern);
         parameters.setUrl(url);
         parameters.setUsername(username);
+        parameters.setIncludeTables(includeTables);
+        parameters.setExcludeTables(excludeTables);
 
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
