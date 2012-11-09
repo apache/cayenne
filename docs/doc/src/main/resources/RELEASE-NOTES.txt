@@ -26,6 +26,7 @@ CAY-1754 Modeler suggested URL for SQLServer should start with 'jdbc:sqlserver:'
 CAY-1759 cdbimport improvements: add 'catalog', rename 'schemaName' to 'schema'
 CAY-1760 cdbimport improvements: Default adapter (if none specified) must be AutoAdapter, not JdbcAdapter 
 CAY-1761 cdbimport improvements: DbLoader must reverse engineer PK auto-increment state. 
+CAY-1762 cdbimport improvements: Support for "defaultPackage" parameter, as the new DataMaps ends up placing entities in the root package 
 
 Bug Fixes:
 

@@ -144,6 +144,8 @@ public class DbLoaderTest extends ServerCase {
         boolean supportsFK = accessStackAdapter.supportsFKConstraints();
 
         DataMap map = new DataMap();
+        map.setDefaultPackage("foo.x");
+        
         String tableLabel = adapter.tableTypeForTable();
 
         // *** TESTING THIS ***
@@ -195,20 +197,7 @@ public class DbLoaderTest extends ServerCase {
         loader.setCreatingMeaningfulPK(false);
         loader.loadObjEntities(map);
 
-        ObjEntity ae = map.getObjEntity("Artist");
-        assertNotNull(ae);
-        assertEquals("Artist", ae.getName());
-        // assert primary key is not an attribute
-        assertNull(ae.getAttribute("artistId"));
-        if (supportsLobs) {
-            assertLobObjEntities(map);
-        }
-
-        if (supportsFK) {
-            Collection<?> rels1 = ae.getRelationships();
-            assertNotNull(rels1);
-            assertTrue(rels1.size() > 0);
-        }
+        assertObjEntities(map);
 
         // now when the map is loaded, test
         // various things
@@ -256,6 +245,31 @@ public class DbLoaderTest extends ServerCase {
             assertTrue(id.isPrimaryKey());
             assertTrue(id.isGenerated());
         }
+    }
+
+    private void assertObjEntities(DataMap map) {
+
+        boolean supportsLobs = accessStackAdapter.supportsLobs();
+        boolean supportsFK = accessStackAdapter.supportsFKConstraints();
+
+        ObjEntity ae = map.getObjEntity("Artist");
+        assertNotNull(ae);
+        assertEquals("Artist", ae.getName());
+        
+        // assert primary key is not an attribute
+        assertNull(ae.getAttribute("artistId"));
+        
+        if (supportsLobs) {
+            assertLobObjEntities(map);
+        }
+
+        if (supportsFK) {
+            Collection<?> rels1 = ae.getRelationships();
+            assertNotNull(rels1);
+            assertTrue(rels1.size() > 0);
+        }
+        
+        assertEquals("foo.x.Artist", ae.getClassName());
     }
 
     private void assertLobDbEntities(DataMap map) {

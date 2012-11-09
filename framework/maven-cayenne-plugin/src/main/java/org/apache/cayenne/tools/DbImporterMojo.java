@@ -67,6 +67,16 @@ public class DbImporterMojo extends AbstractMojo {
     private File map;
 
     /**
+     * A default package for ObjEntity Java classes. If not specified, and the
+     * existing DataMap already has the default package, the existing package
+     * will be used.
+     * 
+     * @parameter expression="${cdbimport.defaultPackage}"
+     * @since 3.2
+     */
+    private String defaultPackage;
+
+    /**
      * Indicates whether existing DB and object entities should be overwritten.
      * This is an all-or-nothing setting. If you need finer granularity, please
      * use the Cayenne Modeler.
@@ -248,6 +258,13 @@ public class DbImporterMojo extends AbstractMojo {
         }
 
         DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
+
+        // do not override default package of existsing DataMap unless it is
+        // explicitly requested by the plugin caller
+        if (defaultPackage != null && defaultPackage.length() > 0) {
+            dataMap.setDefaultPackage(defaultPackage);
+        }
+
         String[] types = loader.getDefaultTableTypes();
         loader.load(dataMap, catalog, schema, tablePattern, types);
 
