@@ -40,6 +40,11 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
     public MySQLUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
+    
+    @Override
+    public boolean supportsCatalogs() {
+        return true;
+    }
 
     @Override
     public boolean supportsLobs() {

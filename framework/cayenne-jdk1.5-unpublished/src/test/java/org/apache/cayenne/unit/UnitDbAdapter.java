@@ -225,6 +225,10 @@ public class UnitDbAdapter {
     public boolean supportsCaseInsensitiveOrder() {
         return true;
     }
+    
+    public boolean supportsCatalogs() {
+        return false;
+    }
 
     public boolean supportsBatchPK() {
         return true;
