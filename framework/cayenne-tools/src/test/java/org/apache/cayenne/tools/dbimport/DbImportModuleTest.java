@@ -18,19 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.tools.dbimport;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
+import static org.mockito.Mockito.mock;
+import junit.framework.TestCase;
+
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.commons.logging.Log;
 
-/**
- * A DI module that bootstraps {@link DbImportAction}. Should be used in
- * conjunction with {@link ToolsModule}.
- * 
- * @since 3.2
- */
-public class DbImportModule implements Module {
+public class DbImportModuleTest extends TestCase {
 
-    public void configure(Binder binder) {
-        binder.bind(DbImportAction.class).to(DbImportAction.class);
+    public void testModuleContents() {
+
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+        assertTrue(i.getInstance(DbImportAction.class) instanceof DbImportAction);
     }
 }

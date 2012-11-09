@@ -30,6 +30,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
@@ -50,7 +51,7 @@ public class DbImportAction {
     private DbAdapterFactory adapterFactory;
     private Log logger;
 
-    public DbImportAction(Log logger, DbAdapterFactory adapterFactory) {
+    public DbImportAction(@Inject Log logger, @Inject DbAdapterFactory adapterFactory) {
         this.logger = logger;
         this.adapterFactory = adapterFactory;
     }
