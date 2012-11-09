@@ -249,15 +249,16 @@ public class DbImporterMojo extends AbstractMojo {
             loader.setNamingStrategy(namingStrategyInst);
         }
 
-        final DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
-        loader.loadDataMapFromDB(schema, tablePattern, dataMap);
+        DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
+        String[] types = loader.getDefaultTableTypes();
+        loader.load(dataMap, catalog, schema, tablePattern, types);
 
         for (ObjEntity addedObjEntity : loaderDelegate.getAddedObjEntities()) {
             DeleteRuleUpdater.updateObjEntity(addedObjEntity);
         }
 
         if (importProcedures) {
-            loader.loadProceduresFromDB(schema, procedurePattern, dataMap);
+            loader.loadProcedures(dataMap, catalog, schema, procedurePattern);
         }
 
         // Write the new DataMap out to disk.
