@@ -26,52 +26,38 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A {@link DataSourceFactory} that loads JDBC connection information from an XML resource
- * associated with the DataNodeDescriptor, returning a DataSource with simple connection
- * pooling.
+ * A {@link DataSourceFactory} that loads JDBC connection information from an
+ * XML resource associated with the DataNodeDescriptor, returning a DataSource
+ * with simple connection pooling.
  * 
  * @since 3.1
  */
 public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 
-    private static final Log logger = LogFactory
-            .getLog(XMLPoolingDataSourceFactory.class);
+    private static final Log logger = LogFactory.getLog(XMLPoolingDataSourceFactory.class);
 
-    @Inject
-    protected ResourceLocator resourceLocator;
-    
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
         DataSourceInfo dataSourceDescriptor = nodeDescriptor.getDataSourceDescriptor();
-       
 
         if (dataSourceDescriptor == null) {
-            String message = "Null dataSourceDescriptor for nodeDescriptor '"
-                    + nodeDescriptor.getName()
-                    + "'";
+            String message = "Null dataSourceDescriptor for nodeDescriptor '" + nodeDescriptor.getName() + "'";
             logger.info(message);
             throw new ConfigurationException(message);
         }
-        
+
         try {
-            return new PoolManager(
-                    dataSourceDescriptor.getJdbcDriver(),
-                    dataSourceDescriptor.getDataSourceUrl(),
-                    dataSourceDescriptor.getMinConnections(),
-                    dataSourceDescriptor.getMaxConnections(),
-                    dataSourceDescriptor.getUserName(),
-                    dataSourceDescriptor.getPassword(),
-                    jdbcEventLogger);
-        }
-        catch (Exception e) {
+            return new PoolManager(dataSourceDescriptor.getJdbcDriver(), dataSourceDescriptor.getDataSourceUrl(),
+                    dataSourceDescriptor.getMinConnections(), dataSourceDescriptor.getMaxConnections(),
+                    dataSourceDescriptor.getUserName(), dataSourceDescriptor.getPassword(), jdbcEventLogger);
+        } catch (Exception e) {
             jdbcEventLogger.logConnectFailure(e);
             throw e;
         }
