@@ -21,9 +21,12 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 
+import javax.sql.DataSource;
+
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.ToolModule;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -42,7 +45,7 @@ import org.xml.sax.InputSource;
 public abstract class CayenneTask extends Task {
     protected Path classpath;
 
-    protected DbAdapter adapter;
+    protected String adapter;
     protected File map;
     protected String driver;
     protected String url;
@@ -100,13 +103,7 @@ public abstract class CayenneTask extends Task {
      *            The db adapter to set.
      */
     public void setAdapter(String adapter) {
-        if (adapter != null) {
-            Injector injector = DIBootstrap.createInjector(new ToolModule());
-            AdhocObjectFactory objectFactory = injector
-                    .getInstance(AdhocObjectFactory.class);
-
-            this.adapter = objectFactory.newInstance(DbAdapter.class, adapter);
-        }
+        this.adapter = adapter;
     }
 
     /**
@@ -131,9 +128,6 @@ public abstract class CayenneTask extends Task {
 
     /**
      * Sets the username used to connect to the database server.
-     * 
-     * @param username
-     *            The username to set.
      */
     public void setUserName(String username) {
         this.userName = username;
@@ -153,5 +147,21 @@ public abstract class CayenneTask extends Task {
     protected DataMap loadDataMap() throws Exception {
         InputSource in = new InputSource(map.getCanonicalPath());
         return new MapLoader().loadDataMap(in);
+    }
+    
+    protected Injector getInjector() {
+        return DIBootstrap.createInjector(new ToolModule());
+    }
+
+    protected DbAdapter getAdapter(Injector injector, DataSource dataSource)
+            throws Exception {
+
+        DbAdapterFactory adapterFactory = injector
+                .getInstance(DbAdapterFactory.class);
+
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setAdapterType(adapter);
+
+        return adapterFactory.createAdapter(nodeDescriptor, dataSource);
     }
 }

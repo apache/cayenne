@@ -19,9 +19,18 @@
 
 package org.apache.cayenne.tools;
 
+import static org.mockito.Mockito.mock;
+
+import javax.sql.DataSource;
+
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.ToolModule;
+import org.apache.cayenne.dba.AutoAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 
 public class DbGeneratorTaskTest extends TestCase {
 
@@ -38,9 +47,19 @@ public class DbGeneratorTaskTest extends TestCase {
     }
 
     public void testSetAdapter() throws Exception {
+        DataSource ds = mock(DataSource.class);
+        Injector injector = DIBootstrap.createInjector(new ToolModule());
+
         DbGeneratorTask task = new DbGeneratorTask();
+        
+        DbAdapter autoAdapter = task.getAdapter(injector, ds);
+        assertTrue(autoAdapter instanceof AutoAdapter);
+        
+        
         task.setAdapter(SQLServerAdapter.class.getName());
-        assertTrue(task.adapter instanceof SQLServerAdapter);
+
+        DbAdapter sqlServerAdapter = task.getAdapter(injector, ds);
+        assertTrue(sqlServerAdapter instanceof SQLServerAdapter);
     }
 
     public void testSetUrl() throws Exception {

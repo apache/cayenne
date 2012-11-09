@@ -26,6 +26,8 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.AbstractDbLoaderDelegate;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -76,6 +78,9 @@ public class DbImporterTask extends CayenneTask {
             DriverDataSource dataSource = new DriverDataSource((Driver) Class
                     .forName(driver).newInstance(), url, userName, password);
 
+            Injector injector = getInjector();
+            DbAdapter adapter = getAdapter(injector, dataSource);
+
             // Load the data map and run the db importer.
             final LoaderDelegate loaderDelegate = new LoaderDelegate();
             final DbLoader loader = new DbLoader(dataSource.getConnection(),
@@ -101,7 +106,8 @@ public class DbImporterTask extends CayenneTask {
             }
 
             if (importProcedures) {
-                loader.loadProcedures(dataMap, catalog, schema, procedurePattern);
+                loader.loadProcedures(dataMap, catalog, schema,
+                        procedurePattern);
             }
 
             // Write the new DataMap out to disk.

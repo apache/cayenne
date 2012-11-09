@@ -26,8 +26,6 @@ import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -38,8 +36,8 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
 /**
- * An Ant Task that is a frontend to Cayenne DbGenerator allowing schema generation from
- * DataMap using Ant.
+ * An Ant Task that is a frontend to Cayenne DbGenerator allowing schema
+ * generation from DataMap using Ant.
  * 
  * @since 1.2
  */
@@ -58,29 +56,14 @@ public class DbGeneratorTask extends CayenneTask {
     public void execute() {
 
         Injector injector = DIBootstrap.createInjector(new ToolModule());
-        AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
-
-        // prepare defaults
-        if (adapter == null) {
-            adapter = objectFactory.newInstance(
-                    DbAdapter.class,
-                    JdbcAdapter.class.getName());
-        }
 
         log(String.format(
                 "connection settings - [driver: %s, url: %s, username: %s]",
-                driver,
-                url,
-                userName), Project.MSG_VERBOSE);
+                driver, url, userName), Project.MSG_VERBOSE);
 
-        log(
-                String.format(
-                        "generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
-                        dropTables,
-                        dropPK,
-                        createTables,
-                        createPK,
-                        createFK),
+        log(String.format(
+                "generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
+                dropTables, dropPK, createTables, createPK, createFK),
                 Project.MSG_VERBOSE);
 
         validateAttributes();
@@ -93,11 +76,15 @@ public class DbGeneratorTask extends CayenneTask {
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();
-            DbGenerator generator = new DbGenerator(
-                    adapter,
-                    dataMap,
-                    Collections.<DbEntity> emptyList(),
-                    null,
+
+            // load driver taking custom CLASSPATH into account...
+            DriverDataSource dataSource = new DriverDataSource((Driver) Class
+                    .forName(driver).newInstance(), url, userName, password);
+
+            DbAdapter adapter = getAdapter(injector, dataSource);
+
+            DbGenerator generator = new DbGenerator(adapter, dataMap,
+                    Collections.<DbEntity> emptyList(), null,
                     NoopJdbcEventLogger.getInstance());
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
@@ -105,13 +92,8 @@ public class DbGeneratorTask extends CayenneTask {
             generator.setShouldDropPKSupport(dropPK);
             generator.setShouldDropTables(dropTables);
 
-            // load driver taking custom CLASSPATH into account...
-            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(
-                    driver).newInstance(), url, userName, password);
-
             generator.runGenerator(dataSource);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
 
             String message = "Error generating database";
@@ -122,15 +104,14 @@ public class DbGeneratorTask extends CayenneTask {
 
             log(message, Project.MSG_ERR);
             throw new BuildException(message, th);
-        }
-        finally {
+        } finally {
             Thread.currentThread().setContextClassLoader(loader);
         }
     }
 
     /**
-     * Validates atttributes that are not related to internal DefaultClassGenerator.
-     * Throws BuildException if attributes are invalid.
+     * Validates atttributes that are not related to internal
+     * DefaultClassGenerator. Throws BuildException if attributes are invalid.
      */
     protected void validateAttributes() throws BuildException {
         StringBuilder error = new StringBuilder("");
