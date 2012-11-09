@@ -30,7 +30,9 @@ import org.apache.cayenne.query.Query;
  * delegate methods during different stages of porting process.
  * 
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples package.
+ * @deprecated since 3.2
  */
+@Deprecated
 public interface DataPortDelegate {
 
     /**

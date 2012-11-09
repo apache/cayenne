@@ -52,7 +52,9 @@ import org.apache.cayenne.query.SelectQuery;
  * </p>
  * 
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples package.
+ * @deprecated since 3.2
  */
+@Deprecated
 public class DataPort {
 
     public static final int INSERT_BATCH_SIZE = 1000;
