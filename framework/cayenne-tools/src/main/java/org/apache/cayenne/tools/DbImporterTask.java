@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.tools;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Driver;
 
@@ -30,6 +31,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.util.DeleteRuleUpdater;
@@ -37,6 +39,7 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.xml.sax.InputSource;
 
 public class DbImporterTask extends CayenneTask {
 
@@ -104,13 +107,7 @@ public class DbImporterTask extends CayenneTask {
 
             String schema = getSchema();
 
-            DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
-
-            // do not override default package of existsing DataMap unless it is
-            // explicitly requested by the plugin caller
-            if (defaultPackage != null && defaultPackage.length() > 0) {
-                dataMap.setDefaultPackage(defaultPackage);
-            }
+            DataMap dataMap = getDataMap();
 
             String[] types = loader.getDefaultTableTypes();
             loader.load(dataMap, catalog, schema, tablePattern, types);
@@ -146,6 +143,35 @@ public class DbImporterTask extends CayenneTask {
             log(message, Project.MSG_ERR);
             throw new BuildException(message, th);
         }
+    }
+
+    DataMap getDataMap() throws IOException {
+
+        DataMap dataMap;
+
+        if (map.exists()) {
+            InputSource in = new InputSource(map.getCanonicalPath());
+            return new MapLoader().loadDataMap(in);
+        } else {
+            dataMap = new DataMap();
+        }
+
+        // update map defaults
+
+        // do not override default package of existing DataMap unless it is
+        // explicitly requested by the plugin caller
+        if (defaultPackage != null && defaultPackage.length() > 0) {
+            dataMap.setDefaultPackage(defaultPackage);
+        }
+
+        // do not override default schema of existing DataMap unless it is
+        // explicitly requested by the plugin caller, and the provided schema is
+        // not a pattern
+        if (schema != null && schema.length() > 0 && schema.indexOf('%') >= 0) {
+            dataMap.setDefaultSchema(schema);
+        }
+
+        return dataMap;
     }
 
     /**

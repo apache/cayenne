@@ -20,6 +20,7 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Driver;
 
@@ -257,13 +258,7 @@ public class DbImporterMojo extends AbstractMojo {
             loader.setNamingStrategy(namingStrategyInst);
         }
 
-        DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
-
-        // do not override default package of existsing DataMap unless it is
-        // explicitly requested by the plugin caller
-        if (defaultPackage != null && defaultPackage.length() > 0) {
-            dataMap.setDefaultPackage(defaultPackage);
-        }
+        DataMap dataMap = getDataMap();
 
         String[] types = loader.getDefaultTableTypes();
         loader.load(dataMap, catalog, schema, tablePattern, types);
@@ -286,6 +281,35 @@ public class DbImporterMojo extends AbstractMojo {
         dataMap.encodeAsXML(encoder);
 
         pw.close();
+    }
+
+    DataMap getDataMap() throws IOException {
+
+        DataMap dataMap;
+
+        if (map.exists()) {
+            InputSource in = new InputSource(map.getCanonicalPath());
+            return new MapLoader().loadDataMap(in);
+        } else {
+            dataMap = new DataMap();
+        }
+
+        // update map defaults
+
+        // do not override default package of existing DataMap unless it is
+        // explicitly requested by the plugin caller
+        if (defaultPackage != null && defaultPackage.length() > 0) {
+            dataMap.setDefaultPackage(defaultPackage);
+        }
+
+        // do not override default schema of existing DataMap unless it is
+        // explicitly requested by the plugin caller, and the provided schema is
+        // not a pattern
+        if (schema != null && schema.length() > 0 && schema.indexOf('%') >= 0) {
+            dataMap.setDefaultSchema(schema);
+        }
+
+        return dataMap;
     }
 
     DbAdapter getAdapter(Injector injector, DataSource dataSource)
@@ -335,11 +359,5 @@ public class DbImporterMojo extends AbstractMojo {
             super.objEntityRemoved(ent);
             getLog().info("Removed obj entity: " + ent.getName());
         }
-    }
-
-    /** Loads and returns DataMap based on <code>map</code> attribute. */
-    protected DataMap loadDataMap() throws Exception {
-        final InputSource in = new InputSource(map.getCanonicalPath());
-        return new MapLoader().loadDataMap(in);
     }
 }
