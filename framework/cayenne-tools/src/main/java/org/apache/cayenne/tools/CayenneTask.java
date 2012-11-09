@@ -26,11 +26,9 @@ import javax.sql.DataSource;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
@@ -147,10 +145,6 @@ public abstract class CayenneTask extends Task {
     protected DataMap loadDataMap() throws Exception {
         InputSource in = new InputSource(map.getCanonicalPath());
         return new MapLoader().loadDataMap(in);
-    }
-    
-    protected Injector getInjector() {
-        return DIBootstrap.createInjector(new ToolsModule());
     }
 
     protected DbAdapter getAdapter(Injector injector, DataSource dataSource)

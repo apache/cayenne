@@ -38,11 +38,14 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
 /**
- * A "cdataport" Ant task implementing a frontend to DataPort allowing porting database
- * data using Ant build scripts.
+ * A "cdataport" Ant task implementing a frontend to DataPort allowing porting
+ * database data using Ant build scripts.
  * 
- * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples package.
+ * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples
+ *        package.
+ * @deprecated since 3.2
  */
+@Deprecated
 public class DataPortTask extends CayenneTask {
 
     protected File projectFile;
@@ -60,6 +63,10 @@ public class DataPortTask extends CayenneTask {
 
     @Override
     public void execute() throws BuildException {
+
+        log("*** 'cdataport' task is deprecated and will be removed after 3.2",
+                Project.MSG_WARN);
+
         validateParameters();
 
         String projectFileLocation = projectFile.getName();
@@ -71,49 +78,48 @@ public class DataPortTask extends CayenneTask {
             }
         };
 
-        ServerRuntime runtime = new ServerRuntime(
-                projectFileLocation,
+        ServerRuntime runtime = new ServerRuntime(projectFileLocation,
                 dataPortModule);
         DataDomain domain;
 
-        ClassLoader threadContextClassLoader = Thread
-                .currentThread()
+        ClassLoader threadContextClassLoader = Thread.currentThread()
                 .getContextClassLoader();
         try {
-            // need to set context class loader so that cayenne can find jdbc driver and
+            // need to set context class loader so that cayenne can find jdbc
+            // driver and
             // PasswordEncoder
             // TODO: andrus 04/11/2010 is this still relevant in 3.1?
-            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(
+                    getClass().getClassLoader());
 
             domain = runtime.getDataDomain();
-        }
-        catch (Exception ex) {
-            throw new BuildException("Error loading Cayenne configuration from "
-                    + projectFile, ex);
-        }
-        finally {
+        } catch (Exception ex) {
+            throw new BuildException(
+                    "Error loading Cayenne configuration from " + projectFile,
+                    ex);
+        } finally {
             // set back to original ClassLoader
-            Thread.currentThread().setContextClassLoader(threadContextClassLoader);
+            Thread.currentThread().setContextClassLoader(
+                    threadContextClassLoader);
         }
 
         // perform project validation
         DataNode source = domain.getDataNode(srcNode);
         if (source == null) {
-            throw new BuildException("srcNode not found in the project: " + srcNode);
+            throw new BuildException("srcNode not found in the project: "
+                    + srcNode);
         }
 
         DataNode destination = domain.getDataNode(destNode);
         if (destination == null) {
-            throw new BuildException("destNode not found in the project: " + destNode);
+            throw new BuildException("destNode not found in the project: "
+                    + destNode);
         }
 
         log("Porting from '" + srcNode + "' to '" + destNode + "'.");
 
-        AntDataPortDelegate portDelegate = new AntDataPortDelegate(
-                this,
-                maps,
-                includeTables,
-                excludeTables);
+        AntDataPortDelegate portDelegate = new AntDataPortDelegate(this, maps,
+                includeTables, excludeTables);
         DataPort dataPort = new DataPort(portDelegate);
         dataPort.setEntities(getAllEntities(source, destination));
         dataPort.setCleaningDestination(cleanDest);
@@ -122,17 +128,17 @@ public class DataPortTask extends CayenneTask {
 
         try {
             dataPort.execute();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Throwable topOfStack = Util.unwindException(e);
-            throw new BuildException(
-                    "Error porting data: " + topOfStack.getMessage(),
-                    topOfStack);
+            throw new BuildException("Error porting data: "
+                    + topOfStack.getMessage(), topOfStack);
         }
     }
 
-    protected Collection<DbEntity> getAllEntities(DataNode source, DataNode target) {
-        // use a set to exclude duplicates, though a valid project will probably have
+    protected Collection<DbEntity> getAllEntities(DataNode source,
+            DataNode target) {
+        // use a set to exclude duplicates, though a valid project will probably
+        // have
         // none...
         Collection<DbEntity> allEntities = new HashSet<DbEntity>();
 
@@ -154,11 +160,13 @@ public class DataPortTask extends CayenneTask {
 
     protected void validateParameters() throws BuildException {
         if (projectFile == null) {
-            throw new BuildException("Required 'projectFile' parameter is missing.");
+            throw new BuildException(
+                    "Required 'projectFile' parameter is missing.");
         }
 
         if (!projectFile.exists()) {
-            throw new BuildException("'projectFile' does not exist: " + projectFile);
+            throw new BuildException("'projectFile' does not exist: "
+                    + projectFile);
         }
 
         if (srcNode == null) {
@@ -166,7 +174,8 @@ public class DataPortTask extends CayenneTask {
         }
 
         if (destNode == null) {
-            throw new BuildException("Required 'destNode' parameter is missing.");
+            throw new BuildException(
+                    "Required 'destNode' parameter is missing.");
         }
     }
 

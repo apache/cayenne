@@ -65,7 +65,7 @@ class CayenneGeneratorMapLoaderAction {
 
     protected DataMap loadDataMap(MapLoader mapLoader, File dataMapFile)
             throws MalformedURLException {
-        InputSource in = new InputSource(dataMapFile.toURL().toString());
+        InputSource in = new InputSource(dataMapFile.toURI().toURL().toString());
         return mapLoader.loadDataMap(in);
     }
 

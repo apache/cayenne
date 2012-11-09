@@ -27,11 +27,13 @@ import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbimport.ImportDbLoaderDelegate;
+import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -87,7 +89,7 @@ public class DbImporterTask extends CayenneTask {
             DriverDataSource dataSource = new DriverDataSource((Driver) Class
                     .forName(driver).newInstance(), url, userName, password);
 
-            Injector injector = getInjector();
+            Injector injector = DIBootstrap.createInjector(new ToolsModule());
             DbAdapter adapter = getAdapter(injector, dataSource);
 
             // Load the data map and run the db importer.

@@ -29,6 +29,7 @@ CAY-1761 cdbimport improvements: DbLoader must reverse engineer PK auto-incremen
 CAY-1762 cdbimport improvements: Support for "defaultPackage" parameter, as the new DataMaps ends up placing entities in the root package 
 CAY-1763 cdbimport improvements: specified "schema" should become the default schema of the generated DataMap 
 CAY-1764 cdbimport improvements: "overwrite" flag
+CAY-1766 Deprecating DataPort ant task
 
 Bug Fixes:
 

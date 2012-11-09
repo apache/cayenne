@@ -519,6 +519,12 @@
 		</section>
 		<section xml:id="ant-cdataport">
 			<title>cdataport</title>
+			<para>
+				<note>
+					<para>'cdataport' is deprecated in 3.2 and will bre removed in the future
+						versions.</para>
+				</note>
+			</para>
 		</section>
 	</section>
 </chapter>
