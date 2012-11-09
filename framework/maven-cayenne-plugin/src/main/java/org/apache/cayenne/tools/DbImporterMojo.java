@@ -26,19 +26,19 @@ import java.sql.Driver;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.access.AbstractDbLoaderDelegate;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbimport.ImportDbLoaderDelegate;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -233,7 +233,7 @@ public class DbImporterMojo extends AbstractMojo {
 
         String schema = getSchema();
 
-        Injector injector = DIBootstrap.createInjector(new ToolModule());
+        Injector injector = DIBootstrap.createInjector(new ToolsModule());
 
         // load driver taking custom CLASSPATH into account...
         DriverDataSource dataSource = new DriverDataSource((Driver) Class
@@ -242,8 +242,7 @@ public class DbImporterMojo extends AbstractMojo {
         DbAdapter adapter = getAdapter(injector, dataSource);
 
         // Load the data map and run the db importer.
-        AbstractDbLoaderDelegate loaderDelegate = new AbstractDbLoaderDelegate() {
-        };
+        ImportDbLoaderDelegate loaderDelegate = new ImportDbLoaderDelegate();
         DbLoader loader = new DbLoader(dataSource.getConnection(), adapter,
                 loaderDelegate);
         loader.setCreatingMeaningfulPK(meaningfulPk);

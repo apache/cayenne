@@ -23,10 +23,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Driver;
 
-import org.apache.cayenne.access.AbstractDbLoaderDelegate;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbimport.ImportDbLoaderDelegate;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
@@ -91,8 +91,7 @@ public class DbImporterTask extends CayenneTask {
             DbAdapter adapter = getAdapter(injector, dataSource);
 
             // Load the data map and run the db importer.
-            AbstractDbLoaderDelegate loaderDelegate = new AbstractDbLoaderDelegate() {
-            };
+            ImportDbLoaderDelegate loaderDelegate = new ImportDbLoaderDelegate();
             DbLoader loader = new DbLoader(dataSource.getConnection(), adapter,
                     loaderDelegate);
             loader.setCreatingMeaningfulPK(meaningfulPk);

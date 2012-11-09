@@ -17,34 +17,33 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
-
-import junit.framework.TestCase;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.CayenneException;
+package org.apache.cayenne.dbimport;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class AbstractDbLoaderDelegateTest extends TestCase {
+import junit.framework.TestCase;
 
-    final class TestDbLoaderDelegate extends AbstractDbLoaderDelegate {}
+import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 
-    private AbstractDbLoaderDelegate delegate;
+public class ImportDbLoaderDelegateTest extends TestCase {
+
+    private ImportDbLoaderDelegate delegate;
     private DataMap dataMap;
     private DbEntity dbEntity;
     private ObjEntity objEntity;
 
     @Override
     public void setUp() {
-        delegate = new TestDbLoaderDelegate();
+        delegate = new ImportDbLoaderDelegate();
         dataMap = new DataMap();
 
         dbEntity = new DbEntity("TestDbEntity");
         dbEntity.setDataMap(dataMap);
-        
+
         objEntity = new ObjEntity("TestObjEntity");
         objEntity.setDataMap(dataMap);
     }
@@ -60,7 +59,7 @@ public class AbstractDbLoaderDelegateTest extends TestCase {
 
         assertEquals(1, dataMap.getDbEntities().size());
         assertTrue(dataMap.getDbEntities().containsAll(entities));
-        
+
         assertEquals(entities, delegate.getAddedDbEntities());
     }
 

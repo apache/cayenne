@@ -26,12 +26,12 @@ import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.tools.configuration.ToolsModule;
 
 public class DbImporterMojoTest extends TestCase {
 
@@ -40,7 +40,7 @@ public class DbImporterMojoTest extends TestCase {
         DbImporterMojo mojo = new DbImporterMojo();
 
         DataSource ds = mock(DataSource.class);
-        Injector injector = DIBootstrap.createInjector(new ToolModule());
+        Injector injector = DIBootstrap.createInjector(new ToolsModule());
         DbAdapter adapter = mojo.getAdapter(injector, ds);
         assertNotNull(adapter);
         assertTrue(adapter instanceof AutoAdapter);

@@ -17,24 +17,36 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.CayenneException;
+package org.apache.cayenne.dbimport;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
-public abstract class AbstractDbLoaderDelegate implements DbLoaderDelegate {
+import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 
-    private List<DbEntity> addedDbEntities = new ArrayList<DbEntity>();
-    private List<DbEntity> removedDbEntities = new ArrayList<DbEntity>();
-    private List<ObjEntity> addedObjEntities = new ArrayList<ObjEntity>();
-    private List<ObjEntity> removedObjEntities = new ArrayList<ObjEntity>();
+/**
+ * @since 3.2
+ */
+public class ImportDbLoaderDelegate implements DbLoaderDelegate {
 
-    public boolean overwriteDbEntity(final DbEntity ent) throws CayenneException {
+    private List<DbEntity> addedDbEntities;
+    private List<DbEntity> removedDbEntities;
+    private List<ObjEntity> addedObjEntities;
+    private List<ObjEntity> removedObjEntities;
+
+    public ImportDbLoaderDelegate() {
+        addedDbEntities = new ArrayList<DbEntity>();
+        removedDbEntities = new ArrayList<DbEntity>();
+        addedObjEntities = new ArrayList<ObjEntity>();
+        removedObjEntities = new ArrayList<ObjEntity>();
+    }
+
+    public boolean overwriteDbEntity(final DbEntity ent)
+            throws CayenneException {
         return false;
     }
 

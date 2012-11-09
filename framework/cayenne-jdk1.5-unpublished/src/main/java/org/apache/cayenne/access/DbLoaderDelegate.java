@@ -24,25 +24,24 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * DbLoaderDelegate defines API that allows to control the behavior of DbLoader during the
- * database reverse-engineering. Delegate is also notified of the progress of
- * reverse-engineering.
- * 
+ * DbLoaderDelegate defines API that allows to control the behavior of DbLoader
+ * during the database reverse-engineering. Delegate is also notified of the
+ * progress of reverse-engineering.
  */
 public interface DbLoaderDelegate {
 
     /**
-     * Returns true to tell DbLoader that it is OK to overwrite DbEntity that already
-     * exists in the model. If loading process should be stopped immediately, an exception
-     * is thrown.
+     * Returns true to tell DbLoader that it is OK to overwrite DbEntity that
+     * already exists in the model. If loading process should be stopped
+     * immediately, an exception is thrown.
      */
-    public boolean overwriteDbEntity(DbEntity ent) throws CayenneException;
+    public boolean overwriteDbEntity(DbEntity entity) throws CayenneException;
 
-    public void dbEntityAdded(DbEntity ent);
+    public void dbEntityAdded(DbEntity entity);
 
-    public void dbEntityRemoved(DbEntity ent);
+    public void dbEntityRemoved(DbEntity entity);
 
-    public void objEntityAdded(ObjEntity ent);
+    public void objEntityAdded(ObjEntity entity);
 
-    public void objEntityRemoved(ObjEntity ent);
+    public void objEntityRemoved(ObjEntity entity);
 }

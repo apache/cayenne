@@ -23,7 +23,6 @@ import java.io.File;
 import java.sql.Driver;
 
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -33,6 +32,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
@@ -137,7 +137,7 @@ public class DbGeneratorMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
     	
-    	Injector injector = DIBootstrap.createInjector(new ToolModule());
+    	Injector injector = DIBootstrap.createInjector(new ToolsModule());
     	AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
 		Log logger = new MavenLogger(this);
