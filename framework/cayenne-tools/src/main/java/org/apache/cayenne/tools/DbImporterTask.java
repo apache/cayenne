@@ -50,6 +50,15 @@ public class DbImporterTask extends CayenneTask {
 
     private String schema;
 
+    /**
+     * A default package for ObjEntity Java classes. If not specified, and the
+     * existing DataMap already has the default package, the existing package
+     * will be used.
+     * 
+     * @since 3.2
+     */
+    private String defaultPackage;
+
     private String catalog;
     private String tablePattern;
     private boolean importProcedures = false;
@@ -96,6 +105,12 @@ public class DbImporterTask extends CayenneTask {
             String schema = getSchema();
 
             DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
+
+            // do not override default package of existsing DataMap unless it is
+            // explicitly requested by the plugin caller
+            if (defaultPackage != null && defaultPackage.length() > 0) {
+                dataMap.setDefaultPackage(defaultPackage);
+            }
 
             String[] types = loader.getDefaultTableTypes();
             loader.load(dataMap, catalog, schema, tablePattern, types);
@@ -173,6 +188,10 @@ public class DbImporterTask extends CayenneTask {
      */
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    public void setDefaultPackage(String defaultPackage) {
+        this.defaultPackage = defaultPackage;
     }
 
     public void setTablePattern(String tablePattern) {
