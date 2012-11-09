@@ -23,6 +23,7 @@ import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
@@ -80,28 +81,22 @@ public class ToolsModule implements Module {
         binder.bind(AdhocObjectFactory.class).toInstance(objectFactory);
 
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-        binder.bind(BatchQueryBuilderFactory.class).to(
-                DefaultBatchQueryBuilderFactory.class);
+        binder.bind(BatchQueryBuilderFactory.class).to(DefaultBatchQueryBuilderFactory.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
         // TODO: this is cloned from ServerModule... figure out how to reuse
         // this list
-        binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST)
-                .add(new OpenBaseSniffer(objectFactory))
-                .add(new FrontBaseSniffer(objectFactory))
-                .add(new IngresSniffer(objectFactory))
-                .add(new SQLiteSniffer(objectFactory))
-                .add(new DB2Sniffer(objectFactory))
-                .add(new H2Sniffer(objectFactory))
-                .add(new HSQLDBSniffer(objectFactory))
-                .add(new SybaseSniffer(objectFactory))
-                .add(new DerbySniffer(objectFactory))
-                .add(new SQLServerSniffer(objectFactory))
-                .add(new OracleSniffer(objectFactory))
-                .add(new PostgresSniffer(objectFactory))
-                .add(new MySQLSniffer(objectFactory));
+        binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(new OpenBaseSniffer(objectFactory))
+                .add(new FrontBaseSniffer(objectFactory)).add(new IngresSniffer(objectFactory))
+                .add(new SQLiteSniffer(objectFactory)).add(new DB2Sniffer(objectFactory))
+                .add(new H2Sniffer(objectFactory)).add(new HSQLDBSniffer(objectFactory))
+                .add(new SybaseSniffer(objectFactory)).add(new DerbySniffer(objectFactory))
+                .add(new SQLServerSniffer(objectFactory)).add(new OracleSniffer(objectFactory))
+                .add(new PostgresSniffer(objectFactory)).add(new MySQLSniffer(objectFactory));
 
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
+
+        binder.bind(DataSourceFactory.class).to(DriverDataSourceFactory.class);
 
     }
 

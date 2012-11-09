@@ -59,34 +59,30 @@ public class DbGeneratorTask extends CayenneTask {
         Log logger = new AntLogger(this);
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
 
-        log(String.format(
-                "connection settings - [driver: %s, url: %s, username: %s]",
-                driver, url, userName), Project.MSG_VERBOSE);
+        log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName),
+                Project.MSG_VERBOSE);
 
         log(String.format(
                 "generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
-                dropTables, dropPK, createTables, createPK, createFK),
-                Project.MSG_VERBOSE);
+                dropTables, dropPK, createTables, createPK, createFK), Project.MSG_VERBOSE);
 
         validateAttributes();
 
         ClassLoader loader = null;
         try {
             loader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(
-                    DbGeneratorTask.class.getClassLoader());
+            Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();
 
             // load driver taking custom CLASSPATH into account...
-            DriverDataSource dataSource = new DriverDataSource((Driver) Class
-                    .forName(driver).newInstance(), url, userName, password);
+            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,
+                    userName, password);
 
             DbAdapter adapter = getAdapter(injector, dataSource);
 
-            DbGenerator generator = new DbGenerator(adapter, dataMap,
-                    Collections.<DbEntity> emptyList(), null,
+            DbGenerator generator = new DbGenerator(adapter, dataMap, Collections.<DbEntity> emptyList(), null,
                     NoopJdbcEventLogger.getInstance());
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
@@ -112,7 +108,7 @@ public class DbGeneratorTask extends CayenneTask {
     }
 
     /**
-     * Validates atttributes that are not related to internal
+     * Validates attributes that are not related to internal
      * DefaultClassGenerator. Throws BuildException if attributes are invalid.
      */
     protected void validateAttributes() throws BuildException {

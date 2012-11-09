@@ -21,14 +21,14 @@ package org.apache.cayenne.tools.dbimport;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Driver;
 
 import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
-import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -48,12 +48,15 @@ import org.xml.sax.InputSource;
  */
 public class DbImportAction {
 
+    private DataSourceFactory dataSourceFactory;
     private DbAdapterFactory adapterFactory;
     private Log logger;
 
-    public DbImportAction(@Inject Log logger, @Inject DbAdapterFactory adapterFactory) {
+    public DbImportAction(@Inject Log logger, @Inject DbAdapterFactory adapterFactory,
+            @Inject DataSourceFactory dataSourceFactory) {
         this.logger = logger;
         this.adapterFactory = adapterFactory;
+        this.dataSourceFactory = dataSourceFactory;
     }
 
     public void execute(DbImportParameters parameters) throws Exception {
@@ -77,12 +80,18 @@ public class DbImportAction {
             logger.debug("Importer options - namingStrategy: " + parameters.getNamingStrategy());
         }
 
-        // TODO: load via DI
-        DriverDataSource dataSource = new DriverDataSource(
-                (Driver) Class.forName(parameters.getDriver()).newInstance(), parameters.getUrl(),
-                parameters.getUsername(), parameters.getPassword());
+        DataSourceInfo dataSourceInfo = new DataSourceInfo();
+        dataSourceInfo.setDataSourceUrl(parameters.getUrl());
+        dataSourceInfo.setJdbcDriver(parameters.getDriver());
+        dataSourceInfo.setUserName(parameters.getUsername());
+        dataSourceInfo.setPassword(parameters.getPassword());
 
-        DbAdapter adapter = getAdapter(parameters.getAdapter(), dataSource);
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setAdapterType(parameters.getAdapter());
+        nodeDescriptor.setDataSourceDescriptor(dataSourceInfo);
+
+        DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
+        DbAdapter adapter = adapterFactory.createAdapter(nodeDescriptor, dataSource);
         DataMap dataMap = getDataMap(parameters);
 
         DbImportDbLoaderDelegate loaderDelegate = new DbImportDbLoaderDelegate();
@@ -117,14 +126,6 @@ public class DbImportAction {
         dataMap.encodeAsXML(encoder);
 
         pw.close();
-    }
-
-    DbAdapter getAdapter(String adapter, DataSource dataSource) throws Exception {
-
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(adapter);
-
-        return adapterFactory.createAdapter(nodeDescriptor, dataSource);
     }
 
     DataMap getDataMap(DbImportParameters parameters) throws IOException {
