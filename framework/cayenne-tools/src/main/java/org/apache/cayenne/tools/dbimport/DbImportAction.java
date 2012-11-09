@@ -21,13 +21,15 @@ package org.apache.cayenne.tools.dbimport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.net.URL;
 import java.sql.Connection;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
@@ -38,9 +40,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.NamePatternMatcher;
 import org.apache.cayenne.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.logging.Log;
 import org.xml.sax.InputSource;
 
@@ -52,15 +56,19 @@ import org.xml.sax.InputSource;
  */
 public class DbImportAction {
 
+    private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
+
+    private ProjectSaver projectSaver;
     private DataSourceFactory dataSourceFactory;
     private DbAdapterFactory adapterFactory;
     private Log logger;
 
     public DbImportAction(@Inject Log logger, @Inject DbAdapterFactory adapterFactory,
-            @Inject DataSourceFactory dataSourceFactory) {
+            @Inject DataSourceFactory dataSourceFactory, @Inject ProjectSaver projectSaver) {
         this.logger = logger;
         this.adapterFactory = adapterFactory;
         this.dataSourceFactory = dataSourceFactory;
+        this.projectSaver = projectSaver;
     }
 
     public void execute(DbImportParameters parameters) throws Exception {
@@ -102,15 +110,10 @@ public class DbImportAction {
     }
 
     void saveLoaded(DataMap dataMap, File dataMapFile) throws FileNotFoundException {
-        dataMapFile.delete();
 
-        PrintWriter pw = new PrintWriter(dataMapFile);
-        XMLEncoder encoder = new XMLEncoder(pw, "\t");
-
-        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        dataMap.encodeAsXML(encoder);
-
-        pw.close();
+        ConfigurationTree<DataMap> projectRoot = new ConfigurationTree<DataMap>(dataMap);
+        Project project = new Project(projectRoot);
+        projectSaver.save(project);
     }
 
     DataMap load(DbImportParameters parameters, DataNodeDescriptor nodeDescriptor) throws Exception {
@@ -173,6 +176,16 @@ public class DbImportAction {
     DataMap createDataMap(DbImportParameters parameters) throws IOException {
 
         File dataMapFile = parameters.getDataMapFile();
+        if (dataMapFile == null) {
+            throw new NullPointerException("Null DataMap File.");
+        }
+
+        String name = dataMapFile.getName();
+        if (!name.endsWith(DATA_MAP_LOCATION_SUFFIX)) {
+            throw new CayenneRuntimeException("DataMap file name must end with '%s': '%s'", DATA_MAP_LOCATION_SUFFIX,
+                    name);
+        }
+
         DataMap dataMap;
 
         if (dataMapFile.exists()) {
@@ -188,7 +201,13 @@ public class DbImportAction {
                 dataMap.clearResultSets();
             }
         } else {
-            dataMap = new DataMap();
+
+            // the name and URL are important for the save to work
+            String dataMapName = name.substring(0, name.length() - DATA_MAP_LOCATION_SUFFIX.length());
+            URL dataMapUrl = dataMapFile.toURI().toURL();
+
+            dataMap = new DataMap(dataMapName);
+            dataMap.setConfigurationSource(new URLResource(dataMapUrl));
         }
 
         // update map defaults

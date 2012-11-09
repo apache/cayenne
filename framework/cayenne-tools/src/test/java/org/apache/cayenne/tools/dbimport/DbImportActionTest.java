@@ -20,6 +20,8 @@ package org.apache.cayenne.tools.dbimport;
 
 import static org.mockito.Mockito.mock;
 
+import java.io.File;
+import java.net.URL;
 import java.sql.Connection;
 
 import junit.framework.TestCase;
@@ -29,7 +31,10 @@ import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 
 public class DbImportActionTest extends TestCase {
@@ -68,7 +73,7 @@ public class DbImportActionTest extends TestCase {
         assertTrue(loader1.includeTableName("a"));
         assertTrue(loader1.includeTableName("b"));
         assertTrue(loader1.includeTableName("cd"));
-        
+
         parameters.setExcludeTables("cd");
 
         DbLoader loader2 = action.createLoader(parameters, mock(DbAdapter.class), mock(Connection.class),
@@ -80,5 +85,53 @@ public class DbImportActionTest extends TestCase {
         assertTrue(loader2.includeTableName("b"));
         assertFalse(loader2.includeTableName("cd"));
         assertTrue(loader2.includeTableName("cx"));
+    }
+
+    public void testSaveLoaded() throws Exception {
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+
+        DbImportAction action = i.getInstance(DbImportAction.class);
+
+        String packagePath = getClass().getPackage().getName().replace('.', '/');
+        URL packageUrl = getClass().getClassLoader().getResource(packagePath);
+        assertNotNull(packageUrl);
+        URL outUrl = new URL(packageUrl, "dbimport/testSaveLoaded1.map.xml");
+
+        File out = new File(outUrl.toURI());
+        out.delete();
+        assertFalse(out.isFile());
+
+        DataMap map = new DataMap("testSaveLoaded1");
+        map.setConfigurationSource(new URLResource(outUrl));
+
+        action.saveLoaded(map, out);
+
+        assertTrue(out.isFile());
+
+        String contents = Util.stringFromFile(out);
+        assertTrue("Has no project version saved", contents.contains("project-version=\""));
+    }
+
+    public void testCreateDataMap() throws Exception {
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+
+        DbImportAction action = i.getInstance(DbImportAction.class);
+
+        String packagePath = getClass().getPackage().getName().replace('.', '/');
+        URL packageUrl = getClass().getClassLoader().getResource(packagePath);
+        assertNotNull(packageUrl);
+        URL outUrl = new URL(packageUrl, "dbimport/testCreateDataMap1.map.xml");
+
+        File out = new File(outUrl.toURI());
+        out.delete();
+        assertFalse(out.isFile());
+
+        DbImportParameters parameters = new DbImportParameters();
+        parameters.setDataMapFile(out);
+        DataMap dataMap = action.createDataMap(parameters);
+        assertEquals("testCreateDataMap1", dataMap.getName());
+        assertEquals(outUrl, dataMap.getConfigurationSource().getURL());
     }
 }
