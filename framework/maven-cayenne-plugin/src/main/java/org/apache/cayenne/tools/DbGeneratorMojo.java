@@ -43,9 +43,9 @@ import org.xml.sax.InputSource;
 /**
  * Maven mojo to perform class generation from data map. This class is a Maven
  * adapter to DefaultClassGenerator class.
- *
+ * 
  * @since 3.0
- *
+ * 
  * @phase pre-integration-test
  * @goal cdbgen
  */
@@ -53,24 +53,24 @@ public class DbGeneratorMojo extends AbstractMojo {
 
     /**
      * DataMap XML file to use as a schema descriptor.
-     *
+     * 
      * @parameter expression="${cdbgen.map}"
-	 * @required
+     * @required
      */
-	private File map;
+    private File map;
 
     /**
-     * Java class implementing org.apache.cayenne.dba.DbAdapter.
-     * While this attribute is optional (a generic JdbcAdapter is used if not set),
-     * it is highly recommended to specify correct target adapter.
-     *
+     * Java class implementing org.apache.cayenne.dba.DbAdapter. While this
+     * attribute is optional (a generic JdbcAdapter is used if not set), it is
+     * highly recommended to specify correct target adapter.
+     * 
      * @parameter expression="${cdbgen.adapter}"
      */
     private String adapter;
 
     /**
      * A class of JDBC driver to use for the target database.
-     *
+     * 
      * @parameter expression="${cdbgen.driver}"
      * @required
      */
@@ -78,7 +78,7 @@ public class DbGeneratorMojo extends AbstractMojo {
 
     /**
      * JDBC connection URL of a target database.
-     *
+     * 
      * @parameter expression="${cdbgen.url}"
      * @required
      */
@@ -86,71 +86,73 @@ public class DbGeneratorMojo extends AbstractMojo {
 
     /**
      * Database user name.
-     *
+     * 
      * @parameter expression="${cdbgen.username}"
      */
     private String username;
 
     /**
      * Database user password.
-     *
+     * 
      * @parameter expression="${cdbgen.password}"
      */
     private String password;
 
     /**
-     * Defines whether cdbgen should drop the tables before attempting to create new ones.
-     * Default is <code>false</code>.
-     *
+     * Defines whether cdbgen should drop the tables before attempting to create
+     * new ones. Default is <code>false</code>.
+     * 
      * @parameter expression="${cdbgen.dropTables}" default-value="false"
      */
     private boolean dropTables;
 
     /**
-     * Defines whether cdbgen should drop Cayenne primary key support objects. Default is <code>false</code>.
-     *
+     * Defines whether cdbgen should drop Cayenne primary key support objects.
+     * Default is <code>false</code>.
+     * 
      * @parameter expression="${cdbgen.dropPK}" default-value="false"
      */
     private boolean dropPK;
 
     /**
-     * Defines whether cdbgen should create new tables. Default is <code>true</code>.
-     *
+     * Defines whether cdbgen should create new tables. Default is
+     * <code>true</code>.
+     * 
      * @parameter expression="${cdbgen.createTables}" default-value="true"
      */
     private boolean createTables;
 
     /**
-     * Defines whether cdbgen should create Cayenne-specific auto PK objects. Default is <code>true</code>.
-     *
+     * Defines whether cdbgen should create Cayenne-specific auto PK objects.
+     * Default is <code>true</code>.
+     * 
      * @parameter expression="${cdbgen.createPK}" default-value="true"
      */
     private boolean createPK;
 
     /**
-     * Defines whether cdbgen should create foreign key copnstraints. Default is <code>true</code>.
-     *
+     * Defines whether cdbgen should create foreign key copnstraints. Default is
+     * <code>true</code>.
+     * 
      * @parameter expression="${cdbgen.createFK}' default-value="true"
      */
     private boolean createFK;
 
-
     public void execute() throws MojoExecutionException, MojoFailureException {
-    	
-    	Injector injector = DIBootstrap.createInjector(new ToolsModule());
-    	AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
-		Log logger = new MavenLogger(this);
+        Log logger = new MavenLogger(this);
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
+        AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
         logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, username));
 
-        logger.info(String.format("generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
+        logger.info(String.format(
+                "generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
                 dropTables, dropPK, createTables, createPK, createFK));
 
         try {
-            final DbAdapter adapterInst = (adapter == null) ? 
-            		(DbAdapter)objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) : 
-            		(DbAdapter)objectFactory.newInstance(DbAdapter.class, adapter);
+            final DbAdapter adapterInst = (adapter == null) ? (DbAdapter) objectFactory.newInstance(DbAdapter.class,
+                    JdbcAdapter.class.getName()) : (DbAdapter) objectFactory.newInstance(DbAdapter.class, adapter);
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();
@@ -162,12 +164,11 @@ public class DbGeneratorMojo extends AbstractMojo {
             generator.setShouldDropTables(dropTables);
 
             // load driver taking custom CLASSPATH into account...
-            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(
-                    driver).newInstance(), url, username, password);
+            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,
+                    username, password);
 
             generator.runGenerator(dataSource);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
 
             String message = "Error generating database";
@@ -186,5 +187,5 @@ public class DbGeneratorMojo extends AbstractMojo {
         InputSource in = new InputSource(map.getCanonicalPath());
         return new MapLoader().loadDataMap(in);
     }
-    
+
 }

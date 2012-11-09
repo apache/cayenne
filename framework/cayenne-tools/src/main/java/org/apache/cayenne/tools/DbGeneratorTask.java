@@ -32,6 +32,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -55,7 +56,8 @@ public class DbGeneratorTask extends CayenneTask {
     @Override
     public void execute() {
 
-        Injector injector = DIBootstrap.createInjector(new ToolsModule());
+        Log logger = new AntLogger(this);
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
 
         log(String.format(
                 "connection settings - [driver: %s, url: %s, username: %s]",

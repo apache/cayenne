@@ -31,6 +31,7 @@ import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.commons.logging.Log;
 
 public class DbGeneratorTaskTest extends TestCase {
 
@@ -48,14 +49,13 @@ public class DbGeneratorTaskTest extends TestCase {
 
     public void testSetAdapter() throws Exception {
         DataSource ds = mock(DataSource.class);
-        Injector injector = DIBootstrap.createInjector(new ToolsModule());
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(mock(Log.class)));
 
         DbGeneratorTask task = new DbGeneratorTask();
-        
+
         DbAdapter autoAdapter = task.getAdapter(injector, ds);
         assertTrue(autoAdapter instanceof AutoAdapter);
-        
-        
+
         task.setAdapter(SQLServerAdapter.class.getName());
 
         DbAdapter sqlServerAdapter = task.getAdapter(injector, ds);

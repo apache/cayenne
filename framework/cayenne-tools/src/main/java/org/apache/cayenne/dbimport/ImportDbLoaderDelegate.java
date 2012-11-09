@@ -31,22 +31,21 @@ import org.apache.cayenne.map.ObjEntity;
 /**
  * @since 3.2
  */
-public class ImportDbLoaderDelegate implements DbLoaderDelegate {
+class ImportDbLoaderDelegate implements DbLoaderDelegate {
 
     private List<DbEntity> addedDbEntities;
     private List<DbEntity> removedDbEntities;
     private List<ObjEntity> addedObjEntities;
     private List<ObjEntity> removedObjEntities;
 
-    public ImportDbLoaderDelegate() {
+    ImportDbLoaderDelegate() {
         addedDbEntities = new ArrayList<DbEntity>();
         removedDbEntities = new ArrayList<DbEntity>();
         addedObjEntities = new ArrayList<ObjEntity>();
         removedObjEntities = new ArrayList<ObjEntity>();
     }
 
-    public boolean overwriteDbEntity(final DbEntity ent)
-            throws CayenneException {
+    public boolean overwriteDbEntity(final DbEntity ent) throws CayenneException {
         return false;
     }
 

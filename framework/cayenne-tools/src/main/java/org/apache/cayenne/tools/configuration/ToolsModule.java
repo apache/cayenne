@@ -44,6 +44,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.commons.logging.Log;
 
 /**
  * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven
@@ -53,7 +54,20 @@ import org.apache.cayenne.log.JdbcEventLogger;
  */
 public class ToolsModule implements Module {
 
+    private Log logger;
+
+    public ToolsModule(Log logger) {
+
+        if (logger == null) {
+            throw new NullPointerException("Null logger");
+        }
+
+        this.logger = logger;
+    }
+
     public void configure(Binder binder) {
+
+        binder.bind(Log.class).toInstance(logger);
 
         // configure empty global stack properties
         binder.bindMap(Constants.PROPERTIES_MAP);
@@ -88,6 +102,7 @@ public class ToolsModule implements Module {
                 .add(new MySQLSniffer(objectFactory));
 
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
+
     }
 
 }

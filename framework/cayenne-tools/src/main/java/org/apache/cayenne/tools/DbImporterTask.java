@@ -19,117 +19,55 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Driver;
+import java.io.File;
 
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.conn.DriverDataSource;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.ImportDbLoaderDelegate;
+import org.apache.cayenne.dbimport.DbImportAction;
+import org.apache.cayenne.dbimport.DbImportModule;
+import org.apache.cayenne.dbimport.DbImportParameters;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.tools.configuration.ToolsModule;
-import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
+import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.xml.sax.InputSource;
+import org.apache.tools.ant.Task;
 
-public class DbImporterTask extends CayenneTask {
+public class DbImporterTask extends Task {
 
-    private boolean overwrite = true;
+    private DbImportParameters parameters;
 
     /**
      * @deprecated since 3.2 in favor of "schema"
      */
     private String schemaName;
 
-    private String schema;
-
-    /**
-     * A default package for ObjEntity Java classes. If not specified, and the
-     * existing DataMap already has the default package, the existing package
-     * will be used.
-     * 
-     * @since 3.2
-     */
-    private String defaultPackage;
-
-    private String catalog;
-    private String tablePattern;
-    private boolean importProcedures = false;
-    private String procedurePattern;
-    private boolean meaningfulPk = false;
-    private String namingStrategy = "org.apache.cayenne.map.naming.SmartNamingStrategy";
+    public DbImporterTask() {
+        parameters = new DbImportParameters();
+        parameters.setOverwrite(true);
+        parameters.setImportProcedures(false);
+        parameters.setMeaningfulPk(false);
+        parameters.setNamingStrategy("org.apache.cayenne.map.naming.SmartNamingStrategy");
+    }
 
     @Override
     public void execute() {
 
-        log(String.format(
-                "connection settings - [driver: %s, url: %s, username: %s, password: %s]",
-                driver, url, userName, password), Project.MSG_VERBOSE);
+        if (schemaName != null) {
+            log("'schemaName' property is deprecated. Use 'schema' instead", Project.MSG_WARN);
+        }
 
-        log(String.format(
-                "importer options - [map: %s, overwrite: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
-                map, overwrite, getSchema(), tablePattern, importProcedures,
-                procedurePattern, meaningfulPk, namingStrategy),
-                Project.MSG_VERBOSE);
+        if (parameters.getSchema() == null) {
+            parameters.setSchema(schemaName);
+        }
 
         validateAttributes();
 
+        Log logger = new AntLogger(this);
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+
         try {
-
-            // load driver taking custom CLASSPATH into account...
-            DriverDataSource dataSource = new DriverDataSource((Driver) Class
-                    .forName(driver).newInstance(), url, userName, password);
-
-            Injector injector = DIBootstrap.createInjector(new ToolsModule());
-            DbAdapter adapter = getAdapter(injector, dataSource);
-
-            // Load the data map and run the db importer.
-            ImportDbLoaderDelegate loaderDelegate = new ImportDbLoaderDelegate();
-            DbLoader loader = new DbLoader(dataSource.getConnection(), adapter,
-                    loaderDelegate);
-            loader.setCreatingMeaningfulPK(meaningfulPk);
-
-            if (namingStrategy != null) {
-                final NamingStrategy namingStrategyInst = (NamingStrategy) Class
-                        .forName(namingStrategy).newInstance();
-                loader.setNamingStrategy(namingStrategyInst);
-            }
-
-            String schema = getSchema();
-
-            DataMap dataMap = getDataMap();
-
-            String[] types = loader.getDefaultTableTypes();
-            loader.load(dataMap, catalog, schema, tablePattern, types);
-
-            for (ObjEntity addedObjEntity : loaderDelegate
-                    .getAddedObjEntities()) {
-                DeleteRuleUpdater.updateObjEntity(addedObjEntity);
-            }
-
-            if (importProcedures) {
-                loader.loadProcedures(dataMap, catalog, schema,
-                        procedurePattern);
-            }
-
-            // Write the new DataMap out to disk.
-            map.delete();
-            PrintWriter pw = new PrintWriter(map);
-
-            XMLEncoder encoder = new XMLEncoder(pw, "\t");
-            encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            dataMap.encodeAsXML(encoder);
-
-            pw.close();
+            injector.getInstance(DbImportAction.class).execute(parameters);
         } catch (final Exception ex) {
             final Throwable th = Util.unwindException(ex);
 
@@ -144,45 +82,6 @@ public class DbImporterTask extends CayenneTask {
         }
     }
 
-    DataMap getDataMap() throws IOException {
-
-        DataMap dataMap;
-
-        if (map.exists()) {
-            InputSource in = new InputSource(map.getCanonicalPath());
-            dataMap = new MapLoader().loadDataMap(in);
-
-            if (overwrite) {
-                dataMap.clearObjEntities();
-                dataMap.clearEmbeddables();
-                dataMap.clearProcedures();
-                dataMap.clearDbEntities();
-                dataMap.clearQueries();
-                dataMap.clearResultSets();
-            }
-
-        } else {
-            dataMap = new DataMap();
-        }
-
-        // update map defaults
-
-        // do not override default package of existing DataMap unless it is
-        // explicitly requested by the plugin caller
-        if (defaultPackage != null && defaultPackage.length() > 0) {
-            dataMap.setDefaultPackage(defaultPackage);
-        }
-
-        // do not override default schema of existing DataMap unless it is
-        // explicitly requested by the plugin caller, and the provided schema is
-        // not a pattern
-        if (schema != null && schema.length() > 0 && schema.indexOf('%') >= 0) {
-            dataMap.setDefaultSchema(schema);
-        }
-
-        return dataMap;
-    }
-
     /**
      * Validates attributes that are not related to internal
      * DefaultClassGenerator. Throws BuildException if attributes are invalid.
@@ -190,15 +89,15 @@ public class DbImporterTask extends CayenneTask {
     protected void validateAttributes() throws BuildException {
         StringBuilder error = new StringBuilder("");
 
-        if (map == null) {
+        if (parameters.getMap() == null) {
             error.append("The 'map' attribute must be set.\n");
         }
 
-        if (driver == null) {
+        if (parameters.getDriver() == null) {
             error.append("The 'driver' attribute must be set.\n");
         }
 
-        if (url == null) {
+        if (parameters.getUrl() == null) {
             error.append("The 'adapter' attribute must be set.\n");
         }
 
@@ -211,7 +110,7 @@ public class DbImporterTask extends CayenneTask {
      * @since 3.2
      */
     public void setOverwrite(boolean overwrite) {
-        this.overwrite = overwrite;
+        parameters.setOverwrite(overwrite);
     }
 
     /**
@@ -225,39 +124,57 @@ public class DbImporterTask extends CayenneTask {
      * @since 3.2
      */
     public void setSchema(String schema) {
-        this.schema = schema;
+        parameters.setSchema(schema);
     }
 
+    /**
+     * @since 3.2
+     */
     public void setDefaultPackage(String defaultPackage) {
-        this.defaultPackage = defaultPackage;
+        parameters.setDefaultPackage(defaultPackage);
     }
 
     public void setTablePattern(String tablePattern) {
-        this.tablePattern = tablePattern;
+        parameters.setTablePattern(tablePattern);
     }
 
     public void setImportProcedures(boolean importProcedures) {
-        this.importProcedures = importProcedures;
+        parameters.setImportProcedures(importProcedures);
     }
 
     public void setProcedurePattern(String procedurePattern) {
-        this.procedurePattern = procedurePattern;
+        parameters.setProcedurePattern(procedurePattern);
     }
 
     public void setMeaningfulPk(boolean meaningfulPk) {
-        this.meaningfulPk = meaningfulPk;
+        parameters.setMeaningfulPk(meaningfulPk);
     }
 
     public void setNamingStrategy(String namingStrategy) {
-        this.namingStrategy = namingStrategy;
+        parameters.setNamingStrategy(namingStrategy);
     }
 
-    private String getSchema() {
-        if (schemaName != null) {
-            log("'schemaName' property is deprecated. Use 'schema' instead",
-                    Project.MSG_WARN);
-        }
+    public void setAdapter(String adapter) {
+        parameters.setAdapter(adapter);
+    }
 
-        return schema != null ? schema : schemaName;
+    public void setDriver(String driver) {
+        parameters.setDriver(driver);
+    }
+
+    public void setMap(File map) {
+        parameters.setMap(map);
+    }
+
+    public void setPassword(String password) {
+        parameters.setPassword(password);
+    }
+
+    public void setUrl(String url) {
+        parameters.setUrl(url);
+    }
+
+    public void setUserName(String username) {
+        parameters.setUsername(username);
     }
 }

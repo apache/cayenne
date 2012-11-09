@@ -20,32 +20,18 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Driver;
 
-import javax.sql.DataSource;
-
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DbAdapterFactory;
-import org.apache.cayenne.conn.DriverDataSource;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.ImportDbLoaderDelegate;
+import org.apache.cayenne.dbimport.DbImportAction;
+import org.apache.cayenne.dbimport.DbImportModule;
+import org.apache.cayenne.dbimport.DbImportParameters;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.tools.configuration.ToolsModule;
-import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
+import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.xml.sax.InputSource;
 
 /**
  * Maven mojo to reverse engineer datamap from DB.
@@ -201,20 +187,29 @@ public class DbImporterMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        getLog().debug(
-                String.format(
-                        "connection settings - [driver: %s, url: %s, username: %s, password: %s]",
-                        driver, url, username, password));
+        Log logger = new MavenLogger(this);
 
-        getLog().info(
-                String.format(
-                        "importer options - [map: %s, overwrite: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
-                        map, overwrite, getSchema(), tablePattern,
-                        importProcedures, procedurePattern, meaningfulPk,
-                        namingStrategy));
+        DbImportParameters parameters = new DbImportParameters();
+        parameters.setAdapter(adapter);
+        parameters.setCatalog(catalog);
+        parameters.setDefaultPackage(defaultPackage);
+        parameters.setDriver(driver);
+        parameters.setImportProcedures(importProcedures);
+        parameters.setMap(map);
+        parameters.setMeaningfulPk(meaningfulPk);
+        parameters.setNamingStrategy(namingStrategy);
+        parameters.setOverwrite(overwrite);
+        parameters.setPassword(password);
+        parameters.setProcedurePattern(procedurePattern);
+        parameters.setSchema(getSchema());
+        parameters.setTablePattern(tablePattern);
+        parameters.setUrl(url);
+        parameters.setUsername(username);
+
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
         try {
-            doExecute();
+            injector.getInstance(DbImportAction.class).execute(parameters);
         } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
 
@@ -229,109 +224,9 @@ public class DbImporterMojo extends AbstractMojo {
         }
     }
 
-    private void doExecute() throws Exception {
-
-        String schema = getSchema();
-
-        Injector injector = DIBootstrap.createInjector(new ToolsModule());
-
-        // load driver taking custom CLASSPATH into account...
-        DriverDataSource dataSource = new DriverDataSource((Driver) Class
-                .forName(driver).newInstance(), url, username, password);
-
-        DbAdapter adapter = getAdapter(injector, dataSource);
-
-        // Load the data map and run the db importer.
-        ImportDbLoaderDelegate loaderDelegate = new ImportDbLoaderDelegate();
-        DbLoader loader = new DbLoader(dataSource.getConnection(), adapter,
-                loaderDelegate);
-        loader.setCreatingMeaningfulPK(meaningfulPk);
-
-        if (namingStrategy != null) {
-            NamingStrategy namingStrategyInst = (NamingStrategy) Class.forName(
-                    namingStrategy).newInstance();
-            loader.setNamingStrategy(namingStrategyInst);
-        }
-
-        DataMap dataMap = getDataMap();
-
-        String[] types = loader.getDefaultTableTypes();
-        loader.load(dataMap, catalog, schema, tablePattern, types);
-
-        for (ObjEntity addedObjEntity : loaderDelegate.getAddedObjEntities()) {
-            DeleteRuleUpdater.updateObjEntity(addedObjEntity);
-        }
-
-        if (importProcedures) {
-            loader.loadProcedures(dataMap, catalog, schema, procedurePattern);
-        }
-
-        // Write the new DataMap out to disk.
-        map.delete();
-
-        PrintWriter pw = new PrintWriter(map);
-        XMLEncoder encoder = new XMLEncoder(pw, "\t");
-
-        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        dataMap.encodeAsXML(encoder);
-
-        pw.close();
-    }
-
-    DataMap getDataMap() throws IOException {
-
-        DataMap dataMap;
-
-        if (map.exists()) {
-            InputSource in = new InputSource(map.getCanonicalPath());
-            dataMap = new MapLoader().loadDataMap(in);
-
-            if (overwrite) {
-                dataMap.clearObjEntities();
-                dataMap.clearEmbeddables();
-                dataMap.clearProcedures();
-                dataMap.clearDbEntities();
-                dataMap.clearQueries();
-                dataMap.clearResultSets();
-            }
-        } else {
-            dataMap = new DataMap();
-        }
-
-        // update map defaults
-
-        // do not override default package of existing DataMap unless it is
-        // explicitly requested by the plugin caller
-        if (defaultPackage != null && defaultPackage.length() > 0) {
-            dataMap.setDefaultPackage(defaultPackage);
-        }
-
-        // do not override default schema of existing DataMap unless it is
-        // explicitly requested by the plugin caller, and the provided schema is
-        // not a pattern
-        if (schema != null && schema.length() > 0 && schema.indexOf('%') >= 0) {
-            dataMap.setDefaultSchema(schema);
-        }
-
-        return dataMap;
-    }
-
-    DbAdapter getAdapter(Injector injector, DataSource dataSource)
-            throws Exception {
-
-        DbAdapterFactory adapterFactory = injector
-                .getInstance(DbAdapterFactory.class);
-
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(adapter);
-
-        return adapterFactory.createAdapter(nodeDescriptor, dataSource);
-    }
-
     private String getSchema() {
         if (schemaName != null) {
-            getLog().warn(
-                    "'schemaName' property is deprecated. Use 'schema' instead");
+            getLog().warn("'schemaName' property is deprecated. Use 'schema' instead");
         }
 
         return schema != null ? schema : schemaName;

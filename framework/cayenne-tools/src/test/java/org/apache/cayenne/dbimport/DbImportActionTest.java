@@ -16,40 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.tools;
+package org.apache.cayenne.dbimport;
 
 import static org.mockito.Mockito.mock;
-
-import java.lang.reflect.Field;
 
 import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.commons.logging.Log;
 
-public class DbImporterMojoTest extends TestCase {
+public class DbImportActionTest extends TestCase {
 
     public void testGetAdapter() throws Exception {
 
-        DbImporterMojo mojo = new DbImporterMojo();
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(mock(Log.class)));
+
+        DbImportAction action = new DbImportAction(injector.getInstance(Log.class),
+                injector.getInstance(DbAdapterFactory.class));
 
         DataSource ds = mock(DataSource.class);
-        Injector injector = DIBootstrap.createInjector(new ToolsModule());
-        DbAdapter adapter = mojo.getAdapter(injector, ds);
+
+        DbAdapter adapter = action.getAdapter(null, ds);
         assertNotNull(adapter);
         assertTrue(adapter instanceof AutoAdapter);
 
-        Field adapterField = mojo.getClass().getDeclaredField("adapter");
-        adapterField.setAccessible(true);
-        adapterField.set(mojo, MySQLAdapter.class.getName());
-        
-        DbAdapter adapter2 = mojo.getAdapter(injector, ds);
+        DbAdapter adapter2 = action.getAdapter(MySQLAdapter.class.getName(), ds);
         assertNotNull(adapter2);
         assertTrue(adapter2 instanceof MySQLAdapter);
     }
