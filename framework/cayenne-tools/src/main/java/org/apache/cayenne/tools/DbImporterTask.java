@@ -19,28 +19,36 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.conn.DriverDataSource;
-import org.apache.cayenne.access.DbLoader;
+import java.io.PrintWriter;
+import java.sql.Driver;
+
+import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.AbstractDbLoaderDelegate;
-import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.naming.NamingStrategy;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.CayenneException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-
-import java.io.PrintWriter;
-import java.sql.Driver;
 
 public class DbImporterTask extends CayenneTask {
 
     // DbImporter options.
     private boolean overwriteExisting = true;
+
+    /**
+     * @deprecated since 3.2 in favor of "schema"
+     */
     private String schemaName;
+
+    private String schema;
+
+    private String catalog;
     private String tablePattern;
     private boolean importProcedures = false;
     private String procedurePattern;
@@ -50,72 +58,62 @@ public class DbImporterTask extends CayenneTask {
     @Override
     public void execute() {
 
-        log(
-                String.format(
-                        "connection settings - [driver: %s, url: %s, username: %s, password: %s]",
-                        driver,
-                        url,
-                        userName,
-                        password),
-                Project.MSG_VERBOSE);
+        log(String.format(
+                "connection settings - [driver: %s, url: %s, username: %s, password: %s]",
+                driver, url, userName, password), Project.MSG_VERBOSE);
 
-        log(
-                String.format(
-                        "importer options - [map: %s, overwriteExisting: %s, schemaName: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
-                        map,
-                        overwriteExisting,
-                        schemaName,
-                        tablePattern,
-                        importProcedures,
-                        procedurePattern,
-                        meaningfulPk,
-                        namingStrategy),
-                Project.MSG_VERBOSE);
+        log(String.format(
+                "importer options - [map: %s, overwriteExisting: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
+                map, overwriteExisting, getSchema(), tablePattern,
+                importProcedures, procedurePattern, meaningfulPk,
+                namingStrategy), Project.MSG_VERBOSE);
 
         validateAttributes();
 
         try {
 
             // load driver taking custom CLASSPATH into account...
-            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(
-                    driver).newInstance(), url, userName, password);
+            DriverDataSource dataSource = new DriverDataSource((Driver) Class
+                    .forName(driver).newInstance(), url, userName, password);
 
             // Load the data map and run the db importer.
             final LoaderDelegate loaderDelegate = new LoaderDelegate();
-            final DbLoader loader = new DbLoader(
-                    dataSource.getConnection(),
-                    adapter,
-                    loaderDelegate);
+            final DbLoader loader = new DbLoader(dataSource.getConnection(),
+                    adapter, loaderDelegate);
             loader.setCreatingMeaningfulPK(meaningfulPk);
 
             if (namingStrategy != null) {
-                final NamingStrategy namingStrategyInst = (NamingStrategy) Class.forName(
-                        namingStrategy).newInstance();
+                final NamingStrategy namingStrategyInst = (NamingStrategy) Class
+                        .forName(namingStrategy).newInstance();
                 loader.setNamingStrategy(namingStrategyInst);
             }
 
-            final DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
-            loader.loadDataMapFromDB(schemaName, tablePattern, dataMap);
+            String schema = getSchema();
 
-            for (ObjEntity addedObjEntity : loaderDelegate.getAddedObjEntities()) {
+            DataMap dataMap = map.exists() ? loadDataMap() : new DataMap();
+
+            String[] types = loader.getDefaultTableTypes();
+            loader.load(dataMap, catalog, schema, tablePattern, types);
+
+            for (ObjEntity addedObjEntity : loaderDelegate
+                    .getAddedObjEntities()) {
                 DeleteRuleUpdater.updateObjEntity(addedObjEntity);
             }
 
             if (importProcedures) {
-                loader.loadProceduresFromDB(schemaName, procedurePattern, dataMap);
+                loader.loadProcedures(dataMap, catalog, schema, procedurePattern);
             }
 
             // Write the new DataMap out to disk.
             map.delete();
             PrintWriter pw = new PrintWriter(map);
-            
+
             XMLEncoder encoder = new XMLEncoder(pw, "\t");
             encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
             dataMap.encodeAsXML(encoder);
 
             pw.close();
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
             final Throwable th = Util.unwindException(ex);
 
             String message = "Error importing database schema";
@@ -130,8 +128,8 @@ public class DbImporterTask extends CayenneTask {
     }
 
     /**
-     * Validates atttributes that are not related to internal DefaultClassGenerator.
-     * Throws BuildException if attributes are invalid.
+     * Validates attributes that are not related to internal
+     * DefaultClassGenerator. Throws BuildException if attributes are invalid.
      */
     protected void validateAttributes() throws BuildException {
         StringBuilder error = new StringBuilder("");
@@ -157,8 +155,18 @@ public class DbImporterTask extends CayenneTask {
         this.overwriteExisting = overwriteExisting;
     }
 
+    /**
+     * @deprecated since 3.2 use {@link #setSchema(String)}
+     */
     public void setSchemaName(String schemaName) {
         this.schemaName = schemaName;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public void setSchema(String schema) {
+        this.schema = schema;
     }
 
     public void setTablePattern(String tablePattern) {
@@ -181,10 +189,20 @@ public class DbImporterTask extends CayenneTask {
         this.namingStrategy = namingStrategy;
     }
 
+    private String getSchema() {
+        if (schemaName != null) {
+            log("'schemaName' property is deprecated. Use 'schema' instead",
+                    Project.MSG_WARN);
+        }
+
+        return schema != null ? schema : schemaName;
+    }
+
     final class LoaderDelegate extends AbstractDbLoaderDelegate {
 
         @Override
-        public boolean overwriteDbEntity(final DbEntity ent) throws CayenneException {
+        public boolean overwriteDbEntity(final DbEntity ent)
+                throws CayenneException {
             return overwriteExisting;
         }
 

@@ -200,7 +200,7 @@ public class DbImporterMojo extends AbstractMojo {
         getLog().info(
                 String.format(
                         "importer options - [map: %s, overwriteExisting: %s, schema: %s, tablePattern: %s, importProcedures: %s, procedurePattern: %s, meaningfulPk: %s, namingStrategy: %s]",
-                        map, overwriteExisting, schema, tablePattern,
+                        map, overwriteExisting, getSchema(), tablePattern,
                         importProcedures, procedurePattern, meaningfulPk,
                         namingStrategy));
 
