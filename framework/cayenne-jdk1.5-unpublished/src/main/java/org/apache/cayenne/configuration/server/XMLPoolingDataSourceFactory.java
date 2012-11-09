@@ -36,6 +36,8 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @since 3.1
  */
+// TODO: this factory does not read XML anymore, should we rename it to
+// something else?
 public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 
     private static final Log logger = LogFactory.getLog(XMLPoolingDataSourceFactory.class);
