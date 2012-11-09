@@ -19,29 +19,27 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.util.Util;
+import java.io.File;
+
 import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.MapLoader;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Reference;
 import org.xml.sax.InputSource;
 
-import java.io.File;
-
 /**
- * Base task for all Cayenne ant tasks, providing support for common configuration items.
- *
+ * Base task for all Cayenne ant tasks, providing support for common
+ * configuration items.
+ * 
  * @since 1.2
  */
-public abstract class CayenneTask extends Task
-{
+public abstract class CayenneTask extends Task {
     protected Path classpath;
 
     protected DbAdapter adapter;
@@ -53,8 +51,9 @@ public abstract class CayenneTask extends Task
 
     /**
      * Sets the classpath used by the task.
-     *
-     * @param path The classpath to set.
+     * 
+     * @param path
+     *            The classpath to set.
      */
     public void setClasspath(Path path) {
         createClasspath().append(path);
@@ -62,16 +61,18 @@ public abstract class CayenneTask extends Task
 
     /**
      * Sets the classpath reference used by the task.
-     *
-     * @param reference The classpath reference to set.
+     * 
+     * @param reference
+     *            The classpath reference to set.
      */
     public void setClasspathRef(Reference reference) {
         createClasspath().setRefid(reference);
     }
 
     /**
-     * Convenience method for creating a classpath instance to be used for the task.
-     *
+     * Convenience method for creating a classpath instance to be used for the
+     * task.
+     * 
      * @return The new classpath.
      */
     private Path createClasspath() {
@@ -84,8 +85,9 @@ public abstract class CayenneTask extends Task
 
     /**
      * Sets the map.
-     *
-     * @param map The map to set
+     * 
+     * @param map
+     *            The map to set
      */
     public void setMap(File map) {
         this.map = map;
@@ -93,22 +95,25 @@ public abstract class CayenneTask extends Task
 
     /**
      * Sets the db adapter.
-     *
-     * @param adapter The db adapter to set.
+     * 
+     * @param adapter
+     *            The db adapter to set.
      */
     public void setAdapter(String adapter) {
         if (adapter != null) {
             Injector injector = DIBootstrap.createInjector(new ToolModule());
-            AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
-            
+            AdhocObjectFactory objectFactory = injector
+                    .getInstance(AdhocObjectFactory.class);
+
             this.adapter = objectFactory.newInstance(DbAdapter.class, adapter);
         }
     }
 
     /**
      * Sets the JDBC driver used to connect to the database server.
-     *
-     * @param driver The driver to set.
+     * 
+     * @param driver
+     *            The driver to set.
      */
     public void setDriver(String driver) {
         this.driver = driver;
@@ -116,8 +121,9 @@ public abstract class CayenneTask extends Task
 
     /**
      * Sets the JDBC URL used to connect to the database server.
-     *
-     * @param url The url to set.
+     * 
+     * @param url
+     *            The url to set.
      */
     public void setUrl(String url) {
         this.url = url;
@@ -125,8 +131,9 @@ public abstract class CayenneTask extends Task
 
     /**
      * Sets the username used to connect to the database server.
-     *
-     * @param username The username to set.
+     * 
+     * @param username
+     *            The username to set.
      */
     public void setUserName(String username) {
         this.userName = username;
@@ -134,14 +141,15 @@ public abstract class CayenneTask extends Task
 
     /**
      * Sets the password used to connect to the database server.
-     *
-     * @param password The password to set.
+     * 
+     * @param password
+     *            The password to set.
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
-        /** Loads and returns DataMap based on <code>map</code> attribute. */
+    /** Loads and returns DataMap based on <code>map</code> attribute. */
     protected DataMap loadDataMap() throws Exception {
         InputSource in = new InputSource(map.getCanonicalPath());
         return new MapLoader().loadDataMap(in);
