@@ -16,10 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.tools.configuration;
 
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
@@ -43,11 +46,12 @@ import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
- * A DI module containing basic Cayenne configuration.
+ * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven
+ * plugins.
  * 
- * @since 3.1
+ * @since 3.2
  */
-public class ToolModule implements Module {
+public class ToolsModule implements Module {
 
     public void configure(Binder binder) {
 

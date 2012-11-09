@@ -23,7 +23,6 @@ import java.sql.Driver;
 import java.util.Collections;
 
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.conn.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
@@ -31,6 +30,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -55,7 +55,7 @@ public class DbGeneratorTask extends CayenneTask {
     @Override
     public void execute() {
 
-        Injector injector = DIBootstrap.createInjector(new ToolModule());
+        Injector injector = DIBootstrap.createInjector(new ToolsModule());
 
         log(String.format(
                 "connection settings - [driver: %s, url: %s, username: %s]",

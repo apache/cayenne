@@ -25,12 +25,12 @@ import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.configuration.ToolModule;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.tools.configuration.ToolsModule;
 
 public class DbGeneratorTaskTest extends TestCase {
 
@@ -48,7 +48,7 @@ public class DbGeneratorTaskTest extends TestCase {
 
     public void testSetAdapter() throws Exception {
         DataSource ds = mock(DataSource.class);
-        Injector injector = DIBootstrap.createInjector(new ToolModule());
+        Injector injector = DIBootstrap.createInjector(new ToolsModule());
 
         DbGeneratorTask task = new DbGeneratorTask();
         
