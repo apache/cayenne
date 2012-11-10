@@ -20,7 +20,6 @@
 package org.apache.cayenne.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
@@ -129,9 +128,8 @@ public abstract class RelationshipFault {
             PropertyDescriptor property = resolver.getClassDescriptor(
                     reverse.getSourceEntity().getName()).getProperty(reverse.getName());
 
-            Iterator it = resolved.iterator();
-            while (it.hasNext()) {
-                property.writePropertyDirectly(it.next(), null, relationshipOwner);
+            for(Object o : resolved) {
+                property.writePropertyDirectly(o, null, relationshipOwner);
             }
         }
     }
