@@ -571,8 +571,7 @@
 			<title>cdataport</title>
 			<para>
 				<note>
-					<para>'cdataport' is deprecated in 3.2 and will bre removed in the future
-						versions.</para>
+					<para>'cdataport' is deprecated in 3.2 and will be removed in the future versions.</para>
 				</note>
 			</para>
 		</section>
