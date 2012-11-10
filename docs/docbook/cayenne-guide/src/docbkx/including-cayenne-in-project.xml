@@ -481,8 +481,8 @@
 					</tbody>
 				</table>
 			</para>
-			<para>Example - loading a DB schema from a local HSQLDB database (essentially a reverse
-				operation compared to the cdbgen example above)
+			<para>Example - loading a DB schema from a local HSQLDB database (essentially a reverse operation
+				compared to the cdbgen example above)
 				:<programlisting>&lt;plugin>
 	&lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
 	&lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
@@ -492,9 +492,9 @@
 		&lt;execution>
 			&lt;configuration>
 				&lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
-				&lt;url>jdbc:hsqldb:hsql://localhost/testdb&lt;/url>
+				&lt;url>jdbc:mysql://127.0.0.1/mydb&lt;/url>
 				&lt;adapter>org.apache.cayenne.dba.hsqldb.HSQLDBAdapter&lt;/adapter>
-				&lt;driver>org.hsqldb.jdbcDriver&lt;/driver>                        
+				&lt;driver>com.mysql.jdbc.Driver&lt;/driver>                        
 				&lt;username>sa&lt;/username>
 			&lt;/configuration>
 			&lt;goals>
@@ -515,6 +515,13 @@
 		</section>
 		<section xml:id="ant-cdbimport">
 			<title>cdbimport</title>
+			<para>This is an Ant counterpart of "cdbimport" goal of maven-cayenne-plugin described
+				above. It has exactly the same properties. Here is a usage
+				example:<programlisting> &lt;cdbimport map="${context.dir}/WEB-INF/my.map.xml"
+    driver="com.mysql.jdbc.Driver" 
+    url="jdbc:mysql://127.0.0.1/mydb" 
+    username="sa"/> </programlisting>
+			</para>
 		</section>
 		<section xml:id="ant-cdataport">
 			<title>cdataport</title>
