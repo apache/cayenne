@@ -262,10 +262,9 @@ public class PersistentObjectSet extends RelationshipFault
 
             // add only those that are not already on the list
             // do not include transient objects...
-            if (addedToUnresolved != null && !addedToUnresolved.isEmpty()) {
-                Iterator it = addedToUnresolved.iterator();
-                while (it.hasNext()) {
-                    Object next = it.next();
+            if (addedToUnresolved != null) {
+
+                for (Object next : addedToUnresolved) {
 
                     if (next instanceof Persistent) {
                         Persistent dataObject = (Persistent) next;
@@ -318,17 +317,15 @@ public class PersistentObjectSet extends RelationshipFault
         return true;
     }
 
-    void postprocessAdd(Collection collection) {
-        Iterator it = collection.iterator();
-        while (it.hasNext()) {
-            postprocessAdd(it.next());
+    void postprocessAdd(Collection<?> collection) {
+        for (Object next : collection) {
+            postprocessAdd(next);
         }
     }
 
-    void postprocessRemove(Collection collection) {
-        Iterator it = collection.iterator();
-        while (it.hasNext()) {
-            postprocessRemove(it.next());
+    void postprocessRemove(Collection<?> collection) {
+        for (Object next : collection) {
+            postprocessRemove(next);
         }
     }
 

@@ -42,7 +42,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
     protected List objectList;
 
     // track additions/removals in unresolved...
-    protected LinkedList addedToUnresolved;
+    protected LinkedList<Object> addedToUnresolved;
     protected LinkedList<Object> removedFromUnresolved;
 
     // exists for the benefit of custom serialization schemes such as the one in Hessian.
@@ -390,17 +390,15 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return true;
     }
 
-    protected void postprocessAdd(Collection collection) {
-        Iterator it = collection.iterator();
-        while (it.hasNext()) {
-            postprocessAdd(it.next());
+    protected void postprocessAdd(Collection<?> collection) {
+        for (Object next : collection) {
+            postprocessAdd(next);
         }
     }
 
-    protected void postprocessRemove(Collection collection) {
-        Iterator it = collection.iterator();
-        while (it.hasNext()) {
-            postprocessRemove(it.next());
+    protected void postprocessRemove(Collection<?> collection) {
+        for (Object next : collection) {
+            postprocessRemove(next);
         }
     }
 
