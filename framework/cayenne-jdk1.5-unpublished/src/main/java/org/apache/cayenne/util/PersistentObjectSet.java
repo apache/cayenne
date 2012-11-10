@@ -235,8 +235,6 @@ public class PersistentObjectSet extends RelationshipFault
                 // if another thread just resolved the list
                 if (isFault()) {
                     List localList = resolveFromDB();
-
-                    mergeLocalChanges(localList);
                     this.objectSet = new HashSet(localList);
                 }
             }
@@ -249,8 +247,9 @@ public class PersistentObjectSet extends RelationshipFault
         addedToUnresolved = null;
         removedFromUnresolved = null;
     }
-
-    void mergeLocalChanges(List fetchedList) {
+    
+    @Override
+    protected void mergeLocalChanges(List resolved) {
 
         // only merge if an object is in an uncommitted state
         // any other state means that our local tracking
@@ -258,7 +257,7 @@ public class PersistentObjectSet extends RelationshipFault
         if (isUncommittedParent()) {
 
             if (removedFromUnresolved != null) {
-                fetchedList.removeAll(removedFromUnresolved);
+                resolved.removeAll(removedFromUnresolved);
             }
 
             // add only those that are not already on the list
@@ -275,8 +274,8 @@ public class PersistentObjectSet extends RelationshipFault
                         }
                     }
 
-                    if (!fetchedList.contains(next)) {
-                        fetchedList.add(next);
+                    if (!resolved.contains(next)) {
+                        resolved.add(next);
                     }
                 }
             }

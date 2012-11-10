@@ -75,6 +75,8 @@ public abstract class RelationshipFault {
         int state = relationshipOwner.getPersistenceState();
         return state == PersistenceState.MODIFIED || state == PersistenceState.DELETED;
     }
+    
+    protected abstract void mergeLocalChanges(List resolved);
 
     /**
      * Executes a query that returns related objects. Subclasses would invoke this method
@@ -87,24 +89,26 @@ public abstract class RelationshipFault {
         }
 
         List resolved = relationshipOwner.getObjectContext().performQuery(
-                new RelationshipQuery(
-                        relationshipOwner.getObjectId(),
-                        relationshipName,
-                        false));
-        
+                new RelationshipQuery(relationshipOwner.getObjectId(), relationshipName, false));
+
         /**
-         * Duplicating the list (see CAY-1194). Doing that only for RelationshipFault
-         * query results, so only for nested DataContexts
+         * Duplicating the list (see CAY-1194). Doing that only for
+         * RelationshipFault query results, so only for nested DataContexts
          */
         if (resolved instanceof RelationshipFault) {
             resolved = new ArrayList(resolved);
         }
+        
+        // merge local before updating reverse to ensure we update reverse rels
+        // of the right objects (see CAY-1757)
+        mergeLocalChanges(resolved);
 
         if (resolved.isEmpty()) {
             return resolved;
         }
 
         updateReverse(resolved);
+
         return resolved;
     }
     

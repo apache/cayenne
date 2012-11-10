@@ -67,6 +67,11 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
     public void invalidate() {
         setObjectMap(null);
     }
+    
+    @Override
+    protected void mergeLocalChanges(List resolved) {
+        // TODO implement
+    }
 
     public boolean isFault() {
 

@@ -298,10 +298,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
                 // now that we obtained the lock, check
                 // if another thread just resolved the list
                 if (isFault()) {
-                    List localList = resolveFromDB();
-
-                    mergeLocalChanges(localList);
-                    this.objectList = localList;
+                    this.objectList = resolveFromDB();
                 }
             }
         }

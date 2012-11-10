@@ -162,4 +162,9 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
 
         fault = false;
     }
+    
+    @Override
+    protected void mergeLocalChanges(List resolved) {
+        // noop
+    }
 }
