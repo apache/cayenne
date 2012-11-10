@@ -435,7 +435,6 @@
 								be a pattern in the format supported by
 								DatabaseMetadata.getTables(). I.e. it can contain '%' wildcard.</td>
 						</tr>
-						<tr/>
 						<tr>
 							<td><code>defaultPackage</code></td>
 							<td>String</td>
