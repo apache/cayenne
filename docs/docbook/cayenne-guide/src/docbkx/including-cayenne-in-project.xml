@@ -363,11 +363,11 @@
 		</section>
 		<section xml:id="mvn-cdbimport">
 			<title>cdbimport</title>
-			<para><code>cdbimport</code> is a <code>maven-cayenne-plugin</code> goal that generates
-				a DataMap based on an existing database schema. By default, it is bound to the
+			<para><code>cdbimport</code> is a <code>maven-cayenne-plugin</code> goal that generates a DataMap
+				based on an existing database schema. By default, it is bound to the
 				generate-sources phase. This allows you to generate your DataMap prior to building
-				your project, which may be necessary if you are also using the cgen task.
-				<table frame="void">
+				your project, possibly followed by "cgen" execution to generate the classes.<table
+					frame="void">
 					<caption>cdbimport required parameters</caption>
 					<col width="14%"/>
 					<col width="7%"/>
@@ -384,10 +384,15 @@
 							<td><code>map</code>
 							</td>
 							<td>File</td>
-							<td>DataMap XML file which is the destination of the schema import.
-								Maybe an existing file. If this file does not exist, it is created
-								when cdbimport is executed. E.g.
-									<code>${project.basedir}/src/main/resources/my.map.xml</code></td>
+							<td>DataMap XML file which is the destination of the schema import. Can
+								be an existing file. If this file does not exist, it is created when
+								cdbimport is executed. E.g.
+									<code>${project.basedir}/src/main/resources/my.map.xml</code>.
+								If "overwrite" is true (the default), an existing DataMap will be
+								used as a template for the new imported DataMap, i.e. all its
+								entities will be cleared and recreated, but its common settings,
+								such as default Java package, will be preserved (unless changed
+								explicitly in the plugin configuration).</td>
 						</tr>
 						<tr>
 							<td><code>driver</code></td>
@@ -397,7 +402,7 @@
 						<tr>
 							<td><code>url</code></td>
 							<td>String</td>
-							<td>JDBC connection URL of a target database.</td>
+							<td>JDBC URL of a target database.</td>
 						</tr>
 					</tbody>
 				</table></para>
@@ -406,7 +411,7 @@
 					<caption>cdbimport optional parameters</caption>
 					<col width="24%"/>
 					<col width="8%"/>
-					<col width="68%"/>
+					<col width="67%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -419,10 +424,46 @@
 							<td><code>adapter</code>
 							</td>
 							<td>String</td>
-							<td>Java class name implementing org.apache.cayenne.dba.DbAdapter. While
-								this attribute is optional (a generic JdbcAdapter is used if not
-								set), it is highly recommended to specify correct target
-								adapter.</td>
+							<td>A Java class name implementing org.apache.cayenne.dba.DbAdapter. This attribute is
+								optional. If not specified, AutoAdapter is used, which will attempt
+								to guess the DB type.</td>
+						</tr>
+						<tr>
+							<td><code>catalog</code></td>
+							<td>String</td>
+							<td>A database catalog to import tables/stored procedures from. This can
+								be a pattern in the format supported by
+								DatabaseMetadata.getTables(). I.e. it can contain '%' wildcard.</td>
+						</tr>
+						<tr/>
+						<tr>
+							<td><code>defaultPackage</code></td>
+							<td>String</td>
+							<td>A Java package that will be set as the imported DataMap default and
+								a package of all the persistent Java classes. This is a required
+								attribute if the "map" itself does not already contain a default
+								package, as otherwise all the persistent classes will be mapped with
+								no package, and will not compile.</td>
+						</tr>
+						<tr>
+							<td><code>excludeTables</code></td>
+							<td>boolean</td>
+							<td>A comma separated list of Perl5 patterns that defines which table
+								names should be skipped during the import. This (together with
+								'includeTables') is the most flexible way to filter the table list.
+								Another way to filter it is via "tablePattern" that is limited to
+								filtering with a single wildcard pattern as defined in
+								DatabaseMetadata.getTables().</td>
+						</tr>
+						<tr>
+							<td><code>includeTables</code></td>
+							<td>boolean</td>
+							<td>A comma separated list of Perl5 patterns that defines which table
+								names should be included during the import. Additionally matching
+								tables will be compared with "excludeTables" pattern. If they match
+								include and exclude, they will be skipped. Another way to filter it
+								is via "tablePattern" that is limited to filtering with a single
+								wildcard pattern as defined in DatabaseMetadata.getTables().</td>
 						</tr>
 						<tr>
 							<td><code>importProcedures</code></td>
@@ -445,11 +486,10 @@
 							</td>
 						</tr>
 						<tr>
-							<td><code>overwriteExisting</code></td>
+							<td><code>overwrite</code></td>
 							<td>boolean</td>
-							<td>Indicates whether existing DB and object entities should be
-								overwritten. This is an all-or-nothing setting. If you need finer
-								granularity, use the CayenneModeler. Default is "true". </td>
+							<td>If true (default), deletes all existing mappings before starting scheman import. If
+								false, already existing entities are preserved.</td>
 						</tr>
 						<tr>
 							<td><code>password</code></td>
@@ -464,9 +504,11 @@
 								importProcedures is true. </td>
 						</tr>
 						<tr>
-							<td><code>schemaName</code></td>
+							<td><code>schema</code></td>
 							<td>String</td>
-							<td>Database schema to import tables/stored procedures from. </td>
+							<td>A database schema to import tables/stored procedures from. This can
+								be a pattern in the format supported by
+								DatabaseMetadata.getTables(). I.e. it can contain '%' wildcard.</td>
 						</tr>
 						<tr>
 							<td><code>tablePattern</code></td>
@@ -482,8 +524,8 @@
 					</tbody>
 				</table>
 			</para>
-			<para>Example - loading a DB schema from a local HSQLDB database (essentially a reverse
-				operation compared to the cdbgen example above)
+			<para>Example - loading a DB schema from a local HSQLDB database (essentially a reverse operation
+				compared to the cdbgen example above)
 				:<programlisting>&lt;plugin>
 	&lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
 	&lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
@@ -493,10 +535,10 @@
 		&lt;execution>
 			&lt;configuration>
 				&lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
-				&lt;url>jdbc:hsqldb:hsql://localhost/testdb&lt;/url>
-				&lt;adapter>org.apache.cayenne.dba.hsqldb.HSQLDBAdapter&lt;/adapter>
-				&lt;driver>org.hsqldb.jdbcDriver&lt;/driver>                        
+				&lt;url>jdbc:mysql://127.0.0.1/mydb&lt;/url>
+				&lt;driver>com.mysql.jdbc.Driver&lt;/driver>                        
 				&lt;username>sa&lt;/username>
+				&lt;defaultPackage>com.example.cayenne&lt;/defaultPackage>
 			&lt;/configuration>
 			&lt;goals>
 				&lt;goal>cdbimport&lt;/goal>
@@ -516,6 +558,14 @@
 		</section>
 		<section xml:id="ant-cdbimport">
 			<title>cdbimport</title>
+			<para>This is an Ant counterpart of "cdbimport" goal of maven-cayenne-plugin described
+				above. It has exactly the same properties. Here is a usage
+				example:<programlisting> &lt;cdbimport map="${context.dir}/WEB-INF/my.map.xml"
+    driver="com.mysql.jdbc.Driver" 
+    url="jdbc:mysql://127.0.0.1/mydb" 
+    username="sa"
+	defaultPackage="com.example.cayenne"/> </programlisting>
+			</para>
 		</section>
 		<section xml:id="ant-cdataport">
 			<title>cdataport</title>
