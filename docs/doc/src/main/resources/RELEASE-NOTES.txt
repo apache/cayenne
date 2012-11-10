@@ -23,6 +23,7 @@ CAY-1737 ObjectContexts listening to DataChannel events must be non-blocking
 CAY-1748 IdCoder/EntityIdCoder improvements to work with ObjectIds, including temp ones
 CAY-1753 remove light-superclass.vm class template
 CAY-1754 Modeler suggested URL for SQLServer should start with 'jdbc:sqlserver:' instead of 'jdbc:microsoft:sqlserver:'
+CAY-1758 cdbimport improvements
 CAY-1759 cdbimport improvements: add 'catalog', rename 'schemaName' to 'schema'
 CAY-1760 cdbimport improvements: Default adapter (if none specified) must be AutoAdapter, not JdbcAdapter 
 CAY-1761 cdbimport improvements: DbLoader must reverse engineer PK auto-increment state. 
