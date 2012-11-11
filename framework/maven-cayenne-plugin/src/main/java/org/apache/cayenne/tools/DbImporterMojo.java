@@ -208,6 +208,13 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private String password;
 
+    /**
+     * If true, would use primitives instead of numeric and boolean classes.
+     * 
+     * @parameter expression="${cdbimport.usePrimitives}" default-value="true"
+     */
+    private boolean usePrimitives;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Log logger = new MavenLogger(this);
@@ -250,6 +257,7 @@ public class DbImporterMojo extends AbstractMojo {
         parameters.setUsername(username);
         parameters.setIncludeTables(includeTables);
         parameters.setExcludeTables(excludeTables);
+        parameters.setUsePrimitives(usePrimitives);
         return parameters;
     }
 

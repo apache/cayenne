@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.map.naming.SmartNamingStrategy;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportModule;
@@ -51,7 +52,8 @@ public class DbImporterTask extends Task {
         parameters = new DbImportParameters();
         parameters.setOverwrite(true);
         parameters.setImportProcedures(false);
-        parameters.setNamingStrategy("org.apache.cayenne.map.naming.SmartNamingStrategy");
+        parameters.setUsePrimitives(true);
+        parameters.setNamingStrategy(SmartNamingStrategy.class.getName());
     }
 
     @Override
@@ -199,6 +201,13 @@ public class DbImporterTask extends Task {
      */
     public void setExcludeTables(String excludeTables) {
         parameters.setExcludeTables(excludeTables);
+    }
+
+    /**
+     * @since 3.2
+     */
+    public void setUsePrimitives(boolean usePrimitives) {
+        parameters.setUsePrimitives(usePrimitives);
     }
 
     private void initSchema() {
