@@ -212,6 +212,26 @@ public class DbImporterMojo extends AbstractMojo {
 
         Log logger = new MavenLogger(this);
 
+        DbImportParameters parameters = toParameters();
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+
+        try {
+            injector.getInstance(DbImportAction.class).execute(parameters);
+        } catch (Exception ex) {
+            Throwable th = Util.unwindException(ex);
+
+            String message = "Error importing database schema";
+
+            if (th.getLocalizedMessage() != null) {
+                message += ": " + th.getLocalizedMessage();
+            }
+
+            getLog().error(message);
+            throw new MojoExecutionException(message, th);
+        }
+    }
+
+    DbImportParameters toParameters() {
         DbImportParameters parameters = new DbImportParameters();
         parameters.setAdapter(adapter);
         parameters.setCatalog(catalog);
@@ -230,23 +250,7 @@ public class DbImporterMojo extends AbstractMojo {
         parameters.setUsername(username);
         parameters.setIncludeTables(includeTables);
         parameters.setExcludeTables(excludeTables);
-
-        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
-
-        try {
-            injector.getInstance(DbImportAction.class).execute(parameters);
-        } catch (Exception ex) {
-            Throwable th = Util.unwindException(ex);
-
-            String message = "Error importing database schema";
-
-            if (th.getLocalizedMessage() != null) {
-                message += ": " + th.getLocalizedMessage();
-            }
-
-            getLog().error(message);
-            throw new MojoExecutionException(message, th);
-        }
+        return parameters;
     }
 
     private String getSchema() {
