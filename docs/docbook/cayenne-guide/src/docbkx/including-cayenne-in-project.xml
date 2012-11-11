@@ -447,22 +447,21 @@
 						<tr>
 							<td><code>excludeTables</code></td>
 							<td>boolean</td>
-							<td>A comma separated list of Perl5 patterns that defines which table
-								names should be skipped during the import. This (together with
-								'includeTables') is the most flexible way to filter the table list.
-								Another way to filter it is via "tablePattern" that is limited to
-								filtering with a single wildcard pattern as defined in
-								DatabaseMetadata.getTables().</td>
+							<td>A comma-separated list of Perl5 patterns that defines which table names should be skipped
+								during the import. This (together with 'includeTables') is the most
+								flexible way to filter the table list. Another way to filter it is
+								via "tablePattern" that is limited to filtering with a single
+								wildcard pattern as defined in DatabaseMetadata.getTables().</td>
 						</tr>
 						<tr>
 							<td><code>includeTables</code></td>
 							<td>boolean</td>
-							<td>A comma separated list of Perl5 patterns that defines which table
-								names should be included during the import. Additionally matching
-								tables will be compared with "excludeTables" pattern. If they match
-								include and exclude, they will be skipped. Another way to filter it
-								is via "tablePattern" that is limited to filtering with a single
-								wildcard pattern as defined in DatabaseMetadata.getTables().</td>
+							<td>A comma-separated list of Perl5 patterns that defines which table names should be
+								included during the import. Additionally matching tables will be
+								compared with "excludeTables" pattern. If they match include and
+								exclude, they will be skipped. Another way to filter it is via
+								"tablePattern" that is limited to filtering with a single wildcard
+								pattern as defined in DatabaseMetadata.getTables().</td>
 						</tr>
 						<tr>
 							<td><code>importProcedures</code></td>
@@ -471,10 +470,11 @@
 								database. Default is false. </td>
 						</tr>
 						<tr>
-							<td><code>meaningfulPk</code></td>
-							<td>boolean</td>
-							<td>Indicates whether primary keys should be mapped as attributes of the
-								ObjEntity. Default is false. </td>
+							<td><code>meaningfulPkTables</code></td>
+							<td>String</td>
+							<td>A comma-separated list of Perl5 patterns that defines which imported tables should have
+								their primary key columns mapped as ObjAttributes. "*" would
+								indicate all tables.</td>
 						</tr>
 						<tr>
 							<td><code>namingStrategy</code></td>
