@@ -21,6 +21,8 @@ package org.apache.cayenne.tools.dbimport;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 
@@ -32,9 +34,11 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.logging.Log;
 
 public class DbImportActionTest extends TestCase {
@@ -113,16 +117,13 @@ public class DbImportActionTest extends TestCase {
         assertTrue("Has no project version saved", contents.contains("project-version=\""));
     }
 
-    public void testCreateDataMap() throws Exception {
+    public void testCreateDataMap_New() throws Exception {
         Log log = mock(Log.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
 
         DbImportAction action = i.getInstance(DbImportAction.class);
 
-        String packagePath = getClass().getPackage().getName().replace('.', '/');
-        URL packageUrl = getClass().getClassLoader().getResource(packagePath);
-        assertNotNull(packageUrl);
-        URL outUrl = new URL(packageUrl, "dbimport/testCreateDataMap1.map.xml");
+        URL outUrl = dataMapUrl("testCreateDataMap1.map.xml");
 
         File out = new File(outUrl.toURI());
         out.delete();
@@ -133,5 +134,40 @@ public class DbImportActionTest extends TestCase {
         DataMap dataMap = action.createDataMap(parameters);
         assertEquals("testCreateDataMap1", dataMap.getName());
         assertEquals(outUrl, dataMap.getConfigurationSource().getURL());
+    }
+
+    public void testCreateDataMap_Existing() throws Exception {
+
+        URL outUrl = dataMapUrl("testCreateDataMap2.map.xml");
+
+        File out = new File(outUrl.toURI());
+        out.delete();
+        assertFalse(out.isFile());
+
+        DataMap tempMap = new DataMap();
+        tempMap.addDbEntity(new DbEntity("X"));
+        
+        PrintWriter writer = new PrintWriter(out);
+        tempMap.encodeAsXML(new XMLEncoder(writer));
+        writer.close();
+        assertTrue(out.isFile());
+        
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+
+        DbImportAction action = i.getInstance(DbImportAction.class);
+
+        DbImportParameters parameters = new DbImportParameters();
+        parameters.setDataMapFile(out);
+        DataMap dataMap = action.createDataMap(parameters);
+        assertEquals("testCreateDataMap2", dataMap.getName());
+        assertEquals(outUrl, dataMap.getConfigurationSource().getURL());
+    }
+
+    private URL dataMapUrl(String name) throws MalformedURLException {
+        String packagePath = getClass().getPackage().getName().replace('.', '/');
+        URL packageUrl = getClass().getClassLoader().getResource(packagePath);
+        assertNotNull(packageUrl);
+        return new URL(packageUrl, "dbimport/" + name);
     }
 }

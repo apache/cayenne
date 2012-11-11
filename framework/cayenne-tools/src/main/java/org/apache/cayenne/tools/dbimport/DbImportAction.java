@@ -201,14 +201,12 @@ public class DbImportAction {
                 dataMap.clearResultSets();
             }
         } else {
-
-            // the name and URL are important for the save to work
             String dataMapName = name.substring(0, name.length() - DATA_MAP_LOCATION_SUFFIX.length());
-            URL dataMapUrl = dataMapFile.toURI().toURL();
-
             dataMap = new DataMap(dataMapName);
-            dataMap.setConfigurationSource(new URLResource(dataMapUrl));
         }
+
+        URL dataMapUrl = dataMapFile.toURI().toURL();
+        dataMap.setConfigurationSource(new URLResource(dataMapUrl));
 
         // update map defaults
 
