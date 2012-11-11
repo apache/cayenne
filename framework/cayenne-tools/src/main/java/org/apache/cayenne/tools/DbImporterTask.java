@@ -42,24 +42,23 @@ public class DbImporterTask extends Task {
      */
     private String schemaName;
 
+    /**
+     * @deprecated since 3.2 in favor of "meaningfulPkTable"
+     */
+    private boolean meaningfulPk;
+
     public DbImporterTask() {
         parameters = new DbImportParameters();
         parameters.setOverwrite(true);
         parameters.setImportProcedures(false);
-        parameters.setMeaningfulPk(false);
         parameters.setNamingStrategy("org.apache.cayenne.map.naming.SmartNamingStrategy");
     }
 
     @Override
     public void execute() {
 
-        if (schemaName != null) {
-            log("'schemaName' property is deprecated. Use 'schema' instead", Project.MSG_WARN);
-        }
-
-        if (parameters.getSchema() == null) {
-            parameters.setSchema(schemaName);
-        }
+        initSchema();
+        initMeaningfulPkTables();
 
         validateAttributes();
 
@@ -146,8 +145,18 @@ public class DbImporterTask extends Task {
         parameters.setProcedurePattern(procedurePattern);
     }
 
+    /**
+     * @deprecated since 3.2 use {@link #setMeaningfulPkTables(String)}
+     */
     public void setMeaningfulPk(boolean meaningfulPk) {
-        parameters.setMeaningfulPk(meaningfulPk);
+        this.meaningfulPk = meaningfulPk;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public void setMeaningfulPkTables(String meaningfulPkTables) {
+        parameters.setMeaningfulPkTables(meaningfulPkTables);
     }
 
     public void setNamingStrategy(String namingStrategy) {
@@ -190,5 +199,25 @@ public class DbImporterTask extends Task {
      */
     public void setExcludeTables(String excludeTables) {
         parameters.setExcludeTables(excludeTables);
+    }
+
+    private void initSchema() {
+        if (schemaName != null) {
+            log("'schemaName' property is deprecated. Use 'schema' instead", Project.MSG_WARN);
+        }
+
+        if (parameters.getSchema() == null) {
+            parameters.setSchema(schemaName);
+        }
+    }
+
+    private void initMeaningfulPkTables() {
+        if (meaningfulPk) {
+            log("'meaningfulPk' property is deprecated. Use 'meaningfulPkTables' pattern instead", Project.MSG_WARN);
+        }
+
+        if (parameters.getMeaningfulPkTables() == null && meaningfulPk) {
+            parameters.setMeaningfulPkTables("*");
+        }
     }
 }

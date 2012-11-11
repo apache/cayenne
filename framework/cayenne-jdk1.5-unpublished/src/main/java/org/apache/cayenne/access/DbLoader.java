@@ -142,8 +142,11 @@ public class DbLoader {
         return metaData;
     }
 
-    public void setCreatingMeaningfulPK(boolean check) {
-        this.creatingMeaningfulPK = check;
+    /**
+     * @since 3.0
+     */
+    public void setCreatingMeaningfulPK(boolean creatingMeaningfulPK) {
+        this.creatingMeaningfulPK = creatingMeaningfulPK;
     }
 
     /**
@@ -209,7 +212,7 @@ public class DbLoader {
     }
 
     /**
-     * Retrieves catalogues for the database associated with this DbLoader.
+     * Retrieves catalogs for the database associated with this DbLoader.
      * 
      * @return List with the catalog names, empty Array if none found.
      */
@@ -518,8 +521,7 @@ public class DbLoader {
             return;
         }
 
-        List<ObjEntity> loadedEntities = new ArrayList<ObjEntity>(
-                dbEntityList.size());
+        List<ObjEntity> loadedEntities = new ArrayList<ObjEntity>(dbEntityList.size());
 
         String packageName = map.getDefaultPackage();
         if (Util.isEmptyString(packageName)) {
@@ -551,9 +553,8 @@ public class DbLoader {
             ObjEntity objEntity = new ObjEntity(objEntityName);
             objEntity.setDbEntity(dbEntity);
 
-            objEntity
-                    .setClassName(getGenericClassName() != null ? getGenericClassName()
-                            : packageName + objEntity.getName());
+            objEntity.setClassName(getGenericClassName() != null ? getGenericClassName() : packageName
+                    + objEntity.getName());
             map.addObjEntity(objEntity);
             loadedEntities.add(objEntity);
             // added entity without attributes or relationships...
@@ -563,8 +564,15 @@ public class DbLoader {
         }
 
         // update ObjEntity attributes and relationships
-        new EntityMergeSupport(map, namingStrategy, !creatingMeaningfulPK)
-                .synchronizeWithDbEntities(loadedEntities);
+        EntityMergeSupport objEntityMerger = createEntityMerger(map);
+        objEntityMerger.synchronizeWithDbEntities(loadedEntities);
+    }
+    
+    /**
+     * @since 3.2
+     */
+    protected EntityMergeSupport createEntityMerger(DataMap map) {
+        return new EntityMergeSupport(map, namingStrategy, !creatingMeaningfulPK);
     }
 
     /** Loads database relationships into a DataMap. */

@@ -146,8 +146,15 @@ public class DbImporterMojo extends AbstractMojo {
      * Default is <code>false</code>.
      * 
      * @parameter expression="${cdbimport.meaningfulPk}" default-value="false"
+     * @deprecated since 3.2 use meaningfulPkTables
      */
     private boolean meaningfulPk;
+
+    /**
+     * @parameter expression="${cdbimport.meaningfulPkTables}"
+     * @since 3.2
+     */
+    private String meaningfulPkTables;
 
     /**
      * Java class implementing org.apache.cayenne.map.naming.NamingStrategy.
@@ -212,7 +219,7 @@ public class DbImporterMojo extends AbstractMojo {
         parameters.setDriver(driver);
         parameters.setImportProcedures(importProcedures);
         parameters.setDataMapFile(map);
-        parameters.setMeaningfulPk(meaningfulPk);
+        parameters.setMeaningfulPkTables(getMeaningfulPkTables());
         parameters.setNamingStrategy(namingStrategy);
         parameters.setOverwrite(overwrite);
         parameters.setPassword(password);
@@ -248,6 +255,18 @@ public class DbImporterMojo extends AbstractMojo {
         }
 
         return schema != null ? schema : schemaName;
+    }
+
+    private String getMeaningfulPkTables() {
+        if (meaningfulPk) {
+            getLog().warn("'meaningfulPk' property is deprecated. Use 'meaningfulPkTables' pattern instead");
+        }
+
+        if (meaningfulPkTables != null) {
+            return meaningfulPkTables;
+        }
+
+        return meaningfulPk ? "*" : null;
     }
 
 }

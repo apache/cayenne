@@ -67,11 +67,7 @@ public class DbImportParameters {
      */
     private String procedurePattern;
 
-    /**
-     * Indicates whether primary keys should be mapped as meaningful attributes
-     * in the object entities.
-     */
-    private boolean meaningfulPk;
+    private String meaningfulPkTables;
 
     /**
      * Java class implementing org.apache.cayenne.map.naming.NamingStrategy.
@@ -174,14 +170,6 @@ public class DbImportParameters {
         this.procedurePattern = procedurePattern;
     }
 
-    public boolean isMeaningfulPk() {
-        return meaningfulPk;
-    }
-
-    public void setMeaningfulPk(boolean meaningfulPk) {
-        this.meaningfulPk = meaningfulPk;
-    }
-
     public String getNamingStrategy() {
         return namingStrategy;
     }
@@ -244,5 +232,18 @@ public class DbImportParameters {
 
     public void setExcludeTables(String excludeTables) {
         this.excludeTables = excludeTables;
+    }
+
+    /**
+     * Returns a comma-separated list of Perl5 regular expressions that match
+     * table names for which {@link DbImportAction} should include ObjAttribute
+     * for PK.
+     */
+    public String getMeaningfulPkTables() {
+        return meaningfulPkTables;
+    }
+
+    public void setMeaningfulPkTables(String meaningfulPkTables) {
+        this.meaningfulPkTables = meaningfulPkTables;
     }
 }

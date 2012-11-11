@@ -95,6 +95,20 @@ public class EntityMergeSupport {
 
         return changed;
     }
+    
+    /**
+     * @since 3.2
+     */
+    protected boolean removePK(DbEntity dbEntity) {
+        return removeMeaningfulPKs;
+    }
+    
+    /**
+     * @since 3.2
+     */
+    protected boolean removeFK(DbEntity dbEntity) {
+        return removeMeaningfulFKs;
+    }
 
     /**
      * Updates ObjEntity attributes and relationships based on the current state of its
@@ -104,7 +118,12 @@ public class EntityMergeSupport {
      */
     public boolean synchronizeWithDbEntity(ObjEntity entity) {
 
-        if (entity == null || entity.getDbEntity() == null) {
+        if (entity == null) {
+            return false;
+        }
+        
+        DbEntity dbEntity = entity.getDbEntity();
+        if (dbEntity == null) {
             return false;
         }
 
@@ -115,7 +134,7 @@ public class EntityMergeSupport {
         // button)
         synchronized (map) {
 
-            if (removeMeaningfulFKs) {
+            if (removeFK(dbEntity)) {
 
                 // get rid of attributes that are now src attributes for relationships
                 for (DbAttribute da : getMeaningfulFKs(entity)) {
@@ -150,9 +169,9 @@ public class EntityMergeSupport {
 
             // add missing relationships
             for (DbRelationship dr : getRelationshipsToAdd(entity)) {
-                DbEntity dbEntity = (DbEntity) dr.getTargetEntity();
+                DbEntity targetEntity = (DbEntity) dr.getTargetEntity();
 
-                for (Entity mappedTarget : map.getMappedEntities(dbEntity)) {
+                for (Entity mappedTarget : map.getMappedEntities(targetEntity)) {
 
                     // avoid duplicate names
                     String relationshipName = namingStrategy
@@ -202,20 +221,24 @@ public class EntityMergeSupport {
      * ObjEntity.
      */
     protected List<DbAttribute> getAttributesToAdd(ObjEntity objEntity) {
-        List<DbAttribute> missing = new ArrayList<DbAttribute>();
-        Collection<DbRelationship> rels = objEntity.getDbEntity().getRelationships();
-        Collection<DbRelationship> incomingRels = getIncomingRelationships(objEntity
-                .getDbEntity());
+        DbEntity dbEntity = objEntity.getDbEntity();
 
-        for (DbAttribute dba : objEntity.getDbEntity().getAttributes()) {
-            
+        List<DbAttribute> missing = new ArrayList<DbAttribute>();
+
+        Collection<DbRelationship> rels = dbEntity.getRelationships();
+        Collection<DbRelationship> incomingRels = getIncomingRelationships(dbEntity);
+
+        for (DbAttribute dba : dbEntity.getAttributes()) {
+
             if (dba.getName() == null) {
                 continue;
             }
-            
+
             if (objEntity.getAttributeForDbAttribute(dba) != null) {
                 continue;
             }
+
+            boolean removeMeaningfulPKs = removePK(dbEntity);
 
             if (removeMeaningfulPKs && dba.isPrimaryKey()) {
                 continue;
@@ -238,8 +261,7 @@ public class EntityMergeSupport {
                 if (!dba.isPrimaryKey() && isFK) {
                     continue;
                 }
-            }
-            else {
+            } else {
                 if (isFK) {
                     continue;
                 }
@@ -261,8 +283,7 @@ public class EntityMergeSupport {
                 if (!dba.isPrimaryKey() && isFK) {
                     continue;
                 }
-            }
-            else {
+            } else {
                 if (isFK) {
                     continue;
                 }

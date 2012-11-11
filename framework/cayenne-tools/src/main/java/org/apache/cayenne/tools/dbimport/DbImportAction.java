@@ -37,6 +37,7 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NamingStrategy;
@@ -45,6 +46,7 @@ import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.NamePatternMatcher;
 import org.apache.cayenne.util.DeleteRuleUpdater;
+import org.apache.cayenne.util.EntityMergeSupport;
 import org.apache.commons.logging.Log;
 import org.xml.sax.InputSource;
 
@@ -88,7 +90,7 @@ public class DbImportAction {
             logger.debug("Importer options - tablePattern: " + parameters.getTablePattern());
             logger.debug("Importer options - importProcedures: " + parameters.isImportProcedures());
             logger.debug("Importer options - procedurePattern: " + parameters.getProcedurePattern());
-            logger.debug("Importer options - meaningfulPk: " + parameters.isMeaningfulPk());
+            logger.debug("Importer options - meaningfulPkTables: " + parameters.getMeaningfulPkTables());
             logger.debug("Importer options - namingStrategy: " + parameters.getNamingStrategy());
             logger.debug("Importer options - includeTables: " + parameters.getIncludeTables());
             logger.debug("Importer options - excludeTables: " + parameters.getExcludeTables());
@@ -153,15 +155,27 @@ public class DbImportAction {
 
         final NamePatternMatcher nameFilter = new NamePatternMatcher(logger, parameters.getIncludeTables(),
                 parameters.getExcludeTables());
+        final NamePatternMatcher meaningfulPkFilter = new NamePatternMatcher(logger,
+                parameters.getMeaningfulPkTables(), null);
 
         DbLoader loader = new DbLoader(connection, adapter, loaderDelegate) {
             @Override
             public boolean includeTableName(String tableName) {
                 return nameFilter.isIncluded(tableName);
             }
+            
+            @Override
+            protected EntityMergeSupport createEntityMerger(DataMap map) {
+                return new EntityMergeSupport(map, namingStrategy, true) {
+
+                    @Override
+                    protected boolean removePK(DbEntity dbEntity) {
+                        return !meaningfulPkFilter.isIncluded(dbEntity.getName());
+                    }
+                };
+            }
         };
 
-        loader.setCreatingMeaningfulPK(parameters.isMeaningfulPk());
 
         // TODO: load via DI AdhocObjectFactory
         String namingStrategy = parameters.getNamingStrategy();
