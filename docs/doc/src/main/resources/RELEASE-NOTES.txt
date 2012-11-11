@@ -34,6 +34,7 @@ CAY-1765 cdbimport improvements: add excludeTables/includeTables parameters
 CAY-1766 Deprecating DataPort ant task
 CAY-1768 cdbimport improvements: DataMap "project-version" attribute is skipped when DM is saved
 CAY-1769 cdbimport improvements: meaningfulPk flag must be turned into a pattern
+CAY-1771 cdbimport improvements: "usePrimitives" flag
 
 Bug Fixes:
 

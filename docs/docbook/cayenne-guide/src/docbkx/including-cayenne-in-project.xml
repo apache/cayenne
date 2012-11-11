@@ -520,6 +520,13 @@
 							<td>String</td>
 							<td>Database user name.</td>
 						</tr>
+						<tr>
+							<td><code>usePrimitives</code></td>
+							<td>boolean</td>
+							<td>Whether numberic and boolean data types should be mapped as Java
+								primitives or Java classes. Default is "true", i.e. primitives will
+								be used.</td>
+						</tr>
 					</tbody>
 				</table>
 			</para>
