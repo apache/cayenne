@@ -149,7 +149,7 @@ public class DbImportAction {
         return dataMap;
     }
 
-    DbLoader createLoader(DbImportParameters parameters, DbAdapter adapter, Connection connection,
+    DbLoader createLoader(final DbImportParameters parameters, DbAdapter adapter, Connection connection,
             DbLoaderDelegate loaderDelegate) throws InstantiationException, IllegalAccessException,
             ClassNotFoundException {
 
@@ -168,13 +168,16 @@ public class DbImportAction {
 
             @Override
             protected EntityMergeSupport createEntityMerger(DataMap map) {
-                return new EntityMergeSupport(map, namingStrategy, true) {
+                EntityMergeSupport emSupport = new EntityMergeSupport(map, namingStrategy, true) {
 
                     @Override
                     protected boolean removePK(DbEntity dbEntity) {
                         return !meaningfulPkFilter.isIncluded(dbEntity.getName());
                     }
                 };
+
+                emSupport.setUsePrimitives(parameters.isUsePrimitives());
+                return emSupport;
             }
         };
 

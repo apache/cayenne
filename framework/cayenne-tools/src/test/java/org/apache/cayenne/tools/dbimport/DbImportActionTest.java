@@ -39,6 +39,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -160,7 +161,7 @@ public class DbImportActionTest extends TestCase {
 
         map.addDbEntity(e1);
         entities.add(e1);
-        
+
         DbEntity a1 = new DbEntity("a1");
         DbAttribute apk = new DbAttribute("pk", Types.INTEGER, a1);
         apk.setPrimaryKey(true);
@@ -176,11 +177,79 @@ public class DbImportActionTest extends TestCase {
         ObjEntity oe1 = map.getObjEntity("E1");
         assertEquals(1, oe1.getAttributes().size());
         assertNotNull(oe1.getAttribute("nonPk"));
-        
+
         ObjEntity oe2 = map.getObjEntity("A1");
         assertEquals(2, oe2.getAttributes().size());
         assertNotNull(oe2.getAttribute("nonPk"));
         assertNotNull(oe2.getAttribute("pk"));
+    }
+
+    public void testCreateLoader_UsePrimitives_False() throws Exception {
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+
+        DbImportAction action = i.getInstance(DbImportAction.class);
+
+        DbImportParameters parameters = new DbImportParameters();
+        parameters.setUsePrimitives(false);
+
+        DbLoader loader1 = action.createLoader(parameters, mock(DbAdapter.class), mock(Connection.class),
+                mock(DbLoaderDelegate.class));
+
+        DataMap map = new DataMap();
+
+        DbEntity e1 = new DbEntity("e1");
+        DbAttribute nonPk = new DbAttribute("nonPk", Types.INTEGER, e1);
+        e1.addAttribute(nonPk);
+
+        map.addDbEntity(e1);
+
+        // DbLoader is so ugly and hard to test..
+        Field dbEntityList = DbLoader.class.getDeclaredField("dbEntityList");
+        dbEntityList.setAccessible(true);
+        List<DbEntity> entities = (List<DbEntity>) dbEntityList.get(loader1);
+        entities.add(e1);
+
+        loader1.loadObjEntities(map);
+
+        ObjEntity oe1 = map.getObjEntity("E1");
+
+        ObjAttribute oa1 = (ObjAttribute) oe1.getAttribute("nonPk");
+        assertEquals("java.lang.Integer", oa1.getType());
+    }
+
+    public void testCreateLoader_UsePrimitives_True() throws Exception {
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+
+        DbImportAction action = i.getInstance(DbImportAction.class);
+
+        DbImportParameters parameters = new DbImportParameters();
+        parameters.setUsePrimitives(true);
+
+        DbLoader loader1 = action.createLoader(parameters, mock(DbAdapter.class), mock(Connection.class),
+                mock(DbLoaderDelegate.class));
+
+        DataMap map = new DataMap();
+
+        DbEntity e1 = new DbEntity("e1");
+        DbAttribute nonPk = new DbAttribute("nonPk", Types.INTEGER, e1);
+        e1.addAttribute(nonPk);
+
+        map.addDbEntity(e1);
+
+        // DbLoader is so ugly and hard to test..
+        Field dbEntityList = DbLoader.class.getDeclaredField("dbEntityList");
+        dbEntityList.setAccessible(true);
+        List<DbEntity> entities = (List<DbEntity>) dbEntityList.get(loader1);
+        entities.add(e1);
+
+        loader1.loadObjEntities(map);
+
+        ObjEntity oe1 = map.getObjEntity("E1");
+
+        ObjAttribute oa1 = (ObjAttribute) oe1.getAttribute("nonPk");
+        assertEquals("int", oa1.getType());
     }
 
     public void testSaveLoaded() throws Exception {

@@ -21,8 +21,10 @@ package org.apache.cayenne.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
@@ -42,9 +44,23 @@ import org.apache.cayenne.map.naming.NamingStrategy;
  */
 public class EntityMergeSupport {
 
+    private static final Map<String, String> CLASS_TO_PRIMITVE;
+
+    static {
+        CLASS_TO_PRIMITVE = new HashMap<String, String>();
+        CLASS_TO_PRIMITVE.put(Byte.class.getName(), "byte");
+        CLASS_TO_PRIMITVE.put(Long.class.getName(), "long");
+        CLASS_TO_PRIMITVE.put(Double.class.getName(), "double");
+        CLASS_TO_PRIMITVE.put(Boolean.class.getName(), "boolean");
+        CLASS_TO_PRIMITVE.put(Float.class.getName(), "float");
+        CLASS_TO_PRIMITVE.put(Short.class.getName(), "short");
+        CLASS_TO_PRIMITVE.put(Integer.class.getName(), "int");
+    }
+
     protected DataMap map;
     protected boolean removeMeaningfulFKs;
     protected boolean removeMeaningfulPKs;
+    protected boolean usePrimitives;
 
     /**
      * Strategy for choosing names for entities, attributes and relationships
@@ -63,8 +79,7 @@ public class EntityMergeSupport {
     /**
      * @since 3.0
      */
-    public EntityMergeSupport(DataMap map, NamingStrategy namingStrategy,
-            boolean removeMeaningfulPKs) {
+    public EntityMergeSupport(DataMap map, NamingStrategy namingStrategy, boolean removeMeaningfulPKs) {
         this.map = map;
         this.removeMeaningfulFKs = true;
         this.listeners = new ArrayList<EntityMergeListener>();
@@ -72,8 +87,8 @@ public class EntityMergeSupport {
         this.namingStrategy = namingStrategy;
 
         /**
-         * Adding a listener, so that all created ObjRelationships would have default
-         * delete rule
+         * Adding a listener, so that all created ObjRelationships would have
+         * default delete rule
          */
         addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
     }
@@ -95,14 +110,14 @@ public class EntityMergeSupport {
 
         return changed;
     }
-    
+
     /**
      * @since 3.2
      */
     protected boolean removePK(DbEntity dbEntity) {
         return removeMeaningfulPKs;
     }
-    
+
     /**
      * @since 3.2
      */
@@ -111,8 +126,8 @@ public class EntityMergeSupport {
     }
 
     /**
-     * Updates ObjEntity attributes and relationships based on the current state of its
-     * DbEntity.
+     * Updates ObjEntity attributes and relationships based on the current state
+     * of its DbEntity.
      * 
      * @return true if the ObjEntity has changed as a result of synchronization.
      */
@@ -121,7 +136,7 @@ public class EntityMergeSupport {
         if (entity == null) {
             return false;
         }
-        
+
         DbEntity dbEntity = entity.getDbEntity();
         if (dbEntity == null) {
             return false;
@@ -130,13 +145,15 @@ public class EntityMergeSupport {
         boolean changed = false;
 
         // synchronization on DataMap is some (weak) protection
-        // against simultaneous modification of the map (like double-clicking on sync
+        // against simultaneous modification of the map (like double-clicking on
+        // sync
         // button)
         synchronized (map) {
 
             if (removeFK(dbEntity)) {
 
-                // get rid of attributes that are now src attributes for relationships
+                // get rid of attributes that are now src attributes for
+                // relationships
                 for (DbAttribute da : getMeaningfulFKs(entity)) {
                     ObjAttribute oa = entity.getAttributeForDbAttribute(da);
                     while (oa != null) {
@@ -153,12 +170,16 @@ public class EntityMergeSupport {
 
                 String attrName = namingStrategy.createObjAttributeName(da);
                 // avoid duplicate names
-                attrName = NamedObjectFactory.createName(
-                        ObjAttribute.class,
-                        entity,
-                        attrName);
+                attrName = NamedObjectFactory.createName(ObjAttribute.class, entity, attrName);
 
                 String type = TypesMapping.getJavaBySqlType(da.getType());
+
+                if (usePrimitives) {
+                    String primitive = CLASS_TO_PRIMITVE.get(type);
+                    if (primitive != null) {
+                        type = primitive;
+                    }
+                }
 
                 ObjAttribute oa = new ObjAttribute(attrName, type, entity);
                 oa.setDbAttributePath(da.getName());
@@ -174,12 +195,8 @@ public class EntityMergeSupport {
                 for (Entity mappedTarget : map.getMappedEntities(targetEntity)) {
 
                     // avoid duplicate names
-                    String relationshipName = namingStrategy
-                            .createObjRelationshipName(dr);
-                    relationshipName = NamedObjectFactory.createName(
-                            ObjRelationship.class,
-                            entity,
-                            relationshipName);
+                    String relationshipName = namingStrategy.createObjRelationshipName(dr);
+                    relationshipName = NamedObjectFactory.createName(ObjRelationship.class, entity, relationshipName);
 
                     ObjRelationship or = new ObjRelationship(relationshipName);
                     or.addDbRelationship(dr);
@@ -217,8 +234,8 @@ public class EntityMergeSupport {
     }
 
     /**
-     * Returns a list of attributes that exist in the DbEntity, but are missing from the
-     * ObjEntity.
+     * Returns a list of attributes that exist in the DbEntity, but are missing
+     * from the ObjEntity.
      */
     protected List<DbAttribute> getAttributesToAdd(ObjEntity objEntity) {
         DbEntity dbEntity = objEntity.getDbEntity();
@@ -398,5 +415,20 @@ public class EntityMergeSupport {
      */
     public NamingStrategy getNamingStrategy() {
         return namingStrategy;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public boolean isUsePrimitives() {
+        return usePrimitives;
+    }
+
+    /**
+     * @since 3.2
+     * @param usePrimitives
+     */
+    public void setUsePrimitives(boolean usePrimitives) {
+        this.usePrimitives = usePrimitives;
     }
 }

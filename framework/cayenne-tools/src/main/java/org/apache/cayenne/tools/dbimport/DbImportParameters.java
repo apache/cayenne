@@ -106,6 +106,8 @@ public class DbImportParameters {
     private String includeTables;
     private String excludeTables;
 
+    private boolean usePrimitives;
+
     public File getDataMapFile() {
         return dataMapFile;
     }
@@ -245,5 +247,13 @@ public class DbImportParameters {
 
     public void setMeaningfulPkTables(String meaningfulPkTables) {
         this.meaningfulPkTables = meaningfulPkTables;
+    }
+
+    public boolean isUsePrimitives() {
+        return usePrimitives;
+    }
+
+    public void setUsePrimitives(boolean usePrimitives) {
+        this.usePrimitives = usePrimitives;
     }
 }
