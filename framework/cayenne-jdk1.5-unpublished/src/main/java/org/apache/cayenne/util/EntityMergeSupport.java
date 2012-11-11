@@ -208,21 +208,17 @@ public class EntityMergeSupport {
                 .getDbEntity());
 
         for (DbAttribute dba : objEntity.getDbEntity().getAttributes()) {
-            // already there
+            
+            if (dba.getName() == null) {
+                continue;
+            }
+            
             if (objEntity.getAttributeForDbAttribute(dba) != null) {
                 continue;
             }
 
-            // check if adding it makes sense at all
-            if (!removeMeaningfulPKs) {
-                if (dba.getName() == null) {
-                    continue;
-                }
-            }
-            else {
-                if (dba.getName() == null || dba.isPrimaryKey()) {
-                    continue;
-                }
+            if (removeMeaningfulPKs && dba.isPrimaryKey()) {
+                continue;
             }
 
             // check FK's
