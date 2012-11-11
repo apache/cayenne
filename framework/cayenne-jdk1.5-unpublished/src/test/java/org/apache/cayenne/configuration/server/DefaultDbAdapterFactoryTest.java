@@ -83,9 +83,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         DefaultDbAdapterFactory factory = new DefaultDbAdapterFactory(detectors);
         injector.injectMembers(factory);
 
-        DbAdapter createdAdapter = factory.createAdapter(
-                new DataNodeDescriptor(),
-                dataSource);
+        DbAdapter createdAdapter = factory.createAdapter(new DataNodeDescriptor(), dataSource);
         assertTrue(createdAdapter instanceof AutoAdapter);
         assertEquals("XXXXX", createdAdapter.createTable(new DbEntity("Test")));
     }
@@ -101,12 +99,11 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
                 binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
                 binder.bindList(Constants.SERVER_USER_TYPES_LIST);
                 binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
-                
+
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(BatchQueryBuilderFactory.class).toInstance(
-                        mock(BatchQueryBuilderFactory.class));
+                binder.bind(BatchQueryBuilderFactory.class).toInstance(mock(BatchQueryBuilderFactory.class));
             }
         };
 
@@ -115,15 +112,10 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         DefaultDbAdapterFactory factory = new DefaultDbAdapterFactory(detectors);
         injector.injectMembers(factory);
 
-        DbAdapter createdAdapter = factory.createAdapter(
-                new DataNodeDescriptor(),
-                new MockDataSource());
+        DbAdapter createdAdapter = factory.createAdapter(new DataNodeDescriptor(), new MockDataSource());
         assertNotNull(createdAdapter);
-        assertTrue(
-                "Unexpected class: " + createdAdapter.getClass().getName(),
-                createdAdapter instanceof AutoAdapter);
-        assertEquals("CREATE TABLE Test ()", createdAdapter.createTable(new DbEntity(
-                "Test")));
+        assertTrue("Unexpected class: " + createdAdapter.getClass().getName(), createdAdapter instanceof AutoAdapter);
+        assertEquals("CREATE TABLE Test ()", createdAdapter.createTable(new DbEntity("Test")));
     }
 
     public void testCreatedAdapter_Custom() throws Exception {
@@ -140,12 +132,11 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
                 binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
                 binder.bindList(Constants.SERVER_USER_TYPES_LIST);
                 binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
-                
+
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(BatchQueryBuilderFactory.class).toInstance(
-                        mock(BatchQueryBuilderFactory.class));
+                binder.bind(BatchQueryBuilderFactory.class).toInstance(mock(BatchQueryBuilderFactory.class));
             }
         };
 
@@ -154,12 +145,47 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         DefaultDbAdapterFactory factory = new DefaultDbAdapterFactory(detectors);
         injector.injectMembers(factory);
 
-        DbAdapter createdAdapter = factory.createAdapter(
-                nodeDescriptor,
-                new MockDataSource());
+        DbAdapter createdAdapter = factory.createAdapter(nodeDescriptor, new MockDataSource());
         assertNotNull(createdAdapter);
-        assertTrue(
-                "Unexpected class: " + createdAdapter.getClass().getName(),
-                createdAdapter instanceof SybaseAdapter);
+        assertTrue("Unexpected class: " + createdAdapter.getClass().getName(), createdAdapter instanceof SybaseAdapter);
+    }
+
+    public void testCreatedAdapter_AutoExplicit() throws Exception {
+
+        final DbAdapter adapter = mock(DbAdapter.class);
+        when(adapter.createTable(any(DbEntity.class))).thenReturn("XXXXX");
+
+        List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
+        detectors.add(new DbAdapterDetector() {
+
+            public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
+                return adapter;
+            }
+        });
+
+        MockConnection connection = new MockConnection();
+
+        MockDataSource dataSource = new MockDataSource();
+        dataSource.setupConnection(connection);
+
+        Module testModule = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            }
+        };
+
+        Injector injector = DIBootstrap.createInjector(testModule);
+
+        DefaultDbAdapterFactory factory = new DefaultDbAdapterFactory(detectors);
+        injector.injectMembers(factory);
+
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setAdapterType(AutoAdapter.class.getName());
+
+        DbAdapter createdAdapter = factory.createAdapter(nodeDescriptor, dataSource);
+        assertTrue(createdAdapter instanceof AutoAdapter);
+        assertEquals("XXXXX", createdAdapter.createTable(new DbEntity("Test")));
     }
 }

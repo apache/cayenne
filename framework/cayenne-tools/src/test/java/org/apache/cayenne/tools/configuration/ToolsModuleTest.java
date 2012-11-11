@@ -19,15 +19,20 @@
 package org.apache.cayenne.tools.configuration;
 
 import static org.mockito.Mockito.mock;
+
+import javax.sql.DataSource;
+
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
+import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
-import org.apache.cayenne.tools.configuration.DriverDataSourceFactory;
-import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.commons.logging.Log;
 
 public class ToolsModuleTest extends TestCase {
@@ -36,9 +41,22 @@ public class ToolsModuleTest extends TestCase {
 
         Log log = mock(Log.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));
-        
+
         assertSame(log, i.getInstance(Log.class));
         assertTrue(i.getInstance(DataSourceFactory.class) instanceof DriverDataSourceFactory);
         assertTrue(i.getInstance(AdhocObjectFactory.class) instanceof DefaultAdhocObjectFactory);
+        assertTrue(i.getInstance(DbAdapterFactory.class) instanceof DefaultDbAdapterFactory);
+    }
+
+    public void testDbApdater() throws Exception {
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new ToolsModule(log));
+
+        DbAdapterFactory factory = i.getInstance(DbAdapterFactory.class);
+
+        DataNodeDescriptor nodeDescriptor = mock(DataNodeDescriptor.class);
+        DataSource dataSource = mock(DataSource.class);
+
+        assertTrue(factory.createAdapter(nodeDescriptor, dataSource) instanceof AutoAdapter);
     }
 }

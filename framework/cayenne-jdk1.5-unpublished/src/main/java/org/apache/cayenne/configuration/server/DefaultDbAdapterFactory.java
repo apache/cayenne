@@ -38,8 +38,8 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
- * A factory of DbAdapters that either loads user-provided adapter or guesses the adapter
- * type from the database metadata.
+ * A factory of DbAdapters that either loads user-provided adapter or guesses
+ * the adapter type from the database metadata.
  * 
  * @since 3.1
  */
@@ -55,8 +55,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
     protected AdhocObjectFactory objectFactory;
     protected List<DbAdapterDetector> detectors;
 
-    public DefaultDbAdapterFactory(
-            @Inject(Constants.SERVER_ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
+    public DefaultDbAdapterFactory(@Inject(Constants.SERVER_ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
         if (detectors == null) {
             throw new NullPointerException("Null detectors list");
         }
@@ -64,20 +63,24 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
         this.detectors = detectors;
     }
 
-    public DbAdapter createAdapter(
-            final DataNodeDescriptor nodeDescriptor,
-            final DataSource dataSource) throws Exception {
-        
+    public DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, final DataSource dataSource) throws Exception {
+
         String adapterType = null;
-        
+
         if (nodeDescriptor != null) {
             adapterType = nodeDescriptor.getAdapterType();
         }
 
+        // must not create AutoAdapter via objectFactory, so treat explicit
+        // AutoAdapter as null and let it fall through to the default. (explicit
+        // AutoAdapter is often passed from the cdbimport pligin).
+        if (adapterType != null && adapterType.equals(AutoAdapter.class.getName())) {
+            adapterType = null;
+        }
+
         if (adapterType != null) {
             return objectFactory.newInstance(DbAdapter.class, adapterType);
-        }
-        else {
+        } else {
             return new AutoAdapter(new Provider<DbAdapter>() {
 
                 public DbAdapter get() {
@@ -98,32 +101,28 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
             try {
                 return detectAdapter(c.getMetaData());
-            }
-            finally {
+            } finally {
                 try {
                     c.close();
-                }
-                catch (SQLException e) {
+                } catch (SQLException e) {
                     // ignore...
                 }
             }
-        }
-        catch (SQLException e) {
-            throw new CayenneRuntimeException("Error detecting database type: "
-                    + e.getLocalizedMessage(), e);
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
         }
     }
 
     protected DbAdapter detectAdapter(DatabaseMetaData metaData) throws SQLException {
-        // iterate in reverse order to allow custom factories to take precedence over the
+        // iterate in reverse order to allow custom factories to take precedence
+        // over the
         // default ones configured in constructor
         for (int i = detectors.size() - 1; i >= 0; i--) {
             DbAdapterDetector detector = detectors.get(i);
             DbAdapter adapter = detector.createAdapter(metaData);
 
             if (adapter != null) {
-                jdbcEventLogger.log("Detected and installed adapter: "
-                        + adapter.getClass().getName());
+                jdbcEventLogger.log("Detected and installed adapter: " + adapter.getClass().getName());
 
                 // TODO: should detector do this??
                 injector.injectMembers(adapter);
