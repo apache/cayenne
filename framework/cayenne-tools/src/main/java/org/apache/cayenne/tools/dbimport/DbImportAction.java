@@ -155,15 +155,17 @@ public class DbImportAction {
 
         final NamePatternMatcher nameFilter = new NamePatternMatcher(logger, parameters.getIncludeTables(),
                 parameters.getExcludeTables());
+
+        String meangfulPkExclude = parameters.getMeaningfulPkTables() != null ? null : "*";
         final NamePatternMatcher meaningfulPkFilter = new NamePatternMatcher(logger,
-                parameters.getMeaningfulPkTables(), null);
+                parameters.getMeaningfulPkTables(), meangfulPkExclude);
 
         DbLoader loader = new DbLoader(connection, adapter, loaderDelegate) {
             @Override
             public boolean includeTableName(String tableName) {
                 return nameFilter.isIncluded(tableName);
             }
-            
+
             @Override
             protected EntityMergeSupport createEntityMerger(DataMap map) {
                 return new EntityMergeSupport(map, namingStrategy, true) {
@@ -175,7 +177,6 @@ public class DbImportAction {
                 };
             }
         };
-
 
         // TODO: load via DI AdhocObjectFactory
         String namingStrategy = parameters.getNamingStrategy();
