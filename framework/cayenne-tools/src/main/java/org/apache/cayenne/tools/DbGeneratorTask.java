@@ -57,7 +57,7 @@ public class DbGeneratorTask extends CayenneTask {
     public void execute() {
 
         Log logger = new AntLogger(this);
-        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
+       
 
         log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName),
                 Project.MSG_VERBOSE);
@@ -69,6 +69,7 @@ public class DbGeneratorTask extends CayenneTask {
         validateAttributes();
 
         ClassLoader loader = null;
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
         try {
             loader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
@@ -104,6 +105,7 @@ public class DbGeneratorTask extends CayenneTask {
             throw new BuildException(message, th);
         } finally {
             Thread.currentThread().setContextClassLoader(loader);
+            injector.shutdown();
         }
     }
 

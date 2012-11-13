@@ -81,6 +81,9 @@ public class DbImporterTask extends Task {
             log(message, Project.MSG_ERR);
             throw new BuildException(message, th);
         }
+        finally {
+            injector.shutdown();
+        }
     }
 
     /**
