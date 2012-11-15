@@ -37,9 +37,9 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.commons.collections.Transformer;
 
 /**
- * Encapsulates join reuse/split logic used in SelectQuery processing. All expression
- * path's that exist in the query (in the qualifier, etc.) are processed to produce a
- * combined join tree.
+ * Encapsulates join reuse/split logic used in SelectQuery processing. All
+ * expression path's that exist in the query (in the qualifier, etc.) are
+ * processed to produce a combined join tree.
  * 
  * @since 3.0
  */
@@ -47,7 +47,7 @@ public class JoinStack {
 
     protected JoinTreeNode rootNode;
     protected JoinTreeNode topNode;
-    private QuotingStrategy strategy;
+    private QuotingStrategy quotingStrategy;
 
     private int aliasCounter;
 
@@ -62,11 +62,10 @@ public class JoinStack {
         boolean status;
         if (dataMap != null && dataMap.isQuotingSQLIdentifiers()) {
             status = true;
-        }
-        else {
+        } else {
             status = false;
         }
-        strategy = dbAdapter.getQuotingStrategy(status);
+        quotingStrategy = dbAdapter.getQuotingStrategy(status);
         qualifierTranslator = dbAdapter.getQualifierTranslator(assembler);
 
         resetStack();
@@ -84,21 +83,11 @@ public class JoinStack {
         return rootNode.size() - 1;
     }
 
-    void appendRoot(Appendable out, DbEntity rootEntity) throws IOException {
-        out.append(rootEntity.getFullyQualifiedName());
-        out.append(' ').append(rootNode.getTargetTableAlias());
-    }
+    void appendRootWithQuoteSqlIdentifiers(Appendable out, DbEntity rootEntity) throws IOException {
 
-    void appendRootWithQuoteSqlIdentifiers(Appendable out, DbEntity rootEntity)
-            throws IOException {
-
-        if (rootEntity.getSchema() != null) {
-            out.append(strategy.quoteString(rootEntity.getSchema()));
-            out.append(".");
-        }
-        out.append(strategy.quoteString(rootEntity.getName()));
+        out.append(quotingStrategy.quoteFullyQualifiedName(rootEntity));
         out.append(' ');
-        out.append(strategy.quoteString(rootNode.getTargetTableAlias()));
+        out.append(quotingStrategy.quoteString(rootNode.getTargetTableAlias()));
     }
 
     /**
@@ -112,8 +101,7 @@ public class JoinStack {
         }
     }
 
-    protected void appendJoinSubtree(Appendable out, JoinTreeNode node)
-            throws IOException {
+    protected void appendJoinSubtree(Appendable out, JoinTreeNode node) throws IOException {
 
         DbRelationship relationship = node.getRelationship();
 
@@ -122,28 +110,21 @@ public class JoinStack {
         String targetAlias = node.getTargetTableAlias();
 
         switch (node.getJoinType()) {
-            case INNER:
-                out.append(" JOIN");
-                break;
-            case LEFT_OUTER:
-                out.append(" LEFT JOIN");
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported join type: "
-                        + node.getJoinType());
+        case INNER:
+            out.append(" JOIN");
+            break;
+        case LEFT_OUTER:
+            out.append(" LEFT JOIN");
+            break;
+        default:
+            throw new IllegalArgumentException("Unsupported join type: " + node.getJoinType());
         }
 
         out.append(' ');
-
-        if (targetEntity.getSchema() != null) {
-
-            out.append(strategy.quoteString(targetEntity.getSchema()));
-            out.append(".");
-        }
-        out.append(strategy.quoteString(targetEntity.getName()));
+        out.append(quotingStrategy.quoteFullyQualifiedName(targetEntity));
 
         out.append(' ');
-        out.append(strategy.quoteString(targetAlias));
+        out.append(quotingStrategy.quoteString(targetAlias));
         out.append(" ON (");
 
         List<DbJoin> joins = relationship.getJoins();
@@ -154,13 +135,13 @@ public class JoinStack {
                 out.append(" AND ");
             }
 
-            out.append(strategy.quoteString(srcAlias));
+            out.append(quotingStrategy.quoteString(srcAlias));
             out.append('.');
-            out.append(strategy.quoteString(join.getSourceName()));
+            out.append(quotingStrategy.quoteString(join.getSourceName()));
             out.append(" = ");
-            out.append(strategy.quoteString(targetAlias));
+            out.append(quotingStrategy.quoteString(targetAlias));
             out.append('.');
-            out.append(strategy.quoteString(join.getTargetName()));
+            out.append(quotingStrategy.quoteString(join.getTargetName()));
         }
 
         /**
@@ -168,8 +149,7 @@ public class JoinStack {
          */
         Expression dbQualifier = targetEntity.getQualifier();
         if (dbQualifier != null) {
-            dbQualifier = dbQualifier.transform(new JoinedDbEntityQualifierTransformer(
-                    node));
+            dbQualifier = dbQualifier.transform(new JoinedDbEntityQualifierTransformer(node));
 
             if (len > 0) {
                 out.append(" AND ");
@@ -188,8 +168,7 @@ public class JoinStack {
     /**
      * Append join information to the qualifier - the part after "WHERE".
      */
-    protected void appendQualifier(Appendable out, boolean firstQualifierElement)
-            throws IOException {
+    protected void appendQualifier(Appendable out, boolean firstQualifierElement) throws IOException {
         // nothing as standard join is performed before "WHERE"
     }
 
@@ -201,8 +180,8 @@ public class JoinStack {
     }
 
     /**
-     * Finds or creates a JoinTreeNode for the given arguments and sets it as the next
-     * current join.
+     * Finds or creates a JoinTreeNode for the given arguments and sets it as
+     * the next current join.
      */
     void pushJoin(DbRelationship relationship, JoinType joinType, String alias) {
         topNode = topNode.findOrCreateChild(relationship, joinType, alias);
@@ -213,9 +192,10 @@ public class JoinStack {
     }
 
     /**
-     * Class to translate *joined* DB Entity qualifiers annotation to *current* Obj-entity
-     * qualifiers annotation This is done by changing all Obj-paths to concatenated
-     * Db-paths to root entity and rejecting all original Db-paths
+     * Class to translate *joined* DB Entity qualifiers annotation to *current*
+     * Obj-entity qualifiers annotation This is done by changing all Obj-paths
+     * to concatenated Db-paths to root entity and rejecting all original
+     * Db-paths
      */
     class JoinedDbEntityQualifierTransformer implements Transformer {
 
@@ -227,9 +207,9 @@ public class JoinStack {
                 String relName = node.getRelationship().getName();
 
                 /**
-                 * We must be in the same join as 'node', otherwise incorrect join
-                 * statement like JOIN t1 ... ON (t0.id=t1.id AND t2.qualifier=0) could be
-                 * generated
+                 * We must be in the same join as 'node', otherwise incorrect
+                 * join statement like JOIN t1 ... ON (t0.id=t1.id AND
+                 * t2.qualifier=0) could be generated
                  */
                 if (node.getJoinType() == JoinType.LEFT_OUTER) {
                     relName += Entity.OUTER_JOIN_INDICATOR;
@@ -243,8 +223,7 @@ public class JoinStack {
 
         public Object transform(Object input) {
             if (input instanceof ASTObjPath) {
-                return new ASTDbPath(pathToRoot.toString()
-                        + ((SimpleNode) input).getOperand(0));
+                return new ASTDbPath(pathToRoot.toString() + ((SimpleNode) input).getOperand(0));
             }
             return input;
         }
