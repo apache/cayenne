@@ -51,6 +51,10 @@ class NoQuotingStrategy implements QuotingStrategy {
         StringBuilder buffer = new StringBuilder();
 
         for (String part : fqnParts) {
+            
+            if(part == null) {
+                continue;
+            }
 
             if (buffer.length() > 0) {
                 buffer.append(".");
