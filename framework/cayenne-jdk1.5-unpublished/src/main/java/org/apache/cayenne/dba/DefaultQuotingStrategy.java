@@ -39,10 +39,17 @@ class DefaultQuotingStrategy implements QuotingStrategy {
 
     public String quoteFullyQualifiedName(DbEntity entity) {
         StringBuilder buf = new StringBuilder();
+        
+        if(entity.getCatalog() != null) {
+            buf.append(quoteString(entity.getCatalog())).append(".");
+        }
+        
         if (entity.getSchema() != null) {
             buf.append(quoteString(entity.getSchema())).append(".");
         }
+        
         buf.append(quoteString(entity.getName()));
+        
         return buf.toString();
     }
 }

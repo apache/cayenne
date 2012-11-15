@@ -56,9 +56,7 @@ public class DbEntityTest extends ServerCase {
         assertTrue(d2.getPrimaryKeys().contains(pk2));
 
         assertNotNull(d2.getGeneratedAttributes());
-        assertEquals(entity.getGeneratedAttributes().size(), d2
-                .getGeneratedAttributes()
-                .size());
+        assertEquals(entity.getGeneratedAttributes().size(), d2.getGeneratedAttributes().size());
 
         DbAttribute generated2 = (DbAttribute) d2.getAttribute(generated.getName());
         assertNotNull(generated2);
@@ -76,9 +74,7 @@ public class DbEntityTest extends ServerCase {
         generated.setGenerated(true);
         entity.addAttribute(generated);
 
-        DbEntity d2 = (DbEntity) HessianUtil.cloneViaClientServerSerialization(
-                entity,
-                new EntityResolver());
+        DbEntity d2 = (DbEntity) HessianUtil.cloneViaClientServerSerialization(entity, new EntityResolver());
 
         assertNotNull(d2.getPrimaryKeys());
         assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
@@ -88,9 +84,7 @@ public class DbEntityTest extends ServerCase {
         assertTrue(d2.getPrimaryKeys().contains(pk2));
 
         assertNotNull(d2.getGeneratedAttributes());
-        assertEquals(entity.getGeneratedAttributes().size(), d2
-                .getGeneratedAttributes()
-                .size());
+        assertEquals(entity.getGeneratedAttributes().size(), d2.getGeneratedAttributes().size());
 
         DbAttribute generated2 = (DbAttribute) d2.getAttribute(generated.getName());
         assertNotNull(generated2);
@@ -122,19 +116,25 @@ public class DbEntityTest extends ServerCase {
     }
 
     public void testFullyQualifiedName() {
-        DbEntity ent = new DbEntity("abc");
 
-        String tstName = "tst_name";
-        String schemaName = "tst_schema_name";
-        ent.setName(tstName);
+        DbEntity e1 = new DbEntity("e1");
+        assertEquals("e1", e1.getFullyQualifiedName());
 
-        assertEquals(tstName, ent.getName());
-        assertEquals(tstName, ent.getFullyQualifiedName());
+        DbEntity e2 = new DbEntity("e2");
+        e2.setSchema("s2");
+        assertEquals("e2", e2.getName());
+        assertEquals("s2.e2", e2.getFullyQualifiedName());
 
-        ent.setSchema(schemaName);
-
-        assertEquals(tstName, ent.getName());
-        assertEquals(schemaName + "." + tstName, ent.getFullyQualifiedName());
+        DbEntity e3 = new DbEntity("e3");
+        e3.setSchema("s3");
+        e3.setCatalog("c3");
+        assertEquals("e3", e3.getName());
+        assertEquals("c3.s3.e3", e3.getFullyQualifiedName());
+        
+        DbEntity e4 = new DbEntity("e4");
+        e4.setCatalog("c4");
+        assertEquals("e4", e4.getName());
+        assertEquals("c4.e4", e4.getFullyQualifiedName());
     }
 
     public void testGetPrimaryKey() {
@@ -237,67 +237,47 @@ public class DbEntityTest extends ServerCase {
     }
 
     public void testTranslateToRelatedEntityIndependentPath() {
-        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity(
-                "ARTIST");
+        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = Expression.fromString("db:paintingArray");
-        Expression translated = artistE
-                .translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:toArtist.paintingArray"), translated);
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
+        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray"), translated);
     }
 
     public void testTranslateToRelatedEntityTrimmedPath() {
-        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity(
-                "ARTIST");
+        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
-        Expression translated = artistE
-                .translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:toArtist.artistExhibitArray.toExhibit"), translated);
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
+        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.artistExhibitArray.toExhibit"),
+                translated);
     }
 
     public void testTranslateToRelatedEntitySplitHalfWay() {
-        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity(
-                "ARTIST");
+        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = Expression
-                .fromString("db:paintingArray.toPaintingInfo.TEXT_REVIEW");
-        Expression translated = artistE.translateToRelatedEntity(
-                e1,
-                "paintingArray.toGallery");
-        assertEquals(
-                "failure: " + translated,
-                Expression
-                        .fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"),
-                translated);
+        Expression e1 = Expression.fromString("db:paintingArray.toPaintingInfo.TEXT_REVIEW");
+        Expression translated = artistE.translateToRelatedEntity(e1, "paintingArray.toGallery");
+        assertEquals("failure: " + translated,
+                Expression.fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
     }
 
     public void testTranslateToRelatedEntityMatchingPath() {
-        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity(
-                "ARTIST");
+        DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
         Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
-        Expression translated = artistE.translateToRelatedEntity(
-                e1,
-                "artistExhibitArray.toExhibit");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray.toExhibit");
 
-        assertEquals(
-                "failure: " + translated,
-                Expression
-                        .fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"),
-                translated);
+        assertEquals("failure: " + translated,
+                Expression.fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
     }
 
     public void testTranslateToRelatedEntityToOne() {
-        DbEntity paintingE = runtime.getDataDomain().getEntityResolver().getDbEntity(
-                "PAINTING");
+        DbEntity paintingE = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
 
         Expression e1 = Expression.fromString("db:toArtist.ARTIST_NAME = 'aa'");
         Expression translated = paintingE.translateToRelatedEntity(e1, "toArtist");
 
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:ARTIST_NAME = 'aa'"), translated);
+        assertEquals("failure: " + translated, Expression.fromString("db:ARTIST_NAME = 'aa'"), translated);
     }
 }
