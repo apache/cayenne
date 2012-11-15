@@ -21,17 +21,15 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * @since 3.0
+ * @since 3.2 this is a top level class.
  */
-public interface QuotingStrategy {
+class NoQuotingStrategy implements QuotingStrategy {
 
-    /**
-     * Returns a properly quoted identifier.
-     */
-    String quoteString(String identifier);
+    public String quoteString(String name) {
+        return name;
+    }
 
-    /**
-     * Returns a properly quoted fully qualified name of DbEntity.
-     */
-    String quoteFullyQualifiedName(DbEntity entity);
+    public String quoteFullyQualifiedName(DbEntity entity) {
+        return entity.getFullyQualifiedName();
+    }
 }

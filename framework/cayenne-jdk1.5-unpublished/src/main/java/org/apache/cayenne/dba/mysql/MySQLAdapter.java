@@ -95,7 +95,6 @@ public class MySQLAdapter extends JdbcAdapter {
         setSupportsFkConstraints(true);
         setSupportsUniqueConstraints(true);
         setSupportsGeneratedKeys(true);
-        initIdentifiersQuotes();
     }
 
     void setSupportsFkConstraints(boolean flag) {

@@ -55,19 +55,21 @@ import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
 
 /**
- * A generic DbAdapter implementation. Can be used as a default adapter or as a superclass
- * of a concrete adapter implementation.
+ * A generic DbAdapter implementation. Can be used as a default adapter or as a
+ * superclass of a concrete adapter implementation.
  */
 public class JdbcAdapter implements DbAdapter {
-    
+
     // defines if database uses case-insensitive collation
     public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
-    
+
     final static String DEFAULT_IDENTIFIERS_START_QUOTE = "\"";
     final static String DEFAULT_IDENTIFIERS_END_QUOTE = "\"";
 
     private PkGenerator pkGenerator;
-    
+    private final QuotingStrategy noQuotingStrategy;
+    private QuotingStrategy quotingStrategy;
+
     protected TypesHandler typesHandler;
     protected ExtendedTypeMap extendedTypes;
     protected boolean supportsBatchUpdates;
@@ -77,7 +79,7 @@ public class JdbcAdapter implements DbAdapter {
 
     protected String identifiersStartQuote;
     protected String identifiersEndQuote;
-    
+
     protected ResourceLocator resourceLocator;
     protected boolean caseInsensitiveCollations;
 
@@ -86,7 +88,7 @@ public class JdbcAdapter implements DbAdapter {
      */
     @Inject
     protected BatchQueryBuilderFactory batchQueryBuilderFactory;
-    
+
     @Inject
     protected JdbcEventLogger logger;
 
@@ -112,6 +114,8 @@ public class JdbcAdapter implements DbAdapter {
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
 
+        this.noQuotingStrategy = new NoQuotingStrategy();
+
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
@@ -126,6 +130,8 @@ public class JdbcAdapter implements DbAdapter {
         this.extendedTypes = new ExtendedTypeMap();
         initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         initIdentifiersQuotes();
+
+        this.quotingStrategy = new DefaultQuotingStrategy(identifiersStartQuote, identifiersEndQuote);
     }
 
     /**
@@ -136,7 +142,7 @@ public class JdbcAdapter implements DbAdapter {
     public String getBatchTerminator() {
         return ";";
     }
-    
+
     /**
      * @since 3.1
      */
@@ -145,12 +151,13 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Locates and returns a named adapter resource. A resource can be an XML file, etc.
+     * Locates and returns a named adapter resource. A resource can be an XML
+     * file, etc.
      * <p>
-     * This implementation is based on the premise that each adapter is located in its own
-     * Java package and all resources are in the same package as well. Resource lookup is
-     * recursive, so that if DbAdapter is a subclass of another adapter, parent adapter
-     * package is searched as a failover.
+     * This implementation is based on the premise that each adapter is located
+     * in its own Java package and all resources are in the same package as
+     * well. Resource lookup is recursive, so that if DbAdapter is a subclass of
+     * another adapter, parent adapter package is searched as a failover.
      * </p>
      * 
      * @since 3.0
@@ -174,21 +181,19 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Called from {@link #initExtendedTypes(List, List, List)} to load adapter-specific
-     * types into the ExtendedTypeMap right after the default types are loaded, but before
-     * the DI overrides are. This method has specific implementations in JdbcAdapter
-     * subclasses.
+     * Called from {@link #initExtendedTypes(List, List, List)} to load
+     * adapter-specific types into the ExtendedTypeMap right after the default
+     * types are loaded, but before the DI overrides are. This method has
+     * specific implementations in JdbcAdapter subclasses.
      */
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         // noop... subclasses may override to install custom types
     }
-    
+
     /**
      * @since 3.1
      */
-    protected void initExtendedTypes(
-            List<ExtendedType> defaultExtendedTypes,
-            List<ExtendedType> userExtendedTypes,
+    protected void initExtendedTypes(List<ExtendedType> defaultExtendedTypes, List<ExtendedType> userExtendedTypes,
             List<ExtendedTypeFactory> extendedTypeFactories) {
         for (ExtendedType type : defaultExtendedTypes) {
             extendedTypes.registerType(type);
@@ -206,24 +211,23 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Creates and returns a primary key generator. This factory method should be
-     * overriden by JdbcAdapter subclasses to provide custom implementations of
-     * PKGenerator.
+     * Creates and returns a primary key generator. This factory method should
+     * be overriden by JdbcAdapter subclasses to provide custom implementations
+     * of PKGenerator.
      */
     protected PkGenerator createPkGenerator() {
         return new JdbcPkGenerator(this);
     }
 
     /**
-     * Creates and returns an {@link EJBQLTranslatorFactory} used to generate visitors for
-     * EJBQL to SQL translations. This method should be overriden by subclasses that need
-     * to customize EJBQL generation.
+     * Creates and returns an {@link EJBQLTranslatorFactory} used to generate
+     * visitors for EJBQL to SQL translations. This method should be overriden
+     * by subclasses that need to customize EJBQL generation.
      * 
      * @since 3.0
      */
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        JdbcEJBQLTranslatorFactory translatorFactory = 
-                new JdbcEJBQLTranslatorFactory();
+        JdbcEJBQLTranslatorFactory translatorFactory = new JdbcEJBQLTranslatorFactory();
         translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
         return translatorFactory;
     }
@@ -264,9 +268,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 3.0
      */
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy(table
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
 
         StringBuilder buf = new StringBuilder("DROP TABLE ");
         buf.append(context.quoteFullyQualifiedName(table));
@@ -275,8 +277,8 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns a SQL string that can be used to create database table corresponding to
-     * <code>ent</code> parameter.
+     * Returns a SQL string that can be used to create database table
+     * corresponding to <code>ent</code> parameter.
      */
     public String createTable(DbEntity entity) {
         boolean status = (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers());
@@ -293,8 +295,7 @@ public class JdbcAdapter implements DbAdapter {
             while (it.hasNext()) {
                 if (first) {
                     first = false;
-                }
-                else {
+                } else {
                     sqlBuffer.append(", ");
                 }
 
@@ -302,11 +303,8 @@ public class JdbcAdapter implements DbAdapter {
 
                 // attribute may not be fully valid, do a simple check
                 if (column.getType() == TypesMapping.NOT_DEFINED) {
-                    throw new CayenneRuntimeException("Undefined type for attribute '"
-                            + entity.getFullyQualifiedName()
-                            + "."
-                            + column.getName()
-                            + "'.");
+                    throw new CayenneRuntimeException("Undefined type for attribute '" + entity.getFullyQualifiedName()
+                            + "." + column.getName() + "'.");
                 }
 
                 createTableAppendColumn(sqlBuffer, column);
@@ -349,19 +347,15 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        boolean status = ((column.getEntity().getDataMap() != null)
-                && column.getEntity().getDataMap().isQuotingSQLIdentifiers());
+        boolean status = ((column.getEntity().getDataMap() != null) && column.getEntity().getDataMap()
+                .isQuotingSQLIdentifiers());
         QuotingStrategy context = getQuotingStrategy(status);
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? ((DbEntity) column
-                    .getEntity()).getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + entityName
-                    + "."
-                    + column.getName()
-                    + "': "
-                    + column.getType());
+            String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
+                    : "<null>";
+            throw new CayenneRuntimeException("Undefined type for attribute '" + entityName + "." + column.getName()
+                    + "': " + column.getType());
         }
 
         String type = types[0];
@@ -372,9 +366,8 @@ public class JdbcAdapter implements DbAdapter {
         if (TypesMapping.supportsLength(column.getType())) {
             int len = column.getMaxLength();
 
-            int scale = (TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT)
-                    ? column.getScale()
-                    : -1;
+            int scale = (TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT) ? column
+                    .getScale() : -1;
 
             // sanity check
             if (scale > len) {
@@ -401,12 +394,11 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.1
      */
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
-        boolean status =  (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers());
+        boolean status = (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers());
         QuotingStrategy context = getQuotingStrategy(status);
 
         if (columns == null || columns.isEmpty()) {
-            throw new CayenneRuntimeException(
-                    "Can't create UNIQUE constraint - no columns specified.");
+            throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
         }
 
         StringBuilder buf = new StringBuilder();
@@ -431,8 +423,8 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns a SQL string that can be used to create a foreign key constraint for the
-     * relationship.
+     * Returns a SQL string that can be used to create a foreign key constraint
+     * for the relationship.
      */
     public String createFkConstraint(DbRelationship rel) {
 
@@ -453,8 +445,7 @@ public class JdbcAdapter implements DbAdapter {
             if (!first) {
                 buf.append(", ");
                 refBuf.append(", ");
-            }
-            else
+            } else
                 first = false;
 
             buf.append(context.quoteString(join.getSourceName()));
@@ -477,13 +468,7 @@ public class JdbcAdapter implements DbAdapter {
         return extendedTypes;
     }
 
-    public DbAttribute buildAttribute(
-            String name,
-            String typeName,
-            int type,
-            int size,
-            int scale,
-            boolean allowNulls) {
+    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
 
         DbAttribute attr = new DbAttribute();
         attr.setName(name);
@@ -524,23 +509,16 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new JdbcActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new JdbcActionBuilder(this, node.getEntityResolver()));
     }
 
-    public void bindParameter(
-            PreparedStatement statement,
-            Object object,
-            int pos,
-            int sqlType,
-            int scale) throws SQLException, Exception {
+    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+            throws SQLException, Exception {
 
         if (object == null) {
             statement.setNull(pos, sqlType);
-        }
-        else {
-            ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(
-                    object.getClass());
+        } else {
+            ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(object.getClass());
             typeProcessor.setJdbcObject(statement, object, pos, sqlType, scale);
         }
     }
@@ -568,8 +546,8 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns a translator factory for EJBQL to SQL translation. This property is
-     * normally initialized in constructor by calling
+     * Returns a translator factory for EJBQL to SQL translation. This property
+     * is normally initialized in constructor by calling
      * {@link #createEJBQLTranslatorFactory()}, and can be overridden by calling
      * {@link #setEjbqlTranslatorFactory(EJBQLTranslatorFactory)}.
      * 
@@ -580,9 +558,10 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Sets a translator factory for EJBQL to SQL translation. This property is normally
-     * initialized in constructor by calling {@link #createEJBQLTranslatorFactory()}, so
-     * users would only override it if they need to customize EJBQL translation.
+     * Sets a translator factory for EJBQL to SQL translation. This property is
+     * normally initialized in constructor by calling
+     * {@link #createEJBQLTranslatorFactory()}, so users would only override it
+     * if they need to customize EJBQL translation.
      * 
      * @since 3.0
      */
@@ -609,13 +588,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 3.0
      */
     public QuotingStrategy getQuotingStrategy(boolean needQuotes) {
-        if (needQuotes) {
-            return new QuoteStrategy(this.getIdentifiersStartQuote(), this
-                    .getIdentifiersEndQuote());
-        }
-        else {
-            return new NoQuoteStrategy();
-        }
+        return (needQuotes) ? quotingStrategy : noQuotingStrategy;
     }
 
     /**
@@ -628,8 +601,7 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * @since 3.1
      */
-    public void setBatchQueryBuilderFactory(
-            BatchQueryBuilderFactory batchQueryBuilderFactory) {
+    public void setBatchQueryBuilderFactory(BatchQueryBuilderFactory batchQueryBuilderFactory) {
         this.batchQueryBuilderFactory = batchQueryBuilderFactory;
     }
 }
