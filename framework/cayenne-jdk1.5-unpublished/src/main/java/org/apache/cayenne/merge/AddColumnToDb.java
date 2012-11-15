@@ -40,7 +40,7 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
     protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
 
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+        sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ADD COLUMN ");
         sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
         sqlBuffer.append(" ");

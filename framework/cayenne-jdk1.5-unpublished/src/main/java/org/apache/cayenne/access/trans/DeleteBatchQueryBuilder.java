@@ -47,7 +47,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
         QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
        
         StringBuffer query = new StringBuffer("DELETE FROM ");
-        query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
 
         applyQualifier(query, batch);
 

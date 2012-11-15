@@ -42,7 +42,7 @@ public class OracleMergerFactory extends MergerFactory {
             @Override
             protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ADD ");
                 sqlBuffer.append(context.quotedIdentifier(column.getName()));
                 sqlBuffer.append(" ");
@@ -61,7 +61,7 @@ public class OracleMergerFactory extends MergerFactory {
             @Override
             protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" MODIFY ");
                 sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
@@ -82,7 +82,7 @@ public class OracleMergerFactory extends MergerFactory {
                         .isQuotingSQLIdentifiers());
 
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" MODIFY ");
 
                 adapter.createTableAppendColumn(sqlBuffer, column);
@@ -105,7 +105,7 @@ public class OracleMergerFactory extends MergerFactory {
                         .getDataMap()
                         .isQuotingSQLIdentifiers());
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" MODIFY ");
 
                 adapter.createTableAppendColumn(sqlBuffer, column);

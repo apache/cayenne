@@ -77,7 +77,7 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
 
         buf
                 .append(" FROM ")
-                .append(strategy.quoteFullyQualifiedName(updateQuery.getDbEntity()))
+                .append(strategy.quotedFullyQualifiedName(updateQuery.getDbEntity()))
                 .append(" WHERE ");
 
         it = qualifierAttributes.iterator();

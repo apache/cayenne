@@ -34,12 +34,21 @@ public interface QuotingStrategy {
     String quoteString(String identifier);
 
     /**
+     * @deprecated since 3.2 renamed to
+     *             {@link #quotedFullyQualifiedName(DbEntity)}.
+     */
+    @Deprecated
+    String quoteFullyQualifiedName(DbEntity entity);
+
+    /**
      * Builds a fully qualified name from catalog, schema, name parts of
      * DbEntity, inclosing them in quotations according to this strategy
-     * algorithm. Analog of toQuotedIdentifier(entity.getCatalog(),
-     * entity.getSchema(), entity.getName()).
+     * algorithm. Analog of "quotedIdentifier(entity.getCatalog(),
+     * entity.getSchema(), entity.getName())".
+     * 
+     * @since 3.2
      */
-    String quoteFullyQualifiedName(DbEntity entity);
+    String quotedFullyQualifiedName(DbEntity entity);
 
     /**
      * Builds a dot-separated qualifier, inclosing parts in quotations according

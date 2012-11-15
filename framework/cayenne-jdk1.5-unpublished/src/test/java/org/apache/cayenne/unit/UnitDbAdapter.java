@@ -106,7 +106,7 @@ public class UnitDbAdapter {
                 StringBuilder drop = new StringBuilder();
 
                 drop.append("ALTER TABLE ").append(
-                        strategy.quoteFullyQualifiedName(entity)).append(
+                        strategy.quotedFullyQualifiedName(entity)).append(
                         " DROP CONSTRAINT ").append(constraint);
                 executeDDL(conn, drop.toString());
             }

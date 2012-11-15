@@ -271,7 +271,7 @@ public class JdbcAdapter implements DbAdapter {
         QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
 
         StringBuilder buf = new StringBuilder("DROP TABLE ");
-        buf.append(context.quoteFullyQualifiedName(table));
+        buf.append(context.quotedFullyQualifiedName(table));
 
         return Collections.singleton(buf.toString());
     }
@@ -285,7 +285,7 @@ public class JdbcAdapter implements DbAdapter {
         QuotingStrategy context = getQuotingStrategy(status);
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ");
-        sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+        sqlBuffer.append(context.quotedFullyQualifiedName(entity));
 
         sqlBuffer.append(" (");
         // columns
@@ -404,7 +404,7 @@ public class JdbcAdapter implements DbAdapter {
         StringBuilder buf = new StringBuilder();
 
         buf.append("ALTER TABLE ");
-        buf.append(context.quoteFullyQualifiedName(source));
+        buf.append(context.quotedFullyQualifiedName(source));
         buf.append(" ADD UNIQUE (");
 
         Iterator<DbAttribute> it = columns.iterator();
@@ -436,7 +436,7 @@ public class JdbcAdapter implements DbAdapter {
 
         buf.append("ALTER TABLE ");
 
-        buf.append(context.quoteFullyQualifiedName(source));
+        buf.append(context.quotedFullyQualifiedName(source));
         buf.append(" ADD FOREIGN KEY (");
 
         boolean first = true;
@@ -454,7 +454,7 @@ public class JdbcAdapter implements DbAdapter {
 
         buf.append(") REFERENCES ");
 
-        buf.append(context.quoteFullyQualifiedName((DbEntity) rel.getTargetEntity()));
+        buf.append(context.quotedFullyQualifiedName((DbEntity) rel.getTargetEntity()));
 
         buf.append(" (").append(refBuf.toString()).append(')');
         return buf.toString();

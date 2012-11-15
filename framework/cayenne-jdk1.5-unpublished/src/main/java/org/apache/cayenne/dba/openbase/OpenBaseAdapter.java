@@ -167,7 +167,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
         StringBuilder buf = new StringBuilder();
 
         buf.append("CREATE TABLE ");
-        buf.append(context.quoteFullyQualifiedName(ent));
+        buf.append(context.quotedFullyQualifiedName(ent));
         buf.append(" (");
 
         // columns

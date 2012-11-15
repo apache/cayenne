@@ -51,7 +51,7 @@ public class IngresMergerFactory extends MergerFactory {
             @Override
             protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER COLUMN ");
                 sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
@@ -70,7 +70,7 @@ public class IngresMergerFactory extends MergerFactory {
                         .getDataMap()
                         .isQuotingSQLIdentifiers());
                 buf.append("ALTER TABLE ");
-                buf.append(context.quoteFullyQualifiedName(getEntity()));
+                buf.append(context.quotedFullyQualifiedName(getEntity()));
                 buf.append(" DROP COLUMN ");
                 buf.append(context.quotedIdentifier(getColumn().getName()));
                 buf.append(" RESTRICT ");
@@ -95,7 +95,7 @@ public class IngresMergerFactory extends MergerFactory {
                 StringBuilder refBuf = new StringBuilder();
         
                 buf.append("ALTER TABLE ");
-                buf.append(context.quoteFullyQualifiedName(source));
+                buf.append(context.quotedFullyQualifiedName(source));
         
                 // requires the ADD CONSTRAINT statement
                 buf.append(" ADD CONSTRAINT ");
@@ -121,7 +121,7 @@ public class IngresMergerFactory extends MergerFactory {
                 }
         
                 buf.append(") REFERENCES ");
-                buf.append(context.quoteFullyQualifiedName((DbEntity) rel.getTargetEntity()));
+                buf.append(context.quotedFullyQualifiedName((DbEntity) rel.getTargetEntity()));
                 buf.append(" (");
                 buf.append(refBuf.toString());
                 buf.append(')');
@@ -191,7 +191,7 @@ public class IngresMergerFactory extends MergerFactory {
                         .getDataMap()
                         .isQuotingSQLIdentifiers());
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
                 sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" ");
@@ -230,7 +230,7 @@ public class IngresMergerFactory extends MergerFactory {
                         .isQuotingSQLIdentifiers());
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
-                buf.append(context.quoteFullyQualifiedName(getEntity()));
+                buf.append(context.quotedFullyQualifiedName(getEntity()));
                 buf.append(" DROP CONSTRAINT ");
                 buf.append(fkName);
                 buf.append(" CASCADE ");

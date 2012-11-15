@@ -45,7 +45,7 @@ public class HSQLMergerFactory extends MergerFactory {
             @Override
             protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
                 sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
@@ -64,7 +64,7 @@ public class HSQLMergerFactory extends MergerFactory {
                         .getDataMap()
                         .isQuotingSQLIdentifiers());
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
                 sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" NULL");
@@ -93,7 +93,7 @@ public class HSQLMergerFactory extends MergerFactory {
                     List<String> sqls) {
                 sqls.add("ALTER TABLE "
                         + getQuotingStrategy(adapter)
-                                .quoteFullyQualifiedName(getEntity())
+                                .quotedFullyQualifiedName(getEntity())
                         + " DROP PRIMARY KEY");
             }
 

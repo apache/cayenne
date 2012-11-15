@@ -204,7 +204,7 @@ final class FlattenedArcKey {
             sql.append("')");
         }
 
-        sql.append(" FROM ").append(quoter.quoteFullyQualifiedName(joinEntity))
+        sql.append(" FROM ").append(quoter.quotedFullyQualifiedName(joinEntity))
                 .append(" WHERE ");
         int i = snapshot.size();
         for (Object key : snapshot.keySet()) {

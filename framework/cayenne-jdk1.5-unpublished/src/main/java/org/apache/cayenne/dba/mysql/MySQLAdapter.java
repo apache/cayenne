@@ -136,7 +136,7 @@ public class MySQLAdapter extends JdbcAdapter {
         // statement
         StringBuffer buf = new StringBuffer();
         QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
-        buf.append(context.quoteFullyQualifiedName(table));
+        buf.append(context.quotedFullyQualifiedName(table));
 
         return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf.toString() + " CASCADE",
                 "SET FOREIGN_KEY_CHECKS=1");

@@ -57,7 +57,7 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
         if (detectedPrimaryKeyName == null) {
             return;
         }
-        sqls.add("ALTER TABLE " + getQuotingStrategy(adapter).quoteFullyQualifiedName(getEntity())
+        sqls.add("ALTER TABLE " + getQuotingStrategy(adapter).quotedFullyQualifiedName(getEntity())
                 + " DROP CONSTRAINT " + detectedPrimaryKeyName);
     }
 
@@ -66,7 +66,7 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
 
         StringBuilder sql = new StringBuilder();
         sql.append("ALTER TABLE ");
-        sql.append(quotingStrategy.quoteFullyQualifiedName(getEntity()));
+        sql.append(quotingStrategy.quotedFullyQualifiedName(getEntity()));
         sql.append(" ADD PRIMARY KEY (");
         for (Iterator<DbAttribute> it = primaryKeyNew.iterator(); it.hasNext();) {
             sql.append(quotingStrategy.quotedIdentifier(it.next().getName()));

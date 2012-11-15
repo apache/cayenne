@@ -55,7 +55,7 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
                 .isQuotingSQLIdentifiers());
         StringBuilder buf = new StringBuilder();
         buf.append("ALTER TABLE ");
-        buf.append(context.quoteFullyQualifiedName(getEntity()));
+        buf.append(context.quotedFullyQualifiedName(getEntity()));
         buf.append(" DROP CONSTRAINT ");
         buf.append(fkName);
 

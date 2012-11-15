@@ -39,7 +39,7 @@ public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
                 .getDataMap()
                 .isQuotingSQLIdentifiers());
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+        sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
         sqlBuffer.append(" DROP COLUMN ");
         sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
 

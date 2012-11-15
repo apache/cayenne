@@ -43,7 +43,7 @@ public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
                 .getDataMap()
                 .isQuotingSQLIdentifiers());
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+        sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ALTER COLUMN ");
         sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
         sqlBuffer.append(" DROP NOT NULL");

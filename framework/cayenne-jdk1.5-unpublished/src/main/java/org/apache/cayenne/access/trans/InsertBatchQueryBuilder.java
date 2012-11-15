@@ -97,7 +97,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
         QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
 
         StringBuilder query = new StringBuilder("INSERT INTO ");
-        query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
         query.append(" (");
 
         int columnCount = 0;

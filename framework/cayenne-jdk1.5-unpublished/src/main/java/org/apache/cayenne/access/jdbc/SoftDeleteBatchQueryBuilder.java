@@ -54,7 +54,7 @@ public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
         QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
 
         StringBuffer query = new StringBuffer("UPDATE ");
-        query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
         query.append(" SET ").append(strategy.quotedIdentifier(deletedFieldName)).append(
                 " = ?");
 

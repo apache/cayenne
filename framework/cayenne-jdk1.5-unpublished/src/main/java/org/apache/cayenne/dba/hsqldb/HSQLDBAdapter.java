@@ -70,7 +70,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     protected String getTableName(DbEntity entity) {
         QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
-        return context.quoteFullyQualifiedName(entity);
+        return context.quotedFullyQualifiedName(entity);
     }
 
     /**

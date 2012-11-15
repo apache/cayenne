@@ -48,7 +48,7 @@ public class H2MergerFactory extends MergerFactory {
             @Override
             protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
                 sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
@@ -94,7 +94,7 @@ public class H2MergerFactory extends MergerFactory {
                     List<String> sqls) {
                 sqls.add("ALTER TABLE "
                         + getQuotingStrategy(adapter)
-                                .quoteFullyQualifiedName(getEntity())
+                                .quotedFullyQualifiedName(getEntity())
                         + " DROP PRIMARY KEY");
             }
 

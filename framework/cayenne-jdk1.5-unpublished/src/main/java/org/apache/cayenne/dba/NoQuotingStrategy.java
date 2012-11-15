@@ -32,8 +32,13 @@ class NoQuotingStrategy implements QuotingStrategy {
     public String quoteString(String name) {
         return quotedIdentifier(name);
     }
-
+    
+    @Deprecated
     public String quoteFullyQualifiedName(DbEntity entity) {
+        return quotedFullyQualifiedName(entity);
+    }
+
+    public String quotedFullyQualifiedName(DbEntity entity) {
         return quotedIdentifier(entity.getCatalog(), entity.getSchema(), entity.getName());
     }
 

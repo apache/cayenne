@@ -221,7 +221,7 @@ public class OracleAdapter extends JdbcAdapter {
                 .getDataMap()
                 .isQuotingSQLIdentifiers());
         StringBuffer buf = new StringBuffer("DROP TABLE ");
-        buf.append(context.quoteFullyQualifiedName(table));
+        buf.append(context.quotedFullyQualifiedName(table));
 
         buf.append(" CASCADE CONSTRAINTS");
         return Collections.singleton(buf.toString());

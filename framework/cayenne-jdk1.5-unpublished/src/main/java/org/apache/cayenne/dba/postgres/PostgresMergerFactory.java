@@ -39,7 +39,7 @@ public class PostgresMergerFactory extends MergerFactory {
             protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 // http://www.postgresql.org/docs/8.2/static/sql-altertable.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
                 sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" TYPE ");

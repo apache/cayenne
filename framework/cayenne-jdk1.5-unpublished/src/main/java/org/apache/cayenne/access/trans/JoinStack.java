@@ -85,7 +85,7 @@ public class JoinStack {
 
     void appendRootWithQuoteSqlIdentifiers(Appendable out, DbEntity rootEntity) throws IOException {
 
-        out.append(quotingStrategy.quoteFullyQualifiedName(rootEntity));
+        out.append(quotingStrategy.quotedFullyQualifiedName(rootEntity));
         out.append(' ');
         out.append(quotingStrategy.quotedIdentifier(rootNode.getTargetTableAlias()));
     }
@@ -121,7 +121,7 @@ public class JoinStack {
         }
 
         out.append(' ');
-        out.append(quotingStrategy.quoteFullyQualifiedName(targetEntity));
+        out.append(quotingStrategy.quotedFullyQualifiedName(targetEntity));
 
         out.append(' ');
         out.append(quotingStrategy.quotedIdentifier(targetAlias));

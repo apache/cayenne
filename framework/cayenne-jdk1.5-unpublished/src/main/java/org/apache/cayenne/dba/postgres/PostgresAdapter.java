@@ -143,7 +143,7 @@ public class PostgresAdapter extends JdbcAdapter {
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
 
-        buf.append(context.quoteFullyQualifiedName(ent));
+        buf.append(context.quotedFullyQualifiedName(ent));
 
         buf.append(" (");
 
@@ -264,7 +264,7 @@ public class PostgresAdapter extends JdbcAdapter {
                 .getDataMap()
                 .isQuotingSQLIdentifiers());
         StringBuffer buf = new StringBuffer("DROP TABLE ");
-        buf.append(context.quoteFullyQualifiedName(table));
+        buf.append(context.quotedFullyQualifiedName(table));
         buf.append(" CASCADE");
         return Collections.singleton(buf.toString());
     }

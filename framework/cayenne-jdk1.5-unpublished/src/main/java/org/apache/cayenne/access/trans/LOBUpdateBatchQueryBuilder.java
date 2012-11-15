@@ -79,7 +79,7 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
         QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
 		
         StringBuffer query = new StringBuffer("UPDATE ");
-		query.append(strategy.quoteFullyQualifiedName(batch.getDbEntity()));
+		query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
 		query.append(" SET ");
 
         int len = updatedDbAttributes.size();

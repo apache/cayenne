@@ -52,7 +52,7 @@ public class MySQLMergerFactory extends MergerFactory {
                         .isQuotingSQLIdentifiers());
 
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" CHANGE ");
                 sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" ");
@@ -79,7 +79,7 @@ public class MySQLMergerFactory extends MergerFactory {
                         .isQuotingSQLIdentifiers());
 
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" CHANGE ");
                 sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" ");
@@ -103,7 +103,7 @@ public class MySQLMergerFactory extends MergerFactory {
             protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" MODIFY ");
                 sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
@@ -132,7 +132,7 @@ public class MySQLMergerFactory extends MergerFactory {
                 StringBuilder buf = new StringBuilder();
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 buf.append("ALTER TABLE ");
-                buf.append(context.quoteFullyQualifiedName(entity));
+                buf.append(context.quotedFullyQualifiedName(entity));
                 buf.append(" DROP FOREIGN KEY ");
                 buf.append(fkName);
 
@@ -159,7 +159,7 @@ public class MySQLMergerFactory extends MergerFactory {
                     List<String> sqls) {
                 sqls.add("ALTER TABLE "
                         + getQuotingStrategy(adapter)
-                                .quoteFullyQualifiedName(getEntity())
+                                .quotedFullyQualifiedName(getEntity())
                         + " DROP PRIMARY KEY");
             }
 

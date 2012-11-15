@@ -53,7 +53,7 @@ public class SybaseMergerFactory extends MergerFactory {
                         .getDataMap()
                         .isQuotingSQLIdentifiers());
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ADD ");
                 boolean magnatory = column.isMandatory();
                 column.setMandatory(false);
@@ -81,7 +81,7 @@ public class SybaseMergerFactory extends MergerFactory {
                         .getDataMap()
                         .isQuotingSQLIdentifiers());
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
+                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" DROP ");
                 sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
 
@@ -145,7 +145,7 @@ public class SybaseMergerFactory extends MergerFactory {
             protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" MODIFY ");
                 sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
@@ -163,7 +163,7 @@ public class SybaseMergerFactory extends MergerFactory {
                 .getDataMap()
                 .isQuotingSQLIdentifiers());
         sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quoteFullyQualifiedName(entity));
+        sqlBuffer.append(context.quotedFullyQualifiedName(entity));
         sqlBuffer.append(" MODIFY ");
         adapter.createTableAppendColumn(sqlBuffer, column);
 
