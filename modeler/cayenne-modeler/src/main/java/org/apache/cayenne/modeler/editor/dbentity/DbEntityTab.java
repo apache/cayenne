@@ -61,22 +61,23 @@ import com.jgoodies.forms.layout.FormLayout;
  * Detail view of the DbEntity properties.
  * 
  */
-public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
-        DbEntityDisplayListener {
+public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, DbEntityDisplayListener {
 
     static final String PK_DEFAULT_GENERATOR = "Default";
     static final String PK_DB_GENERATOR = "Database-Generated";
     static final String PK_CUSTOM_SEQUENCE_GENERATOR = "Custom Sequence";
 
-    static final String[] PK_GENERATOR_TYPES = new String[] {
-            PK_DEFAULT_GENERATOR, PK_DB_GENERATOR, PK_CUSTOM_SEQUENCE_GENERATOR
-    };
+    static final String[] PK_GENERATOR_TYPES = new String[] { PK_DEFAULT_GENERATOR, PK_DB_GENERATOR,
+            PK_CUSTOM_SEQUENCE_GENERATOR };
 
     protected ProjectController mediator;
 
     protected TextAdapter name;
+    protected TextAdapter catalog;
     protected TextAdapter schema;
     protected TextAdapter qualifier;
+
+    protected JLabel catalogLabel;
     protected JLabel schemaLabel;
 
     protected JComboBox pkGeneratorType;
@@ -100,10 +101,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         toolBar.addSeparator();
 
         toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
-        toolBar
-                .add(actionManager
-                        .getAction(CreateRelationshipAction.class)
-                        .buildButton());
+        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton());
         toolBar.addSeparator();
         toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
         toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton());
@@ -115,6 +113,15 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
                 setEntityName(text);
             }
         };
+
+        catalogLabel = new JLabel("Catalog:");
+        catalog = new TextAdapter(new JTextField()) {
+
+            protected void updateModel(String text) throws ValidationException {
+                setCatalog(text);
+            }
+        };
+
         schemaLabel = new JLabel("Schema:");
         schema = new TextAdapter(new JTextField()) {
 
@@ -135,12 +142,9 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
         pkGeneratorDetailLayout = new CardLayout();
         pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout);
-        pkGeneratorDetail
-                .add(new PKDefaultGeneratorPanel(mediator), PK_DEFAULT_GENERATOR);
+        pkGeneratorDetail.add(new PKDefaultGeneratorPanel(mediator), PK_DEFAULT_GENERATOR);
         pkGeneratorDetail.add(new PKDBGeneratorPanel(mediator), PK_DB_GENERATOR);
-        pkGeneratorDetail.add(
-                new PKCustomSequenceGeneratorPanel(mediator),
-                PK_CUSTOM_SEQUENCE_GENERATOR);
+        pkGeneratorDetail.add(new PKCustomSequenceGeneratorPanel(mediator), PK_CUSTOM_SEQUENCE_GENERATOR);
 
         // assemble
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
@@ -149,6 +153,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
         builder.appendSeparator("DbEntity Configuration");
         builder.append("DbEntity Name:", name.getComponent());
+        builder.append(catalogLabel, catalog.getComponent());
         builder.append(schemaLabel, schema.getComponent());
         builder.append("Qualifier", qualifier.getComponent());
 
@@ -172,15 +177,13 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         pkGeneratorType.addItemListener(new ItemListener() {
 
             public void itemStateChanged(ItemEvent e) {
-                pkGeneratorDetailLayout.show(pkGeneratorDetail, (String) pkGeneratorType
-                        .getSelectedItem());
+                pkGeneratorDetailLayout.show(pkGeneratorDetail, (String) pkGeneratorType.getSelectedItem());
 
                 for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
                     if (pkGeneratorDetail.getComponent(i).isVisible()) {
 
                         DbEntity entity = mediator.getCurrentDbEntity();
-                        PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail
-                                .getComponent(i);
+                        PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail.getComponent(i);
                         panel.onInit(entity);
                         break;
                     }
@@ -190,8 +193,8 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
     }
 
     public void processExistingSelection(EventObject e) {
-        EntityDisplayEvent ede = new EntityDisplayEvent(this, mediator
-                .getCurrentDbEntity(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
+        EntityDisplayEvent ede = new EntityDisplayEvent(this, mediator.getCurrentDbEntity(),
+                mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
         mediator.fireDbEntityDisplayEvent(ede);
     }
 
@@ -202,7 +205,8 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
             return;
         }
 
-        // if entity hasn't changed, still notify PK Generator panels, as entity PK may
+        // if entity hasn't changed, still notify PK Generator panels, as entity
+        // PK may
         // have changed...
 
         for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
@@ -210,11 +214,12 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
         }
 
         if (!e.isEntityChanged()) {
-            //name.getComponent().requestFocusInWindow();
+            // name.getComponent().requestFocusInWindow();
             return;
         }
 
         name.setText(entity.getName());
+        catalog.setText(entity.getCatalog());
         schema.setText(entity.getSchema());
         qualifier.setText(new ExpressionConvertor().valueAsString(entity.getQualifier()));
 
@@ -222,8 +227,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
         if (entity.getPrimaryKeyGenerator() != null) {
             type = PK_CUSTOM_SEQUENCE_GENERATOR;
-        }
-        else {
+        } else {
             for (DbAttribute a : entity.getPrimaryKeys()) {
                 if (a.isGenerated()) {
                     type = PK_DB_GENERATOR;
@@ -231,6 +235,9 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
                 }
             }
         }
+
+        catalogLabel.setEnabled(true);
+        catalog.getComponent().setEnabled(true);
 
         schemaLabel.setEnabled(true);
         schema.getComponent().setEnabled(true);
@@ -255,19 +262,29 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
 
         if (newName == null) {
             throw new ValidationException("Entity name is required.");
-        }
-        else if (entity.getDataMap().getDbEntity(newName) == null) {
+        } else if (entity.getDataMap().getDbEntity(newName) == null) {
             // completely new name, set new name for entity
             EntityEvent e = new EntityEvent(this, entity, entity.getName());
             entity.setName(newName);
             // ProjectUtil.setDbEntityName(entity, newName);
             mediator.fireDbEntityEvent(e);
-        }
-        else {
+        } else {
             // there is an entity with the same name
-            throw new ValidationException("There is another entity with name '"
-                    + newName
-                    + "'.");
+            throw new ValidationException("There is another entity with name '" + newName + "'.");
+        }
+    }
+
+    void setCatalog(String text) {
+
+        if (text != null && text.trim().length() == 0) {
+            text = null;
+        }
+
+        DbEntity ent = mediator.getCurrentDbEntity();
+
+        if (ent != null && !Util.nullSafeEquals(ent.getCatalog(), text)) {
+            ent.setCatalog(text);
+            mediator.fireDbEntityEvent(new EntityEvent(this, ent));
         }
     }
 
@@ -284,7 +301,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
             mediator.fireDbEntityEvent(new EntityEvent(this, ent));
         }
     }
-    
+
     void setQualifier(String qualifier) {
 
         if (qualifier != null && qualifier.trim().length() == 0) {
@@ -302,12 +319,11 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor,
                     ent.setQualifier(exp);
                     mediator.fireDbEntityEvent(new EntityEvent(this, ent));
                 }
-            }
-            catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ex) {
                 // unparsable qualifier
                 throw new ValidationException(ex.getMessage());
             }
-            
+
         }
     }
 }
