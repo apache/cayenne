@@ -40,6 +40,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.datamap.CatalogUpdateController;
 import org.apache.cayenne.modeler.dialog.datamap.LockingUpdateController;
 import org.apache.cayenne.modeler.dialog.datamap.PackageUpdateController;
 import org.apache.cayenne.modeler.dialog.datamap.SchemaUpdateController;
@@ -68,11 +69,13 @@ public class DataMapView extends JPanel {
     protected JLabel location;
     protected JComboBox nodeSelector;
     protected JCheckBox defaultLockType;
+    protected TextAdapter defaultCatalog;
     protected TextAdapter defaultSchema;
     protected TextAdapter defaultPackage;
     protected TextAdapter defaultSuperclass;
     protected JCheckBox quoteSQLIdentifiers;
 
+    protected JButton updateDefaultCatalog;
     protected JButton updateDefaultSchema;
     protected JButton updateDefaultPackage;
     protected JButton updateDefaultSuperclass;
@@ -107,6 +110,14 @@ public class DataMapView extends JPanel {
         nodeSelector = Application.getWidgetFactory().createUndoableComboBox();
         nodeSelector.setRenderer(CellRenderers.listRendererWithIcons());
 
+        updateDefaultCatalog = new JButton("Update...");
+        defaultCatalog = new TextAdapter(new JTextField()) {
+
+            protected void updateModel(String text) {
+                setDefaultCatalog(text);
+            }
+        };
+        
         updateDefaultSchema = new JButton("Update...");
         defaultSchema = new TextAdapter(new JTextField()) {
 
@@ -167,6 +178,7 @@ public class DataMapView extends JPanel {
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
 
         builder.appendSeparator("Entity Defaults");
+        builder.append("DB Catalog:", defaultCatalog.getComponent(), updateDefaultCatalog);
         builder.append("DB Schema:", defaultSchema.getComponent(), updateDefaultSchema);
         builder.append(
                 "Java Package:",
@@ -247,6 +259,13 @@ public class DataMapView extends JPanel {
                 updateDefaultClientSuperclass();
             }
         });
+        
+        updateDefaultCatalog.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                updateDefaultCatalog();
+            }
+        });
 
         updateDefaultSchema.addActionListener(new ActionListener() {
 
@@ -319,6 +338,7 @@ public class DataMapView extends JPanel {
         // init default fields
         defaultLockType.setSelected(map.getDefaultLockType() != ObjEntity.LOCK_TYPE_NONE);
         defaultPackage.setText(map.getDefaultPackage());
+        defaultCatalog.setText(map.getDefaultCatalog());
         defaultSchema.setText(map.getDefaultSchema());
         defaultSuperclass.setText(map.getDefaultSuperclass());
 
@@ -455,6 +475,26 @@ public class DataMapView extends JPanel {
         dataMap.setDefaultClientSuperclass(newSuperclass);
         eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
     }
+    
+    void setDefaultCatalog(String newCatalog) {
+        DataMap dataMap = eventController.getCurrentDataMap();
+
+        if (dataMap == null) {
+            return;
+        }
+
+        if (newCatalog != null && newCatalog.trim().length() == 0) {
+            newCatalog = null;
+        }
+
+        String oldCatalog = dataMap.getDefaultCatalog();
+        if (Util.nullSafeEquals(newCatalog, oldCatalog)) {
+            return;
+        }
+
+        dataMap.setDefaultCatalog(newCatalog);
+        eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
+    }
 
     void setDefaultSchema(String newSchema) {
         DataMap dataMap = eventController.getCurrentDataMap();
@@ -564,6 +604,18 @@ public class DataMapView extends JPanel {
 
             // announce DataNode change
             eventController.fireDataNodeEvent(new DataNodeEvent(this, node));
+        }
+    }
+    
+    void updateDefaultCatalog() {
+        DataMap dataMap = eventController.getCurrentDataMap();
+
+        if (dataMap == null) {
+            return;
+        }
+
+        if (dataMap.getDbEntities().size() > 0 || dataMap.getProcedures().size() > 0) {
+            new CatalogUpdateController(eventController, dataMap).startupAction();
         }
     }
 

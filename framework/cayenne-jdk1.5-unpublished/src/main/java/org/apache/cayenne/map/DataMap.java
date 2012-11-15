@@ -74,6 +74,13 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     public static final String DEFAULT_CLIENT_SUPERCLASS_PROPERTY = "defaultClientSuperclass";
 
     /**
+     * Defines the name of the property for default DB catalog.
+     * 
+     * @since 3.2
+     */
+    public static final String DEFAULT_CATALOG_PROPERTY = "defaultCatalog";
+    
+    /**
      * Defines the name of the property for default DB schema.
      * 
      * @since 1.1
@@ -115,6 +122,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
     protected Boolean quotingSQLIdentifiers;
 
+    protected String defaultCatalog;
     protected String defaultSchema;
     protected String defaultPackage;
 
@@ -237,6 +245,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
         Object lockType = properties.get(DEFAULT_LOCK_TYPE_PROPERTY);
         Object packageName = properties.get(DEFAULT_PACKAGE_PROPERTY);
+        Object catalog = properties.get(DEFAULT_CATALOG_PROPERTY);
         Object schema = properties.get(DEFAULT_SCHEMA_PROPERTY);
         Object superclass = properties.get(DEFAULT_SUPERCLASS_PROPERTY);
         Object clientEntities = properties.get(CLIENT_SUPPORTED_PROPERTY);
@@ -253,6 +262,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         this.quotingSQLIdentifiers = (quoteSqlIdentifier != null) ? "true"
                 .equalsIgnoreCase(quoteSqlIdentifier.toString()) : false;
         this.defaultSchema = (schema != null) ? schema.toString() : null;
+        this.defaultCatalog = (catalog != null) ? catalog.toString() : null;
         this.defaultSuperclass = (superclass != null) ? superclass.toString() : null;
         this.clientSupported = (clientEntities != null) ? "true"
                 .equalsIgnoreCase(clientEntities.toString()) : false;
@@ -325,6 +335,10 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
         if (!Util.isEmptyString(defaultPackage)) {
             encoder.printProperty(DEFAULT_PACKAGE_PROPERTY, defaultPackage);
+        }
+        
+        if (!Util.isEmptyString(defaultCatalog)) {
+            encoder.printProperty(DEFAULT_CATALOG_PROPERTY, defaultCatalog);
         }
 
         if (!Util.isEmptyString(defaultSchema)) {
@@ -1285,5 +1299,19 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      */
     public void setConfigurationSource(Resource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public String getDefaultCatalog() {
+        return defaultCatalog;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public void setDefaultCatalog(String defaultCatalog) {
+        this.defaultCatalog = defaultCatalog;
     }
 }

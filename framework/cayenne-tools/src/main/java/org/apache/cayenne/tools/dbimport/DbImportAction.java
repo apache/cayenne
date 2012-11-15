@@ -235,11 +235,19 @@ public class DbImportAction {
             dataMap.setDefaultPackage(defaultPackage);
         }
 
+        // do not override default catalog of existing DataMap unless it is
+        // explicitly requested by the plugin caller, and the provided catalog is
+        // not a pattern
+        String catalog = parameters.getCatalog();
+        if (catalog != null && catalog.length() > 0 && catalog.indexOf('%') < 0) {
+            dataMap.setDefaultCatalog(catalog);
+        }
+        
         // do not override default schema of existing DataMap unless it is
         // explicitly requested by the plugin caller, and the provided schema is
         // not a pattern
         String schema = parameters.getSchema();
-        if (schema != null && schema.length() > 0 && schema.indexOf('%') >= 0) {
+        if (schema != null && schema.length() > 0 && schema.indexOf('%') < 0) {
             dataMap.setDefaultSchema(schema);
         }
 
