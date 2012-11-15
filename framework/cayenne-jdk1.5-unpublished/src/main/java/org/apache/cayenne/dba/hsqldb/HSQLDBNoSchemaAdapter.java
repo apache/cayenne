@@ -27,6 +27,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 
@@ -51,19 +52,20 @@ public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
      */
     @Override
     protected String getTableName(DbEntity entity) {
-        return entity.getName();
+        QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
+        return context.quotedIdentifier(entity.getName());
     }
 
     /**
-     * Generate unqualified name.
+     * Returns NULL.
      * 
      * @since 1.2
      */
     @Override
     protected String getSchemaName(DbEntity entity) {
-        return "";
+        return null;
     }
-
+ 
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
         // hsqldb doesn't support schema namespaces, so remove if found

@@ -74,6 +74,16 @@ public class HSQLDBAdapter extends JdbcAdapter {
     }
 
     /**
+     * Returns DbEntity schema name for 1.8 and on. Subclass generates
+     * unqualified name.
+     * 
+     * @since 1.2
+     */
+    protected String getSchemaName(DbEntity entity) {
+        return entity.getSchema();
+    }
+
+    /**
      * Uses special action builder to create the right action.
      * 
      * @since 1.2
