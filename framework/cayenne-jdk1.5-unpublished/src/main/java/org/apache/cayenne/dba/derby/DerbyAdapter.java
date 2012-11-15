@@ -158,7 +158,7 @@ public class DerbyAdapter extends JdbcAdapter {
         // note that max length for types like XYZ FOR BIT DATA must be entered in the
         // middle of type name, e.g. VARCHAR (100) FOR BIT DATA.
 
-        sqlBuffer.append(context.quoteString(column.getName()));
+        sqlBuffer.append(context.quotedIdentifier(column.getName()));
 
         sqlBuffer.append(' ');
         if (length.length() > 0 && type.endsWith(FOR_BIT_DATA_SUFFIX)) {

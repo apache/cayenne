@@ -87,7 +87,7 @@ public class JoinStack {
 
         out.append(quotingStrategy.quoteFullyQualifiedName(rootEntity));
         out.append(' ');
-        out.append(quotingStrategy.quoteString(rootNode.getTargetTableAlias()));
+        out.append(quotingStrategy.quotedIdentifier(rootNode.getTargetTableAlias()));
     }
 
     /**
@@ -124,7 +124,7 @@ public class JoinStack {
         out.append(quotingStrategy.quoteFullyQualifiedName(targetEntity));
 
         out.append(' ');
-        out.append(quotingStrategy.quoteString(targetAlias));
+        out.append(quotingStrategy.quotedIdentifier(targetAlias));
         out.append(" ON (");
 
         List<DbJoin> joins = relationship.getJoins();
@@ -135,13 +135,9 @@ public class JoinStack {
                 out.append(" AND ");
             }
 
-            out.append(quotingStrategy.quoteString(srcAlias));
-            out.append('.');
-            out.append(quotingStrategy.quoteString(join.getSourceName()));
+            out.append(quotingStrategy.quotedIdentifier(srcAlias, join.getSourceName()));
             out.append(" = ");
-            out.append(quotingStrategy.quoteString(targetAlias));
-            out.append('.');
-            out.append(quotingStrategy.quoteString(join.getTargetName()));
+            out.append(quotingStrategy.quotedIdentifier(targetAlias, join.getTargetName()));
         }
 
         /**

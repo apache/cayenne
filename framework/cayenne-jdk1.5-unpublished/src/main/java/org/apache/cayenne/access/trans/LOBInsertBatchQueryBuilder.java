@@ -70,7 +70,7 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
 
 		for (Iterator<DbAttribute> i = dbAttributes.iterator(); i.hasNext();) {
 			DbAttribute attribute = i.next();
-			query.append(strategy.quoteString(attribute.getName()));
+			query.append(strategy.quotedIdentifier(attribute.getName()));
 			if (i.hasNext()) {
 				query.append(", ");
 			}

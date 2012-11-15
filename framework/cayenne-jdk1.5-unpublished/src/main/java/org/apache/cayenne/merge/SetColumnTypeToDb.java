@@ -50,7 +50,7 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ALTER ");
-        sqlBuffer.append(context.quoteString(columnNew.getName()));
+        sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
         sqlBuffer.append(" TYPE ");
     }
 

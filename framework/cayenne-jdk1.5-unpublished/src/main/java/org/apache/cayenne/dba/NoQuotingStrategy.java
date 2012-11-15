@@ -25,11 +25,35 @@ import org.apache.cayenne.map.DbEntity;
  */
 class NoQuotingStrategy implements QuotingStrategy {
 
+    /**
+     * @deprecated since 3.2
+     */
+    @Deprecated
     public String quoteString(String name) {
-        return name;
+        return quotedIdentifier(name);
     }
 
     public String quoteFullyQualifiedName(DbEntity entity) {
-        return entity.getFullyQualifiedName();
+        return quotedIdentifier(entity.getCatalog(), entity.getSchema(), entity.getName());
+    }
+
+    public String quotedIdentifier(String... fqnParts) {
+
+        if (fqnParts.length == 1) {
+            return fqnParts[0];
+        }
+
+        StringBuilder buffer = new StringBuilder();
+
+        for (String part : fqnParts) {
+
+            if (buffer.length() > 0) {
+                buffer.append(".");
+            }
+
+            buffer.append(part);
+        }
+
+        return buffer.toString();
     }
 }

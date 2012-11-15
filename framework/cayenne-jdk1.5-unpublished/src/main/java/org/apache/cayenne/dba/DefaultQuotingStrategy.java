@@ -33,23 +33,31 @@ class DefaultQuotingStrategy implements QuotingStrategy {
         this.endQuote = endQuote;
     }
 
+    /**
+     * @deprecated since 3.2
+     */
+    @Deprecated
     public String quoteString(String name) {
-        return startQuote + name + endQuote;
+        return quotedIdentifier(name);
     }
 
     public String quoteFullyQualifiedName(DbEntity entity) {
-        StringBuilder buf = new StringBuilder();
-        
-        if(entity.getCatalog() != null) {
-            buf.append(quoteString(entity.getCatalog())).append(".");
+        return quotedIdentifier(entity.getCatalog(), entity.getSchema(), entity.getName());
+    }
+
+    public String quotedIdentifier(String... fqnParts) {
+
+        StringBuilder buffer = new StringBuilder();
+
+        for (String part : fqnParts) {
+
+            if (buffer.length() > 0) {
+                buffer.append(".");
+            }
+
+            buffer.append(startQuote).append(part).append(endQuote);
         }
-        
-        if (entity.getSchema() != null) {
-            buf.append(quoteString(entity.getSchema())).append(".");
-        }
-        
-        buf.append(quoteString(entity.getName()));
-        
-        return buf.toString();
+
+        return buffer.toString();
     }
 }

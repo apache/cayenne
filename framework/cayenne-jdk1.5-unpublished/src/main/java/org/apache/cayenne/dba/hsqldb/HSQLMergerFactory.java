@@ -47,7 +47,7 @@ public class HSQLMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(context.quoteString(columnNew.getName()));
+                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
             }
         };
@@ -66,7 +66,7 @@ public class HSQLMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quoteString(getColumn().getName()));
+                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" NULL");
 
                 return Collections.singletonList(sqlBuffer.toString());

@@ -53,7 +53,7 @@ public class IngresMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quoteString(columnNew.getName()));
+                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
            }
         };
@@ -72,7 +72,7 @@ public class IngresMergerFactory extends MergerFactory {
                 buf.append("ALTER TABLE ");
                 buf.append(context.quoteFullyQualifiedName(getEntity()));
                 buf.append(" DROP COLUMN ");
-                buf.append(context.quoteString(getColumn().getName()));
+                buf.append(context.quotedIdentifier(getColumn().getName()));
                 buf.append(" RESTRICT ");
 
                 return Collections.singletonList(buf.toString());
@@ -104,7 +104,7 @@ public class IngresMergerFactory extends MergerFactory {
                         + "_"
                         + (long) (System.currentTimeMillis() / (Math.random() * 100000));
         
-                buf.append(context.quoteString(name));
+                buf.append(context.quotedIdentifier(name));
                 buf.append(" FOREIGN KEY (");
         
                 boolean first = true;
@@ -116,8 +116,8 @@ public class IngresMergerFactory extends MergerFactory {
                     else
                         first = false;
         
-                    buf.append(context.quoteString(join.getSourceName()));
-                    refBuf.append(context.quoteString(join.getTargetName()));
+                    buf.append(context.quotedIdentifier(join.getSourceName()));
+                    refBuf.append(context.quotedIdentifier(join.getTargetName()));
                 }
         
                 buf.append(") REFERENCES ");
@@ -162,7 +162,7 @@ public class IngresMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(getEntity().getFullyQualifiedName());
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quoteString(getColumn().getName()));
+                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
               
@@ -193,7 +193,7 @@ public class IngresMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quoteString(getColumn().getName()));
+                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
               

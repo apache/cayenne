@@ -27,11 +27,26 @@ public interface QuotingStrategy {
 
     /**
      * Returns a properly quoted identifier.
+     * 
+     * @deprecated use {@link #quotedIdentifier(String...)}
      */
+    @Deprecated
     String quoteString(String identifier);
 
     /**
-     * Returns a properly quoted fully qualified name of DbEntity.
+     * Builds a fully qualified name from catalog, schema, name parts of
+     * DbEntity, inclosing them in quotations according to this strategy
+     * algorithm. Analog of toQuotedIdentifier(entity.getCatalog(),
+     * entity.getSchema(), entity.getName()).
      */
     String quoteFullyQualifiedName(DbEntity entity);
+
+    /**
+     * Builds a dot-separated qualifier, inclosing parts in quotations according
+     * to this strategy algorithm. Any of the parts can be null, in which case
+     * it will be skipped.
+     * 
+     * @since 3.2
+     */
+    String quotedIdentifier(String... identifierParts);
 }

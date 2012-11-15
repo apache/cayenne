@@ -42,7 +42,7 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ADD COLUMN ");
-        sqlBuffer.append(context.quoteString(getColumn().getName()));
+        sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
         sqlBuffer.append(" ");
     }
 

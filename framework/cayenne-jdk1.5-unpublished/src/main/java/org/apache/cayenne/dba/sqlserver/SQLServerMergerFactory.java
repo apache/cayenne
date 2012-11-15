@@ -48,7 +48,7 @@ public class SQLServerMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quoteString(columnNew.getName()));
+                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
             }
         };
@@ -64,7 +64,7 @@ public class SQLServerMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" ADD ");
-                sqlBuffer.append(context.quoteString(column.getName()));
+                sqlBuffer.append(context.quotedIdentifier(column.getName()));
                 sqlBuffer.append(" ");
             }
         };

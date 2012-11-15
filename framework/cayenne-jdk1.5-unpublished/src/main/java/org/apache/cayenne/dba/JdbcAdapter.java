@@ -335,7 +335,7 @@ public class JdbcAdapter implements DbAdapter {
 
                 DbAttribute at = pkit.next();
 
-                sqlBuffer.append(context.quoteString(at.getName()));
+                sqlBuffer.append(context.quotedIdentifier(at.getName()));
             }
             sqlBuffer.append(')');
         }
@@ -359,7 +359,7 @@ public class JdbcAdapter implements DbAdapter {
         }
 
         String type = types[0];
-        sqlBuffer.append(context.quoteString(column.getName()));
+        sqlBuffer.append(context.quotedIdentifier(column.getName()));
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s
@@ -409,12 +409,12 @@ public class JdbcAdapter implements DbAdapter {
 
         Iterator<DbAttribute> it = columns.iterator();
         DbAttribute first = it.next();
-        buf.append(context.quoteString(first.getName()));
+        buf.append(context.quotedIdentifier(first.getName()));
 
         while (it.hasNext()) {
             DbAttribute next = it.next();
             buf.append(", ");
-            buf.append(context.quoteString(next.getName()));
+            buf.append(context.quotedIdentifier(next.getName()));
         }
 
         buf.append(")");
@@ -448,8 +448,8 @@ public class JdbcAdapter implements DbAdapter {
             } else
                 first = false;
 
-            buf.append(context.quoteString(join.getSourceName()));
-            refBuf.append(context.quoteString(join.getTargetName()));
+            buf.append(context.quotedIdentifier(join.getSourceName()));
+            refBuf.append(context.quotedIdentifier(join.getTargetName()));
         }
 
         buf.append(") REFERENCES ");

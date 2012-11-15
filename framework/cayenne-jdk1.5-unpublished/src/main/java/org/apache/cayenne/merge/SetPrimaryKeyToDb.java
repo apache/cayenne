@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -56,20 +57,19 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
         if (detectedPrimaryKeyName == null) {
             return;
         }
-        sqls.add("ALTER TABLE "
-                + getQuotingStrategy(adapter)
-                        .quoteFullyQualifiedName(getEntity())
-                + " DROP CONSTRAINT "
-                + detectedPrimaryKeyName);
+        sqls.add("ALTER TABLE " + getQuotingStrategy(adapter).quoteFullyQualifiedName(getEntity())
+                + " DROP CONSTRAINT " + detectedPrimaryKeyName);
     }
 
     protected void appendAddNewPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
+        QuotingStrategy quotingStrategy = getQuotingStrategy(adapter);
+
         StringBuilder sql = new StringBuilder();
         sql.append("ALTER TABLE ");
-        sql.append(getQuotingStrategy(adapter).quoteFullyQualifiedName(getEntity()));
+        sql.append(quotingStrategy.quoteFullyQualifiedName(getEntity()));
         sql.append(" ADD PRIMARY KEY (");
         for (Iterator<DbAttribute> it = primaryKeyNew.iterator(); it.hasNext();) {
-            sql.append(getQuotingStrategy(adapter).quoteString(it.next().getName()));
+            sql.append(quotingStrategy.quotedIdentifier(it.next().getName()));
             if (it.hasNext()) {
                 sql.append(", ");
             }
@@ -79,10 +79,7 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
     }
 
     public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetPrimaryKeyToModel(
-                getEntity(),
-                primaryKeyNew,
-                primaryKeyOriginal,
+        return factory.createSetPrimaryKeyToModel(getEntity(), primaryKeyNew, primaryKeyOriginal,
                 detectedPrimaryKeyName);
     }
 

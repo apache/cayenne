@@ -37,7 +37,7 @@ public class FlavoredDBHelper extends DBHelper {
 
     @Override
     protected String quote(String sqlIdentifier) {
-        return quotingStrategy.quoteString(sqlIdentifier);
+        return quotingStrategy.quotedIdentifier(sqlIdentifier);
     }
 
 }

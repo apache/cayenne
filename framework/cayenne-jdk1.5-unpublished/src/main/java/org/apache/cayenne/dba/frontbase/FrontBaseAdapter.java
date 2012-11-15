@@ -148,10 +148,10 @@ public class FrontBaseAdapter extends JdbcAdapter {
             }
 
             String type = types[0];
-            buf.append(context.quoteString(at.getName())).append(' ').append(type);
+            buf.append(context.quotedIdentifier(at.getName())).append(' ').append(type);
 
-            // Mapping LONGVARCHAR without length creates a column with lenght "1" which
-            // is defintely not what we want...so just use something very large (1Gb seems
+            // Mapping LONGVARCHAR without length creates a column with length "1" which
+            // is definitely not what we want...so just use something very large (1Gb seems
             // to be the limit for FB)
             if (at.getType() == Types.LONGVARCHAR) {
 
@@ -208,7 +208,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
                     buf.append(", ");
 
                 DbAttribute at = pkit.next();
-                buf.append(context.quoteString(at.getName()));
+                buf.append(context.quotedIdentifier(at.getName()));
             }
             buf.append(')');
         }

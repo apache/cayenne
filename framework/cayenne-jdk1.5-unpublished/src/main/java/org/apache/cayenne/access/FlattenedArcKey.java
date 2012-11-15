@@ -188,7 +188,7 @@ final class FlattenedArcKey {
             DbAttribute attribute = pkList.get(i);
 
             sql.append("#result('");
-            sql.append(quoter.quoteString(attribute.getName()));
+            sql.append(quoter.quotedIdentifier(attribute.getName()));
 
             if (quotesNeeded) {
                 // since the name of the column can potentially be quoted and
@@ -208,7 +208,7 @@ final class FlattenedArcKey {
                 .append(" WHERE ");
         int i = snapshot.size();
         for (Object key : snapshot.keySet()) {
-            sql.append(quoter.quoteString(String.valueOf(key)))
+            sql.append(quoter.quotedIdentifier(String.valueOf(key)))
                     .append(" #bindEqual($").append(key).append(")");
 
             if (--i > 0) {

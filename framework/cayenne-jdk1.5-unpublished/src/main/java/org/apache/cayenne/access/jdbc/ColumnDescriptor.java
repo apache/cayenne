@@ -87,8 +87,7 @@ public class ColumnDescriptor implements Serializable {
     /**
      * @since 1.2
      */
-    public ColumnDescriptor(ObjAttribute objAttribute, DbAttribute dbAttribute,
-            String columnAlias) {
+    public ColumnDescriptor(ObjAttribute objAttribute, DbAttribute dbAttribute, String columnAlias) {
         this(dbAttribute, columnAlias);
         this.dataRowKey = objAttribute.getDbAttributePath();
         this.javaClass = objAttribute.getType();
@@ -112,8 +111,7 @@ public class ColumnDescriptor implements Serializable {
      * 
      * @since 3.1
      */
-    public ColumnDescriptor(String columnName, ResultSetMetaData metaData, int position)
-            throws SQLException {
+    public ColumnDescriptor(String columnName, ResultSetMetaData metaData, int position) throws SQLException {
         this(columnName, metaData.getColumnType(position));
     }
 
@@ -126,8 +124,7 @@ public class ColumnDescriptor implements Serializable {
         this(getColumnNameFromMeta(metaData, position), metaData, position);
     }
 
-    private static String getColumnNameFromMeta(ResultSetMetaData metaData, int position)
-            throws SQLException {
+    private static String getColumnNameFromMeta(ResultSetMetaData metaData, int position) throws SQLException {
         String name = metaData.getColumnLabel(position);
         if (name == null || name.length() == 0) {
             name = metaData.getColumnName(position);
@@ -140,8 +137,9 @@ public class ColumnDescriptor implements Serializable {
     }
 
     /**
-     * Returns true if another object is a ColumnDescriptor with the same name, name
-     * prefix, table and procedure names. Other fields are ignored in the equality test.
+     * Returns true if another object is a ColumnDescriptor with the same name,
+     * name prefix, table and procedure names. Other fields are ignored in the
+     * equality test.
      * 
      * @since 1.2
      */
@@ -152,13 +150,9 @@ public class ColumnDescriptor implements Serializable {
         }
 
         ColumnDescriptor rhs = (ColumnDescriptor) o;
-        return new EqualsBuilder()
-                .append(name, rhs.name)
-                .append(namePrefix, rhs.namePrefix)
-                .append(procedureName, rhs.procedureName)
-                .append(dataRowKey, rhs.dataRowKey)
-                .append(tableName, rhs.tableName)
-                .isEquals();
+        return new EqualsBuilder().append(name, rhs.name).append(namePrefix, rhs.namePrefix)
+                .append(procedureName, rhs.procedureName).append(dataRowKey, rhs.dataRowKey)
+                .append(tableName, rhs.tableName).isEquals();
     }
 
     /**
@@ -166,13 +160,8 @@ public class ColumnDescriptor implements Serializable {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(23, 43)
-                .append(name)
-                .append(namePrefix)
-                .append(procedureName)
-                .append(tableName)
-                .append(dataRowKey)
-                .toHashCode();
+        return new HashCodeBuilder(23, 43).append(name).append(namePrefix).append(procedureName).append(tableName)
+                .append(dataRowKey).toHashCode();
     }
 
     /**
@@ -201,10 +190,7 @@ public class ColumnDescriptor implements Serializable {
     }
 
     public String getQualifiedColumnNameWithQuoteSqlIdentifiers(QuotingStrategy strategy) {
-        String nameWithQuoteSqlIdentifiers = strategy.quoteString(name);
-        return (namePrefix != null) ? strategy.quoteString(namePrefix)
-                + '.'
-                + nameWithQuoteSqlIdentifiers : nameWithQuoteSqlIdentifiers;
+        return strategy.quotedIdentifier(namePrefix, name);
     }
 
     public int getJdbcType() {

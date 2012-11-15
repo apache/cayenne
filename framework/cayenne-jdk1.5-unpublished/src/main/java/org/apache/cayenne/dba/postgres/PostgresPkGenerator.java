@@ -131,7 +131,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
                 try {
                     List<String> sequenceList = new ArrayList<String>();
                     while (rs.next()) {
-                        sequenceList.add(context.quoteString(rs.getString(1)));
+                        sequenceList.add(context.quotedIdentifier(rs.getString(1)));
                     }
                     return sequenceList;
                 }

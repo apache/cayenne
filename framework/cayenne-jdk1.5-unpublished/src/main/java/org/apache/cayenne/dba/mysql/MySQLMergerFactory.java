@@ -54,7 +54,7 @@ public class MySQLMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(context.quoteString(getColumn().getName()));
+                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" ");
                 adapter.createTableAppendColumn(sqlBuffer, column);
 
@@ -81,7 +81,7 @@ public class MySQLMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(context.quoteString(getColumn().getName()));
+                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
                 sqlBuffer.append(" ");
                 adapter.createTableAppendColumn(sqlBuffer, column);
 
@@ -105,7 +105,7 @@ public class MySQLMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quoteFullyQualifiedName(entity));
                 sqlBuffer.append(" MODIFY ");
-                sqlBuffer.append(context.quoteString(columnNew.getName()));
+                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
                 sqlBuffer.append(" ");
             }
 

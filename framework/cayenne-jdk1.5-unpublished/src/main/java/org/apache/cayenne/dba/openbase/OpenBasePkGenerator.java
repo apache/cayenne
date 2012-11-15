@@ -232,7 +232,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         }
         QuotingStrategy context = getAdapter().getQuotingStrategy(status);
 
-        buffer.append(context.quoteString(entity.getName()));
+        buffer.append(context.quotedIdentifier(entity.getName()));
 
         buffer.append(" (");
 
@@ -240,12 +240,12 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 
         // at this point we know that there is at least on PK column
         DbAttribute firstColumn = it.next();
-        buffer.append(context.quoteString(firstColumn.getName()));
+        buffer.append(context.quotedIdentifier(firstColumn.getName()));
 
         while (it.hasNext()) {
             DbAttribute column = it.next();
             buffer.append(", ");
-            buffer.append(context.quoteString(column.getName()));
+            buffer.append(context.quotedIdentifier(column.getName()));
         }
 
         buffer.append(")");
@@ -278,19 +278,19 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         // create a regular one in this case
         buffer.append(pk.size() == 1 ? "CREATE UNIQUE INDEX " : "CREATE INDEX ");
 
-        buffer.append(context.quoteString(entity.getName()));
+        buffer.append(context.quotedIdentifier(entity.getName()));
         buffer.append(" (");
 
         Iterator<DbAttribute> it = pk.iterator();
 
         // at this point we know that there is at least on PK column
         DbAttribute firstColumn = it.next();
-        buffer.append(context.quoteString(firstColumn.getName()));
+        buffer.append(context.quotedIdentifier(firstColumn.getName()));
 
         while (it.hasNext()) {
             DbAttribute column = it.next();
             buffer.append(", ");
-            buffer.append(context.quoteString(column.getName()));
+            buffer.append(context.quotedIdentifier(column.getName()));
         }
         buffer.append(")");
         return buffer.toString();

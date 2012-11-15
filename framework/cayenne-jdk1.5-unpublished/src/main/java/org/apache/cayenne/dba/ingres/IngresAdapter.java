@@ -142,7 +142,7 @@ public class IngresAdapter extends JdbcAdapter {
         }
 
         String type = types[0];
-        buf.append(context.quoteString(at.getName())).append(' ').append(type);
+        buf.append(context.quotedIdentifier(at.getName())).append(' ').append(type);
 
         // append size and precision (if applicable)
         if (TypesMapping.supportsLength(at.getType())) {

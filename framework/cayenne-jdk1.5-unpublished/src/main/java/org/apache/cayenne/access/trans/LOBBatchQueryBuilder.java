@@ -68,7 +68,7 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
 
         Iterator it = selectedLOBAttributes.iterator();
         while (it.hasNext()) {
-            buf.append(strategy.quoteString(((DbAttribute) it.next()).getName()));
+            buf.append(strategy.quotedIdentifier(((DbAttribute) it.next()).getName()));
 
             if (it.hasNext()) {
                 buf.append(", ");

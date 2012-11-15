@@ -67,7 +67,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
             }
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            query.append(strategy.quoteString(attribute.getName()));
+            query.append(strategy.quotedIdentifier(attribute.getName()));
             query.append(" = ?");
         }
 

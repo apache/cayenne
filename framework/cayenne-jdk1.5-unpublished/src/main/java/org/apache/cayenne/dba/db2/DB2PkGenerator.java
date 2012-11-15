@@ -58,28 +58,22 @@ public class DB2PkGenerator extends JdbcPkGenerator {
         try {
             Statement st = con.createStatement();
             try {
-                String sql = "SELECT NEXTVAL FOR "
-                        + pkGeneratingSequenceName
-                        + " FROM SYSIBM.SYSDUMMY1";
+                String sql = "SELECT NEXTVAL FOR " + pkGeneratingSequenceName + " FROM SYSIBM.SYSDUMMY1";
                 adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
                 ResultSet rs = st.executeQuery(sql);
                 try {
                     // Object pk = null;
                     if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + entity.getName());
+                        throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
                     }
                     return rs.getLong(1);
-                }
-                finally {
+                } finally {
                     rs.close();
                 }
-            }
-            finally {
+            } finally {
                 st.close();
             }
-        }
-        finally {
+        } finally {
             con.close();
         }
     }
@@ -122,8 +116,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
                 tempEnt.setDataMap(dm);
                 tempEnt.setName(ent.getName());
                 name = sequenceName(tempEnt);
-            }
-            else {
+            } else {
                 name = sequenceName(ent);
             }
             if (sequences.contains(name)) {
@@ -145,7 +138,8 @@ public class DB2PkGenerator extends JdbcPkGenerator {
     }
 
     /**
-     * Fetches a list of existing sequences that might match Cayenne generated ones.
+     * Fetches a list of existing sequences that might match Cayenne generated
+     * ones.
      */
     protected List<String> getExistingSequences(DataNode node) throws SQLException {
 
@@ -156,11 +150,8 @@ public class DB2PkGenerator extends JdbcPkGenerator {
             Statement sel = con.createStatement();
             try {
                 StringBuilder buffer = new StringBuilder();
-                buffer
-                        .append("SELECT SEQNAME FROM SYSCAT.SEQUENCES ")
-                        .append("WHERE SEQNAME LIKE '")
-                        .append(_SEQUENCE_PREFIX)
-                        .append("%'");
+                buffer.append("SELECT SEQNAME FROM SYSCAT.SEQUENCES ").append("WHERE SEQNAME LIKE '")
+                        .append(_SEQUENCE_PREFIX).append("%'");
 
                 String sql = buffer.toString();
                 adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
@@ -171,16 +162,13 @@ public class DB2PkGenerator extends JdbcPkGenerator {
                         sequenceList.add(rs.getString(1));
                     }
                     return sequenceList;
-                }
-                finally {
+                } finally {
                     rs.close();
                 }
-            }
-            finally {
+            } finally {
                 sel.close();
             }
-        }
-        finally {
+        } finally {
             con.close();
         }
     }
@@ -192,26 +180,14 @@ public class DB2PkGenerator extends JdbcPkGenerator {
         boolean status;
         if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
             status = true;
-        }
-        else {
+        } else {
             status = false;
         }
         QuotingStrategy context = getAdapter().getQuotingStrategy(status);
         String entName = entity.getName();
         String seqName = _SEQUENCE_PREFIX + entName;
 
-        if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-            if (context != null) {
-                seqName = context.quoteString(entity.getSchema())
-                        + "."
-                        + context.quoteString(seqName);
-            }
-            else {
-                seqName = entity.getSchema() + "." + seqName;
-            }
-        }
-
-        return context.quoteString(seqName);
+        return context.quotedIdentifier(entity.getSchema(), seqName);
     }
 
     /**
@@ -226,15 +202,8 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      */
     protected String createSequenceString(DbEntity entity) {
         StringBuilder buf = new StringBuilder();
-        buf
-                .append("CREATE SEQUENCE ")
-                .append(sequenceName(entity))
-                .append(" START WITH 200")
-                .append(" INCREMENT BY ")
-                .append(getPkCacheSize())
-                .append(" NO MAXVALUE ")
-                .append(" NO CYCLE ")
-                .append(" CACHE ")
+        buf.append("CREATE SEQUENCE ").append(sequenceName(entity)).append(" START WITH 200").append(" INCREMENT BY ")
+                .append(getPkCacheSize()).append(" NO MAXVALUE ").append(" NO CYCLE ").append(" CACHE ")
                 .append(getPkCacheSize());
         return buf.toString();
     }

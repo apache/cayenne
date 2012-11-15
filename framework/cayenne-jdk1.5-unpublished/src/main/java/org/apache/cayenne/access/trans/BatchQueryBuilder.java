@@ -72,7 +72,7 @@ public abstract class BatchQueryBuilder {
         }
         QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
 
-        buf.append(strategy.quoteString(dbAttribute.getName()));
+        buf.append(strategy.quotedIdentifier(dbAttribute.getName()));
 
         if (trim) {
             buf.append(')');

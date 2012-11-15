@@ -336,7 +336,7 @@ public class UnitDbAdapter {
                             constraintMap.put(fkTable, constraints);
                         }
 
-                        constraints.add(strategy.quoteString(fk));
+                        constraints.add(strategy.quotedIdentifier(fk));
                     }
                 }
             }

@@ -44,7 +44,8 @@ import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
- * Translates parts of the query to SQL. Always works in the context of parent Translator.
+ * Translates parts of the query to SQL. Always works in the context of parent
+ * Translator.
  */
 public abstract class QueryAssemblerHelper {
 
@@ -53,20 +54,16 @@ public abstract class QueryAssemblerHelper {
     protected QuotingStrategy strategy;
 
     /**
-     * Creates QueryAssemblerHelper initializing with parent {@link QueryAssembler} and
-     * output buffer object.
+     * Creates QueryAssemblerHelper initializing with parent
+     * {@link QueryAssembler} and output buffer object.
      */
     public QueryAssemblerHelper(QueryAssembler queryAssembler) {
         this.queryAssembler = queryAssembler;
         boolean status;
         if (queryAssembler.getQueryMetadata().getDataMap() != null
-                && queryAssembler
-                        .getQueryMetadata()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers()) {
+                && queryAssembler.getQueryMetadata().getDataMap().isQuotingSQLIdentifiers()) {
             status = true;
-        }
-        else {
+        } else {
             status = false;
         }
         strategy = queryAssembler.getAdapter().getQuotingStrategy(status);
@@ -109,23 +106,22 @@ public abstract class QueryAssemblerHelper {
     protected abstract void doAppendPart() throws IOException;
 
     /**
-     * Outputs the standard JDBC (database agnostic) expression for supplying the escape
-     * character to the database server when supplying a LIKE clause. This has been
-     * factored-out because some database adaptors handle LIKE differently and they need
-     * access to this common method in order not to repeat this code. </p>
+     * Outputs the standard JDBC (database agnostic) expression for supplying
+     * the escape character to the database server when supplying a LIKE clause.
+     * This has been factored-out because some database adaptors handle LIKE
+     * differently and they need access to this common method in order not to
+     * repeat this code. </p>
      * <p>
-     * If there is no escape character defined then this method will not output anything.
-     * An escape character of 0 will mean no escape character.
+     * If there is no escape character defined then this method will not output
+     * anything. An escape character of 0 will mean no escape character.
      * 
      * @since 3.1
      */
-    protected void appendLikeEscapeCharacter(PatternMatchNode patternMatchNode)
-            throws IOException {
+    protected void appendLikeEscapeCharacter(PatternMatchNode patternMatchNode) throws IOException {
         char escapeChar = patternMatchNode.getEscapeChar();
 
         if ('?' == escapeChar) {
-            throw new CayenneRuntimeException(
-                    "the escape character of '?' is illegal for LIKE clauses.");
+            throw new CayenneRuntimeException("the escape character of '?' is illegal for LIKE clauses.");
         }
 
         if (0 != escapeChar) {
@@ -143,33 +139,25 @@ public abstract class QueryAssemblerHelper {
         queryAssembler.resetJoinStack();
         String joinSplitAlias = null;
 
-        for (PathComponent<ObjAttribute, ObjRelationship> component : getObjEntity()
-                .resolvePath(pathExp, queryAssembler.getPathAliases())) {
+        for (PathComponent<ObjAttribute, ObjRelationship> component : getObjEntity().resolvePath(pathExp,
+                queryAssembler.getPathAliases())) {
 
             if (component.isAlias()) {
                 joinSplitAlias = component.getName();
-                for (PathComponent<ObjAttribute, ObjRelationship> aliasPart : component
-                        .getAliasedPath()) {
+                for (PathComponent<ObjAttribute, ObjRelationship> aliasPart : component.getAliasedPath()) {
 
                     ObjRelationship relationship = aliasPart.getRelationship();
 
                     if (relationship == null) {
-                        throw new IllegalStateException(
-                                "Non-relationship aliased path part: "
-                                        + aliasPart.getName());
+                        throw new IllegalStateException("Non-relationship aliased path part: " + aliasPart.getName());
                     }
 
                     if (aliasPart.isLast() && component.isLast()) {
-                        processRelTermination(
-                                relationship,
-                                aliasPart.getJoinType(),
-                                joinSplitAlias);
-                    }
-                    else {
+                        processRelTermination(relationship, aliasPart.getJoinType(), joinSplitAlias);
+                    } else {
                         // find and add joins ....
                         for (DbRelationship dbRel : relationship.getDbRelationships()) {
-                            queryAssembler.dbRelationshipAdded(dbRel, aliasPart
-                                    .getJoinType(), joinSplitAlias);
+                            queryAssembler.dbRelationshipAdded(dbRel, aliasPart.getJoinType(), joinSplitAlias);
                         }
                     }
                 }
@@ -185,37 +173,23 @@ public abstract class QueryAssemblerHelper {
                 // if this is a last relationship in the path,
                 // it needs special handling
                 if (component.isLast()) {
-                    processRelTermination(
-                            relationship,
-                            component.getJoinType(),
-                            joinSplitAlias);
-                }
-                else {
+                    processRelTermination(relationship, component.getJoinType(), joinSplitAlias);
+                } else {
                     // find and add joins ....
                     for (DbRelationship dbRel : relationship.getDbRelationships()) {
-                        queryAssembler.dbRelationshipAdded(
-                                dbRel,
-                                component.getJoinType(),
-                                joinSplitAlias);
+                        queryAssembler.dbRelationshipAdded(dbRel, component.getJoinType(), joinSplitAlias);
                     }
                 }
-            }
-            else {
+            } else {
                 Iterator<CayenneMapEntry> dbPathIterator = attribute.getDbPathIterator();
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
 
                     if (pathPart == null) {
-                        throw new CayenneRuntimeException(
-                                "ObjAttribute has no component: " + attribute.getName());
-                    }
-                    else if (pathPart instanceof DbRelationship) {
-                        queryAssembler.dbRelationshipAdded(
-                                (DbRelationship) pathPart,
-                                JoinType.INNER,
-                                joinSplitAlias);
-                    }
-                    else if (pathPart instanceof DbAttribute) {
+                        throw new CayenneRuntimeException("ObjAttribute has no component: " + attribute.getName());
+                    } else if (pathPart instanceof DbRelationship) {
+                        queryAssembler.dbRelationshipAdded((DbRelationship) pathPart, JoinType.INNER, joinSplitAlias);
+                    } else if (pathPart instanceof DbAttribute) {
                         processColumnWithQuoteSqlIdentifiers((DbAttribute) pathPart, pathExp);
                     }
                 }
@@ -229,31 +203,23 @@ public abstract class QueryAssemblerHelper {
         queryAssembler.resetJoinStack();
         String joinSplitAlias = null;
 
-        for (PathComponent<DbAttribute, DbRelationship> component : getDbEntity()
-                .resolvePath(pathExp, queryAssembler.getPathAliases())) {
+        for (PathComponent<DbAttribute, DbRelationship> component : getDbEntity().resolvePath(pathExp,
+                queryAssembler.getPathAliases())) {
 
             if (component.isAlias()) {
                 joinSplitAlias = component.getName();
-                for (PathComponent<DbAttribute, DbRelationship> aliasPart : component
-                        .getAliasedPath()) {
+                for (PathComponent<DbAttribute, DbRelationship> aliasPart : component.getAliasedPath()) {
 
                     DbRelationship relationship = aliasPart.getRelationship();
 
                     if (relationship == null) {
-                        throw new IllegalStateException(
-                                "Non-relationship aliased path part: "
-                                        + aliasPart.getName());
+                        throw new IllegalStateException("Non-relationship aliased path part: " + aliasPart.getName());
                     }
 
                     if (aliasPart.isLast() && component.isLast()) {
-                        processRelTermination(
-                                relationship,
-                                aliasPart.getJoinType(),
-                                joinSplitAlias);
-                    }
-                    else {
-                        queryAssembler.dbRelationshipAdded(relationship, component
-                                .getJoinType(), joinSplitAlias);
+                        processRelTermination(relationship, aliasPart.getJoinType(), joinSplitAlias);
+                    } else {
+                        queryAssembler.dbRelationshipAdded(relationship, component.getJoinType(), joinSplitAlias);
                     }
                 }
 
@@ -267,18 +233,12 @@ public abstract class QueryAssemblerHelper {
                 // if this is a last relationship in the path,
                 // it needs special handling
                 if (component.isLast()) {
-                    processRelTermination(
-                            relationship,
-                            component.getJoinType(),
-                            joinSplitAlias);
-                }
-                else {
+                    processRelTermination(relationship, component.getJoinType(), joinSplitAlias);
+                } else {
                     // find and add joins ....
-                    queryAssembler.dbRelationshipAdded(relationship, component
-                            .getJoinType(), joinSplitAlias);
+                    queryAssembler.dbRelationshipAdded(relationship, component.getJoinType(), joinSplitAlias);
                 }
-            }
-            else {
+            } else {
                 processColumnWithQuoteSqlIdentifiers(component.getAttribute(), pathExp);
             }
         }
@@ -288,90 +248,69 @@ public abstract class QueryAssemblerHelper {
         processColumnWithQuoteSqlIdentifiers(dbAttr, null);
     }
 
-    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp)
-            throws IOException {
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) throws IOException {
 
-        String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler
-                .getCurrentAlias() : null;
-
-        if (alias != null) {
-
-            out.append(strategy.quoteString(alias));
-            out.append(".");
-        }
-        out.append(strategy.quoteString(dbAttr.getName()));
+        String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler.getCurrentAlias() : null;
+        out.append(strategy.quotedIdentifier(alias, dbAttr.getName()));
     }
 
     /**
-     * Appends SQL code to the query buffer to handle <code>val</code> as a parameter to
-     * the PreparedStatement being built. Adds <code>val</code> into QueryAssembler
-     * parameter list.
+     * Appends SQL code to the query buffer to handle <code>val</code> as a
+     * parameter to the PreparedStatement being built. Adds <code>val</code>
+     * into QueryAssembler parameter list.
      * <p>
      * If <code>val</code> is null, "NULL" is appended to the query.
      * </p>
      * <p>
-     * If <code>val</code> is a DataObject, its primary key value is used as a parameter.
-     * <i>Only objects with a single column primary key can be used.</i>
+     * If <code>val</code> is a DataObject, its primary key value is used as a
+     * parameter. <i>Only objects with a single column primary key can be
+     * used.</i>
      * 
-     * @param val object that should be appended as a literal to the query. Must be of one
-     *            of "standard JDBC" types, null or a DataObject.
-     * @param attr DbAttribute that has information on what type of parameter is being
-     *            appended.
+     * @param val
+     *            object that should be appended as a literal to the query. Must
+     *            be of one of "standard JDBC" types, null or a DataObject.
+     * @param attr
+     *            DbAttribute that has information on what type of parameter is
+     *            being appended.
      */
-    protected void appendLiteral(Object val, DbAttribute attr, Expression parentExpression)
-            throws IOException {
+    protected void appendLiteral(Object val, DbAttribute attr, Expression parentExpression) throws IOException {
 
         if (val == null) {
             out.append("NULL");
-        }
-        else if (val instanceof Persistent) {
+        } else if (val instanceof Persistent) {
             ObjectId id = ((Persistent) val).getObjectId();
 
             // check if this id is acceptable to be a parameter
             if (id == null) {
-                throw new CayenneRuntimeException(
-                        "Can't use TRANSIENT object as a query parameter.");
+                throw new CayenneRuntimeException("Can't use TRANSIENT object as a query parameter.");
             }
 
             if (id.isTemporary()) {
-                throw new CayenneRuntimeException(
-                        "Can't use NEW object as a query parameter.");
+                throw new CayenneRuntimeException("Can't use NEW object as a query parameter.");
             }
 
             Map<String, Object> snap = id.getIdSnapshot();
             if (snap.size() != 1) {
                 StringBuilder msg = new StringBuilder();
-                msg
-                        .append("Object must have a single primary key column ")
-                        .append("to serve as a query parameter. ")
-                        .append("This object has ")
-                        .append(snap.size())
-                        .append(": ")
-                        .append(snap);
+                msg.append("Object must have a single primary key column ").append("to serve as a query parameter. ")
+                        .append("This object has ").append(snap.size()).append(": ").append(snap);
 
                 throw new CayenneRuntimeException(msg.toString());
             }
 
             // checks have been passed, use id value
-            appendLiteralDirect(
-                    snap.get(snap.keySet().iterator().next()),
-                    attr,
-                    parentExpression);
-        }
-        else {
+            appendLiteralDirect(snap.get(snap.keySet().iterator().next()), attr, parentExpression);
+        } else {
             appendLiteralDirect(val, attr, parentExpression);
         }
     }
 
     /**
-     * Appends SQL code to the query buffer to handle <code>val</code> as a parameter to
-     * the PreparedStatement being built. Adds <code>val</code> into QueryAssembler
-     * parameter list.
+     * Appends SQL code to the query buffer to handle <code>val</code> as a
+     * parameter to the PreparedStatement being built. Adds <code>val</code>
+     * into QueryAssembler parameter list.
      */
-    protected void appendLiteralDirect(
-            Object val,
-            DbAttribute attr,
-            Expression parentExpression) throws IOException {
+    protected void appendLiteralDirect(Object val, DbAttribute attr, Expression parentExpression) throws IOException {
         out.append('?');
 
         // we are hoping that when processing parameter list,
@@ -381,12 +320,14 @@ public abstract class QueryAssemblerHelper {
     }
 
     /**
-     * Returns database type of expression parameters or null if it can not be determined.
+     * Returns database type of expression parameters or null if it can not be
+     * determined.
      */
     protected DbAttribute paramsDbType(Expression e) {
         int len = e.getOperandCount();
 
-        // for unary expressions, find parent binary - this is a hack mainly to support
+        // for unary expressions, find parent binary - this is a hack mainly to
+        // support
         // ASTList
         if (len < 2) {
 
@@ -415,10 +356,8 @@ public abstract class QueryAssemblerHelper {
             if (op instanceof Expression) {
                 Expression expression = (Expression) op;
                 if (expression.getType() == Expression.OBJ_PATH) {
-                    PathComponent<ObjAttribute, ObjRelationship> last = getObjEntity()
-                            .lastPathComponent(
-                                    expression,
-                                    queryAssembler.getPathAliases());
+                    PathComponent<ObjAttribute, ObjRelationship> last = getObjEntity().lastPathComponent(expression,
+                            queryAssembler.getPathAliases());
 
                     // TODO: handle EmbeddableAttribute
                     // if (last instanceof EmbeddableAttribute)
@@ -427,27 +366,20 @@ public abstract class QueryAssemblerHelper {
                     if (last.getAttribute() != null) {
                         attribute = last.getAttribute().getDbAttribute();
                         break;
-                    }
-                    else if (last.getRelationship() != null) {
-                        List<DbRelationship> dbPath = last
-                                .getRelationship()
-                                .getDbRelationships();
+                    } else if (last.getRelationship() != null) {
+                        List<DbRelationship> dbPath = last.getRelationship().getDbRelationships();
                         if (dbPath.size() > 0) {
                             relationship = dbPath.get(dbPath.size() - 1);
                             break;
                         }
                     }
-                }
-                else if (expression.getType() == Expression.DB_PATH) {
-                    PathComponent<DbAttribute, DbRelationship> last = getDbEntity()
-                            .lastPathComponent(
-                                    expression,
-                                    queryAssembler.getPathAliases());
+                } else if (expression.getType() == Expression.DB_PATH) {
+                    PathComponent<DbAttribute, DbRelationship> last = getDbEntity().lastPathComponent(expression,
+                            queryAssembler.getPathAliases());
                     if (last.getAttribute() != null) {
                         attribute = last.getAttribute();
                         break;
-                    }
-                    else if (last.getRelationship() != null) {
+                    } else if (last.getRelationship() != null) {
                         relationship = last.getRelationship();
                         break;
                     }
@@ -471,17 +403,15 @@ public abstract class QueryAssemblerHelper {
     }
 
     /**
-     * Processes case when an OBJ_PATH expression ends with relationship. If this is a "to
-     * many" relationship, a join is added and a column expression for the target entity
-     * primary key. If this is a "to one" relationship, column expression for the source
-     * foreign key is added.
+     * Processes case when an OBJ_PATH expression ends with relationship. If
+     * this is a "to many" relationship, a join is added and a column expression
+     * for the target entity primary key. If this is a "to one" relationship,
+     * column expression for the source foreign key is added.
      * 
      * @since 3.0
      */
-    protected void processRelTermination(
-            ObjRelationship rel,
-            JoinType joinType,
-            String joinSplitAlias) throws IOException {
+    protected void processRelTermination(ObjRelationship rel, JoinType joinType, String joinSplitAlias)
+            throws IOException {
 
         Iterator<DbRelationship> dbRels = rel.getDbRelationships().iterator();
 
@@ -493,8 +423,7 @@ public abstract class QueryAssemblerHelper {
             // it needs special handling
             if (!dbRels.hasNext()) {
                 processRelTermination(dbRel, joinType, joinSplitAlias);
-            }
-            else {
+            } else {
                 // find and add joins ....
                 queryAssembler.dbRelationshipAdded(dbRel, joinType, joinSplitAlias);
             }
@@ -502,17 +431,15 @@ public abstract class QueryAssemblerHelper {
     }
 
     /**
-     * Handles case when a DB_NAME expression ends with relationship. If this is a "to
-     * many" relationship, a join is added and a column expression for the target entity
-     * primary key. If this is a "to one" relationship, column expression for the source
-     * foreign key is added.
+     * Handles case when a DB_NAME expression ends with relationship. If this is
+     * a "to many" relationship, a join is added and a column expression for the
+     * target entity primary key. If this is a "to one" relationship, column
+     * expression for the source foreign key is added.
      * 
      * @since 3.0
      */
-    protected void processRelTermination(
-            DbRelationship rel,
-            JoinType joinType,
-            String joinSplitAlias) throws IOException {
+    protected void processRelTermination(DbRelationship rel, JoinType joinType, String joinSplitAlias)
+            throws IOException {
 
         if (rel.isToMany()) {
             // append joins
@@ -523,12 +450,8 @@ public abstract class QueryAssemblerHelper {
         List<DbJoin> joins = rel.getJoins();
         if (joins.size() != 1) {
             StringBuilder msg = new StringBuilder();
-            msg
-                    .append("OBJ_PATH expressions are only supported ")
-                    .append("for a single-join relationships. ")
-                    .append("This relationship has ")
-                    .append(joins.size())
-                    .append(" joins.");
+            msg.append("OBJ_PATH expressions are only supported ").append("for a single-join relationships. ")
+                    .append("This relationship has ").append(joins.size()).append(" joins.");
 
             throw new CayenneRuntimeException(msg.toString());
         }
@@ -542,19 +465,14 @@ public abstract class QueryAssemblerHelper {
             Collection<DbAttribute> pk = ent.getPrimaryKeys();
             if (pk.size() != 1) {
                 StringBuilder msg = new StringBuilder();
-                msg
-                        .append("DB_NAME expressions can only support ")
-                        .append("targets with a single column PK. ")
-                        .append("This entity has ")
-                        .append(pk.size())
-                        .append(" columns in primary key.");
+                msg.append("DB_NAME expressions can only support ").append("targets with a single column PK. ")
+                        .append("This entity has ").append(pk.size()).append(" columns in primary key.");
 
                 throw new CayenneRuntimeException(msg.toString());
             }
 
             attribute = pk.iterator().next();
-        }
-        else {
+        } else {
             attribute = join.getSource();
         }
 

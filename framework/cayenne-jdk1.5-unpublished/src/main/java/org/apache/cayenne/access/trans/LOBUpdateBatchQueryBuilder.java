@@ -89,7 +89,7 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
             }
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            query.append(strategy.quoteString(attribute.getName()));
+            query.append(strategy.quotedIdentifier(attribute.getName()));
 			query.append(" = ");
             appendUpdatedParameter(query, attribute, batch.getValue(i));
         }

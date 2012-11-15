@@ -44,7 +44,7 @@ public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(context.quoteFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ALTER COLUMN ");
-        sqlBuffer.append(context.quoteString(getColumn().getName()));
+        sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
         sqlBuffer.append(" SET NOT NULL");
 
         return Collections.singletonList(sqlBuffer.toString());

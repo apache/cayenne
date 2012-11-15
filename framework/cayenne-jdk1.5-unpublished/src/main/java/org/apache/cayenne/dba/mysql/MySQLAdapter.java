@@ -55,17 +55,19 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>. <h3>
+ * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>.
+ * <h3>
  * Foreign Key Constraint Handling</h3>
  * <p>
- * Foreign key constraints are supported by InnoDB engine and NOT supported by MyISAM
- * engine. This adapter by default assumes MyISAM, so
- * {@link org.apache.cayenne.dba.JdbcAdapter#supportsFkConstraints()} will return false.
- * Users can manually change this by calling <em>setSupportsFkConstraints(true)</em> or
- * better by using an {@link org.apache.cayenne.dba.AutoAdapter}, i.e. not entering the
- * adapter name at all for the DataNode, letting Cayenne guess it in runtime. In the later
- * case Cayenne will check the <em>table_type</em> MySQL variable to detect whether InnoDB
- * is the default, and configure the adapter accordingly.
+ * Foreign key constraints are supported by InnoDB engine and NOT supported by
+ * MyISAM engine. This adapter by default assumes MyISAM, so
+ * {@link org.apache.cayenne.dba.JdbcAdapter#supportsFkConstraints()} will
+ * return false. Users can manually change this by calling
+ * <em>setSupportsFkConstraints(true)</em> or better by using an
+ * {@link org.apache.cayenne.dba.AutoAdapter}, i.e. not entering the adapter
+ * name at all for the DataNode, letting Cayenne guess it in runtime. In the
+ * later case Cayenne will check the <em>table_type</em> MySQL variable to
+ * detect whether InnoDB is the default, and configure the adapter accordingly.
  * <h3>Sample Connection Settings</h3>
  * <ul>
  * <li>Adapter name: org.apache.cayenne.dba.mysql.MySQLAdapter</li>
@@ -106,7 +108,7 @@ public class MySQLAdapter extends JdbcAdapter {
         this.identifiersStartQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START;
         this.identifiersEndQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END;
     }
-    
+
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         QualifierTranslator translator = new MySQLQualifierTranslator(queryAssembler);
@@ -121,8 +123,7 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new MySQLActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new MySQLActionBuilder(this, node.getEntityResolver()));
     }
 
     /**
@@ -130,22 +131,20 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK checks
+        // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK
+        // checks
         // statement
         StringBuffer buf = new StringBuffer();
-        QuotingStrategy context = getQuotingStrategy(table
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
         buf.append(context.quoteFullyQualifiedName(table));
 
-        return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS "
-                + buf.toString()
-                + " CASCADE", "SET FOREIGN_KEY_CHECKS=1");
+        return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf.toString() + " CASCADE",
+                "SET FOREIGN_KEY_CHECKS=1");
     }
 
     /**
-     * Installs appropriate ExtendedTypes used as converters for passing values between
-     * JDBC and Java layers.
+     * Installs appropriate ExtendedTypes used as converters for passing values
+     * between JDBC and Java layers.
      */
     @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
@@ -160,43 +159,32 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     @Override
-    public DbAttribute buildAttribute(
-            String name,
-            String typeName,
-            int type,
-            int size,
-            int precision,
+    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int precision,
             boolean allowNulls) {
 
         if (typeName != null) {
             typeName = typeName.toLowerCase();
         }
 
-        // all LOB types are returned by the driver as OTHER... must remap them manually
+        // all LOB types are returned by the driver as OTHER... must remap them
+        // manually
         // (at least on MySQL 3.23)
         if (type == Types.OTHER) {
             if ("longblob".equals(typeName)) {
                 type = Types.BLOB;
-            }
-            else if ("mediumblob".equals(typeName)) {
+            } else if ("mediumblob".equals(typeName)) {
                 type = Types.BLOB;
-            }
-            else if ("blob".equals(typeName)) {
+            } else if ("blob".equals(typeName)) {
                 type = Types.BLOB;
-            }
-            else if ("tinyblob".equals(typeName)) {
+            } else if ("tinyblob".equals(typeName)) {
                 type = Types.VARBINARY;
-            }
-            else if ("longtext".equals(typeName)) {
+            } else if ("longtext".equals(typeName)) {
                 type = Types.CLOB;
-            }
-            else if ("mediumtext".equals(typeName)) {
+            } else if ("mediumtext".equals(typeName)) {
                 type = Types.CLOB;
-            }
-            else if ("text".equals(typeName)) {
+            } else if ("text".equals(typeName)) {
                 type = Types.CLOB;
-            }
-            else if ("tinytext".equals(typeName)) {
+            } else if ("tinytext".equals(typeName)) {
                 type = Types.VARCHAR;
             }
         }
@@ -204,12 +192,12 @@ public class MySQLAdapter extends JdbcAdapter {
         else if (typeName != null && typeName.endsWith(" unsigned")) {
             // per
             // http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-type-conversions.html
-            if (typeName.equals("int unsigned")
-                    || typeName.equals("integer unsigned")
+            if (typeName.equals("int unsigned") || typeName.equals("integer unsigned")
                     || typeName.equals("mediumint unsigned")) {
                 type = Types.BIGINT;
             }
-            // BIGINT UNSIGNED maps to BigInteger according to MySQL docs, but there is no
+            // BIGINT UNSIGNED maps to BigInteger according to MySQL docs, but
+            // there is no
             // JDBC mapping for BigInteger
         }
 
@@ -217,8 +205,9 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     /**
-     * Creates and returns a primary key generator. Overrides superclass implementation to
-     * return an instance of MySQLPkGenerator that does the correct table locking.
+     * Creates and returns a primary key generator. Overrides superclass
+     * implementation to return an instance of MySQLPkGenerator that does the
+     * correct table locking.
      */
     @Override
     protected PkGenerator createPkGenerator() {
@@ -230,15 +219,14 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        JdbcEJBQLTranslatorFactory translatorFactory = 
-                new MySQLEJBQLTranslatorFactory();
+        JdbcEJBQLTranslatorFactory translatorFactory = new MySQLEJBQLTranslatorFactory();
         translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
         return translatorFactory;
     }
 
     /**
-     * Overrides super implementation to explicitly set table engine to InnoDB if FK
-     * constraints are supported by this adapter.
+     * Overrides super implementation to explicitly set table engine to InnoDB
+     * if FK constraints are supported by this adapter.
      */
     @Override
     public String createTable(DbEntity entity) {
@@ -252,9 +240,9 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     /**
-     * Customizes PK clause semantics to ensure that generated columns are in the
-     * beginning of the PK definition, as this seems to be a requirement for InnoDB
-     * tables.
+     * Customizes PK clause semantics to ensure that generated columns are in
+     * the beginning of the PK definition, as this seems to be a requirement for
+     * InnoDB tables.
      * 
      * @since 1.2
      */
@@ -264,8 +252,7 @@ public class MySQLAdapter extends JdbcAdapter {
         boolean status;
         if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
             status = true;
-        }
-        else {
+        } else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
@@ -285,33 +272,29 @@ public class MySQLAdapter extends JdbcAdapter {
                     sqlBuffer.append(", ");
 
                 DbAttribute at = pkit.next();
-                sqlBuffer.append(context.quoteString(at.getName()));
+                sqlBuffer.append(context.quotedIdentifier(at.getName()));
             }
             sqlBuffer.append(')');
         }
 
         // if FK constraints are supported, we must add indices to all FKs
-        // Note that according to MySQL docs, FK indexes are created automatically when
+        // Note that according to MySQL docs, FK indexes are created
+        // automatically when
         // constraint is defined, starting at MySQL 4.1.2
         if (supportsFkConstraints) {
             for (Relationship r : entity.getRelationships()) {
                 DbRelationship relationship = (DbRelationship) r;
-                if (relationship.getJoins().size() > 0
-                        && relationship.isToPK()
-                        && !relationship.isToDependentPK()) {
+                if (relationship.getJoins().size() > 0 && relationship.isToPK() && !relationship.isToDependentPK()) {
 
                     sqlBuffer.append(", KEY (");
 
-                    Iterator<DbAttribute> columns = relationship
-                            .getSourceAttributes()
-                            .iterator();
+                    Iterator<DbAttribute> columns = relationship.getSourceAttributes().iterator();
                     DbAttribute column = columns.next();
-                    sqlBuffer.append(context.quoteString(column.getName()));
+                    sqlBuffer.append(context.quotedIdentifier(column.getName()));
 
                     while (columns.hasNext()) {
                         column = columns.next();
-                        sqlBuffer.append(", ").append(
-                                context.quoteString(column.getName()));
+                        sqlBuffer.append(", ").append(context.quotedIdentifier(column.getName()));
                     }
 
                     sqlBuffer.append(")");
@@ -321,33 +304,28 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     /**
-     * Appends AUTO_INCREMENT clause to the column definition for generated columns.
+     * Appends AUTO_INCREMENT clause to the column definition for generated
+     * columns.
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         boolean status;
-        if ((column.getEntity().getDataMap() != null)
-                && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
+        if ((column.getEntity().getDataMap() != null) && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
             status = true;
-        }
-        else {
+        } else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? ((DbEntity) column
-                    .getEntity()).getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + entityName
-                    + "."
-                    + column.getName()
-                    + "': "
-                    + column.getType());
+            String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
+                    : "<null>";
+            throw new CayenneRuntimeException("Undefined type for attribute '" + entityName + "." + column.getName()
+                    + "': " + column.getType());
         }
 
         String type = types[0];
-        sqlBuffer.append(context.quoteString(column.getName()));
+        sqlBuffer.append(context.quotedIdentifier(column.getName()));
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s
@@ -389,8 +367,7 @@ public class MySQLAdapter extends JdbcAdapter {
         public int compare(DbAttribute a1, DbAttribute a2) {
             if (a1.isGenerated() != a2.isGenerated()) {
                 return a1.isGenerated() ? -1 : 1;
-            }
-            else {
+            } else {
                 return a1.getName().compareTo(a2.getName());
             }
         }

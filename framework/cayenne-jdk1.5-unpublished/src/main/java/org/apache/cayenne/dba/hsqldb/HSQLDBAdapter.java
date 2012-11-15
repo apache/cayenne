@@ -42,8 +42,9 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * DbAdapter implementation for the <a href="http://hsqldb.sourceforge.net/"> HSQLDB RDBMS
- * </a>. Sample connection settings to use with HSQLDB are shown below:
+ * DbAdapter implementation for the <a href="http://hsqldb.sourceforge.net/">
+ * HSQLDB RDBMS </a>. Sample connection settings to use with HSQLDB are shown
+ * below:
  * 
  * <pre>
  *        test-hsqldb.jdbc.username = test
@@ -54,44 +55,22 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class HSQLDBAdapter extends JdbcAdapter {
 
-    public HSQLDBAdapter(
-            @Inject RuntimeProperties runtimeProperties,
+    public HSQLDBAdapter(@Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(
-                runtimeProperties,
-                defaultExtendedTypes,
-                userExtendedTypes,
-                extendedTypeFactories);
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
     }
 
     /**
-     * Generate fully-qualified name for 1.8 and on. Subclass generates unqualified name.
+     * Generate fully-qualified name for 1.8 and on. Subclass generates
+     * unqualified name.
      * 
      * @since 1.2
      */
     protected String getTableName(DbEntity entity) {
-        QuotingStrategy context = getQuotingStrategy(entity
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
         return context.quoteFullyQualifiedName(entity);
-    }
-
-    /**
-     * Generate fully-qualified name for 1.8 and on. Subclass generates unqualified name.
-     * 
-     * @since 1.2
-     */
-    protected String getSchemaName(DbEntity entity) {
-        if (entity.getSchema() != null && entity.getSchema().length() > 0) {
-            QuotingStrategy context = getQuotingStrategy(entity
-                    .getDataMap()
-                    .isQuotingSQLIdentifiers());
-            return context.quoteString(entity.getSchema()) + ".";
-        }
-
-        return "";
     }
 
     /**
@@ -101,8 +80,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new HSQLActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new HSQLActionBuilder(this, node.getEntityResolver()));
     }
 
     /**
@@ -115,14 +93,12 @@ public class HSQLDBAdapter extends JdbcAdapter {
         boolean status;
         if (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers()) {
             status = true;
-        }
-        else {
+        } else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
         if (columns == null || columns.isEmpty()) {
-            throw new CayenneRuntimeException(
-                    "Can't create UNIQUE constraint - no columns specified.");
+            throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
         }
 
         String srcName = getTableName(source);
@@ -132,23 +108,18 @@ public class HSQLDBAdapter extends JdbcAdapter {
         buf.append("ALTER TABLE ").append(srcName);
         buf.append(" ADD CONSTRAINT ");
 
-        buf.append(context.quoteString(getSchemaName(source)));
-        String name = "U_"
-                + source.getName()
-                + "_"
-                + (long) (System.currentTimeMillis() / (Math.random() * 100000));
-
-        buf.append(context.quoteString(name));
+        String name = "U_" + source.getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+        buf.append(context.quotedIdentifier(source.getSchema(), name));
         buf.append(" UNIQUE (");
 
         Iterator<DbAttribute> it = columns.iterator();
         DbAttribute first = it.next();
-        buf.append(context.quoteString(first.getName()));
+        buf.append(context.quotedIdentifier(first.getName()));
 
         while (it.hasNext()) {
             DbAttribute next = it.next();
             buf.append(", ");
-            buf.append(context.quoteString(next.getName()));
+            buf.append(context.quotedIdentifier(next.getName()));
         }
 
         buf.append(")");
@@ -167,8 +138,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
         if ((rel.getSourceEntity().getDataMap() != null)
                 && rel.getSourceEntity().getDataMap().isQuotingSQLIdentifiers()) {
             status = true;
-        }
-        else {
+        } else {
             status = false;
         }
         QuotingStrategy context = getQuotingStrategy(status);
@@ -183,13 +153,13 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
         // hsqldb requires the ADD CONSTRAINT statement
         buf.append(" ADD CONSTRAINT ");
-        buf.append(getSchemaName((DbEntity) rel.getSourceEntity()));
-        String name = "U_"
-                + rel.getSourceEntity().getName()
-                + "_"
+
+        String name = "U_" + rel.getSourceEntity().getName() + "_"
                 + (long) (System.currentTimeMillis() / (Math.random() * 100000));
 
-        buf.append(context.quoteString(name));
+        DbEntity sourceEntity = (DbEntity) rel.getSourceEntity();
+
+        buf.append(context.quotedIdentifier(sourceEntity.getSchema(), name));
         buf.append(" FOREIGN KEY (");
 
         boolean first = true;
@@ -197,12 +167,11 @@ public class HSQLDBAdapter extends JdbcAdapter {
             if (!first) {
                 buf.append(", ");
                 refBuf.append(", ");
-            }
-            else
+            } else
                 first = false;
 
-            buf.append(context.quoteString(join.getSourceName()));
-            refBuf.append(context.quoteString(join.getTargetName()));
+            buf.append(context.quotedIdentifier(join.getSourceName()));
+            refBuf.append(context.quotedIdentifier(join.getTargetName()));
         }
 
         buf.append(") REFERENCES ");
@@ -235,15 +204,15 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        // CAY-1095: if the column is type double, temporarily set the max length to 0 to
+        // CAY-1095: if the column is type double, temporarily set the max
+        // length to 0 to
         // avoid adding precision information.
         if (column.getType() == Types.DOUBLE && column.getMaxLength() > 0) {
             int len = column.getMaxLength();
             column.setMaxLength(0);
             super.createTableAppendColumn(sqlBuffer, column);
             column.setMaxLength(len);
-        }
-        else {
+        } else {
             super.createTableAppendColumn(sqlBuffer, column);
         }
     }

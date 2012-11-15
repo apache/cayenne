@@ -113,7 +113,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
                 if (columnCount > 0) {
                     query.append(", ");
                 }
-                query.append(strategy.quoteString(attribute.getName()));
+                query.append(strategy.quotedIdentifier(attribute.getName()));
                 columnCount++;
             }
         }
