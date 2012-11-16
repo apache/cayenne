@@ -468,7 +468,7 @@ public class DbLoader {
         for (final DbEntity dbEntity : map.getDbEntities()) {
             if (tables.contains(dbEntity)) {
                 String tableName = dbEntity.getName();
-                ResultSet rs = metaData.getPrimaryKeys(null,
+                ResultSet rs = metaData.getPrimaryKeys(dbEntity.getCatalog(),
                         dbEntity.getSchema(), tableName);
                 try {
                     while (rs.next()) {
