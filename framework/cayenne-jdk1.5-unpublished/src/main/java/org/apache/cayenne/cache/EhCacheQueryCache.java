@@ -71,59 +71,34 @@ public class EhCacheQueryCache implements QueryCache {
         if (key == null) {
             return null;
         }
-        
-        Element result = null;
-        String[] groupNames = metadata.getCacheGroups();
-        if (groupNames != null && groupNames.length > 0) {
-            Ehcache cache = cacheManager.getCache(groupNames[0]);
-            if (cache == null) {
-                return null;
-            }
-            else {
-                result = cache.get(key);
-                if (result != null) {
-                    return (List)result.getObjectValue();
-                }
-            }
-            if (groupNames.length > 1) {
-                logger.warn("multiple cache groups per key: " + key);
-            }
-        }
-        else {
-            result = getDefaultCache().get(key);
-            if (result != null) {
-                return (List)getDefaultCache().get(key).getObjectValue();
-            }
-        }
-        return null;
-    }
 
-    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
-        String key = metadata.getCacheKey();
-        if (key == null) {
+        String cacheName = cacheName(key, metadata.getCacheGroups());
+        Ehcache cache = cacheManager.getCache(cacheName);
+
+        if (cache == null) {
             return null;
         }
 
-        Ehcache cache = null;
-        Element result = null;
-        String[] groupNames = metadata.getCacheGroups();
-        if (groupNames != null && groupNames.length > 0) {
+        Element result = cache.get(key);
+        return result != null ? (List) result.getObjectValue() : null;
+    }
 
-            if (groupNames.length > 1) {
-                logger.warn("multiple cache groups per key '" + key + "', ignoring all but the first one: "
-                        + groupNames[0]);
-            }
+    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
 
-            // create empty cache for cache group here, as we have a factory to
-            // create an object, and should never ever return null from this
-            // method
-            cache = cacheManager.addCacheIfAbsent(groupNames[0]);
-            result = cache.get(key);
-
-        } else {
-            cache = getDefaultCache();
-            result = cache.get(key);
+        String key = metadata.getCacheKey();
+        if (key == null) {
+            // TODO: we should really throw here... The method declares that it
+            // never returns null
+            return null;
         }
+
+        String cacheName = cacheName(key, metadata.getCacheGroups());
+
+        // create empty cache for cache group here, as we have a factory to
+        // create an object, and should never ever return null from this
+        // method
+        Ehcache cache = cacheManager.addCacheIfAbsent(cacheName);
+        Element result = cache.get(key);
 
         if (result != null) {
             return (List) result.getObjectValue();
@@ -134,49 +109,55 @@ public class EhCacheQueryCache implements QueryCache {
         cache.acquireWriteLockOnKey(key);
         try {
 
-            // trying to read from cache again in case of
-            // someone else put it to the cache before us
-            List list = get(metadata);
+            // now that we locked the key, let's reread the cache again, in case
+            // an object appeared there already
+            result = cache.get(key);
 
-            if (list == null) {
-
-                // if not succeeded in reading again putting
-                // object to the cache ourselves
-                Object noResult = factory.createObject();
-                if (!(noResult instanceof List)) {
-                    if (noResult == null) {
-                        throw new CayenneRuntimeException("Null object created: " + metadata.getCacheKey());
-                    } else {
-                        throw new CayenneRuntimeException("Invalid query result, expected List, got "
-                                + noResult.getClass().getName());
-                    }
-                }
-
-                list = (List) noResult;
-                put(metadata, list);
-                return list;
-            } else {
-                return list;
+            if (result != null) {
+                return (List) result.getObjectValue();
             }
+
+            // if not succeeded in reading again putting
+            // object to the cache ourselves
+            Object object = factory.createObject();
+            if (!(object instanceof List)) {
+                if (object == null) {
+                    throw new CayenneRuntimeException("Null object created: " + metadata.getCacheKey());
+                } else {
+                    throw new CayenneRuntimeException("Invalid query result, expected List, got "
+                            + object.getClass().getName());
+                }
+            }
+
+            cache.put(new Element(key, object));
+
+            return (List) object;
+
         } finally {
             cache.releaseWriteLockOnKey(key);
         }
+    }
+    
+    private String cacheName(String key, String... cacheGroups) {
+        if (cacheGroups != null && cacheGroups.length > 0) {
+
+            if (cacheGroups.length > 1) {
+                logger.warn("multiple cache groups per key '" + key + "', ignoring all but the first one: "
+                        + cacheGroups[0]);
+            }
+
+            return cacheGroups[0];
+        }
+
+        return DEFAULT_CACHE_NAME;
     }
 
     public void put(QueryMetadata metadata, List results) {
         String key = metadata.getCacheKey();
         if (key != null) {
-            String[] groupNames = metadata.getCacheGroups();
-            if (groupNames != null && groupNames.length > 0) {
-                Ehcache cache = cacheManager.addCacheIfAbsent(groupNames[0]);
-                cache.put(new Element(key, results));
-                if (groupNames.length > 1) {
-                    logger.warn("multiple groups per key: " + key);
-                }
-            }
-            else {
-                getDefaultCache().put(new Element(key,results));
-            }
+            String cacheName = cacheName(key, metadata.getCacheGroups());
+            Ehcache cache = cacheManager.addCacheIfAbsent(cacheName);
+            cache.put(new Element(key,results));
         }
     }
 
@@ -185,8 +166,7 @@ public class EhCacheQueryCache implements QueryCache {
             for (String cache : cacheManager.getCacheNames()) {
                 cacheManager.getCache(cache).remove(key);
             }
-        }
-        
+        }   
     }
 
     public void removeGroup(String groupKey) {
