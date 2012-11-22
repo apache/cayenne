@@ -30,42 +30,41 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 public class EhCacheQueryCache implements QueryCache {
-    
+
     /**
      * Default cache group name.
      */
     static final String DEFAULT_CACHE_NAME = "cayenne.default.cachegroup";
-    
+
     private static Log logger = LogFactory.getLog(EhCacheQueryCache.class);
-    
+
     protected CacheManager cacheManager;
-    
+
     public EhCacheQueryCache() {
         cacheManager = new CacheManager();
         init();
     }
-    
+
     public EhCacheQueryCache(String configFile) {
         cacheManager = new CacheManager(configFile);
         init();
     }
-    
+
     public EhCacheQueryCache(CacheManager cacheManager) {
         if (cacheManager != null) {
             this.cacheManager = cacheManager;
             init();
-        }
-        else {
+        } else {
             throw new CayenneRuntimeException("CacheManager cannot be null.");
         }
     }
-    
+
     private void init() {
         cacheManager.addCacheIfAbsent(DEFAULT_CACHE_NAME);
     }
 
+    @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata) {
         String key = metadata.getCacheKey();
         if (key == null) {
@@ -83,6 +82,7 @@ public class EhCacheQueryCache implements QueryCache {
         return result != null ? (List) result.getObjectValue() : null;
     }
 
+    @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
 
         String key = metadata.getCacheKey();
@@ -137,8 +137,11 @@ public class EhCacheQueryCache implements QueryCache {
             cache.releaseWriteLockOnKey(key);
         }
     }
-    
-    private String cacheName(String key, String... cacheGroups) {
+
+    /**
+     * @since 3.2
+     */
+    protected String cacheName(String key, String... cacheGroups) {
         if (cacheGroups != null && cacheGroups.length > 0) {
 
             if (cacheGroups.length > 1) {
@@ -152,12 +155,13 @@ public class EhCacheQueryCache implements QueryCache {
         return DEFAULT_CACHE_NAME;
     }
 
+    @SuppressWarnings("rawtypes")
     public void put(QueryMetadata metadata, List results) {
         String key = metadata.getCacheKey();
         if (key != null) {
             String cacheName = cacheName(key, metadata.getCacheGroups());
             Ehcache cache = cacheManager.addCacheIfAbsent(cacheName);
-            cache.put(new Element(key,results));
+            cache.put(new Element(key, results));
         }
     }
 
@@ -166,7 +170,7 @@ public class EhCacheQueryCache implements QueryCache {
             for (String cache : cacheManager.getCacheNames()) {
                 cacheManager.getCache(cache).remove(key);
             }
-        }   
+        }
     }
 
     public void removeGroup(String groupKey) {
@@ -187,11 +191,16 @@ public class EhCacheQueryCache implements QueryCache {
 
     /**
      * Returns default cache group.
+     * 
+     * @deprecated since 3.2 - this method is no longer in use. If you are
+     *             overriding it, override {@link #cacheName(String, String...)}
+     *             instead.
      */
+    @Deprecated
     public Ehcache getDefaultCache() {
         return cacheManager.getCache(DEFAULT_CACHE_NAME);
     }
-    
+
     /**
      * Shuts down EhCache CacheManager
      */
