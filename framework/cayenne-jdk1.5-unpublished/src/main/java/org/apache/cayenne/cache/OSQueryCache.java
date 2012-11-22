@@ -104,7 +104,7 @@ public class OSQueryCache implements QueryCache {
      * Returns a collection of group names that have been configured explicitly via
      * properties.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Collection getGroupNames() {
         return refreshSpecifications != null
                 ? Collections.unmodifiableCollection(refreshSpecifications.keySet())
@@ -236,7 +236,7 @@ public class OSQueryCache implements QueryCache {
         return spec;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata) {
         String key = metadata.getCacheKey();
         if (key == null) {
@@ -263,7 +263,7 @@ public class OSQueryCache implements QueryCache {
      * provider will block on the entry update or not is controlled by "cache.blocking"
      * configuration property and is "false" by default.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
         String key = metadata.getCacheKey();
         if (key == null) {
@@ -328,7 +328,7 @@ public class OSQueryCache implements QueryCache {
         return refresh != null ? refresh : defaultRefreshSpecification;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void put(QueryMetadata metadata, List results) {
         String key = metadata.getCacheKey();
         if (key != null) {

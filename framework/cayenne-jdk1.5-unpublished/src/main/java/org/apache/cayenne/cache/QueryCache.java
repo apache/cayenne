@@ -38,7 +38,7 @@ public interface QueryCache {
      * Returns a cached query result for the given QueryMetadata or null if the result is
      * not cached or is expired.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     List get(QueryMetadata metadata);
 
     /**
@@ -51,10 +51,10 @@ public interface QueryCache {
      * from running the same query when a missing entry is requested by multiple threads
      * simultaneously.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     List get(QueryMetadata metadata, QueryCacheEntryFactory factory);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     void put(QueryMetadata metadata, List results);
 
     /**

@@ -47,7 +47,7 @@ public class MapQueryCache implements QueryCache, Serializable {
         this.map = new LRUMap(maxSize);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata) {
         String key = metadata.getCacheKey();
         if (key == null) {
@@ -68,7 +68,7 @@ public class MapQueryCache implements QueryCache, Serializable {
      * a result there is a potential of multiple threads to be updating cache in parallel -
      * this wouldn't lead to corruption of the cache, but can be suboptimal.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
         List result = get(metadata);
         if (result == null) {
@@ -93,7 +93,7 @@ public class MapQueryCache implements QueryCache, Serializable {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void put(QueryMetadata metadata, List results) {
         String key = metadata.getCacheKey();
         if (key != null) {
