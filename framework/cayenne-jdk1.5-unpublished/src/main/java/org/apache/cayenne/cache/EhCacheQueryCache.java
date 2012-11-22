@@ -103,66 +103,62 @@ public class EhCacheQueryCache implements QueryCache {
         if (key == null) {
             return null;
         }
-        
+
         Ehcache cache = null;
         Element result = null;
         String[] groupNames = metadata.getCacheGroups();
         if (groupNames != null && groupNames.length > 0) {
-            cache = cacheManager.getCache(groupNames[0]);
-            if (cache == null) {
-                return null;
-            }
-            else {
-                result = cache.get(key);
-            }
+
             if (groupNames.length > 1) {
-                logger.warn("multiple cache groups per key: " + key);
+                logger.warn("multiple cache groups per key '" + key + "', ignoring all but the first one: "
+                        + groupNames[0]);
             }
-        }
-        else {
+
+            // create empty cache for cache group here, as we have a factory to
+            // create an object, and should never ever return null from this
+            // method
+            cache = cacheManager.addCacheIfAbsent(groupNames[0]);
+            result = cache.get(key);
+
+        } else {
             cache = getDefaultCache();
             result = cache.get(key);
         }
 
         if (result != null) {
-            return (List)result.getObjectValue();
+            return (List) result.getObjectValue();
         }
 
         // if no result in cache locking the key to write
         // and putting it to the cache
         cache.acquireWriteLockOnKey(key);
         try {
-            
+
             // trying to read from cache again in case of
             // someone else put it to the cache before us
             List list = get(metadata);
-            
+
             if (list == null) {
-                
-                // if not succeeded  in reading again putting
+
+                // if not succeeded in reading again putting
                 // object to the cache ourselves
                 Object noResult = factory.createObject();
                 if (!(noResult instanceof List)) {
                     if (noResult == null) {
-                        throw new CayenneRuntimeException("Null object created: "
-                                + metadata.getCacheKey());
-                    }
-                    else {
-                        throw new CayenneRuntimeException(
-                                "Invalid query result, expected List, got "
+                        throw new CayenneRuntimeException("Null object created: " + metadata.getCacheKey());
+                    } else {
+                        throw new CayenneRuntimeException("Invalid query result, expected List, got "
                                 + noResult.getClass().getName());
                     }
                 }
 
-                list = (List)noResult;
+                list = (List) noResult;
                 put(metadata, list);
                 return list;
-            }
-            else {
+            } else {
                 return list;
             }
-        }
-        finally {
+        } finally {
             cache.releaseWriteLockOnKey(key);
         }
     }
