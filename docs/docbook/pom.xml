@@ -43,13 +43,6 @@
 	<artifactId>cayenne-docbook</artifactId>
 	<packaging>pom</packaging>
 	<name>Cayenne Docbook Documentation</name>
-
-	<distributionManagement>
-		<site>
-			<id>website</id>
-			<url>scp://people.apache.org/www/cayenne/docbook/</url>
-		</site>
-	</distributionManagement>
 	
 	<build>
 		<pluginManagement>
@@ -66,16 +59,6 @@
 							<scope>runtime</scope>
 						</dependency>
 					</dependencies>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-antrun-plugin</artifactId>
-					<version>1.7</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>3.1</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -126,39 +109,6 @@
 						<goals>
 							<goal>generate-html</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<configuration>
-					<generateReports>false</generateReports>
-					<sourceDirectory>src</sourceDirectory>
-					<includes>index.xml</includes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>cleanup-maven</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
-								<delete failonerror="false">
-									<filelist dir="target/site/css" files="maven-base.css,maven-theme.css,print.css,site.css" />
-									<!-- collapsed.gifx is deliberately mispelt since we want to leave one image behind to avoid a maven problem with deploying a completely empty site -->
-									<filelist dir="target/site/images" files="collapsed.gifx,external.png,icon_info_sml.gif,icon_warning_sml.gif,newwindow.png,expanded.gif,icon_error_sml.gif,icon_success_sml.gif" />
-								</delete>
-								<delete dir="target/site/images/logos" failonerror="false" />
-							</target>
-						</configuration>
-
 					</execution>
 				</executions>
 			</plugin>
