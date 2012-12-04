@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
