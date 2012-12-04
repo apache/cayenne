@@ -20,7 +20,8 @@ CAY-1754 Modeler suggested URL for SQLServer should start with 'jdbc:sqlserver:'
 Bug Fixes Since 3.1B1:
 
 CAY-957 Deadlock in nested contexts
-CAY-1689 CAY-1689 [PATCH] LOB*QueryBuilders do not check isQuotingSQLIdentifiers
+CAY-1689 [PATCH] LOB*QueryBuilders do not check isQuotingSQLIdentifiers
+CAY-1708 Modeler error when pasting datamap with EJBQL query
 CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
 CAY-1715 Passing parameters to mapped EJBQL queries
 CAY-1721 Writing blobs fails (Oracle)
