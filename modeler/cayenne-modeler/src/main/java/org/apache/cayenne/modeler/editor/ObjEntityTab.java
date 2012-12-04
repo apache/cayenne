@@ -469,7 +469,9 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         dbModel.setSelectedItem(entity.getDbEntity());
         dbEntityCombo.setRenderer(CellRenderers.entityListRendererWithIcons(map));
         dbEntityCombo.setModel(dbModel);
-        dbEntityCombo.setEnabled(entity.getSuperClassName() == null);
+
+        boolean isUsedInheritance = entity.getSuperEntity() != null;
+        dbEntityCombo.setEnabled(!isUsedInheritance);
 
         // toggle visibilty and editability rules
         
