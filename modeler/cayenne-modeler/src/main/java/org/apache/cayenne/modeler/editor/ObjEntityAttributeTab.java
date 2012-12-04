@@ -389,6 +389,11 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     public void objEntityAdded(EntityEvent e) {
+        if (e.getSource() == this) {
+            return;
+        }
+
+        this.rebuildTable((ObjEntity) e.getEntity());
     }
 
     public void objEntityRemoved(EntityEvent e) {
