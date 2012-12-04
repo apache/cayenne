@@ -54,6 +54,7 @@ import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
 import org.apache.cayenne.query.AbstractQuery;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -294,35 +295,18 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         dataMap,
                         embeddable);
             }
+            else if (content instanceof EJBQLQuery) {
+                EJBQLQuery query = (EJBQLQuery) content;
+
+                query.setName(getFreeName(new QueryNameChecker(domain), query.getName()));
+                query.setDataMap(dataMap);
+
+                dataMap.addQuery(query);
+                QueryType.fireQueryEvent(this, mediator, dataMap, query);
+            }
             else if (content instanceof Query) {
                 // paste Query to DataMap
                 AbstractQuery query = (AbstractQuery) content;
-
-                /**
-                 * Change Query root do current datamap's
-                 */
-                Object root = query.getRoot();
-                Object newRoot = root;
-
-                if (root instanceof ObjEntity) {
-                    newRoot = dataMap.getObjEntity(((ObjEntity) root).getName());
-                }
-                else if (root instanceof DbEntity) {
-                    newRoot = dataMap.getDbEntity(((DbEntity) root).getName());
-                }
-                else if (root instanceof Procedure) {
-                    newRoot = dataMap.getProcedure(((Procedure) root).getName());
-                }
-
-                if (newRoot == null) {
-                    JOptionPane
-                            .showMessageDialog(
-                                    Application.getFrame(),
-                                    "Query root cannot be resolved. Pasting has not been performed.",
-                                    "Warning",
-                                    JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
 
                 query.setName(getFreeName(new QueryNameChecker(domain), query.getName()));
                 query.setDataMap(dataMap);
