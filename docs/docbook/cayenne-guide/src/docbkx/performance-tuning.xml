@@ -52,11 +52,11 @@ query.addPrefetch("paintings").setSemantics(
 		</section>
 		<section xml:id="disjoint-prefetch-semantics">
 			<title>Disjoint Prefetching Semantics</title>
-			<para>This semantics (only applicable to SelectQuery) results in Cayenne generatiing one
-				SQL statement for the main objects, and a separate statement for each prefetch path
+			<para>This semantics (only applicable to SelectQuery) results in Cayenne generating one SQL
+				statement for the main objects, and a separate statement for each prefetch path
 				(hence "disjoint" - related objects are not fetched with the main query). Each
 				additional SQL statement uses a qualifier of the main query plus a set of joins
-				traversing the preftech path between the main and related entity. </para>
+				traversing the prefetch path between the main and related entity. </para>
 			<para>This strategy has an advantage of efficient JVM memory use, and faster overall
 				result processing by Cayenne, but it requires (1+N) SQL statements to be executed,
 				where N is the number of prefetched relationships.</para>
@@ -86,8 +86,8 @@ query.addPrefetch("paintings").setSemantics(
 		</section>
 		<section xml:id="joint-prefetch-semantics">
 			<title>Joint Prefetching Semantics</title>
-			<para>Joint senantics results in a single SQL statement for root objects and any number
-				of jointly prefetched paths. Cayenne processes in memory a cartesian product of the
+			<para>Joint semantics results in a single SQL statement for root objects and any number of
+				jointly prefetched paths. Cayenne processes in memory a cartesian product of the
 				entities involved, converting it to an object tree. It uses OUTER joins to connect
 				prefetched entities.</para>
 			<para>Joint is the most efficient prefetch type of the three as far as generated SQL
