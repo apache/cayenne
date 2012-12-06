@@ -47,7 +47,13 @@ public class DefaultTransactionManager implements TransactionManager {
         Transaction tx = dataDomain.createTransaction();
         Transaction.bindThreadTransaction(tx);
         try {
-            return op.perform();
+
+            T result = op.perform();
+
+            tx.commit();
+
+            return result;
+
         } catch (Exception ex) {
             tx.setRollbackOnly();
             throw new CayenneRuntimeException(ex);
@@ -57,7 +63,7 @@ public class DefaultTransactionManager implements TransactionManager {
             if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
                 try {
                     tx.rollback();
-                } catch (Exception rollbackEx) {
+                } catch (Exception e) {
                 }
             }
         }
