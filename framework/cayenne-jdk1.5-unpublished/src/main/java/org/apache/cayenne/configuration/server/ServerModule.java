@@ -89,6 +89,8 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.tx.DefaultTransactionManager;
+import org.apache.cayenne.tx.TransactionManager;
 
 /**
  * A DI module containing all Cayenne server runtime configuration.
@@ -237,5 +239,7 @@ public class ServerModule implements Module {
 
         // a default ObjectStoreFactory used to create ObjectStores for contexts
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
+        
+        binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
     }
 }

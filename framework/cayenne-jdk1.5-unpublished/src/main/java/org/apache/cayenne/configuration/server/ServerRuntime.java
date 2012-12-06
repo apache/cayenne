@@ -27,6 +27,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.tx.TransactionManager;
 
 /**
  * An object representing Cayenne server-stack that connects directly to the database via
@@ -61,6 +62,13 @@ public class ServerRuntime extends CayenneRuntime {
      */
     public ServerRuntime(String[] configurationLocations, Module... extraModules) {
         super(mergeModules(mainModule(configurationLocations), extraModules));
+    }
+    
+    /**
+     * @since 3.2
+     */
+    public TransactionManager getTransactionManager() {
+        return injector.getInstance(TransactionManager.class);
     }
 
     /**
