@@ -19,26 +19,27 @@
 package org.apache.cayenne.tx;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.Transaction;
-import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DefaultTransactionManagerTest extends ServerCase {
 
-    @Inject
-    private ServerRuntime runtime;
-
     public void testPerformInTransaction_NoTx() {
-        DefaultTransactionManager txManager = new DefaultTransactionManager(runtime);
+        
+        final Transaction tx = mock(Transaction.class);
+        final DataDomain domain = mock(DataDomain.class);
+        when(domain.createTransaction()).thenReturn(tx);
+        
+        DefaultTransactionManager txManager = new DefaultTransactionManager(domain);
 
         final Object expectedResult = new Object();
         Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
-            public Object perform(CayenneRuntime runtime) {
+            public Object perform() {
                 assertNotNull(Transaction.getThreadTransaction());
                 return expectedResult;
             }
@@ -48,16 +49,21 @@ public class DefaultTransactionManagerTest extends ServerCase {
     }
 
     public void testPerformInTransaction_ExistingTx() {
-        DefaultTransactionManager txManager = new DefaultTransactionManager(runtime);
+        
+        final Transaction tx1 = mock(Transaction.class);
+        final DataDomain domain = mock(DataDomain.class);
+        when(domain.createTransaction()).thenReturn(tx1);
+        
+        DefaultTransactionManager txManager = new DefaultTransactionManager(domain);
 
-        final Transaction tx = mock(Transaction.class);
-        Transaction.bindThreadTransaction(tx);
+        final Transaction tx2 = mock(Transaction.class);
+        Transaction.bindThreadTransaction(tx2);
         try {
 
             final Object expectedResult = new Object();
             Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
-                public Object perform(CayenneRuntime runtime) {
-                    assertSame(tx, Transaction.getThreadTransaction());
+                public Object perform() {
+                    assertSame(tx2, Transaction.getThreadTransaction());
                     return expectedResult;
                 }
             });

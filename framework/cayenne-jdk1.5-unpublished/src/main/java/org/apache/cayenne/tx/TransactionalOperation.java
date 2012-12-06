@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.configuration.CayenneRuntime;
-
 /**
  * @since 3.2
  */
@@ -30,5 +28,5 @@ public interface TransactionalOperation<T> {
      * {@link TransactionManager} will wrap this method call in a single
      * thread-bound transaction.
      */
-    T perform(CayenneRuntime runtime);
+    T perform();
 }

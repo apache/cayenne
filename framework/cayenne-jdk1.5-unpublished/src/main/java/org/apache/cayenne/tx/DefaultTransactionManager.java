@@ -19,8 +19,8 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.Transaction;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 
 /**
@@ -28,10 +28,10 @@ import org.apache.cayenne.di.Inject;
  */
 public class DefaultTransactionManager implements TransactionManager {
 
-    private ServerRuntime runtime;
+    private DataDomain dataDomain;
 
-    public DefaultTransactionManager(@Inject ServerRuntime runtime) {
-        this.runtime = runtime;
+    public DefaultTransactionManager(@Inject DataDomain dataDomain) {
+        this.dataDomain = dataDomain;
     }
 
     public <T> T performInTransaction(TransactionalOperation<T> op) {
@@ -40,14 +40,14 @@ public class DefaultTransactionManager implements TransactionManager {
         // commit or roll it back
         Transaction currentTx = Transaction.getThreadTransaction();
         if (currentTx != null) {
-            return op.perform(runtime);
+            return op.perform();
         }
 
         // start a new tx and manage it till the end
-        Transaction tx = runtime.getDataDomain().createTransaction();
+        Transaction tx = dataDomain.createTransaction();
         Transaction.bindThreadTransaction(tx);
         try {
-            return op.perform(runtime);
+            return op.perform();
         } catch (Exception ex) {
             tx.setRollbackOnly();
             throw new CayenneRuntimeException(ex);
