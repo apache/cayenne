@@ -36,6 +36,7 @@ import java.util.Set;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -121,7 +122,7 @@ public class DbLoader {
 
     /**
      * Creates new DbLoader with specified naming strategy.
-     * 
+     *
      * @since 3.0
      */
     public DbLoader(Connection connection, DbAdapter adapter,
@@ -152,7 +153,7 @@ public class DbLoader {
     /**
      * Returns true if the generator should map all primary key columns as
      * ObjAttributes.
-     * 
+     *
      * @since 3.0
      */
     public boolean isCreatingMeaningfulPK() {
@@ -161,7 +162,7 @@ public class DbLoader {
 
     /**
      * Returns database connection used by this DbLoader.
-     * 
+     *
      * @since 3.0
      */
     public Connection getConnection() {
@@ -174,7 +175,7 @@ public class DbLoader {
      * {@link org.apache.cayenne.CayenneDataObject}. If generic class name is
      * null (which is the default), DbLoader will assign each entity a unique
      * class name derived from the table name.
-     * 
+     *
      * @since 1.2
      */
     public String getGenericClassName() {
@@ -187,7 +188,7 @@ public class DbLoader {
      * {@link org.apache.cayenne.CayenneDataObject}. If generic class name is
      * set to null (which is the default), DbLoader will assign each entity a
      * unique class name derived from the table name.
-     * 
+     *
      * @since 1.2
      */
     public void setGenericClassName(String genericClassName) {
@@ -196,7 +197,7 @@ public class DbLoader {
 
     /**
      * Returns DbAdapter associated with this DbLoader.
-     * 
+     *
      * @since 1.1
      */
     public DbAdapter getAdapter() {
@@ -213,7 +214,7 @@ public class DbLoader {
 
     /**
      * Retrieves catalogs for the database associated with this DbLoader.
-     * 
+     *
      * @return List with the catalog names, empty Array if none found.
      */
     public List<String> getCatalogs() throws SQLException {
@@ -233,7 +234,7 @@ public class DbLoader {
 
     /**
      * Retrieves the schemas for the database.
-     * 
+     *
      * @return List with the schema names, empty Array if none found.
      */
     public List<String> getSchemas() throws SQLException {
@@ -254,7 +255,7 @@ public class DbLoader {
     /**
      * Returns all the table types for the given database. Types may be such as
      * "TABLE", "VIEW", "SYSTEM TABLE", etc.
-     * 
+     *
      * @return List of Strings, empty array if nothing found.
      */
     public List<String> getTableTypes() throws SQLException {
@@ -274,7 +275,7 @@ public class DbLoader {
     /**
      * Returns all tables for given combination of the criteria. Tables returned
      * as DbEntities without any attributes or relationships.
-     * 
+     *
      * @param catalogPattern
      *            The name of the catalog, may be null.
      * @param schemaPattern
@@ -344,7 +345,7 @@ public class DbLoader {
 
     /**
      * Loads dbEntities for the specified tables.
-     * 
+     *
      * @param map
      *            DataMap to be populated with DbEntities.
      * @param tables
@@ -557,17 +558,13 @@ public class DbLoader {
                     + objEntity.getName());
             map.addObjEntity(objEntity);
             loadedEntities.add(objEntity);
-            // added entity without attributes or relationships...
-            if (delegate != null) {
-                delegate.objEntityAdded(objEntity);
-            }
         }
 
         // update ObjEntity attributes and relationships
         EntityMergeSupport objEntityMerger = createEntityMerger(map);
         objEntityMerger.synchronizeWithDbEntities(loadedEntities);
     }
-    
+
     /**
      * @since 3.2
      */
@@ -753,6 +750,37 @@ public class DbLoader {
     }
 
     /**
+     * Method remove temporary entities from dataMap and optimize relationships
+     * @param map
+     */
+    private void optimizeObjRelationships(DataMap map) {
+        List<ObjEntity> entitiesForDelete = new ArrayList<ObjEntity>();
+
+        for (ObjEntity curEntity : map.getObjEntities()) {
+            ManyToManyCandidateEntity entity = new ManyToManyCandidateEntity(curEntity);
+
+            if (entity.isRepresentManyToManyTable()) {
+                entity.optimizeRelationships();
+                entitiesForDelete.add(curEntity);
+            }
+        }
+
+        // remove needed entities
+        for (ObjEntity curDeleteEntity : entitiesForDelete) {
+            map.removeObjEntity(curDeleteEntity.getName(), true);
+        }
+    }
+
+    private void fireObjEntitiesAddedEvents(DataMap map) {
+        for (ObjEntity curEntity : map.getObjEntities()) {
+            // notify delegate
+            if (delegate != null) {
+                delegate.objEntityAdded(curEntity);
+            }
+        }
+    }
+
+    /**
      * @since 3.2
      */
     public String[] getDefaultTableTypes() {
@@ -777,7 +805,7 @@ public class DbLoader {
      * Performs database reverse engineering and generates DataMap that contains
      * default mapping of the tables and views. By default will include regular
      * tables and views.
-     * 
+     *
      * @since 1.0.7
      * @deprecated since 3.2 use
      *             {@link #load(DataMap, String, String, String, String...)}
@@ -799,22 +827,33 @@ public class DbLoader {
      * Performs database reverse engineering and generates DataMap object that
      * contains default mapping of the tables and views. Allows to limit types
      * of tables to read.
-     * 
+     *
      * @deprecated since 3.2 use
      *             {@link #load(DataMap, String, String, String, String...)}
      *             method that supports catalogs.
      */
     public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern,
             String[] tableTypes, DataMap dataMap) throws SQLException {
+        clearDataMap(dataMap);
+
         load(dataMap, null, schemaPattern, tablePattern, tableTypes);
         return dataMap;
+    }
+
+    private void clearDataMap(DataMap dataMap) {
+        dataMap.clearDbEntities();
+        dataMap.clearEmbeddables();
+        dataMap.clearObjEntities();
+        dataMap.clearProcedures();
+        dataMap.clearQueries();
+        dataMap.clearResultSets();
     }
 
     /**
      * Performs database reverse engineering to match the specified catalog,
      * schema, table name and table type patterns and fills the specified
      * DataMap object with DB and object mapping info.
-     * 
+     *
      * @since 3.2
      */
     public void load(DataMap dataMap, String catalogPattern,
@@ -830,7 +869,10 @@ public class DbLoader {
 
         if (loadDbEntities(dataMap, tables)) {
             loadDbRelationships(dataMap);
+
             loadObjEntities(dataMap);
+            optimizeObjRelationships(dataMap);
+            fireObjEntitiesAddedEvents(dataMap);
         }
     }
 
@@ -842,7 +884,7 @@ public class DbLoader {
      * currently this method is NOT CALLED from "loadDataMapFromDB" and should
      * be invoked explicitly by the user. </i>
      * </p>
-     * 
+     *
      * @since 1.1
      * @deprecated since 3.2 use
      *             {@link #loadProcedures(DataMap, String, String, String)} that
@@ -861,7 +903,7 @@ public class DbLoader {
      * currently this method is NOT CALLED from "loadDataMapFromDB" and should
      * be invoked explicitly by the user. </i>
      * </p>
-     * 
+     *
      * @since 3.2
      */
     public void loadProcedures(DataMap dataMap, String catalogPattern,
@@ -1010,7 +1052,7 @@ public class DbLoader {
 
     /**
      * Sets new naming strategy for reverse engineering
-     * 
+     *
      * @since 3.0
      */
     public void setNamingStrategy(NamingStrategy strategy) {
