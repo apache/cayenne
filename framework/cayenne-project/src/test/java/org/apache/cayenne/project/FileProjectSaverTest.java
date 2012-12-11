@@ -135,12 +135,12 @@ public class FileProjectSaverTest extends Project2Case {
     }
 
     /**
-     * Method test fix for CAY-1780 bug. If specify related fragments (for example ./../)
+     * Method test fix for CAY-1780. If specify related fragments (for example ./../)
      * in target file path then file must be created successfully.
      * @throws Exception
      */
-    public void testSaveForRelatedPaths() throws Exception {
-        File testFolder = setupTestDirectory("testSaveForRelatedPaths");
+    public void testSaveForProjectFileWithRelatedPaths() throws Exception {
+        File testFolder = setupTestDirectory("testSaveForProjectFileWithRelatedPaths");
 
         String mapFilePath = "file:" + testFolder.getCanonicalPath() + "/../test.map.xml";
         String mapFileName = "test";
