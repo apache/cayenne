@@ -19,6 +19,7 @@
 package org.apache.cayenne.project;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 
 import javax.xml.xpath.XPath;
@@ -44,10 +45,10 @@ import org.w3c.dom.NodeList;
 
 public class FileProjectSaverTest extends Project2Case {
 
-    public void testSaveAs_Sorted() throws Exception {
+    private FileProjectSaver saver;
 
-        File testFolder = setupTestDirectory("testSaveAs_Sorted");
-
+    @Override
+    public void setUp() throws Exception {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
@@ -56,9 +57,14 @@ public class FileProjectSaverTest extends Project2Case {
             }
         };
 
-        FileProjectSaver saver = new FileProjectSaver();
+        saver = new FileProjectSaver();
         Injector injector = DIBootstrap.createInjector(testModule);
         injector.injectMembers(saver);
+    }
+
+    public void testSaveAs_Sorted() throws Exception {
+
+        File testFolder = setupTestDirectory("testSaveAs_Sorted");
 
         DataChannelDescriptor rootNode = new DataChannelDescriptor();
         rootNode.setName("test");
@@ -127,4 +133,25 @@ public class FileProjectSaverTest extends Project2Case {
         assertEquals("C", xpath.evaluate("@name", mapRefs.item(2)));
 
     }
+
+    /**
+     * Method test fix for CAY-1780 bug. If specify related fragments (for example ./../)
+     * in target file path then file must be created successfully.
+     * @throws Exception
+     */
+    public void testSaveForRelatedPaths() throws Exception {
+        File testFolder = setupTestDirectory("testSaveForRelatedPaths");
+
+        String mapFilePath = "file:" + testFolder.getCanonicalPath() + "/../test.map.xml";
+        String mapFileName = "test";
+        DataMap testDataMap = new DataMap(mapFileName);
+        testDataMap.setConfigurationSource(new URLResource(new URL(mapFilePath)));
+        Project project = new Project(new ConfigurationTree<DataMap>(testDataMap));
+
+        saver.save(project);
+
+        File target = new File(testFolder.getParentFile(), mapFileName + ".map.xml");
+        assertTrue(target.isFile());
+    }
+
 }

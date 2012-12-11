@@ -106,8 +106,13 @@ public class FileProjectSaver implements ProjectSaver {
             clearTempFiles(units);
         }
 
-        if (deleteOldResources) {
-            clearOldFiles(units);
+        try {
+            if (deleteOldResources) {
+                clearOldFiles(units);
+            }
+        }
+        catch (IOException ex) {
+            throw new CayenneRuntimeException(ex);
         }
     }
 
@@ -274,7 +279,7 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    private void clearOldFiles(Collection<SaveUnit> units) {
+    private void clearOldFiles(Collection<SaveUnit> units) throws IOException {
         for (SaveUnit unit : units) {
 
             if (unit.sourceConfiguration == null) {
@@ -299,16 +304,28 @@ public class FileProjectSaver implements ProjectSaver {
             // target matches, skip this file
             boolean isTarget = false;
             for (SaveUnit xunit : units) {
-                if (sourceFile.equals(xunit.targetFile)) {
+                if (isFilesEquals(sourceFile, xunit.targetFile)) {
                     isTarget = true;
                     break;
                 }
             }
 
             if (!isTarget) {
-                sourceFile.delete();
+                if (!sourceFile.delete()) {
+                    throw new CayenneRuntimeException("Could not delete file '%s'", sourceFile.getCanonicalPath());
+                }
             }
         }
+    }
+
+    private boolean isFilesEquals(File firstFile, File secondFile) throws IOException {
+        boolean isFirstFileExists = firstFile.exists();
+        boolean isSecondFileExists = secondFile.exists();
+
+        String firstFilePath = firstFile.getCanonicalPath();
+        String secondFilePath = secondFile.getCanonicalPath();
+
+        return isFirstFileExists && isSecondFileExists && firstFilePath.equals(secondFilePath);
     }
 
     class SaveUnit {
