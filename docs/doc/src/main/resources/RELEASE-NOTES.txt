@@ -37,6 +37,7 @@ CAY-1769 cdbimport improvements: meaningfulPk flag must be turned into a pattern
 CAY-1771 cdbimport improvements: "usePrimitives" flag
 CAY-1772 Real support for DbEntity catalogs
 CAY-1778 TransactionManager to simplify user-managed transactions 
+CAY-1779 Flatten object entities for many to many relationships on reverse engineering 
 
 Bug Fixes:
 
