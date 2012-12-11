@@ -750,10 +750,9 @@ public class DbLoader {
     }
 
     /**
-     * Method remove temporary entities from dataMap and optimize relationships
-     * @param map
+     * Flattens many-to-many relationships in the generated model.
      */
-    private void optimizeObjRelationships(DataMap map) {
+    private void flattenManyToManyRelationships(DataMap map) {
         List<ObjEntity> entitiesForDelete = new ArrayList<ObjEntity>();
 
         for (ObjEntity curEntity : map.getObjEntities()) {
@@ -871,7 +870,7 @@ public class DbLoader {
             loadDbRelationships(dataMap);
 
             loadObjEntities(dataMap);
-            optimizeObjRelationships(dataMap);
+            flattenManyToManyRelationships(dataMap);
             fireObjEntitiesAddedEvents(dataMap);
         }
     }
