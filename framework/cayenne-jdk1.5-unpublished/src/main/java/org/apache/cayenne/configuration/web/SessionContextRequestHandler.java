@@ -39,6 +39,8 @@ import org.apache.cayenne.di.Injector;
  * <p>
  * User applications in most cases should provide a custom RequestHandler that implements
  * a smarter app-specific strategy for providing ObjectContext.
+ * <p>
+ * For stateless (per request) context creation use {@link StatelessContextRequestHandler}.
  * 
  * @since 3.1
  */
