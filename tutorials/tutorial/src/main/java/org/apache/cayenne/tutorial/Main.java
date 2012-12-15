@@ -79,12 +79,12 @@ public class Main {
 
 	static void selectTutorial(ObjectContext context) {
 		// SelectQuery examples
-		SelectQuery<Painting> select1 = SelectQuery.from(Painting.class, null);
+		SelectQuery<Painting> select1 = SelectQuery.query(Painting.class, null);
 		List<Painting> paintings1 = context.performQuery(select1);
 
 		Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
 				Painting.NAME_PROPERTY, "gi%");
-		SelectQuery<Painting> select2 = SelectQuery.from(Painting.class, qualifier2);
+		SelectQuery<Painting> select2 = SelectQuery.query(Painting.class, qualifier2);
 		List<Painting> paintings2 = context.performQuery(select2);
 
 		Calendar c = new GregorianCalendar();
@@ -94,7 +94,7 @@ public class Main {
 				.fromString("artist.dateOfBirth < $date");
 		qualifier3 = qualifier3.expWithParameters(Collections.singletonMap(
 				"date", c.getTime()));
-		SelectQuery<Painting> select3 = SelectQuery.from(Painting.class, qualifier3);
+		SelectQuery<Painting> select3 = SelectQuery.query(Painting.class, qualifier3);
 		List<Painting> paintings3 = context.performQuery(select3);
 	}
 
@@ -102,7 +102,7 @@ public class Main {
 		// Delete object examples
 		Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
 				"Pablo Picasso");
-		SelectQuery<Artist> selectToDelete = SelectQuery.from(Artist.class, qualifier);
+		SelectQuery<Artist> selectToDelete = SelectQuery.query(Artist.class, qualifier);
 		Artist picasso = (Artist) Cayenne.objectForQuery(context,
 				selectToDelete);
 
