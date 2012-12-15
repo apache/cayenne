@@ -39,6 +39,7 @@ CAY-1772 Real support for DbEntity catalogs
 CAY-1778 TransactionManager to simplify user-managed transactions 
 CAY-1779 Flatten object entities for many to many relationships on reverse engineering 
 CAY-1781 Add StatelessContextRequestHandler as an alternative to the Session-based one
+CAY-1294 Generify query
 
 Bug Fixes:
 

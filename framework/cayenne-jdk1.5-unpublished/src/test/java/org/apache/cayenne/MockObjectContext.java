@@ -25,6 +25,8 @@ import java.util.List;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.SelectQuery;
 
 /**
  * A noop ObjectContext used for unit testing.
@@ -82,6 +84,10 @@ public class MockObjectContext implements ObjectContext {
         return null;
     }
 
+    public <T> List<T> select(Select<T> query) {
+        return performQuery(query);
+    }
+    
     public int[] performNonSelectingQuery(Query query) {
         return null;
     }

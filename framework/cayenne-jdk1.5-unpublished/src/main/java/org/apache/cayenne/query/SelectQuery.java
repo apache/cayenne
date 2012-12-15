@@ -39,8 +39,8 @@ import org.apache.cayenne.util.XMLSerializable;
  * Supports expression qualifier, multiple orderings and a number of other parameters that
  * serve as runtime hints to Cayenne on how to optimize the fetch and result processing.
  */
-public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
-        XMLSerializable {
+public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery,
+        XMLSerializable, Select<T> {
 
     public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
     public static final boolean DISTINCT_DEFAULT = false;
@@ -93,7 +93,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      *
      * @param rootClass the Class of objects fetched by this query.
      */
-    public SelectQuery(Class<?> rootClass) {
+    public SelectQuery(Class<T> rootClass) {
         this(rootClass, null);
     }
 
@@ -104,7 +104,18 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @param rootClass the Class of objects fetched by this query.
      * @param qualifier an Expression indicating which objects should be fetched.
      */
-    public SelectQuery(Class<?> rootClass, Expression qualifier) {
+    public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier) {
+    	return new SelectQuery<T>(rootClass, qualifier);
+    }
+    
+    /**
+     * Creates a SelectQuery that selects objects of a given persistent class that match
+     * supplied qualifier.
+     *
+     * @param rootClass the Class of objects fetched by this query.
+     * @param qualifier an Expression indicating which objects should be fetched.
+     */
+    public SelectQuery(Class<T> rootClass, Expression qualifier) {
         this(rootClass, qualifier, null);
     }
 
@@ -117,7 +128,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @param orderings defines how to order the results, may be null.
      * @since 3.1
      */
-    public SelectQuery(Class<?> rootClass, Expression qualifier, List<Ordering> orderings) {
+    public SelectQuery(Class<T> rootClass, Expression qualifier, List<Ordering> orderings) {
         init(rootClass, qualifier);
         addOrderings(orderings);
     }
@@ -342,7 +353,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * A shortcut for {@link #queryWithParameters(Map, boolean)}that prunes parts of
      * qualifier that have no parameter value set.
      */
-    public SelectQuery queryWithParameters(Map<String, ?> parameters) {
+    public SelectQuery<T> queryWithParameters(Map<String, ?> parameters) {
         return queryWithParameters(parameters, true);
     }
 
@@ -353,9 +364,9 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      * @see org.apache.cayenne.exp.Expression#expWithParameters(java.util.Map, boolean)
      *      parameter substitution.
      */
-    public SelectQuery queryWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
+    public SelectQuery<T> queryWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
         // create a query replica
-        SelectQuery query = new SelectQuery();
+        SelectQuery<T> query = new SelectQuery<T>();
         query.setDistinct(distinct);
 
         query.metaData.copyFromInfo(this.metaData);
@@ -379,7 +390,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
      *
      * @since 1.1
      */
-    public Query createQuery(Map<String, ?> parameters) {
+    public SelectQuery<T> createQuery(Map<String, ?> parameters) {
         return queryWithParameters(parameters);
     }
 

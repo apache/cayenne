@@ -41,6 +41,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.RefreshQuery;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
@@ -284,6 +285,11 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     @SuppressWarnings("unchecked")
     public abstract List performQuery(Query query);
 
+    @SuppressWarnings("unchecked")
+    public <T> List<T> select(Select<T> query) {
+    	return performQuery(query);
+    }
+    
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
 

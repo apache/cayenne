@@ -50,12 +50,12 @@ import org.apache.cayenne.util.XMLEncoder;
  * 
  * @since 3.0
  */
-class IncrementalSelectQuery extends SelectQuery {
+class IncrementalSelectQuery<T> extends SelectQuery<T> {
 
-    private SelectQuery query;
+    private SelectQuery<T> query;
     private String cacheKey;
 
-    IncrementalSelectQuery(SelectQuery delegate, String cacheKey) {
+    IncrementalSelectQuery(SelectQuery<T> delegate, String cacheKey) {
         this.query = delegate;
         this.cacheKey = cacheKey;
     }
@@ -181,7 +181,7 @@ class IncrementalSelectQuery extends SelectQuery {
     }
 
     @Override
-    public Query createQuery(Map parameters) {
+    public SelectQuery<T> createQuery(Map parameters) {
         return query.createQuery(parameters);
     }
 
@@ -266,12 +266,12 @@ class IncrementalSelectQuery extends SelectQuery {
     }
 
     @Override
-    public SelectQuery queryWithParameters(Map parameters, boolean pruneMissing) {
+    public SelectQuery<T> queryWithParameters(Map parameters, boolean pruneMissing) {
         return query.queryWithParameters(parameters, pruneMissing);
     }
 
     @Override
-    public SelectQuery queryWithParameters(Map parameters) {
+    public SelectQuery<T> queryWithParameters(Map parameters) {
         return query.queryWithParameters(parameters);
     }
 

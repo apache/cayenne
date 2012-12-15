@@ -46,7 +46,7 @@ import org.apache.cayenne.query.SortOrder;
  * 
  * @since 1.1
  */
-public class EOQuery extends SelectQuery {
+public class EOQuery<T> extends SelectQuery<T> {
 
     protected Map<String, ?> plistMap;
     protected Map bindings;
