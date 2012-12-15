@@ -52,7 +52,7 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
     }
 
     @Override
-    public SQLAction objectSelectAction(SelectQuery query) {
+    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
         return new SQLServerSelectAction(query, adapter, entityResolver);
     }    
     

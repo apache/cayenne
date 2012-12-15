@@ -197,7 +197,7 @@ public class DataPort {
 
             DbEntity entity = (DbEntity) it.next();
 
-            SelectQuery select = new SelectQuery(entity);
+            SelectQuery<DataRow> select = new SelectQuery<DataRow>(entity);
             select.setFetchingDataRows(true);
 
             // delegate is allowed to substitute query

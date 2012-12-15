@@ -40,7 +40,7 @@ public interface SQLActionVisitor {
     /**
      * Creates an action to execute a SelectQuery.
      */
-    SQLAction objectSelectAction(SelectQuery query);
+    <T> SQLAction objectSelectAction(SelectQuery<T> query);
 
     /**
      * Creates an action to execute a SQLTemplate.

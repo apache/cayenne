@@ -80,7 +80,7 @@ public class SelectQueryBasicsTest extends TestCase {
     }
 
     public void testAddOrdering2() throws Exception {
-        SelectQuery q = new SelectQuery();
+        SelectQuery<Object> q = new SelectQuery<Object>();
 
         String path = "a.b.c";
         q.addOrdering(path, SortOrder.DESCENDING);

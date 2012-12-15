@@ -30,7 +30,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class Oracle8SelectAction extends OracleSelectAction {
 
-    Oracle8SelectAction(SelectQuery query, JdbcAdapter adapter,
+	<T> Oracle8SelectAction(SelectQuery<T> query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

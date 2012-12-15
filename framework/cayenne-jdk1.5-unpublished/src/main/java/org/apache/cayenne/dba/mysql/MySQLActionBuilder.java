@@ -36,7 +36,7 @@ class MySQLActionBuilder extends JdbcActionBuilder {
     }
 
     @Override
-    public SQLAction objectSelectAction(SelectQuery query) {
+    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
         return new MySQLSelectAction(query, adapter, entityResolver);
     }
 

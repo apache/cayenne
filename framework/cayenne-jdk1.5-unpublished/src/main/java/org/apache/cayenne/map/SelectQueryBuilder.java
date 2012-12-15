@@ -34,7 +34,7 @@ class SelectQueryBuilder extends QueryLoader {
      */
     @Override
     public Query getQuery() {
-        SelectQuery query = new SelectQuery();
+        SelectQuery<Object> query = new SelectQuery<Object>();
         query.setRoot(getRoot());
         query.setName(name);
         query.setDataMap(dataMap);

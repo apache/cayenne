@@ -36,7 +36,7 @@ class FrontBaseActionBuilder extends JdbcActionBuilder {
     }
 
     @Override
-    public SQLAction objectSelectAction(SelectQuery query) {
+    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
         return new SelectAction(query, adapter, entityResolver) {
 
             @Override

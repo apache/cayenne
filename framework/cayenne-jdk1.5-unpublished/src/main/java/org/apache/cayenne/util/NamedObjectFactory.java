@@ -394,7 +394,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected Object create(String name, Object namingContext) {
-            SelectQuery query = new SelectQuery();
+            SelectQuery<Object> query = new SelectQuery<Object>();
             query.setName(name);
             return query;
         }

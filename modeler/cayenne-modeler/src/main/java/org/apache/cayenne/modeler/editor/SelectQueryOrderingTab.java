@@ -77,7 +77,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
     static final String PLACEHOLDER_PANEL = "placeholder";
 
     protected ProjectController mediator;
-    protected SelectQuery selectQuery;
+    protected SelectQuery<?> selectQuery;
 
     protected MultiColumnBrowser browser;
     protected JTable table;
@@ -140,12 +140,12 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
             return;
         }
 
-        if (!(((SelectQuery) query).getRoot() instanceof Entity)) {
+        if (!(((SelectQuery<?>) query).getRoot() instanceof Entity)) {
             processInvalidModel("SelectQuery has no root set.");
             return;
         }
 
-        this.selectQuery = (SelectQuery) query;
+        this.selectQuery = (SelectQuery<?>) query;
         browser.setModel(createBrowserModel((Entity) selectQuery.getRoot()));
         table.setModel(createTableModel());
 

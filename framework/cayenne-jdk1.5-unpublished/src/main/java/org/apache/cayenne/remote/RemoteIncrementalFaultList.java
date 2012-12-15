@@ -111,7 +111,7 @@ public class RemoteIncrementalFaultList implements List {
         // server-side, so use a special wrapper that is itself a subclass of
         // SelectQuery
         if (query instanceof SelectQuery) {
-            query = new IncrementalSelectQuery((SelectQuery) paginatedQuery, cacheKey);
+            query = new IncrementalSelectQuery<Object>((SelectQuery<Object>) paginatedQuery, cacheKey);
         }
         else {
             query = new IncrementalQuery(paginatedQuery, cacheKey);

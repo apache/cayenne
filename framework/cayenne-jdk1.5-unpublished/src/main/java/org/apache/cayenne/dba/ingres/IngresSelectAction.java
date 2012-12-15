@@ -28,7 +28,7 @@ import org.apache.cayenne.query.SelectQuery;
 
 public class IngresSelectAction extends SelectAction {
 
-    public IngresSelectAction(SelectQuery query, JdbcAdapter adapter,
+    public <T> IngresSelectAction(SelectQuery<T> query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

@@ -108,7 +108,7 @@ public class DataMapUtils {
         }
         
         if(query instanceof SelectQuery) {
-            for(Ordering ordering: ((SelectQuery)query).getOrderings()) {
+            for(Ordering ordering: ((SelectQuery<?>)query).getOrderings()) {
                 // validate paths in ordering
                 String path = ordering.getSortSpecString();
                 Iterator<CayenneMapEntry> it = ((ObjEntity)query.getRoot()).resolvePathComponents(path);

@@ -28,7 +28,7 @@ import org.apache.cayenne.query.SelectQuery;
 
 public class SQLServerSelectAction extends SelectAction {
 
-    public SQLServerSelectAction(SelectQuery query, JdbcAdapter adapter,
+    public <T> SQLServerSelectAction(SelectQuery<T> query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

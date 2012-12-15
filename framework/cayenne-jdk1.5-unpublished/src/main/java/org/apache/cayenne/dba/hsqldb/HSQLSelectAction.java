@@ -31,7 +31,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class HSQLSelectAction extends SelectAction {
 
-    HSQLSelectAction(SelectQuery query, JdbcAdapter adapter, EntityResolver entityResolver) {
+	<T> HSQLSelectAction(SelectQuery<T> query, JdbcAdapter adapter, EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }
 

@@ -35,7 +35,7 @@ import org.apache.cayenne.util.CayenneMapEntry;
  */
 class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
 
-    SelectQuery query;
+    SelectQuery<?> query;
     QueryRouter router;
     EntityResolver resolver;
     ClassDescriptor classDescriptor;

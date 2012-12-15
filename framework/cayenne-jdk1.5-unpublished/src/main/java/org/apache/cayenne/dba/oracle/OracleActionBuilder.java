@@ -72,7 +72,7 @@ class OracleActionBuilder extends JdbcActionBuilder {
     }
 
     @Override
-    public SQLAction objectSelectAction(SelectQuery query) {
+    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
         return new OracleSelectAction(query, getAdapter(), getEntityResolver());
     }
 }

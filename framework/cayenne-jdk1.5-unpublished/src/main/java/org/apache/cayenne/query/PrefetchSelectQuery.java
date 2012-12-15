@@ -31,7 +31,7 @@ import org.apache.cayenne.util.Util;
  * A SelectQuery to perform a prefetch based on another query. Used internally by Cayenne
  * and is normally never used directly.
  */
-public class PrefetchSelectQuery extends SelectQuery {
+public class PrefetchSelectQuery extends SelectQuery<Object> {
 
     /**
      * The relationship path from root objects to the objects being prefetched.

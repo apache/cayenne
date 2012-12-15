@@ -31,7 +31,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class PostgresSelectAction extends SelectAction {
 
-    PostgresSelectAction(SelectQuery query, JdbcAdapter adapter,
+    <T> PostgresSelectAction(SelectQuery<T> query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

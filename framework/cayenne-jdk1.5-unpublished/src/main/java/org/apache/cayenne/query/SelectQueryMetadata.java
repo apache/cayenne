@@ -39,7 +39,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
         this.pathSplitAliases = new HashMap<String, String>(info.getPathSplitAliases());
     }
 
-    boolean resolve(Object root, EntityResolver resolver, SelectQuery query) {
+    <T> boolean resolve(Object root, EntityResolver resolver, SelectQuery<T> query) {
 
         if (super.resolve(root, resolver, null)) {
 
@@ -99,7 +99,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
         return false;
     }
 
-    private void resolveAutoAliases(SelectQuery query) {
+    private <T> void resolveAutoAliases(SelectQuery<T> query) {
         Expression qualifier = query.getQualifier();
         if (qualifier != null) {
             resolveAutoAliases(qualifier);

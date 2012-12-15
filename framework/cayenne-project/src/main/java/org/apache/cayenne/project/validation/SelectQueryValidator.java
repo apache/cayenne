@@ -34,7 +34,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 class SelectQueryValidator extends ConfigurationNodeValidator {
 
-    void validate(SelectQuery query, ValidationResult validationResult) {
+    <T> void validate(SelectQuery<T> query, ValidationResult validationResult) {
 
         validateName(query, validationResult);
 
@@ -64,8 +64,8 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
         // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
-    void validateOrdering(
-            SelectQuery query,
+    <T> void validateOrdering(
+            SelectQuery<T> query,
             Entity root,
             Ordering ordering,
             ValidationResult validationResult) {
@@ -89,7 +89,7 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
         // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
-    Entity validateRoot(SelectQuery query, ValidationResult validationResult) {
+    <T> Entity validateRoot(SelectQuery<T> query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
             addFailure(validationResult, query, "Query '%s' has no root", query.getName());
@@ -128,7 +128,7 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
         return null;
     }
 
-    void validateName(SelectQuery query, ValidationResult validationResult) {
+    <T> void validateName(SelectQuery<T> query, ValidationResult validationResult) {
         String name = query.getName();
 
         // Must have name

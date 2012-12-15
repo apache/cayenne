@@ -31,7 +31,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class MySQLSelectAction extends SelectAction {
 
-    MySQLSelectAction(SelectQuery query, JdbcAdapter adapter,
+	<T> MySQLSelectAction(SelectQuery<T> query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

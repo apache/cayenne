@@ -277,8 +277,8 @@ public class SelectTranslator extends QueryAssembler {
         return suppressingDistinct;
     }
 
-    private SelectQuery getSelectQuery() {
-        return (SelectQuery) getQuery();
+    private SelectQuery<?> getSelectQuery() {
+        return (SelectQuery<?>) getQuery();
     }
 
     protected List<ColumnDescriptor> buildResultColumns() {
@@ -286,7 +286,7 @@ public class SelectTranslator extends QueryAssembler {
         this.defaultAttributesByColumn = new HashMap<ColumnDescriptor, ObjAttribute>();
 
         List<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();
-        SelectQuery query = getSelectQuery();
+        SelectQuery<?> query = getSelectQuery();
 
         if (query.getRoot() instanceof DbEntity) {
             appendDbEntityColumns(columns, query);
@@ -301,9 +301,9 @@ public class SelectTranslator extends QueryAssembler {
         return columns;
     }
 
-    List<ColumnDescriptor> appendDbEntityColumns(
+    <T> List<ColumnDescriptor> appendDbEntityColumns(
             List<ColumnDescriptor> columns,
-            SelectQuery query) {
+            SelectQuery<T> query) {
 
         final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
 
@@ -318,9 +318,9 @@ public class SelectTranslator extends QueryAssembler {
     /**
      * Appends columns needed for object SelectQuery to the provided columns list.
      */
-    List<ColumnDescriptor> appendQueryColumns(
+    <T> List<ColumnDescriptor> appendQueryColumns(
             final List<ColumnDescriptor> columns,
-            SelectQuery query) {
+            SelectQuery<T> query) {
 
         final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
 
@@ -523,9 +523,9 @@ public class SelectTranslator extends QueryAssembler {
         return columns;
     }
 
-    List<ColumnDescriptor> appendIdColumns(
+    <T> List<ColumnDescriptor> appendIdColumns(
             final List<ColumnDescriptor> columns,
-            SelectQuery query) {
+            SelectQuery<T> query) {
 
         Set<ColumnTracker> skipSet = new HashSet<ColumnTracker>();
 

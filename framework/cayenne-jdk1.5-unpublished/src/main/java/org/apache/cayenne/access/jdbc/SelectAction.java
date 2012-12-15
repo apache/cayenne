@@ -43,9 +43,9 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class SelectAction extends BaseSQLAction {
 
-    protected SelectQuery query;
+    protected SelectQuery<?> query;
 
-    public SelectAction(SelectQuery query, JdbcAdapter adapter,
+    public SelectAction(SelectQuery<?> query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(adapter, entityResolver);
         this.query = query;

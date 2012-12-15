@@ -68,7 +68,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
         return new ProcedureAction(query, adapter, entityResolver);
     }
 
-    public SQLAction objectSelectAction(SelectQuery query) {
+    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
         return new SelectAction(query, adapter, entityResolver);
     }
 

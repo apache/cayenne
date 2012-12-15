@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
@@ -84,7 +85,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
                     : attributeQualifier;
         }
 
-        SelectQuery query = new SelectQuery(rootEntity, qualifier);
+        SelectQuery<DataRow> query = new SelectQuery<DataRow>(rootEntity, qualifier);
         query.setFetchingDataRows(true);
         return (Map<?, ?>) Cayenne.objectForQuery(context, query);
     }

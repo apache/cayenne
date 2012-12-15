@@ -62,7 +62,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
     protected List elements;
     protected DataContext dataContext;
     protected ObjEntity rootEntity;
-    protected SelectQuery internalQuery;
+    protected SelectQuery<?> internalQuery;
     protected int unfetchedObjects;
 
     /**
@@ -113,7 +113,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
         // create an internal query, it is a partial replica of
         // the original query and will serve as a value holder for
         // various parameters
-        this.internalQuery = new SelectQuery(rootEntity);
+        this.internalQuery = new SelectQuery<Object>(rootEntity);
         this.internalQuery.setFetchingDataRows(metadata.isFetchingDataRows());
         this.internalQuery.setPrefetchTree(metadata.getPrefetchTree());
 
@@ -248,14 +248,14 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
             // fetch the range of objects in fetchSize chunks
             boolean fetchesDataRows = internalQuery.isFetchingDataRows();
-            List<?> objects = new ArrayList<Object>(qualsSize);
+            List<Object> objects = new ArrayList<Object>(qualsSize);
 
             int fetchSize = maxFetchSize > 0 ? maxFetchSize : Integer.MAX_VALUE;
 
             int fetchEnd = Math.min(qualsSize, fetchSize);
             int fetchBegin = 0;
             while (fetchBegin < qualsSize) {
-                SelectQuery query = new SelectQuery(
+                SelectQuery<Object> query = new SelectQuery<Object>(
                         rootEntity,
                         ExpressionFactory.joinExp(
                                 Expression.OR,

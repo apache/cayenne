@@ -128,13 +128,13 @@ public class MapLoaderLoadTest extends TestCase {
     }
 
     private void checkLoadedQueries(DataMap map) throws Exception {
-        SelectQuery queryWithQualifier = (SelectQuery) map.getQuery("QueryWithQualifier");
+        SelectQuery<?> queryWithQualifier = (SelectQuery<?>) map.getQuery("QueryWithQualifier");
         assertNotNull(queryWithQualifier);
         assertTrue(queryWithQualifier.getRoot() instanceof ObjEntity);
         assertEquals("Artist", ((Entity) queryWithQualifier.getRoot()).getName());
         assertNotNull(queryWithQualifier.getQualifier());
 
-        SelectQuery queryWithOrdering = (SelectQuery) map.getQuery("QueryWithOrdering");
+        SelectQuery<?> queryWithOrdering = (SelectQuery<?>) map.getQuery("QueryWithOrdering");
         assertNotNull(queryWithOrdering);
         assertTrue(queryWithOrdering.getRoot() instanceof ObjEntity);
         assertEquals("Artist", ((Entity) queryWithOrdering.getRoot()).getName());
@@ -150,7 +150,7 @@ public class MapLoaderLoadTest extends TestCase {
         assertTrue(dobOrdering.isAscending());
         assertFalse(dobOrdering.isCaseInsensitive());
 
-        SelectQuery queryWithPrefetch = (SelectQuery) map.getQuery("QueryWithPrefetch");
+        SelectQuery<?> queryWithPrefetch = (SelectQuery<?>) map.getQuery("QueryWithPrefetch");
         assertNotNull(queryWithPrefetch);
         assertTrue(queryWithPrefetch.getRoot() instanceof ObjEntity);
         assertEquals("Gallery", ((Entity) queryWithPrefetch.getRoot()).getName());

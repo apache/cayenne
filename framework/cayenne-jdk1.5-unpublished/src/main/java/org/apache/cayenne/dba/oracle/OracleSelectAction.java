@@ -32,7 +32,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OracleSelectAction extends SelectAction {
 
-    public OracleSelectAction(SelectQuery query, JdbcAdapter adapter,
+    public <T> OracleSelectAction(SelectQuery<T> query, JdbcAdapter adapter,
             EntityResolver entityResolver) {
         super(query, adapter, entityResolver);
     }

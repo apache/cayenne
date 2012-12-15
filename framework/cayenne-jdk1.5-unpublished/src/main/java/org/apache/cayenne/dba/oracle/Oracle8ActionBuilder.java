@@ -43,7 +43,7 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
     }
 
     @Override
-    public SQLAction objectSelectAction(SelectQuery query) {
+    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
         return new Oracle8SelectAction(query, getAdapter(), getEntityResolver());
     }
 

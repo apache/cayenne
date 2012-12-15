@@ -70,7 +70,7 @@ class ObjectIdBatchFault {
     private Map<String, Object> fetchObjects() {
 
         if (sources == null) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
 
         EntityResolver resolver = context.getEntityResolver();
@@ -86,14 +86,14 @@ class ObjectIdBatchFault {
 
             Object object = Cayenne.objectForQuery(context, new ObjectIdQuery(id));
             if (object == null) {
-                return Collections.EMPTY_MAP;
+                return Collections.emptyMap();
             }
             else {
                 return Collections.singletonMap(uuid, object);
             }
         }
 
-        Map<String, SelectQuery> queriesByEntity = new HashMap<String, SelectQuery>();
+        Map<String, SelectQuery<DataObject>> queriesByEntity = new HashMap<String, SelectQuery<DataObject>>();
         Map<String, EntityIdCoder> codersByEntity = new HashMap<String, EntityIdCoder>();
 
         for (ObjectIdBatchSourceItem source : sources) {
@@ -101,13 +101,13 @@ class ObjectIdBatchFault {
             String uuid = source.getId();
             String entityName = EntityIdCoder.getEntityName(uuid);
             EntityIdCoder coder = codersByEntity.get(entityName);
-            SelectQuery query;
+            SelectQuery<DataObject> query;
 
             if (coder == null) {
                 coder = new EntityIdCoder(resolver.getObjEntity(entityName));
                 codersByEntity.put(entityName, coder);
 
-                query = new SelectQuery(entityName);
+                query = new SelectQuery<DataObject>(entityName);
                 queriesByEntity.put(entityName, query);
             }
             else {
@@ -124,7 +124,7 @@ class ObjectIdBatchFault {
         int capacity = (int) Math.ceil(sources.size() / 0.75d);
         Map<String, Object> results = new HashMap<String, Object>(capacity);
 
-        for (SelectQuery query : queriesByEntity.values()) {
+        for (SelectQuery<DataObject> query : queriesByEntity.values()) {
 
             EntityIdCoder coder = codersByEntity.get(query.getRoot());
             List<DataObject> objects = context.performQuery(query);

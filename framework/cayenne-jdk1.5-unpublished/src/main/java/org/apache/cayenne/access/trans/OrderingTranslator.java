@@ -59,7 +59,7 @@ public class OrderingTranslator extends QueryAssemblerHelper {
             return;
         }
 
-        Iterator<Ordering> it = ((SelectQuery) q).getOrderings().iterator();
+        Iterator<Ordering> it = ((SelectQuery<?>) q).getOrderings().iterator();
 
         Appendable mainBuffer = this.out;
 
