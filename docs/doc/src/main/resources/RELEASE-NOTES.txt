@@ -45,7 +45,8 @@ Bug Fixes:
 
 CAY-957 Deadlock in nested contexts
 CAY-1677 Modeler: text fields discard input unless you press enter
-CAY-1708 - Modeler error when pasting datamap with EJBQL query
+CAY-1708 Modeler error when pasting datamap with EJBQL query
+CAY-1714 ROP: Cayenne tries to build a query for non committed object when using more than 2 nested contexts 
 CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
 CAY-1719 Modeler - Obj Attribute Java Type editor won't focus sometimes
