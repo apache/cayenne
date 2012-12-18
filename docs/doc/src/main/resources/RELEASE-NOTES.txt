@@ -23,6 +23,7 @@ CAY-957 Deadlock in nested contexts
 CAY-1689 [PATCH] LOB*QueryBuilders do not check isQuotingSQLIdentifiers
 CAY-1708 Modeler error when pasting datamap with EJBQL query
 CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
+CAY-1714 ROP: Cayenne tries to build a query for non committed object when using more than 2 nested contexts 
 CAY-1715 Passing parameters to mapped EJBQL queries
 CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
