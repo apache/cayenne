@@ -26,10 +26,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
@@ -52,7 +56,7 @@ public class JdbcPkGenerator implements PkGenerator {
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
 
     protected JdbcAdapter adapter;
-    protected Map<String, LongPkRange> pkCache = new HashMap<String, LongPkRange>();
+    protected ConcurrentHashMap<String, SortedSet<Long>> pkCache = new ConcurrentHashMap<String, SortedSet<Long>>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
 
     public JdbcPkGenerator(JdbcAdapter adapter) {
@@ -253,21 +257,32 @@ public class JdbcPkGenerator implements PkGenerator {
             value = longPkFromDatabase(node, entity);
         }
         else {
+            SortedSet<Long> pks = pkCache.get(entity.getName());
+
+            if (pks == null) {
+                // created exhausted LongPkRange
+                pks = new TreeSet<Long>();
+                SortedSet<Long> previousPks = pkCache.putIfAbsent(entity.getName(), pks);
+                if (previousPks != null) {
+                	pks = previousPks;
+                }
+            }
+
+            if (pks.isEmpty()) {
+            	long val = longPkFromDatabase(node, entity);
+            	SortedSet<Long> nextPks = mkSortedSetFromRange(val, val + cacheSize - 1);
+            	while (!pkCache.replace(entity.getName(), pks, nextPks)) {
+            		pks = pkCache.get(entity.getName()); // the cache for this entity has changed, so re-fetch it then update
+            		SortedSet<Long> previousPlusNext = new TreeSet<Long>(pks);
+            		previousPlusNext.addAll(nextPks);
+            		nextPks = previousPlusNext;
+            	}
+            	pks = nextPks;
+            }
+
             synchronized (pkCache) {
-                LongPkRange r = pkCache.get(entity.getName());
-
-                if (r == null) {
-                    // created exhausted LongPkRange
-                    r = new LongPkRange(1l, 0l);
-                    pkCache.put(entity.getName(), r);
-                }
-
-                if (r.isExhausted()) {
-                    long val = longPkFromDatabase(node, entity);
-                    r.reset(val, val + cacheSize - 1);
-                }
-
-                value = r.getNextPrimaryKey();
+                value = pks.first();
+                pks.remove(value);
             }
         }
 
@@ -280,7 +295,15 @@ public class JdbcPkGenerator implements PkGenerator {
         }
     }
 
-    /**
+    private SortedSet<Long> mkSortedSetFromRange(long min, long max) {
+    	SortedSet<Long> result = new TreeSet<Long>();
+    	for (long i = min; i <= max; i++) {
+    		result.add(i);
+    	}
+    	return result;
+    }
+
+	/**
      * Performs primary key generation ignoring cache. Generates a range of primary keys
      * as specified by "pkCacheSize" bean property.
      * <p>
