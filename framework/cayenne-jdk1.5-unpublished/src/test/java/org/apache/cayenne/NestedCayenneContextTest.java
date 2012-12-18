@@ -32,6 +32,8 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTooneDep;
 import org.apache.cayenne.testdo.mt.ClientMtTooneMaster;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
@@ -689,6 +691,26 @@ public class NestedCayenneContextTest extends RemoteCayenneCase {
         child.commitChangesToParent();
 
         // fetching other relationship... this fails per CAY-1183
+        childMt2.getTable3();
+    }
+    
+    /**
+     * CAY1714
+     */
+    public void testQueriesOnTemporaryObject() throws Exception {
+        ObjectContext clientContext = this.clientContext.createChildContext();
+        ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
+
+        ObjectContext child = clientContext.createChildContext();
+        ClientMtTable1 childMt = (ClientMtTable1) Cayenne.objectForPK(child, parentMt.getObjectId());
+        childMt.setGlobalAttribute1("1183");
+        ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
+        childMt2.setGlobalAttribute("1183");
+        childMt2.setTable1(childMt);
+
+        child.commitChangesToParent();
+
+        // this will fail
         childMt2.getTable3();
     }
 
