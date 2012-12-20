@@ -21,7 +21,9 @@
 
 	<!-- The next line is needed to work with maven injecting the docbook stylesheets -->
 	<xsl:import href="urn:docbkx:stylesheet" />
-	<xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/> 
+	<!-- <xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/> -->
+
+    <xsl:import href="highlight.xsl" />
 
 	<xsl:param name="keep.relative.image.uris" select="1"/>
 	<xsl:param name="toc.section.depth">1</xsl:param>

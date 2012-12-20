@@ -37,11 +37,11 @@
             more common way in Cayenne (or ORM in general) is to get a hold of the object first, and
             then delete it via the context. Let's use utility class Cayenne to find an
             artist:</para>
-        <programlisting>Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY, "Pablo Picasso");
+        <programlisting language="java">Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY, "Pablo Picasso");
 SelectQuery select = new SelectQuery(Artist.class, qualifier);
 Artist picasso = (Artist) Cayenne.objectForQuery(context, select);</programlisting>
         <para>Now let's delete the artist:</para>
-        <programlisting>if (picasso != null) {
+        <programlisting language="java">if (picasso != null) {
     context.deleteObject(picasso);
     context.commitChanges();
 }</programlisting>

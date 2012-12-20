@@ -11,7 +11,7 @@
             ObjectContext.</para>
         <para>Let's start by creating an empty Main class with the standard main() method in the
             client project:</para>
-        <programlisting>package org.example.cayenne.persistent.client;
+        <programlisting language="java">package org.example.cayenne.persistent.client;
 
 public class Main {
 
@@ -21,7 +21,7 @@ public class Main {
 }</programlisting>
         <para>Now the part that is actually different from regular Cayenne - establishing the server
             connection and obtaining the ObjectContext:</para>
-        <programlisting>ClientConnection connection = new HessianConnection("http://localhost:8080/tutorial/cayenne-service");
+        <programlisting language="java">ClientConnection connection = new HessianConnection("http://localhost:8080/tutorial/cayenne-service");
 DataChannel channel = new ClientChannel(connection, false, new DefaultEventManager(), false);
 ObjectContext context = new CayenneContext(channel);</programlisting>
         <para>Note that the "channel" can be used to create as many peer ObjectContexts as needed
@@ -31,7 +31,7 @@ ObjectContext context = new CayenneContext(channel);</programlisting>
             connection (or channel, or context).</para>
         <para>So now let's do the same persistent operaions that we did in the first tutorial "Main"
             class. Let's start by creating and saving some objects:</para>
-        <programlisting>// creating new Artist
+        <programlisting language="java">// creating new Artist
 Artist picasso = context.newObject(Artist.class);
 picasso.setName("Pablo Picasso");
 
@@ -55,7 +55,7 @@ stein.setGallery(metropolitan);
 // saving all the changes above
 context.commitChanges();</programlisting>
         <para>Now let's select them back:</para>
-        <programlisting>// SelectQuery examples
+        <programlisting language="java">// SelectQuery examples
 SelectQuery select1 = new SelectQuery(Painting.class);
 List&lt;Painting&gt; paintings1 = context.performQuery(select1);
 
@@ -64,7 +64,7 @@ Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
 SelectQuery select2 = new SelectQuery(Painting.class, qualifier2);
 List&lt;Painting&gt; paintings2 = context.performQuery(select2);</programlisting>
         <para>Now, delete:</para>
-        <programlisting>Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
+        <programlisting language="java">Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
                 "Pablo Picasso");
 SelectQuery selectToDelete = new SelectQuery(Artist.class, qualifier);
 Artist picasso = (Artist) DataObjectUtils.objectForQuery(context,

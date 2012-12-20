@@ -65,6 +65,7 @@
 			<para>By creating custom templates, you can use cgen to generate other output (such as
 				web pages, reports, specialized code templates) based on DataMap information.</para>
 			<para>
+                <div class="table">
 				<table frame="void">
 					<caption>cgen required parameters</caption>
 					<col width="14%"/>
@@ -94,6 +95,8 @@
 						</tr>
 					</tbody>
 				</table>
+                </div>
+                <div class="table">
 				<table frame="void">
 					<caption>cgen optional parameters</caption>
 					<col width="33%"/>
@@ -210,7 +213,9 @@
 								package.</td>
 						</tr>
 					</tbody>
-				</table>Example - a typical class generation scenario, where pairs of classes are
+				</table>
+                </div>
+                Example - a typical class generation scenario, where pairs of classes are
 				generated, and superclasses are placed in a separate package:
 				<programlisting>&lt;plugin>
 	&lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
