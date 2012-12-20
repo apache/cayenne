@@ -16,7 +16,7 @@
                 <para>Select all paintings (the code, and the log output it generates):</para>
             </listitem>
         </itemizedlist>
-        <programlisting>SelectQuery select1 = new SelectQuery(Painting.class);
+        <programlisting language="java">SelectQuery select1 = new SelectQuery(Painting.class);
 List paintings1 = context.performQuery(select1);</programlisting>
         <programlisting>INFO: SELECT t0.GALLERY_ID, t0.ARTIST_ID, t0.NAME, t0.ID FROM PAINTING t0
 INFO: === returned 2 rows. - took 18 ms.</programlisting>
@@ -25,7 +25,7 @@ INFO: === returned 2 rows. - took 18 ms.</programlisting>
                 <para>Select paintings that start with "gi", ignoring case:</para>
             </listitem>
         </itemizedlist>
-        <programlisting>Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
+        <programlisting language="java">Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
                 Painting.NAME_PROPERTY,
                 "gi%");
 SelectQuery select2 = new SelectQuery(Painting.class, qualifier2);
@@ -40,7 +40,7 @@ INFO: === returned 1 row. - took 18 ms.</programlisting>
                     ExpressionFactory):</para>
             </listitem>
         </itemizedlist>
-        <programlisting>Calendar c = new GregorianCalendar();
+        <programlisting language="java">Calendar c = new GregorianCalendar();
 c.set(c.get(Calendar.YEAR) - 100, 0, 1, 0, 0, 0);
 
 Expression qualifier3 = Expression.fromString("artist.dateOfBirth &lt; $date");

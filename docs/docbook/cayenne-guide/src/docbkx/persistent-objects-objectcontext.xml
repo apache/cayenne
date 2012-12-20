@@ -7,7 +7,7 @@
 		<para>ObjectContext is an interface that users normally work with to access the database. It
 			provides the API to execute database operations and to manage persistent objects. A
 			context is obtained from the
-			ServerRuntime:<programlisting>ObjectContext context = runtime.getContext();</programlisting></para>
+			ServerRuntime:<programlisting language="java">ObjectContext context = runtime.getContext();</programlisting></para>
 		<para>The call above creates a new instance of ObjectContext that can access the database via this
 			runtime. ObjectContext is a single "work area" in Cayenne, storing persistent objects.
 			ObjectContext guarantees that for each database row with a unique ID it will contain at
@@ -94,7 +94,7 @@
 		<para>One of the first things users usually want to do with an ObjectContext is to select
 			some objects from a database. This is done by calling "<emphasis role="italic"
 				>performQuery</emphasis>"
-			method:<programlisting>SelectQuery query = new SelectQuery(Artist.class);
+			method:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
 List&lt;Artist> artists = context.performQuery(query);</programlisting>We'll
 			discuss queries in some detail in the following chapters. The example above is
 			self-explanatory - we create a SelectQuery that matches all Artist objects present in
@@ -103,34 +103,34 @@ List&lt;Artist> artists = context.performQuery(query);</programlisting>We'll
 			database. For such queries ObjectContext provides "<emphasis role="italic"
 				>performGenericQuery</emphasis>"method. While not nearly as commonly-used as
 			"performQuery", it is nevertheless important in some situations.
-			E.g.:<programlisting>Collection&lt;Query> queries = ... // multiple queries that need to be run together
+			E.g.:<programlisting language="java">Collection&lt;Query> queries = ... // multiple queries that need to be run together
 QueryChain query = new QueryChain(queries);
 
 QueryResponse response = context.performGenericQuery(query);</programlisting></para>
 		<para>An application might modify selected objects. E.g.:</para>
-		<programlisting>Artist selectedArtist = artists.get(0);
+		<programlisting language="java">Artist selectedArtist = artists.get(0);
 selectedArtist.setName("Dali");</programlisting>
 		<para>The first time the object property is changed, the object's state is automatically set
 			to "MODIFIED" by Cayenne. Cayenne tracks all in-memory changes until a user calls
 				"<emphasis role="italic"
-			>commitChanges</emphasis>":<programlisting>context.commitChanges();</programlisting>At
+			>commitChanges</emphasis>":<programlisting language="java">context.commitChanges();</programlisting>At
 			this point all in-memory changes are analyzed and a minimal set of SQL statements is
 			issued in a single transaction to synchronize the database with the in-memory state. In
 			our example "commitChanges" commits just one object, but generally it can be any number
 			of objects. </para>
 		<para>If instead of commit, we wanted to reset all changed objects to the previously
 			committed state, we'd call <emphasis>rollbackChanges</emphasis>
-			instead:<programlisting>context.rollbackChanges();</programlisting></para>
+			instead:<programlisting language="java">context.rollbackChanges();</programlisting></para>
 		<para>"<emphasis role="italic">newObject</emphasis>" method call creates a persistent object
 			and sets its state to
-			"NEW":<programlisting>Artist newArtist = context.newObject(Artist.class);
+			"NEW":<programlisting language="java">Artist newArtist = context.newObject(Artist.class);
 newArtist.setName("Picasso");</programlisting></para>
 		<para>It will only exist in memory until "commitChanges" is issued. On commit Cayenne might
 			generate a new primary key (unless a user set it explicitly, or a PK was inferred from a
 			relationship) and issue an INSERT SQL statement to permanently store the object.</para>
 		<para><emphasis>deleteObjects</emphasis> method takes one or more Persistent objects and
 			marks them as
-			"DELETED":<programlisting>context.deleteObjects(artist1);
+			"DELETED":<programlisting language="java">context.deleteObjects(artist1);
 context.deleteObjects(artist2, artist3, artist4);</programlisting>Additionally
 			"deleteObjects" processes all  delete rules modeled for the affected objects. This may
 			result in implicitly deleting or modifying extra related objects. Same as insert and
@@ -143,11 +143,11 @@ context.deleteObjects(artist2, artist3, artist4);</programlisting>Additionally
 			common operation. E.g. to improve performance a user might utilize a single shared
 			context to select and cache data, and then occasionally transfer some selected objects
 			to another context to modify and commit
-			them:<programlisting>ObjectContext editingContext = runtime.getContext();
+			them:<programlisting language="java">ObjectContext editingContext = runtime.getContext();
 Artist localArtist = editingContext.localObject(artist);</programlisting></para>
 		<para>Often an appliction needs to inspect mapping metadata. This information is stored in
 			the EntityResolver object, accessible via the
-			ObjectContext:<programlisting>EntityResolver resolver = objectContext.getEntityResolver();</programlisting></para>
+			ObjectContext:<programlisting language="java">EntityResolver resolver = objectContext.getEntityResolver();</programlisting></para>
 		<para>Here we discussed the most commonly used subset of the ObjectContext API. There are
 			other useful methods, e.g. those allowing to inspect registered objects state en bulk,
 			etc. Check the latest JavaDocs for details.</para>
@@ -158,12 +158,12 @@ Artist localArtist = editingContext.localObject(artist);</programlisting></para>
 				<code>"org.apache.cayenne.Cayenne"</code>) that builds on ObjectContext API to
 			provide a number of very common operations. E.g. get a primary key (most entities do not
 			model PK as an object property)
-			:<programlisting>long pk = Cayenne.longPKForObject(artist);</programlisting></para>
+			:<programlisting language="java">long pk = Cayenne.longPKForObject(artist);</programlisting></para>
 		<para>It also provides the reverse operation - finding an object given a known
-			PK:<programlisting>Artist artist = Cayenne.objectForPK(context, Artist.class, 34579);</programlisting></para>
+			PK:<programlisting language="java">Artist artist = Cayenne.objectForPK(context, Artist.class, 34579);</programlisting></para>
 		<para>If a query is expected to return 0 or 1 object, Cayenne helper class can be used to find
 			this object. It throws an exception if more than one object matched the
-			query:<programlisting>Artist artist = (Artist) Cayenne.objectForQuery(context, new SelectQuery(Artist.class));</programlisting></para>
+			query:<programlisting language="java">Artist artist = (Artist) Cayenne.objectForQuery(context, new SelectQuery(Artist.class));</programlisting></para>
 		<para>Feel free to explore Cayenne class API for other useful methods.</para>
 	</section>
 	<section xml:id="objectcontext-nesting">
@@ -185,18 +185,18 @@ Artist localArtist = editingContext.localObject(artist);</programlisting></para>
 			separate JVM and communicates with its parent via a web service. ROP is discussed in
 			details in the following chapters. Here we concentrate on the same-VM nesting.</para>
 		<para>To create a nested context, use an instance of ServerRuntime, passing it the desired
-			parent:<programlisting>ObjectContext parent = runtime.getContext();
+			parent:<programlisting language="java">ObjectContext parent = runtime.getContext();
 ObjectContext nested = runtime.getContext((DataChannel) parent);</programlisting>From
 			here a nested context operates just like a regular context (you can perform queries,
 			create and delete objects, etc.). The only difference is that commit and rollback
 			operations can either be limited to synchronization with the parent, or cascade all the
 			way to the
-			database:<programlisting>// merges nested context changes into the parent context
+			database:<programlisting language="java">// merges nested context changes into the parent context
 nested.commitChangesToParent();
 
 // regular 'commitChanges' cascades commit through the chain 
 // of parent contexts all the way to the database
-nested.commitChanges();</programlisting><programlisting>// unrolls all local changes, getting context in a state identical to parent
+nested.commitChanges();</programlisting><programlisting language="java">// unrolls all local changes, getting context in a state identical to parent
 nested.rollbackChangesLocally();
 
 // regular 'rollbackChanges' cascades rollback through the chain of contexts 
@@ -215,17 +215,17 @@ nested.rollbackChanges();</programlisting></para>
 			below.</para>
 		<para>When creating a new generic object, either cast your ObjectContext to DataContext
 			(that provides "newObject(String)" API), or provide your object with an explicit
-			ObjectId:<programlisting>DataObject generic = ((DataContext) context).newObject("GenericEntity");</programlisting><programlisting>DataObject generic = new CayenneDataObject();
+			ObjectId:<programlisting language="java">DataObject generic = ((DataContext) context).newObject("GenericEntity");</programlisting><programlisting language="java">DataObject generic = new CayenneDataObject();
 generic.setObjectId(new ObjectId("GenericEntity"));
 context.registerNewObject(generic);</programlisting>SelectQuery
 			for generic object should be created passing entity name String in constructor, instead
 			of a Java
-			class:<programlisting>SelectQuery query = new SelectQuery("GenericEntity");</programlisting>Use
+			class:<programlisting language="java">SelectQuery query = new SelectQuery("GenericEntity");</programlisting>Use
 			DataObject API to access and modify properties of a generic
-			object:<programlisting>String name = (String) generic.readProperty("name");
+			object:<programlisting language="java">String name = (String) generic.readProperty("name");
 generic.writeProperty("name", "New Name");</programlisting>This
 			is how an application can obtain entity name of a generic
-			object:<programlisting>String entityName = generic.getObjectId().getEntityName();</programlisting></para>
+			object:<programlisting language="java">String entityName = generic.getObjectId().getEntityName();</programlisting></para>
 	</section>
 	<section xml:id="transactions">
 		<title>Transactions</title>
@@ -243,7 +243,7 @@ generic.writeProperty("name", "New Name");</programlisting>This
 		<para>If you are using an EJB container (or some other JTA environment), you'll likely need
 			to switch Cayenne runtime into "external transactions mode".  This is either done in the
 			Modeler (check DataDomain > 'Container-Managed Transactions' checkbox), or in the
-			code:<programlisting>runtime.getDataDomain().setUsingExternalTransactions(true);</programlisting>In
+			code:<programlisting language="java">runtime.getDataDomain().setUsingExternalTransactions(true);</programlisting>In
 			this case Cayenne assumes that JDBC Connections obtained by runtime whenever that might
 			happen are all coming from a transactional DataSource managed by the container. In this
 			case Cayenne does not attempt to commit or rollback the connections, leaving it up to
@@ -253,7 +253,7 @@ generic.writeProperty("name", "New Name");</programlisting>This
 			rolled back together in case of failure. This can be done with an explicit thread-bound
 			transaction that surrounds a set of operations. Application is responsible for
 			committing or rolling it
-			back:<programlisting>Transaction tx = runtime.getDataDomain().createTransaction();
+			back:<programlisting language="java">Transaction tx = runtime.getDataDomain().createTransaction();
 Transaction.bindThreadTransaction(tx);
 
 try {

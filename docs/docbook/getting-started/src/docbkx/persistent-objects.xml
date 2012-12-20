@@ -18,7 +18,7 @@
         <para>Let's for instance add a utility method to the Artist class that sets Artist date of
             birth, taking a string argument for the date. It will be preserved even if the model
             changes later:</para>
-        <programlisting>package org.example.cayenne.persistent;
+        <programlisting language="java">package org.example.cayenne.persistent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,13 +60,13 @@ public class Artist extends _Artist {
                 role="bold">must</emphasis> be registered with DataContext to be persisted and to
             allow setting relationships with other objects. Add this code to the "main" method of
             the Main class:</para>
-        <programlisting>Artist picasso = context.newObject(Artist.class);
+        <programlisting language="java">Artist picasso = context.newObject(Artist.class);
 picasso.setName("Pablo Picasso");
 picasso.setDateOfBirthString("18811025");</programlisting>
         <para>Note that at this point "picasso" object is only stored in memory and is not saved in
             the database. Let's continue by adding a Metropolitan Museum "Gallery" object and a few
             Picasso "Paintings":</para>
-        <programlisting>Gallery metropolitan = context.newObject(Gallery.class);
+        <programlisting language="java">Gallery metropolitan = context.newObject(Gallery.class);
 metropolitan.setName("Metropolitan Museum of Art"); 
 
 Painting girl = context.newObject(Painting.class);
@@ -78,13 +78,13 @@ stein.setName("Gertrude Stein");</programlisting>
             case below relationships are automatically estabslished in both directions (e.g.
             picasso.addToPaintings(girl) has exactly the same effect as
             girl.setToArtist(picasso)).</para>
-        <programlisting>picasso.addToPaintings(girl);
+        <programlisting language="java">picasso.addToPaintings(girl);
 picasso.addToPaintings(stein);
         
 girl.setGallery(metropolitan);
 stein.setGallery(metropolitan);</programlisting>
         <para>Now lets save all five new objects, in a single method call:</para>
-        <programlisting>context.commitChanges();</programlisting>
+        <programlisting language="java">context.commitChanges();</programlisting>
         <para>Now you can run the application again as described in the previous chapter. The new
             output will show a few actual DB operations:</para>
         <programlisting>org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader load

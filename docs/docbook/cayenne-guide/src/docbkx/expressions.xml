@@ -195,7 +195,7 @@ Expression qualifier1 = template.expWithParameters(p1);
 			general examples and some gotchas. </para>
 		<para>The following code recreates the expression from the previous chapter, but now using
 			expression
-			API:<programlisting>// String expression: name like 'A%' and price &lt; 1000
+			API:<programlisting language="java">// String expression: name like 'A%' and price &lt; 1000
 Expression e1 = ExpressionFactory.likeExp(Painting.NAME_PROPERTY, "A%");
 Expression e2 = ExpressionFactory.lessExp(Painting.PRICE_PROPERTY, 1000);
 Expression finalExp = e1.andExp(e2); </programlisting>This
@@ -211,7 +211,7 @@ Expression finalExp = e1.andExp(e2); </programlisting>This
 			control how SQL joins are generated if the same path is encountered more than once in
 			the same Expression. Two ExpressionFactory methods allow to implicitly generate aliases
 			to "split" match paths into individual joins if
-			needed:<programlisting>Expression matchAllExp(String path, Collection values)
+			needed:<programlisting language="java">Expression matchAllExp(String path, Collection values)
 Expression matchAllExp(String path, Object... values)</programlisting></para>
 		<para>"Path" argument to both of these methods can use a split character (a pipe symbol '|')
 			instead of dot to indicate that relationship following a path should be split into a
@@ -227,16 +227,16 @@ Expression matchAllExp(String path, Object... values)</programlisting></para>
 			is done by the database engine. However the same expressions can also be used for
 			accessing object properties, calculating values, in-memory filtering. </para>
 		<para>Checking whether an object satisfies an
-			expression:<programlisting>Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, "John", "Bob");
+			expression:<programlisting language="java">Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, "John", "Bob");
 User user = ...
 if(e.match(user)) {
    ...
 }</programlisting>Reading
 			property
-			value:<programlisting>Expression e = Expression.fromString(User.NAME_PROPERTY);
+			value:<programlisting language="java">Expression e = Expression.fromString(User.NAME_PROPERTY);
 String name = e.evaluate(user);</programlisting></para>
 		<para>Filtering a list of
-			objects:<programlisting>Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, "John", "Bob");
+			objects:<programlisting language="java">Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, "John", "Bob");
 List&lt;User> unfiltered = ...
 List&lt;User> filtered = e.filterObjects(unfiltered);</programlisting></para>
 		<para>

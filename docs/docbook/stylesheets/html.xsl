@@ -15,22 +15,29 @@
 	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 	KIND, either express or implied.  See the License for the
 	specific language governing permissions and limitations
-	under the License.   
+	under the License.
 -->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 
-  <xsl:include href="common-customizations.xsl"/>
+        version="1.0">
+    <!--  xmlns:xslthl="http://xslthl.sf.net"
+        exclude-result-prefixes="xslthl" -->
+    <xsl:include href="common-customizations.xsl"/>
 
-  <xsl:param name="html.stylesheet" select="'css/cayenne-doc.css'"/>
-  <xsl:param name="chunker.output.encoding">UTF-8</xsl:param>
+    <!--<xsl:param name="highlight.source" select="1"/>-->
+    <xsl:param name="html.stylesheet" select="'css/cayenne-doc.css'"/>
+    <xsl:param name="chunker.output.encoding">UTF-8</xsl:param>
 
-  <!-- Only chapters start a new page -->
-  <xsl:param name="chunk.section.depth">0</xsl:param>
+    <!-- Only chapters start a new page -->
+    <xsl:param name="chunk.section.depth">0</xsl:param>
 
-  <!-- Don't add any embedded styles -->
-  <xsl:param name="css.decoration">0</xsl:param>
-  
-  <xsl:param name="ignore.image.scaling">1</xsl:param>
+    <!-- Don't add any embedded styles -->
+    <xsl:param name="css.decoration">0</xsl:param>
 
-  <xsl:param name="use.id.as.filename">1</xsl:param>
+    <xsl:param name="ignore.image.scaling">1</xsl:param>
+
+    <xsl:param name="use.id.as.filename">1</xsl:param>
+
+
+
 </xsl:stylesheet>

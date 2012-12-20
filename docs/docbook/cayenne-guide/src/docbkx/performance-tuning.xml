@@ -10,7 +10,7 @@
 			chapter, as it is a powerful performance optimization method. Another common application
 			of prefetching is for refreshing stale object relationships.</para>
 		<para>Prefetching example:
-			<programlisting>SelectQuery query = new SelectQuery(Artist.class);
+			<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
 
 // this instructs Cayenne to prefetch one of Artist's relationships
 query.addPrefetch("paintings");
@@ -20,9 +20,9 @@ query.addPrefetch("paintings");
 List&lt;Artist> artists = context.performQuery(query);</programlisting>
 			All types of relationships can be preftetched - to-one, to-many, flattened. </para>
 		<para>A prefetch can span multiple relationships:
-			<programlisting> query.addPrefetch("paintings.gallery");</programlisting></para>
+			<programlisting language="java"> query.addPrefetch("paintings.gallery");</programlisting></para>
 		<para>A query can have multiple
-			prefetches:<programlisting>query.addPrefetch("paintings"); 
+			prefetches:<programlisting language="java">query.addPrefetch("paintings");
 query.addPrefetch("paintings.gallery"); </programlisting></para>
 		<para>If a query is fetching DataRows, all "disjoint" prefetches are ignored, only "joint"
 			prefetches are executed (see prefetching semantics discussion below for what disjoint and
@@ -35,14 +35,14 @@ query.addPrefetch("paintings.gallery"); </programlisting></para>
 				query root objects with related objects fully resolved. However semantics can affect
 				preformance, in some cases significantly. There are 3 types of prefetch semantics,
 				all defined as constants in
-				org.apache.cayenne.query.PrefetchTreeNode:<programlisting>PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS
+				org.apache.cayenne.query.PrefetchTreeNode:<programlisting language="java">PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS
 PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS
 PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS</programlisting></para>
 			<para>Each query has a default prefetch semantics, so generally users do not have to
 				worry about changing it, except when performance is a concern, or a few special
 				cases when a default sematics can't produce the correct result. SelectQuery uses
 				DISJOINT_PREFETCH_SEMANTICS by default. Semantics can be changed as
-				follows:<programlisting>SelectQuery query = new SelectQuery(Artist.class); 
+				follows:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
 query.addPrefetch("paintings").setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS); </programlisting></para>
 			<para>There's no limitation on mixing different types of semantics in the same

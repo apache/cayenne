@@ -64,7 +64,7 @@
         <section>
             <title>Bootstrapping Cayenne in Various Environments</title>
             <para> Here is a simple example of starting a server-side Cayenne stack:</para>
-            <programlisting>ServerRuntime runtime = new ServerRuntime("cayenne-UntitledDomain.xml");</programlisting>
+            <programlisting language="java">ServerRuntime runtime = new ServerRuntime("cayenne-UntitledDomain.xml");</programlisting>
             <para>For more detailed examples check the tutorials and other documentation.</para>
         </section>
         <section>
@@ -95,7 +95,7 @@
                 scale well to complex applications, and 3.0 API for mapping the listeners is hard to
                 use. In 3.1 you can annotate listener methods and register multiple callback methods
                 with a single call. </para>
-            <programlisting>// declare a listener with annotated methods
+            <programlisting language="java">// declare a listener with annotated methods
 class MyListener {
     @PostLoad(Entity1.class)
     @PostPersist(Entity1.class)
@@ -111,7 +111,7 @@ runtime.getChannel().getEntityResolver().getCallbackRegistry().addListener(liste
             <para>Moreover, unlike JPA annotations, Cayenne allows to attach a listener to a set of
                 entities not known to the listener upfront, but that are all annotated with some
                 custom annotation:</para>
-            <programlisting>class MyListener {
+            <programlisting language="java">class MyListener {
     @PostLoad(entityAnnotations = CustomAnnotation.class)
     void postLoad(Object object) {
         ....
@@ -126,7 +126,7 @@ runtime.getChannel().getEntityResolver().getCallbackRegistry().addListener(liste
                 Filters are widely used by "cayenne-lifecyle" extensions and allow to build powerful
                 custom object lifecycle-aware code. To install a filter, the following API is
                 used:</para>
-            <programlisting>class MyFilter implement DataChannelFilter { .. }
+            <programlisting language="java">class MyFilter implement DataChannelFilter { .. }
 
 MyFilter filter = new MyFilter();
 ServerRuntime runtime = ..
@@ -135,7 +135,7 @@ runtime.getDataDomain().addFilter(filter);</programlisting>
                 that certain operations can be triggered by Cayenne inside the scope of filter's
                 onQuery() or onSync() methods. To ensure annotated methods are invoked, filter
                 registration should be combined with listener registration:</para>
-            <programlisting>MyFilter filter = new MyFilter();
+            <programlisting language="java">MyFilter filter = new MyFilter();
 ServerRuntime runtime = ..
 runtime.getDataDomain().addFilter(filter);
 runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(filter);

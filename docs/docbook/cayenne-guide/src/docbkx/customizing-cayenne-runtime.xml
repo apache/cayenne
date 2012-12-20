@@ -34,13 +34,13 @@
 			<para>To have a working DI container, we need three things: service interfaces and
 				classes, a module that describes service bindings, a container that loads the
 				module, and resolves the depedencies. Let's start with service interfaces and
-				classes:<programlisting>public interface Service1 {
+				classes:<programlisting language="java">public interface Service1 {
 	public String getString();
-}</programlisting><programlisting>public interface Service2 {
+}</programlisting><programlisting language="java">public interface Service2 {
 	public int getInt();
 }</programlisting></para>
 			<para>A service implementation using instance variable
-				injection:<programlisting>public class Service1Impl implements Service1 {
+				injection:<programlisting language="java">public class Service1Impl implements Service1 {
 	@Inject
 	private Service2 service2;
 	
@@ -49,7 +49,7 @@
 	}
 }</programlisting>Same
 				thing, but using constructor
-				injection:<programlisting>public class Service1Impl implements Service1 {
+				injection:<programlisting language="java">public class Service1Impl implements Service1 {
 
 	private Service2 service2;
 
@@ -61,7 +61,7 @@
 		return service2.getInt() + "_Service1Impl";
 	}
 }
-</programlisting><programlisting>public class Service2Impl implements Service2 {
+</programlisting><programlisting language="java">public class Service2Impl implements Service2 {
 	private int i;
 
 	public int getInt() {
@@ -77,7 +77,7 @@
 				object representing service interface. Here is a module that binds Service1 and
 				Service2 to corresponding default implementations:</para>
 			<para>
-				<programlisting>public class Module1 implements Module {
+				<programlisting language="java">public class Module1 implements Module {
 
 	public void configure(Binder binder) {
 		binder.bind(Service1.class).to(Service1Impl.class);
@@ -87,22 +87,22 @@
 			</para>
 			<para>Once we have at least one module, we can create a DI container.
 					<code>org.apache.cayenne.di.Injector</code> is the container class in
-				Cayenne:<programlisting>Injector injector = DIBootstrap.createInjector(new Module1());</programlisting></para>
+				Cayenne:<programlisting language="java">Injector injector = DIBootstrap.createInjector(new Module1());</programlisting></para>
 			<para>Now that we have created the container, we can obtain services from it and call
 				their
-				methods:<programlisting>Service1 s1 = injector.getInstance(Service1.class);
+				methods:<programlisting language="java">Service1 s1 = injector.getInstance(Service1.class);
 for (int i = 0; i &lt; 5; i++) {
 	System.out.println("S1 String: " + s1.getString());
 }</programlisting></para>
 			<para>This outputs the following lines, demonstrating that s1 was Service1Impl and
 				Service2 injected into it was
-				Service2Impl:<programlisting>0_Service1Impl
+				Service2Impl:<programlisting language="java">0_Service1Impl
 1_Service1Impl
 2_Service1Impl
 3_Service1Impl
 4_Service1Impl</programlisting></para>
 			<para>There are more flavors of bindings:
-				<programlisting>// binding to instance - allowing user to create and configure instance
+				<programlisting language="java">// binding to instance - allowing user to create and configure instance
 // inside the module class
 binder.bind(Service2.class).toInstance(new Service2Impl());
 
@@ -140,7 +140,7 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
 				etc.</para>
 			<para>Another useful scope is "no scope", meaning that every time a container is asked to provide
 				a service instance for a given key, a new instance will be created and
-				returned:<programlisting>binder.bind(Service2.class).to(Service2Impl.class).withoutScope();</programlisting>Users
+				returned:<programlisting language="java">binder.bind(Service2.class).to(Service2Impl.class).withoutScope();</programlisting>Users
 				can also create their own scopes, e.g. a web application request scope or a session
 				scope. Most often than not custom scopes can be created as instances of
 					<code>org.apache.cayenne.di.spi.DefaultScope</code> with startup and shutdown
@@ -173,7 +173,7 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
 	public void configure(Binder binder) {
 		// customizations go here...
 	}	
-}</programlisting><programlisting>Module extensions = new MyExtensionsModule();
+}</programlisting><programlisting language="java">Module extensions = new MyExtensionsModule();
 ServerRuntime runtime = 
 	new ServerRuntime("com/example/cayenne-mydomain.xml", extensions);</programlisting>
 		<section xml:id="changing-properties-of-existing-services">
@@ -206,13 +206,13 @@ ServerRuntime runtime =
 				may contribute an instance of custom DbAdapterDetector to a
 					<code>org.apache.cayenne.configuration.server.DefaultDbAdapterFactory.detectors</code>
 				list:</para>
-			<programlisting>public class MyDbAdapterDetector implements DbAdapterDetector {
+			<programlisting language="java">public class MyDbAdapterDetector implements DbAdapterDetector {
 	public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
 		// check if we support this database and retun custom adapter
 		...
 	}
 }</programlisting>
-			<programlisting>// since build-in list for this key is a singleton, repeated
+			<programlisting language="java">// since build-in list for this key is a singleton, repeated
 // calls to 'bindList' will return the same instance 
 binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
        .add(MyDbAdapterDetector.class);</programlisting>
@@ -233,7 +233,7 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
 				implementation of this service is provided by <code>MapQueryCacheProvider</code>.
 				But if we want to use <code>EhCacheQueryCache</code> (a Cayenne wrapper for the
 				EhCache framework), we can define it like
-				this:<programlisting>binder.bind(QueryCache.class).to(EhCacheQueryCache.class);</programlisting></para>
+				this:<programlisting language="java">binder.bind(QueryCache.class).to(EhCacheQueryCache.class);</programlisting></para>
 		</section>
 	</section>
 	<section xml:id="noteworthy-runtime-components">

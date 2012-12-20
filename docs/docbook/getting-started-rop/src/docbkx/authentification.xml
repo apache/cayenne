@@ -83,7 +83,7 @@
     <section xml:id="running-client">
         <title>Running Client with Basic Authentication</title>
         <para>If you run the client without any changes, you'll get the following error:</para>
-        <programlisting>org.apache.cayenne.remote.hessian.HessianConnection connect
+        <programlisting language="java">org.apache.cayenne.remote.hessian.HessianConnection connect
 INFO: Connecting to [http://localhost:8080/tutorial/cayenne-service] - dedicated session.
 org.apache.cayenne.remote.hessian.HessianConnection connect
 INFO: Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
@@ -115,7 +115,7 @@ Caused by: java.net.HttpRetryException: cannot retry due to server authenticatio
 	... 4 more</programlisting>
         <para>Which is exactly what you'd expect, as the client is not authenticating itself. So
             change the line in Main.java where we obtained an ROP connection to this:</para>
-        <programlisting>ClientConnection connection = new HessianConnection(
+        <programlisting language="java">ClientConnection connection = new HessianConnection(
         "http://localhost:8080/tutorial/cayenne-service",
         "cayenne-user", "secret", null);</programlisting>
         <para>Try running again, and everything should work as before. Obviously in production

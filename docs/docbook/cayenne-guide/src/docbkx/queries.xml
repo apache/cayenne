@@ -25,7 +25,7 @@
 		<title>SelectQuery</title>
 		<para>SelectQuery is the most commonly used query in user applications. It returns a list of
 			persistent objects of a certain type specified in the
-			query:<programlisting>SelectQuery query = new SelectQuery(Artist.class);
+			query:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
 List&lt;Artist> objects = context.performQuery(query);</programlisting>This
 			returned all rows in the "ARTIST" table. If the logs were turned on, you might see the
 			following SQL
@@ -35,7 +35,7 @@ INFO: === returned 5 row. - took 5 ms.</programlisting></para>
 			qualifier to select only the data that you care about. Qualifier is simply an Expression
 			(Expressions where discussed in the previous chapter). If you only want artists whose
 			name begins with 'Pablo', you might use the following qualifier expression:
-			<programlisting>SelectQuery query = new SelectQuery(Artist.class, 
+			<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class,
         ExpressionFactory.likeExp(Artist.NAME_PROPERTY, "Pablo%"));
 List&lt;Artist> objects = context.performQuery(query);</programlisting>The
 			SQL will look different this
