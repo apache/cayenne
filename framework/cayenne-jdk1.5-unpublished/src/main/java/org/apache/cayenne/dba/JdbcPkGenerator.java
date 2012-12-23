@@ -31,9 +31,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
@@ -56,7 +58,7 @@ public class JdbcPkGenerator implements PkGenerator {
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
 
     protected JdbcAdapter adapter;
-    protected ConcurrentHashMap<String, SortedSet<Long>> pkCache = new ConcurrentHashMap<String, SortedSet<Long>>();
+    protected ConcurrentHashMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<String, Queue<Long>>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
 
     public JdbcPkGenerator(JdbcAdapter adapter) {
@@ -257,12 +259,12 @@ public class JdbcPkGenerator implements PkGenerator {
             value = longPkFromDatabase(node, entity);
         }
         else {
-            SortedSet<Long> pks = pkCache.get(entity.getName());
+            Queue<Long> pks = pkCache.get(entity.getName());
 
             if (pks == null) {
                 // created exhausted LongPkRange
-                pks = new TreeSet<Long>();
-                SortedSet<Long> previousPks = pkCache.putIfAbsent(entity.getName(), pks);
+                pks = new ConcurrentLinkedQueue<Long>();
+                Queue<Long> previousPks = pkCache.putIfAbsent(entity.getName(), pks);
                 if (previousPks != null) {
                 	pks = previousPks;
                 }
@@ -270,20 +272,22 @@ public class JdbcPkGenerator implements PkGenerator {
 
             if (pks.isEmpty()) {
             	long val = longPkFromDatabase(node, entity);
-            	SortedSet<Long> nextPks = mkSortedSetFromRange(val, val + cacheSize - 1);
-            	while (!pkCache.replace(entity.getName(), pks, nextPks)) {
+            	Queue<Long> nextPks = mkRange(val, val + cacheSize - 1);
+            	int iterations = 0;
+            	while (!pkCache.replace(entity.getName(), pks, nextPks) && iterations < 999) {
             		pks = pkCache.get(entity.getName()); // the cache for this entity has changed, so re-fetch it then update
-            		SortedSet<Long> previousPlusNext = new TreeSet<Long>(pks);
+            		Queue<Long> previousPlusNext = new ConcurrentLinkedQueue<Long>(pks);
             		previousPlusNext.addAll(nextPks);
             		nextPks = previousPlusNext;
+            		iterations++;
+            	}
+            	if (iterations >= 999) {
+            		throw new IllegalStateException("Unable to add new primary keys to the cache for entity " + entity.getName());
             	}
             	pks = nextPks;
             }
 
-            synchronized (pkCache) {
-                value = pks.first();
-                pks.remove(value);
-            }
+            value = pks.poll();
         }
 
         if (pk.getType() == Types.BIGINT) {
@@ -295,8 +299,8 @@ public class JdbcPkGenerator implements PkGenerator {
         }
     }
 
-    private SortedSet<Long> mkSortedSetFromRange(long min, long max) {
-    	SortedSet<Long> result = new TreeSet<Long>();
+    private Queue<Long> mkRange(long min, long max) {
+    	Queue<Long> result = new ConcurrentLinkedQueue<Long>();
     	for (long i = min; i <= max; i++) {
     		result.add(i);
     	}
