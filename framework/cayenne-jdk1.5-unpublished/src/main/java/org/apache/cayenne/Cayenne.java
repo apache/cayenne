@@ -29,6 +29,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyUtils;
@@ -492,6 +493,16 @@ public final class Cayenne {
         return objects.get(0);
     }
 
+    /**
+     * Returns an object or a DataRow that is a result of a given query. If query returns
+     * more than one object, an exception is thrown. If query returns no objects, null is
+     * returned.
+     */
+    @SuppressWarnings("unchecked")
+	public static <T> T objectForSelect(ObjectContext context, Select<T> query) {
+    	return (T) objectForQuery(context, query);
+    }
+    
     static ObjectId buildId(ObjectContext context, String objEntityName, Object pk) {
         if (pk == null) {
             throw new IllegalArgumentException("Null PK");

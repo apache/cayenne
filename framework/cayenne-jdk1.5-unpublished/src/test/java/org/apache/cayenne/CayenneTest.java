@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import java.nio.channels.Selector;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.Map;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
@@ -175,6 +177,18 @@ public class CayenneTest extends ServerCase {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
+    public void testObjectForSelect() throws Exception {
+        createOneArtist();
+
+        SelectQuery<Artist> query = SelectQuery.query(Artist.class, ExpressionFactory.matchDbExp("ARTIST_NAME", "artist2"));
+
+        Artist object = Cayenne.objectForSelect(context, query);
+
+        assertNotNull(object);
+        assertTrue(object instanceof Artist);
+        assertEquals("artist2", ((Artist) object).getArtistName());
+    }
+    
     public void testObjectForQueryNoObject() throws Exception {
 
         ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, new Integer(
