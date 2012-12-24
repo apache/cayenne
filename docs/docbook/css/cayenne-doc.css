@@ -25,8 +25,29 @@ hr {
     background:    gray;
 }
 
-h1,h2,h3,h4 {
-    color:         #660000;
+h1, h2, h3, h4 {
+    font-family: "Trebuchet MS","Lucida Grande",Verdana,sans-serif;
+    font-weight: normal;
+    line-height: normal;
+    margin: 1em 0 0.5em;
+}
+
+h2 {
+    color: #660000;
+    font-size: 170%;
+    padding: 0;
+}
+
+h3 {
+    border-bottom: 1px solid #EAEAEA;
+    color: #CC4400;
+    font-size: 135%;
+    padding-bottom: 3px;
+}
+
+h4 {
+    color: #AAAA99;
+    font-size: 130%;
 }
 
 pre {
