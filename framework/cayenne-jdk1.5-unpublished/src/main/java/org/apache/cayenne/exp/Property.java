@@ -1,10 +1,9 @@
 package org.apache.cayenne.exp;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SortOrder;
@@ -150,7 +149,24 @@ public class Property<E> {
     /**
      * @return An expression for finding objects with values in the given set.
      */
-    public Expression in(E... values) {
+    public Expression in(E firstValue, E... moreValues) {
+
+        int moreValuesLength = moreValues != null ? moreValues.length : 0;
+
+        Object[] values = new Object[moreValuesLength + 1];
+        values[0] = firstValue;
+
+        if (moreValuesLength > 0) {
+            System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
+        }
+
+        return ExpressionFactory.inExp(getName(), values);
+    }
+    
+    /**
+     * @return An expression for finding objects with values in the given set.
+     */
+    public Expression in(Collection<E> values) {
         return ExpressionFactory.inExp(getName(), values);
     }
 
