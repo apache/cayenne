@@ -1,249 +1,250 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
-	version="5.0" xml:id="expressions">
-	<title>Expressions</title>
-	<section xml:id="expressions-overview">
-		<title>Expressions Overview</title>
-		<para>Cayenne provides a simple yet powerful object-based expression language. The most common
-			usese of expressions are to build qualifiers and orderings of queries that are later
-			converted to SQL by Cayenne and to evaluate in-memory against specific objects (to
-			access certain values in the object graph or to perform in-memory object filtering and
-			sorting). Cayenne provides API to build expressions in the code and a parser to create
-			expressions from strings.</para>
-	</section>
-	<section xml:id="path-expressions">
-		<title>Path Expressions</title>
-		<para>Before discussing how to build expressions, it is important to understand one group of
-			expressions widely used in Cayenne - path expressions. There are two types of path
-			expressions - object and database, used for navigating graphs of connected objects or
-			joined DB tables respectively. Object paths are much more commonly used, as after all
-			Cayenne is supposed to provide a degree of isolation of the object model from the
-			database. However database paths are helpful in certain situations. General structure of
-			path expressions is the following:<programlisting> [db:]segment[+][.segment[+]...]</programlisting><itemizedlist>
-				<listitem>
-					<para>"db:" is an optional prefix indicating that the following path is a DB
-						path. Otherwise it is an object path.</para>
-				</listitem>
-				<listitem>
-					<para>"segment" is a name of a property (relationship or attribute in Cayenne
-						terms) in the path. Path must have at least one segment; segments are
-						separated by dot (".").</para>
-				</listitem>
-				<listitem>
-					<para>"+" An "OUTER JOIN" path component. Currently "+" only has effect when
-						translated to SQL as OUTER JOIN. When evaluating expressions in memory, it
-						is ignored.</para>
-				</listitem>
-			</itemizedlist></para>
-		<para>An object path expression represents a chain of property names rooted in a certain
-			(unspecified during expression creation) object and "navigating" to its related value.
-			E.g. a path expression "artist.name" might be a property path starting from a Painting
-			object, pointing to the related Artist object, and then to its name attribute. A few
-			more examples:</para>
-		<para>
-			<itemizedlist>
-				<listitem>
-					<para>"name" - can be used to navigate (read) the "name" property of a Person
-						(or any other type of object that has a "name" property).</para>
-				</listitem>
-				<listitem>
-					<para>"artist.exhibits.closingDate" - can be used to navigate to a closing date
-						of any of the exhibits of a Painting's Artist object.</para>
-				</listitem>
-				<listitem>
-					<para>"artist.exhibits+.closingDate" - same as the previous example, but when
-						translated into SQL, an OUTER JOIN will be used for "exhibits".</para>
-				</listitem>
-			</itemizedlist>
-		</para>
-		<para>Similarly a database path expression is a dot-separated path through DB table joins
-			and columns. In Cayenne joins are mapped as DbRelationships with some symbolic names
-			(the closest concept to DbRelationship name in the DB world is a named foreign key
-			constraint. But DbRelationship names are usually chosen arbitrarily, without regard to
-			constraints naming or even constraints presence). A database path therefore might look
-			like this -  "db:dbrelationshipX.dbrelationshipY.COLUMN_Z". More specific examples:<itemizedlist>
-				<listitem>
-					<para>"db:NAME" - can be used to navigate to the value of "NAME" column of some
-						unspecified table.</para>
-				</listitem>
-				<listitem>
-					<para>"db:artist.artistExhibits.exhibit.CLOSING_DATE" - can be used to match a
-						closing date of any of the exhibits of a related artist record.</para>
-				</listitem>
-			</itemizedlist></para>
-		<para>Cayenne supports "aliases" in path Expressions. E.g. the same expression can be
-			written using explicit path or an alias:<itemizedlist>
-				<listitem>
-					<para>"artist.exhibits.closingDate" - full path</para>
-				</listitem>
-				<listitem>
-					<para>"e.closingDate" - alias "e" is used for "artist.exhibits".</para>
-				</listitem>
-			</itemizedlist>SelectQuery using the second form of the path expression must be made
-			aware of the alias via <emphasis role="italic"
-				>"SelectQuery.aliasPathSplits(..)"</emphasis>, otherwise an Exception will be
-			thrown. The main use of aliases is to allow users to control how SQL joins are generated
-			if the same path is encountered more than once in any given Expression. Each alias for
-			any given path would result in a separate join. Without aliases, a single join will be
-			used for a group of matching paths.</para>
-	</section>
-	<section xml:id="expressions-from-strings">
-		<title>Creating Expressions from Strings </title>
-		<para>While in most cases users are likely to rely on API from the following section for
-			expression creation, we'll start by showing String expressions, as this will help
-			understanding the semantics. A Cayenne expression can be represented as a String, which
-			can be later converted to an expression object using <code>Expression.fromString</code>
-			static method. Here is an
-			example:<programlisting>String expString = "name like 'A%' and price &lt; 1000";
+    version="5.0" xml:id="expressions">
+    <title>Expressions</title>
+    <section xml:id="expressions-overview">
+        <title>Expressions Overview</title>
+        <para>Cayenne provides a simple yet powerful object-based expression language. The most common
+            usese of expressions are to build qualifiers and orderings of queries that are later
+            converted to SQL by Cayenne and to evaluate in-memory against specific objects (to
+            access certain values in the object graph or to perform in-memory object filtering and
+            sorting). Cayenne provides API to build expressions in the code and a parser to create
+            expressions from strings.</para>
+    </section>
+    <section xml:id="path-expressions">
+        <title>Path Expressions</title>
+        <para>Before discussing how to build expressions, it is important to understand one group of
+            expressions widely used in Cayenne - path expressions. There are two types of path
+            expressions - object and database, used for navigating graphs of connected objects or
+            joined DB tables respectively. Object paths are much more commonly used, as after all
+            Cayenne is supposed to provide a degree of isolation of the object model from the
+            database. However database paths are helpful in certain situations. General structure of
+            path expressions is the following:<programlisting> [db:]segment[+][.segment[+]...]</programlisting><itemizedlist>
+                <listitem>
+                    <para>&quot;db:&quot; is an optional prefix indicating that the following path is a DB
+                        path. Otherwise it is an object path.</para>
+                </listitem>
+                <listitem>
+                    <para>&quot;segment&quot; is a name of a property (relationship or attribute in Cayenne
+                        terms) in the path. Path must have at least one segment; segments are
+                        separated by dot (&quot;.&quot;).</para>
+                </listitem>
+                <listitem>
+                    <para>&quot;+&quot; An &quot;OUTER JOIN&quot; path component. Currently &quot;+&quot; only has effect when
+                        translated to SQL as OUTER JOIN. When evaluating expressions in memory, it
+                        is ignored.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>An object path expression represents a chain of property names rooted in a certain
+            (unspecified during expression creation) object and &quot;navigating&quot; to its related value.
+            E.g. a path expression &quot;artist.name&quot; might be a property path starting from a Painting
+            object, pointing to the related Artist object, and then to its name attribute. A few
+            more examples:</para>
+        <para>
+            <itemizedlist>
+                <listitem>
+                    <para>&quot;name&quot; - can be used to navigate (read) the &quot;name&quot; property of a Person
+                        (or any other type of object that has a &quot;name&quot; property).</para>
+                </listitem>
+                <listitem>
+                    <para>&quot;artist.exhibits.closingDate&quot; - can be used to navigate to a closing date
+                        of any of the exhibits of a Painting&apos;s Artist object.</para>
+                </listitem>
+                <listitem>
+                    <para>&quot;artist.exhibits+.closingDate&quot; - same as the previous example, but when
+                        translated into SQL, an OUTER JOIN will be used for &quot;exhibits&quot;.</para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>Similarly a database path expression is a dot-separated path through DB table joins
+            and columns. In Cayenne joins are mapped as DbRelationships with some symbolic names
+            (the closest concept to DbRelationship name in the DB world is a named foreign key
+            constraint. But DbRelationship names are usually chosen arbitrarily, without regard to
+            constraints naming or even constraints presence). A database path therefore might look
+            like this -  &quot;db:dbrelationshipX.dbrelationshipY.COLUMN_Z&quot;. More specific examples:<itemizedlist>
+                <listitem>
+                    <para>&quot;db:NAME&quot; - can be used to navigate to the value of &quot;NAME&quot; column of some
+                        unspecified table.</para>
+                </listitem>
+                <listitem>
+                    <para>&quot;db:artist.artistExhibits.exhibit.CLOSING_DATE&quot; - can be used to match a
+                        closing date of any of the exhibits of a related artist record.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Cayenne supports &quot;aliases&quot; in path Expressions. E.g. the same expression can be
+            written using explicit path or an alias:<itemizedlist>
+                <listitem>
+                    <para>&quot;artist.exhibits.closingDate&quot; - full path</para>
+                </listitem>
+                <listitem>
+                    <para>&quot;e.closingDate&quot; - alias &quot;e&quot; is used for &quot;artist.exhibits&quot;.</para>
+                </listitem>
+            </itemizedlist>SelectQuery using the second form of the path expression must be made
+            aware of the alias via <emphasis role="italic">
+                &quot;SelectQuery.aliasPathSplits(..)&quot;</emphasis>, otherwise an Exception will be
+            thrown. The main use of aliases is to allow users to control how SQL joins are generated
+            if the same path is encountered more than once in any given Expression. Each alias for
+            any given path would result in a separate join. Without aliases, a single join will be
+            used for a group of matching paths.</para>
+    </section>
+    <section xml:id="expressions-from-strings">
+        <title>Creating Expressions from Strings </title>
+        <para>While in most cases users are likely to rely on API from the following section for
+            expression creation, we&apos;ll start by showing String expressions, as this will help
+            understanding the semantics. A Cayenne expression can be represented as a String, which
+            can be later converted to an expression object using <code>Expression.fromString</code>
+            static method. Here is an
+            example:<programlisting>String expString = &quot;name like &apos;A%&apos; and price &lt; 1000&quot;;
 Expression exp = Expression.fromString(expString);</programlisting>This
-			particular expression may be used to match Paintings with names that start with "A" and
-			a price less than $1000. While this example is pretty self-explanatory, there are a few
-			points worth mentioning. "name" and "price" here are object paths discussed earlier. As
-			always, paths themselves are not attached to a specific root entity and can be applied
-			to any entity that has similarly named attributes or relationships. So when we are
-			saying that this expression "may be used to match Paintings", we are implying that there
-			may be other entities, for which this expression is valid. Now the expression details... </para>
-		<para><emphasis role="italic">Character constants</emphasis> that are not paths or numeric values
-			should be enclosed in single or double quotes. Two of the expressions below are
-			equivalent:<programlisting>name = 'ABC'
+            particular expression may be used to match Paintings with names that start with &quot;A&quot; and
+            a price less than $1000. While this example is pretty self-explanatory, there are a few
+            points worth mentioning. &quot;name&quot; and &quot;price&quot; here are object paths discussed earlier. As
+            always, paths themselves are not attached to a specific root entity and can be applied
+            to any entity that has similarly named attributes or relationships. So when we are
+            saying that this expression &quot;may be used to match Paintings&quot;, we are implying that there
+            may be other entities, for which this expression is valid. Now the expression details... </para>
+        <para><emphasis role="italic">Character constants</emphasis> that are not paths or numeric values
+            should be enclosed in single or double quotes. Two of the expressions below are
+            equivalent:<programlisting>name = &apos;ABC&apos;
 
 // double quotes are escaped inside Java Strings of course
-name = \"ABC\"</programlisting></para>
-		<para><emphasis role="italic">Case sensitivity.</emphasis> Expression operators are all case
-			sensitive and are usually lowercase. Complex words follow the java camel-case
-			style:<programlisting>// valid
-name likeIgnoreCase 'A%'
+name = \&quot;ABC\&quot;</programlisting></para>
+        <para><emphasis role="italic">Case sensitivity.</emphasis> Expression operators are all case
+            sensitive and are usually lowercase. Complex words follow the java camel-case
+            style:<programlisting>// valid
+name likeIgnoreCase &apos;A%&apos;
 
 // invalid - will throw a parse exception
-name LIKEIGNORECASE 'A%'</programlisting></para>
-		<para><emphasis role="italic">Grouping with
-			parenthesis</emphasis>:<programlisting>value = (price + 250.00) * 3</programlisting></para>
-		<para><emphasis role="italic">Path prefixes.</emphasis> Object expressions are unquoted strings,
-			optionally prefixed by "obj:" (usually they are not prefixed at all actually). Database
-			expressions are always prefixed with "db:". A special kind of prefix, not discussed yet
-			is "enum:" that prefixes an enumeration
-			constant:<programlisting>// object path
-name = 'Salvador Dali'
+name LIKEIGNORECASE &apos;A%&apos;</programlisting></para>
+        <para><emphasis role="italic">Grouping with parenthesis:</emphasis>
+            <programlisting>value = (price + 250.00) * 3</programlisting>
+        </para>
+        <para><emphasis role="italic">Path prefixes.</emphasis> Object expressions are unquoted strings,
+            optionally prefixed by &quot;obj:&quot; (usually they are not prefixed at all actually). Database
+            expressions are always prefixed with &quot;db:&quot;. A special kind of prefix, not discussed yet
+            is &quot;enum:&quot; that prefixes an enumeration
+            constant:<programlisting>// object path
+name = &apos;Salvador Dali&apos;
 
 // same object path - a rarely used form
-obj:name = 'Salvador Dali'
+obj:name = &apos;Salvador Dali&apos;
 
 // multi-segment object path
-artist.name = 'Salvador Dali'
+artist.name = &apos;Salvador Dali&apos;
 
 // db path
-db:NAME = 'Salvador Dali'
+db:NAME = &apos;Salvador Dali&apos;
 
 // enumeration constant
 name = enum:org.foo.EnumClass.VALUE1</programlisting></para>
-		<para>
-			<emphasis role="italic">Binary conditions</emphasis> are expressions that contain a path
-			on the left, a value on the right, and some operation between them, such as equals,
-			like, etc. They can be used as qualifiers in
-				SelectQueries:<programlisting>name like 'A%'</programlisting><emphasis role="italic"
-				>Named parameters.</emphasis> Expressions can have named parameters (names that
-			start with "$"). Parameterized expressions allow to create reusable expression
-			templates. Also if an Expression contains a complex object that doesn't have a simple
-			String representation (e.g. a Date, a DataObject, an ObjectId), parameterizing such
-			expression is the only way to represent it as String. Here are some
-			examples:<programlisting>Expression template = Expression.fromString("name = $name");
+        <para>
+            <emphasis role="italic">Binary conditions</emphasis> are expressions that contain a path
+            on the left, a value on the right, and some operation between them, such as equals,
+            like, etc. They can be used as qualifiers in
+                SelectQueries:<programlisting>name like &apos;A%&apos;</programlisting>
+            <emphasis role="italic">Named parameters.</emphasis> Expressions can have named parameters (names that
+            start with &quot;$&quot;). Parameterized expressions allow to create reusable expression
+            templates. Also if an Expression contains a complex object that doesn&apos;t have a simple
+            String representation (e.g. a Date, a DataObject, an ObjectId), parameterizing such
+            expression is the only way to represent it as String. Here are some
+            examples:<programlisting>Expression template = Expression.fromString(&quot;name = $name&quot;);
 ...
-Map p1 = Collections.singletonMap("name", "Salvador Dali");
+Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador Dali&quot;);
 Expression qualifier1 = template.expWithParameters(p1);
 ...
-Map p2 = Collections.singletonMap("name", "Monet");
+Map p2 = Collections.singletonMap(&quot;name&quot;, &quot;Monet&quot;);
 Expression qualifier2 = template.expWithParameters(p2);</programlisting>To
-			create a named parameterized expression with a LIKE clause, SQL wildcards must be part
-			of the values in the Map and not the expression string
-			itself:<programlisting>Expression template = Expression.fromString("name like $name");
+            create a named parameterized expression with a LIKE clause, SQL wildcards must be part
+            of the values in the Map and not the expression string
+            itself:<programlisting>Expression template = Expression.fromString(&quot;name like $name&quot;);
 ...
-Map p1 = Collections.singletonMap("name", "Salvador%");
+Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador%&quot;);
 Expression qualifier1 = template.expWithParameters(p1);</programlisting>When
-			matching on a relationship, parameters can be Persistent objects or
-			ObjectIds:<programlisting>Expression template = Expression.fromString("artist = $artist");
+            matching on a relationship, parameters can be Persistent objects or
+            ObjectIds:<programlisting>Expression template = Expression.fromString(&quot;artist = $artist&quot;);
 ...
 Artist dali = // asume we fetched this one already
-Map p1 = Collections.singletonMap("artist", dali);
+Map p1 = Collections.singletonMap(&quot;artist&quot;, dali);
 Expression qualifier1 = template.expWithParameters(p1);</programlisting>Uninitialized
-			parameters will be automatically pruned from expressions, so a user can omit some
-			parameters when creating an expression from a parameterized
-			template:<programlisting>Expression template = Expression.fromString("name like $name and dateOfBirth > $date");
+            parameters will be automatically pruned from expressions, so a user can omit some
+            parameters when creating an expression from a parameterized
+            template:<programlisting>Expression template = Expression.fromString(&quot;name like $name and dateOfBirth &gt; $date&quot;);
 ...
-Map p1 = Collections.singletonMap("name", "Salvador%");
+Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador%&quot;);
 Expression qualifier1 = template.expWithParameters(p1);
 
-// qualifier1 is now equals to "name like 'Salvador%'", the 'dateOfBirth' condition was 
+// qualifier1 is now equals to &quot;name like &apos;Salvador%&apos;&quot;, the &apos;dateOfBirth&apos; condition was
 // pruned, as no value was specified for the $date parameter</programlisting></para>
-		<para><emphasis role="italic">Null handling.</emphasis> Handling of Java nulls as operands
-			is no different from normal values. Instead of using special conditional operators, like
-			SQL does (IS NULL, IS NOT NULL), "=" and "!=" expressions can be used directly with null
-			values. It is up to Cayenne to translate expressions with nulls to the valid SQL.</para>
-		<para>
-			<note>
-				<para>A formal definition of all possible valid expressions in a form of JavaCC
-					grammar is provided in Appendix C</para>
-			</note>
-		</para>
-	</section>
-	<section xml:id="expressions-with-expressionfactory">
-		<title>Creating Expressions with API</title>
-		<para>Creating expressions from Strings is a powerful and dynamic approach, however a safer
-			alternative is to use Java API. It provides some degree of compile-time checking of
-			expressions validity. The API is cenetred around ExpressionFactory class, and the
-			Expression class. ExpressionFactory contains a number of rather self-explanatory factory
-			methods. We won't be going over all of them in detail, but will rather show a few
-			general examples and some gotchas. </para>
-		<para>The following code recreates the expression from the previous chapter, but now using
-			expression
-			API:<programlisting language="java">// String expression: name like 'A%' and price &lt; 1000
-Expression e1 = ExpressionFactory.likeExp(Painting.NAME_PROPERTY, "A%");
+        <para><emphasis role="italic">Null handling.</emphasis> Handling of Java nulls as operands
+            is no different from normal values. Instead of using special conditional operators, like
+            SQL does (IS NULL, IS NOT NULL), &quot;=&quot; and &quot;!=&quot; expressions can be used directly with null
+            values. It is up to Cayenne to translate expressions with nulls to the valid SQL.</para>
+        <para>
+            <note>
+                <para>A formal definition of all possible valid expressions in a form of JavaCC
+                    grammar is provided in Appendix C</para>
+            </note>
+        </para>
+    </section>
+    <section xml:id="expressions-with-expressionfactory">
+        <title>Creating Expressions with API</title>
+        <para>Creating expressions from Strings is a powerful and dynamic approach, however a safer
+            alternative is to use Java API. It provides some degree of compile-time checking of
+            expressions validity. The API is cenetred around ExpressionFactory class, and the
+            Expression class. ExpressionFactory contains a number of rather self-explanatory factory
+            methods. We won&apos;t be going over all of them in detail, but will rather show a few
+            general examples and some gotchas. </para>
+        <para>The following code recreates the expression from the previous chapter, but now using
+            expression
+            API:<programlisting>// String expression: name like &apos;A%&apos; and price &lt; 1000
+Expression e1 = ExpressionFactory.likeExp(Painting.NAME_PROPERTY, &quot;A%&quot;);
 Expression e2 = ExpressionFactory.lessExp(Painting.PRICE_PROPERTY, 1000);
 Expression finalExp = e1.andExp(e2); </programlisting>This
-			is more verbose than creating it from String, but it is also more resilient to the
-			entity properties renaming and precludes semantic errors in the expression String.<note>
-				<para>The last line in the example above shows how to create a new expression by
-					"chaining" 2 other epxressions. A common error when chaining expressions is to
-					assume that "andExp" and "orExp" append another expression to the current
-					expression. In fact a new expression is created. I.e. Expression API treats
-					existing expressions as immutable.</para>
-			</note></para>
-		<para>As discussed earlier, Cayenne supports aliases in path Expressions, allowing to
-			control how SQL joins are generated if the same path is encountered more than once in
-			the same Expression. Two ExpressionFactory methods allow to implicitly generate aliases
-			to "split" match paths into individual joins if
-			needed:<programlisting language="java">Expression matchAllExp(String path, Collection values)
+            is more verbose than creating it from String, but it is also more resilient to the
+            entity properties renaming and precludes semantic errors in the expression String.<note>
+                <para>The last line in the example above shows how to create a new expression by
+                    &quot;chaining&quot; 2 other epxressions. A common error when chaining expressions is to
+                    assume that &quot;andExp&quot; and &quot;orExp&quot; append another expression to the current
+                    expression. In fact a new expression is created. I.e. Expression API treats
+                    existing expressions as immutable.</para>
+            </note></para>
+        <para>As discussed earlier, Cayenne supports aliases in path Expressions, allowing to
+            control how SQL joins are generated if the same path is encountered more than once in
+            the same Expression. Two ExpressionFactory methods allow to implicitly generate aliases
+            to &quot;split&quot; match paths into individual joins if
+            needed:<programlisting>Expression matchAllExp(String path, Collection values)
 Expression matchAllExp(String path, Object... values)</programlisting></para>
-		<para>"Path" argument to both of these methods can use a split character (a pipe symbol '|')
-			instead of dot to indicate that relationship following a path should be split into a
-			separate set of joins, one per collection value. There can only be one split at most in
-			any given path. Split must always precede a relationship. E.g. "|exhibits.paintings",
-			"exhibits|paintings", etc. Internally Cayenne would generate distinct aliases for each
-			of the split expressions, forcing separate joins.</para>
-	</section>
-	<section xml:id="expressions-in-memory">
-		<title>Evaluating Expressions in Memory</title>
-		<para>When used in a query, an expression is converted to SQL WHERE clause (or ORDER BY
-			clause) by Cayenne during query execution. Thus the actual evaluation against the data
-			is done by the database engine. However the same expressions can also be used for
-			accessing object properties, calculating values, in-memory filtering. </para>
-		<para>Checking whether an object satisfies an
-			expression:<programlisting language="java">Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, "John", "Bob");
+        <para>&quot;Path&quot; argument to both of these methods can use a split character (a pipe symbol &apos;|&apos;)
+            instead of dot to indicate that relationship following a path should be split into a
+            separate set of joins, one per collection value. There can only be one split at most in
+            any given path. Split must always precede a relationship. E.g. &quot;|exhibits.paintings&quot;,
+            &quot;exhibits|paintings&quot;, etc. Internally Cayenne would generate distinct aliases for each
+            of the split expressions, forcing separate joins.</para>
+    </section>
+    <section xml:id="expressions-in-memory">
+        <title>Evaluating Expressions in Memory</title>
+        <para>When used in a query, an expression is converted to SQL WHERE clause (or ORDER BY
+            clause) by Cayenne during query execution. Thus the actual evaluation against the data
+            is done by the database engine. However the same expressions can also be used for
+            accessing object properties, calculating values, in-memory filtering. </para>
+        <para>Checking whether an object satisfies an
+            expression:<programlisting>Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, &quot;John&quot;, &quot;Bob&quot;);
 User user = ...
 if(e.match(user)) {
    ...
 }</programlisting>Reading
-			property
-			value:<programlisting language="java">Expression e = Expression.fromString(User.NAME_PROPERTY);
+            property
+            value:<programlisting>Expression e = Expression.fromString(User.NAME_PROPERTY);
 String name = e.evaluate(user);</programlisting></para>
-		<para>Filtering a list of
-			objects:<programlisting language="java">Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, "John", "Bob");
-List&lt;User> unfiltered = ...
-List&lt;User> filtered = e.filterObjects(unfiltered);</programlisting></para>
-		<para>
-			<note>
-				<para>Current limitation of in-memory expressions is that no collections are
-					permitted in the property path.</para>
-			</note>
-		</para>
-	</section>
+        <para>Filtering a list of
+            objects:<programlisting>Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, &quot;John&quot;, &quot;Bob&quot;);
+List&lt;User&gt; unfiltered = ...
+List&lt;User&gt; filtered = e.filterObjects(unfiltered);</programlisting></para>
+        <para>
+            <note>
+                <para>Current limitation of in-memory expressions is that no collections are
+                    permitted in the property path.</para>
+            </note>
+        </para>
+    </section>
 </chapter>

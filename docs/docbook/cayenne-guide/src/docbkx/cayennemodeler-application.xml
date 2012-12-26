@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
-	version="5.0" xml:id="cayennemodeler-application">
-	<title>CayenneModeler Application</title>
-	<section xml:id="working-with-mapping-projects">
-		<title>Working with Mapping Projects</title>
-	</section>
-	<section xml:id="reverse-engineering-database">
-		<title>Reverse Engineering Database</title>
-	</section>
-	<section xml:id="generating-database-schema">
-		<title>Generating Database Schema</title>
-	</section>
-	<section xml:id="migrations">
-		<title>Migrations</title>
-	</section>
-	<section xml:id="generating-java-classes">
-		<title>Generating Java Classes</title>
-	</section>
-	<section xml:id="modeling-inheritance">
-		<title>Modeling Inheritance</title>
-	</section>
-	<section xml:id="modeling-generic-persistence-classes">
-		<title>Modeling Generic Persistent Classes</title>
-		<para>Normally each ObjEntity is mapped to a specific Java class (such as Artist or
-			Painting) that explicitly declare all entity properties as pairs of getters and setters.
-			However Cayenne allows to map a completly generic class to any number of entities. The
-			only expectation is that a generic class implements
-				<emphasis>org.apache.cayenne.DataObject</emphasis>. So an ideal candidate for a
-			generic class is CayenneDataObject, or some custom subclass of CayenneDataObject.</para>
-		<para>If you don't enter anything for Java Class of an ObjEntity, Cayenne assumes generic
-			mapping and uses the following implicit rules to determine a class of a generic object.
-			If DataMap "Custom Superclass" is set, runtime uses this class to instantiate new
-			objects. If not, org.apache.cayenne.CayenneDataObject is used.</para>
-		<para>Class generation procedures (either done in the Modeler or with Ant or Maven) would
-			skip entities that are mapped to CayenneDataObject explicitly or have no class
-			mapping.</para>
-	</section>
-	<section xml:id="modeling-pk-generation-strategy">
-		<title>Modeling Primary Key Generation Strategy</title>
-	</section>
+    version="5.0" xml:id="cayennemodeler-application">
+    <title>CayenneModeler Application</title>
+    <section xml:id="working-with-mapping-projects">
+        <title>Working with Mapping Projects</title>
+    </section>
+    <section xml:id="reverse-engineering-database">
+        <title>Reverse Engineering Database</title>
+    </section>
+    <section xml:id="generating-database-schema">
+        <title>Generating Database Schema</title>
+    </section>
+    <section xml:id="migrations">
+        <title>Migrations</title>
+    </section>
+    <section xml:id="generating-java-classes">
+        <title>Generating Java Classes</title>
+    </section>
+    <section xml:id="modeling-inheritance">
+        <title>Modeling Inheritance</title>
+    </section>
+    <section xml:id="modeling-generic-persistence-classes">
+        <title>Modeling Generic Persistent Classes</title>
+        <para>Normally each ObjEntity is mapped to a specific Java class (such as Artist or
+            Painting) that explicitly declare all entity properties as pairs of getters and setters.
+            However Cayenne allows to map a completly generic class to any number of entities. The
+            only expectation is that a generic class implements
+                <emphasis>org.apache.cayenne.DataObject</emphasis>. So an ideal candidate for a
+            generic class is CayenneDataObject, or some custom subclass of CayenneDataObject.</para>
+        <para>If you don't enter anything for Java Class of an ObjEntity, Cayenne assumes generic
+            mapping and uses the following implicit rules to determine a class of a generic object.
+            If DataMap "Custom Superclass" is set, runtime uses this class to instantiate new
+            objects. If not, org.apache.cayenne.CayenneDataObject is used.</para>
+        <para>Class generation procedures (either done in the Modeler or with Ant or Maven) would
+            skip entities that are mapped to CayenneDataObject explicitly or have no class
+            mapping.</para>
+    </section>
+    <section xml:id="modeling-pk-generation-strategy">
+        <title>Modeling Primary Key Generation Strategy</title>
+    </section>
 </chapter>

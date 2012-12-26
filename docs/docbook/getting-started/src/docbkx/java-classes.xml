@@ -38,21 +38,21 @@
             This is because our project does not include Cayenne as a Maven dependency yet. Let's
             fix it now by adding "cayenne-server" artifact in the bottom of the pom.xml file. The
             resulting POM should look like
-            this:<programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 	
+            this:<programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
-	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-	&lt;groupId&gt;org.example.cayenne&lt;/groupId&gt;
-	&lt;artifactId&gt;tutorial&lt;/artifactId&gt;
-	&lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;org.example.cayenne&lt;/groupId&gt;
+    &lt;artifactId&gt;tutorial&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
 
-	&lt;dependencies&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
-			&lt;artifactId&gt;cayenne-server&lt;/artifactId&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
+            &lt;artifactId&gt;cayenne-server&lt;/artifactId&gt;
    &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
-			&lt;version&gt;3.1M3&lt;/version&gt;
-		&lt;/dependency&gt;
-	&lt;/dependencies&gt;
+            &lt;version&gt;3.1M3&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
 &lt;/project&gt;</programlisting></para>
         <para>Your computer must be connected to the internet. Once you save the pom.xml, Eclipse
             will download the needed Cayenne jar file and add it to the project build path. As a

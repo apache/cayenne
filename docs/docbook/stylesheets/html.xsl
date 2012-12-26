@@ -18,10 +18,10 @@
 	under the License.
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-
         version="1.0">
-    <!--  xmlns:xslthl="http://xslthl.sf.net"
-        exclude-result-prefixes="xslthl" -->
+
+    <xsl:import href="urn:docbkx:stylesheet" />
+    <xsl:import href="highlight.xsl" />
     <xsl:include href="common-customizations.xsl"/>
 
     <!--<xsl:param name="highlight.source" select="1"/>-->
@@ -37,7 +37,5 @@
     <xsl:param name="ignore.image.scaling">1</xsl:param>
 
     <xsl:param name="use.id.as.filename">1</xsl:param>
-
-
 
 </xsl:stylesheet>

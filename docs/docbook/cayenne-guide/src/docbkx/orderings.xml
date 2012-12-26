@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
-	version="5.0" xml:id="orderings">
-	<title>Orderings</title>
-		<para>An Ordering object defines how a list of objects should be ordered. Orderings are
-			essentially path expressions combined with a sorting strategy. Creating an Ordering:
-			<programlisting language="java">Ordering o = new Ordering(Painting.NAME_PROPERTY, SortOrder.ASENDING);</programlisting></para>
-		<para>Like expressions, orderings are translated into SQL as parts of queries (and the sorting
-		occurs in the database). Also like expressions, orderings can be used in memory, naturally -
-		to sort
-		objects:<programlisting language="java">Ordering o = new Ordering(Painting.NAME_PROPERTY, SortOrder.ASCENDING_INSENSITIVE);
+    version="5.0" xml:id="orderings">
+    <title>Orderings</title>
+        <para>An Ordering object defines how a list of objects should be ordered. Orderings are
+            essentially path expressions combined with a sorting strategy. Creating an Ordering:
+            <programlisting language="java">Ordering o = new Ordering(Painting.NAME_PROPERTY, SortOrder.ASENDING);</programlisting></para>
+        <para>Like expressions, orderings are translated into SQL as parts of queries (and the sorting
+        occurs in the database). Also like expressions, orderings can be used in memory, naturally -
+        to sort
+        objects:<programlisting language="java">Ordering o = new Ordering(Painting.NAME_PROPERTY, SortOrder.ASCENDING_INSENSITIVE);
 List&lt;Painting> list = ...
 o.orderList(list);</programlisting>Note
-		that unlike filtering with Expressions, ordering is performed in-place. This list object is
-		reordered and no new list is created.</para>
+        that unlike filtering with Expressions, ordering is performed in-place. This list object is
+        reordered and no new list is created.</para>
 </chapter>
