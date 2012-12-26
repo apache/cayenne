@@ -497,6 +497,8 @@ public final class Cayenne {
      * Returns an object or a DataRow that is a result of a given query. If query returns
      * more than one object, an exception is thrown. If query returns no objects, null is
      * returned.
+     * 
+     * @since 3.1
      */
     @SuppressWarnings("unchecked")
 	public static <T> T objectForSelect(ObjectContext context, Select<T> query) {
