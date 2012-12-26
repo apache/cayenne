@@ -66,9 +66,9 @@ public class Main {
                 started:<programlisting>INFO: Loading XML configuration resource from file:cayenne-project.xml
 INFO: loading user name and password.
 INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
-	Driver class: org.apache.derby.jdbc.EmbeddedDriver
-	Min. connections in the pool: 1
-	Max. connections in the pool: 1</programlisting><informaltable
+    Driver class: org.apache.derby.jdbc.EmbeddedDriver
+    Min. connections in the pool: 1
+    Max. connections in the pool: 1</programlisting><informaltable
                 border="1">
                 <col width="4%"/>
                 <col width="96%"/>

@@ -58,8 +58,10 @@ TOKENS
  * Integer or real Numeric literal, whose object value is stored in the token manager's
  * "literalValue" field.
  */&lt;DEFAULT> TOKEN : {
-&lt;INT_LITERAL: ("0" (["0"-"7"])* | ["1"-"9"] (["0"-"9"])* | "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+) (["l","L","h","H"])?> : {
-| &lt;FLOAT_LITERAL: &lt;DEC_FLT> (&lt;EXPONENT>)? (&lt;FLT_SUFF>)? | &lt;DEC_DIGITS> &lt;EXPONENT> (&lt;FLT_SUFF>)? | &lt;DEC_DIGITS> &lt;FLT_SUFF>> : {
+&lt;INT_LITERAL: ("0" (["0"-"7"])* | ["1"-"9"] (["0"-"9"])* | "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+)
+        (["l","L","h","H"])?> : {
+| &lt;FLOAT_LITERAL: &lt;DEC_FLT> (&lt;EXPONENT>)? (&lt;FLT_SUFF>)? | &lt;DEC_DIGITS> &lt;EXPONENT> (&lt;FLT_SUFF>)?
+| &lt;DEC_DIGITS> &lt;FLT_SUFF>> : {
 | &lt;#DEC_FLT: (["0"-"9"])+ "." (["0"-"9"])* | "." (["0"-"9"])+>
 | &lt;#DEC_DIGITS: (["0"-"9"])+>
 | &lt;#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+>
@@ -67,14 +69,14 @@ TOKENS
 }
 
 NON-TERMINALS
-	expression	:=	orCondition &lt;EOF>
-	orCondition	:=	andCondition ( "or" andCondition )*
-	andCondition	:=	notCondition ( "and" notCondition )*
-	notCondition	:=	( "not" | "!" ) simpleCondition
-		|	simpleCondition
-	simpleCondition	:=	&lt;TRUE>
-		|	&lt;FALSE>
-		|	scalarConditionExpression 
+    expression    :=    orCondition &lt;EOF>
+    orCondition    :=    andCondition ( "or" andCondition )*
+    andCondition    :=    notCondition ( "and" notCondition )*
+    notCondition    :=    ( "not" | "!" ) simpleCondition
+        |    simpleCondition
+    simpleCondition    :=    &lt;TRUE>
+        |    &lt;FALSE>
+        |    scalarConditionExpression
              ( simpleNotCondition 
                | ( "=" | "==" ) scalarExpression 
                | ( "!=" | "&lt;>" ) scalarExpression 
@@ -86,39 +88,39 @@ NON-TERMINALS
                | "in" ( namedParameter | "(" scalarCommaList ")" ) 
                | "between" scalarExpression "and" scalarExpression 
              )?
-	simpleNotCondition	:=	( "not" | "!" ) 
+    simpleNotCondition    :=    ( "not" | "!" )
              ( "like" scalarExpression 
                | "likeIgnoreCase" scalarExpression 
                | "in" ( namedParameter | "(" scalarCommaList ")" ) 
                | "between" scalarExpression "and" scalarExpression 
              )
-	scalarCommaList	:=	( scalarConstExpression ( "," scalarConstExpression )* )
-	scalarConditionExpression	:=	scalarNumericExpression
-		|	&lt;SINGLE_QUOTED_STRING> 
-		|	&lt;DOUBLE_QUOTED_STRING> 
-		|	&lt;NULL>
-	scalarExpression	:=	scalarConditionExpression
-		|	&lt;TRUE> 
-		|	&lt;FALSE> 
-	scalarConstExpression	:=	&lt;SINGLE_QUOTED_STRING> 
-		|	&lt;DOUBLE_QUOTED_STRING> 
-		|	namedParameter
-		|	&lt;INT_LITERAL> 
-		|	&lt;FLOAT_LITERAL> 
-		|	&lt;TRUE> 
-		|	&lt;FALSE> 
-	scalarNumericExpression	:=	multiplySubtractExp 
+    scalarCommaList    :=    ( scalarConstExpression ( "," scalarConstExpression )* )
+    scalarConditionExpression    :=    scalarNumericExpression
+        |    &lt;SINGLE_QUOTED_STRING>
+        |    &lt;DOUBLE_QUOTED_STRING>
+        |    &lt;NULL>
+    scalarExpression    :=    scalarConditionExpression
+        |    &lt;TRUE>
+        |    &lt;FALSE>
+    scalarConstExpression    :=    &lt;SINGLE_QUOTED_STRING>
+        |    &lt;DOUBLE_QUOTED_STRING>
+        |    namedParameter
+        |    &lt;INT_LITERAL>
+        |    &lt;FLOAT_LITERAL>
+        |    &lt;TRUE>
+        |    &lt;FALSE>
+    scalarNumericExpression    :=    multiplySubtractExp
              ( "+" multiplySubtractExp | "-" multiplySubtractExp )*
-	multiplySubtractExp	:=	numericTerm ( "*" numericTerm | "/" numericTerm )*
-	numericTerm	:=	( "+" )? numericPrimary
-		|	"-" numericPrimary
-	numericPrimary	:=	"(" orCondition ")"
-		|	pathExpression
-		|	namedParameter
-		|	&lt;INT_LITERAL> 
-		|	&lt;FLOAT_LITERAL> 
-	namedParameter	:=	"$" &lt;PROPERTY_PATH> 
-	pathExpression	:=	( &lt;PROPERTY_PATH>  
+    multiplySubtractExp    :=    numericTerm ( "*" numericTerm | "/" numericTerm )*
+    numericTerm    :=    ( "+" )? numericPrimary
+        |    "-" numericPrimary
+    numericPrimary    :=    "(" orCondition ")"
+        |    pathExpression
+        |    namedParameter
+        |    &lt;INT_LITERAL>
+        |    &lt;FLOAT_LITERAL>
+    namedParameter    :=    "$" &lt;PROPERTY_PATH>
+    pathExpression    :=    ( &lt;PROPERTY_PATH>
                             | "obj:" &lt;PROPERTY_PATH>  
                             | "db:" &lt;PROPERTY_PATH>  
                             | "enum:" &lt;PROPERTY_PATH>  )

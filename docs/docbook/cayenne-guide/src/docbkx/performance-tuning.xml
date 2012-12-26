@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
-	version="5.0" xml:id="performance-tuning">
-	<title>Performance Tuning</title>
-	<section xml:id="prefetching">
-		<title>Prefetching</title>
-		<para>Prefetching is a technique that allows to bring back in one query not only the queried
-			objects, but also objects related to them. In other words it is a controlled eager
-			relationship resolving mechanism. Prefetching is discussed in the "Performance Tuning"
-			chapter, as it is a powerful performance optimization method. Another common application
-			of prefetching is for refreshing stale object relationships.</para>
-		<para>Prefetching example:
-			<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
+    version="5.0" xml:id="performance-tuning">
+    <title>Performance Tuning</title>
+    <section xml:id="prefetching">
+        <title>Prefetching</title>
+        <para>Prefetching is a technique that allows to bring back in one query not only the queried
+            objects, but also objects related to them. In other words it is a controlled eager
+            relationship resolving mechanism. Prefetching is discussed in the "Performance Tuning"
+            chapter, as it is a powerful performance optimization method. Another common application
+            of prefetching is for refreshing stale object relationships.</para>
+        <para>Prefetching example:
+            <programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
 
 // this instructs Cayenne to prefetch one of Artist's relationships
 query.addPrefetch("paintings");
@@ -18,104 +18,104 @@ query.addPrefetch("paintings");
 // query is expecuted as usual, but the resulting Artists will have
 // their paintings "inflated"
 List&lt;Artist> artists = context.performQuery(query);</programlisting>
-			All types of relationships can be preftetched - to-one, to-many, flattened. </para>
-		<para>A prefetch can span multiple relationships:
-			<programlisting language="java"> query.addPrefetch("paintings.gallery");</programlisting></para>
-		<para>A query can have multiple
-			prefetches:<programlisting language="java">query.addPrefetch("paintings");
+            All types of relationships can be preftetched - to-one, to-many, flattened. </para>
+        <para>A prefetch can span multiple relationships:
+            <programlisting language="java"> query.addPrefetch("paintings.gallery");</programlisting></para>
+        <para>A query can have multiple
+            prefetches:<programlisting language="java">query.addPrefetch("paintings");
 query.addPrefetch("paintings.gallery"); </programlisting></para>
-		<para>If a query is fetching DataRows, all "disjoint" prefetches are ignored, only "joint"
-			prefetches are executed (see prefetching semantics discussion below for what disjoint and
-			joint prefetches mean).</para>
-		
-		<section xml:id="prefetching-semantics">
-			<title>Prefetching Semantics</title>
-			<para>Prefetching semantics defines a strategy to prefetch relationships. Depending on
-				it, Cayenne would generate different types of queries. The end result is the same -
-				query root objects with related objects fully resolved. However semantics can affect
-				preformance, in some cases significantly. There are 3 types of prefetch semantics,
-				all defined as constants in
-				org.apache.cayenne.query.PrefetchTreeNode:<programlisting language="java">PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS
+        <para>If a query is fetching DataRows, all "disjoint" prefetches are ignored, only "joint"
+            prefetches are executed (see prefetching semantics discussion below for what disjoint and
+            joint prefetches mean).</para>
+
+        <section xml:id="prefetching-semantics">
+            <title>Prefetching Semantics</title>
+            <para>Prefetching semantics defines a strategy to prefetch relationships. Depending on
+                it, Cayenne would generate different types of queries. The end result is the same -
+                query root objects with related objects fully resolved. However semantics can affect
+                preformance, in some cases significantly. There are 3 types of prefetch semantics,
+                all defined as constants in
+                org.apache.cayenne.query.PrefetchTreeNode:<programlisting language="java">PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS
 PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS
 PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS</programlisting></para>
-			<para>Each query has a default prefetch semantics, so generally users do not have to
-				worry about changing it, except when performance is a concern, or a few special
-				cases when a default sematics can't produce the correct result. SelectQuery uses
-				DISJOINT_PREFETCH_SEMANTICS by default. Semantics can be changed as
-				follows:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
+            <para>Each query has a default prefetch semantics, so generally users do not have to
+                worry about changing it, except when performance is a concern, or a few special
+                cases when a default sematics can't produce the correct result. SelectQuery uses
+                DISJOINT_PREFETCH_SEMANTICS by default. Semantics can be changed as
+                follows:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
 query.addPrefetch("paintings").setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS); </programlisting></para>
-			<para>There's no limitation on mixing different types of semantics in the same
-				SelectQuery. Multiple prefetches each can have its own semantics. </para>
-			<para>SQLTemplate and ProcedureQuery are both using JOINT_PREFETCH_SEMANTICS and it can
-				not be changed due to the nature of these two queries.</para>
-		</section>
-		<section xml:id="disjoint-prefetch-semantics">
-			<title>Disjoint Prefetching Semantics</title>
-			<para>This semantics (only applicable to SelectQuery) results in Cayenne generating one SQL
-				statement for the main objects, and a separate statement for each prefetch path
-				(hence "disjoint" - related objects are not fetched with the main query). Each
-				additional SQL statement uses a qualifier of the main query plus a set of joins
-				traversing the prefetch path between the main and related entity. </para>
-			<para>This strategy has an advantage of efficient JVM memory use, and faster overall
-				result processing by Cayenne, but it requires (1+N) SQL statements to be executed,
-				where N is the number of prefetched relationships.</para>
-			
-		</section>
-		<section xml:id="disjoint-by-id-prefetch-semantics">
-			<title>Disjoint-by-ID Prefetching Semantics</title>
-			<para>This is a variation of disjoint prefetch where related objects are matched against
-				a set of IDs derived from the fetched main objects (or intermediate objects in a
-				multi-step prefetch). Cayenne limits the size of the generated WHERE clause, as most
-				DBs can't parse arbitrary large SQL. So prefetch queries are broken into smaller
-				queries. The size of  is controlled by the DI property
-				Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY (the default number of conditions in
-				the generated WHERE clause is 10000). Cayenne will generate (1 + N * M) SQL
-				statements for each query using disjoint-by-ID prefetches, where N is the number of
-				relationships to prefetch, and M is the number of queries for a given prefetch that
-				is dependent on the number of objects in the result (ideally M = 1).</para>
-			<para>The advantage of this type of prefetch is that matching database rows by ID may be
-				much faster than matching the qualifier of the original query. Moreover this is
-					<emphasis role="bold">the only type of prefetch</emphasis> that can handle
-				SelectQueries with <emphasis role="bold">fetch limit</emphasis>. Both joint and
-				regular disjoint prefetches may produce invalid results or generate inefficient
-				fetch-the-entire table SQL when fetch limit is in effect. </para>
-			<para>The disadvantage is that query SQL can get unwieldy for large result sets, as each
-				object will have to have its own condition in the WHERE clause of the generated
-				SQL.</para>
-		</section>
-		<section xml:id="joint-prefetch-semantics">
-			<title>Joint Prefetching Semantics</title>
-			<para>Joint semantics results in a single SQL statement for root objects and any number of
-				jointly prefetched paths. Cayenne processes in memory a cartesian product of the
-				entities involved, converting it to an object tree. It uses OUTER joins to connect
-				prefetched entities.</para>
-			<para>Joint is the most efficient prefetch type of the three as far as generated SQL
-				goes. There's always just 1 SQL query generated. Its downsides are the potentially
-				increased amount of data that needs to get across the network between the
-				application server and the database, and more data processing that needs to be done
-				on the Cayenne side.</para>
-		</section>
-	</section>
-	<section xml:id="datarows">
-		<title>Data Rows</title>
-	</section>
-	<section xml:id="iterated-queries">
-		<title>Iterated Queries</title>
-	</section>
-	<section xml:id="paginated-queries">
-		<title>Paginated Queries</title>
-	</section>
-	<section xml:id="caching-and-fresh-data">
-		<title>Caching and Fresh Data</title>
-		<section xml:id="object-caching">
-			<title>Object Caching</title>
-		</section>
-		<section xml:id="query-result-caching">
-			<title>Query Result Caching</title>
-		</section>
-	</section>
-	<section xml:id="turning-off-synchronization-of-objectcontexts">
-		<title>Turning off Synchronization of ObjectContexts</title>
-	</section>
+            <para>There's no limitation on mixing different types of semantics in the same
+                SelectQuery. Multiple prefetches each can have its own semantics. </para>
+            <para>SQLTemplate and ProcedureQuery are both using JOINT_PREFETCH_SEMANTICS and it can
+                not be changed due to the nature of these two queries.</para>
+        </section>
+        <section xml:id="disjoint-prefetch-semantics">
+            <title>Disjoint Prefetching Semantics</title>
+            <para>This semantics (only applicable to SelectQuery) results in Cayenne generatiing one
+                SQL statement for the main objects, and a separate statement for each prefetch path
+                (hence "disjoint" - related objects are not fetched with the main query). Each
+                additional SQL statement uses a qualifier of the main query plus a set of joins
+                traversing the preftech path between the main and related entity. </para>
+            <para>This strategy has an advantage of efficient JVM memory use, and faster overall
+                result processing by Cayenne, but it requires (1+N) SQL statements to be executed,
+                where N is the number of prefetched relationships.</para>
+
+        </section>
+        <section xml:id="disjoint-by-id-prefetch-semantics">
+            <title>Disjoint-by-ID Prefetching Semantics</title>
+            <para>This is a variation of disjoint prefetch where related objects are matched against
+                a set of IDs derived from the fetched main objects (or intermediate objects in a
+                multi-step prefetch). Cayenne limits the size of the generated WHERE clause, as most
+                DBs can't parse arbitrary large SQL. So prefetch queries are broken into smaller
+                queries. The size of  is controlled by the DI property
+                Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY (the default number of conditions in
+                the generated WHERE clause is 10000). Cayenne will generate (1 + N * M) SQL
+                statements for each query using disjoint-by-ID prefetches, where N is the number of
+                relationships to prefetch, and M is the number of queries for a given prefetch that
+                is dependent on the number of objects in the result (ideally M = 1).</para>
+            <para>The advantage of this type of prefetch is that matching database rows by ID may be
+                much faster than matching the qualifier of the original query. Moreover this is
+                    <emphasis role="bold">the only type of prefetch</emphasis> that can handle
+                SelectQueries with <emphasis role="bold">fetch limit</emphasis>. Both joint and
+                regular disjoint prefetches may produce invalid results or generate inefficient
+                fetch-the-entire table SQL when fetch limit is in effect. </para>
+            <para>The disadvantage is that query SQL can get unwieldy for large result sets, as each
+                object will have to have its own condition in the WHERE clause of the generated
+                SQL.</para>
+        </section>
+        <section xml:id="joint-prefetch-semantics">
+            <title>Joint Prefetching Semantics</title>
+            <para>Joint senantics results in a single SQL statement for root objects and any number
+                of jointly prefetched paths. Cayenne processes in memory a cartesian product of the
+                entities involved, converting it to an object tree. It uses OUTER joins to connect
+                prefetched entities.</para>
+            <para>Joint is the most efficient prefetch type of the three as far as generated SQL
+                goes. There's always just 1 SQL query generated. Its downsides are the potentially
+                increased amount of data that needs to get across the network between the
+                application server and the database, and more data processing that needs to be done
+                on the Cayenne side.</para>
+        </section>
+    </section>
+    <section xml:id="datarows">
+        <title>Data Rows</title>
+    </section>
+    <section xml:id="iterated-queries">
+        <title>Iterated Queries</title>
+    </section>
+    <section xml:id="paginated-queries">
+        <title>Paginated Queries</title>
+    </section>
+    <section xml:id="caching-and-fresh-data">
+        <title>Caching and Fresh Data</title>
+        <section xml:id="object-caching">
+            <title>Object Caching</title>
+        </section>
+        <section xml:id="query-result-caching">
+            <title>Query Result Caching</title>
+        </section>
+    </section>
+    <section xml:id="turning-off-synchronization-of-objectcontexts">
+        <title>Turning off Synchronization of ObjectContexts</title>
+    </section>
 </chapter>

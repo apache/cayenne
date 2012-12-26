@@ -26,7 +26,7 @@
     &lt;auth-method&gt;BASIC&lt;/auth-method&gt;
     &lt;realm-name&gt;Cayenne Realm&lt;/realm-name&gt;
 &lt;/login-config&gt;
-	
+
 &lt;security-role&gt;
     &lt;role-name&gt;cayenne-service-user&lt;/role-name&gt;
 &lt;/security-role&gt;</programlisting>
@@ -54,20 +54,20 @@
         <para>Open pom.xml in the server project and configure a "userRealm" for the Jetty
             plugin:</para>
         <programlisting>&lt;plugin&gt;
-	&lt;groupId&gt;org.mortbay.jetty&lt;/groupId&gt;
-		&lt;artifactId&gt;maven-jetty-plugin&lt;/artifactId&gt;
-		&lt;version&gt;6.1.22&lt;/version&gt;
-		&lt;!-- adding configuration below: --&gt;
-		&lt;configuration&gt;
-			&lt;userRealms&gt;
-				&lt;userRealm implementation="org.mortbay.jetty.security.HashUserRealm"&gt;
-					&lt;!-- this name must match the realm-name in web.xml --&gt;
-					&lt;name&gt;Cayenne Realm&lt;/name&gt;
-					&lt;config&gt;realm.properties&lt;/config&gt;
-				&lt;/userRealm&gt;
-			&lt;/userRealms&gt;
-		&lt;/configuration&gt;
-	&lt;/plugin&gt;
+    &lt;groupId&gt;org.mortbay.jetty&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-jetty-plugin&lt;/artifactId&gt;
+        &lt;version&gt;6.1.22&lt;/version&gt;
+        &lt;!-- adding configuration below: --&gt;
+        &lt;configuration&gt;
+            &lt;userRealms&gt;
+                &lt;userRealm implementation="org.mortbay.jetty.security.HashUserRealm"&gt;
+                    &lt;!-- this name must match the realm-name in web.xml --&gt;
+                    &lt;name&gt;Cayenne Realm&lt;/name&gt;
+                    &lt;config&gt;realm.properties&lt;/config&gt;
+                &lt;/userRealm&gt;
+            &lt;/userRealms&gt;
+        &lt;/configuration&gt;
+    &lt;/plugin&gt;
 &lt;/plugins&gt;</programlisting>
         <para>Now create a new file called {["realm.properties"}} <emphasis role="italic">at the
                 root of the server project</emphasis> and put user login/password in there:</para>
@@ -89,30 +89,30 @@ org.apache.cayenne.remote.hessian.HessianConnection connect
 INFO: Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
       CAUSE - cannot retry due to server authentication, in streaming mode
 java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
-	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1257)
-	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:379)
-	at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
-	at $Proxy0.establishSession(Unknown Source)
-	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
-	at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
-	at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:337)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init>(ClientChannel.java:108)
-	at org.example.cayenne.Main.main(Main.java:25)
+    at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1257)
+    at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:379)
+    at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
+    at $Proxy0.establishSession(Unknown Source)
+    at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
+    at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
+    at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:337)
+    at org.apache.cayenne.remote.ClientChannel.&lt;init>(ClientChannel.java:108)
+    at org.example.cayenne.Main.main(Main.java:25)
 Exception in thread "main" org.apache.cayenne.CayenneRuntimeException: [v.3.1M3 Sep 19 2011 07:12:41] 
 Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service; 
 CAUSE - cannot retry due to server authentication, in streaming mode
-	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:229)
-	at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
-	at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:337)
-	at org.apache.cayenne.remote.ClientChannel.&lt;init>(ClientChannel.java:108)
-	at org.example.cayenne.Main.main(Main.java:25)
+    at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:229)
+    at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
+    at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:337)
+    at org.apache.cayenne.remote.ClientChannel.&lt;init>(ClientChannel.java:108)
+    at org.example.cayenne.Main.main(Main.java:25)
 Caused by: java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
-	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1257)
-	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:379)
-	at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
-	at $Proxy0.establishSession(Unknown Source)
-	at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
-	... 4 more</programlisting>
+    at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1257)
+    at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:379)
+    at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
+    at $Proxy0.establishSession(Unknown Source)
+    at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
+    ... 4 more</programlisting>
         <para>Which is exactly what you'd expect, as the client is not authenticating itself. So
             change the line in Main.java where we obtained an ROP connection to this:</para>
         <programlisting language="java">ClientConnection connection = new HessianConnection(

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
-	xml:id="cayenne-guide-part2" xmlns:xi="http://www.w3.org/2001/XInclude">
-	<title>Cayenne Framework</title>
-	<xi:include href="including-cayenne-in-project.xml"/>
-	<xi:include href="starting-cayenne.xml"/>
-	<xi:include href="persistent-objects-objectcontext.xml"/>
-	<xi:include href="expressions.xml"/>
-	<xi:include href="orderings.xml"/>
-	<xi:include href="queries.xml"/>
-	<xi:include href="lifecycle-events.xml"/>
-	<xi:include href="performance-tuning.xml"/>
-	<xi:include href="customizing-cayenne-runtime.xml"/>
+    xml:id="cayenne-guide-part2" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Cayenne Framework</title>
+    <xi:include href="including-cayenne-in-project.xml"/>
+    <xi:include href="starting-cayenne.xml"/>
+    <xi:include href="persistent-objects-objectcontext.xml"/>
+    <xi:include href="expressions.xml"/>
+    <xi:include href="orderings.xml"/>
+    <xi:include href="queries.xml"/>
+    <xi:include href="lifecycle-events.xml"/>
+    <xi:include href="performance-tuning.xml"/>
+    <xi:include href="customizing-cayenne-runtime.xml"/>
 </part>

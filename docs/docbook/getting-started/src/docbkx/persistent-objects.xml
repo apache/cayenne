@@ -91,8 +91,8 @@ stein.setGallery(metropolitan);</programlisting>
 INFO: Loading XML configuration resource from file:cayenne-project.xml
 ... 
 INFO: Opening connection: jdbc:derby:memory:testdb;create=true
-	Login: null
-	Password: *******
+    Login: null
+    Password: *******
 INFO: +++ Connecting: SUCCESS.
 INFO: Detected and installed adapter: org.apache.cayenne.dba.derby.DerbyAdapter
 INFO: --- transaction started.
