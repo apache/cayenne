@@ -48,7 +48,7 @@ public class ConcurrentPkGeneratorTest extends ServerCase {
      */
     public void testConcurrentInserts() throws Exception {
 		final DataMap dataMap = runtime.getDataDomain().getDataMap("qualified");
-
+		
 		// clear out the table
 		ObjectContext context = runtime.getContext();
 		List<Qualified1> qualified1s = context.select(SelectQuery.query(Qualified1.class, null));
@@ -102,13 +102,14 @@ public class ConcurrentPkGeneratorTest extends ServerCase {
 			}
 		});
 		
-		int lastPk = Cayenne.intPKForObject(qualified1s.get(0)) - 1;
-		for (Qualified1 qualified1 : qualified1s) {
-			if (lastPk+1 != Cayenne.intPKForObject(qualified1)) {
-				fail("Found gap in sequence number: " + lastPk + " - " + Cayenne.intPKForObject(qualified1));
-			}
-			lastPk++;
-		}
+		// PKs will be used in order most of the time, but the implementation doesn't guarantee it.
+//		int lastPk = Cayenne.intPKForObject(qualified1s.get(0)) - 1;
+//		for (Qualified1 qualified1 : qualified1s) {
+//			if (lastPk+1 != Cayenne.intPKForObject(qualified1)) {
+//				fail("Found gap in sequence number: " + lastPk + " - " + Cayenne.intPKForObject(qualified1));
+//			}
+//			lastPk++;
+//		}
     }
     
 }

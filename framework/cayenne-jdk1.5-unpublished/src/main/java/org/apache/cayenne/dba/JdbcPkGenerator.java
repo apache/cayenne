@@ -26,14 +26,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -252,7 +250,7 @@ public class JdbcPkGenerator implements PkGenerator {
         else
             cacheSize = pkCacheSize;
 
-        long value;
+        Long value;
 
         // if no caching, always generate fresh
         if (cacheSize <= 1) {
@@ -270,41 +268,22 @@ public class JdbcPkGenerator implements PkGenerator {
                 }
             }
 
-            if (pks.isEmpty()) {
-            	long val = longPkFromDatabase(node, entity);
-            	Queue<Long> nextPks = mkRange(val, val + cacheSize - 1);
-            	int iterations = 0;
-            	while (!pkCache.replace(entity.getName(), pks, nextPks) && iterations < 999) {
-            		pks = pkCache.get(entity.getName()); // the cache for this entity has changed, so re-fetch it then update
-            		Queue<Long> previousPlusNext = new ConcurrentLinkedQueue<Long>(pks);
-            		previousPlusNext.addAll(nextPks);
-            		nextPks = previousPlusNext;
-            		iterations++;
-            	}
-            	if (iterations >= 999) {
-            		throw new IllegalStateException("Unable to add new primary keys to the cache for entity " + entity.getName());
-            	}
-            	pks = nextPks;
-            }
-
             value = pks.poll();
+            if (value == null) {
+            	value = longPkFromDatabase(node, entity);
+            	for (long i = value+1; i < value + cacheSize; i++) {
+            		pks.add(i);
+            	}
+            }
         }
 
         if (pk.getType() == Types.BIGINT) {
-            return Long.valueOf(value);
+            return value;
         }
         else {
             // leaving it up to the user to ensure that PK does not exceed max int...
-            return Integer.valueOf((int) value);
+            return value.intValue();
         }
-    }
-
-    private Queue<Long> mkRange(long min, long max) {
-    	Queue<Long> result = new ConcurrentLinkedQueue<Long>();
-    	for (long i = min; i <= max; i++) {
-    		result.add(i);
-    	}
-    	return result;
     }
 
 	/**
