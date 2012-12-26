@@ -119,6 +119,20 @@ public class Property<E> {
     public Expression likeInsensitive(E value) {
         return ExpressionFactory.likeIgnoreCaseExp(getName(), value);
     }
+    
+    /**
+     * @return An expression for a Database "NOT LIKE" query.
+     */
+    public Expression nlike(E value) {
+        return ExpressionFactory.notLikeExp(getName(), value);
+    }
+
+    /**
+     * @return An expression for a case insensitive "NOT LIKE" query.
+     */
+    public Expression nlikeInsensitive(E value) {
+        return ExpressionFactory.notLikeIgnoreCaseExp(getName(), value);
+    }
 
     /**
      * @return An expression checking for objects between a lower and upper
