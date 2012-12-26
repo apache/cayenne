@@ -251,6 +251,9 @@ public class Property<E> {
     }
 
     PrefetchTreeNode prefetch() {
+
+        // TODO: not very efficient - we are creating a prefetch that
+        // SelectQuery would throw away and recreate...
         PrefetchTreeNode root = new PrefetchTreeNode();
         PrefetchTreeNode node = root.addPath(name);
         node.setPhantom(false);

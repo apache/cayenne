@@ -148,7 +148,7 @@ public class DataContextPrefetchTest extends ServerCase {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
-        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+        q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
 
         final List<Artist> artists = context.select(q);
 
@@ -243,7 +243,7 @@ public class DataContextPrefetchTest extends ServerCase {
             }
         });
     }
-
+    
     /**
      * Test that a to-many relationship is initialized when a target entity has a compound
      * PK only partially involved in relationship.
@@ -288,6 +288,47 @@ public class DataContextPrefetchTest extends ServerCase {
                 ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
                 assertEquals(PersistenceState.COMMITTED, artistExhibit2
                         .getPersistenceState());
+                assertSame(a2, artistExhibit2.getToArtist());
+            }
+        });
+    }
+    
+    
+    public void testPrefetchToManyOnJoinTableJoinedPrefetch_ViaProperty() throws Exception {
+        createTwoArtistsWithExhibitsDataSet();
+
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        q.addPrefetch(Artist.ARTIST_EXHIBIT_ARRAY.joint());
+        q.addOrdering(Artist.ARTIST_NAME.asc());
+
+        final List<Artist> artists = context.select(q);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+
+                assertEquals(2, artists.size());
+
+                Artist a1 = artists.get(0);
+                assertEquals("artist2", a1.getArtistName());
+                List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
+                assertNotNull(toMany);
+                assertFalse(((ValueHolder) toMany).isFault());
+                assertEquals(2, toMany.size());
+
+                ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
+                assertEquals(PersistenceState.COMMITTED, artistExhibit.getPersistenceState());
+                assertSame(a1, artistExhibit.getToArtist());
+
+                Artist a2 = artists.get(1);
+                assertEquals("artist3", a2.getArtistName());
+                List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
+                assertNotNull(toMany2);
+                assertFalse(((ValueHolder) toMany2).isFault());
+                assertEquals(3, toMany2.size());
+
+                ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
+                assertEquals(PersistenceState.COMMITTED, artistExhibit2.getPersistenceState());
                 assertSame(a2, artistExhibit2.getToArtist());
             }
         });
