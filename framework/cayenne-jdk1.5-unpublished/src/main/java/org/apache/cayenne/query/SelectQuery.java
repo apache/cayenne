@@ -515,6 +515,18 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
     /**
      * Adds a prefetch with specified relationship path to the query.
      *
+     * @since 3.2
+     */
+    public PrefetchTreeNode addPrefetch(PrefetchTreeNode prefetchElement) {
+        String path = prefetchElement.getPath();
+        int semantics = prefetchElement.getSemantics();
+        
+        return metaData.addPrefetch(path, semantics);
+    }
+    
+    /**
+     * Adds a prefetch with specified relationship path to the query.
+     *
      * @since 1.2 signature changed to return created PrefetchTreeNode.
      */
     public PrefetchTreeNode addPrefetch(String prefetchPath) {

@@ -143,6 +143,35 @@ public class DataContextPrefetchTest extends ServerCase {
         tArtistExhibit.insert(101, 3);
         tArtistExhibit.insert(101, 4);
     }
+    
+    public void testPrefetchToMany_ViaProperty() throws Exception {
+        createTwoArtistsAndTwoPaintingsDataSet();
+
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+
+        final List<Artist> artists = context.select(q);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+
+                assertEquals(2, artists.size());
+
+                for (int i = 0; i < 2; i++) {
+                    Artist a = artists.get(i);
+                    List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
+                    assertNotNull(toMany);
+                    assertFalse(((ValueHolder) toMany).isFault());
+                    assertEquals(1, toMany.size());
+
+                    Painting p = (Painting) toMany.get(0);
+                    assertEquals("Invalid prefetched painting:" + p, "p_"
+                            + a.getArtistName(), p.getPaintingTitle());
+                }
+            }
+        });
+    }
 
     public void testPrefetchToMany_WithQualfier() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
