@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.testmap.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.GeneratedF1;
 
 /**
@@ -13,9 +14,12 @@ import org.apache.cayenne.testdo.testmap.GeneratedF1;
  */
 public abstract class _GeneratedF2 extends CayenneDataObject {
 
+    @Deprecated
     public static final String F1_PROPERTY = "f1";
 
     public static final String ID_PK_COLUMN = "ID";
+
+    public static final Property<List<GeneratedF1>> F1 = new Property<List<GeneratedF1>>("f1");
 
     public void addToF1(GeneratedF1 obj) {
         addToManyTarget("f1", obj, true);

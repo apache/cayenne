@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.testmap.auto;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Artist;
 
 /**
@@ -13,32 +14,39 @@ import org.apache.cayenne.testdo.testmap.Artist;
  */
 public abstract class _Painting1 extends CayenneDataObject {
 
+    @Deprecated
     public static final String ESTIMATED_PRICE_PROPERTY = "estimatedPrice";
+    @Deprecated
     public static final String PAINTING_TITLE_PROPERTY = "paintingTitle";
+    @Deprecated
     public static final String TO_ARTIST_PROPERTY = "toArtist";
 
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
+    public static final Property<BigDecimal> ESTIMATED_PRICE = new Property<BigDecimal>("estimatedPrice");
+    public static final Property<String> PAINTING_TITLE = new Property<String>("paintingTitle");
+    public static final Property<Artist> TO_ARTIST = new Property<Artist>("toArtist");
+
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
-        writeProperty(ESTIMATED_PRICE_PROPERTY, estimatedPrice);
+        writeProperty("estimatedPrice", estimatedPrice);
     }
     public BigDecimal getEstimatedPrice() {
-        return (BigDecimal)readProperty(ESTIMATED_PRICE_PROPERTY);
+        return (BigDecimal)readProperty("estimatedPrice");
     }
 
     public void setPaintingTitle(String paintingTitle) {
-        writeProperty(PAINTING_TITLE_PROPERTY, paintingTitle);
+        writeProperty("paintingTitle", paintingTitle);
     }
     public String getPaintingTitle() {
-        return (String)readProperty(PAINTING_TITLE_PROPERTY);
+        return (String)readProperty("paintingTitle");
     }
 
     public void setToArtist(Artist toArtist) {
-        setToOneTarget(TO_ARTIST_PROPERTY, toArtist, true);
+        setToOneTarget("toArtist", toArtist, true);
     }
 
     public Artist getToArtist() {
-        return (Artist)readProperty(TO_ARTIST_PROPERTY);
+        return (Artist)readProperty("toArtist");
     }
 
 

@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 
@@ -12,27 +13,32 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
  */
 public abstract class _ArtistExhibit extends CayenneDataObject {
 
+    @Deprecated
     public static final String TO_ARTIST_PROPERTY = "toArtist";
+    @Deprecated
     public static final String TO_EXHIBIT_PROPERTY = "toExhibit";
 
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 
+    public static final Property<Artist> TO_ARTIST = new Property<Artist>("toArtist");
+    public static final Property<Exhibit> TO_EXHIBIT = new Property<Exhibit>("toExhibit");
+
     public void setToArtist(Artist toArtist) {
-        setToOneTarget(TO_ARTIST_PROPERTY, toArtist, true);
+        setToOneTarget("toArtist", toArtist, true);
     }
 
     public Artist getToArtist() {
-        return (Artist)readProperty(TO_ARTIST_PROPERTY);
+        return (Artist)readProperty("toArtist");
     }
 
 
     public void setToExhibit(Exhibit toExhibit) {
-        setToOneTarget(TO_EXHIBIT_PROPERTY, toExhibit, true);
+        setToOneTarget("toExhibit", toExhibit, true);
     }
 
     public Exhibit getToExhibit() {
-        return (Exhibit)readProperty(TO_EXHIBIT_PROPERTY);
+        return (Exhibit)readProperty("toExhibit");
     }
 
 

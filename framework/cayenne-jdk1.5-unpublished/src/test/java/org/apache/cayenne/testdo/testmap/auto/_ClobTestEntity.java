@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.testmap.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.ClobTestRelation;
 
 /**
@@ -13,10 +14,15 @@ import org.apache.cayenne.testdo.testmap.ClobTestRelation;
  */
 public abstract class _ClobTestEntity extends CayenneDataObject {
 
+    @Deprecated
     public static final String CLOB_COL_PROPERTY = "clobCol";
+    @Deprecated
     public static final String CLOB_VALUE_PROPERTY = "clobValue";
 
     public static final String CLOB_TEST_ID_PK_COLUMN = "CLOB_TEST_ID";
+
+    public static final Property<String> CLOB_COL = new Property<String>("clobCol");
+    public static final Property<List<ClobTestRelation>> CLOB_VALUE = new Property<List<ClobTestRelation>>("clobValue");
 
     public void setClobCol(String clobCol) {
         writeProperty("clobCol", clobCol);

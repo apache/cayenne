@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.testmap.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Bag;
 import org.apache.cayenne.testdo.testmap.Ball;
 import org.apache.cayenne.testdo.testmap.BoxInfo;
@@ -16,54 +17,65 @@ import org.apache.cayenne.testdo.testmap.Thing;
  */
 public abstract class _Box extends CayenneDataObject {
 
+    @Deprecated
     public static final String NAME_PROPERTY = "name";
+    @Deprecated
     public static final String BAG_PROPERTY = "bag";
+    @Deprecated
     public static final String BALLS_PROPERTY = "balls";
+    @Deprecated
     public static final String BOX_INFO_PROPERTY = "boxInfo";
+    @Deprecated
     public static final String THINGS_PROPERTY = "things";
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<Bag> BAG = new Property<Bag>("bag");
+    public static final Property<List<Ball>> BALLS = new Property<List<Ball>>("balls");
+    public static final Property<BoxInfo> BOX_INFO = new Property<BoxInfo>("boxInfo");
+    public static final Property<List<Thing>> THINGS = new Property<List<Thing>>("things");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setBag(Bag bag) {
-        setToOneTarget(BAG_PROPERTY, bag, true);
+        setToOneTarget("bag", bag, true);
     }
 
     public Bag getBag() {
-        return (Bag)readProperty(BAG_PROPERTY);
+        return (Bag)readProperty("bag");
     }
 
 
     public void addToBalls(Ball obj) {
-        addToManyTarget(BALLS_PROPERTY, obj, true);
+        addToManyTarget("balls", obj, true);
     }
     public void removeFromBalls(Ball obj) {
-        removeToManyTarget(BALLS_PROPERTY, obj, true);
+        removeToManyTarget("balls", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Ball> getBalls() {
-        return (List<Ball>)readProperty(BALLS_PROPERTY);
+        return (List<Ball>)readProperty("balls");
     }
 
 
     public void setBoxInfo(BoxInfo boxInfo) {
-        setToOneTarget(BOX_INFO_PROPERTY, boxInfo, true);
+        setToOneTarget("boxInfo", boxInfo, true);
     }
 
     public BoxInfo getBoxInfo() {
-        return (BoxInfo)readProperty(BOX_INFO_PROPERTY);
+        return (BoxInfo)readProperty("boxInfo");
     }
 
 
     @SuppressWarnings("unchecked")
     public List<Thing> getThings() {
-        return (List<Thing>)readProperty(THINGS_PROPERTY);
+        return (List<Thing>)readProperty("things");
     }
 
 

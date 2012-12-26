@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.testmap.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Ball;
 import org.apache.cayenne.testdo.testmap.Box;
 import org.apache.cayenne.testdo.testmap.Thing;
@@ -15,12 +16,21 @@ import org.apache.cayenne.testdo.testmap.Thing;
  */
 public abstract class _Bag extends CayenneDataObject {
 
+    @Deprecated
     public static final String NAME_PROPERTY = "name";
+    @Deprecated
     public static final String BALLS_PROPERTY = "balls";
+    @Deprecated
     public static final String BOXES_PROPERTY = "boxes";
+    @Deprecated
     public static final String THINGS_PROPERTY = "things";
 
     public static final String ID_PK_COLUMN = "ID";
+
+    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<List<Ball>> BALLS = new Property<List<Ball>>("balls");
+    public static final Property<List<Box>> BOXES = new Property<List<Box>>("boxes");
+    public static final Property<List<Thing>> THINGS = new Property<List<Thing>>("things");
 
     public void setName(String name) {
         writeProperty("name", name);

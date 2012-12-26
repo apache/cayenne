@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -16,61 +17,72 @@ import org.apache.cayenne.testdo.testmap.Painting;
  */
 public abstract class _Artist extends CayenneDataObject {
 
+    @Deprecated
     public static final String ARTIST_NAME_PROPERTY = "artistName";
+    @Deprecated
     public static final String DATE_OF_BIRTH_PROPERTY = "dateOfBirth";
+    @Deprecated
     public static final String ARTIST_EXHIBIT_ARRAY_PROPERTY = "artistExhibitArray";
+    @Deprecated
     public static final String GROUP_ARRAY_PROPERTY = "groupArray";
+    @Deprecated
     public static final String PAINTING_ARRAY_PROPERTY = "paintingArray";
 
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
 
+    public static final Property<String> ARTIST_NAME = new Property<String>("artistName");
+    public static final Property<Date> DATE_OF_BIRTH = new Property<Date>("dateOfBirth");
+    public static final Property<List<ArtistExhibit>> ARTIST_EXHIBIT_ARRAY = new Property<List<ArtistExhibit>>("artistExhibitArray");
+    public static final Property<List<ArtGroup>> GROUP_ARRAY = new Property<List<ArtGroup>>("groupArray");
+    public static final Property<List<Painting>> PAINTING_ARRAY = new Property<List<Painting>>("paintingArray");
+
     public void setArtistName(String artistName) {
-        writeProperty(ARTIST_NAME_PROPERTY, artistName);
+        writeProperty("artistName", artistName);
     }
     public String getArtistName() {
-        return (String)readProperty(ARTIST_NAME_PROPERTY);
+        return (String)readProperty("artistName");
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
-        writeProperty(DATE_OF_BIRTH_PROPERTY, dateOfBirth);
+        writeProperty("dateOfBirth", dateOfBirth);
     }
     public Date getDateOfBirth() {
-        return (Date)readProperty(DATE_OF_BIRTH_PROPERTY);
+        return (Date)readProperty("dateOfBirth");
     }
 
     public void addToArtistExhibitArray(ArtistExhibit obj) {
-        addToManyTarget(ARTIST_EXHIBIT_ARRAY_PROPERTY, obj, true);
+        addToManyTarget("artistExhibitArray", obj, true);
     }
     public void removeFromArtistExhibitArray(ArtistExhibit obj) {
-        removeToManyTarget(ARTIST_EXHIBIT_ARRAY_PROPERTY, obj, true);
+        removeToManyTarget("artistExhibitArray", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<ArtistExhibit> getArtistExhibitArray() {
-        return (List<ArtistExhibit>)readProperty(ARTIST_EXHIBIT_ARRAY_PROPERTY);
+        return (List<ArtistExhibit>)readProperty("artistExhibitArray");
     }
 
 
     public void addToGroupArray(ArtGroup obj) {
-        addToManyTarget(GROUP_ARRAY_PROPERTY, obj, true);
+        addToManyTarget("groupArray", obj, true);
     }
     public void removeFromGroupArray(ArtGroup obj) {
-        removeToManyTarget(GROUP_ARRAY_PROPERTY, obj, true);
+        removeToManyTarget("groupArray", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<ArtGroup> getGroupArray() {
-        return (List<ArtGroup>)readProperty(GROUP_ARRAY_PROPERTY);
+        return (List<ArtGroup>)readProperty("groupArray");
     }
 
 
     public void addToPaintingArray(Painting obj) {
-        addToManyTarget(PAINTING_ARRAY_PROPERTY, obj, true);
+        addToManyTarget("paintingArray", obj, true);
     }
     public void removeFromPaintingArray(Painting obj) {
-        removeToManyTarget(PAINTING_ARRAY_PROPERTY, obj, true);
+        removeToManyTarget("paintingArray", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Painting> getPaintingArray() {
-        return (List<Painting>)readProperty(PAINTING_ARRAY_PROPERTY);
+        return (List<Painting>)readProperty("paintingArray");
     }
 
 

@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 
 /**
@@ -11,11 +12,18 @@ import org.apache.cayenne.testdo.testmap.ClobTestEntity;
  */
 public abstract class _ClobTestRelation extends CayenneDataObject {
 
+    @Deprecated
     public static final String ID_PROPERTY = "id";
+    @Deprecated
     public static final String VALUE_PROPERTY = "value";
+    @Deprecated
     public static final String CLOB_ID_PROPERTY = "clobId";
 
     public static final String ID_PK_COLUMN = "ID";
+
+    public static final Property<Integer> ID = new Property<Integer>("id");
+    public static final Property<Integer> VALUE = new Property<Integer>("value");
+    public static final Property<ClobTestEntity> CLOB_ID = new Property<ClobTestEntity>("clobId");
 
     public void setId(Integer id) {
         writeProperty("id", id);

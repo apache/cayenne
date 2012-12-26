@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Painting;
 
 /**
@@ -11,32 +12,39 @@ import org.apache.cayenne.testdo.testmap.Painting;
  */
 public abstract class _PaintingInfo extends CayenneDataObject {
 
+    @Deprecated
     public static final String IMAGE_BLOB_PROPERTY = "imageBlob";
+    @Deprecated
     public static final String TEXT_REVIEW_PROPERTY = "textReview";
+    @Deprecated
     public static final String PAINTING_PROPERTY = "painting";
 
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
+    public static final Property<byte[]> IMAGE_BLOB = new Property<byte[]>("imageBlob");
+    public static final Property<String> TEXT_REVIEW = new Property<String>("textReview");
+    public static final Property<Painting> PAINTING = new Property<Painting>("painting");
+
     public void setImageBlob(byte[] imageBlob) {
-        writeProperty(IMAGE_BLOB_PROPERTY, imageBlob);
+        writeProperty("imageBlob", imageBlob);
     }
     public byte[] getImageBlob() {
-        return (byte[])readProperty(IMAGE_BLOB_PROPERTY);
+        return (byte[])readProperty("imageBlob");
     }
 
     public void setTextReview(String textReview) {
-        writeProperty(TEXT_REVIEW_PROPERTY, textReview);
+        writeProperty("textReview", textReview);
     }
     public String getTextReview() {
-        return (String)readProperty(TEXT_REVIEW_PROPERTY);
+        return (String)readProperty("textReview");
     }
 
     public void setPainting(Painting painting) {
-        setToOneTarget(PAINTING_PROPERTY, painting, true);
+        setToOneTarget("painting", painting, true);
     }
 
     public Painting getPainting() {
-        return (Painting)readProperty(PAINTING_PROPERTY);
+        return (Painting)readProperty("painting");
     }
 
 

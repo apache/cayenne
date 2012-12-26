@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.testmap.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 
@@ -14,50 +15,59 @@ import org.apache.cayenne.testdo.testmap.Artist;
  */
 public abstract class _ArtGroup extends CayenneDataObject {
 
+    @Deprecated
     public static final String NAME_PROPERTY = "name";
+    @Deprecated
     public static final String ARTIST_ARRAY_PROPERTY = "artistArray";
+    @Deprecated
     public static final String CHILD_GROUPS_ARRAY_PROPERTY = "childGroupsArray";
+    @Deprecated
     public static final String TO_PARENT_GROUP_PROPERTY = "toParentGroup";
 
     public static final String GROUP_ID_PK_COLUMN = "GROUP_ID";
 
+    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<List<Artist>> ARTIST_ARRAY = new Property<List<Artist>>("artistArray");
+    public static final Property<List<ArtGroup>> CHILD_GROUPS_ARRAY = new Property<List<ArtGroup>>("childGroupsArray");
+    public static final Property<ArtGroup> TO_PARENT_GROUP = new Property<ArtGroup>("toParentGroup");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToArtistArray(Artist obj) {
-        addToManyTarget(ARTIST_ARRAY_PROPERTY, obj, true);
+        addToManyTarget("artistArray", obj, true);
     }
     public void removeFromArtistArray(Artist obj) {
-        removeToManyTarget(ARTIST_ARRAY_PROPERTY, obj, true);
+        removeToManyTarget("artistArray", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Artist> getArtistArray() {
-        return (List<Artist>)readProperty(ARTIST_ARRAY_PROPERTY);
+        return (List<Artist>)readProperty("artistArray");
     }
 
 
     public void addToChildGroupsArray(ArtGroup obj) {
-        addToManyTarget(CHILD_GROUPS_ARRAY_PROPERTY, obj, true);
+        addToManyTarget("childGroupsArray", obj, true);
     }
     public void removeFromChildGroupsArray(ArtGroup obj) {
-        removeToManyTarget(CHILD_GROUPS_ARRAY_PROPERTY, obj, true);
+        removeToManyTarget("childGroupsArray", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<ArtGroup> getChildGroupsArray() {
-        return (List<ArtGroup>)readProperty(CHILD_GROUPS_ARRAY_PROPERTY);
+        return (List<ArtGroup>)readProperty("childGroupsArray");
     }
 
 
     public void setToParentGroup(ArtGroup toParentGroup) {
-        setToOneTarget(TO_PARENT_GROUP_PROPERTY, toParentGroup, true);
+        setToOneTarget("toParentGroup", toParentGroup, true);
     }
 
     public ArtGroup getToParentGroup() {
-        return (ArtGroup)readProperty(TO_PARENT_GROUP_PROPERTY);
+        return (ArtGroup)readProperty("toParentGroup");
     }
 
 
