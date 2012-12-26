@@ -498,7 +498,7 @@ public final class Cayenne {
      * more than one object, an exception is thrown. If query returns no objects, null is
      * returned.
      * 
-     * @since 3.1
+     * @since 3.2
      */
     @SuppressWarnings("unchecked")
 	public static <T> T objectForSelect(ObjectContext context, Select<T> query) {
