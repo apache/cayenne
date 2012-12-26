@@ -35,15 +35,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
@@ -343,6 +340,17 @@ public class DataContextTest extends ServerCase {
         assertEquals("artISt4", objects.get(3).getArtistName());
         assertEquals("aRtist5", objects.get(4).getArtistName());
     }
+    
+    public void testSelect_DataRows() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, null);
+        List<DataRow> objects = context.select(query);
+
+        assertNotNull(objects);
+        assertEquals(7, objects.size());
+        assertTrue("DataRow expected, got " + objects.get(0).getClass(), objects.get(0) instanceof DataRow);
+    }
 
     public void testPerformSelectQuery1() throws Exception {
         createArtistsAndPaintingsDataSet();
@@ -356,6 +364,8 @@ public class DataContextTest extends ServerCase {
                 "Artist expected, got " + objects.get(0).getClass(),
                 objects.get(0) instanceof Artist);
     }
+    
+    
 
     public void testPerformSelectQuery2() throws Exception {
         createArtistsAndPaintingsDataSet();

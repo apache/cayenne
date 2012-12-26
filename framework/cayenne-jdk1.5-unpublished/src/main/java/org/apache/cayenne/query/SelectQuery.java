@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
@@ -49,6 +50,42 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
     protected boolean distinct;
 
     SelectQueryMetadata metaData = new SelectQueryMetadata();
+    
+    /**
+     * Creates a SelectQuery that selects objects of a given persistent class that match
+     * supplied qualifier.
+     *
+     * @param rootClass the Class of objects fetched by this query.
+     * @param qualifier an Expression indicating which objects should be fetched.
+     * 
+     * @since 3.2
+     */
+    public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier) {
+        return new SelectQuery<T>(rootClass, qualifier);
+    }
+    
+    /**
+     * Creates a SelectQuery that selects DataRows that correspond to a given
+     * persistent class that match supplied qualifier.
+     * 
+     * @param rootClass
+     *            the Class of objects that correspond to DataRows entity.
+     * @param qualifier
+     *            an Expression indicating which objects should be fetched.
+     * 
+     * @since 3.2
+     */
+    public static SelectQuery<DataRow> dataRowQuery(Class<?> rootClass, Expression qualifier) {
+        // create a query replica that would fetch DataRows
+        SelectQuery<DataRow> query = new SelectQuery<DataRow>();
+
+        query.setRoot(rootClass);
+
+        query.setQualifier(qualifier);
+        query.metaData.setFetchingDataRows(true);
+
+        return query;
+    }
 
     /** Creates an empty SelectQuery. */
     public SelectQuery() {
@@ -95,17 +132,6 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      */
     public SelectQuery(Class<T> rootClass) {
         this(rootClass, null);
-    }
-
-    /**
-     * Creates a SelectQuery that selects objects of a given persistent class that match
-     * supplied qualifier.
-     *
-     * @param rootClass the Class of objects fetched by this query.
-     * @param qualifier an Expression indicating which objects should be fetched.
-     */
-    public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier) {
-    	return new SelectQuery<T>(rootClass, qualifier);
     }
     
     /**
@@ -265,7 +291,7 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
 
         // must init defaults even if properties are empty
         if (properties == null) {
-            properties = Collections.EMPTY_MAP;
+            properties = Collections.emptyMap();
         }
 
         Object distinct = properties.get(DISTINCT_PROPERTY);
@@ -435,7 +461,7 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      * Returns a list of orderings used by this query.
      */
     public List<Ordering> getOrderings() {
-        return (orderings != null) ? orderings : Collections.EMPTY_LIST;
+        return (orderings != null) ? orderings : Collections.<Ordering> emptyList();
     }
 
     /**
@@ -512,21 +538,27 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
     }
 
     /**
-     * Returns <code>true</code> if this query should produce a list of data rows as
-     * opposed to DataObjects, <code>false</code> for DataObjects. This is a hint to
-     * QueryEngine executing this query.
+     * Returns <code>true</code> if this query should produce a list of data
+     * rows as opposed to DataObjects, <code>false</code> for DataObjects. This
+     * is a hint to QueryEngine executing this query.
+     * 
+     * @deprecated since 3.2, use {@link #dataRowQuery(Class, Expression)}
+     *             to create DataRow query instead.
      */
     public boolean isFetchingDataRows() {
         return (root instanceof DbEntity) || metaData.isFetchingDataRows();
     }
 
     /**
-     * Sets query result type. If <code>flag</code> parameter is <code>true</code>, then
-     * results will be in the form of data rows.
+     * Sets query result type. If <code>flag</code> parameter is
+     * <code>true</code>, then results will be in the form of data rows.
      * <p>
-     * <i>Note that if the root of this query is a {@link DbEntity}, this setting has no
-     * effect, and data rows are always fetched. </i>
+     * <i>Note that if the root of this query is a {@link DbEntity}, this
+     * setting has no effect, and data rows are always fetched. </i>
      * </p>
+     * 
+     * @deprecated since 3.2, use {@link #dataRowQuery(Class, Expression)}
+     *             to create DataRow query instead.
      */
     public void setFetchingDataRows(boolean flag) {
         metaData.setFetchingDataRows(flag);
