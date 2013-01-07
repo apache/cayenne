@@ -186,6 +186,10 @@ public class CayenneModelerController extends CayenneController {
      * Action method invoked on project closing.
      */
     public void projectClosedAction() {
+        
+        // CAY-1786
+        frame.selectedTaxIndex = 0;
+        
         // --- update view
         frame.setView(null);
 
