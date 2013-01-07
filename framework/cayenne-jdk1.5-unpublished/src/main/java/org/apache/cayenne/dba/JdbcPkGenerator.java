@@ -26,10 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,10 +51,12 @@ import org.apache.cayenne.util.IDUtil;
 public class JdbcPkGenerator implements PkGenerator {
 
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
+    private static final long DEFAULT_PK_START_VALUE = 200;
 
     protected JdbcAdapter adapter;
     protected ConcurrentHashMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<String, Queue<Long>>();
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
+    protected long pkStartValue = DEFAULT_PK_START_VALUE;
 
     public JdbcPkGenerator(JdbcAdapter adapter) {
         this.adapter = adapter;
@@ -146,7 +145,7 @@ public class JdbcPkGenerator implements PkGenerator {
                 .append(" (TABLE_NAME, NEXT_ID)")
                 .append(" VALUES ('")
                 .append(entName)
-                .append("', 200)");
+                .append("', ").append(pkStartValue).append(")");
         return buf.toString();
     }
 
@@ -337,6 +336,14 @@ public class JdbcPkGenerator implements PkGenerator {
     public void setPkCacheSize(int pkCacheSize) {
         this.pkCacheSize = (pkCacheSize < 1) ? 1 : pkCacheSize;
     }
+    
+    long getPkStartValue() {
+        return pkStartValue;
+    }
+    
+    void setPkStartValue(long startValue) {
+        this.pkStartValue = startValue;
+    }
 
     public void reset() {
         pkCache.clear();
@@ -358,13 +365,13 @@ public class JdbcPkGenerator implements PkGenerator {
             return false;
         }
 
-        public int getId() {
+        public long getId() {
             if (id == null) {
                 throw new CayenneRuntimeException("No key was retrieved for entity "
                         + entityName);
             }
 
-            return id.intValue();
+            return id.longValue();
         }
 
         public void nextRows(Query query, List<?> dataRows) {
