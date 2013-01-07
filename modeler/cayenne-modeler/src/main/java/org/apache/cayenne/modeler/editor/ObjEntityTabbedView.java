@@ -34,7 +34,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
@@ -54,7 +53,7 @@ import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplayListener,
         ObjRelationshipDisplayListener, ObjAttributeDisplayListener {
 
-    protected ProjectController mediator;
+    protected ProjectController projectController;
 
     protected Component entityPanel;
     protected ObjEntityRelationshipTab relationshipsPanel;
@@ -68,8 +67,8 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
      */
     protected JPanel listenersPanel;
 
-    public ObjEntityTabbedView(ProjectController mediator) {
-        this.mediator = mediator;
+    public ObjEntityTabbedView(ProjectController projectController) {
+        this.projectController = projectController;
 
         initView();
         initController();
@@ -82,35 +81,34 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
 
-        entityPanel = new JScrollPane(new ObjEntityTab(mediator));
+        entityPanel = new JScrollPane(new ObjEntityTab(projectController));
         addTab("Entity", entityPanel);
 
-        attributesPanel = new ObjEntityAttributeTab(mediator);
+        attributesPanel = new ObjEntityAttributeTab(projectController);
         addTab("Attributes", attributesPanel);
 
-        relationshipsPanel = new ObjEntityRelationshipTab(mediator);
+        relationshipsPanel = new ObjEntityRelationshipTab(projectController);
         addTab("Relationships", relationshipsPanel);
 
-        callbacksPanel = new ObjEntityCallbackMethodsTab(mediator);
+        callbacksPanel = new ObjEntityCallbackMethodsTab(projectController);
         addTab("Callbacks", callbacksPanel);
 
-        listenersPanel = new ObjEntityCallbackListenersTab(mediator);
+        listenersPanel = new ObjEntityCallbackListenersTab(projectController);
         addTab("Listeners", listenersPanel);
     }
 
     private void initController() {
-        mediator.addObjEntityDisplayListener(this);
-        mediator.addObjAttributeDisplayListener(this);
-        mediator.addObjRelationshipDisplayListener(this);
+        projectController.addObjEntityDisplayListener(this);
+        projectController.addObjAttributeDisplayListener(this);
+        projectController.addObjRelationshipDisplayListener(this);
 
         addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
                 resetRemoveButtons();
-                
-                CayenneModelerFrame frame = (CayenneModelerFrame) getRootPane().getParent();
-                frame.selectedTaxIndex = getSelectedIndex();
-                
+
+                projectController.setEntityTabSelection(getSelectedIndex());
+
                 Component selected = getSelectedComponent();
                 while (selected instanceof JScrollPane) {
                     selected = ((JScrollPane) selected).getViewport().getView();
@@ -144,11 +142,11 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
 
         resetRemoveButtons();
         setVisible(e.getEntity() != null);
-        
+
         if (getRootPane() != null) {
-            CayenneModelerFrame frame = (CayenneModelerFrame) getRootPane().getParent();
-            if (frame.selectedTaxIndex < getTabCount()) {
-                setSelectedIndex(frame.selectedTaxIndex);
+           
+            if (projectController.getEntityTabSelection() < getTabCount()) {
+                setSelectedIndex(projectController.getEntityTabSelection());
             }
         }
     }

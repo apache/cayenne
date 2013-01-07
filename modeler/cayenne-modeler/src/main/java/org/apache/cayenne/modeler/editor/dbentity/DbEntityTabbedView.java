@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.Component;
 
-import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
@@ -34,7 +33,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
@@ -51,18 +49,18 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         DbEntityDisplayListener, DbRelationshipDisplayListener,
         DbAttributeDisplayListener {
 
-    protected ProjectController mediator;
+    protected ProjectController projectController;
 
     protected Component entityPanel;
     protected DbEntityAttributeTab attributesPanel;
     protected DbEntityRelationshipTab relationshipsPanel;
 
-    public DbEntityTabbedView(ProjectController mediator) {
+    public DbEntityTabbedView(ProjectController projectController) {
         super();
-        this.mediator = mediator;
-        mediator.addDbEntityDisplayListener(this);
-        mediator.addDbAttributeDisplayListener(this);
-        mediator.addDbRelationshipDisplayListener(this);
+        this.projectController = projectController;
+        projectController.addDbEntityDisplayListener(this);
+        projectController.addDbAttributeDisplayListener(this);
+        projectController.addDbRelationshipDisplayListener(this);
 
         setTabPlacement(JTabbedPane.TOP);
 
@@ -70,11 +68,11 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
 
-        entityPanel = new JScrollPane(new DbEntityTab(mediator));
+        entityPanel = new JScrollPane(new DbEntityTab(projectController));
         addTab("Entity", entityPanel);
-        attributesPanel = new DbEntityAttributeTab(mediator);
+        attributesPanel = new DbEntityAttributeTab(projectController);
         addTab("Attributes", attributesPanel);
-        relationshipsPanel = new DbEntityRelationshipTab(mediator);
+        relationshipsPanel = new DbEntityRelationshipTab(projectController);
         addTab("Relationships", relationshipsPanel);
 
         addChangeListener(this);
@@ -92,9 +90,8 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
     public void stateChanged(ChangeEvent e) {
         resetRemoveButtons();
 
-        CayenneModelerFrame frame = (CayenneModelerFrame) getRootPane().getParent();
-        frame.selectedTaxIndex = getSelectedIndex();
-        
+        projectController.setEntityTabSelection(getSelectedIndex());
+
         // find source view
         Component selected = getSelectedComponent();
         while (selected instanceof JScrollPane) {
@@ -117,12 +114,9 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
 
         resetRemoveButtons();
         setVisible(e.getEntity() != null);
-        
-        if (getRootPane() != null) {
-            CayenneModelerFrame frame = (CayenneModelerFrame) getRootPane().getParent();
-            if (frame.selectedTaxIndex < getTabCount()) {
-                setSelectedIndex(frame.selectedTaxIndex);
-            }
+
+        if (projectController.getEntityTabSelection() < getTabCount()) {
+            setSelectedIndex(projectController.getEntityTabSelection());
         }
     }
 

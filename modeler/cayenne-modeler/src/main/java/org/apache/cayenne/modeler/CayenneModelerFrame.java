@@ -145,8 +145,6 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
      */
     protected WelcomeScreen welcomeScreen;
 
-    public int selectedTaxIndex = 0;
-    
     public CayenneModelerFrame(ActionManager actionManager) {
         super(ModelerConstants.TITLE);
         this.actionManager = actionManager;

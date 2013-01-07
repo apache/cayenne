@@ -187,9 +187,6 @@ public class CayenneModelerController extends CayenneController {
      */
     public void projectClosedAction() {
         
-        // CAY-1786
-        frame.selectedTaxIndex = 0;
-        
         // --- update view
         frame.setView(null);
 
