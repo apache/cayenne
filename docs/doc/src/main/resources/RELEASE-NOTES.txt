@@ -63,3 +63,4 @@ CAY-1757 ROP: Faulting entity relationship resets uncommitted modifications made
 CAY-1774 EhCacheQueryCache.get(QueryMetadata, QueryCacheEntryFactory) returns null if EhCache instance for group is not present
 CAY-1780 cdbimport do not create xml file in resource folder
 CAY-1782 Deadlock when performing many concurrent inserts
+CAY-1783 JdbcPkGenerator.longPkFromDatabase would throw an exception if the PK value exceeds a range of Java int
