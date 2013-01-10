@@ -141,38 +141,18 @@
         <xsl:param name="position" select="''"/>
         <xsl:param name="gentext-key" select="''"/>
         <xsl:variable name="Version">
-            <!--<xsl:if test="//releaseinfo">-->
-                <!--<xsl:text>Spring-Integration (</xsl:text>-->
-                <!--<xsl:value-of select="//releaseinfo"/>-->
-                <!--${pom.version}-->
-                <!--<xsl:text>)</xsl:text>-->
-            <!--</xsl:if>-->
-            <fo:inline min-width="150mm">Apache Cayenne ${pom.version}</fo:inline>
+            <fo:inline min-width="150mm">v.${pom.version}</fo:inline>
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="$sequence='blank'">
-                <xsl:if test="$position = 'center'">
+                <xsl:if test="$position = 'left'">
                     <xsl:value-of select="$Version"/>
                 </xsl:if>
-            </xsl:when>
-            <!-- for double sided printing, print page numbers on alternating sides (of the page) -->
-            <xsl:when test="$double.sided != 0">
-                <xsl:choose>
-                    <xsl:when test="$sequence = 'even' and $position='left'">
-                        <fo:page-number/>
-                    </xsl:when>
-                    <xsl:when test="$sequence = 'odd' and $position='right'">
-                        <fo:page-number/>
-                    </xsl:when>
-                    <xsl:when test="$position='center'">
-                        <xsl:value-of select="$Version"/>
-                    </xsl:when>
-                </xsl:choose>
             </xsl:when>
             <!-- for single sided printing, print all page numbers on the right (of the page) -->
             <xsl:when test="$double.sided = 0">
                 <xsl:choose>
-                    <xsl:when test="$position='center'">
+                    <xsl:when test="$position='left'">
                         <xsl:value-of select="$Version"/>
                     </xsl:when>
                     <xsl:when test="$position='right'">
