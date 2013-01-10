@@ -132,3 +132,9 @@ span.productname {
     font-size: 200%;
     font-weight: bold;
 }
+
+div.buildversion {
+    left: 3px;
+    position: relative;
+    top: 21px;
+}
