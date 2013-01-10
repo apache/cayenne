@@ -5,7 +5,6 @@
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
-                xmlns:d="http://docbook.org/ns/docbook"
                 version="1.0">
 
     <xsl:import href="urn:docbkx:stylesheet"/>
@@ -142,11 +141,13 @@
         <xsl:param name="position" select="''"/>
         <xsl:param name="gentext-key" select="''"/>
         <xsl:variable name="Version">
-            <xsl:if test="//releaseinfo">
-                <xsl:text>Spring-Integration (</xsl:text>
-                <xsl:value-of select="//releaseinfo"/>
-                <xsl:text>)</xsl:text>
-            </xsl:if>
+            <!--<xsl:if test="//releaseinfo">-->
+                <!--<xsl:text>Spring-Integration (</xsl:text>-->
+                <!--<xsl:value-of select="//releaseinfo"/>-->
+                <!--${pom.version}-->
+                <!--<xsl:text>)</xsl:text>-->
+            <!--</xsl:if>-->
+            <fo:inline min-width="150mm">Apache Cayenne ${pom.version}</fo:inline>
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="$sequence='blank'">
