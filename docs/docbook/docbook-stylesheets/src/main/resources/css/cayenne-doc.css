@@ -133,8 +133,8 @@ span.productname {
     font-weight: bold;
 }
 
-div.buildversion {
-    left: 3px;
-    position: relative;
-    top: 21px;
+th.versioninfo {
+    font-size: small;
+    font-weight: normal;
+    text-align: left;
 }
