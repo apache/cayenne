@@ -241,6 +241,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
      * Selects a specified attribute.
      */
     public void selectAttributes(ObjAttribute[] attrs) {
+        
         ModelerUtil.updateActions(
                 attrs.length,
                 RemoveAttributeAction.class,
@@ -260,6 +261,12 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     public void processExistingSelection(EventObject e) {
+        
+        // hasn't been initialized yet, nothing to do
+        if (!(table.getModel() instanceof ObjAttributeTableModel)) {
+            return;
+        }
+        
         if (e instanceof ChangeEvent) {
             table.clearSelection();
         }

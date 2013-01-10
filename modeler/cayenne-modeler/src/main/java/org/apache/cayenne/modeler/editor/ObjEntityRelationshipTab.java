@@ -246,6 +246,12 @@ public class ObjEntityRelationshipTab extends JPanel implements ObjEntityDisplay
     }
 
     public void processExistingSelection(EventObject e) {
+        
+        // hasn't been initialized yet, nothing to do
+        if (!(table.getModel() instanceof ObjRelationshipTableModel)) {
+            return;
+        }
+        
         if (e instanceof ChangeEvent) {
             table.clearSelection();
         }
