@@ -163,12 +163,12 @@ public class SimpleIdIncrementalFaultListTest extends ServerCase {
         createArtistsDataSet();
 
         Artist newArtist = context.newObject(Artist.class);
-        newArtist.setArtistName("X");
+        newArtist.setArtistName("x");
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.setPageSize(6);
-        q.addOrdering("db:ARTIST_ID", SortOrder.DESCENDING);
+        q.addOrdering(Artist.ARTIST_NAME.asc());
 
         SimpleIdIncrementalFaultList<?> list = new SimpleIdIncrementalFaultList<Object>(
                 context,
