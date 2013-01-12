@@ -166,9 +166,9 @@ public class SimpleIdIncrementalFaultListTest extends ServerCase {
         newArtist.setArtistName("x");
         context.commitChanges();
 
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.setPageSize(6);
-        q.addOrdering(Artist.ARTIST_NAME.asc());
+        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         SimpleIdIncrementalFaultList<?> list = new SimpleIdIncrementalFaultList<Object>(
                 context,
