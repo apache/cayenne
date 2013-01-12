@@ -102,6 +102,9 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
             else if (content instanceof ObjEntity) {
                 rAction.removeObjEntity(map, (ObjEntity) content);
             }
+            else if (content instanceof Embeddable) {
+                rAction.removeEmbeddable(map, (Embeddable) content);
+            }
             else if (content instanceof Query) {
                 rAction.removeQuery(map, (Query) content);
             }
