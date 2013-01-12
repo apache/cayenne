@@ -21,6 +21,7 @@ Bug Fixes Since 3.1B1:
 
 CAY-957 Deadlock in nested contexts
 CAY-1689 [PATCH] LOB*QueryBuilders do not check isQuotingSQLIdentifiers
+CAY-1701 Modeler cannot undo pasting of obj (db) entity
 CAY-1708 Modeler error when pasting datamap with EJBQL query
 CAY-1713 Inconsistent property name: "cayenne.rop.service.timeout"
 CAY-1714 ROP: Cayenne tries to build a query for non committed object when using more than 2 nested contexts 
