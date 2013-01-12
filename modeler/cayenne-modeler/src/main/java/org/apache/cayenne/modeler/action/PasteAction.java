@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.undo.UndoableEdit;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -40,6 +41,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -103,15 +106,15 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             Object currentObject = getProjectController().getCurrentObject();
 
             if (content != null && currentObject != null) {
-
-                PasteCompoundUndoableEdit undoableEdit = new PasteCompoundUndoableEdit();
-
                 DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
                         .getProject()
                         .getRootNode();
                 DataMap map = getProjectController().getCurrentDataMap();
 
+                UndoableEdit undoableEdit;
                 if (content instanceof List) {
+                    undoableEdit = new PasteCompoundUndoableEdit();
+
                     for (Object o : (List) content) {
                         paste(currentObject, o);
                         undoableEdit.addEdit(new PasteUndoableEdit(
@@ -123,11 +126,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 }
                 else {
                     paste(currentObject, content);
-                    undoableEdit.addEdit(new PasteUndoableEdit(
-                            domain,
-                            map,
-                            currentObject,
-                            content));
+                    undoableEdit = new PasteUndoableEdit(domain, map, currentObject, content);
                 }
 
                 application.getUndoManager().addEdit(undoableEdit);
@@ -259,6 +258,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
         else if (where instanceof DataMap) {
             // paste DbEntity to DataMap
             final DataMap dataMap = ((DataMap) where);
+
+            // clear data map parent cache
+            clearDataMapCache(dataMap);
 
             if (content instanceof DbEntity) {
                 DbEntity dbEntity = (DbEntity) content;
@@ -447,6 +449,13 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         param);
             }
 
+        }
+    }
+
+    private void clearDataMapCache(DataMap dataMap) {
+        MappingNamespace ns = dataMap.getNamespace();
+        if (ns instanceof EntityResolver) {
+            ((EntityResolver) ns).clearCache();
         }
     }
 
