@@ -34,7 +34,6 @@
     <packaging>pom</packaging>
     
     <modules>
-      <module>cayenne-runtime-itest</module>
 	  <module>cayenne-tools-itest</module>
     </modules>
 	<build>
