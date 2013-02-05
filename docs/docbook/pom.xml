@@ -26,7 +26,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.parents</groupId>
 		<artifactId>cayenne-docs-parent</artifactId>
-		<version>3.1B2-SNAPSHOT</version>
+		<version>3.1B2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	
@@ -101,9 +101,9 @@
 							<foCustomization>${project.stylesheetdir}/stylesheets/pdf.xsl</foCustomization>
 							<postProcess>
 								<delete failonerror="false">
-									<fileset dir="target/site/" includes="*.fo"/>
+									<fileset dir="target/site/" includes="*.fo" />
 								</delete>
-								<move file="target/site/index.pdf" tofile="target/site/${project.artifactId}.pdf"/>
+								<move file="target/site/index.pdf" tofile="target/site/${project.artifactId}.pdf" />
 							</postProcess>
 						</configuration>
 						<phase>generate-resources</phase>
