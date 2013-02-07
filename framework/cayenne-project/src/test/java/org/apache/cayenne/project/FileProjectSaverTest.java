@@ -142,7 +142,7 @@ public class FileProjectSaverTest extends Project2Case {
     public void testSaveForProjectFileWithRelatedPaths() throws Exception {
         File testFolder = setupTestDirectory("testSaveForProjectFileWithRelatedPaths");
 
-        String mapFilePath = "file:" + testFolder.getCanonicalPath() + "/../test.map.xml";
+        String mapFilePath = testFolder.toURI() + "../test.map.xml";
         String mapFileName = "test";
         DataMap testDataMap = new DataMap(mapFileName);
         testDataMap.setConfigurationSource(new URLResource(new URL(mapFilePath)));
