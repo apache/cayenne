@@ -7,38 +7,38 @@ The Apache Software Foundation (http://www.apache.org/).
 
 RUNTIME FRAMEWORK
 
-1. ObjectStyle Cayenne Notice: This software is derived from Cayenne Framework, 
+* ObjectStyle Cayenne Notice: This software is derived from Cayenne Framework, 
 originally developed at The ObjectStyle Group and donated to the ASF by its authors
 (http://objectstyle.org)
 
-2. This software includes Ashwood graph library developed by Andriy Shapochka.
+* This software includes Ashwood graph library developed by Andriy Shapochka.
 (http://objectstyle.org/ashwood/)
 
-3. This software includes VPP library developed by FoundryLogic, LLC.
+* This software includes VPP library developed by FoundryLogic, LLC.
 (http://vpp.sourceforge.net/)
 
-4. This software includes concurrentlinkedhashmap library developed by Google Inc.
+* This software includes concurrentlinkedhashmap library developed by Google Inc.
 (http://code.google.com/p/concurrentlinkedhashmap/)
 
 
 GUI TOOLS
 
-4. CayenneModeler includes JGoodies library developed by Karsten Lentzsch.
+* CayenneModeler includes JGoodies library developed by Karsten Lentzsch.
 (http://www.jgoodies.com/)
 
-5. CayenneModeler includes OGNL library developed by Drew Davidson and Luke Blanshard
+* CayenneModeler includes OGNL library developed by Drew Davidson and Luke Blanshard
 (http://commons.apache.org/ognl/)
 
-6. CayenneModeler includes GIF binary images developed by Eclipse Foundation. 
+* CayenneModeler includes GIF binary images developed by Eclipse Foundation. 
 (http://www.eclipse.org/).
 
-7. CayenneModeler includes jEdit-syntax library developed by Slava Pestov, Artur Biesiadowski, 
+* CayenneModeler includes jEdit-syntax library developed by Slava Pestov, Artur Biesiadowski, 
 Clancy Malcolm, Jonathan Revusky, Juha Lindfors and Mike Dillon.
 (http://jedit-syntax.sourceforge.net/)
 
-8. CayenneModeler includes Inflector library developed by the Inflector project
+* CayenneModeler includes Inflector library developed by the Inflector project
 (https://inflector.dev.java.net/)
 
-8. CayenneModeler includes JGraph library developed by JGraph Ltd
+* CayenneModeler includes JGraph library developed by JGraph Ltd
 (http://www.jgraph.com)
 
