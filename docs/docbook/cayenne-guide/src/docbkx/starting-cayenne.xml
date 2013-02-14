@@ -7,27 +7,25 @@
         <para>In runtime Cayenne is accessed via
                 <code>org.apache.cayenne.configuration.server.ServerRuntime</code>. ServerRuntime is
             created simply by calling a
-            constructor:<programlisting language="java">ServerRuntime runtime =
-    new ServerRuntime("com/example/cayenne-project.xml");</programlisting></para>
+            constructor:<programlisting language="java">ServerRuntime runtime = new ServerRuntime("com/example/cayenne-project.xml");</programlisting></para>
         <para>The parameter you pass to the constructor is a location of the main project file. Location
             is a '/'-separated path (same path separator is used on UNIX and Windows) that is
             resolved relative to the application classpath. The project file can be placed in the
             root package or in a subpackage (e.g. in the code above it is in "com/example"
             subpackage).</para>
-        <para>ServerRuntime encapsulates a single Cayenne stack. Most applications will just have one
-            ServerRuntime using it to create as many ObjectContexts as needed, access the Dependency
-            Injection (DI) container and work with other Cayenne features. Internally ServerRuntime
-            is just a thin wrapper around the DI container. Detailed features of the container are
-            discussed in "Customizing Cayenne Runtime" chapter. Here we'll just show an example of
-            how an application might replace a default implementation of a built-in Cayenne service
-            (in this case - QueryCache) with a different
+        <para>ServerRuntime encapsulates a single Cayenne stack. Most applications will just have
+            one ServerRuntime using it to create as many ObjectContexts as needed, access the
+            Dependency Injection (DI) container and work with other Cayenne features. Internally
+            ServerRuntime is just a thin wrapper around the DI container. Detailed features of the
+            container are discussed in "Customizing Cayenne Runtime" chapter. Here we'll just show
+            an example of how an application might replace a default implementation of a built-in
+            Cayenne service (in this case - QueryCache) with a different
             class:<programlisting language="java">public class MyExtensionsModule implements Module {
     public void configure(Binder binder) {
         binder.bind(QueryCache.class).to(EhCacheQueryCache.class);
     }
 }</programlisting><programlisting language="java">Module extensions = new MyExtensionsModule();
-ServerRuntime runtime = 
-    new ServerRuntime("com/example/cayenne-project.xml", extensions);</programlisting></para>
+ServerRuntime runtime = new ServerRuntime("com/example/cayenne-project.xml", extensions);</programlisting></para>
         <para>It is a good idea to shut down the runtime when it is no longer needed, usually before the
             application itself is shutdown: <programlisting language="java">runtime.shutdown();</programlisting>When
             a runtime object has the same scope as the application, this may not be always
@@ -41,8 +39,7 @@ ServerRuntime runtime =
             projects and merge them together in a single configuration. This way different parts of
             a database can be mapped independenlty from each other (even by different software
             providers), and combined in runtime when assembling an application. Doing it is as easy
-            as passing multiple project locations to ServerRuntime constructor:</para><programlisting language="java">ServerRuntime runtime =
-    new ServerRuntime(new String[] {
+            as passing multiple project locations to ServerRuntime constructor:</para><programlisting language="java">ServerRuntime runtime = new ServerRuntime(new String[] {
         "com/example/cayenne-project.xml",
         "org/foo/cayenne-library1.xml",
         "org/foo/cayenne-library2.xml"

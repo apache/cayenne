@@ -35,8 +35,7 @@ INFO: === returned 5 row. - took 5 ms.</programlisting></para>
             qualifier to select only the data that you care about. Qualifier is simply an Expression
             (Expressions where discussed in the previous chapter). If you only want artists whose
             name begins with 'Pablo', you might use the following qualifier expression:
-            <programlisting language="java">SelectQuery query = new SelectQuery(Artist.class,
-        ExpressionFactory.likeExp(Artist.NAME_PROPERTY, "Pablo%"));
+            <programlisting language="java">SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.likeExp(Artist.NAME_PROPERTY, "Pablo%"));
 List&lt;Artist> objects = context.performQuery(query);</programlisting>The
             SQL will look different this
             time:<programlisting>INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 WHERE t0.NAME LIKE ?
