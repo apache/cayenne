@@ -41,6 +41,7 @@ CAY-1755 FaultFailureException resolving relationships to UNIQUE non-PK columns
 CAY-1757 ROP: Faulting entity relationship resets uncommitted modifications made to its reverse relationship 
 CAY-1774 EhCacheQueryCache.get(QueryMetadata, QueryCacheEntryFactory) returns null if EhCache instance for group is not present
 CAY-1783 JdbcPkGenerator.longPkFromDatabase would throw an exception if the PK value exceeds a range of Java int
+CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor
 
 ----------------------------------
 Release: 3.1B1
