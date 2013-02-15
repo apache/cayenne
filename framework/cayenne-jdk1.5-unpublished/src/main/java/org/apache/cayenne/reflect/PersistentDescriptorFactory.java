@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
@@ -265,7 +265,10 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
         if (qualifier != null) {
 
-            final Set<ObjAttribute> attributes = new HashSet<ObjAttribute>();
+            // using map instead of a Set to collect attributes, as
+            // ObjEntity.getAttribute may return a decorator for attribute on
+            // each call, resulting in dupes
+            final Map<String, ObjAttribute> attributes = new HashMap<String, ObjAttribute>();
             final DbEntity dbEntity = descriptor.getEntity().getDbEntity();
 
             qualifier.traverse(new TraversalHelper() {
@@ -300,19 +303,18 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                                         .getJavaBySqlType(attribute.getType()));
                             }
 
-                            attributes.add(objectAttribute);
+                            attributes.put(objectAttribute.getName(), objectAttribute);
                         }
                     }
                     else if (node.getType() == Expression.OBJ_PATH) {
                         String path = node.getOperand(0).toString();
-                        attributes.add((ObjAttribute) descriptor
-                                .getEntity()
-                                .getAttribute(path));
+                        ObjAttribute attribute = (ObjAttribute) descriptor.getEntity().getAttribute(path);
+                        attributes.put(path, attribute);
                     }
                 }
             });
 
-            descriptor.setDiscriminatorColumns(attributes);
+            descriptor.setDiscriminatorColumns(attributes.values());
             descriptor.setEntityQualifier(qualifier);
         }
     }
