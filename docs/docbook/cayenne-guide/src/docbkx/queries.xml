@@ -194,9 +194,9 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
             <para>These are the custom directives used to customize SQLTemplate parsing and
                 integrate with the JDBC layer:<table frame="void">
                     <caption>cgen optional parameters</caption>
-                    <col width="29%"/>
-                    <col width="26%"/>
-                    <col width="45%"/>
+                    <col width="28%"/>
+                    <col width="33%"/>
+                    <col width="39%"/>
                     <thead>
                         <tr>
                             <th>Directive</th>
@@ -207,8 +207,8 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
                     <tbody>
                         <tr>
                             <td><para><code>#bind(value)</code></para>
-                                <para><code>#bind(value jdbcTypeName)</code></para>
-                                <para><code>#bind(value jdbcTypeName scale)</code></para>
+                                <para><code>#bind(value jdbcType)</code></para>
+                                <para><code>#bind(value jdbcType scale)</code></para>
                             </td>
                             <td>
                                 <para><code>#bind($xyz)</code></para>
@@ -229,9 +229,9 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
                                     the variable can be a collection, that will be automatically
                                     expanded into a list of individual value bindings. This is
                                     useful for instance to build IN conditions. </para>
-                                <para>The second parameter - <code>jdbcTypeName</code> - is a JDBC
-                                    data type of the parameter, as defined in
-                                        <code>java.sql.Types</code>. </para>
+                                <para>The second parameter - <code>jdbcType</code> - is a JDBC data
+                                    type of the parameter, as defined in
+                                    <code>java.sql.Types</code>. </para>
                                 <para>A full query example may look like this:  </para>
                                 <para><code>update ARTIST set NAME = #bind($name) where ID =
                                         #bind($id)</code></para>
@@ -240,8 +240,9 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
                         <tr>
                             <td>
                                 <para><code>#bindEqual(value)</code></para>
-                                <para><code>#bindEqual(value jdbcTypeName)</code></para>
-                                <para><code>#bindEqual(value jdbcTypeName scale)</code></para>
+                                <para><code>#bindEqual(value jdbcType)</code></para>
+                                <para><code>#bindEqual(value
+                                    jdbcType scale)</code></para>
                             </td>
                             <td>
                                 <para><code>#bindEqual($xyz)</code></para>
@@ -266,8 +267,9 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
                         <tr>
                             <td>
                                 <para><code>#bindNotEqual(value)</code></para>
-                                <para><code>#bindNotEqual(value jdbcTypeName)</code></para>
-                                <para><code>#bindNotEqual(value jdbcTypeName scale)</code></para>
+                                <para><code>#bindNotEqual(value jdbcType)</code></para>
+                                <para><code>#bindNotEqual(value jdbcType</code></para>
+                                <para><code>   scale )</code></para>
                             </td>
                             <td>
                                 <para><code>#bindNotEqual($xyz)</code></para>
@@ -278,6 +280,41 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
                             <td>This directive deals with the same issue as <code>#bindEqual</code>
                                 above, only it generates "not equal" in front of the value (or IS
                                 NOT NULL).</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <para><code>#bindObjectEqual</code></para>
+                                <para><code>(value columns idColumns)</code></para>
+                            </td>
+                            <td>
+                                <para><code>#bindObjectEqual($a 't0.ID' 'ID')</code></para>
+                                <para><code>#bindObjectEqual($a ['t0.FK1', 't0.FK2'] ['PK1',
+                                        'PK2'])</code></para>
+                            </td>
+                            <td>
+                                <para>It can be tricky to use a Persistent object (or an ObjectId)
+                                    in a binding, especially for tables with compound primary keys.
+                                    This directive helps to handle such binding. It maps columns in
+                                    the query to the names of Persistent object ID columns, extracts
+                                    ID values from the object, and generates SQL like "COL1 = ? AND
+                                    COL2 = ? ..." , binding positional parameters to ID values. It
+                                    can also correctly handle null object.</para>
+                                <para>Also notice how in the second example we are specifying a
+                                    Velocity array.</para>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <para><code>#bindObjectNotEqual</code></para>
+                                <para><code>(value columns idColumns)</code></para>
+                            </td>
+                            <td>
+                                <para><code>#bindObjectNotEqual($a 't0.ID' 'ID')</code></para>
+                                <para><code>#bindObjectNotEqual($a ['t0.FK1', 't0.FK2'] ['PK1',
+                                        'PK2'])</code></para>
+                            </td>
+                            <td>Same as #bindObjectEqual above, only generates "not equal" operator
+                                for value comparison (or IS NOT NULL).</td>
                         </tr>
                     </tbody>
                 </table></para>
