@@ -8,8 +8,16 @@ To browse individual bug reports check out project issue tracker:
 http://issues.apache.org/cayenne/
 
 ----------------------------------
+Release: 3.1B3
+Date: 2013
+----------------------------------
+Bug Fixes Since 3.1B2:
+
+CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor
+
+----------------------------------
 Release: 3.1B2
-Date: 2012
+Date: 2013
 ----------------------------------
 Changes/New Features Since 3.1B1:
 
@@ -41,7 +49,6 @@ CAY-1755 FaultFailureException resolving relationships to UNIQUE non-PK columns
 CAY-1757 ROP: Faulting entity relationship resets uncommitted modifications made to its reverse relationship 
 CAY-1774 EhCacheQueryCache.get(QueryMetadata, QueryCacheEntryFactory) returns null if EhCache instance for group is not present
 CAY-1783 JdbcPkGenerator.longPkFromDatabase would throw an exception if the PK value exceeds a range of Java int
-CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor
 
 ----------------------------------
 Release: 3.1B1
