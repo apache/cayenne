@@ -193,7 +193,7 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
             <title>Directives</title>
             <para>These are the custom directives used to customize SQLTemplate parsing and
                 integrate with the JDBC layer:<table frame="void">
-                    <caption>cgen optional parameters</caption>
+                    <caption>SQLTemplate Directives</caption>
                     <col width="28%"/>
                     <col width="33%"/>
                     <col width="39%"/>
@@ -315,6 +315,70 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
                             </td>
                             <td>Same as #bindObjectEqual above, only generates "not equal" operator
                                 for value comparison (or IS NOT NULL).</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <para><code>#result(column)</code></para>
+                                <para><code>#result(column javaType)</code></para>
+                                <para><code>#result(column javaType alias)</code></para>
+                            </td>
+                            <td>
+                                <para><code>#result('NAME')</code></para>
+                                <para><code>#result('DATE_OF_BIRTH' 'java.util.Date') </code></para>
+                                <para><code>#result('DOB' 'java.util.Date' 'DATE_OF_BIRTH')
+                                    </code></para>
+                            </td>
+                            <td>
+                                <para>Renders a column in SELECT clause of the query and maps it to
+                                    a key in the result DataRow. Also ensures the value read is of
+                                    the correct type. This allows to create a DataRow (and
+                                    ultimately - a persistent object) from an arbitrary
+                                    ResultSet.</para>
+                                <para>A <code>javaType</code> argument is a fully-qualified Java
+                                    class name for a given result column. For simplicity most common
+                                    Java types used in JDBC can be specified without a package.
+                                    These include all numeric types, primitives, String, SQL dates,
+                                    BigDecimal and BigInteger. So "#result('A' 'String')",
+                                    "#result('B' 'java.lang.String')" and "#result('C' 'int')" are
+                                    all valid.</para>
+                                <para><code>alias</code> argument specifies both the SQL alias of
+                                    the column and the value key in the DataRow.</para>
+                                <para>Here is a complete query example using #result:</para>
+                                <para><code>SELECT #result('ID' 'int'), #result('NAME' 'String'),
+                                        #result('DATE_OF_BIRTH' 'java.util.Date') FROM
+                                        ARTIST"</code></para>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <para><code>#chain(operator) ... #end</code></para>
+                                <para><code>#chain(operator prefix) ... #end</code></para>
+                                <para><code>#chunk() ... #end</code></para>
+                                <para><code>#chunk(param) ... #end</code></para>
+                            </td>
+                            <td>
+                                <para><code>#chain('OR' 'WHERE')  #chunk($name) NAME LIKE
+                                        #bind($name) #end" #chunk($id) ARTIST_ID > #bind($id) #end"
+                                        #end" </code></para>
+                            </td>
+                            <td>
+                                <para><code>#chain</code> and <code>#chunk</code> directives are
+                                    used for conditional inclusion of SQL code. They are often used
+                                    together with <code>#chain</code> wrapping multiple
+                                        <code>#chunks</code>.</para>
+                                <para>A chunk evaluates its parameter expression and if it is NULL
+                                    suppresses rendering of the enclosed SQL block. A chain renders
+                                    its <code>prefix</code> and its chunks joined by the
+                                        <code>operator</code>. If all the chunks are suppressed, the
+                                    chain itself is suppressed. </para>
+                                <para>This allows to work with otherwise hard to script SQL
+                                    semantics. E.g. a WHERE clause can contain multiple conditions
+                                    joined with AND or OR. Application code would like to exclude a
+                                    condition if its right-hand parameter is not present (similar to
+                                    Expression pruning discussed above). If all conditions are
+                                    excluded, the entire WHERE clause should be excluded.
+                                    chain/chunk allows to do that.</para>
+                            </td>
                         </tr>
                     </tbody>
                 </table></para>
