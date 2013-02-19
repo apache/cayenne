@@ -340,7 +340,8 @@ select.setParameters(Collections.singletonMap("a", a)); </programlisting></para>
                 <para><emphasis role="italic">Semantics:</emphasis></para>
                 <programlisting>#result(column)
 #result(column javaType)
-#result(column javaType alias)</programlisting>
+#result(column javaType alias)
+#result(column javaType alias dataRowKey)</programlisting>
                 <para><emphasis role="italic">Arguments:</emphasis>
                     <itemizedlist>
                         <listitem>
@@ -361,12 +362,21 @@ select.setParameters(Collections.singletonMap("a", a)); </programlisting></para>
                                 and the value key in the DataRow. If omitted, "column" value is
                                 used.</para>
                         </listitem>
+                        <listitem>
+                            <para><code>dataRowKey</code> - needed if SQL 'alias' is not appropriate
+                                as a DataRow key on the Cayenne side. One common case when this
+                                happens is when a DataRow retrieved from a query is mapped using
+                                joint prefetch keys (see below). In this case DataRow must use
+                                database path expressions for joint column keys, and their format is
+                                incompatible with most databases alias format. </para>
+                        </listitem>
                     </itemizedlist></para>
                 <para>
                     <emphasis role="italic"
                     >Usage</emphasis>:<programlisting>#result('NAME')
 #result('DATE_OF_BIRTH' 'java.util.Date') 
-#result('DOB' 'java.util.Date' 'DATE_OF_BIRTH') 
+#result('DOB' 'java.util.Date' 'DATE_OF_BIRTH')
+#result('DOB' 'java.util.Date' '' 'artist.DATE_OF_BIRTH') 
 #result('SALARY' 'float') </programlisting></para>
                 <para><emphasis role="italic">Full
                     example:</emphasis><programlisting>SELECT #result('ID' 'int'), #result('NAME' 'String'), #result('DATE_OF_BIRTH' 'java.util.Date') FROM ARTIST</programlisting></para>
@@ -398,6 +408,113 @@ select.setParameters(Collections.singletonMap("a", a)); </programlisting></para>
 #end" </programlisting></para>
           
             </section>
+        </section>
+        <section>
+            <title>Mapping SQLTemplate Results</title>
+            <para>Here we'll discuss how to convert the data selected via SQLTemplate to some
+                useable format, compatible with other query results. It can either be very simple or
+                very complex, depending on the structure of the SQL, JDBC driver nature and the
+                desired result structure. This section presents various tips and tricks dealing with
+                result mapping. </para>
+            <para>By default SQLTemplate is expected to return a List of Persistent objects of its
+                root type. This is the simple
+                case:<programlisting>SQLTemplate query = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST");
+
+// List of Artists
+List&lt;Artist> artists = context.performQuery(query);</programlisting>Just
+                like SelectQuery, SQLTemplate can fetch DataRows. In fact DataRows option is very
+                useful with SQLTemplate, as the result type most often than not does not represent a
+                Cayenne entity, but instead may be some aggregated report or any other data whose
+                object structure is opaque to
+                Cayenne:<programlisting>String sql = SELECT t0.NAME, COUNT(1) FROM ARTIST t0 JOIN PAINTING t1 ON (t0.ID = t1.ARTIST_ID) "
+    + "GROUP BY t0.NAME ORDER BY COUNT(1)";
+SQLTemplate query = new SQLTemplate(Artist.class, sql);
+
+// ensure we are fetching DataRows
+query.setFetchingDataRows(true);
+
+// List of DataRow
+List&lt;DataRow> rows = context.performQuery(query);</programlisting>In
+                the example above, even though the query root is Artist. the result is a list of
+                artist names with painting counts (as mentioned before in such case "root" is only
+                used to find the DB to fetch against, but has no bearning on the result). The
+                DataRows here are the most appropriate and desired result type.</para>
+            <para>In a more advanced case you may decide to fetch a list of scalars or a list of
+                Object[] with each array entry being either an entity or a scalar. You probably
+                won't be doing this too often and it requires quite a lot of work to setup, but if
+                you want your SQLTemplate to return results similar to EJBQLQuery, it is doable
+                using SQLResult as described
+                below:<programlisting>SQLTemplate query = new SQLTemplate(Painting.class, "SELECT ESTIMATED_PRICE P FROM PAINTING");
+
+// let Cayenne know that result is a scalar
+SQLResult resultDescriptor = new SQLResult();
+resultDescriptor.addColumnResult("P");
+query.setResult(resultDescriptor);
+
+// List of BigDecimals
+List&lt;BigDecimal> prices = context.performQuery(query); </programlisting><programlisting>SQLTemplate query = new SQLTemplate(Artist.class, "SELECT t0.ID, t0.NAME, t0.DATE_OF_BIRTH, COUNT(t1.PAINTING_ID) C " +
+      "FROM ARTIST t0 LEFT JOIN PAINTING t1 ON (t0.ID = t1.ARTIST_ID) " +
+      "GROUP BY t0.ID, t0.NAME, t0.DATE_OF_BIRTH");
+
+// let Cayenne know that result is a mix of Artist objects and the count of their paintings
+EntityResult artistResult = new EntityResult(Artist.class);
+artistResult.addDbField(Artist.ID_PK_COLUMN, "ARTIST_ID");
+artistResult.addObjectField(Artist.NAME_PROPERTY, "NAME");
+artistResult.addObjectField(Artist.DATE_OF_BIRTH_PROPERTY, "DATE_OF_BIRTH");
+
+SQLResult resultDescriptor = new SQLResult();
+resultDescriptor.addEntityResult(artistResult);
+resultDescriptor.addColumnResult("C");
+query.setResult(resultDescriptor);
+
+// List of Object[]
+List&lt;Object[]> data = context.performQuery(query);</programlisting></para>
+            <para>Another trick related to mapping result sets is making Cayenne recognize
+                prefetched entities in the result set. This emulates "joint" prefetching of
+                SelectQuery, and is achieved by special column naming. Columns belonging to the
+                "root" entity of the query should use unqualified names corresponding to the root
+                DbEntity columns. For each related entity column names must be prefixed with
+                relationship name and a dot (e.g. "toArtist.ID"). Column naming can be controlled
+                with "#result"
+                directive:<programlisting>String sql = "SELECT distinct "
+    + "#result('t1.ESTIMATED_PRICE' 'BigDecimal' '' 'paintings.ESTIMATED_PRICE'), "
+    + "#result('t1.PAINTING_TITLE' 'String' '' 'paintings.PAINTING_TITLE'), "
+    + "#result('t1.GALLERY_ID' 'int' '' 'paintings.GALLERY_ID'), "
+    + "#result('t1.ID' 'int' '' 'paintings.ID'), "
+    + "#result('NAME' 'String'), "
+    + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
+    + "#result('t0.ID' 'int' '' 'ID') "
+    + "FROM ARTIST t0, PAINTING t1 "
+    + "WHERE t0.ID = t1.ARTIST_ID";
+
+SQLTemplate q = new SQLTemplate(Artist.class, sql);
+q.addPrefetch(Artist.PAINTINGS_PROPERTY)
+List&lt;Artist> objects = context.performQuery(query);</programlisting></para>
+            <para>And the final tip deals with capitalization of the DataRow keys. Queries like
+                    "<code>SELECT * FROM...</code>" and even "<code>SELECT COLUMN1, COLUMN2, ...
+                    FROM ...</code>" can sometimes result in Cayenne exceptions on attempts to
+                convert fetched DataRows to objects. Essentially any query that is not using a
+                    <code>#result</code> directive to describe the result set is prone to this
+                problem, as different databases may produce different capitalization of the
+                java.sql.ResultSet columns. </para>
+            <para>The most universal way to address this issue is to describe each column explicitly
+                in the SQLTemplate via <code>#result</code>, e.g.: "<code>SELECT #result('column1'),
+                    #result('column2'), ..</code>". However this quickly becomes impractical for
+                tables with lots of columns. For such cases Cayenne provides a shortcut based on the
+                fact that an ORM mapping usually follows some naming convention for the column
+                names. Simply put, for case-insensitive databases developers normally use either all
+                lowercase or all uppercase column names. Here is the API that takes advantage of
+                that user knowledge and forces Cayenne to follow a given naming convention for the
+                DataRow keys (this is also available as a dropdown in the
+                Modeler):<programlisting>SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST");
+query.setColumnNamesCapitalization(CapsStrategy.LOWER);
+List objects = context.performQuery(query);</programlisting></para>
+            <para>or<programlisting>SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST");
+query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+List objects = context.performQuery(query); </programlisting></para>
+            <para>None of this affects the generated SQL, but the resulting DataRows are using
+                correct capitalization. Note that you probably shouldn't bother with this unless you
+                are getting CayenneRuntimeExceptions when fetching with SQLTemplate.</para>
         </section>
     </section>
     <section xml:id="procedurequery">
