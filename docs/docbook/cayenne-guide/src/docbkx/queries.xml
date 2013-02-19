@@ -191,197 +191,213 @@ query.setParameters(Collections.singletonMap("tableName", "mydb.PAINTING"));
         </section>
         <section xml:id="sqltemplate-bind-directive">
             <title>Directives</title>
-            <para>These are the custom directives used to customize SQLTemplate parsing and
-                integrate with the JDBC layer:<table frame="void">
-                    <caption>SQLTemplate Directives</caption>
-                    <col width="28%"/>
-                    <col width="33%"/>
-                    <col width="39%"/>
-                    <thead>
-                        <tr>
-                            <th>Directive</th>
-                            <th>Usage</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><para><code>#bind(value)</code></para>
-                                <para><code>#bind(value jdbcType)</code></para>
-                                <para><code>#bind(value jdbcType scale)</code></para>
-                            </td>
-                            <td>
-                                <para><code>#bind($xyz)</code></para>
-                                <para><code>#bind('str')</code></para>
-                                <para><code>#bind($xyz 'VARCHAR')</code></para>
-                                <para><code>#bind($xyz 'DECIMAL' 2)</code></para>
-                            </td>
-                            <td>
-                                <para>Creates a PreparedStatement positional parameter in place of
-                                    the directive, binding the value to it before statement
-                                    execution. "<code>#bind</code>" is allowed in places where a "?"
-                                    would be allowed in a PreparedStatement. And in such places it
-                                    almost always makes sense to pass objects to the template via
-                                    this or other forms of #bind instead of inserting them
-                                    inline.</para>
-                                <para>A <code>value</code> can either be a char constant or a
-                                    variable that is resolved from the query parameters. Note that
-                                    the variable can be a collection, that will be automatically
-                                    expanded into a list of individual value bindings. This is
-                                    useful for instance to build IN conditions. </para>
-                                <para>The second parameter - <code>jdbcType</code> - is a JDBC data
-                                    type of the parameter, as defined in
-                                    <code>java.sql.Types</code>. </para>
-                                <para>A full query example may look like this:  </para>
-                                <para><code>update ARTIST set NAME = #bind($name) where ID =
-                                        #bind($id)</code></para>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <para><code>#bindEqual(value)</code></para>
-                                <para><code>#bindEqual(value jdbcType)</code></para>
-                                <para><code>#bindEqual(value
-                                    jdbcType scale)</code></para>
-                            </td>
-                            <td>
-                                <para><code>#bindEqual($xyz)</code></para>
-                                <para><code>#bindEqual('str')</code></para>
-                                <para><code>#bindEqual($xyz 'VARCHAR')</code></para>
-                                <para><code>#bindEqual($xyz 'DECIMAL' 2)</code></para>
-                            </td>
-                            <td>
-                                <para>Same as <code>#bind</code>, but also includes the "=" sign in
-                                    front of the value binding. E.g.: </para>
-                                <para><code>update ARTIST set NAME = #bind($name) where ID
-                                        #bindEqual($id)</code></para>
-                                <para>Here we took the previous example and replaced "ID =
-                                    #bind(..)" with "ID #bindEqual(..)". While it looks like a
-                                    clumsy shortcut to eliminate the equal sign, the actual reason
-                                    why this is useful is that it allows the value to be NULL. If
-                                    the value is not null, "= ?" is generated, but if it is, the
-                                    resulting chunk of the SQL would look like "IS NULL" and will be
-                                    compilant with what the DB expects.</para>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <para><code>#bindNotEqual(value)</code></para>
-                                <para><code>#bindNotEqual(value jdbcType)</code></para>
-                                <para><code>#bindNotEqual(value jdbcType</code></para>
-                                <para><code>   scale )</code></para>
-                            </td>
-                            <td>
-                                <para><code>#bindNotEqual($xyz)</code></para>
-                                <para><code>#bindNotEqual('str')</code></para>
-                                <para><code>#bindNotEqual($xyz 'VARCHAR')</code></para>
-                                <para><code>#bindNotEqual($xyz 'DECIMAL' 2)</code></para>
-                            </td>
-                            <td>This directive deals with the same issue as <code>#bindEqual</code>
-                                above, only it generates "not equal" in front of the value (or IS
-                                NOT NULL).</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <para><code>#bindObjectEqual</code></para>
-                                <para><code>(value columns idColumns)</code></para>
-                            </td>
-                            <td>
-                                <para><code>#bindObjectEqual($a 't0.ID' 'ID')</code></para>
-                                <para><code>#bindObjectEqual($a ['t0.FK1', 't0.FK2'] ['PK1',
-                                        'PK2'])</code></para>
-                            </td>
-                            <td>
-                                <para>It can be tricky to use a Persistent object (or an ObjectId)
-                                    in a binding, especially for tables with compound primary keys.
-                                    This directive helps to handle such binding. It maps columns in
-                                    the query to the names of Persistent object ID columns, extracts
-                                    ID values from the object, and generates SQL like "COL1 = ? AND
-                                    COL2 = ? ..." , binding positional parameters to ID values. It
-                                    can also correctly handle null object.</para>
-                                <para>Also notice how in the second example we are specifying a
-                                    Velocity array.</para>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <para><code>#bindObjectNotEqual</code></para>
-                                <para><code>(value columns idColumns)</code></para>
-                            </td>
-                            <td>
-                                <para><code>#bindObjectNotEqual($a 't0.ID' 'ID')</code></para>
-                                <para><code>#bindObjectNotEqual($a ['t0.FK1', 't0.FK2'] ['PK1',
-                                        'PK2'])</code></para>
-                            </td>
-                            <td>Same as #bindObjectEqual above, only generates "not equal" operator
-                                for value comparison (or IS NOT NULL).</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <para><code>#result(column)</code></para>
-                                <para><code>#result(column javaType)</code></para>
-                                <para><code>#result(column javaType alias)</code></para>
-                            </td>
-                            <td>
-                                <para><code>#result('NAME')</code></para>
-                                <para><code>#result('DATE_OF_BIRTH' 'java.util.Date') </code></para>
-                                <para><code>#result('DOB' 'java.util.Date' 'DATE_OF_BIRTH')
-                                    </code></para>
-                            </td>
-                            <td>
-                                <para>Renders a column in SELECT clause of the query and maps it to
-                                    a key in the result DataRow. Also ensures the value read is of
-                                    the correct type. This allows to create a DataRow (and
-                                    ultimately - a persistent object) from an arbitrary
-                                    ResultSet.</para>
-                                <para>A <code>javaType</code> argument is a fully-qualified Java
-                                    class name for a given result column. For simplicity most common
-                                    Java types used in JDBC can be specified without a package.
-                                    These include all numeric types, primitives, String, SQL dates,
-                                    BigDecimal and BigInteger. So "#result('A' 'String')",
-                                    "#result('B' 'java.lang.String')" and "#result('C' 'int')" are
-                                    all valid.</para>
-                                <para><code>alias</code> argument specifies both the SQL alias of
-                                    the column and the value key in the DataRow.</para>
-                                <para>Here is a complete query example using #result:</para>
-                                <para><code>SELECT #result('ID' 'int'), #result('NAME' 'String'),
-                                        #result('DATE_OF_BIRTH' 'java.util.Date') FROM
-                                        ARTIST"</code></para>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <para><code>#chain(operator) ... #end</code></para>
-                                <para><code>#chain(operator prefix) ... #end</code></para>
-                                <para><code>#chunk() ... #end</code></para>
-                                <para><code>#chunk(param) ... #end</code></para>
-                            </td>
-                            <td>
-                                <para><code>#chain('OR' 'WHERE')  #chunk($name) NAME LIKE
-                                        #bind($name) #end" #chunk($id) ARTIST_ID > #bind($id) #end"
-                                        #end" </code></para>
-                            </td>
-                            <td>
-                                <para><code>#chain</code> and <code>#chunk</code> directives are
-                                    used for conditional inclusion of SQL code. They are often used
-                                    together with <code>#chain</code> wrapping multiple
-                                        <code>#chunks</code>.</para>
-                                <para>A chunk evaluates its parameter expression and if it is NULL
-                                    suppresses rendering of the enclosed SQL block. A chain renders
-                                    its <code>prefix</code> and its chunks joined by the
-                                        <code>operator</code>. If all the chunks are suppressed, the
-                                    chain itself is suppressed. </para>
-                                <para>This allows to work with otherwise hard to script SQL
-                                    semantics. E.g. a WHERE clause can contain multiple conditions
-                                    joined with AND or OR. Application code would like to exclude a
-                                    condition if its right-hand parameter is not present (similar to
-                                    Expression pruning discussed above). If all conditions are
-                                    excluded, the entire WHERE clause should be excluded.
-                                    chain/chunk allows to do that.</para>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table></para>
+            <para>These are the Cayenne directives used to customize SQLTemplate parsing and
+                integrate it with the JDBC layer: </para>
+            <section>
+                <title>#bind</title>
+                <para>Creates a PreparedStatement positional parameter in place of the directive,
+                    binding the value to it before statement execution. <code>#bind</code> is
+                    allowed in places where a "?" would be allowed in a PreparedStatement. And in
+                    such places it almost always makes sense to pass objects to the template via
+                    this or other forms of <code>#bind</code> instead of inserting them
+                    inline.</para>
+                <para><emphasis role="italic">Semantics:</emphasis></para>
+                <programlisting>#bind(value)
+#bind(value jdbcType)
+#bind(value jdbcType scale)</programlisting>
+                <para><emphasis role="italic">Arguments:</emphasis>
+                    <itemizedlist>
+                        <listitem>
+                            <para><code>value</code> - can either be a char constant or a variable
+                                that is resolved from the query parameters. Note that the variable
+                                can be a collection, that will be automatically expanded into a list
+                                of individual value bindings. This is useful for instance to build
+                                IN conditions. </para>
+                        </listitem>
+                        <listitem>
+                            <para><code>jdbcType</code> - is a JDBC data type of the parameter as
+                                defined in <code>java.sql.Types</code>.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>scale</code> - An optional scale of the numeric value. Same
+                                as "scale" in PreparedStatement.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>
+                    <emphasis role="italic"
+                    >Usage</emphasis>:<programlisting>#bind($xyz)
+#bind('str')
+#bind($xyz 'VARCHAR')
+#bind($xyz 'DECIMAL' 2)</programlisting></para>
+                <para><emphasis role="italic">Full
+                    example:</emphasis><programlisting>update ARTIST set NAME = #bind($name) where ID = #bind($id)</programlisting></para>
+            </section>
+            <section>
+                <title>#bindEqual</title>
+                <para>Same as #bind, but also includes the "=" sign in front of the value binding.
+                    Look at the example below - we took the #bind example and replaced "<code>ID =
+                        #bind(..)</code>" with "<code>ID #bindEqual(..)</code>". While it looks like
+                    a clumsy shortcut to eliminate the equal sign, the actual reason why this is
+                    useful is that it allows the value to be null. If the value is not null,
+                        "<code>= ?</code>" is generated, but if it is, the resulting chunk of the
+                    SQL would look like "<code>IS NULL</code>" and will be compilant with what the
+                    DB expects.</para>
+                <para><emphasis role="italic">Semantics:</emphasis></para>
+                <programlisting>#bindEqual(value)
+#bindEqual(value jdbcType)
+#bindEqual(value jdbcType scale)</programlisting>
+                <para><emphasis role="italic">Arguments: (same as #bind)</emphasis>
+                </para>
+                <para>
+                    <emphasis role="italic"
+                    >Usage</emphasis>:<programlisting>#bindEqual($xyz)
+#bindEqual('str')
+#bindEqual($xyz 'VARCHAR')
+#bindEqual($xyz 'DECIMAL' 2)</programlisting></para>
+                <para><emphasis role="italic">Full
+                    example:</emphasis><programlisting>update ARTIST set NAME = #bind($name) where ID #bindEqual($id)</programlisting></para>
+            </section>
+            <section>
+                <title>#bindNotEqual</title>
+                <para>This directive deals with the same issue as <code>#bindEqual</code> above,
+                    only it generates "not equal" in front of the value (or IS NOT NULL).</para>
+                <para><emphasis role="italic">Semantics:</emphasis></para>
+                <programlisting>#bindNotEqual(value)
+#bindNotEqual(value jdbcType)
+#bindNotEqual(value jdbcType scale)</programlisting>
+                <para><emphasis role="italic">Arguments: (same as #bind)</emphasis></para>
+                <para>
+                    <emphasis role="italic"
+                    >Usage</emphasis>:<programlisting>#bindNotEqual($xyz)
+#bindNotEqual('str')
+#bindNotEqual($xyz 'VARCHAR')
+#bindNotEqual($xyz 'DECIMAL' 2)</programlisting></para>
+                <para><emphasis role="italic">Full
+                    example:</emphasis><programlisting>update ARTIST set NAME = #bind($name) where ID #bindEqual($id)</programlisting></para>
+            </section>
+            <section>
+                <title>#bindObjectEqual</title>
+                <para>It can be tricky to use a Persistent object or an ObjectId in a binding,
+                    especially for tables with compound primary keys. This directive helps to handle
+                    such binding. It maps columns in the query to the names of Persistent object ID
+                    columns, extracts ID values from the object, and generates SQL like "COL1 = ?
+                    AND COL2 = ? ..." , binding positional parameters to ID values. It can also
+                    correctly handle null object. Also notice how we are specifying a Velocity array
+                    for multi-column PK.</para>
+                <para><emphasis role="italic">Semantics:</emphasis></para>
+                <programlisting>#bindObjectEqual(value columns idColumns)</programlisting>
+                <para><emphasis role="italic">Arguments:</emphasis>
+                    <itemizedlist>
+                        <listitem>
+                            <para><code>value</code> - must be a variable that is resolved from the
+                                query parameters to a Persistent or ObjectId.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>columns</code> - the names of the columns to generate in the
+                                SQL.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>idColumn</code> - the names of the ID columns for a given
+                                entity. Must match the order of "columns" to match against.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>
+                    <emphasis role="italic"
+                    >Usage</emphasis>:<programlisting>#bindObjectEqual($a 't0.ID' 'ID')
+#bindObjectEqual($b ['t0.FK1', 't0.FK2'] ['PK1', 'PK2'])</programlisting></para>
+                <para><emphasis role="italic">Full
+                    example:</emphasis><programlisting>String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
+SQLTemplate select = new SQLTemplate(Artist.class, sql);
+
+Artist a = ....
+select.setParameters(Collections.singletonMap("a", a)); </programlisting></para>
+            </section>
+            <section>
+                <title>#bindObjectNotEqual</title>
+                <para>Same as #bindObjectEqual above, only generates "not equal" operator for value
+                    comparison (or IS NOT NULL).</para>
+                <para><emphasis role="italic">Semantics:</emphasis></para>
+                <programlisting>#bindObjectNotEqual(value columns idColumns)</programlisting>
+                <para><emphasis role="italic">Arguments: (same as #bindObjectEqual)</emphasis>
+                </para>
+                <para>
+                    <emphasis role="italic"
+                    >Usage</emphasis>:<programlisting>#bindObjectNotEqual($a 't0.ID' 'ID')
+#bindObjectNotEqual($b ['t0.FK1', 't0.FK2'] ['PK1', 'PK2'])</programlisting></para>
+                <para><emphasis role="italic">Full
+                    example:</emphasis><programlisting>String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectNotEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
+SQLTemplate select = new SQLTemplate(Artist.class, sql);
+
+Artist a = ....
+select.setParameters(Collections.singletonMap("a", a)); </programlisting></para>
+            </section>
+            <section>
+                <title>#result</title>
+                <para>Renders a column in SELECT clause of a query and maps it to a key in the
+                    result DataRow. Also ensures the value read is of the correct type. This allows
+                    to create a DataRow (and ultimately - a persistent object) from an arbitrary
+                    ResultSet.</para>
+                <para><emphasis role="italic">Semantics:</emphasis></para>
+                <programlisting>#result(column)
+#result(column javaType)
+#result(column javaType alias)</programlisting>
+                <para><emphasis role="italic">Arguments:</emphasis>
+                    <itemizedlist>
+                        <listitem>
+                            <para><code>column</code> - the name of the column to render in SQL
+                                SELECT clause.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>javaType</code> - a fully-qualified Java class name for a
+                                given result column. For simplicity most common Java types used in
+                                JDBC can be specified without a package. These include all numeric
+                                types, primitives, String, SQL dates, BigDecimal and BigInteger. So
+                                    "<code>#result('A' 'String')</code>", "<code>#result('B'
+                                    'java.lang.String')</code>" and "<code>#result('C'
+                                'int')</code>" are all valid</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>alias</code> - specifies both the SQL alias of the column
+                                and the value key in the DataRow. If omitted, "column" value is
+                                used.</para>
+                        </listitem>
+                    </itemizedlist></para>
+                <para>
+                    <emphasis role="italic"
+                    >Usage</emphasis>:<programlisting>#result('NAME')
+#result('DATE_OF_BIRTH' 'java.util.Date') 
+#result('DOB' 'java.util.Date' 'DATE_OF_BIRTH') 
+#result('SALARY' 'float') </programlisting></para>
+                <para><emphasis role="italic">Full
+                    example:</emphasis><programlisting>SELECT #result('ID' 'int'), #result('NAME' 'String'), #result('DATE_OF_BIRTH' 'java.util.Date') FROM ARTIST</programlisting></para>
+            </section>
+            <section>
+                <title>#chain and #chunk</title>
+                
+                    <para><code>#chain</code> and <code>#chunk</code> directives are used for
+                    conditional inclusion of SQL code. They are used together with
+                        <code>#chain</code> wrapping multiple <code>#chunks</code>. A chunk
+                    evaluates its parameter expression and if it is NULL suppresses rendering of the
+                    enclosed SQL block. A chain renders its prefix and its chunks joined by the
+                    operator. If all the chunks are suppressed, the chain itself is suppressed. This
+                    allows to work with otherwise hard to script SQL semantics. E.g. a WHERE clause
+                    can contain multiple conditions joined with AND or OR. Application code would
+                    like to exclude a condition if its right-hand parameter is not present (similar
+                    to Expression pruning discussed above). If all conditions are excluded, the
+                    entire WHERE clause should be excluded. chain/chunk allows to do that.</para>
+                    <para>
+                    <emphasis role="italic"
+                    >Semantics</emphasis>:<programlisting>#chain(operator) ... #end
+#chain(operator prefix) ... #end
+#chunk() ... #end
+#chunk(param) ... #end </programlisting></para>
+                    <para><emphasis role="italic">Full
+                    example:</emphasis><programlisting>#chain('OR' 'WHERE') 
+	#chunk($name) NAME LIKE #bind($name) #end" 
+	#chunk($id) ARTIST_ID > #bind($id) #end" 
+#end" </programlisting></para>
+          
+            </section>
         </section>
     </section>
     <section xml:id="procedurequery">
