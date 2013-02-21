@@ -7,8 +7,9 @@
         <para>Prefetching is a technique that allows to bring back in one query not only the queried
             objects, but also objects related to them. In other words it is a controlled eager
             relationship resolving mechanism. Prefetching is discussed in the "Performance Tuning"
-            chapter, as it is a powerful performance optimization method. Another common application
-            of prefetching is for refreshing stale object relationships.</para>
+            chapter, as it is a powerful performance optimization method. However another common
+            application of prefetching is to refresh stale object relationships, so more generally
+            it can be viewed as a technique for managing subsets of the object graph.</para>
         <para>Prefetching example:
             <programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
 
@@ -17,8 +18,8 @@ query.addPrefetch("paintings");
 
 // query is expecuted as usual, but the resulting Artists will have
 // their paintings "inflated"
-List&lt;Artist> artists = context.performQuery(query);</programlisting>
-            All types of relationships can be preftetched - to-one, to-many, flattened. </para>
+List&lt;Artist> artists = context.performQuery(query);</programlisting>All
+            types of relationships can be preftetched - to-one, to-many, flattened. </para>
         <para>A prefetch can span multiple relationships:
             <programlisting language="java"> query.addPrefetch("paintings.gallery");</programlisting></para>
         <para>A query can have multiple
@@ -86,7 +87,7 @@ query.addPrefetch("paintings").setSemantics(
         </section>
         <section xml:id="joint-prefetch-semantics">
             <title>Joint Prefetching Semantics</title>
-            <para>Joint senantics results in a single SQL statement for root objects and any number
+            <para>Joint semantics results in a single SQL statement for root objects and any number
                 of jointly prefetched paths. Cayenne processes in memory a cartesian product of the
                 entities involved, converting it to an object tree. It uses OUTER joins to connect
                 prefetched entities.</para>
@@ -99,12 +100,120 @@ query.addPrefetch("paintings").setSemantics(
     </section>
     <section xml:id="datarows">
         <title>Data Rows</title>
+        <para>Converting result set data to Persistent objects and registering these objects in the
+            ObjectContext can be an expensive operation compareable to the time spent running the
+            query (and frequently exceeding it). Internally Cayenne builds the result as a list of
+            DataRows, that are later converted to objects. Skipping the last step and using data in
+            the form of DataRows can significantly increase performance. </para>
+        <para>DataRow is a simply a map of values keyed by their DB column name. It is a ubiqutous
+            representation of DB data used internally by Cayenne. And it can be quite usable as is
+            in the application in many cases. So performance sensitive selects should consider
+            DataRows - it saves memory and CPU cycles. All selecting queries support DataRows
+            option,
+            e.g.:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
+query.setFetchingDataRows(true);
+
+List&lt;DataRow> rows = context.performQuery(query); </programlisting><programlisting language="java">SQLTemplate query = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST");
+query.setFetchingDataRows(true);
+
+List&lt;DataRow> rows = context.performQuery(query);</programlisting></para>
+        <para>Moreover DataRows may be converted to Persistent objects later as needed. So e.g. you
+            may implement some in-memory filtering, only converting a subset of fetched
+            objects:<programlisting language="java">// you need to cast ObjectContext to DataContext to get access to 'objectFromDataRow'
+DataContext dataContext = (DataContext) context;
+
+for(DataRow row : rows) {
+    if(row.get("DATE_OF_BIRTH") != null) {
+        Artist artist = dataContext.objectFromDataRow(Artist.class, row);
+        // do something with Artist...
+        ...
+    }
+}</programlisting></para>
     </section>
     <section xml:id="iterated-queries">
         <title>Iterated Queries</title>
+        <para>While contemporary hardware may easily allow applications to fetch hundreds of
+            thousands or even millions of objects into memory, it doesn't mean this is always a good
+            idea to do so. You can optimize processing of very large result sets with two techniques
+            discussed in this and the following chapter - iterated and paginated queries. </para>
+        <para>Iterated query is not actually a special query. Any selecting query can be executed in
+            iterated mode by the DataContext (like in the previous example, a cast to DataContext is
+            needed). DataContext returns an object called <code>ResultIterator</code> that is backed
+            by an open ResultSet. Data is read from ResultIterator one row at a time until it is
+            exhausted. Data comes as a DataRows regardless of whether the orginating query was
+            configured to fetch DataRows or not. A ResultIterator must be explicitly closed to avoid
+            JDBC resource leak.</para>
+        <para>Iterated query provides constant memory performance for arbitrarily large ResultSets.
+            This is true at least on the Cayenne end, as JDBC driver may still decide to bring the
+            entire ResultSet into the JVM memory. </para>
+        <para>Here is a full
+            example:<programlisting language="java">// you need to cast ObjectContext to DataContext to get access to 'performIteratedQuery'
+DataContext dataContext = (DataContext) context;
+
+// create a regular query
+SelectQuery q = new SelectQuery(Artist.class);
+
+// ResultIterator operations all throw checked CayenneException
+// moreover 'finally' is required to close it
+try {
+
+    ResultIterator it = dataContext.performIteratedQuery(q);
+
+    try {
+        while(it.hasNextRow()) {
+            // normally we'd read a row, process its data, and throw it away
+            // this gives us constant memory performance
+            Map row = (Map) it.nextRow();
+            
+            // do something with the row...
+            ...
+        }
+    }
+    finally {
+        it.close();
+    }
+}
+catch(CayenneException e) {
+   e.printStackTrace();
+}
+</programlisting>Also
+            common sense tells us that ResultIterators should be processed and closed as soon as
+            possible to release the DB connection. E.g. storing open iterators between HTTP requests
+            and for unpredictable length of time would quickly exhaust the connection pool.</para>
     </section>
     <section xml:id="paginated-queries">
         <title>Paginated Queries</title>
+        <para>Enabling query pagination allows to load very large result sets in a Java app with
+            very little memory overhead (much smaller than even the DataRows option discussed
+            above). Moreover it is completely transparent to the application - a user gets what
+            appears to be a list of Persistent objects - there's no iterator to close or DataRows to
+            convert to objects:</para>
+        <para>
+            <programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
+query.setPageSize(50);
+
+// the fact that result is paginated is transparent
+List&lt;Artist> artists = ctxt.performQuery(query);</programlisting>
+        </para>
+        <para>Having said that, DataRows option can be combined with pagination, providing the best
+            of both
+            worlds:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
+query.setPageSize(50);
+query.setFetchingDataRows(true);
+
+List&lt;DataRow> rows = ctxt.performQuery(query);</programlisting></para>
+        <para>The way pagination works internally, it first fetches a list of IDs for the root
+            entity of the query. This is very fast and initially takes very little memory. Then when
+            an object is requested at an arbitrary index in the list, this object and adjacent
+            objects (a "page" of objects that is determined by the query pageSize parameter) are
+            fetched together by ID. Subsequent requests to the objects of this "page" are served
+            from memory.</para>
+        <para>An obvious limitation of pagination is that if you eventually access all objects in
+            the list, the memory use will end up being the same as with no pagination. However it is
+            still a very useful approach. With some lists (e.g. multi-page search results) only a
+            few top objects are normally accessed. At the same time pagination allows to estimate
+            the full list size without fetching all the objects. And again - it is completely
+            transparent and looks like a normal query.</para>
     </section>
     <section xml:id="caching-and-fresh-data">
         <title>Caching and Fresh Data</title>
@@ -117,5 +226,49 @@ query.addPrefetch("paintings").setSemantics(
     </section>
     <section xml:id="turning-off-synchronization-of-objectcontexts">
         <title>Turning off Synchronization of ObjectContexts</title>
+        <para>By default when a single ObjectContext commits its changes, all other contexts in the
+            same runtime receive an event that contains all the committed changes. This allows them
+            to update their cached object state to match the latest committed data. There are
+            however many problems with this ostensibly helpful feature. In short - it works well in
+            environments with few contexts and in unclustered scenarios, such as single user desktop
+            applications, or simple webapps with only a few users. More specifically:<itemizedlist>
+                <listitem>
+                    <para>The performance of synchronization is (probably worse than) O(N) where N
+                        is the number of peer ObjectContexts in the system. In a typical webapp N
+                        can be quite large. Besides for any given context, due to locking on
+                        synchronization, context own performance will depend not only on the queries
+                        that it runs, but also on external events that it does not control. This is
+                        unacceptable in most situations. </para>
+                </listitem>
+                <listitem>
+                    <para>Commit events are untargeted - even contexts that do not hold a given
+                        updated object will receive the full event that they will have to
+                        process.</para>
+                </listitem>
+                <listitem>
+                    <para>Clustering between JVMs doesn't scale - apps with large volumes of commits
+                        will quickly saturate the network with events, while most of those will be
+                        thrown away on the receiving end as mentioned above.</para>
+                </listitem>
+                <listitem>
+                    <para>Some contexts may not want to be refreshed. A refresh in the middle of an
+                        operation may lead to unpredictable results. </para>
+                </listitem>
+                <listitem>
+                    <para>Synchronization will interfere with optimistic locking. </para>
+                </listitem>
+            </itemizedlist>So we've made a good case for disabling synchronization in most webapps.
+            To do that, set to "false" the following DI property -
+                <code>Constants.SERVER_CONTEXTS_SYNC_PROPERTY</code>, using one of the standard
+            Cayenne DI approaches. E.g. from command
+            line:<programlisting language="java">java -Dcayenne.server.contexts_sync_strategy=false</programlisting>Or
+            by changing the standard properties Map in a custom extensions
+            module:<programlisting language="java">public class MyModule implements Module {
+
+    @Override
+    public void configure(Binder binder) {
+        binder.bindMap(Constants.PROPERTIES_MAP).put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "false");
+    }
+}</programlisting></para>
     </section>
 </chapter>

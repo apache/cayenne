@@ -184,7 +184,7 @@ ServerRuntime runtime =
                 Supported property names are listed in "Appendix A".</para>
             <para>There are two ways to set service properties. The most obvious one is to pass it
                 to the JVM with -D flag on startup.
-                E.g.<programlisting>java -Dorg.apache.cayenne.sync_contexts=false ...</programlisting></para>
+                E.g.<programlisting>java -Dcayenne.server.contexts_sync_strategy=false ...</programlisting></para>
             <para>A second one is to contribute a property to
                     <code>org.apache.cayenne.configuration.DefaultRuntimeProperties.properties
                 </code>map (see the next section on how to do that). This map contains the default
