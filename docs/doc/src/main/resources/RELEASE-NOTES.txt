@@ -45,6 +45,7 @@ CAY-1785 SelectQuery<T> for DataRows
 Bug Fixes:
 
 CAY-957 Deadlock in nested contexts
+CAY-1522 EJBQL query don't support quotes
 CAY-1677 Modeler: text fields discard input unless you press enter
 CAY-1701 Modeler cannot undo pasting of obj (db) entity
 CAY-1708 Modeler error when pasting datamap with EJBQL query
