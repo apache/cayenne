@@ -44,16 +44,17 @@ public abstract class BatchQueryBuilder {
     }
 
     /**
-     * Translates BatchQuery into an SQL string formatted to use in a PreparedStatement.
+     * Translates BatchQuery into an SQL string formatted to use in a
+     * PreparedStatement.
      * 
      * @throws IOException
      */
     public abstract String createSqlString(BatchQuery batch) throws IOException;
 
     /**
-     * Appends the name of the column to the query buffer. Subclasses use this method to
-     * append column names in the WHERE clause, i.e. for the columns that are not being
-     * updated.
+     * Appends the name of the column to the query buffer. Subclasses use this
+     * method to append column names in the WHERE clause, i.e. for the columns
+     * that are not being updated.
      */
     protected void appendDbAttribute(StringBuffer buf, DbAttribute dbAttribute) {
 
@@ -62,14 +63,7 @@ public abstract class BatchQueryBuilder {
         if (trim) {
             buf.append(trimFunction).append('(');
         }
-        boolean status;
-        if (dbAttribute.getEntity().getDataMap() != null
-                && dbAttribute.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
+
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
         buf.append(strategy.quotedName(dbAttribute));
@@ -96,12 +90,12 @@ public abstract class BatchQueryBuilder {
     }
 
     /**
-     * Binds parameters for the current batch iteration to the PreparedStatement.
+     * Binds parameters for the current batch iteration to the
+     * PreparedStatement.
      * 
      * @since 1.2
      */
-    public void bindParameters(PreparedStatement statement, BatchQuery query)
-            throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
 
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int attributeCount = dbAttributes.size();
@@ -109,19 +103,14 @@ public abstract class BatchQueryBuilder {
         for (int i = 0; i < attributeCount; i++) {
             Object value = query.getValue(i);
             DbAttribute attribute = dbAttributes.get(i);
-            adapter.bindParameter(
-                    statement,
-                    value,
-                    i + 1,
-                    attribute.getType(),
-                    attribute.getScale());
+            adapter.bindParameter(statement, value, i + 1, attribute.getType(), attribute.getScale());
 
         }
     }
 
     /**
-     * Returns a list of values for the current batch iteration. Used primarily for
-     * logging.
+     * Returns a list of values for the current batch iteration. Used primarily
+     * for logging.
      * 
      * @since 1.2
      */
