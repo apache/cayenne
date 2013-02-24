@@ -49,9 +49,8 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
         if (itemCount++ > 0) {
             context.append(',');
         }
-        
-        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(
-                context));
+
+        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(context));
         return false;
     }
 
@@ -66,41 +65,38 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
 
             @Override
             protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
-                throw new EJBQLException(
-                        "Can't GROUP BY on multi-column paths or objects");
+                throw new EJBQLException("Can't GROUP BY on multi-column paths or objects");
             }
-            
+
             @Override
             public boolean visitIdentificationVariable(EJBQLExpression expression) {
 
                 String idVariableAbsolutePath = fullPath + "." + expression.getText();
                 ClassDescriptor descriptor = context.getEntityDescriptor(idVariableAbsolutePath);
                 if (descriptor != null) {
-                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath,
-                            context.getQuotingSupport().generateTableName(descriptor.getEntity().getDbEntity()));
+                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath, context.getQuotingStrategy()
+                            .quotedFullyQualifiedName(descriptor.getEntity().getDbEntity()));
                 }
 
                 this.lastPathComponent = expression.getText();
                 this.fullPath = fullPath + '.' + lastPathComponent;
-                
+
                 return true;
             }
-            
-            
+
             @Override
             protected void processTerminatingRelationship(ObjRelationship relationship) {
 
-                Collection<DbAttribute> dbAttr = ((ObjEntity) relationship
-                        .getTargetEntity()).getDbEntity().getAttributes();
+                Collection<DbAttribute> dbAttr = ((ObjEntity) relationship.getTargetEntity()).getDbEntity()
+                        .getAttributes();
 
                 DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
                 DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
 
                 Iterator<DbAttribute> it = dbAttr.iterator();
-                
 
-                String alias = this.lastAlias != null ? lastAlias : context
-                        .getTableAlias(idPath, context.getQuotingSupport().generateTableName(table));
+                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
+                        .getQuotingStrategy().quotedFullyQualifiedName(table));
 
                 boolean first = true;
                 while (it.hasNext()) {
@@ -108,17 +104,17 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                     context.append(!first ? ", " : " ");
 
                     DbAttribute dbAttribute = it.next();
-                    context.append(alias).append('.').append(context.getQuotingSupport().generateColumnName(dbAttribute));
+                    context.append(alias).append('.').append(context.getQuotingStrategy().quotedName(dbAttribute));
 
                     first = false;
                 }
 
             }
-            
+
         };
-       
+
         expression.visit(childVisitor);
-        
+
         return false;
     }
 }

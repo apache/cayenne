@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.dba.QuotingSupport;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -76,8 +76,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(
-                context));
+        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(context));
         return false;
     }
 
@@ -90,15 +89,15 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitBetween(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
-            case 0:
-                if (expression.isNegated()) {
-                    context.append(" NOT");
-                }
-                context.append(" BETWEEN");
-                break;
-            case 1:
-                context.append(" AND");
-                break;
+        case 0:
+            if (expression.isNegated()) {
+                context.append(" NOT");
+            }
+            context.append(" BETWEEN");
+            break;
+        case 1:
+            context.append(" AND");
+            break;
         }
 
         return true;
@@ -113,7 +112,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitIsEmpty(EJBQLExpression expression) {
 
-        // handle as "path is [not] null" (an alt. way would've been a correlated subquery
+        // handle as "path is [not] null" (an alt. way would've been a
+        // correlated subquery
         // on the target entity)...
 
         if (expression.isNegated()) {
@@ -136,34 +136,31 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         // run as a correlated subquery.
         // see "visitMemberOf" for correlated subquery logic
-        // also note that the code below is mostly copy/paste from MEMBER OF method ...
-        // maybe there's enough commonality in building correlated subqueries to make it
+        // also note that the code below is mostly copy/paste from MEMBER OF
+        // method ...
+        // maybe there's enough commonality in building correlated subqueries to
+        // make it
         // reusable???
 
         if (expression.getChildrenCount() != 1) {
-            throw new EJBQLException("SIZE must have exactly one child, got: "
-                    + expression.getChildrenCount());
+            throw new EJBQLException("SIZE must have exactly one child, got: " + expression.getChildrenCount());
         }
 
         if (!(expression.getChild(0) instanceof EJBQLPath)) {
-            throw new EJBQLException(
-                    "First child of SIZE must be a collection path, got: "
-                            + expression.getChild(1));
+            throw new EJBQLException("First child of SIZE must be a collection path, got: " + expression.getChild(1));
         }
+
+        QuotingStrategy quoter = context.getQuotingStrategy();
 
         EJBQLPath path = (EJBQLPath) expression.getChild(0);
 
         String id = path.getAbsolutePath();
 
         String correlatedEntityId = path.getId();
-        ClassDescriptor correlatedEntityDescriptor = context
-                .getEntityDescriptor(correlatedEntityId);
-        String correlatedTableName = context.getQuotingSupport().generateTableName(correlatedEntityDescriptor
-                .getEntity()
+        ClassDescriptor correlatedEntityDescriptor = context.getEntityDescriptor(correlatedEntityId);
+        String correlatedTableName = quoter.quotedFullyQualifiedName(correlatedEntityDescriptor.getEntity()
                 .getDbEntity());
-        String correlatedTableAlias = context.getTableAlias(
-                correlatedEntityId,
-                correlatedTableName);
+        String correlatedTableAlias = context.getTableAlias(correlatedEntityId, correlatedTableName);
 
         String subqueryId = context.createIdAlias(id);
         ClassDescriptor targetDescriptor = context.getEntityDescriptor(subqueryId);
@@ -174,38 +171,31 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         context.append(" EXISTS (SELECT 1 FROM ");
 
-        String subqueryTableName = context.getQuotingSupport().generateTableName(targetDescriptor
-                .getEntity()
-                .getDbEntity());
+        String subqueryTableName = quoter.quotedFullyQualifiedName(targetDescriptor.getEntity().getDbEntity());
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
-        ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor
-                .getEntity()
-                .getRelationship(path.getRelativePath());
+        ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor.getEntity().getRelationship(
+                path.getRelativePath());
 
         if (relationship.getDbRelationshipPath().contains(".")) {
-            // if the DbRelationshipPath contains '.', the relationship is flattened
-            subqueryRootAlias = processFlattenedRelationShip(
-                    subqueryRootAlias,
-                    relationship);
-        }
-        else {
-            // not using "AS" to separate table name and alias name - OpenBase doesn't
+            // if the DbRelationshipPath contains '.', the relationship is
+            // flattened
+            subqueryRootAlias = processFlattenedRelationShip(subqueryRootAlias, relationship);
+        } else {
+            // not using "AS" to separate table name and alias name - OpenBase
+            // doesn't
             // support "AS", and the rest of the databases do not care
             context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
 
         }
         context.append(" WHERE");
 
-        DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
-                new EJBQLTableId(id)).get(0);
+        DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(new EJBQLTableId(id)).get(0);
         Iterator<DbJoin> it = correlatedJoinRelationship.getJoins().iterator();
         while (it.hasNext()) {
             DbJoin join = it.next();
-            context.append(' ').append(subqueryRootAlias).append('.').append(
-                    join.getTargetName()).append(" = ");
-            context.append(correlatedTableAlias).append('.')
-                    .append(context.getQuotingSupport().generateColumnName(join.getSource()));
+            context.append(' ').append(subqueryRootAlias).append('.').append(join.getTargetName()).append(" = ");
+            context.append(correlatedTableAlias).append('.').append(quoter.quotedSourceName(join));
 
             if (it.hasNext()) {
                 context.append(" AND");
@@ -223,22 +213,24 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         // create a correlated subquery, using the following transformation:
 
         // * Subquery Root is always an entity that is a target of relationship
-        // * A subquery has a join based on reverse relationship, pointing to the
+        // * A subquery has a join based on reverse relationship, pointing to
+        // the
         // original ID.
-        // * Join must be transled as a part of the subquery WHERE clause instead of
+        // * Join must be translated as a part of the subquery WHERE clause
+        // instead of
         // FROM.
         // * A condition is added: subquery_root_id = LHS_memberof
 
         if (expression.getChildrenCount() != 2) {
-            throw new EJBQLException("MEMBER OF must have exactly two children, got: "
-                    + expression.getChildrenCount());
+            throw new EJBQLException("MEMBER OF must have exactly two children, got: " + expression.getChildrenCount());
         }
 
         if (!(expression.getChild(1) instanceof EJBQLPath)) {
-            throw new EJBQLException(
-                    "Second child of the MEMBER OF must be a collection path, got: "
-                            + expression.getChild(1));
+            throw new EJBQLException("Second child of the MEMBER OF must be a collection path, got: "
+                    + expression.getChild(1));
         }
+
+        QuotingStrategy quoter = context.getQuotingStrategy();
 
         EJBQLPath path = (EJBQLPath) expression.getChild(1);
 
@@ -247,14 +239,10 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         String id = path.getAbsolutePath();
 
         String correlatedEntityId = path.getId();
-        ClassDescriptor correlatedEntityDescriptor = context
-                .getEntityDescriptor(correlatedEntityId);
-        String correlatedTableName = context.getQuotingSupport().generateTableName(correlatedEntityDescriptor
-                .getEntity()
+        ClassDescriptor correlatedEntityDescriptor = context.getEntityDescriptor(correlatedEntityId);
+        String correlatedTableName = quoter.quotedFullyQualifiedName(correlatedEntityDescriptor.getEntity()
                 .getDbEntity());
-        String correlatedTableAlias = context.getTableAlias(
-                correlatedEntityId,
-                correlatedTableName);
+        String correlatedTableAlias = context.getTableAlias(correlatedEntityId, correlatedTableName);
 
         String subqueryId = context.createIdAlias(id);
         ClassDescriptor targetDescriptor = context.getEntityDescriptor(subqueryId);
@@ -265,23 +253,19 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         context.append(" EXISTS (SELECT 1 FROM ");
 
-        String subqueryTableName = context.getQuotingSupport().generateTableName(targetDescriptor
-                .getEntity()
-                .getDbEntity());
+        String subqueryTableName = quoter.quotedFullyQualifiedName(targetDescriptor.getEntity().getDbEntity());
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
-        ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor
-                .getEntity()
-                .getRelationship(path.getRelativePath());
+        ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor.getEntity().getRelationship(
+                path.getRelativePath());
 
         if (relationship.getDbRelationshipPath().contains(".")) {
-            // if the DbRelationshipPath contains '.', the relationship is flattened
-            subqueryRootAlias = processFlattenedRelationShip(
-                    subqueryRootAlias,
-                    relationship);
-        }
-        else {
-            // not using "AS" to separate table name and alias name - OpenBase doesn't
+            // if the DbRelationshipPath contains '.', the relationship is
+            // flattened
+            subqueryRootAlias = processFlattenedRelationShip(subqueryRootAlias, relationship);
+        } else {
+            // not using "AS" to separate table name and alias name - OpenBase
+            // doesn't
             // support "AS", and the rest of the databases do not care
             context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
 
@@ -289,14 +273,11 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         context.append(" WHERE");
 
-        DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
-                new EJBQLTableId(id)).get(0);
+        DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(new EJBQLTableId(id)).get(0);
 
-        QuotingSupport quotingSupport = context.getQuotingSupport();
         for (DbJoin join : correlatedJoinRelationship.getJoins()) {
-            context.append(' ').append(subqueryRootAlias).append('.').append(
-                    join.getTargetName()).append(" = ");
-            context.append(correlatedTableAlias).append('.').append(quotingSupport.generateColumnName(join.getSource()));
+            context.append(' ').append(subqueryRootAlias).append('.').append(join.getTargetName()).append(" = ");
+            context.append(correlatedTableAlias).append('.').append(quoter.quotedSourceName(join));
             context.append(" AND");
         }
 
@@ -313,37 +294,32 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
-    private String processFlattenedRelationShip(
-            String subqueryRootAlias,
-            ObjRelationship relationship) {
+    private String processFlattenedRelationShip(String subqueryRootAlias, ObjRelationship relationship) {
+
+        QuotingStrategy quoter = context.getQuotingStrategy();
+
         List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-        // reverse order to get the nearest to the correlated of the direct relation
+        // reverse order to get the nearest to the correlated of the direct
+        // relation
         for (int i = dbRelationships.size() - 1; i > 0; i--) {
             DbRelationship dbRelationship = dbRelationships.get(i);
-            String subqueryTargetTableName = context.getQuotingSupport().generateTableName(
-                    (DbEntity) dbRelationship.getTargetEntity());
+            String subqueryTargetTableName = quoter.quotedFullyQualifiedName((DbEntity) dbRelationship
+                    .getTargetEntity());
             String subqueryTargetAlias;
             if (i == dbRelationships.size() - 1) {
                 subqueryTargetAlias = subqueryRootAlias;
-                context.append(subqueryTargetTableName).append(' ').append(
-                        subqueryTargetAlias);
-            }
-            else {
-                subqueryTargetAlias = context.getTableAlias(
-                        subqueryTargetTableName,
-                        subqueryTargetTableName);
+                context.append(subqueryTargetTableName).append(' ').append(subqueryTargetAlias);
+            } else {
+                subqueryTargetAlias = context.getTableAlias(subqueryTargetTableName, subqueryTargetTableName);
             }
 
             context.append(" JOIN ");
 
-            String subquerySourceTableName = context.getQuotingSupport().generateTableName(
-                    (DbEntity) dbRelationship.getSourceEntity());
-            String subquerySourceAlias = context.getTableAlias(
-                    subquerySourceTableName,
-                    subquerySourceTableName);
+            String subquerySourceTableName = quoter.quotedFullyQualifiedName((DbEntity) dbRelationship
+                    .getSourceEntity());
+            String subquerySourceAlias = context.getTableAlias(subquerySourceTableName, subquerySourceTableName);
 
-            context.append(subquerySourceTableName).append(' ').append(
-                    subquerySourceAlias);
+            context.append(subquerySourceTableName).append(' ').append(subquerySourceAlias);
 
             context.append(" ON (");
 
@@ -351,10 +327,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             Iterator<DbJoin> it = joins.iterator();
             while (it.hasNext()) {
                 DbJoin join = it.next();
-                context.append(' ').append(subqueryTargetAlias).append('.').append(
-                        join.getTargetName()).append(" = ");
-                context.append(subquerySourceAlias).append('.').append(
-                        join.getSourceName());
+                context.append(' ').append(subqueryTargetAlias).append('.').append(join.getTargetName()).append(" = ");
+                context.append(subquerySourceAlias).append('.').append(join.getSourceName());
                 if (it.hasNext()) {
                     context.append(" AND");
                 }
@@ -383,30 +357,30 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         visitConditional((AggregateConditionNode) expression, " OR", finishedChildIndex);
         return true;
     }
-    
+
     /**
-     * Checks expression for containing null input parameter.
-     * For that, we'll append IS NULL or IS NOT NULL instead of =null or <>null
-     * @return whether replacement was done and there's no need for normal expression processing
+     * Checks expression for containing null input parameter. For that, we'll
+     * append IS NULL or IS NOT NULL instead of =null or <>null
+     * 
+     * @return whether replacement was done and there's no need for normal
+     *         expression processing
      */
     protected boolean checkNullParameter(EJBQLExpression expression, String toAppend) {
         if (expression.getChildrenCount() == 2) {
             // We rewrite expression "parameter = :x" where x=null
             // as "parameter IS NULL"
-            // BUT in such as ":x = parameter" (where x=null) we don't do anything
+            // BUT in such as ":x = parameter" (where x=null) we don't do
+            // anything
             // as a result it can be unsupported in some DB
             if (expression.getChild(1) instanceof EJBQLNamedInputParameter) {
-                EJBQLNamedInputParameter par = (EJBQLNamedInputParameter) expression
-                        .getChild(1);
+                EJBQLNamedInputParameter par = (EJBQLNamedInputParameter) expression.getChild(1);
                 if (context.namedParameters.containsKey(par.getText())
                         && context.namedParameters.get(par.getText()) == null) {
                     context.append(toAppend);
                     return true;
                 }
-            }
-            else if (expression.getChild(1) instanceof EJBQLPositionalInputParameter) {
-                EJBQLPositionalInputParameter par = (EJBQLPositionalInputParameter) expression
-                        .getChild(1);
+            } else if (expression.getChild(1) instanceof EJBQLPositionalInputParameter) {
+                EJBQLPositionalInputParameter par = (EJBQLPositionalInputParameter) expression.getChild(1);
                 if (context.positionalParameters.containsKey(par.getPosition())
                         && context.positionalParameters.get(par.getPosition()) == null) {
                     context.append(toAppend);
@@ -420,45 +394,46 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitEquals(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
-            case 0:
-                if (checkNullParameter(expression, " IS NULL")) {
-                    return false;
-                }
-                context.append(" =");
-                break;
-            case 1:
-                // check multicolumn match condition and undo op insertion and append it
-                // from scratch if needed
-                if (multiColumnOperands != null) {
+        case 0:
+            if (checkNullParameter(expression, " IS NULL")) {
+                return false;
+            }
+            context.append(" =");
+            break;
+        case 1:
+            // check multicolumn match condition and undo op insertion and
+            // append it
+            // from scratch if needed
+            if (multiColumnOperands != null) {
 
-                    if (multiColumnOperands.size() != 2) {
-                        throw new EJBQLException(
-                                "Invalid multi-column equals expression. Expected 2 multi-column operands, got "
-                                        + multiColumnOperands.size());
-                    }
-
-                    context.trim(2);
-
-                    EJBQLMultiColumnOperand lhs = multiColumnOperands.get(0);
-                    EJBQLMultiColumnOperand rhs = multiColumnOperands.get(1);
-
-                    Iterator<?> it = lhs.getKeys().iterator();
-                    while (it.hasNext()) {
-                        Object key = it.next();
-
-                        lhs.appendValue(key);
-                        context.append(" =");
-                        rhs.appendValue(key);
-
-                        if (it.hasNext()) {
-                            context.append(" AND");
-                        }
-                    }
-
-                    multiColumnOperands = null;
+                if (multiColumnOperands.size() != 2) {
+                    throw new EJBQLException(
+                            "Invalid multi-column equals expression. Expected 2 multi-column operands, got "
+                                    + multiColumnOperands.size());
                 }
 
-                break;
+                context.trim(2);
+
+                EJBQLMultiColumnOperand lhs = multiColumnOperands.get(0);
+                EJBQLMultiColumnOperand rhs = multiColumnOperands.get(1);
+
+                Iterator<?> it = lhs.getKeys().iterator();
+                while (it.hasNext()) {
+                    Object key = it.next();
+
+                    lhs.appendValue(key);
+                    context.append(" =");
+                    rhs.appendValue(key);
+
+                    if (it.hasNext()) {
+                        context.append(" AND");
+                    }
+                }
+
+                multiColumnOperands = null;
+            }
+
+            break;
         }
 
         return true;
@@ -480,45 +455,46 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitNotEquals(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
-            case 0:
-                if (checkNullParameter(expression, " IS NOT NULL")) {
-                    return false;
-                }
-                context.append(" <>");
-                break;
-            case 1:
-                // check multicolumn match condition and undo op insertion and append it
-                // from scratch if needed
-                if (multiColumnOperands != null) {
+        case 0:
+            if (checkNullParameter(expression, " IS NOT NULL")) {
+                return false;
+            }
+            context.append(" <>");
+            break;
+        case 1:
+            // check multicolumn match condition and undo op insertion and
+            // append it
+            // from scratch if needed
+            if (multiColumnOperands != null) {
 
-                    if (multiColumnOperands.size() != 2) {
-                        throw new EJBQLException(
-                                "Invalid multi-column equals expression. Expected 2 multi-column operands, got "
-                                        + multiColumnOperands.size());
-                    }
-
-                    context.trim(3);
-
-                    EJBQLMultiColumnOperand lhs = multiColumnOperands.get(0);
-                    EJBQLMultiColumnOperand rhs = multiColumnOperands.get(1);
-
-                    Iterator<?> it = lhs.getKeys().iterator();
-                    while (it.hasNext()) {
-                        Object key = it.next();
-
-                        lhs.appendValue(key);
-                        context.append(" <>");
-                        rhs.appendValue(key);
-
-                        if (it.hasNext()) {
-                            context.append(" OR");
-                        }
-                    }
-
-                    multiColumnOperands = null;
+                if (multiColumnOperands.size() != 2) {
+                    throw new EJBQLException(
+                            "Invalid multi-column equals expression. Expected 2 multi-column operands, got "
+                                    + multiColumnOperands.size());
                 }
 
-                break;
+                context.trim(3);
+
+                EJBQLMultiColumnOperand lhs = multiColumnOperands.get(0);
+                EJBQLMultiColumnOperand rhs = multiColumnOperands.get(1);
+
+                Iterator<?> it = lhs.getKeys().iterator();
+                while (it.hasNext()) {
+                    Object key = it.next();
+
+                    lhs.appendValue(key);
+                    context.append(" <>");
+                    rhs.appendValue(key);
+
+                    if (it.hasNext()) {
+                        context.append(" OR");
+                    }
+                }
+
+                multiColumnOperands = null;
+            }
+
+            break;
         }
         return true;
     }
@@ -565,7 +541,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             if (checkNullParameter(expression, " IS NULL")) {
                 return false;
             }
-            
+
             if (expression.isNegated()) {
                 context.append(" NOT");
             }
@@ -583,20 +559,18 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             }
             context.append(" IN");
 
-            // a cosmetic hack for preventing extra pair of parenthesis from being
+            // a cosmetic hack for preventing extra pair of parenthesis from
+            // being
             // appended in 'visitSubselect'
-            if (expression.getChildrenCount() == 2
-                    && expression.getChild(1) instanceof EJBQLSubselect) {
+            if (expression.getChildrenCount() == 2 && expression.getChild(1) instanceof EJBQLSubselect) {
                 visitSubselect(expression.getChild(1));
                 return false;
             }
 
             context.append(" (");
-        }
-        else if (finishedChildIndex == expression.getChildrenCount() - 1) {
+        } else if (finishedChildIndex == expression.getChildrenCount() - 1) {
             context.append(")");
-        }
-        else if (finishedChildIndex > 0) {
+        } else if (finishedChildIndex > 0) {
             context.append(',');
         }
 
@@ -623,8 +597,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
      */
     boolean needBracket(AggregateConditionNode e) {
         return (e.jjtGetParent() instanceof AggregateConditionNode)
-                && e.getPriority() > ((AggregateConditionNode) e.jjtGetParent())
-                        .getPriority();
+                && e.getPriority() > ((AggregateConditionNode) e.jjtGetParent()).getPriority();
     }
 
     protected void afterChild(EJBQLExpression e, String text, int childIndex) {
@@ -641,22 +614,20 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         ClassDescriptor descriptor = context.getEntityDescriptor(expression.getText());
         if (descriptor == null) {
-            throw new EJBQLException("Invalid identification variable: "
-                    + expression.getText());
+            throw new EJBQLException("Invalid identification variable: " + expression.getText());
         }
 
         DbEntity table = descriptor.getEntity().getDbEntity();
-        String alias = context.getTableAlias(expression.getText(), context.getQuotingSupport().generateTableName(table));
+        String alias = context
+                .getTableAlias(expression.getText(), context.getQuotingStrategy().quotedFullyQualifiedName(table));
 
         Collection<DbAttribute> pks = table.getPrimaryKeys();
 
         if (pks.size() == 1) {
             DbAttribute pk = pks.iterator().next();
-            context.append(' ').append(alias).append('.').append(context.getQuotingSupport().generateColumnName(pk));
-        }
-        else {
-            throw new EJBQLException(
-                    "Multi-column PK to-many matches are not yet supported.");
+            context.append(' ').append(alias).append('.').append(context.getQuotingStrategy().quotedName(pk));
+        } else {
+            throw new EJBQLException("Multi-column PK to-many matches are not yet supported.");
         }
         return false;
     }
@@ -690,16 +661,14 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitIntegerLiteral(EJBQLIntegerLiteral expression) {
         if (expression.getText() == null) {
             context.append("null");
-        }
-        else {
+        } else {
 
             String text = expression.getText();
 
             if (expression.isNegative() && text != null) {
                 if (text.startsWith("-")) {
                     text = text.substring(1);
-                }
-                else {
+                } else {
                     text = "-" + text;
                 }
             }
@@ -708,8 +677,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
             try {
                 value = new Integer(text);
-            }
-            catch (NumberFormatException nfex) {
+            } catch (NumberFormatException nfex) {
                 throw new EJBQLException("Invalid integer: " + expression.getText());
             }
 
@@ -723,16 +691,14 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitDecimalLiteral(EJBQLDecimalLiteral expression) {
         if (expression.getText() == null) {
             context.append("null");
-        }
-        else {
+        } else {
 
             String text = expression.getText();
 
             if (expression.isNegative() && text != null) {
                 if (text.startsWith("-")) {
                     text = text.substring(1);
-                }
-                else {
+                } else {
                     text = "-" + text;
                 }
             }
@@ -741,8 +707,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
             try {
                 value = new BigDecimal(text);
-            }
-            catch (NumberFormatException nfex) {
+            } catch (NumberFormatException nfex) {
                 throw new EJBQLException("Invalid decimal: " + expression.getText());
             }
 
@@ -780,8 +745,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitBooleanLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
-        }
-        else {
+        } else {
             Object value = Boolean.valueOf(expression.getText());
             String var = context.bindParameter(value);
             context.append(" #bind($").append(var).append(" 'BOOLEAN')");
@@ -794,9 +758,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitStringLiteral(EJBQLExpression expression) {
         if (expression.getText() == null) {
             context.append("null");
-        }
-        else {
-            // note that String Literal text is already wrapped in single quotes, with
+        } else {
+            // note that String Literal text is already wrapped in single
+            // quotes, with
             // quotes that are part of the string escaped.
             context.append(" #bind(").append(expression.getText()).append(" 'VARCHAR')");
         }
@@ -818,38 +782,31 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         Map<?, ?> map = null;
         if (object instanceof Persistent) {
             map = ((Persistent) object).getObjectId().getIdSnapshot();
-        }
-        else if (object instanceof ObjectId) {
+        } else if (object instanceof ObjectId) {
             map = ((ObjectId) object).getIdSnapshot();
-        }
-        else if (object instanceof Map) {
+        } else if (object instanceof Map) {
             map = (Map<?, ?>) object;
         }
 
         if (map != null) {
             if (map.size() == 1) {
                 context.rebindParameter(boundName, map.values().iterator().next());
-            }
-            else {
-                addMultiColumnOperand(EJBQLMultiColumnOperand.getObjectOperand(
-                        context,
-                        map));
+            } else {
+                addMultiColumnOperand(EJBQLMultiColumnOperand.getObjectOperand(context, map));
                 return;
             }
         }
 
         if (object != null) {
             context.append(" #bind($").append(boundName).append(")");
-        }
-        else {
+        } else {
 
             String type = null;
             Node parent = ((SimpleNode) expression).jjtGetParent();
 
             context.pushMarker("@processParameter", true);
 
-            EJBQLPathAnaliserTranslator translator = new EJBQLPathAnaliserTranslator(
-                    context);
+            EJBQLPathAnaliserTranslator translator = new EJBQLPathAnaliserTranslator(context);
             parent.visit(translator);
             translator.visitPath(parent, parent.getChildrenCount());
 
@@ -864,12 +821,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
                 PropertyDescriptor property = descriptor.getProperty(pathChunk);
                 if (property instanceof AttributeProperty) {
-                    String atrType = ((AttributeProperty) property)
-                            .getAttribute()
-                            .getType();
+                    String atrType = ((AttributeProperty) property).getAttribute().getType();
 
-                    type = TypesMapping.getSqlNameByType(TypesMapping
-                            .getSqlTypeByJava(atrType));
+                    type = TypesMapping.getSqlNameByType(TypesMapping.getSqlTypeByJava(atrType));
                 }
             }
             context.popMarker();
@@ -877,12 +831,17 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             if (type == null) {
                 type = "VARCHAR";
             }
-            // this is a hack to prevent execptions on DB's like Derby for expressions
-            // "X = NULL". The 'VARCHAR' parameter is totally bogus, but seems to work on
-            // all tested DB's... Also note what JPA spec, chapter 4.11 says: "Comparison
-            // or arithmetic operations with a NULL value always yield an unknown value."
+            // this is a hack to prevent execptions on DB's like Derby for
+            // expressions
+            // "X = NULL". The 'VARCHAR' parameter is totally bogus, but seems
+            // to work on
+            // all tested DB's... Also note what JPA spec, chapter 4.11 says:
+            // "Comparison
+            // or arithmetic operations with a NULL value always yield an
+            // unknown value."
 
-            // TODO: andrus 6/28/2007 Ideally we should track the type of the current
+            // TODO: andrus 6/28/2007 Ideally we should track the type of the
+            // current
             // expression to provide a meaningful type.
 
             context.append(" #bind($").append(boundName).append(" '" + type + "')");
@@ -893,16 +852,16 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitAdd(EJBQLExpression expression, int finishedChildIndex) {
 
         switch (finishedChildIndex) {
-            case -1:
-                context.append(" (");
-                break;
-            case 0:
-                context.append(" +");
-                break;
+        case -1:
+            context.append(" (");
+            break;
+        case 0:
+            context.append(" +");
+            break;
 
-            case 1:
-                context.append(")");
-                break;
+        case 1:
+            context.append(")");
+            break;
         }
 
         return true;
@@ -912,16 +871,16 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitSubtract(EJBQLExpression expression, int finishedChildIndex) {
 
         switch (finishedChildIndex) {
-            case -1:
-                context.append(" (");
-                break;
-            case 0:
-                context.append(" -");
-                break;
+        case -1:
+            context.append(" (");
+            break;
+        case 0:
+            context.append(" -");
+            break;
 
-            case 1:
-                context.append(")");
-                break;
+        case 1:
+            context.append(")");
+            break;
         }
 
         return true;
@@ -930,16 +889,16 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitMultiply(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
-            case -1:
-                context.append(" (");
-                break;
-            case 0:
-                context.append(" *");
-                break;
+        case -1:
+            context.append(" (");
+            break;
+        case 0:
+            context.append(" *");
+            break;
 
-            case 1:
-                context.append(")");
-                break;
+        case 1:
+            context.append(")");
+            break;
         }
 
         return true;
@@ -948,16 +907,16 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitDivide(EJBQLExpression expression, int finishedChildIndex) {
         switch (finishedChildIndex) {
-            case -1:
-                context.append(" (");
-                break;
-            case 0:
-                context.append(" /");
-                break;
+        case -1:
+            context.append(" (");
+            break;
+        case 0:
+            context.append(" /");
+            break;
 
-            case 1:
-                context.append(")");
-                break;
+        case 1:
+            context.append(")");
+            break;
         }
 
         return true;
@@ -985,8 +944,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitAbs(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn ABS(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
         }
 
@@ -997,8 +955,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitSqrt(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn SQRT(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
         }
 
@@ -1009,11 +966,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitMod(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn MOD(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
-        }
-        else {
+        } else {
             context.append(',');
         }
 
@@ -1024,11 +979,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitConcat(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn CONCAT(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
-        }
-        else {
+        } else {
             context.append(',');
         }
 
@@ -1039,11 +992,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitSubstring(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn SUBSTRING(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
-        }
-        else {
+        } else {
             context.append(',');
         }
 
@@ -1054,8 +1005,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitLower(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn LCASE(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
         }
 
@@ -1066,8 +1016,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitUpper(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn UCASE(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
         }
 
@@ -1078,8 +1027,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitLength(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn LENGTH(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
         }
 
@@ -1090,11 +1038,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitLocate(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex < 0) {
             context.append(" {fn LOCATE(");
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             context.append(")}");
-        }
-        else {
+        } else {
             context.append(',');
         }
 
@@ -1108,13 +1054,11 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             if (!(expression.getChild(0) instanceof EJBQLTrimSpecification)) {
                 context.append(" {fn LTRIM({fn RTRIM(");
             }
-        }
-        else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
             if (!(expression.getChild(0) instanceof EJBQLTrimSpecification)
                     || expression.getChild(0) instanceof EJBQLTrimBoth) {
                 context.append(")})}");
-            }
-            else {
+            } else {
                 context.append(")}");
             }
         }
@@ -1127,8 +1071,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         // this is expected to be overwritten in adapter-specific translators
         if (!"' '".equals(expression.getText())) {
             throw new UnsupportedOperationException(
-                    "TRIM character other than space is not supported by a generic adapter: "
-                            + expression.getText());
+                    "TRIM character other than space is not supported by a generic adapter: " + expression.getText());
         }
 
         return false;
@@ -1171,15 +1114,13 @@ class EJBQLPathAnaliserTranslator extends EJBQLPathTranslator {
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
         if (isPath) {
             return false;
-        }
-        else {
+        } else {
 
             if (finishedChildIndex > 0) {
 
                 if (finishedChildIndex + 1 < expression.getChildrenCount()) {
                     processIntermediatePathComponent();
-                }
-                else {
+                } else {
                     processLastPathComponent();
                     if (idPath != null && lastPathComponent != null) {
                         isPath = true;

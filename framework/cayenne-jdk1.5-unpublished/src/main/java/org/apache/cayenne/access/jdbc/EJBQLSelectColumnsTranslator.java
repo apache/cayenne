@@ -59,8 +59,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitAggregate(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(
-                context));
+        expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(context));
         return false;
     }
 
@@ -84,8 +83,8 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
                 final Map<String, String> fields = xfields;
 
-                Collection<DbAttribute> dbAttr = ((ObjEntity) relationship
-                        .getTargetEntity()).getDbEntity().getAttributes();
+                Collection<DbAttribute> dbAttr = ((ObjEntity) relationship.getTargetEntity()).getDbEntity()
+                        .getAttributes();
 
                 DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
                 DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
@@ -95,8 +94,8 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                     this.resolveJoin(true);
                 }
 
-                String alias = this.lastAlias != null ? lastAlias : context
-                        .getTableAlias(idPath, context.getQuotingSupport().generateTableName(table));
+                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
+                        .getQuotingStrategy().quotedFullyQualifiedName(table));
 
                 boolean first = true;
                 while (it.hasNext()) {
@@ -104,11 +103,8 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                     context.append(!first ? ", " : " ");
 
                     DbAttribute dbAttribute = it.next();
-                    appendColumn(
-                            TypesMapping.getJavaBySqlType(dbAttribute.getType()),
-                            alias,
-                            dbAttribute,
-                            fields!=null?fields.get(dbAttribute.getName()):"");
+                    appendColumn(TypesMapping.getJavaBySqlType(dbAttribute.getType()), alias, dbAttribute,
+                            fields != null ? fields.get(dbAttribute.getName()) : "");
 
                     first = false;
                 }
@@ -118,44 +114,36 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             @Override
             protected void processTerminatingAttribute(ObjAttribute attribute) {
                 DbEntity table = currentEntity.getDbEntity();
-                String alias = this.lastAlias != null ? lastAlias : context
-                        .getTableAlias(idPath, context.getQuotingSupport().generateTableName(table));
+                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
+                        .getQuotingStrategy().quotedFullyQualifiedName(table));
                 if (attribute.isFlattened()) {
                     Iterator<?> dbPathIterator = attribute.getDbPathIterator();
                     EJBQLTableId lhsId = new EJBQLTableId(idPath);
 
                     while (dbPathIterator.hasNext()) {
                         Object pathPart = dbPathIterator.next();
-                        // DbRelationships not processed, because they will be processed
+                        // DbRelationships not processed, because they will be
+                        // processed
                         // later when appending table
                         if (pathPart == null) {
-                            throw new CayenneRuntimeException(
-                                    "ObjAttribute has no component: "
-                                            + attribute.getName());
-                        }
-                        else if (pathPart instanceof DbAttribute) {
+                            throw new CayenneRuntimeException("ObjAttribute has no component: " + attribute.getName());
+                        } else if (pathPart instanceof DbAttribute) {
                             DbAttribute dbAttribute = (DbAttribute) pathPart;
-                            appendColumn(
-                                    attribute.getType(),
-                                    context.getTableAlias(
-                                            lhsId.getEntityId(),
-                                            context.getQuotingSupport()
-                                                    .generateTableName((DbEntity) dbAttribute.getEntity())),
-                                    dbAttribute,
-                                    context.isAppendingResultColumns() ? context
-                                            .nextColumnAlias() : "");
+                            appendColumn(attribute.getType(),
+                                    context.getTableAlias(lhsId.getEntityId(), context.getQuotingStrategy()
+                                            .quotedFullyQualifiedName((DbEntity) dbAttribute.getEntity())),
+                                    dbAttribute, context.isAppendingResultColumns() ? context.nextColumnAlias() : "");
 
                         }
 
                     }
 
-                }
-                else {
+                } else {
 
                     DbAttribute dbAttribute = attribute.getDbAttribute();
 
-                    appendColumn(attribute.getType(), alias, dbAttribute, context
-                            .isAppendingResultColumns() ? context.nextColumnAlias() : "");
+                    appendColumn(attribute.getType(), alias, dbAttribute,
+                            context.isAppendingResultColumns() ? context.nextColumnAlias() : "");
                 }
             }
 
@@ -166,24 +154,18 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitIdentifier(EJBQLExpression expression) {
-        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(
-                context));
+        expression.visit(context.getTranslatorFactory().getIdentifierColumnsTranslator(context));
         return false;
     }
 
-    public void appendColumn(
-            String javaType,
-            String alias,
-            DbAttribute dbAttribute,
-            String columnAlias) {
+    public void appendColumn(String javaType, String alias, DbAttribute dbAttribute, String columnAlias) {
         if (context.isAppendingResultColumns()) {
             context.append(" #result('");
-        }
-        else {
+        } else {
             context.append(' ');
         }
 
-        context.append(alias).append('.').append(context.getQuotingSupport().generateColumnName(dbAttribute));
+        context.append(alias).append('.').append(context.getQuotingStrategy().quotedName(dbAttribute));
 
         if (context.isAppendingResultColumns()) {
             // String columnAlias = context.nextColumnAlias();
@@ -191,15 +173,8 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             // TODO: andrus 6/27/2007 - the last parameter is an unofficial
             // "jdbcType"
             // pending CAY-813 implementation, switch to #column directive
-            context
-                    .append("' '")
-                    .append(javaType)
-                    .append("' '")
-                    .append(columnAlias)
-                    .append("' '")
-                    .append(columnAlias)
-                    .append("' " + dbAttribute.getType())
-                    .append(")");
+            context.append("' '").append(javaType).append("' '").append(columnAlias).append("' '").append(columnAlias)
+                    .append("' " + dbAttribute.getType()).append(")");
         }
 
     }

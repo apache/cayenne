@@ -73,14 +73,11 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
         return false;
     }
 
-    private void visitAggregateColumn(
-            EJBQLAggregateColumn column,
-            EJBQLExpressionVisitor pathVisitor) {
+    private void visitAggregateColumn(EJBQLAggregateColumn column, EJBQLExpressionVisitor pathVisitor) {
 
         if (context.isAppendingResultColumns()) {
             context.append(" #result('");
-        }
-        else {
+        } else {
             context.append(' ');
         }
 
@@ -91,12 +88,8 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
         context.append(')');
 
         if (context.isAppendingResultColumns()) {
-            context
-                    .append("' '")
-                    .append(column.getJavaType(attributeType))
-                    .append("' '")
-                    .append(context.nextColumnAlias())
-                    .append("')");
+            context.append("' '").append(column.getJavaType(attributeType)).append("' '")
+                    .append(context.nextColumnAlias()).append("')");
         }
     }
 
@@ -121,19 +114,17 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
         protected void processTerminatingAttribute(ObjAttribute attribute) {
 
             EJBQLAggregateColumnTranslator.this.attributeType = attribute.getType();
-            
+
             DbEntity table = currentEntity.getDbEntity();
-            String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
-                    idPath,
-                    context.getQuotingSupport().generateTableName(table));
-            context.append(alias).append('.').append(
-                    context.getQuotingSupport().generateColumnName(attribute.getDbAttribute()));
+            String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
+                    .getQuotingStrategy().quotedFullyQualifiedName(table));
+            context.append(alias).append('.')
+                    .append(context.getQuotingStrategy().quotedName(attribute.getDbAttribute()));
         }
-        
+
         @Override
         protected void processTerminatingRelationship(ObjRelationship relationship) {
-            Collection<DbAttribute> dbAttr = ((ObjEntity) relationship
-                    .getTargetEntity()).getDbEntity().getAttributes();
+            Collection<DbAttribute> dbAttr = ((ObjEntity) relationship.getTargetEntity()).getDbEntity().getAttributes();
 
             if (dbAttr.size() > 0) {
                 this.resolveJoin(true);
