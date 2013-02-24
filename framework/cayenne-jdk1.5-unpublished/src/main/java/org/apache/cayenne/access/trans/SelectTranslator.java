@@ -33,6 +33,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -56,15 +57,14 @@ import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 
 /**
- * A builder of JDBC PreparedStatements based on Cayenne SelectQueries. Translates
- * SelectQuery to parameterized SQL string and wraps it in a PreparedStatement.
- * SelectTranslator is stateful and thread-unsafe.
+ * A builder of JDBC PreparedStatements based on Cayenne SelectQueries.
+ * Translates SelectQuery to parameterized SQL string and wraps it in a
+ * PreparedStatement. SelectTranslator is stateful and thread-unsafe.
  */
 public class SelectTranslator extends QueryAssembler {
 
-    protected static final int[] UNSUPPORTED_DISTINCT_TYPES = new int[] {
-            Types.BLOB, Types.CLOB, Types.LONGVARBINARY, Types.LONGVARCHAR
-    };
+    protected static final int[] UNSUPPORTED_DISTINCT_TYPES = new int[] { Types.BLOB, Types.CLOB, Types.LONGVARBINARY,
+            Types.LONGVARCHAR };
 
     protected static boolean isUnsupportedForDistinct(int type) {
         for (int i = 0; i < UNSUPPORTED_DISTINCT_TYPES.length; i++) {
@@ -92,9 +92,9 @@ public class SelectTranslator extends QueryAssembler {
     boolean suppressingDistinct;
 
     /**
-     * If set to <code>true</code>, indicates that distinct select query is required no
-     * matter what the original query settings where. This flag can be set when joins are
-     * created using "to-many" relationships.
+     * If set to <code>true</code>, indicates that distinct select query is
+     * required no matter what the original query settings where. This flag can
+     * be set when joins are created using "to-many" relationships.
      */
     boolean forcingDistinct;
 
@@ -109,17 +109,10 @@ public class SelectTranslator extends QueryAssembler {
     @Override
     public String createSqlString() throws Exception {
 
+        DataMap dataMap = queryMetadata.getDataMap();
         JoinStack joins = getJoinStack();
-        boolean status;
-        if (queryMetadata.getDataMap() != null
-                && queryMetadata.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
         forcingDistinct = false;
 
         // build column list
@@ -127,8 +120,7 @@ public class SelectTranslator extends QueryAssembler {
 
         // build qualifier
         QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
-        StringBuilder qualifierBuffer = qualifierTranslator
-                .appendPart(new StringBuilder());
+        StringBuilder qualifierBuffer = qualifierTranslator.appendPart(new StringBuilder());
 
         // build ORDER BY
         OrderingTranslator orderingTranslator = new OrderingTranslator(this);
@@ -158,8 +150,8 @@ public class SelectTranslator extends QueryAssembler {
         // convert ColumnDescriptors to column names
         List<String> selectColumnExpList = new ArrayList<String>();
         for (ColumnDescriptor column : resultColumns) {
-            selectColumnExpList.add(column
-                    .getQualifiedColumnNameWithQuoteSqlIdentifiers(strategy));
+            String fullName = strategy.quotedIdentifier(dataMap, column.getNamePrefix(), column.getName());
+            selectColumnExpList.add(fullName);
         }
 
         // append any column expressions used in the order by if this query
@@ -205,12 +197,12 @@ public class SelectTranslator extends QueryAssembler {
 
         return queryBuf.toString();
     }
-    
+
     /**
      * @since 3.1
      */
     protected void appendSelectColumns(StringBuilder buffer, List<String> selectColumnExpList) {
-        
+
         // append columns (unroll the loop's first element)
         int columnCount = selectColumnExpList.size();
         buffer.append(selectColumnExpList.get(0));
@@ -223,8 +215,9 @@ public class SelectTranslator extends QueryAssembler {
     }
 
     /**
-     * Handles appending optional limit and offset clauses. This implementation does
-     * nothing, deferring to subclasses to define the LIMIT/OFFSET clause syntax.
+     * Handles appending optional limit and offset clauses. This implementation
+     * does nothing, deferring to subclasses to define the LIMIT/OFFSET clause
+     * syntax.
      * 
      * @since 3.0
      */
@@ -251,25 +244,25 @@ public class SelectTranslator extends QueryAssembler {
     }
 
     /**
-     * Returns a map of ColumnDescriptors keyed by ObjAttribute for columns that may need
-     * to be reprocessed manually due to incompatible mappings along the inheritance
-     * hierarchy.
+     * Returns a map of ColumnDescriptors keyed by ObjAttribute for columns that
+     * may need to be reprocessed manually due to incompatible mappings along
+     * the inheritance hierarchy.
      * 
      * @since 1.2
      */
     public Map<ObjAttribute, ColumnDescriptor> getAttributeOverrides() {
         if (attributeOverrides != null) {
             return attributeOverrides;
-        }
-        else {
+        } else {
             return Collections.emptyMap();
         }
     }
 
     /**
-     * Returns true if SelectTranslator determined that a query requiring DISTINCT can't
-     * be run with DISTINCT keyword for internal reasons. If this method returns true,
-     * DataNode may need to do in-memory distinct filtering.
+     * Returns true if SelectTranslator determined that a query requiring
+     * DISTINCT can't be run with DISTINCT keyword for internal reasons. If this
+     * method returns true, DataNode may need to do in-memory distinct
+     * filtering.
      * 
      * @since 1.1
      */
@@ -290,20 +283,16 @@ public class SelectTranslator extends QueryAssembler {
 
         if (query.getRoot() instanceof DbEntity) {
             appendDbEntityColumns(columns, query);
-        }
-        else if (getQueryMetadata().getPageSize() > 0) {
+        } else if (getQueryMetadata().getPageSize() > 0) {
             appendIdColumns(columns, query);
-        }
-        else {
+        } else {
             appendQueryColumns(columns, query);
         }
 
         return columns;
     }
 
-    <T> List<ColumnDescriptor> appendDbEntityColumns(
-            List<ColumnDescriptor> columns,
-            SelectQuery<T> query) {
+    <T> List<ColumnDescriptor> appendDbEntityColumns(List<ColumnDescriptor> columns, SelectQuery<T> query) {
 
         final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
 
@@ -316,16 +305,15 @@ public class SelectTranslator extends QueryAssembler {
     }
 
     /**
-     * Appends columns needed for object SelectQuery to the provided columns list.
+     * Appends columns needed for object SelectQuery to the provided columns
+     * list.
      */
-    <T> List<ColumnDescriptor> appendQueryColumns(
-            final List<ColumnDescriptor> columns,
-            SelectQuery<T> query) {
+    <T> List<ColumnDescriptor> appendQueryColumns(final List<ColumnDescriptor> columns, SelectQuery<T> query) {
 
         final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
 
         // fetched attributes include attributes that are either:
-        // 
+        //
         // * class properties
         // * PK
         // * FK used in relationship
@@ -345,14 +333,11 @@ public class SelectTranslator extends QueryAssembler {
                     Object pathPart = dbPathIterator.next();
 
                     if (pathPart == null) {
-                        throw new CayenneRuntimeException(
-                                "ObjAttribute has no component: " + oa.getName());
-                    }
-                    else if (pathPart instanceof DbRelationship) {
+                        throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
+                    } else if (pathPart instanceof DbRelationship) {
                         DbRelationship rel = (DbRelationship) pathPart;
                         dbRelationshipAdded(rel, JoinType.LEFT_OUTER, null);
-                    }
-                    else if (pathPart instanceof DbAttribute) {
+                    } else if (pathPart instanceof DbAttribute) {
                         DbAttribute dbAttr = (DbAttribute) pathPart;
 
                         appendColumn(columns, oa, dbAttr, attributes, null);
@@ -373,7 +358,7 @@ public class SelectTranslator extends QueryAssembler {
 
             private void visitRelationship(ArcProperty property) {
                 resetJoinStack();
-                
+
                 ObjRelationship rel = property.getRelationship();
                 DbRelationship dbRel = rel.getDbRelationships().get(0);
 
@@ -388,8 +373,9 @@ public class SelectTranslator extends QueryAssembler {
         };
 
         descriptor.visitAllProperties(visitor);
-        
-        //stack should be reset, because all root table attributes go with "t0" table alias
+
+        // stack should be reset, because all root table attributes go with "t0"
+        // table alias
         resetJoinStack();
 
         // add remaining needed attrs from DbEntity
@@ -416,8 +402,7 @@ public class SelectTranslator extends QueryAssembler {
                         .resolvePath(pathExp, getPathAliases())) {
 
                     if (component.getRelationship() != null) {
-                        dbRelationshipAdded(component.getRelationship(), component
-                                .getJoinType(), null);
+                        dbRelationshipAdded(component.getRelationship(), component.getJoinType(), null);
                     }
 
                     lastComponent = component;
@@ -435,11 +420,10 @@ public class SelectTranslator extends QueryAssembler {
 
                         for (DbAttribute pk : targetEntity.getPrimaryKeys()) {
 
-                            // note that we my select a source attribute, but label it as
+                            // note that we my select a source attribute, but
+                            // label it as
                             // target for simplified snapshot processing
-                            appendColumn(columns, null, pk, attributes, labelPrefix
-                                    + '.'
-                                    + pk.getName());
+                            appendColumn(columns, null, pk, attributes, labelPrefix + '.' + pk.getName());
                         }
                     }
                 }
@@ -451,35 +435,35 @@ public class SelectTranslator extends QueryAssembler {
 
             for (PrefetchTreeNode prefetch : query.getPrefetchTree().adjacentJointNodes()) {
 
-                // for each prefetch add all joins plus columns from the target entity
+                // for each prefetch add all joins plus columns from the target
+                // entity
                 Expression prefetchExp = Expression.fromString(prefetch.getPath());
                 Expression dbPrefetch = oe.translateToDbPath(prefetchExp);
 
                 resetJoinStack();
                 DbRelationship r = null;
-                for (PathComponent<DbAttribute, DbRelationship> component : table
-                        .resolvePath(dbPrefetch, getPathAliases())) {
+                for (PathComponent<DbAttribute, DbRelationship> component : table.resolvePath(dbPrefetch,
+                        getPathAliases())) {
                     r = component.getRelationship();
                     dbRelationshipAdded(r, JoinType.LEFT_OUTER, null);
                 }
 
                 if (r == null) {
-                    throw new CayenneRuntimeException("Invalid joint prefetch '"
-                            + prefetch
-                            + "' for entity: "
+                    throw new CayenneRuntimeException("Invalid joint prefetch '" + prefetch + "' for entity: "
                             + oe.getName());
                 }
 
-                // add columns from the target entity, including those that are matched
-                // against the FK of the source entity. This is needed to determine
+                // add columns from the target entity, including those that are
+                // matched
+                // against the FK of the source entity. This is needed to
+                // determine
                 // whether optional relationships are null
 
-                // go via target OE to make sure that Java types are mapped correctly...
+                // go via target OE to make sure that Java types are mapped
+                // correctly...
                 ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(oe);
-                Iterator<ObjAttribute> targetObjAttrs = (Iterator<ObjAttribute>) targetRel
-                        .getTargetEntity()
-                        .getAttributes()
-                        .iterator();
+                Iterator<ObjAttribute> targetObjAttrs = (Iterator<ObjAttribute>) targetRel.getTargetEntity()
+                        .getAttributes().iterator();
 
                 String labelPrefix = dbPrefetch.toString().substring("db:".length());
                 while (targetObjAttrs.hasNext()) {
@@ -489,33 +473,24 @@ public class SelectTranslator extends QueryAssembler {
                         Object pathPart = dbPathIterator.next();
 
                         if (pathPart == null) {
-                            throw new CayenneRuntimeException(
-                                    "ObjAttribute has no component: " + oa.getName());
-                        }
-                        else if (pathPart instanceof DbRelationship) {
+                            throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
+                        } else if (pathPart instanceof DbRelationship) {
                             DbRelationship rel = (DbRelationship) pathPart;
                             dbRelationshipAdded(rel, JoinType.INNER, null);
-                        }
-                        else if (pathPart instanceof DbAttribute) {
+                        } else if (pathPart instanceof DbAttribute) {
                             DbAttribute attribute = (DbAttribute) pathPart;
 
-                            appendColumn(columns, oa, attribute, attributes, labelPrefix
-                                    + '.'
-                                    + attribute.getName());
+                            appendColumn(columns, oa, attribute, attributes, labelPrefix + '.' + attribute.getName());
                         }
                     }
                 }
 
                 // append remaining target attributes such as keys
-                Iterator<DbAttribute> targetAttributes = (Iterator<DbAttribute>) r
-                        .getTargetEntity()
-                        .getAttributes()
+                Iterator<DbAttribute> targetAttributes = (Iterator<DbAttribute>) r.getTargetEntity().getAttributes()
                         .iterator();
                 while (targetAttributes.hasNext()) {
                     DbAttribute attribute = targetAttributes.next();
-                    appendColumn(columns, null, attribute, attributes, labelPrefix
-                            + '.'
-                            + attribute.getName());
+                    appendColumn(columns, null, attribute, attributes, labelPrefix + '.' + attribute.getName());
                 }
             }
         }
@@ -523,9 +498,7 @@ public class SelectTranslator extends QueryAssembler {
         return columns;
     }
 
-    <T> List<ColumnDescriptor> appendIdColumns(
-            final List<ColumnDescriptor> columns,
-            SelectQuery<T> query) {
+    <T> List<ColumnDescriptor> appendIdColumns(final List<ColumnDescriptor> columns, SelectQuery<T> query) {
 
         Set<ColumnTracker> skipSet = new HashSet<ColumnTracker>();
 
@@ -534,30 +507,24 @@ public class SelectTranslator extends QueryAssembler {
         DbEntity dbEntity = oe.getDbEntity();
         for (ObjAttribute attribute : oe.getPrimaryKeys()) {
 
-            // synthetic objattributes can't reliably lookup their DbAttribute, so do
+            // synthetic objattributes can't reliably lookup their DbAttribute,
+            // so do
             // it manually..
-            DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(attribute
-                    .getDbAttributeName());
+            DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(attribute.getDbAttributeName());
             appendColumn(columns, attribute, dbAttribute, skipSet, null);
         }
 
         return columns;
     }
 
-    private void appendColumn(
-            List<ColumnDescriptor> columns,
-            ObjAttribute objAttribute,
-            DbAttribute attribute,
-            Set<ColumnTracker> skipSet,
-            String label) {
+    private void appendColumn(List<ColumnDescriptor> columns, ObjAttribute objAttribute, DbAttribute attribute,
+            Set<ColumnTracker> skipSet, String label) {
 
         String alias = getCurrentAlias();
         if (skipSet.add(new ColumnTracker(alias, attribute))) {
 
-            ColumnDescriptor column = (objAttribute != null) ? new ColumnDescriptor(
-                    objAttribute,
-                    attribute,
-                    alias) : new ColumnDescriptor(attribute, alias);
+            ColumnDescriptor column = (objAttribute != null) ? new ColumnDescriptor(objAttribute, attribute, alias)
+                    : new ColumnDescriptor(attribute, alias);
 
             if (label != null) {
                 column.setDataRowKey(label);
@@ -565,11 +532,11 @@ public class SelectTranslator extends QueryAssembler {
 
             columns.add(column);
 
-            // TODO: andrus, 5/7/2006 - replace 'columns' collection with this map, as it
+            // TODO: andrus, 5/7/2006 - replace 'columns' collection with this
+            // map, as it
             // is redundant
             defaultAttributesByColumn.put(column, objAttribute);
-        }
-        else if (objAttribute != null) {
+        } else if (objAttribute != null) {
 
             // record ObjAttribute override
             for (ColumnDescriptor column : columns) {
@@ -605,10 +572,7 @@ public class SelectTranslator extends QueryAssembler {
      * @since 3.0
      */
     @Override
-    public void dbRelationshipAdded(
-            DbRelationship relationship,
-            JoinType joinType,
-            String joinSplitAlias) {
+    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType, String joinSplitAlias) {
         if (relationship.isToMany()) {
             forcingDistinct = true;
         }
@@ -638,19 +602,14 @@ public class SelectTranslator extends QueryAssembler {
         public boolean equals(Object object) {
             if (object instanceof ColumnTracker) {
                 ColumnTracker other = (ColumnTracker) object;
-                return new EqualsBuilder().append(alias, other.alias).append(
-                        attribute,
-                        other.attribute).isEquals();
+                return new EqualsBuilder().append(alias, other.alias).append(attribute, other.attribute).isEquals();
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder(31, 5)
-                    .append(alias)
-                    .append(attribute)
-                    .toHashCode();
+            return new HashCodeBuilder(31, 5).append(alias).append(attribute).toHashCode();
         }
 
     }

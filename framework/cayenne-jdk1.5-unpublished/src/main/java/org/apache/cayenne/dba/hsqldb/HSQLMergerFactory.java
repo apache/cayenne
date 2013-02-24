@@ -35,9 +35,7 @@ import org.apache.cayenne.merge.SetPrimaryKeyToDb;
 public class HSQLMergerFactory extends MergerFactory {
 
     @Override
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
+    public MergerToken createSetColumnTypeToDb(final DbEntity entity, DbAttribute columnOriginal,
             final DbAttribute columnNew) {
 
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
@@ -47,7 +45,7 @@ public class HSQLMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+                sqlBuffer.append(context.quotedName(columnNew));
                 sqlBuffer.append(" ");
             }
         };
@@ -60,13 +58,11 @@ public class HSQLMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+                sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" NULL");
 
                 return Collections.singletonList(sqlBuffer.toString());
@@ -76,24 +72,13 @@ public class HSQLMergerFactory extends MergerFactory {
     }
 
     @Override
-    public MergerToken createSetPrimaryKeyToDb(
-            DbEntity entity,
-            Collection<DbAttribute> primaryKeyOriginal,
-            Collection<DbAttribute> primaryKeyNew,
-            String detectedPrimaryKeyName) {
-        return new SetPrimaryKeyToDb(
-                entity,
-                primaryKeyOriginal,
-                primaryKeyNew,
-                detectedPrimaryKeyName) {
+    public MergerToken createSetPrimaryKeyToDb(DbEntity entity, Collection<DbAttribute> primaryKeyOriginal,
+            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
+        return new SetPrimaryKeyToDb(entity, primaryKeyOriginal, primaryKeyNew, detectedPrimaryKeyName) {
 
             @Override
-            protected void appendDropOriginalPrimaryKeySQL(
-                    DbAdapter adapter,
-                    List<String> sqls) {
-                sqls.add("ALTER TABLE "
-                        + getQuotingStrategy(adapter)
-                                .quotedFullyQualifiedName(getEntity())
+            protected void appendDropOriginalPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
+                sqls.add("ALTER TABLE " + adapter.getQuotingStrategy().quotedFullyQualifiedName(getEntity())
                         + " DROP PRIMARY KEY");
             }
 

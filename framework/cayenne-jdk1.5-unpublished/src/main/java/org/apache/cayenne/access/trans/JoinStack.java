@@ -59,14 +59,9 @@ public class JoinStack {
     protected JoinStack(DbAdapter dbAdapter, DataMap dataMap, QueryAssembler assembler) {
         this.rootNode = new JoinTreeNode(this);
         this.rootNode.setTargetTableAlias(newAlias());
-        boolean status;
-        if (dataMap != null && dataMap.isQuotingSQLIdentifiers()) {
-            status = true;
-        } else {
-            status = false;
-        }
-        quotingStrategy = dbAdapter.getQuotingStrategy(status);
-        qualifierTranslator = dbAdapter.getQualifierTranslator(assembler);
+
+        this.quotingStrategy = dbAdapter.getQuotingStrategy();
+        this.qualifierTranslator = dbAdapter.getQualifierTranslator(assembler);
 
         resetStack();
     }
@@ -87,7 +82,7 @@ public class JoinStack {
 
         out.append(quotingStrategy.quotedFullyQualifiedName(rootEntity));
         out.append(' ');
-        out.append(quotingStrategy.quotedIdentifier(rootNode.getTargetTableAlias()));
+        out.append(quotingStrategy.quotedIdentifier(rootEntity, rootNode.getTargetTableAlias()));
     }
 
     /**
@@ -124,7 +119,7 @@ public class JoinStack {
         out.append(quotingStrategy.quotedFullyQualifiedName(targetEntity));
 
         out.append(' ');
-        out.append(quotingStrategy.quotedIdentifier(targetAlias));
+        out.append(quotingStrategy.quotedIdentifier(targetEntity, targetAlias));
         out.append(" ON (");
 
         List<DbJoin> joins = relationship.getJoins();
@@ -135,9 +130,9 @@ public class JoinStack {
                 out.append(" AND ");
             }
 
-            out.append(quotingStrategy.quotedIdentifier(srcAlias, join.getSourceName()));
+            out.append(quotingStrategy.quotedIdentifier(relationship.getSourceEntity(), srcAlias, join.getSourceName()));
             out.append(" = ");
-            out.append(quotingStrategy.quotedIdentifier(targetAlias, join.getTargetName()));
+            out.append(quotingStrategy.quotedIdentifier(targetEntity, targetAlias, join.getTargetName()));
         }
 
         /**

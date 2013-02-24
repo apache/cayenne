@@ -27,7 +27,6 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 
@@ -52,8 +51,7 @@ public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
      */
     @Override
     protected String getTableName(DbEntity entity) {
-        QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
-        return context.quotedIdentifier(entity.getName());
+        return quotingStrategy.quotedIdentifier(entity, entity.getName());
     }
 
     /**

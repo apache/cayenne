@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
 import java.util.ArrayList;
@@ -50,13 +49,13 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
         for (int i = 0; i < updatedLen; i++) {
             DbAttribute attribute = updatedDbAttributes.get(i);
             Object value = query.getValue(i);
-            if(isUpdateableColumn(value, attribute.getType())) {
-            	values.add(value);
+            if (isUpdateableColumn(value, attribute.getType())) {
+                values.add(value);
             }
         }
 
-		for (int i = 0; i < qualifierLen; i++) {
-			values.add(query.getValue(updatedLen + i));
+        for (int i = 0; i < qualifierLen; i++) {
+            values.add(query.getValue(updatedLen + i));
         }
 
         return values;
@@ -67,20 +66,12 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
         List<DbAttribute> idDbAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
-		
-		boolean status;
-        if (batch.getDbEntity().getDataMap() != null
-                && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
-		
+
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+
         StringBuffer query = new StringBuffer("UPDATE ");
-		query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
-		query.append(" SET ");
+        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
+        query.append(" SET ");
 
         int len = updatedDbAttributes.size();
         for (int i = 0; i < len; i++) {
@@ -89,8 +80,8 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
             }
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            query.append(strategy.quotedIdentifier(attribute.getName()));
-			query.append(" = ");
+            query.append(strategy.quotedName(attribute));
+            query.append(" = ");
             appendUpdatedParameter(query, attribute, batch.getValue(i));
         }
 

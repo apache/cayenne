@@ -198,7 +198,18 @@ public class AutoAdapter implements DbAdapter {
         getAdapter().createTableAppendColumn(sqlBuffer, column);
     }
 
+    /**
+     * @deprecated since 3.2
+     */
+    @Deprecated
     public QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) {
         return getAdapter().getQuotingStrategy(isQuoteStrategy);
+    }
+    
+    /**
+     * @since 3.2
+     */
+    public QuotingStrategy getQuotingStrategy() {
+        return getAdapter().getQuotingStrategy();
     }
 }

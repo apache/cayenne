@@ -39,7 +39,6 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -161,13 +160,11 @@ public class OpenBaseAdapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-        QuotingStrategy context = getQuotingStrategy(ent
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+
         StringBuilder buf = new StringBuilder();
 
         buf.append("CREATE TABLE ");
-        buf.append(context.quotedFullyQualifiedName(ent));
+        buf.append(quotingStrategy.quotedFullyQualifiedName(ent));
         buf.append(" (");
 
         // columns
@@ -203,7 +200,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
             }
 
             String type = types[0];
-            buf.append(context.quotedIdentifier(at.getName())).append(' ').append(type);
+            buf.append(quotingStrategy.quotedName(at)).append(' ').append(type);
 
             // append size and precision (if applicable)
             if (TypesMapping.supportsLength(at.getType())) {

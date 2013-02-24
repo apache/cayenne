@@ -223,16 +223,10 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 
         StringBuilder buffer = new StringBuilder();
         buffer.append("CREATE PRIMARY KEY ");
-        boolean status;
-        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy context = getAdapter().getQuotingStrategy(status);
+      
+        QuotingStrategy context = getAdapter().getQuotingStrategy();
 
-        buffer.append(context.quotedIdentifier(entity.getName()));
+        buffer.append(context.quotedIdentifier(entity, entity.getName()));
 
         buffer.append(" (");
 
@@ -240,12 +234,12 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 
         // at this point we know that there is at least on PK column
         DbAttribute firstColumn = it.next();
-        buffer.append(context.quotedIdentifier(firstColumn.getName()));
+        buffer.append(context.quotedName(firstColumn));
 
         while (it.hasNext()) {
             DbAttribute column = it.next();
             buffer.append(", ");
-            buffer.append(context.quotedIdentifier(column.getName()));
+            buffer.append(context.quotedName(column));
         }
 
         buffer.append(")");
@@ -258,14 +252,8 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      */
     protected String createUniquePKIndexString(DbEntity entity) {
         Collection<DbAttribute> pk = entity.getPrimaryKeys();
-        boolean status;
-        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy context = getAdapter().getQuotingStrategy(status);
+
+        QuotingStrategy context = getAdapter().getQuotingStrategy();
         if (pk == null || pk.size() == 0) {
             throw new CayenneRuntimeException("Entity '"
                     + entity.getName()
@@ -278,19 +266,19 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
         // create a regular one in this case
         buffer.append(pk.size() == 1 ? "CREATE UNIQUE INDEX " : "CREATE INDEX ");
 
-        buffer.append(context.quotedIdentifier(entity.getName()));
+        buffer.append(context.quotedIdentifier(entity, entity.getName()));
         buffer.append(" (");
 
         Iterator<DbAttribute> it = pk.iterator();
 
         // at this point we know that there is at least on PK column
         DbAttribute firstColumn = it.next();
-        buffer.append(context.quotedIdentifier(firstColumn.getName()));
+        buffer.append(context.quotedName(firstColumn));
 
         while (it.hasNext()) {
             DbAttribute column = it.next();
             buffer.append(", ");
-            buffer.append(context.quotedIdentifier(column.getName()));
+            buffer.append(context.quotedName(column));
         }
         buffer.append(")");
         return buffer.toString();

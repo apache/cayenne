@@ -30,7 +30,6 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -46,15 +45,13 @@ public class PostgresPkGenerator extends OraclePkGenerator {
 
     @Override
     protected String createSequenceString(DbEntity ent) {
-        // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
-        // however 7.3 doesn't like BY and WITH, so using older more neutral syntax
+        // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START
+        // WITH
+        // however 7.3 doesn't like BY and WITH, so using older more neutral
+        // syntax
         // that works with all tested versions.
         StringBuilder buf = new StringBuilder();
-        buf
-                .append("CREATE SEQUENCE ")
-                .append(sequenceName(ent))
-                .append(" INCREMENT ")
-                .append(pkCacheSize(ent))
+        buf.append("CREATE SEQUENCE ").append(sequenceName(ent)).append(" INCREMENT ").append(pkCacheSize(ent))
                 .append(" START 200");
         return buf.toString();
     }
@@ -67,8 +64,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
 
         DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
         String pkGeneratingSequenceName;
-        if (pkGenerator != null
-                && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
+        if (pkGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
                 && pkGenerator.getGeneratorName() != null)
             pkGeneratingSequenceName = pkGenerator.getGeneratorName();
         else
@@ -84,40 +80,27 @@ public class PostgresPkGenerator extends OraclePkGenerator {
                 try {
                     // Object pk = null;
                     if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + entity.getName());
+                        throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
                     }
                     return rs.getLong(1);
-                }
-                finally {
+                } finally {
                     rs.close();
                 }
-            }
-            finally {
+            } finally {
                 st.close();
             }
-        }
-        finally {
+        } finally {
             con.close();
         }
 
     }
 
     /**
-     * Fetches a list of existing sequences that might match Cayenne generated ones.
+     * Fetches a list of existing sequences that might match Cayenne generated
+     * ones.
      */
     @Override
     protected List<String> getExistingSequences(DataNode node) throws SQLException {
-
-        boolean status;
-        if (node.getDataMap(node.getName()) != null
-                && node.getDataMap(node.getName()).isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy context = getAdapter().getQuotingStrategy(status);
 
         // check existing sequences
         Connection con = node.getDataSource().getConnection();
@@ -131,19 +114,16 @@ public class PostgresPkGenerator extends OraclePkGenerator {
                 try {
                     List<String> sequenceList = new ArrayList<String>();
                     while (rs.next()) {
-                        sequenceList.add(context.quotedIdentifier(rs.getString(1)));
+                        sequenceList.add(rs.getString(1));
                     }
                     return sequenceList;
-                }
-                finally {
+                } finally {
                     rs.close();
                 }
-            }
-            finally {
+            } finally {
                 sel.close();
             }
-        }
-        finally {
+        } finally {
             con.close();
         }
     }

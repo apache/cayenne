@@ -38,13 +38,11 @@ public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuilder sqlBuffer = new StringBuilder();
-        QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = adapter.getQuotingStrategy();
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ALTER COLUMN ");
-        sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+        sqlBuffer.append(context.quotedName(getColumn()));
         sqlBuffer.append(" SET NOT NULL");
 
         return Collections.singletonList(sqlBuffer.toString());

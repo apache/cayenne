@@ -30,8 +30,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 
 /**
- * Implementation of {@link DeleteBatchQueryBuilder}, which uses 'soft' delete (runs
- * UPDATE and sets 'deleted' field to true instead-of running SQL DELETE)
+ * Implementation of {@link DeleteBatchQueryBuilder}, which uses 'soft' delete
+ * (runs UPDATE and sets 'deleted' field to true instead-of running SQL DELETE)
  */
 public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
 
@@ -48,15 +48,11 @@ public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
             return super.createSqlString(batch);
         }
 
-        boolean status = batch.getDbEntity().getDataMap() != null
-                && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers();
-
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
         StringBuffer query = new StringBuffer("UPDATE ");
         query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
-        query.append(" SET ").append(strategy.quotedIdentifier(deletedFieldName)).append(
-                " = ?");
+        query.append(" SET ").append(strategy.quotedIdentifier(batch.getDbEntity(), deletedFieldName)).append(" = ?");
 
         applyQualifier(query, batch);
 
@@ -69,8 +65,7 @@ public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
     }
 
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQuery query)
-            throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
         if (needSoftDelete(query)) {
             // binding first parameter (which is 'deleted') as true
             adapter.bindParameter(statement, true, 1, Types.BOOLEAN, -1);
@@ -83,8 +78,7 @@ public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
      * @return whether 'soft' deletion should be used
      */
     protected boolean needSoftDelete(BatchQuery query) {
-        DbAttribute attr = (DbAttribute) query.getDbEntity().getAttribute(
-                deletedFieldName);
+        DbAttribute attr = (DbAttribute) query.getDbEntity().getAttribute(deletedFieldName);
         return attr != null && attr.getType() == Types.BOOLEAN;
     }
 }

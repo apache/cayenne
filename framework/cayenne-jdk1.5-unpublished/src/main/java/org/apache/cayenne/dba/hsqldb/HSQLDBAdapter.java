@@ -31,7 +31,6 @@ import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -69,8 +68,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * @since 1.2
      */
     protected String getTableName(DbEntity entity) {
-        QuotingStrategy context = getQuotingStrategy(entity.getDataMap().isQuotingSQLIdentifiers());
-        return context.quotedFullyQualifiedName(entity);
+        return quotingStrategy.quotedFullyQualifiedName(entity);
     }
 
     /**
@@ -100,13 +98,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
-        boolean status;
-        if (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        } else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
+
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
         }
@@ -119,17 +111,17 @@ public class HSQLDBAdapter extends JdbcAdapter {
         buf.append(" ADD CONSTRAINT ");
 
         String name = "U_" + source.getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
-        buf.append(context.quotedIdentifier(source.getSchema(), name));
+        buf.append(quotingStrategy.quotedIdentifier(source, source.getSchema(), name));
         buf.append(" UNIQUE (");
 
         Iterator<DbAttribute> it = columns.iterator();
         DbAttribute first = it.next();
-        buf.append(context.quotedIdentifier(first.getName()));
+        buf.append(quotingStrategy.quotedName(first));
 
         while (it.hasNext()) {
             DbAttribute next = it.next();
             buf.append(", ");
-            buf.append(context.quotedIdentifier(next.getName()));
+            buf.append(quotingStrategy.quotedName(next));
         }
 
         buf.append(")");
@@ -144,14 +136,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public String createFkConstraint(DbRelationship rel) {
-        boolean status;
-        if ((rel.getSourceEntity().getDataMap() != null)
-                && rel.getSourceEntity().getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        } else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
+     
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
@@ -169,7 +154,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
         DbEntity sourceEntity = (DbEntity) rel.getSourceEntity();
 
-        buf.append(context.quotedIdentifier(sourceEntity.getSchema(), name));
+        buf.append(quotingStrategy.quotedIdentifier(sourceEntity, sourceEntity.getSchema(), name));
         buf.append(" FOREIGN KEY (");
 
         boolean first = true;
@@ -180,8 +165,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
             } else
                 first = false;
 
-            buf.append(context.quotedIdentifier(join.getSourceName()));
-            refBuf.append(context.quotedIdentifier(join.getTargetName()));
+            buf.append(quotingStrategy.quotedSourceName(join));
+            refBuf.append(quotingStrategy.quotedTargetName(join));
         }
 
         buf.append(") REFERENCES ");

@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
 import java.util.ArrayList;
@@ -52,41 +51,32 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
         return values;
     }
 
-	@Override
-	public String createSqlString(BatchQuery batch) {
-		List<DbAttribute> dbAttributes = batch.getDbAttributes();
-		boolean status;
-		if (batch.getDbEntity().getDataMap() != null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()) {
-			status = true;
-		} else {
-			status = false;
-		}
-		
-		QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+    @Override
+    public String createSqlString(BatchQuery batch) {
+        List<DbAttribute> dbAttributes = batch.getDbAttributes();
 
-		StringBuffer query = new StringBuffer("INSERT INTO ");
-		query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
-		query.append(" (");
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-		for (Iterator<DbAttribute> i = dbAttributes.iterator(); i.hasNext();) {
-			DbAttribute attribute = i.next();
-			query.append(strategy.quotedIdentifier(attribute.getName()));
-			if (i.hasNext()) {
-				query.append(", ");
-			}
-		}
-		query.append(") VALUES (");
-		for (int i = 0; i < dbAttributes.size(); i++) {
-			if (i > 0) {
-				query.append(", ");
-			}
+        StringBuffer query = new StringBuffer("INSERT INTO ");
+        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
+        query.append(" (");
 
-			appendUpdatedParameter(
-					query,
-					dbAttributes.get(i),
-					batch.getValue(i));
-		}
-		query.append(')');
-		return query.toString();
-	}
+        for (Iterator<DbAttribute> i = dbAttributes.iterator(); i.hasNext();) {
+            DbAttribute attribute = i.next();
+            query.append(strategy.quotedName(attribute));
+            if (i.hasNext()) {
+                query.append(", ");
+            }
+        }
+        query.append(") VALUES (");
+        for (int i = 0; i < dbAttributes.size(); i++) {
+            if (i > 0) {
+                query.append(", ");
+            }
+
+            appendUpdatedParameter(query, dbAttributes.get(i), batch.getValue(i));
+        }
+        query.append(')');
+        return query.toString();
+    }
 }

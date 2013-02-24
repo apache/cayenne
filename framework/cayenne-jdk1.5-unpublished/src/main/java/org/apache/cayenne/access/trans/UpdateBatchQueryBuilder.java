@@ -44,15 +44,9 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
     @Override
     public String createSqlString(BatchQuery batch) throws IOException {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
-        boolean status;
-        if(batch.getDbEntity().getDataMap()!=null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
-            status = false;
-        }
 
-        QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
-        
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
@@ -67,7 +61,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
             }
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            query.append(strategy.quotedIdentifier(attribute.getName()));
+            query.append(strategy.quotedName(attribute));
             query.append(" = ?");
         }
 
@@ -91,8 +85,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
      * Binds BatchQuery parameters to the PreparedStatement.
      */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQuery query)
-            throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
 
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
@@ -104,12 +97,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
             Object value = query.getValue(i);
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            adapter.bindParameter(
-                    statement,
-                    value,
-                    parameterIndex++,
-                    attribute.getType(),
-                    attribute.getScale());
+            adapter.bindParameter(statement, value, parameterIndex++, attribute.getType(), attribute.getScale());
         }
 
         for (int i = 0; i < qualifierAttributes.size(); i++) {
@@ -121,12 +109,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
                 continue;
             }
 
-            adapter.bindParameter(
-                    statement,
-                    value,
-                    parameterIndex++,
-                    attribute.getType(),
-                    attribute.getScale());
+            adapter.bindParameter(statement, value, parameterIndex++, attribute.getType(), attribute.getScale());
         }
     }
 }

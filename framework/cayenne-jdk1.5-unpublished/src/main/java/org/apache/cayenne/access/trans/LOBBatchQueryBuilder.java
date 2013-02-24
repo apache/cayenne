@@ -53,22 +53,14 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
             List selectedLOBAttributes,
             List qualifierAttributes) {
 
-        boolean status;
-        if (updateQuery.getDbEntity().getDataMap() != null
-                && updateQuery.getDbEntity().getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
 		StringBuffer buf = new StringBuffer();
 		buf.append("SELECT ");
 
         Iterator it = selectedLOBAttributes.iterator();
         while (it.hasNext()) {
-            buf.append(strategy.quotedIdentifier(((DbAttribute) it.next()).getName()));
+            buf.append(strategy.quotedName((DbAttribute) it.next()));
 
             if (it.hasNext()) {
                 buf.append(", ");

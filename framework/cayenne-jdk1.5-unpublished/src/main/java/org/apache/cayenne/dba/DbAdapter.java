@@ -181,6 +181,15 @@ public interface DbAdapter {
 
     /**
      * @since 3.0
+     * @deprecated since 3.2 use {@link #getQuotingStrategy()}.
      */
+    @Deprecated
     QuotingStrategy getQuotingStrategy(boolean needQuotes);
+    
+    /**
+     * Returns SQL identifier quoting strategy object 
+     * 
+     * @since 3.2
+     */
+    QuotingStrategy getQuotingStrategy();
 }

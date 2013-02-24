@@ -42,16 +42,14 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ADD COLUMN ");
-        sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+        sqlBuffer.append(context.quotedName(getColumn()));
         sqlBuffer.append(" ");
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
-        QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = adapter.getQuotingStrategy();
         appendPrefix(sqlBuffer, context);
 
         // copied from JdbcAdapter.createTableAppendColumn

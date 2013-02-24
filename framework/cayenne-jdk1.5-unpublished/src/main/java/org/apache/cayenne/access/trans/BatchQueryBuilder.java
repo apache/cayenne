@@ -70,9 +70,9 @@ public abstract class BatchQueryBuilder {
         else {
             status = false;
         }
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy(status);
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        buf.append(strategy.quotedIdentifier(dbAttribute.getName()));
+        buf.append(strategy.quotedName(dbAttribute));
 
         if (trim) {
             buf.append(')');

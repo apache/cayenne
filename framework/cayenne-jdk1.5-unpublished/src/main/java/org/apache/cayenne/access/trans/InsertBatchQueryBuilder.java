@@ -88,13 +88,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
     public String createSqlString(BatchQuery batch) throws IOException {
 
         List<DbAttribute> dbAttributes = batch.getDbAttributes();
-        boolean status;
-        if(batch.getDbEntity().getDataMap()!=null && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers()){ 
-            status= true;
-        } else {
-            status = false;
-        }
-        QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
+        QuotingStrategy strategy =  getAdapter().getQuotingStrategy();
 
         StringBuilder query = new StringBuilder("INSERT INTO ");
         query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
@@ -113,7 +107,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
                 if (columnCount > 0) {
                     query.append(", ");
                 }
-                query.append(strategy.quotedIdentifier(attribute.getName()));
+                query.append(strategy.quotedName(attribute));
                 columnCount++;
             }
         }

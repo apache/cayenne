@@ -31,7 +31,8 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
- * Translator for delete BatchQueries. Creates parametrized DELETE SQL statements.
+ * Translator for delete BatchQueries. Creates parameterized DELETE SQL
+ * statements.
  */
 public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
 
@@ -41,11 +42,9 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
 
     @Override
     public String createSqlString(BatchQuery batch) throws IOException {
-        boolean status = batch.getDbEntity().getDataMap() != null 
-            && batch.getDbEntity().getDataMap().isQuotingSQLIdentifiers();
-        
-        QuotingStrategy strategy =  getAdapter().getQuotingStrategy(status);
-       
+
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+
         StringBuffer query = new StringBuffer("DELETE FROM ");
         query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
 
@@ -53,13 +52,13 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
 
         return query.toString();
     }
-    
+
     /**
      * Appends WHERE clause to SQL string
      */
     protected void applyQualifier(StringBuffer query, BatchQuery batch) {
         query.append(" WHERE ");
-        
+
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) batch;
         Iterator<DbAttribute> i = deleteBatch.getQualifierAttributes().iterator();
         while (i.hasNext()) {
@@ -77,8 +76,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
      * Binds BatchQuery parameters to the PreparedStatement.
      */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQuery query)
-            throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
 
@@ -93,17 +91,12 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
                 continue;
             }
 
-            adapter.bindParameter(
-                    statement,
-                    value,
-                    parameterIndex++,
-                    attribute.getType(),
-                    attribute.getScale());
+            adapter.bindParameter(statement, value, parameterIndex++, attribute.getType(), attribute.getScale());
         }
     }
-    
+
     /**
-     * @return index of first parameter in delete clause 
+     * @return index of first parameter in delete clause
      */
     protected int getFirstParameterIndex(BatchQuery query) {
         return 1;

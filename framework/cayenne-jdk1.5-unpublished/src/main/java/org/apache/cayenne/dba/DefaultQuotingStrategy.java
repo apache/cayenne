@@ -18,7 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.Entity;
 
 /**
  * @since 3.2 this is a top-level class.
@@ -38,25 +42,53 @@ class DefaultQuotingStrategy implements QuotingStrategy {
      */
     @Deprecated
     public String quoteString(String name) {
-        return quotedIdentifier(name);
+        return quotedIdentifier((DataMap) null, name);
     }
-    
+
     @Deprecated
     public String quoteFullyQualifiedName(DbEntity entity) {
-       return quotedFullyQualifiedName(entity);
+        return quotedFullyQualifiedName(entity);
     }
 
     public String quotedFullyQualifiedName(DbEntity entity) {
-        return quotedIdentifier(entity.getCatalog(), entity.getSchema(), entity.getName());
+        return quotedIdentifier(entity.getDataMap(), entity.getCatalog(), entity.getSchema(), entity.getName());
     }
 
-    public String quotedIdentifier(String... fqnParts) {
+    public String quotedName(DbAttribute attribute) {
+        return quotedIdentifier(attribute.getEntity().getDataMap(), attribute.getName());
+    }
+
+    public String quotedSourceName(DbJoin join) {
+        DataMap dataMap = join.getSource().getEntity().getDataMap();
+        return quotedIdentifier(dataMap, join.getSourceName());
+    }
+
+    public String quotedTargetName(DbJoin join) {
+        DataMap dataMap = join.getTarget().getEntity().getDataMap();
+        return quotedIdentifier(dataMap, join.getTargetName());
+    }
+
+    public String quotedIdentifier(Entity entity, String... identifierParts) {
+        return quotedIdentifier(entity.getDataMap(), identifierParts);
+    }
+
+    public String quotedIdentifier(DataMap dataMap, String... identifierParts) {
+
+        String startQuote, endQuote;
+
+        if (dataMap != null && dataMap.isQuotingSQLIdentifiers()) {
+            startQuote = this.startQuote;
+            endQuote = this.endQuote;
+        } else {
+            startQuote = "";
+            endQuote = "";
+        }
 
         StringBuilder buffer = new StringBuilder();
 
-        for (String part : fqnParts) {
-            
-            if(part == null) {
+        for (String part : identifierParts) {
+
+            if (part == null) {
                 continue;
             }
 

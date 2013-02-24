@@ -47,8 +47,9 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL RDBMS </a>.
- * Sample connection settings to use with PostgreSQL are shown below:
+ * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL
+ * RDBMS </a>. Sample connection settings to use with PostgreSQL are shown
+ * below:
  * 
  * <pre>
  *      postgres.jdbc.username = test
@@ -59,16 +60,11 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class PostgresAdapter extends JdbcAdapter {
 
-    public PostgresAdapter(
-            @Inject RuntimeProperties runtimeProperties,
+    public PostgresAdapter(@Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(
-                runtimeProperties,
-                defaultExtendedTypes,
-                userExtendedTypes,
-                extendedTypeFactories);
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         setSupportsBatchUpdates(true);
     }
 
@@ -79,13 +75,12 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new PostgresActionBuilder(this, node
-                .getEntityResolver()));
+        return query.createSQLAction(new PostgresActionBuilder(this, node.getEntityResolver()));
     }
 
     /**
-     * Installs appropriate ExtendedTypes as converters for passing values between JDBC
-     * and Java layers.
+     * Installs appropriate ExtendedTypes as converters for passing values
+     * between JDBC and Java layers.
      */
     @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
@@ -97,13 +92,7 @@ public class PostgresAdapter extends JdbcAdapter {
     }
 
     @Override
-    public DbAttribute buildAttribute(
-            String name,
-            String typeName,
-            int type,
-            int size,
-            int scale,
-            boolean allowNulls) {
+    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
 
         // "bytea" maps to pretty much any binary type, so
         // it is up to us to select the most sensible default.
@@ -124,22 +113,16 @@ public class PostgresAdapter extends JdbcAdapter {
     }
 
     /**
-     * Customizes table creating procedure for PostgreSQL. One difference with generic
-     * implementation is that "bytea" type has no explicit length unlike similar binary
-     * types in other databases.
+     * Customizes table creating procedure for PostgreSQL. One difference with
+     * generic implementation is that "bytea" type has no explicit length unlike
+     * similar binary types in other databases.
      * 
      * @since 1.0.2
      */
     @Override
     public String createTable(DbEntity ent) {
-        boolean status;
-        if (ent.getDataMap() != null && ent.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
+
+        QuotingStrategy context = getQuotingStrategy();
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
 
@@ -160,37 +143,25 @@ public class PostgresAdapter extends JdbcAdapter {
 
             // attribute may not be fully valid, do a simple check
             if (at.getType() == TypesMapping.NOT_DEFINED) {
-                throw new CayenneRuntimeException("Undefined type for attribute '"
-                        + ent.getFullyQualifiedName()
-                        + "."
-                        + at.getName()
-                        + "'.");
+                throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
+                        + at.getName() + "'.");
             }
 
             String[] types = externalTypesForJdbcType(at.getType());
             if (types == null || types.length == 0) {
-                throw new CayenneRuntimeException("Undefined type for attribute '"
-                        + ent.getFullyQualifiedName()
-                        + "."
-                        + at.getName()
-                        + "': "
-                        + at.getType());
+                throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
+                        + at.getName() + "': " + at.getType());
             }
 
             String type = types[0];
-            buf.append(context.quotedIdentifier(at.getName())).append(' ').append(type);
+            buf.append(context.quotedName(at)).append(' ').append(type);
 
             // append size and precision (if applicable)
             if (typeSupportsLength(at.getType())) {
+
                 int len = at.getMaxLength();
-                int scale = (TypesMapping.isDecimal(at.getType()) && at.getType() != Types.FLOAT) // Postgress
-                                                                                                  // don't
-                                                                                                  // support
-                                                                                                  // notations
-                                                                                                  // float(a,
-                                                                                                  // b)
-                        ? at.getScale()
-                        : -1;
+                // Postgres does not support notation float(a, b)
+                int scale = (TypesMapping.isDecimal(at.getType()) && at.getType() != Types.FLOAT) ? at.getScale() : -1;
 
                 // sanity check
                 if (scale > len) {
@@ -210,8 +181,7 @@ public class PostgresAdapter extends JdbcAdapter {
 
             if (at.isMandatory()) {
                 buf.append(" NOT NULL");
-            }
-            else {
+            } else {
                 buf.append(" NULL");
             }
         }
@@ -233,7 +203,7 @@ public class PostgresAdapter extends JdbcAdapter {
                     buf.append(", ");
 
                 DbAttribute at = pkit.next();
-                buf.append(context.quotedIdentifier(at.getName()));
+                buf.append(context.quotedName(at));
             }
             buf.append(')');
         }
@@ -260,9 +230,7 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy(table
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy();
         StringBuffer buf = new StringBuffer("DROP TABLE ");
         buf.append(context.quotedFullyQualifiedName(table));
         buf.append(" CASCADE");

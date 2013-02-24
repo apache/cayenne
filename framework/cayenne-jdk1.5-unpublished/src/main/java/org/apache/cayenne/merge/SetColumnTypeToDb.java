@@ -50,17 +50,15 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
         sqlBuffer.append(" ALTER ");
-        sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+        sqlBuffer.append(context.quotedName(columnNew));
         sqlBuffer.append(" TYPE ");
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
         StringBuffer sqlBuffer = new StringBuffer();
-        QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
-        appendPrefix(sqlBuffer, context);
+       
+        appendPrefix(sqlBuffer, adapter.getQuotingStrategy());
   
         // copied from JdbcAdapter.createTableAppendColumn
         String[] types = adapter.externalTypesForJdbcType(columnNew.getType());

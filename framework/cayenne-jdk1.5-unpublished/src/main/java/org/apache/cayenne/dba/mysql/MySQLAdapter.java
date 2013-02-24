@@ -135,7 +135,7 @@ public class MySQLAdapter extends JdbcAdapter {
         // checks
         // statement
         StringBuffer buf = new StringBuffer();
-        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy();
         buf.append(context.quotedFullyQualifiedName(table));
 
         return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf.toString() + " CASCADE",
@@ -249,13 +249,7 @@ public class MySQLAdapter extends JdbcAdapter {
     // See CAY-358 for details of the InnoDB problem
     @Override
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
-        boolean status;
-        if (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        } else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
+
         // must move generated to the front...
         List<DbAttribute> pkList = new ArrayList<DbAttribute>(entity.getPrimaryKeys());
         Collections.sort(pkList, new PKComparator());
@@ -272,7 +266,7 @@ public class MySQLAdapter extends JdbcAdapter {
                     sqlBuffer.append(", ");
 
                 DbAttribute at = pkit.next();
-                sqlBuffer.append(context.quotedIdentifier(at.getName()));
+                sqlBuffer.append(quotingStrategy.quotedName(at));
             }
             sqlBuffer.append(')');
         }
@@ -290,11 +284,11 @@ public class MySQLAdapter extends JdbcAdapter {
 
                     Iterator<DbAttribute> columns = relationship.getSourceAttributes().iterator();
                     DbAttribute column = columns.next();
-                    sqlBuffer.append(context.quotedIdentifier(column.getName()));
+                    sqlBuffer.append(quotingStrategy.quotedName(column));
 
                     while (columns.hasNext()) {
                         column = columns.next();
-                        sqlBuffer.append(", ").append(context.quotedIdentifier(column.getName()));
+                        sqlBuffer.append(", ").append(quotingStrategy.quotedName(column));
                     }
 
                     sqlBuffer.append(")");
@@ -309,13 +303,7 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        boolean status;
-        if ((column.getEntity().getDataMap() != null) && column.getEntity().getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        } else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
+
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
@@ -325,7 +313,7 @@ public class MySQLAdapter extends JdbcAdapter {
         }
 
         String type = types[0];
-        sqlBuffer.append(context.quotedIdentifier(column.getName()));
+        sqlBuffer.append(quotingStrategy.quotedName(column));
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s

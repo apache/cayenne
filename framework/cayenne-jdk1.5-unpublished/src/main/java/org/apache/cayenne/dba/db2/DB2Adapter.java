@@ -98,14 +98,8 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-        boolean status;
-        if (ent.getDataMap() != null && ent.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
+     
+        QuotingStrategy context = getQuotingStrategy();
 
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
@@ -144,7 +138,7 @@ public class DB2Adapter extends JdbcAdapter {
             }
 
             String type = types[0];
-            buf.append(context.quotedIdentifier(at.getName())).append(' ').append(type);
+            buf.append(context.quotedName(at)).append(' ').append(type);
 
             // append size and precision (if applicable)
             if (TypesMapping.supportsLength(at.getType())) {
@@ -193,7 +187,7 @@ public class DB2Adapter extends JdbcAdapter {
                     buf.append(", ");
 
                 DbAttribute at = pkit.next();
-                buf.append(context.quotedIdentifier(at.getName()));
+                buf.append(context.quotedName(at));
             }
             buf.append(')');
         }

@@ -104,14 +104,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public String createTable(DbEntity ent) {
-        boolean status;
-        if (ent.getDataMap() != null && ent.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
+        QuotingStrategy context = getQuotingStrategy();
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
         buf.append(context.quotedFullyQualifiedName(ent));
@@ -148,7 +141,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
             }
 
             String type = types[0];
-            buf.append(context.quotedIdentifier(at.getName())).append(' ').append(type);
+            buf.append(context.quotedName(at)).append(' ').append(type);
 
             // Mapping LONGVARCHAR without length creates a column with length "1" which
             // is definitely not what we want...so just use something very large (1Gb seems
@@ -208,7 +201,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
                     buf.append(", ");
 
                 DbAttribute at = pkit.next();
-                buf.append(context.quotedIdentifier(at.getName()));
+                buf.append(quotingStrategy.quotedName(at));
             }
             buf.append(')');
         }
@@ -221,14 +214,8 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        boolean status;
-        if (table.getDataMap() != null && table.getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        }
-        else {
-            status = false;
-        }
-        QuotingStrategy context = getQuotingStrategy(status);
+
+        QuotingStrategy context = getQuotingStrategy();
         StringBuffer buf = new StringBuffer("DROP TABLE ");
         buf.append(context.quotedFullyQualifiedName(table));
 

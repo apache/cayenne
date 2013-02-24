@@ -59,14 +59,7 @@ public abstract class QueryAssemblerHelper {
      */
     public QueryAssemblerHelper(QueryAssembler queryAssembler) {
         this.queryAssembler = queryAssembler;
-        boolean status;
-        if (queryAssembler.getQueryMetadata().getDataMap() != null
-                && queryAssembler.getQueryMetadata().getDataMap().isQuotingSQLIdentifiers()) {
-            status = true;
-        } else {
-            status = false;
-        }
-        strategy = queryAssembler.getAdapter().getQuotingStrategy(status);
+        strategy = queryAssembler.getAdapter().getQuotingStrategy();
     }
 
     public ObjEntity getObjEntity() {
@@ -251,7 +244,7 @@ public abstract class QueryAssemblerHelper {
     protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) throws IOException {
 
         String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler.getCurrentAlias() : null;
-        out.append(strategy.quotedIdentifier(alias, dbAttr.getName()));
+        out.append(strategy.quotedIdentifier(dbAttr.getEntity(), alias, dbAttr.getName()));
     }
 
     /**

@@ -46,15 +46,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Defines API and a common superclass for testing various database features. Different
- * databases support different feature sets that need to be tested differently. Many
- * things implemented in subclasses may become future candidates for inclusion in the
- * corresponding adapter code.
+ * Defines API and a common superclass for testing various database features.
+ * Different databases support different feature sets that need to be tested
+ * differently. Many things implemented in subclasses may become future
+ * candidates for inclusion in the corresponding adapter code.
  */
 public class UnitDbAdapter {
 
     private static Log logger = LogFactory.getLog(UnitDbAdapter.class);
-    
+
     @Inject
     protected RuntimeProperties runtimeProperties;
 
@@ -70,21 +70,12 @@ public class UnitDbAdapter {
     /**
      * Drops all table constraints.
      */
-    public void willDropTables(
-            Connection conn,
-            DataMap map,
-            Collection<String> tablesToDrop) throws Exception {
+    public void willDropTables(Connection conn, DataMap map, Collection<String> tablesToDrop) throws Exception {
         dropConstraints(conn, map, tablesToDrop);
     }
 
-    protected void dropConstraints(
-            Connection conn,
-            DataMap map,
-            Collection<String> tablesToDrop) throws Exception {
-        Map<String, Collection<String>> constraintsMap = getConstraints(
-                conn,
-                map,
-                tablesToDrop);
+    protected void dropConstraints(Connection conn, DataMap map, Collection<String> tablesToDrop) throws Exception {
+        Map<String, Collection<String>> constraintsMap = getConstraints(conn, map, tablesToDrop);
 
         for (Map.Entry<String, Collection<String>> entry : constraintsMap.entrySet()) {
 
@@ -98,16 +89,14 @@ public class UnitDbAdapter {
             if (entity == null) {
                 continue;
             }
-            boolean status = entity.getDataMap() != null
-                    && entity.getDataMap().isQuotingSQLIdentifiers();
-            QuotingStrategy strategy = adapter.getQuotingStrategy(status);
+
+            QuotingStrategy strategy = adapter.getQuotingStrategy();
 
             for (String constraint : constraints) {
                 StringBuilder drop = new StringBuilder();
 
-                drop.append("ALTER TABLE ").append(
-                        strategy.quotedFullyQualifiedName(entity)).append(
-                        " DROP CONSTRAINT ").append(constraint);
+                drop.append("ALTER TABLE ").append(strategy.quotedFullyQualifiedName(entity))
+                        .append(" DROP CONSTRAINT ").append(constraint);
                 executeDDL(conn, drop.toString());
             }
         }
@@ -135,16 +124,16 @@ public class UnitDbAdapter {
     }
 
     /**
-     * Returns whether the target database supports expressions in the WHERE clause in the
-     * form "VALUE = COLUMN".
+     * Returns whether the target database supports expressions in the WHERE
+     * clause in the form "VALUE = COLUMN".
      */
     public boolean supportsReverseComparison() {
         return true;
     }
 
     /**
-     * Returns whether an aggregate query like "SELECT min(X) FROM" returns a NULL row
-     * when no data matched the WHERE clause. Most DB's do.
+     * Returns whether an aggregate query like "SELECT min(X) FROM" returns a
+     * NULL row when no data matched the WHERE clause. Most DB's do.
      */
     public boolean supportNullRowForAggregateFunctions() {
         return true;
@@ -162,15 +151,16 @@ public class UnitDbAdapter {
     }
 
     /**
-     * Returns whether the DB supports a TRIM function for an arbitrary character.
+     * Returns whether the DB supports a TRIM function for an arbitrary
+     * character.
      */
     public boolean supportsTrimChar() {
         return false;
     }
 
     /**
-     * Returns false if stored procedures are not supported or if it is a victim of
-     * CAY-148 (column name capitalization).
+     * Returns false if stored procedures are not supported or if it is a victim
+     * of CAY-148 (column name capitalization).
      */
     public boolean canMakeObjectsOutOfProcedures() {
         return supportsStoredProcedures();
@@ -200,12 +190,13 @@ public class UnitDbAdapter {
     }
 
     /**
-     * Returns true if the target database has support for large objects (BLOB, CLOB).
+     * Returns true if the target database has support for large objects (BLOB,
+     * CLOB).
      */
     public boolean supportsLobs() {
         return false;
     }
-    
+
     public boolean supportsLobComparisons() {
         return supportsLobs();
     }
@@ -225,7 +216,7 @@ public class UnitDbAdapter {
     public boolean supportsCaseInsensitiveOrder() {
         return true;
     }
-    
+
     public boolean supportsCatalogs() {
         return false;
     }
@@ -233,7 +224,7 @@ public class UnitDbAdapter {
     public boolean supportsBatchPK() {
         return true;
     }
-    
+
     public boolean supportsBitwiseOps() {
         return false;
     }
@@ -244,28 +235,24 @@ public class UnitDbAdapter {
 
         try {
             st.execute(ddl);
-        }
-        finally {
+        } finally {
             st.close();
         }
     }
 
-    protected void executeDDL(Connection con, String database, String name)
-            throws Exception {
+    protected void executeDDL(Connection con, String database, String name) throws Exception {
         executeDDL(con, ddlString(database, name));
     }
 
     /**
-     * Returns a file under test resources DDL directory for the specified database.
+     * Returns a file under test resources DDL directory for the specified
+     * database.
      */
     private String ddlString(String database, String name) {
         StringBuffer location = new StringBuffer();
         location.append("ddl/").append(database).append("/").append(name);
 
-        InputStream resource = Thread
-                .currentThread()
-                .getContextClassLoader()
-                .getResourceAsStream(location.toString());
+        InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream(location.toString());
 
         if (resource == null) {
             throw new CayenneRuntimeException("Can't find DDL file: " + location);
@@ -278,16 +265,13 @@ public class UnitDbAdapter {
             while ((line = in.readLine()) != null) {
                 buf.append(line).append('\n');
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new CayenneRuntimeException("Error reading DDL file: " + location);
-        }
-        finally {
+        } finally {
 
             try {
                 in.close();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
 
             }
         }
@@ -299,12 +283,10 @@ public class UnitDbAdapter {
     }
 
     /**
-     * Returns a map of database constraints with DbEntity names used as keys, and
-     * Collections of constraint names as values.
+     * Returns a map of database constraints with DbEntity names used as keys,
+     * and Collections of constraint names as values.
      */
-    protected Map<String, Collection<String>> getConstraints(
-            Connection conn,
-            DataMap map,
+    protected Map<String, Collection<String>> getConstraints(Connection conn, DataMap map,
             Collection<String> includeTables) throws SQLException {
 
         Map<String, Collection<String>> constraintMap = new HashMap<String, Collection<String>>();
@@ -316,13 +298,11 @@ public class UnitDbAdapter {
             if (entity == null) {
                 continue;
             }
-            boolean status = entity.getDataMap() != null
-                    && entity.getDataMap().isQuotingSQLIdentifiers();
-            QuotingStrategy strategy = adapter.getQuotingStrategy(status);
+
+            QuotingStrategy strategy = adapter.getQuotingStrategy();
 
             // Get all constraints for the table
-            ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity
-                    .getSchema(), entity.getName());
+            ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName());
             try {
                 while (rs.next()) {
                     String fk = rs.getString("FK_NAME");
@@ -336,11 +316,10 @@ public class UnitDbAdapter {
                             constraintMap.put(fkTable, constraints);
                         }
 
-                        constraints.add(strategy.quotedIdentifier(fk));
+                        constraints.add(strategy.quotedIdentifier(entity, fk));
                     }
                 }
-            }
-            finally {
+            } finally {
                 rs.close();
             }
         }
@@ -348,14 +327,10 @@ public class UnitDbAdapter {
         return constraintMap;
     }
 
-    public QuotingStrategy getQuotingStrategy(boolean status) {
-        return adapter.getQuotingStrategy(status);
-    }
-
     public boolean supportsNullBoolean() {
         return true;
     }
-    
+
     public boolean supportsBoolean() {
         return true;
     }

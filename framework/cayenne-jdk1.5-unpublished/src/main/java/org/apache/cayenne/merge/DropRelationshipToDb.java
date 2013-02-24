@@ -50,9 +50,7 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
         if (fkName == null) {
             return Collections.emptyList();
         }
-        QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = adapter.getQuotingStrategy();
         StringBuilder buf = new StringBuilder();
         buf.append("ALTER TABLE ");
         buf.append(context.quotedFullyQualifiedName(getEntity()));

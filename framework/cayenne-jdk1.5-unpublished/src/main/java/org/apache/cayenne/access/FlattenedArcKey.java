@@ -163,16 +163,7 @@ final class FlattenedArcKey {
         // DeleteBatchQuery
         // expects a PK snapshot, so we must provide it.
 
-        final boolean quotesNeeded;
-        if (joinEntity.getDataMap() != null
-                && joinEntity.getDataMap().isQuotingSQLIdentifiers()) {
-            quotesNeeded = true;
-        } else {
-            quotesNeeded = false;
-        }
-
-        QuotingStrategy quoter = node.getAdapter().getQuotingStrategy(
-                quotesNeeded);
+        QuotingStrategy quoter = node.getAdapter().getQuotingStrategy();
 
         StringBuilder sql = new StringBuilder("SELECT ");
         Collection<DbAttribute> pk = joinEntity.getPrimaryKeys();
@@ -188,19 +179,13 @@ final class FlattenedArcKey {
             DbAttribute attribute = pkList.get(i);
 
             sql.append("#result('");
-            sql.append(quoter.quotedIdentifier(attribute.getName()));
+            sql.append(quoter.quotedName(attribute));
 
-            if (quotesNeeded) {
-                // since the name of the column can potentially be quoted and
-                // use reserved
-                // keywords as name, let's specify
-                // generated column name parameters to ensure the query doesn't
-                // explode
-                sql.append("' '").append(
-                        TypesMapping.getJavaBySqlType(attribute.getType()));
-                sql.append("' '").append("pk").append(i);
-            }
-
+            // since the name of the column can potentially be quoted and
+            // use reserved keywords as name, let's specify generated column
+            // name parameters to ensure the query doesn't explode
+            sql.append("' '").append(TypesMapping.getJavaBySqlType(attribute.getType()));
+            sql.append("' '").append("pk").append(i);
             sql.append("')");
         }
 
@@ -208,7 +193,7 @@ final class FlattenedArcKey {
                 .append(" WHERE ");
         int i = snapshot.size();
         for (Object key : snapshot.keySet()) {
-            sql.append(quoter.quotedIdentifier(String.valueOf(key)))
+            sql.append(quoter.quotedIdentifier(joinEntity, String.valueOf(key)))
                     .append(" #bindEqual($").append(key).append(")");
 
             if (--i > 0) {
@@ -228,7 +213,7 @@ final class FlattenedArcKey {
                     @Override
                     public void nextRows(Query query, List dataRows) {
 
-                        if (quotesNeeded && !dataRows.isEmpty()) {
+                        if (!dataRows.isEmpty()) {
                             // decode results...
 
                             List<DataRow> fixedRows = new ArrayList<DataRow>(

@@ -47,7 +47,7 @@ public class DerbyMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+                sqlBuffer.append(context.quotedName(columnNew));
                 sqlBuffer.append(" SET DATA TYPE ");
             }
         };
@@ -60,13 +60,11 @@ public class DerbyMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+                sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" NOT NULL");
 
                 return Collections.singletonList(sqlBuffer.toString());
@@ -82,13 +80,11 @@ public class DerbyMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+                sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" NULL");
 
                 return Collections.singletonList(sqlBuffer.toString());

@@ -49,9 +49,7 @@ public class SybaseMergerFactory extends MergerFactory {
             public List<String> createSql(DbAdapter adapter) {
 
                 StringBuffer sqlBuffer = new StringBuffer();
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ADD ");
@@ -77,13 +75,11 @@ public class SybaseMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" DROP ");
-                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+                sqlBuffer.append(context.quotedName(getColumn()));
 
                 return Collections.singletonList(sqlBuffer.toString());
             }
@@ -147,7 +143,7 @@ public class SybaseMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" MODIFY ");
-                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+                sqlBuffer.append(context.quotedName(columnNew));
                 sqlBuffer.append(" ");
             }
 
@@ -159,9 +155,7 @@ public class SybaseMergerFactory extends MergerFactory {
             DbEntity entity,
             DbAttribute column) {
         StringBuffer sqlBuffer = new StringBuffer();
-        QuotingStrategy context = adapter.getQuotingStrategy(entity
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = adapter.getQuotingStrategy();
         sqlBuffer.append("ALTER TABLE ");
         sqlBuffer.append(context.quotedFullyQualifiedName(entity));
         sqlBuffer.append(" MODIFY ");

@@ -18,7 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.Entity;
 
 /**
  * @since 3.0
@@ -28,7 +32,7 @@ public interface QuotingStrategy {
     /**
      * Returns a properly quoted identifier.
      * 
-     * @deprecated use {@link #quotedIdentifier(String...)}
+     * @deprecated since 3.2
      */
     @Deprecated
     String quoteString(String identifier);
@@ -51,11 +55,28 @@ public interface QuotingStrategy {
     String quotedFullyQualifiedName(DbEntity entity);
 
     /**
-     * Builds a dot-separated qualifier, inclosing parts in quotations according
-     * to this strategy algorithm. Any of the parts can be null, in which case
-     * it will be skipped.
      * 
      * @since 3.2
      */
-    String quotedIdentifier(String... identifierParts);
+    String quotedName(DbAttribute attribute);
+
+    /**
+     * @since 3.2
+     */
+    String quotedSourceName(DbJoin join);
+
+    /**
+     * @since 3.2
+     */
+    String quotedTargetName(DbJoin join);
+
+    /**
+     * @since 3.2
+     */
+    String quotedIdentifier(Entity entity, String... identifierParts);
+    
+    /**
+     * @since 3.2
+     */
+    String quotedIdentifier(DataMap dataMap, String... identifierParts);
 }

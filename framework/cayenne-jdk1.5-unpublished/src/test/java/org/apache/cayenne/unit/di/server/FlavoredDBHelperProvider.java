@@ -33,17 +33,16 @@ public class FlavoredDBHelperProvider implements Provider<DBHelper> {
     protected ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
-    // injecting provider to make this provider independent from scoping of ServerRuntime
+    // injecting provider to make this provider independent from scoping of
+    // ServerRuntime
     protected Provider<ServerRuntime> serverRuntimeProvider;
 
     @Inject
     protected DbAdapter adapter;
 
     public DBHelper get() throws ConfigurationException {
-
         DataChannel channel = serverRuntimeProvider.get().getChannel();
         DataMap firstMap = channel.getEntityResolver().getDataMaps().iterator().next();
-        return new FlavoredDBHelper(dataSourceFactory.getSharedDataSource(),
-                adapter.getQuotingStrategy(firstMap.isQuotingSQLIdentifiers()));
+        return new FlavoredDBHelper(dataSourceFactory.getSharedDataSource(), adapter.getQuotingStrategy(), firstMap);
     }
 }

@@ -24,7 +24,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -106,12 +105,6 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 
         public String getTokenValue() {
             return getEntity().getName();
-        }
-
-        protected QuotingStrategy getQuotingStrategy(DbAdapter adapter) {
-            return adapter.getQuotingStrategy(getEntity()
-                    .getDataMap()
-                    .isQuotingSQLIdentifiers());
         }
 
         public int compareTo(MergerToken o) {

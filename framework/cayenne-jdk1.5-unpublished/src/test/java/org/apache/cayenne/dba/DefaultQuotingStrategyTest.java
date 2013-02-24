@@ -20,12 +20,34 @@ package org.apache.cayenne.dba;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+
 public class DefaultQuotingStrategyTest extends TestCase {
 
     public void testQuotedIdentifer() {
+
+        DataMap dm = new DataMap();
+        dm.setQuotingSQLIdentifiers(true);
+        DbEntity de = new DbEntity();
+        de.setDataMap(dm);
+
         DefaultQuotingStrategy strategy = new DefaultQuotingStrategy("[", "]");
-        assertEquals("[a]", strategy.quotedIdentifier("a"));
-        assertEquals("[a]", strategy.quotedIdentifier(null, null, "a"));
-        assertEquals("[c].[b].[a]", strategy.quotedIdentifier("c", "b", "a"));
+        assertEquals("[a]", strategy.quotedIdentifier(de, "a"));
+        assertEquals("[a]", strategy.quotedIdentifier(de, null, null, "a"));
+        assertEquals("[c].[b].[a]", strategy.quotedIdentifier(de, "c", "b", "a"));
+    }
+
+    public void testUnQuotedIdentifer() {
+
+        DataMap dm = new DataMap();
+        dm.setQuotingSQLIdentifiers(false);
+        DbEntity de = new DbEntity();
+        de.setDataMap(dm);
+
+        DefaultQuotingStrategy strategy = new DefaultQuotingStrategy("[", "]");
+        assertEquals("a", strategy.quotedIdentifier(de, "a"));
+        assertEquals("a", strategy.quotedIdentifier(de, null, null, "a"));
+        assertEquals("c.b.a", strategy.quotedIdentifier(de, "c", "b", "a"));
     }
 }

@@ -41,7 +41,7 @@ public class DB2MergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+                sqlBuffer.append(context.quotedName(columnNew));
                 sqlBuffer.append(" SET DATA TYPE ");
             }
         };

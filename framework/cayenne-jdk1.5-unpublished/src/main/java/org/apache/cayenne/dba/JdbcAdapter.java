@@ -67,8 +67,7 @@ public class JdbcAdapter implements DbAdapter {
     final static String DEFAULT_IDENTIFIERS_END_QUOTE = "\"";
 
     private PkGenerator pkGenerator;
-    private final QuotingStrategy noQuotingStrategy;
-    private QuotingStrategy quotingStrategy;
+    protected QuotingStrategy quotingStrategy;
 
     protected TypesHandler typesHandler;
     protected ExtendedTypeMap extendedTypes;
@@ -113,8 +112,6 @@ public class JdbcAdapter implements DbAdapter {
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-
-        this.noQuotingStrategy = new NoQuotingStrategy();
 
         // init defaults
         this.setSupportsBatchUpdates(false);
@@ -268,10 +265,9 @@ public class JdbcAdapter implements DbAdapter {
      * @since 3.0
      */
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy(table.getDataMap().isQuotingSQLIdentifiers());
 
         StringBuilder buf = new StringBuilder("DROP TABLE ");
-        buf.append(context.quotedFullyQualifiedName(table));
+        buf.append(quotingStrategy.quotedFullyQualifiedName(table));
 
         return Collections.singleton(buf.toString());
     }
@@ -281,11 +277,10 @@ public class JdbcAdapter implements DbAdapter {
      * corresponding to <code>ent</code> parameter.
      */
     public String createTable(DbEntity entity) {
-        boolean status = (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers());
-        QuotingStrategy context = getQuotingStrategy(status);
+
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ");
-        sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+        sqlBuffer.append(quotingStrategy.quotedFullyQualifiedName(entity));
 
         sqlBuffer.append(" (");
         // columns
@@ -321,12 +316,12 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
-        boolean status = (entity.getDataMap() != null && entity.getDataMap().isQuotingSQLIdentifiers());
-        QuotingStrategy context = getQuotingStrategy(status);
+
         Iterator<DbAttribute> pkit = entity.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
             sqlBuffer.append(", PRIMARY KEY (");
             boolean firstPk = true;
+
             while (pkit.hasNext()) {
                 if (firstPk)
                     firstPk = false;
@@ -335,7 +330,7 @@ public class JdbcAdapter implements DbAdapter {
 
                 DbAttribute at = pkit.next();
 
-                sqlBuffer.append(context.quotedIdentifier(at.getName()));
+                sqlBuffer.append(quotingStrategy.quotedName(at));
             }
             sqlBuffer.append(')');
         }
@@ -347,9 +342,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        boolean status = ((column.getEntity().getDataMap() != null) && column.getEntity().getDataMap()
-                .isQuotingSQLIdentifiers());
-        QuotingStrategy context = getQuotingStrategy(status);
+
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
@@ -359,7 +352,7 @@ public class JdbcAdapter implements DbAdapter {
         }
 
         String type = types[0];
-        sqlBuffer.append(context.quotedIdentifier(column.getName()));
+        sqlBuffer.append(quotingStrategy.quotedName(column));
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s
@@ -394,8 +387,6 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.1
      */
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
-        boolean status = (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers());
-        QuotingStrategy context = getQuotingStrategy(status);
 
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
@@ -404,17 +395,17 @@ public class JdbcAdapter implements DbAdapter {
         StringBuilder buf = new StringBuilder();
 
         buf.append("ALTER TABLE ");
-        buf.append(context.quotedFullyQualifiedName(source));
+        buf.append(quotingStrategy.quotedFullyQualifiedName(source));
         buf.append(" ADD UNIQUE (");
 
         Iterator<DbAttribute> it = columns.iterator();
         DbAttribute first = it.next();
-        buf.append(context.quotedIdentifier(first.getName()));
+        buf.append(quotingStrategy.quotedName(first));
 
         while (it.hasNext()) {
             DbAttribute next = it.next();
             buf.append(", ");
-            buf.append(context.quotedIdentifier(next.getName()));
+            buf.append(quotingStrategy.quotedName(next));
         }
 
         buf.append(")");
@@ -429,14 +420,12 @@ public class JdbcAdapter implements DbAdapter {
     public String createFkConstraint(DbRelationship rel) {
 
         DbEntity source = (DbEntity) rel.getSourceEntity();
-        boolean status = (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers());
-        QuotingStrategy context = getQuotingStrategy(status);
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
         buf.append("ALTER TABLE ");
 
-        buf.append(context.quotedFullyQualifiedName(source));
+        buf.append(quotingStrategy.quotedFullyQualifiedName(source));
         buf.append(" ADD FOREIGN KEY (");
 
         boolean first = true;
@@ -448,13 +437,13 @@ public class JdbcAdapter implements DbAdapter {
             } else
                 first = false;
 
-            buf.append(context.quotedIdentifier(join.getSourceName()));
-            refBuf.append(context.quotedIdentifier(join.getTargetName()));
+            buf.append(quotingStrategy.quotedSourceName(join));
+            refBuf.append(quotingStrategy.quotedTargetName(join));
         }
 
         buf.append(") REFERENCES ");
 
-        buf.append(context.quotedFullyQualifiedName((DbEntity) rel.getTargetEntity()));
+        buf.append(quotingStrategy.quotedFullyQualifiedName((DbEntity) rel.getTargetEntity()));
 
         buf.append(" (").append(refBuf.toString()).append(')');
         return buf.toString();
@@ -586,9 +575,18 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.0
+     * @deprecated since 3.2 use {@link #getQuotingStrategy()}.
      */
+    @Deprecated
     public QuotingStrategy getQuotingStrategy(boolean needQuotes) {
-        return (needQuotes) ? quotingStrategy : noQuotingStrategy;
+        return getQuotingStrategy();
+    }
+
+    /**
+     * @since 3.2
+     */
+    public QuotingStrategy getQuotingStrategy() {
+        return quotingStrategy;
     }
 
     /**

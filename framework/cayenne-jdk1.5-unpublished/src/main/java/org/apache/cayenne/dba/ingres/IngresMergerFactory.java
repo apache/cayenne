@@ -37,13 +37,10 @@ import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
 import org.apache.cayenne.merge.SetNotNullToDb;
 
-
 public class IngresMergerFactory extends MergerFactory {
-    
+
     @Override
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
+    public MergerToken createSetColumnTypeToDb(final DbEntity entity, DbAttribute columnOriginal,
             final DbAttribute columnNew) {
 
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
@@ -53,9 +50,9 @@ public class IngresMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+                sqlBuffer.append(context.quotedName(columnNew));
                 sqlBuffer.append(" ");
-           }
+            }
         };
     }
 
@@ -66,13 +63,11 @@ public class IngresMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder buf = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
                 buf.append("ALTER TABLE ");
                 buf.append(context.quotedFullyQualifiedName(getEntity()));
                 buf.append(" DROP COLUMN ");
-                buf.append(context.quotedIdentifier(getColumn().getName()));
+                buf.append(context.quotedName(getColumn()));
                 buf.append(" RESTRICT ");
 
                 return Collections.singletonList(buf.toString());
@@ -80,98 +75,93 @@ public class IngresMergerFactory extends MergerFactory {
 
         };
     }
-   
+
     @Override
     public MergerToken createAddRelationshipToDb(DbEntity entity, final DbRelationship rel) {
         return new AddRelationshipToDb(entity, rel) {
             @Override
             public List<String> createSql(DbAdapter adapter) {
-              if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
-                  
-                DbEntity source = (DbEntity) rel.getSourceEntity();
-                boolean status = (source.getDataMap() != null && source.getDataMap().isQuotingSQLIdentifiers());
-                QuotingStrategy context = adapter.getQuotingStrategy(status);
-                StringBuilder buf = new StringBuilder();
-                StringBuilder refBuf = new StringBuilder();
-        
-                buf.append("ALTER TABLE ");
-                buf.append(context.quotedFullyQualifiedName(source));
-        
-                // requires the ADD CONSTRAINT statement
-                buf.append(" ADD CONSTRAINT ");
-                String name = "U_"
-                        + rel.getSourceEntity().getName()
-                        + "_"
-                        + (long) (System.currentTimeMillis() / (Math.random() * 100000));
-        
-                buf.append(context.quotedIdentifier(name));
-                buf.append(" FOREIGN KEY (");
-        
-                boolean first = true;
-                for (DbJoin join : rel.getJoins()) {
-                    if (!first) {
-                        buf.append(", ");
-                        refBuf.append(", ");
+                if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
+
+                    DbEntity source = (DbEntity) rel.getSourceEntity();
+                    QuotingStrategy context = adapter.getQuotingStrategy();
+                    StringBuilder buf = new StringBuilder();
+                    StringBuilder refBuf = new StringBuilder();
+
+                    buf.append("ALTER TABLE ");
+                    buf.append(context.quotedFullyQualifiedName(source));
+
+                    // requires the ADD CONSTRAINT statement
+                    buf.append(" ADD CONSTRAINT ");
+                    String name = "U_" + rel.getSourceEntity().getName() + "_"
+                            + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+
+                    buf.append(context.quotedIdentifier(rel.getSourceEntity(), name));
+                    buf.append(" FOREIGN KEY (");
+
+                    boolean first = true;
+                    for (DbJoin join : rel.getJoins()) {
+                        if (!first) {
+                            buf.append(", ");
+                            refBuf.append(", ");
+                        } else
+                            first = false;
+
+                        buf.append(context.quotedSourceName(join));
+                        refBuf.append(context.quotedTargetName(join));
                     }
-                    else
-                        first = false;
-        
-                    buf.append(context.quotedIdentifier(join.getSourceName()));
-                    refBuf.append(context.quotedIdentifier(join.getTargetName()));
+
+                    buf.append(") REFERENCES ");
+                    buf.append(context.quotedFullyQualifiedName((DbEntity) rel.getTargetEntity()));
+                    buf.append(" (");
+                    buf.append(refBuf.toString());
+                    buf.append(')');
+
+                    // also make sure we delete dependent FKs
+                    buf.append(" ON DELETE CASCADE");
+
+                    String fksql = buf.toString();
+
+                    if (fksql != null) {
+                        return Collections.singletonList(fksql);
+                    }
                 }
-        
-                buf.append(") REFERENCES ");
-                buf.append(context.quotedFullyQualifiedName((DbEntity) rel.getTargetEntity()));
-                buf.append(" (");
-                buf.append(refBuf.toString());
-                buf.append(')');
-                
-                // also make sure we delete dependent FKs
-                buf.append(" ON DELETE CASCADE");
-        
-                String fksql = buf.toString();
-                  
-                  if (fksql != null) {
-                      return Collections.singletonList(fksql);
-                  }
-              }
-             
-              return Collections.emptyList();
-             
+
+                return Collections.emptyList();
+
             }
         };
     }
-    
+
     @Override
     public MergerToken createSetNotNullToDb(DbEntity entity, DbAttribute column) {
         return new SetNotNullToDb(entity, column) {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                
-                /* 
-                 * TODO: we generate this query as in ingres db documentation, but unfortunately ingres don't support it
-                 * 
+
+                /*
+                 * TODO: we generate this query as in ingres db documentation,
+                 * but unfortunately ingres don't support it
                  */
-                
+
                 StringBuilder sqlBuffer = new StringBuilder();
-                
-                boolean status = (getEntity().getDataMap() != null) && getEntity().getDataMap().isQuotingSQLIdentifiers();
-                QuotingStrategy context = adapter.getQuotingStrategy(status);
+
+                QuotingStrategy context = adapter.getQuotingStrategy();
 
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(getEntity().getFullyQualifiedName());
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+                sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
-              
+
                 if (TypesMapping.supportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
                     sqlBuffer.append("(");
                     sqlBuffer.append(getColumn().getMaxLength());
                     sqlBuffer.append(")");
                 }
-                
+
                 sqlBuffer.append(" NOT NULL");
 
                 return Collections.singletonList(sqlBuffer.toString());
@@ -179,7 +169,7 @@ public class IngresMergerFactory extends MergerFactory {
 
         };
     }
-    
+
     @Override
     public MergerToken createSetAllowNullToDb(DbEntity entity, DbAttribute column) {
         return new SetAllowNullToDb(entity, column) {
@@ -187,22 +177,20 @@ public class IngresMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+                sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
-              
+
                 if (TypesMapping.supportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
                     sqlBuffer.append("(");
                     sqlBuffer.append(getColumn().getMaxLength());
                     sqlBuffer.append(")");
                 }
-                
+
                 sqlBuffer.append(" WITH NULL");
 
                 return Collections.singletonList(sqlBuffer.toString());
@@ -210,27 +198,23 @@ public class IngresMergerFactory extends MergerFactory {
 
         };
     }
-    
+
     @Override
-    public MergerToken createDropRelationshipToDb(
-            final DbEntity entity,
-            DbRelationship rel) {
+    public MergerToken createDropRelationshipToDb(final DbEntity entity, DbRelationship rel) {
 
         return new DropRelationshipToDb(entity, rel) {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 String fkName = getFkName();
-                
+
                 if (fkName == null) {
                     return Collections.emptyList();
                 }
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
-                buf.append(context.quotedFullyQualifiedName(getEntity()));
+                buf.append(adapter.getQuotingStrategy().quotedFullyQualifiedName(getEntity()));
                 buf.append(" DROP CONSTRAINT ");
                 buf.append(fkName);
                 buf.append(" CASCADE ");

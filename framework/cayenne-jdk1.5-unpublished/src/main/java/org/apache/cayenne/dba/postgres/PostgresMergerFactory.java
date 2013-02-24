@@ -36,12 +36,12 @@ public class PostgresMergerFactory extends MergerFactory {
         return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
 
             @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
+            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy quotingStrategy) {
                 // http://www.postgresql.org/docs/8.2/static/sql-altertable.html
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
+                sqlBuffer.append(quotingStrategy.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER ");
-                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+                sqlBuffer.append(quotingStrategy.quotedName(columnNew));
                 sqlBuffer.append(" TYPE ");
             }
         };

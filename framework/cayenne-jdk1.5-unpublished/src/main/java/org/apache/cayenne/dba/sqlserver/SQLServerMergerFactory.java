@@ -48,7 +48,7 @@ public class SQLServerMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+                sqlBuffer.append(context.quotedName(columnNew));
                 sqlBuffer.append(" ");
             }
         };
@@ -64,7 +64,7 @@ public class SQLServerMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" ADD ");
-                sqlBuffer.append(context.quotedIdentifier(column.getName()));
+                sqlBuffer.append(context.quotedName(column));
                 sqlBuffer.append(" ");
             }
         };
@@ -78,12 +78,8 @@ public class SQLServerMergerFactory extends MergerFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
-
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+                sqlBuffer.append(adapter.getQuotingStrategy().quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
 
                 adapter.createTableAppendColumn(sqlBuffer, column);
@@ -102,11 +98,9 @@ public class SQLServerMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+
                 sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+                sqlBuffer.append(adapter.getQuotingStrategy().quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" ALTER COLUMN ");
 
                 adapter.createTableAppendColumn(sqlBuffer, column);

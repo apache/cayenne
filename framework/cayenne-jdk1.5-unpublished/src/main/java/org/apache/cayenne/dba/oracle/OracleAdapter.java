@@ -217,9 +217,7 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy(table
-                .getDataMap()
-                .isQuotingSQLIdentifiers());
+        QuotingStrategy context = getQuotingStrategy();
         StringBuffer buf = new StringBuffer("DROP TABLE ");
         buf.append(context.quotedFullyQualifiedName(table));
 

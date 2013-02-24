@@ -47,14 +47,12 @@ public class MySQLMergerFactory extends MergerFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
 
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+                sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" ");
                 adapter.createTableAppendColumn(sqlBuffer, column);
 
@@ -74,14 +72,12 @@ public class MySQLMergerFactory extends MergerFactory {
             public List<String> createSql(DbAdapter adapter) {
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
 
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
                 sqlBuffer.append(" CHANGE ");
-                sqlBuffer.append(context.quotedIdentifier(getColumn().getName()));
+                sqlBuffer.append(context.quotedName(getColumn()));
                 sqlBuffer.append(" ");
                 adapter.createTableAppendColumn(sqlBuffer, column);
 
@@ -105,7 +101,7 @@ public class MySQLMergerFactory extends MergerFactory {
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(context.quotedFullyQualifiedName(entity));
                 sqlBuffer.append(" MODIFY ");
-                sqlBuffer.append(context.quotedIdentifier(columnNew.getName()));
+                sqlBuffer.append(context.quotedName(columnNew));
                 sqlBuffer.append(" ");
             }
 
@@ -126,9 +122,7 @@ public class MySQLMergerFactory extends MergerFactory {
                 if (fkName == null) {
                     return Collections.emptyList();
                 }
-                QuotingStrategy context = adapter.getQuotingStrategy(getEntity()
-                        .getDataMap()
-                        .isQuotingSQLIdentifiers());
+                QuotingStrategy context = adapter.getQuotingStrategy();
                 StringBuilder buf = new StringBuilder();
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 buf.append("ALTER TABLE ");
@@ -158,7 +152,7 @@ public class MySQLMergerFactory extends MergerFactory {
                     DbAdapter adapter,
                     List<String> sqls) {
                 sqls.add("ALTER TABLE "
-                        + getQuotingStrategy(adapter)
+                        + adapter.getQuotingStrategy()
                                 .quotedFullyQualifiedName(getEntity())
                         + " DROP PRIMARY KEY");
             }

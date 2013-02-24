@@ -36,7 +36,6 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -47,8 +46,8 @@ import org.apache.cayenne.query.SQLAction;
 
 /**
  * DbAdapter implementation for <a
- * href="http://opensource.ca.com/projects/ingres/">Ingres</a>. Sample connection settings
- * to use with Ingres are shown below:
+ * href="http://opensource.ca.com/projects/ingres/">Ingres</a>. Sample
+ * connection settings to use with Ingres are shown below:
  * 
  * <pre>
  *  ingres.jdbc.username = test
@@ -61,31 +60,23 @@ public class IngresAdapter extends JdbcAdapter {
 
     public static final String TRIM_FUNCTION = "TRIM";
 
-    public IngresAdapter(
-            @Inject RuntimeProperties runtimeProperties,
+    public IngresAdapter(@Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
-        super(
-                runtimeProperties,
-                defaultExtendedTypes,
-                userExtendedTypes,
-                extendedTypeFactories);
+        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
         setSupportsUniqueConstraints(true);
         setSupportsGeneratedKeys(true);
     }
 
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new TrimmingQualifierTranslator(
-                queryAssembler,
-                IngresAdapter.TRIM_FUNCTION);
+        return new TrimmingQualifierTranslator(queryAssembler, IngresAdapter.TRIM_FUNCTION);
     }
 
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new IngresActionBuilder(this, node
-                .getEntityResolver()));
+        return query.createSQLAction(new IngresActionBuilder(this, node.getEntityResolver()));
     }
 
     @Override
@@ -106,17 +97,12 @@ public class IngresAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(
-            PreparedStatement statement,
-            Object object,
-            int pos,
-            int sqlType,
-            int scale) throws SQLException, Exception {
+    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+            throws SQLException, Exception {
 
         if (object == null && (sqlType == Types.BOOLEAN || sqlType == Types.BIT)) {
             statement.setNull(pos, Types.VARCHAR);
-        }
-        else {
+        } else {
             super.bindParameter(statement, object, pos, sqlType, scale);
         }
     }
@@ -128,21 +114,15 @@ public class IngresAdapter extends JdbcAdapter {
 
     @Override
     public void createTableAppendColumn(StringBuffer buf, DbAttribute at) {
-        boolean status = (at.getEntity().getDataMap() != null)
-                && at.getEntity().getDataMap().isQuotingSQLIdentifiers();
-        QuotingStrategy context = getQuotingStrategy(status);
+
         String[] types = externalTypesForJdbcType(at.getType());
         if (types == null || types.length == 0) {
             throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + ((DbEntity) at.getEntity()).getFullyQualifiedName()
-                    + "."
-                    + at.getName()
-                    + "': "
-                    + at.getType());
+                    + ((DbEntity) at.getEntity()).getFullyQualifiedName() + "." + at.getName() + "': " + at.getType());
         }
 
         String type = types[0];
-        buf.append(context.quotedIdentifier(at.getName())).append(' ').append(type);
+        buf.append(quotingStrategy.quotedName(at)).append(' ').append(type);
 
         // append size and precision (if applicable)
         if (TypesMapping.supportsLength(at.getType())) {

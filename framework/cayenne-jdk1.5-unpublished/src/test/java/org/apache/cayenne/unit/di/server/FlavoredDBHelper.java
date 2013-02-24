@@ -21,6 +21,7 @@ package org.apache.cayenne.unit.di.server;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.test.jdbc.DBHelper;
 
 /**
@@ -28,16 +29,18 @@ import org.apache.cayenne.test.jdbc.DBHelper;
  */
 public class FlavoredDBHelper extends DBHelper {
 
-    protected QuotingStrategy quotingStrategy;
+    private QuotingStrategy quotingStrategy;
+    private DataMap dataMap;
 
-    public FlavoredDBHelper(DataSource dataSource, QuotingStrategy quotingStrategy) {
+    public FlavoredDBHelper(DataSource dataSource, QuotingStrategy quotingStrategy, DataMap dataMap) {
         super(dataSource);
+        this.dataMap = dataMap;
         this.quotingStrategy = quotingStrategy;
     }
 
     @Override
     protected String quote(String sqlIdentifier) {
-        return quotingStrategy.quotedIdentifier(sqlIdentifier);
+        return quotingStrategy.quotedIdentifier(dataMap, sqlIdentifier);
     }
 
 }
