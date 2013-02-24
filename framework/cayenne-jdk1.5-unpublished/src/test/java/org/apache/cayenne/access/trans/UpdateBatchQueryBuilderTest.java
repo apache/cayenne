@@ -32,6 +32,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -43,6 +44,9 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private UnitDbAdapter unitAdapter;
     
     @Inject
     private AdhocObjectFactory objectFactory;
@@ -133,8 +137,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
             UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(updateQuery);
 
-            String charStart = adapter.getIdentifiersStartQuote();
-            String charEnd = adapter.getIdentifiersEndQuote();
+            String charStart = unitAdapter.getIdentifiersStartQuote();
+            String charEnd = unitAdapter.getIdentifiersEndQuote();
 
             assertNotNull(generatedSql);
             assertEquals("UPDATE "
@@ -184,8 +188,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
             String generatedSql = builder.createSqlString(updateQuery);
             assertNotNull(generatedSql);
 
-            String charStart = adapter.getIdentifiersStartQuote();
-            String charEnd = adapter.getIdentifiersEndQuote();
+            String charStart = unitAdapter.getIdentifiersStartQuote();
+            String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertEquals("UPDATE "
                     + charStart
                     + entity.getName()

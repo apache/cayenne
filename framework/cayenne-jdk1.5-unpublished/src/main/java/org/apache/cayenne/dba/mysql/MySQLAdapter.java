@@ -41,6 +41,7 @@ import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -104,9 +105,8 @@ public class MySQLAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void initIdentifiersQuotes() {
-        this.identifiersStartQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START;
-        this.identifiersEndQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END;
+    protected QuotingStrategy createQuotingStrategy() {
+        return new DefaultQuotingStrategy("`", "`");
     }
 
     @Override

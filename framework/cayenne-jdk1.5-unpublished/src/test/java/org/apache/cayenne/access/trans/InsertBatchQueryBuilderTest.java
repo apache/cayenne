@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -37,14 +38,15 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     private DbAdapter adapter;
-    
+
+    @Inject
+    private UnitDbAdapter unitAdapter;
+
     @Inject
     private AdhocObjectFactory objectFactory;
 
     public void testConstructor() throws Exception {
-        DbAdapter adapter = objectFactory.newInstance(
-                DbAdapter.class, 
-                JdbcAdapter.class.getName());
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
         DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
 
@@ -52,22 +54,21 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
     }
 
     public void testCreateSqlString() throws Exception {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
-                SimpleLockingTestEntity.class).getDbEntity();
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(SimpleLockingTestEntity.class)
+                .getDbEntity();
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
         InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(adapter);
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
-        assertEquals("INSERT INTO "
-                + entity.getName()
-                + " (DESCRIPTION, LOCKING_TEST_ID, NAME) VALUES (?, ?, ?)", generatedSql);
+        assertEquals("INSERT INTO " + entity.getName() + " (DESCRIPTION, LOCKING_TEST_ID, NAME) VALUES (?, ?, ?)",
+                generatedSql);
     }
 
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
-                SimpleLockingTestEntity.class).getDbEntity();
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(SimpleLockingTestEntity.class)
+                .getDbEntity();
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
@@ -77,28 +78,13 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
             InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
             InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(deleteQuery);
-            String charStart = adapter.getIdentifiersStartQuote();
-            String charEnd = adapter.getIdentifiersEndQuote();
+            String charStart = unitAdapter.getIdentifiersStartQuote();
+            String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);
-            assertEquals("INSERT INTO "
-                    + charStart
-                    + entity.getName()
-                    + charEnd
-                    + " ("
-                    + charStart
-                    + "DESCRIPTION"
-                    + charEnd
-                    + ", "
-                    + charStart
-                    + "LOCKING_TEST_ID"
-                    + charEnd
-                    + ", "
-                    + charStart
-                    + "NAME"
-                    + charEnd
+            assertEquals("INSERT INTO " + charStart + entity.getName() + charEnd + " (" + charStart + "DESCRIPTION"
+                    + charEnd + ", " + charStart + "LOCKING_TEST_ID" + charEnd + ", " + charStart + "NAME" + charEnd
                     + ") VALUES (?, ?, ?)", generatedSql);
-        }
-        finally {
+        } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }
     }

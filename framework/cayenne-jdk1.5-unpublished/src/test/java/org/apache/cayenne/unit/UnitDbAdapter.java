@@ -66,6 +66,14 @@ public class UnitDbAdapter {
         }
         this.adapter = adapter;
     }
+    
+    public String getIdentifiersStartQuote() {
+        return "\"";
+    }
+    
+    public String getIdentifiersEndQuote() {
+        return "\"";
+    }
 
     /**
      * Drops all table constraints.

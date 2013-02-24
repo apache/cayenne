@@ -34,19 +34,19 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.merge.MergerFactory;
 
 /**
- * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
+ * DbAdapter implementation for <a href="http://www.sybase.com">Sybase
+ * RDBMS</a>.
  */
 public class SybaseAdapter extends JdbcAdapter {
 
-    final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "[";
-    final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "]";
-    
     public SybaseAdapter(@Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
@@ -54,13 +54,9 @@ public class SybaseAdapter extends JdbcAdapter {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
     }
 
-    /**
-     * @since 3.0
-     */
     @Override
-    public void initIdentifiersQuotes() {
-        this.identifiersStartQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START;
-        this.identifiersEndQuote = MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END;
+    protected QuotingStrategy createQuotingStrategy() {
+        return new DefaultQuotingStrategy("[", "]");
     }
 
     /**
@@ -82,8 +78,8 @@ public class SybaseAdapter extends JdbcAdapter {
     }
 
     /**
-     * Installs appropriate ExtendedTypes as converters for passing values between JDBC
-     * and Java layers.
+     * Installs appropriate ExtendedTypes as converters for passing values
+     * between JDBC and Java layers.
      */
     @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
@@ -95,14 +91,15 @@ public class SybaseAdapter extends JdbcAdapter {
         // create specially configured ByteArrayType handler
         map.registerType(new ByteArrayType(true, false));
 
-        // address Sybase driver inability to handle java.lang.Short and java.lang.Byte
+        // address Sybase driver inability to handle java.lang.Short and
+        // java.lang.Byte
         map.registerType(new ShortType(true));
         map.registerType(new ByteType(true));
     }
 
     /**
-     * Creates and returns a primary key generator. Overrides superclass implementation to
-     * return an instance of SybasePkGenerator.
+     * Creates and returns a primary key generator. Overrides superclass
+     * implementation to return an instance of SybasePkGenerator.
      */
     @Override
     protected PkGenerator createPkGenerator() {
@@ -110,27 +107,21 @@ public class SybaseAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(
-            PreparedStatement statement,
-            Object object,
-            int pos,
-            int sqlType,
-            int precision) throws SQLException, Exception {
+    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int precision)
+            throws SQLException, Exception {
 
         // Sybase driver doesn't like CLOBs and BLOBs as parameters
         if (object == null) {
             if (sqlType == Types.CLOB) {
                 sqlType = Types.VARCHAR;
-            }
-            else if (sqlType == Types.BLOB) {
+            } else if (sqlType == Types.BLOB) {
                 sqlType = Types.VARBINARY;
             }
         }
 
         if (object == null && sqlType == 0) {
             statement.setNull(pos, Types.VARCHAR);
-        }
-        else {
+        } else {
             super.bindParameter(statement, object, pos, sqlType, precision);
         }
     }

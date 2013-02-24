@@ -37,13 +37,16 @@ import org.apache.cayenne.map.Procedure;
  */
 public class SybaseUnitDbAdapter extends UnitDbAdapter {
 
-    /**
-     * Constructor for SybaseDelegate.
-     * 
-     * @param adapter
-     */
     public SybaseUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
+    }
+    
+    public String getIdentifiersStartQuote() {
+        return "[";
+    }
+    
+    public String getIdentifiersEndQuote() {
+        return "]";
     }
 
     @Override

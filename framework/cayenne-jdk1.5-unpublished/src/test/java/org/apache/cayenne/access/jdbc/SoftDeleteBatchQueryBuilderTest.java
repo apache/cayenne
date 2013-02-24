@@ -38,6 +38,7 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.locking.SoftTest;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -49,6 +50,9 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     protected DbAdapter adapter;
+    
+    @Inject
+    private UnitDbAdapter unitAdapter;
     
     @Inject
     private AdhocObjectFactory objectFactory;
@@ -130,8 +134,8 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
             DeleteBatchQueryBuilder builder = createBuilder(adapter);
             String generatedSql = builder.createSqlString(deleteQuery);
 
-            String charStart = adapter.getIdentifiersStartQuote();
-            String charEnd = adapter.getIdentifiersEndQuote();
+            String charStart = unitAdapter.getIdentifiersStartQuote();
+            String charEnd = unitAdapter.getIdentifiersEndQuote();
 
             assertNotNull(generatedSql);
             assertEquals("UPDATE "

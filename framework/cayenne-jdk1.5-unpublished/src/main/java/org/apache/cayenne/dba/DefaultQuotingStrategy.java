@@ -27,12 +27,12 @@ import org.apache.cayenne.map.Entity;
 /**
  * @since 3.2 this is a top-level class.
  */
-class DefaultQuotingStrategy implements QuotingStrategy {
+public class DefaultQuotingStrategy implements QuotingStrategy {
 
     private String endQuote;
     private String startQuote;
 
-    DefaultQuotingStrategy(String startQuote, String endQuote) {
+    public DefaultQuotingStrategy(String startQuote, String endQuote) {
         this.startQuote = startQuote;
         this.endQuote = endQuote;
     }

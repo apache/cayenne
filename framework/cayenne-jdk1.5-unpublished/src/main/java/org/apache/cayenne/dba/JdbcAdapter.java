@@ -63,9 +63,6 @@ public class JdbcAdapter implements DbAdapter {
     // defines if database uses case-insensitive collation
     public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
 
-    final static String DEFAULT_IDENTIFIERS_START_QUOTE = "\"";
-    final static String DEFAULT_IDENTIFIERS_END_QUOTE = "\"";
-
     private PkGenerator pkGenerator;
     protected QuotingStrategy quotingStrategy;
 
@@ -75,9 +72,6 @@ public class JdbcAdapter implements DbAdapter {
     protected boolean supportsUniqueConstraints;
     protected boolean supportsGeneratedKeys;
     protected EJBQLTranslatorFactory ejbqlTranslatorFactory;
-
-    protected String identifiersStartQuote;
-    protected String identifiersEndQuote;
 
     protected ResourceLocator resourceLocator;
     protected boolean caseInsensitiveCollations;
@@ -90,20 +84,6 @@ public class JdbcAdapter implements DbAdapter {
 
     @Inject
     protected JdbcEventLogger logger;
-
-    /**
-     * @since 3.0
-     */
-    public String getIdentifiersStartQuote() {
-        return identifiersStartQuote;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public String getIdentifiersEndQuote() {
-        return identifiersEndQuote;
-    }
 
     /**
      * Creates new JdbcAdapter with a set of default parameters.
@@ -122,13 +102,12 @@ public class JdbcAdapter implements DbAdapter {
         this.resourceLocator = new ClassLoaderResourceLocator();
 
         this.pkGenerator = createPkGenerator();
+        this.quotingStrategy = createQuotingStrategy();
+
         this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
         this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
         this.extendedTypes = new ExtendedTypeMap();
         initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
-        initIdentifiersQuotes();
-
-        this.quotingStrategy = new DefaultQuotingStrategy(identifiersStartQuote, identifiersEndQuote);
     }
 
     /**
@@ -566,11 +545,11 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * @since 3.0
+     * @since 3.2
+     * @return
      */
-    protected void initIdentifiersQuotes() {
-        this.identifiersStartQuote = DEFAULT_IDENTIFIERS_START_QUOTE;
-        this.identifiersEndQuote = DEFAULT_IDENTIFIERS_END_QUOTE;
+    protected QuotingStrategy createQuotingStrategy() {
+        return new DefaultQuotingStrategy("\"", "\"");
     }
 
     /**

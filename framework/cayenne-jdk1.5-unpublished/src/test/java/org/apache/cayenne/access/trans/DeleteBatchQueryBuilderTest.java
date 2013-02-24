@@ -33,6 +33,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -44,6 +45,9 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private UnitDbAdapter unitAdapter;
     
     @Inject
     private AdhocObjectFactory objectFactory;
@@ -119,8 +123,8 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
             DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(deleteQuery);
 
-            String charStart = adapter.getIdentifiersStartQuote();
-            String charEnd = adapter.getIdentifiersEndQuote();
+            String charStart = unitAdapter.getIdentifiersStartQuote();
+            String charEnd = unitAdapter.getIdentifiersEndQuote();
 
             assertNotNull(generatedSql);
             assertEquals("DELETE FROM "
@@ -163,8 +167,8 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
             DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
             String generatedSql = builder.createSqlString(deleteQuery);
 
-            String charStart = adapter.getIdentifiersStartQuote();
-            String charEnd = adapter.getIdentifiersEndQuote();
+            String charStart = unitAdapter.getIdentifiersStartQuote();
+            String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);
 
             assertEquals("DELETE FROM "

@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -44,6 +43,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -59,6 +59,9 @@ public class SelectTranslatorTest extends ServerCase {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private UnitDbAdapter unitAdapter;
 
     @Inject
     private DBHelper dbHelper;
@@ -536,9 +539,8 @@ public class SelectTranslatorTest extends ServerCase {
 
                 @Override
                 void test(SelectTranslator transl) throws Exception {
-                    JdbcAdapter adapter = (JdbcAdapter) SelectTranslatorTest.this.adapter;
-                    String charStart = adapter.getIdentifiersStartQuote();
-                    String charEnd = adapter.getIdentifiersEndQuote();
+                    String charStart = unitAdapter.getIdentifiersStartQuote();
+                    String charEnd = unitAdapter.getIdentifiersEndQuote();
 
                     String s = transl.createSqlString();
                     assertTrue(s.startsWith("SELECT "));
@@ -612,9 +614,8 @@ public class SelectTranslatorTest extends ServerCase {
                 @Override
                 void test(SelectTranslator transl) throws Exception {
 
-                    JdbcAdapter adapter = (JdbcAdapter) SelectTranslatorTest.this.adapter;
-                    String charStart = adapter.getIdentifiersStartQuote();
-                    String charEnd = adapter.getIdentifiersEndQuote();
+                    String charStart = unitAdapter.getIdentifiersStartQuote();
+                    String charEnd = unitAdapter.getIdentifiersEndQuote();
 
                     String s = transl.createSqlString();
 
@@ -706,9 +707,8 @@ public class SelectTranslatorTest extends ServerCase {
 
                 @Override
                 void test(SelectTranslator transl) throws Exception {
-                    JdbcAdapter adapter = (JdbcAdapter) SelectTranslatorTest.this.adapter;
-                    String charStart = adapter.getIdentifiersStartQuote();
-                    String charEnd = adapter.getIdentifiersEndQuote();
+                    String charStart = unitAdapter.getIdentifiersStartQuote();
+                    String charEnd = unitAdapter.getIdentifiersEndQuote();
 
                     String s = transl.createSqlString();
 
@@ -894,9 +894,8 @@ public class SelectTranslatorTest extends ServerCase {
 
                 @Override
                 void test(SelectTranslator transl) throws Exception {
-                    JdbcAdapter adapter = (JdbcAdapter) SelectTranslatorTest.this.adapter;
-                    String charStart = adapter.getIdentifiersStartQuote();
-                    String charEnd = adapter.getIdentifiersEndQuote();
+                    String charStart = unitAdapter.getIdentifiersStartQuote();
+                    String charEnd = unitAdapter.getIdentifiersEndQuote();
 
                     String s = transl.createSqlString();
 

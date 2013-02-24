@@ -42,6 +42,16 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
     }
     
     @Override
+    public String getIdentifiersStartQuote() {
+        return "`";
+    }
+    
+    @Override
+    public String getIdentifiersEndQuote() {
+        return "`";
+    }
+    
+    @Override
     public boolean supportsCatalogs() {
         return true;
     }
