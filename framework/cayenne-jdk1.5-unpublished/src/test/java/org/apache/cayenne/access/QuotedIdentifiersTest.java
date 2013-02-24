@@ -27,6 +27,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.query.SelectQuery;
@@ -50,9 +51,6 @@ public class QuotedIdentifiersTest extends ServerCase {
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("QUOTED_ADDRESS");
         dbHelper.deleteAll("quote Person");
-    }
-
-    public void testPrefetchQuote() throws Exception {
 
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");
@@ -63,7 +61,7 @@ public class QuotedIdentifiersTest extends ServerCase {
         quote_Person.setName("Arcadi");
         quote_Person.setGroup("107324");
         quote_Person.setAddress_Rel(quoteAdress);
-        
+
         context.commitChanges();
 
         SelectQuery q = new SelectQuery(QuoteAdress.class);
@@ -83,9 +81,11 @@ public class QuotedIdentifiersTest extends ServerCase {
         quote_Person2.setGroup("1111");
         quote_Person2.setDAte(new Date());
         quote_Person2.setAddress_Rel(quoteAdress2);
-        
-        context.commitChanges();
 
+        context.commitChanges();
+    }
+
+    public void testPrefetchQuote() throws Exception {
         DbEntity entity = context
                 .getEntityResolver()
                 .lookupObjEntity(QuoteAdress.class)
@@ -134,10 +134,37 @@ public class QuotedIdentifiersTest extends ServerCase {
                 "Quote_Person", "GROUP", "1111"));
         List objects9 = context.performQuery(queryObjectId2);
         assertEquals(1, objects9.size());
-        
+
+        SelectQuery person2Query = new SelectQuery(Quote_Person.class, ExpressionFactory.matchExp("name", "Name"));
+        Quote_Person quote_Person2 = (Quote_Person) context.performQuery(person2Query).get(0);
+
         RelationshipQuery relationshipQuery = new RelationshipQuery(quote_Person2.getObjectId(), "address_Rel");
         List objects10 = context.performQuery(relationshipQuery);
         assertEquals(1, objects10.size());
-        
     }
+
+    public void testQuotedEJBQLQuery() throws Exception {
+        String ejbql = "select a from QuoteAdress a where a.group = '324'";
+        EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
+        List objects11 = context.performQuery(queryEJBQL);
+        assertEquals(1, objects11.size());
+    }
+
+    public void testQuotedEJBQLQueryWithJoin() throws Exception {
+        String ejbql = "select p from Quote_Person p join p.address_Rel a where p.name = 'Arcadi'";
+        EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
+        List resultList = context.performQuery(queryEJBQL);
+        assertEquals(1, resultList.size());
+    }
+
+    public void testQuotedEJBQLQueryWithOrderBy() throws Exception {
+        EJBQLQuery query = new EJBQLQuery("select p from Quote_Person p order by p.name");
+
+        List<Quote_Person> resultList = (List<Quote_Person>) context.performQuery(query);
+
+        assertEquals(2, resultList.size());
+        assertEquals("Arcadi", resultList.get(0).getName());
+        assertEquals("Name", resultList.get(1).getName());
+    }
+
 }

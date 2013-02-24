@@ -4,6 +4,7 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
 	 project-version="6">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.qualified"/>
+    <property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="QUALIFIED1">
 		<db-attribute name="DELETED" type="BOOLEAN"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>

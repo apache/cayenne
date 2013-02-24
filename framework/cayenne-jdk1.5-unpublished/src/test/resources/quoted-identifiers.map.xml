@@ -5,6 +5,7 @@
 	 project-version="6">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.quotemap"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
+    <property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="QUOTED_ADDRESS">
 		<db-attribute name="ADDRESS ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="City" type="VARCHAR" length="200"/>
