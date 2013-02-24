@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.dba.QuotingSupport;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -157,10 +158,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         String correlatedEntityId = path.getId();
         ClassDescriptor correlatedEntityDescriptor = context
                 .getEntityDescriptor(correlatedEntityId);
-        String correlatedTableName = correlatedEntityDescriptor
+        String correlatedTableName = context.getQuotingSupport().generateTableName(correlatedEntityDescriptor
                 .getEntity()
-                .getDbEntity()
-                .getFullyQualifiedName();
+                .getDbEntity());
         String correlatedTableAlias = context.getTableAlias(
                 correlatedEntityId,
                 correlatedTableName);
@@ -174,10 +174,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         context.append(" EXISTS (SELECT 1 FROM ");
 
-        String subqueryTableName = targetDescriptor
+        String subqueryTableName = context.getQuotingSupport().generateTableName(targetDescriptor
                 .getEntity()
-                .getDbEntity()
-                .getFullyQualifiedName();
+                .getDbEntity());
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
         ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor
@@ -205,7 +204,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             DbJoin join = it.next();
             context.append(' ').append(subqueryRootAlias).append('.').append(
                     join.getTargetName()).append(" = ");
-            context.append(correlatedTableAlias).append('.').append(join.getSourceName());
+            context.append(correlatedTableAlias).append('.')
+                    .append(context.getQuotingSupport().generateColumnName(join.getSource()));
 
             if (it.hasNext()) {
                 context.append(" AND");
@@ -249,10 +249,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         String correlatedEntityId = path.getId();
         ClassDescriptor correlatedEntityDescriptor = context
                 .getEntityDescriptor(correlatedEntityId);
-        String correlatedTableName = correlatedEntityDescriptor
+        String correlatedTableName = context.getQuotingSupport().generateTableName(correlatedEntityDescriptor
                 .getEntity()
-                .getDbEntity()
-                .getFullyQualifiedName();
+                .getDbEntity());
         String correlatedTableAlias = context.getTableAlias(
                 correlatedEntityId,
                 correlatedTableName);
@@ -266,10 +265,9 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         context.append(" EXISTS (SELECT 1 FROM ");
 
-        String subqueryTableName = targetDescriptor
+        String subqueryTableName = context.getQuotingSupport().generateTableName(targetDescriptor
                 .getEntity()
-                .getDbEntity()
-                .getFullyQualifiedName();
+                .getDbEntity());
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
         ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor
@@ -294,10 +292,11 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         DbRelationship correlatedJoinRelationship = context.getIncomingRelationships(
                 new EJBQLTableId(id)).get(0);
 
+        QuotingSupport quotingSupport = context.getQuotingSupport();
         for (DbJoin join : correlatedJoinRelationship.getJoins()) {
             context.append(' ').append(subqueryRootAlias).append('.').append(
                     join.getTargetName()).append(" = ");
-            context.append(correlatedTableAlias).append('.').append(join.getSourceName());
+            context.append(correlatedTableAlias).append('.').append(quotingSupport.generateColumnName(join.getSource()));
             context.append(" AND");
         }
 
@@ -321,8 +320,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         // reverse order to get the nearest to the correlated of the direct relation
         for (int i = dbRelationships.size() - 1; i > 0; i--) {
             DbRelationship dbRelationship = dbRelationships.get(i);
-            String subqueryTargetTableName = ((DbEntity) dbRelationship.getTargetEntity())
-                    .getFullyQualifiedName();
+            String subqueryTargetTableName = context.getQuotingSupport().generateTableName(
+                    (DbEntity) dbRelationship.getTargetEntity());
             String subqueryTargetAlias;
             if (i == dbRelationships.size() - 1) {
                 subqueryTargetAlias = subqueryRootAlias;
@@ -337,8 +336,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
             context.append(" JOIN ");
 
-            String subquerySourceTableName = ((DbEntity) dbRelationship.getSourceEntity())
-                    .getFullyQualifiedName();
+            String subquerySourceTableName = context.getQuotingSupport().generateTableName(
+                    (DbEntity) dbRelationship.getSourceEntity());
             String subquerySourceAlias = context.getTableAlias(
                     subquerySourceTableName,
                     subquerySourceTableName);
@@ -647,14 +646,13 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
 
         DbEntity table = descriptor.getEntity().getDbEntity();
-        String alias = context.getTableAlias(expression.getText(), table
-                .getFullyQualifiedName());
+        String alias = context.getTableAlias(expression.getText(), context.getQuotingSupport().generateTableName(table));
 
         Collection<DbAttribute> pks = table.getPrimaryKeys();
 
         if (pks.size() == 1) {
             DbAttribute pk = pks.iterator().next();
-            context.append(' ').append(alias).append('.').append(pk.getName());
+            context.append(' ').append(alias).append('.').append(context.getQuotingSupport().generateColumnName(pk));
         }
         else {
             throw new EJBQLException(

@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.dba.QuotingSupport;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -110,7 +111,7 @@ public class EJBQLJoinAppender {
         String tableName;
 
         if (sourceEntity instanceof DbEntity) {
-            tableName = ((DbEntity) sourceEntity).getFullyQualifiedName();
+            tableName = context.getQuotingSupport().generateTableName((DbEntity) sourceEntity);
         }
         else {
             tableName = sourceEntity.getName();
@@ -134,14 +135,14 @@ public class EJBQLJoinAppender {
                 for (int i = 1; i < joinRelationships.size(); i++) {
                     DbRelationship dbRelationship = joinRelationships.get(i);
 
-                    String subquerySourceTableName = ((DbEntity)dbRelationship
-                            .getSourceEntity())
-                            .getFullyQualifiedName();
+                    String subquerySourceTableName = context.getQuotingSupport().generateTableName((DbEntity) dbRelationship
+                            .getSourceEntity());
                     String subquerySourceAlias = context.getTableAlias(
                             subquerySourceTableName,
                             subquerySourceTableName);
 
-                    String subqueryTargetTableName = ((DbEntity)dbRelationship.getTargetEntity()).getFullyQualifiedName();
+                    String subqueryTargetTableName = context.getQuotingSupport().generateTableName(
+                            (DbEntity) dbRelationship.getTargetEntity());
                     
                     String subqueryTargetAlias = "";
                     if(i==joinRelationships.size()-1){
@@ -195,6 +196,7 @@ public class EJBQLJoinAppender {
             String sourceAlias,
             String targetAlias) {
         context.append(" ON (");
+        QuotingSupport quotingSupport = context.getQuotingSupport();
 
         Iterator<DbJoin> it = incomingDB.getJoins().iterator();
         if (it.hasNext()) {
@@ -202,11 +204,11 @@ public class EJBQLJoinAppender {
             context
                     .append(sourceAlias)
                     .append('.')
-                    .append(dbJoin.getSourceName())
+                    .append(quotingSupport.generateColumnName(dbJoin.getSource()))
                     .append(" = ")
                     .append(targetAlias)
                     .append('.')
-                    .append(dbJoin.getTargetName());
+                    .append(quotingSupport.generateColumnName(dbJoin.getTarget()));
         }
 
         while (it.hasNext()) {
@@ -215,11 +217,11 @@ public class EJBQLJoinAppender {
             context
                     .append(sourceAlias)
                     .append('.')
-                    .append(dbJoin.getSourceName())
+                    .append(quotingSupport.generateColumnName(dbJoin.getSource()))
                     .append(" = ")
                     .append(targetAlias)
                     .append('.')
-                    .append(dbJoin.getTargetName());
+                    .append(quotingSupport.generateColumnName(dbJoin.getTarget()));
         }
 
         context.append(")");
@@ -228,8 +230,9 @@ public class EJBQLJoinAppender {
     public String appendTable(EJBQLTableId id) {
 
         DbEntity dbEntity = id.getDbEntity(context);
-        
-        String tableName = dbEntity.getFullyQualifiedName();
+
+        String tableName = context.getQuotingSupport().generateTableName(dbEntity);
+
         String alias;
 
         if (context.isUsingAliases()) {
@@ -329,13 +332,16 @@ public class EJBQLJoinAppender {
                         if (next instanceof DbRelationship) {
                             DbRelationship rel = (DbRelationship) next;
                             context.append(" LEFT OUTER JOIN ");
-                            String targetEntityName = ((DbEntity)rel.getTargetEntity()).getFullyQualifiedName();
+                            String targetEntityName = context.getQuotingSupport().generateTableName(
+                                    (DbEntity) rel.getTargetEntity());
                             String subqueryTargetAlias = context.getTableAlias(id
                                     .getEntityId(), targetEntityName);
                             context.append(targetEntityName).append(' ').append(
                                     subqueryTargetAlias);
                             generateJoiningExpression(rel, context.getTableAlias(id
-                                    .getEntityId(), ((DbEntity)rel.getSourceEntity()).getFullyQualifiedName()), subqueryTargetAlias);
+                                    .getEntityId(),
+                                    context.getQuotingSupport().generateTableName((DbEntity) rel.getSourceEntity())),
+                                    subqueryTargetAlias);
                         }
 
                     }

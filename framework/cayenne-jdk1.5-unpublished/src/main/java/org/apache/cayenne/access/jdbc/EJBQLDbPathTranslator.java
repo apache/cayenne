@@ -114,7 +114,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
         if (oldPath != null) {
             this.idPath = oldPath;
-            this.lastAlias = context.getTableAlias(oldPath, currentEntity.getFullyQualifiedName());
+            this.lastAlias = context.getTableAlias(oldPath, context.getQuotingSupport().generateTableName(currentEntity));
         }
         else {
 
@@ -124,7 +124,8 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
                         joinMarker,
                         new EJBQLTableId(idPath),
                         new EJBQLTableId(fullPath));
-                this.lastAlias = context.getTableAlias(fullPath, currentEntity.getFullyQualifiedName());
+                this.lastAlias = context.getTableAlias(fullPath, context.getQuotingSupport().generateTableName(
+                        currentEntity));
             }
             else {
                 joinAppender.appendOuterJoin(
@@ -136,7 +137,8 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
                         .getRelationship(lastPathComponent);
                 DbEntity targetEntity = (DbEntity) lastRelationship.getTargetEntity();
 
-                this.lastAlias = context.getTableAlias(fullPath, targetEntity.getFullyQualifiedName());
+                this.lastAlias = context.getTableAlias(fullPath, context.getQuotingSupport().generateTableName(
+                        targetEntity));
             }
 
             this.idPath = newPath;
@@ -184,11 +186,12 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
         if (isUsingAliases()) {
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
-                    table.getFullyQualifiedName());
-            context.append(' ').append(alias).append('.').append(attribute.getName());
+                    context.getQuotingSupport().generateTableName(table));
+            context.append(' ').append(alias).append('.')
+                    .append(context.getQuotingSupport().generateColumnName(attribute));
         }
         else {
-            context.append(' ').append(attribute.getName());
+            context.append(' ').append(context.getQuotingSupport().generateColumnName(attribute));
         }
     }
 
@@ -203,7 +206,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
-                    table.getFullyQualifiedName());
+                    context.getQuotingSupport().generateTableName(table));
 
             Collection<DbAttribute> pks = table.getPrimaryKeys();
 
@@ -213,7 +216,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
                 if (isUsingAliases()) {
                     context.append(alias).append('.');
                 }
-                context.append(pk.getName());
+                context.append(context.getQuotingSupport().generateColumnName(pk));
             }
             else {
                 throw new EJBQLException(
@@ -227,7 +230,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
-                    table.getFullyQualifiedName());
+                    context.getQuotingSupport().generateTableName(table));
 
             List<DbJoin> joins = relationship.getJoins();
 
@@ -237,7 +240,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
                 if (isUsingAliases()) {
                     context.append(alias).append('.');
                 }
-                context.append(join.getSourceName());
+                context.append(context.getQuotingSupport().generateColumnName(join.getSource()));
             }
             else {
                 Map<String, String> multiColumnMatch = new HashMap<String, String>(joins

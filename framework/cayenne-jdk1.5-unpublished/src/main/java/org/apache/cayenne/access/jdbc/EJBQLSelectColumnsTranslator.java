@@ -96,7 +96,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 }
 
                 String alias = this.lastAlias != null ? lastAlias : context
-                        .getTableAlias(idPath, table.getFullyQualifiedName());
+                        .getTableAlias(idPath, context.getQuotingSupport().generateTableName(table));
 
                 boolean first = true;
                 while (it.hasNext()) {
@@ -119,7 +119,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             protected void processTerminatingAttribute(ObjAttribute attribute) {
                 DbEntity table = currentEntity.getDbEntity();
                 String alias = this.lastAlias != null ? lastAlias : context
-                        .getTableAlias(idPath, table.getFullyQualifiedName());
+                        .getTableAlias(idPath, context.getQuotingSupport().generateTableName(table));
                 if (attribute.isFlattened()) {
                     Iterator<?> dbPathIterator = attribute.getDbPathIterator();
                     EJBQLTableId lhsId = new EJBQLTableId(idPath);
@@ -139,7 +139,8 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                                     attribute.getType(),
                                     context.getTableAlias(
                                             lhsId.getEntityId(),
-                                            dbAttribute.getEntity().getName()),
+                                            context.getQuotingSupport()
+                                                    .generateTableName((DbEntity) dbAttribute.getEntity())),
                                     dbAttribute,
                                     context.isAppendingResultColumns() ? context
                                             .nextColumnAlias() : "");
@@ -182,7 +183,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             context.append(' ');
         }
 
-        context.append(alias).append('.').append(dbAttribute.getName());
+        context.append(alias).append('.').append(context.getQuotingSupport().generateColumnName(dbAttribute));
 
         if (context.isAppendingResultColumns()) {
             // String columnAlias = context.nextColumnAlias();

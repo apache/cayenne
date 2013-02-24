@@ -125,8 +125,9 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             DbEntity table = currentEntity.getDbEntity();
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
-                    table.getFullyQualifiedName());
-            context.append(alias).append('.').append(attribute.getDbAttributeName());
+                    context.getQuotingSupport().generateTableName(table));
+            context.append(alias).append('.').append(
+                    context.getQuotingSupport().generateColumnName(attribute.getDbAttribute()));
         }
         
         @Override

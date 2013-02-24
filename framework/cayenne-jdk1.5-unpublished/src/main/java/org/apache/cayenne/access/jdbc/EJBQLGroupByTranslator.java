@@ -76,7 +76,8 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                 String idVariableAbsolutePath = fullPath + "." + expression.getText();
                 ClassDescriptor descriptor = context.getEntityDescriptor(idVariableAbsolutePath);
                 if (descriptor != null) {
-                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath, descriptor.getEntity().getDbEntity().getFullyQualifiedName());
+                    this.lastAlias = context.getTableAlias(idVariableAbsolutePath,
+                            context.getQuotingSupport().generateTableName(descriptor.getEntity().getDbEntity()));
                 }
 
                 this.lastPathComponent = expression.getText();
@@ -99,7 +100,7 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                 
 
                 String alias = this.lastAlias != null ? lastAlias : context
-                        .getTableAlias(idPath, table.getFullyQualifiedName());
+                        .getTableAlias(idPath, context.getQuotingSupport().generateTableName(table));
 
                 boolean first = true;
                 while (it.hasNext()) {
@@ -107,7 +108,7 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                     context.append(!first ? ", " : " ");
 
                     DbAttribute dbAttribute = it.next();
-                    context.append(alias).append('.').append(dbAttribute.getName());
+                    context.append(alias).append('.').append(context.getQuotingSupport().generateColumnName(dbAttribute));
 
                     first = false;
                 }

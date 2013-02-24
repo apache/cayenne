@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.dba.QuotingSupport;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -125,15 +126,12 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
             if (lastRelationship != null) {
                 ObjEntity targetEntity = (ObjEntity) lastRelationship.getTargetEntity();
 
-                this.lastAlias = context.getTableAlias(fullPath, targetEntity
-                        .getDbEntity()
-                        .getFullyQualifiedName());
+                this.lastAlias = context.getTableAlias(fullPath, context.getQuotingSupport().generateTableName(
+                        targetEntity.getDbEntity()));
             }
             else {
-                this.lastAlias = context.getTableAlias(oldPath, currentEntity
-                        .getDbEntity()
-                        .getFullyQualifiedName());
-
+                String tableName = context.getQuotingSupport().generateTableName(currentEntity.getDbEntity());
+                this.lastAlias = context.getTableAlias(oldPath, tableName);
             }
         }
         else {
@@ -163,9 +161,8 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
             }
 
-            this.lastAlias = context.getTableAlias(fullPath, targetEntity
-                    .getDbEntity()
-                    .getFullyQualifiedName());
+            this.lastAlias = context.getTableAlias(fullPath, context.getQuotingSupport().generateTableName(
+                    targetEntity.getDbEntity()));
 
             this.idPath = newPath;
         }
@@ -206,7 +203,8 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
     }
 
     protected void processTerminatingAttribute(ObjAttribute attribute) {
-        
+        QuotingSupport quotingSupport = context.getQuotingSupport();
+
         DbEntity table = null;
         Iterator<?> it = attribute.getDbPathIterator();
         while (it.hasNext()) {
@@ -219,12 +217,12 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
         if (isUsingAliases()) {
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
-                    table.getFullyQualifiedName());
+                    quotingSupport.generateTableName(table));
             context.append(' ').append(alias).append('.').append(
-                    attribute.getDbAttributeName());
+                    quotingSupport.generateColumnName(attribute.getDbAttribute()));
         }
         else {
-            context.append(' ').append(attribute.getDbAttributeName());
+            context.append(' ').append(context.getQuotingSupport().generateColumnName(attribute.getDbAttribute()));
         }
     }
 
@@ -244,7 +242,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
-                    table.getFullyQualifiedName());
+                    context.getQuotingSupport().generateTableName(table));
 
             Collection<DbAttribute> pks = table.getPrimaryKeys();
 
@@ -254,7 +252,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 if (isUsingAliases()) {
                     context.append(alias).append('.');
                 }
-                context.append(pk.getName());
+                context.append(context.getQuotingSupport().generateColumnName(pk));
             }
             else {
                 throw new EJBQLException(
@@ -270,7 +268,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
             String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(
                     idPath,
-                    table.getFullyQualifiedName());
+                    context.getQuotingSupport().generateTableName(table));
 
             List<DbJoin> joins = dbRelationship.getJoins();
 
@@ -280,7 +278,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
                 if (isUsingAliases()) {
                     context.append(alias).append('.');
                 }
-                context.append(join.getSourceName());
+                context.append(context.getQuotingSupport().generateColumnName(join.getSource()));
             }
             else {
                 Map<String, String> multiColumnMatch = new HashMap<String, String>(joins

@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.QuotingSupport;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.DbEntity;
@@ -47,6 +49,7 @@ public class EJBQLTranslationContext {
     protected Map<String, Object> namedParameters;
     protected Map<Integer, Object> positionalParameters;
     private EJBQLTranslatorFactory translatorFactory;
+    private QuotingSupport quotingSupport;
     private EntityResolver entityResolver;
     private List<Object> resultSetMetadata;
 
@@ -81,6 +84,9 @@ public class EJBQLTranslationContext {
         this.usingAliases = true;
         this.caseInsensitive = false;
         this.queryMetadata = query.getMetaData(entityResolver);
+
+        this.quotingSupport = ((JdbcEJBQLTranslatorFactory) translatorFactory).getQuotingSupport();
+
         // buffer stack will hold named buffers during translation in the order they were
         // requested
         this.bufferStack = new ArrayList<StringBuilder>();
@@ -436,6 +442,10 @@ public class EJBQLTranslationContext {
     
     public void setCaseInsensitive(boolean caseInsensitive) {
         this.caseInsensitive = caseInsensitive;
+    }
+
+    public QuotingSupport getQuotingSupport() {
+        return this.quotingSupport;
     }
 
     public void onSubselect() {

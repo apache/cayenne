@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.DefaultQuotingStrategy;
+import org.apache.cayenne.dba.QuotingSupport;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
@@ -30,6 +33,20 @@ public class JdbcEJBQLTranslatorFactory implements EJBQLTranslatorFactory {
     protected static final String JOIN_APPENDER_KEY = "$JoinAppender";
     
     protected boolean caseInsensitive = false;
+
+    protected QuotingSupport quotingSupport;
+
+    public JdbcEJBQLTranslatorFactory() {
+        initQuoting();
+    }
+
+    protected void initQuoting() {
+        quotingSupport = new QuotingSupport(new DefaultQuotingStrategy());
+    }
+
+    public QuotingSupport getQuotingSupport() {
+        return this.quotingSupport;
+    }
 
     public EJBQLJoinAppender getJoinAppender(EJBQLTranslationContext context) {
         EJBQLJoinAppender appender = (EJBQLJoinAppender) context

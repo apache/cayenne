@@ -235,8 +235,8 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             String javaType) {
 
         DbEntity table = (DbEntity) column.getEntity();
-        String alias = context.getTableAlias(identifier, table.getFullyQualifiedName());
-        String columnName = alias + "." + column.getName();
+        String alias = context.getTableAlias(identifier, context.getQuotingSupport().generateTableName(table));
+        String columnName = alias + "." + context.getQuotingSupport().generateColumnName(column);
 
         Set<String> columns = getColumns();
 
