@@ -299,7 +299,7 @@ public class MyEntity2 extends _MyEntity2 {
     @PostPersist(entityAnnotations = Tag.class)
     @PostUpdate(entityAnnotations = Tag.class)
     @PostRemove(entityAnnotations = Tag.class)
-    void afterCommit() {
+    void afterCommit(Persistent object) {
         counter.get()[0]++;
     }
 }</programlisting></para>
