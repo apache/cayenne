@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 /**
  * Common superclass of tables used in Cayenne. Contains some common configuration
  * settings and utility methods.
- * 
+ *
  */
 public class CayenneTable extends JTable {
 
@@ -219,6 +219,18 @@ public class CayenneTable extends JTable {
             if (!fireForbidden) {
                 super.fireValueChanged(firstIndex, lastIndex, isAdjusting);
             }
+        }
+    }
+
+    public void changeSelection(final int row, final int column, boolean toggle, boolean extend) {
+        super.changeSelection(row, column, toggle, extend);
+        startCellEditingOnTabPressed(row, column);
+    }
+
+    private void startCellEditingOnTabPressed(final int row, final int column) {
+        if (isCellEditable(row, column)) {
+            this.editCellAt(row, column);
+            editorComp.requestFocus();
         }
     }
 
