@@ -463,12 +463,10 @@ public class SelectTranslator extends QueryAssembler {
                 // go via target OE to make sure that Java types are mapped
                 // correctly...
                 ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(oe);
-                Iterator<ObjAttribute> targetObjAttrs = (Iterator<ObjAttribute>) targetRel.getTargetEntity()
-                        .getAttributes().iterator();
+                ObjEntity targetEntity = (ObjEntity) targetRel.getTargetEntity();
 
                 String labelPrefix = dbPrefetch.getPath();
-                while (targetObjAttrs.hasNext()) {
-                    ObjAttribute oa = targetObjAttrs.next();
+                for (ObjAttribute oa : targetEntity.getAttributes()) {
                     Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
                     while (dbPathIterator.hasNext()) {
                         Object pathPart = dbPathIterator.next();
@@ -487,10 +485,8 @@ public class SelectTranslator extends QueryAssembler {
                 }
 
                 // append remaining target attributes such as keys
-                Iterator<DbAttribute> targetAttributes = (Iterator<DbAttribute>) r.getTargetEntity().getAttributes()
-                        .iterator();
-                while (targetAttributes.hasNext()) {
-                    DbAttribute attribute = targetAttributes.next();
+                DbEntity targetDbEntity = (DbEntity) r.getTargetEntity();
+                for (DbAttribute attribute : targetDbEntity.getAttributes()) {
                     appendColumn(columns, null, attribute, attributes, labelPrefix + '.' + attribute.getName());
                 }
             }
@@ -509,8 +505,7 @@ public class SelectTranslator extends QueryAssembler {
         for (ObjAttribute attribute : oe.getPrimaryKeys()) {
 
             // synthetic objattributes can't reliably lookup their DbAttribute,
-            // so do
-            // it manually..
+            // so do it manually..
             DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(attribute.getDbAttributeName());
             appendColumn(columns, attribute, dbAttribute, skipSet, null);
         }
