@@ -66,7 +66,7 @@ public abstract class ASTPath extends SimpleNode {
         this.path = (path != null) ? path.toString() : null;
     }
 
-    protected String getPath() {
+    public String getPath() {
         return path;
     }
 

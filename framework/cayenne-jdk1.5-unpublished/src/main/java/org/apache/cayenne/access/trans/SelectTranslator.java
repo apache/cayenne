@@ -33,6 +33,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -391,7 +392,7 @@ public class SelectTranslator extends QueryAssembler {
             // for each relationship path add PK of the target entity...
             for (String path : ((PrefetchSelectQuery) query).getResultPaths()) {
 
-                Expression pathExp = oe.translateToDbPath(Expression.fromString(path));
+                ASTDbPath pathExp = (ASTDbPath) oe.translateToDbPath(Expression.fromString(path));
 
                 // add joins and find terminating element
 
@@ -415,7 +416,7 @@ public class SelectTranslator extends QueryAssembler {
 
                     if (relationship != null) {
 
-                        String labelPrefix = pathExp.toString().substring("db:".length());
+                        String labelPrefix = pathExp.getPath();
                         DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
 
                         for (DbAttribute pk : targetEntity.getPrimaryKeys()) {
@@ -438,7 +439,7 @@ public class SelectTranslator extends QueryAssembler {
                 // for each prefetch add all joins plus columns from the target
                 // entity
                 Expression prefetchExp = Expression.fromString(prefetch.getPath());
-                Expression dbPrefetch = oe.translateToDbPath(prefetchExp);
+                ASTDbPath dbPrefetch = (ASTDbPath) oe.translateToDbPath(prefetchExp);
 
                 resetJoinStack();
                 DbRelationship r = null;
@@ -465,7 +466,7 @@ public class SelectTranslator extends QueryAssembler {
                 Iterator<ObjAttribute> targetObjAttrs = (Iterator<ObjAttribute>) targetRel.getTargetEntity()
                         .getAttributes().iterator();
 
-                String labelPrefix = dbPrefetch.toString().substring("db:".length());
+                String labelPrefix = dbPrefetch.getPath();
                 while (targetObjAttrs.hasNext()) {
                     ObjAttribute oa = targetObjAttrs.next();
                     Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
