@@ -33,7 +33,7 @@ import org.apache.cayenne.map.Entity;
  * @since 1.1
  */
 public class ASTDbPath extends ASTPath {
-    
+
     public static final String DB_PREFIX = "db:";
 
     ASTDbPath(int id) {
@@ -64,19 +64,16 @@ public class ASTDbPath extends ASTPath {
     protected Map<?, ?> toMap(Object o) {
         if (o instanceof Map) {
             return (Map<?, ?>) o;
-        }
-        else if (o instanceof ObjectId) {
+        } else if (o instanceof ObjectId) {
             return ((ObjectId) o).getIdSnapshot();
-        }
-        else if (o instanceof Persistent) {
+        } else if (o instanceof Persistent) {
             Persistent persistent = (Persistent) o;
 
             // TODO: returns ObjectId snapshot for now.. should probably
             // retrieve full snapshot...
             ObjectId oid = persistent.getObjectId();
             return (oid != null) ? oid.getIdSnapshot() : null;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -96,7 +93,7 @@ public class ASTDbPath extends ASTPath {
         pw.print(DB_PREFIX);
         pw.print(path);
     }
-    
+
     /**
      * @since 3.0
      */
@@ -107,6 +104,15 @@ public class ASTDbPath extends ASTPath {
         pw.print(rootId);
         pw.print('.');
         pw.print(path);
+    }
+
+    /**
+     * @since 3.2
+     */
+    @Override
+    public String toString() {
+        // shouldn't rely on super, see CAY-1803
+        return DB_PREFIX + path;
     }
 
     @Override

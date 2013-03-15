@@ -83,6 +83,15 @@ public class ASTObjPath extends ASTPath {
         pw.print('.');
         pw.print(path);
     }
+    
+    /**
+     * @since 3.2
+     */
+    @Override
+    public String toString() {
+        // shouldn't rely on super, see CAY-1803
+        return path;
+    }
 
     @Override
     public int getType() {
