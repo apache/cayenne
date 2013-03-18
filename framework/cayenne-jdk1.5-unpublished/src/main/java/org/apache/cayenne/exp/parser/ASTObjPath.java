@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.PrintWriter;
+import java.io.IOException;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
@@ -34,7 +34,7 @@ public class ASTObjPath extends ASTPath {
     private static final Log logObj = LogFactory.getLog(ASTObjPath.class);
 
     public static final String OBJ_PREFIX = "obj:";
-    
+
     /**
      * Constructor used by expression parser. Do not invoke directly.
      */
@@ -53,10 +53,8 @@ public class ASTObjPath extends ASTPath {
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        return (o instanceof DataObject)
-                ? ((DataObject) o).readNestedProperty(path)
-                : (o instanceof Entity) ? evaluateEntityNode((Entity) o) : PropertyUtils
-                        .getProperty(o, path);
+        return (o instanceof DataObject) ? ((DataObject) o).readNestedProperty(path)
+                : (o instanceof Entity) ? evaluateEntityNode((Entity) o) : PropertyUtils.getProperty(o, path);
     }
 
     /**
@@ -69,28 +67,22 @@ public class ASTObjPath extends ASTPath {
         return copy;
     }
 
-    @Override
-    public void encodeAsString(PrintWriter pw) {
-        pw.print(path);
-    }
-
-    /**
-     * @since 3.0
-     */
-    @Override
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        pw.print(rootId);
-        pw.print('.');
-        pw.print(path);
-    }
-    
     /**
      * @since 3.2
      */
     @Override
-    public String toString() {
-        // shouldn't rely on super, see CAY-1803
-        return path;
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+        out.append(rootId);
+        out.append('.');
+        out.append(path);
+    }
+
+    /**
+     * @since 3.2
+     */
+    @Override
+    public void appendAsString(Appendable out) throws IOException {
+        out.append(path);
     }
 
     @Override
@@ -103,15 +95,12 @@ public class ASTObjPath extends ASTPath {
             try {
                 if (source instanceof DataObject) {
                     ((DataObject) source).writeProperty(getPath(), value);
-                }
-                else {
+                } else {
                     PropertyUtils.setProperty(source, getPath(), value);
                 }
-            }   
-            catch (CayenneRuntimeException ex) {
-                logObj.warn("Failed to inject value " + value + 
-                        " on path " + getPath() + " to " + source, ex);
+            } catch (CayenneRuntimeException ex) {
+                logObj.warn("Failed to inject value " + value + " on path " + getPath() + " to " + source, ex);
             }
-       }
+        }
     }
 }

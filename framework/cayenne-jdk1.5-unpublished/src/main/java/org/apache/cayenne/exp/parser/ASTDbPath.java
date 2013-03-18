@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.PrintWriter;
+import java.io.IOException;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
@@ -88,31 +88,24 @@ public class ASTDbPath extends ASTPath {
         return copy;
     }
 
-    @Override
-    public void encodeAsString(PrintWriter pw) {
-        pw.print(DB_PREFIX);
-        pw.print(path);
-    }
-
     /**
-     * @since 3.0
+     * @since 3.2
      */
     @Override
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
         // warning: non-standard EJBQL...
-        pw.print(DB_PREFIX);
-        pw.print(rootId);
-        pw.print('.');
-        pw.print(path);
+        out.append(DB_PREFIX);
+        out.append(rootId);
+        out.append('.');
+        out.append(path);
     }
 
     /**
      * @since 3.2
      */
     @Override
-    public String toString() {
-        // shouldn't rely on super, see CAY-1803
-        return DB_PREFIX + path;
+    public void appendAsString(Appendable out) throws IOException {
+        out.append(DB_PREFIX).append(path);
     }
 
     @Override

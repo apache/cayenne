@@ -19,12 +19,14 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -90,56 +92,80 @@ public class ASTList extends SimpleNode {
         return ",";
     }
 
+    /**
+     * @since 3.2
+     */
     @Override
-    public void encodeAsString(PrintWriter pw) {
-        pw.print('(');
+    public void appendAsString(Appendable out) throws IOException {
+
+        out.append('(');
 
         if ((values != null) && (values.length > 0)) {
             for (int i = 0; i < values.length; ++i) {
                 if (i > 0) {
-                    pw.print(getExpressionOperator(i));
-                    pw.print(' ');
+                    out.append(getExpressionOperator(i));
+                    out.append(' ');
                 }
 
                 if (values[i] instanceof Expression) {
-                    ((Expression) values[i]).encodeAsString(pw);
-                }
-                else {
-                    encodeScalarAsString(pw, values[i], '\"');
+                    ((Expression) values[i]).appendAsString(out);
+                } else {
+                    appendScalarAsString(out, values[i], '\"');
                 }
             }
         }
 
-        pw.print(')');
+        out.append(')');
     }
-    
+
+    /**
+     * @deprecated since 3.2 use {@link #appendAsString(Appendable)}
+     */
+    @Override
+    public void encodeAsString(PrintWriter pw) {
+        try {
+            appendAsString(pw);
+        } catch (IOException e) {
+            throw new CayenneRuntimeException("Unexpected IOException appending to PrintWriter", e);
+        }
+    }
+
+    @Override
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+
+        if (parent != null) {
+            out.append("(");
+        }
+
+        if ((values != null) && (values.length > 0)) {
+            for (int i = 0; i < values.length; ++i) {
+                if (i > 0) {
+                    out.append(getEJBQLExpressionOperator(i));
+                    out.append(' ');
+                }
+
+                if (values[i] == null) {
+                    out.append("null");
+                } else {
+                    SimpleNode.appendScalarAsString(out, values[i], '\'');
+                }
+            }
+        }
+
+        if (parent != null) {
+            out.append(')');
+        }
+    }
+
     /**
      * @since 3.0
      */
     @Override
     public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        if (parent != null) {
-            pw.print("(");
-        }
-
-        if ((values != null) && (values.length > 0)) {
-            for (int i = 0; i < values.length; ++i) {
-                if (i > 0) {
-                    pw.print(getEJBQLExpressionOperator(i));
-                    pw.print(' ');
-                }
-
-                if (values[i] == null) {
-                    pw.print("null");
-                }
-                else {
-                    SimpleNode.encodeScalarAsString(pw, values[i], '\'');
-                }
-            }
-        }
-
-        if (parent != null) {
-            pw.print(')');
+        try {
+            appendAsEJBQL(pw, rootId);
+        } catch (IOException e) {
+            throw new CayenneRuntimeException("Unexpected IOException appending to PrintWriter", e);
         }
     }
 
@@ -167,20 +193,17 @@ public class ASTList extends SimpleNode {
     }
 
     /**
-     * Sets an internal collection of values. Value argument
-     * can be an Object[], a Collection or an iterator.
+     * Sets an internal collection of values. Value argument can be an Object[],
+     * a Collection or an iterator.
      */
     protected void setValues(Object value) {
         if (value == null) {
             this.values = null;
-        }
-        else if (value instanceof Object[]) {
+        } else if (value instanceof Object[]) {
             this.values = (Object[]) value;
-        }
-        else if (value instanceof Collection) {
+        } else if (value instanceof Collection) {
             this.values = ((Collection) value).toArray();
-        }
-        else if (value instanceof Iterator) {
+        } else if (value instanceof Iterator) {
             List values = new ArrayList();
             Iterator it = (Iterator) value;
             while (it.hasNext()) {
@@ -188,11 +211,8 @@ public class ASTList extends SimpleNode {
             }
 
             this.values = values.toArray();
-        }
-        else {
-            throw new IllegalArgumentException(
-                "Invalid value class '"
-                    + value.getClass().getName()
+        } else {
+            throw new IllegalArgumentException("Invalid value class '" + value.getClass().getName()
                     + "', expected null, Object[], Collection, Iterator");
         }
     }

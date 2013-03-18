@@ -19,8 +19,10 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
@@ -65,19 +67,49 @@ public class ASTScalar extends SimpleNode {
         return copy;
     }
 
+    /**
+     * @deprecated since 3.2 use {@link #appendAsString(Appendable)}
+     */
     @Override
+    @Deprecated
     public void encodeAsString(PrintWriter pw) {
-        SimpleNode.encodeScalarAsString(pw, value, '\"');
+        try {
+            appendAsString(pw);
+        } catch (IOException e) {
+            throw new CayenneRuntimeException("UNexpected IOException appending to PrintWriter", e);
+        }
     }
 
     /**
-     * @since 3.0
+     * @since 3.2
      */
     @Override
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+    public void appendAsString(Appendable out) throws IOException {
+        SimpleNode.appendScalarAsString(out, value, '\"');
+    }
 
+    /**
+     * @deprecated since 3.2 use {@link #appendAsEJBQL(Appendable, String)}.
+     * @since 3.0
+     */
+    @Deprecated
+    @Override
+    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+        try {
+            appendAsEJBQL(pw, rootId);
+        } catch (IOException e) {
+            throw new CayenneRuntimeException("Unexpected IOException appending to PrintWriter", e);
+        }
+    }
+
+    /**
+     * @since 3.2
+     */
+    @Override
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
         // TODO: see CAY-1111
-        // Persistent processing is a hack for a rather special case of a single column PK
+        // Persistent processing is a hack for a rather special case of a single
+        // column PK
         // object.. full implementation pending...
         Object scalar = value;
         if (scalar instanceof Persistent) {
@@ -89,7 +121,7 @@ public class ASTScalar extends SimpleNode {
             }
         }
 
-        SimpleNode.encodeScalarAsString(pw, scalar, '\'');
+        SimpleNode.appendScalarAsString(out, scalar, '\'');
     }
 
     public void setValue(Object value) {
@@ -102,8 +134,7 @@ public class ASTScalar extends SimpleNode {
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '"
-                + ExpressionParserTreeConstants.jjtNodeName[id]
+        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
                 + "'");
     }
 }

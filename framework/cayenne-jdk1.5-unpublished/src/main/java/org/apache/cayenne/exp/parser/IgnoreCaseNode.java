@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import java.io.PrintWriter;
+import java.io.IOException;
 
 import org.apache.cayenne.exp.ExpressionException;
 
@@ -33,20 +33,21 @@ abstract class IgnoreCaseNode extends PatternMatchNode {
     IgnoreCaseNode(int i, boolean ignoringCase, char escapeChar) {
         super(i, ignoringCase, escapeChar);
     }
-    
+
     @Override
-    protected void encodeChildrenAsEJBQL(PrintWriter pw, String rootId) {
-        //with like, first expression is always path, second is a literal, which must be uppercased
-        pw.print("upper(");
-        ((SimpleNode) children[0]).encodeAsEJBQL(pw, rootId);
-        pw.print(") ");
-        pw.print(getEJBQLExpressionOperator(0));
-        pw.print(" ");
-        
+    protected void appendChildrenAsEJBQL(Appendable out, String rootId) throws IOException {
+        // with like, first expression is always path, second is a literal,
+        // which must be uppercased
+        out.append("upper(");
+        ((SimpleNode) children[0]).appendAsEJBQL(out, rootId);
+        out.append(") ");
+        out.append(getEJBQLExpressionOperator(0));
+        out.append(" ");
+
         Object literal = ((ASTScalar) children[1]).getValue();
         if (!(literal instanceof String)) {
             throw new ExpressionException("Literal value should be a string");
         }
-        SimpleNode.encodeScalarAsString(pw, ((String) literal).toUpperCase(), '\'');
+        SimpleNode.appendScalarAsString(out, ((String) literal).toUpperCase(), '\'');
     }
 }
