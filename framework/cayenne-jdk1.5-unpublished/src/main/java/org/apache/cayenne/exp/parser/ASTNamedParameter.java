@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.PrintWriter;
+import java.io.IOException;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -46,8 +46,7 @@ public class ASTNamedParameter extends ASTScalar {
 
     @Override
     protected Object evaluateNode(Object o) throws Exception {
-        throw new ExpressionException(
-            "Uninitialized parameter: " + value + ", call 'expWithParameters' first.");
+        throw new ExpressionException("Uninitialized parameter: " + value + ", call 'expWithParameters' first.");
     }
 
     /**
@@ -73,21 +72,22 @@ public class ASTNamedParameter extends ASTScalar {
 
         super.setValue(new ExpressionParameter(name));
     }
-    
+
     /**
-     * @since 3.0
+     * @since 3.2
      */
     @Override
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        if(value != null) {
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+
+        if (value != null) {
             String valueString = value.toString();
-            if(valueString.length() > 1 && valueString.charAt(0) == '$') {
-                pw.print(':');
-                pw.print(valueString.substring(1));
+            if (valueString.length() > 1 && valueString.charAt(0) == '$') {
+                out.append(':');
+                out.append(valueString.substring(1));
                 return;
             }
         }
-        
-        super.encodeAsEJBQL(pw, rootId);
+
+        super.appendAsEJBQL(out, rootId);
     }
 }

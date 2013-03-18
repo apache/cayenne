@@ -20,13 +20,11 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -118,18 +116,6 @@ public class ASTList extends SimpleNode {
         out.append(')');
     }
 
-    /**
-     * @deprecated since 3.2 use {@link #appendAsString(Appendable)}
-     */
-    @Override
-    public void encodeAsString(PrintWriter pw) {
-        try {
-            appendAsString(pw);
-        } catch (IOException e) {
-            throw new CayenneRuntimeException("Unexpected IOException appending to PrintWriter", e);
-        }
-    }
-
     @Override
     public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
 
@@ -154,18 +140,6 @@ public class ASTList extends SimpleNode {
 
         if (parent != null) {
             out.append(')');
-        }
-    }
-
-    /**
-     * @since 3.0
-     */
-    @Override
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        try {
-            appendAsEJBQL(pw, rootId);
-        } catch (IOException e) {
-            throw new CayenneRuntimeException("Unexpected IOException appending to PrintWriter", e);
         }
     }
 

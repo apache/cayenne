@@ -18,15 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import java.io.PrintWriter;
+import java.io.IOException;
 
 import org.apache.cayenne.exp.Expression;
 
 /**
- * Boolean true expression element Notice that there is one ASTTrue and one ASTFalse
- * instead of a ASTBoolean with a Boolean value. The main reason for doing this is that a
- * common ASTBoolean will have operand count of 1 and that will default to a prepared
- * statmenet like " where ? and (...)", but we only need " where true and (...)".
+ * Boolean true expression element Notice that there is one ASTTrue and one
+ * ASTFalse instead of a ASTBoolean with a Boolean value. The main reason for
+ * doing this is that a common ASTBoolean will have operand count of 1 and that
+ * will default to a prepared statmenet like " where ? and (...)", but we only
+ * need " where true and (...)".
  * 
  * @see ASTFalse
  * @since 3.0
@@ -51,8 +52,7 @@ public class ASTTrue extends ConditionNode {
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '"
-                + ExpressionParserTreeConstants.jjtNodeName[id]
+        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
                 + "'");
     }
 
@@ -66,16 +66,19 @@ public class ASTTrue extends ConditionNode {
         return Expression.TRUE;
     }
 
+    /**
+     * @since 3.2
+     */
     @Override
-    public void encodeAsString(PrintWriter pw) {
-        pw.print("true");
+    public void appendAsString(Appendable out) throws IOException {
+        out.append("true");
     }
 
     /**
-     * @since 3.0
+     * @since 3.2
      */
     @Override
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        pw.print("true");
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+        out.append("true");
     }
 }

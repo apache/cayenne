@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.PrintWriter;
+import java.io.IOException;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
@@ -52,9 +52,7 @@ public class ASTNot extends AggregateConditionNode {
             return Boolean.FALSE;
         }
 
-        return ConversionUtil.toBoolean(evaluateChild(0, o))
-                ? Boolean.FALSE
-                : Boolean.TRUE;
+        return ConversionUtil.toBoolean(evaluateChild(0, o)) ? Boolean.FALSE : Boolean.TRUE;
     }
 
     /**
@@ -70,24 +68,26 @@ public class ASTNot extends AggregateConditionNode {
         return Expression.NOT;
     }
 
+    /**
+     * @since 3.2
+     */
     @Override
-    public void encodeAsString(PrintWriter pw) {
-        pw.print("not ");
-        super.encodeAsString(pw);
+    public void appendAsString(Appendable out) throws IOException {
+        out.append("not ");
+        super.appendAsString(out);
     }
 
     /**
-     * @since 3.0
+     * @since 3.2
      */
     @Override
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        encodeAsString(pw);
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+        appendAsString(out);
     }
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '"
-                + ExpressionParserTreeConstants.jjtNodeName[id]
+        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
                 + "'");
     }
 }

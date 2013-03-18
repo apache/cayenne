@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.PrintWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
@@ -65,57 +65,59 @@ public class ASTNegate extends SimpleNode {
         return result != null ? result.negate() : null;
     }
 
+    /**
+     * @since 3.2
+     */
     @Override
-    public void encodeAsString(PrintWriter pw) {
+    public void appendAsString(Appendable out) throws IOException {
+
         if ((children != null) && (children.length > 0)) {
-            pw.print("-");
+            out.append("-");
 
             SimpleNode child = (SimpleNode) children[0];
 
             // don't call super - we have our own parenthesis policy
-            boolean useParen = parent != null
-                    && !((child instanceof ASTScalar) || (child instanceof ASTPath));
+            boolean useParen = parent != null && !((child instanceof ASTScalar) || (child instanceof ASTPath));
             if (useParen) {
-                pw.print("(");
+                out.append("(");
             }
 
-            child.encodeAsString(pw);
+            child.appendAsString(out);
 
             if (useParen) {
-                pw.print(')');
+                out.append(')');
             }
         }
     }
 
     /**
-     * @since 3.0
+     * @since 3.2
      */
     @Override
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+
         if ((children != null) && (children.length > 0)) {
-            pw.print("-");
+            out.append("-");
 
             SimpleNode child = (SimpleNode) children[0];
 
             // don't call super - we have our own parenthesis policy
-            boolean useParen = parent != null
-                    && !((child instanceof ASTScalar) || (child instanceof ASTPath));
+            boolean useParen = parent != null && !((child instanceof ASTScalar) || (child instanceof ASTPath));
             if (useParen) {
-                pw.print("(");
+                out.append("(");
             }
 
-            child.encodeAsEJBQL(pw, rootId);
+            child.appendAsEJBQL(out, rootId);
 
             if (useParen) {
-                pw.print(')');
+                out.append(')');
             }
         }
     }
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '"
-                + ExpressionParserTreeConstants.jjtNodeName[id]
+        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
                 + "'");
     }
 
