@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -56,9 +57,7 @@ public class ExpressionTest extends ServerCase {
 
         if (objects.size() > 0) {
             SelectQuery query1 = new SelectQuery(Painting.class);
-            Expression e = ExpressionFactory.matchExp(
-                    Painting.TO_ARTIST_PROPERTY,
-                    objects.get(0));
+            Expression e = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, objects.get(0));
             query.setQualifier(e);
             objects.addAll(context.performQuery(query1));
         }
@@ -91,31 +90,26 @@ public class ExpressionTest extends ServerCase {
     }
 
     public void testFromStringEnum() {
-        Expression e1 = Expression
-                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.ONE");
+        Expression e1 = Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.ONE");
         assertEquals(ExpEnum1.ONE, e1.getOperand(1));
 
-        Expression e2 = Expression
-                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
+        Expression e2 = Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
         assertEquals(ExpEnum1.TWO, e2.getOperand(1));
 
-        Expression e3 = Expression
-                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
+        Expression e3 = Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
         assertEquals(ExpEnum1.THREE, e3.getOperand(1));
 
         try {
             Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.BOGUS");
             fail("Didn't throw on bad enum");
-        }
-        catch (ExpressionException e) {
+        } catch (ExpressionException e) {
             // expected
         }
 
         try {
             Expression.fromString("a = enum:BOGUS");
             fail("Didn't throw on bad enum");
-        }
-        catch (ExpressionException e) {
+        } catch (ExpressionException e) {
             // expected
         }
     }
@@ -135,49 +129,45 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName = 'bla'", e.toEJBQL("x"));
     }
 
-    public void testEncodeAsEJBQL1() {
+    public void testEncodeAsEJBQL1() throws IOException {
 
         Expression e = Expression.fromString("artistName = 'bla'");
 
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        e.encodeAsEJBQL(pw, "x");
-        pw.close();
-        buffer.flush();
+        StringBuilder buffer = new StringBuilder();
+
+        e.appendAsEJBQL(buffer, "x");
+
         String ejbql = buffer.toString();
 
         assertEquals("x.artistName = 'bla'", ejbql);
     }
 
-    public void testEncodeAsEJBQL2() {
+    public void testEncodeAsEJBQL2() throws IOException {
 
         Expression e = Expression.fromString("artistName.stuff = $name");
 
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        e.encodeAsEJBQL(pw, "x");
-        pw.close();
-        buffer.flush();
+        StringBuilder buffer = new StringBuilder();
+
+        e.appendAsEJBQL(buffer, "x");
         String ejbql = buffer.toString();
 
         assertEquals("x.artistName.stuff = :name", ejbql);
     }
 
-    public void testEncodeAsEJBQL3_EncodeListOfParameters() {
+    public void testEncodeAsEJBQL3_EncodeListOfParameters() throws IOException {
 
         Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
 
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        e.encodeAsEJBQL(pw, "x");
-        pw.close();
-        buffer.flush();
+        StringBuilder buffer = new StringBuilder();
+
+        e.appendAsEJBQL(buffer, "x");
+
         String ejbql = buffer.toString();
 
         assertEquals("x.artistName in ('a', 'b', 'c')", ejbql);
     }
 
-    public void testEncodeAsEJBQL_PersistentParamater() {
+    public void testEncodeAsEJBQL_PersistentParamater() throws IOException {
 
         Artist a = new Artist();
         ObjectId aId = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
@@ -185,67 +175,54 @@ public class ExpressionTest extends ServerCase {
 
         Expression e = ExpressionFactory.matchExp("artist", a);
 
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        e.encodeAsEJBQL(pw, "x");
-        pw.close();
-        buffer.flush();
+        StringBuilder buffer = new StringBuilder();
+
+        e.appendAsEJBQL(buffer, "x");
+
         String ejbql = buffer.toString();
 
         assertEquals("x.artist = 1", ejbql);
     }
 
-    public void testEncodeAsEJBQLNotEquals() {
+    public void testAppendAsEJBQLNotEquals() throws IOException {
 
         Expression e = Expression.fromString("artistName != 'bla'");
 
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        e.encodeAsEJBQL(pw, "x");
-        pw.close();
-        buffer.flush();
+        StringBuilder buffer = new StringBuilder();
+        e.appendAsEJBQL(buffer, "x");
         String ejbql = buffer.toString();
 
         assertEquals("x.artistName <> 'bla'", ejbql);
     }
 
-    public void testEncodeAsEJBQL_Enum() {
+    public void testEncodeAsEJBQL_Enum() throws IOException {
 
-        Expression e = Expression
-                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
+        Expression e = Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
 
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        e.encodeAsEJBQL(pw, "x");
-        pw.close();
-        buffer.flush();
+        StringBuilder buffer = new StringBuilder();
+        e.appendAsEJBQL(buffer, "x");
+
         String ejbql = buffer.toString();
 
         assertEquals("x.a = enum:org.apache.cayenne.exp.ExpEnum1.THREE", ejbql);
     }
 
-    public void testEncodeAsString_StringLiteral() {
+    public void testEncodeAsString_StringLiteral() throws IOException {
         Expression e1 = Expression.fromString("a = 'abc'");
 
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        e1.encodeAsString(pw);
-        pw.close();
-        buffer.flush();
+        StringBuilder buffer = new StringBuilder();
+
+        e1.appendAsString(buffer);
 
         assertEquals("a = \"abc\"", buffer.toString());
     }
 
-    public void testEncodeAsString_Enum() {
-        Expression e1 = Expression
-                .fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
+    public void testEncodeAsString_Enum() throws IOException {
+        Expression e1 = Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
 
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        e1.encodeAsString(pw);
-        pw.close();
-        buffer.flush();
+        StringBuilder buffer = new StringBuilder();
 
+        e1.appendAsString(buffer);
         assertEquals("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO", buffer.toString());
     }
 
@@ -275,7 +252,8 @@ public class ExpressionTest extends ServerCase {
         // 2 same objects in different contexts
         assertTrue(e.match(objects.get(0)));
 
-        // we change one object - so the objects are different now (PersistenceState
+        // we change one object - so the objects are different now
+        // (PersistenceState
         // different)
         a1.setArtistName("newName");
 
@@ -326,7 +304,7 @@ public class ExpressionTest extends ServerCase {
 
         Expression exp = e1.andExp(e2);
         assertEquals(exp.getType(), Expression.AND);
-        assertEquals(2, ((SimpleNode)exp).jjtGetNumChildren());
+        assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
     }
 
     public void testOrExp() {
@@ -335,7 +313,7 @@ public class ExpressionTest extends ServerCase {
 
         Expression exp = e1.orExp(e2);
         assertEquals(exp.getType(), Expression.OR);
-        assertEquals(2, ((SimpleNode)exp).jjtGetNumChildren());
+        assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
     }
 
     public void testAndExpVarArgs() {
@@ -346,7 +324,7 @@ public class ExpressionTest extends ServerCase {
 
         Expression exp = e1.andExp(e2, e3, e4);
         assertEquals(exp.getType(), Expression.AND);
-        assertEquals(4, ((SimpleNode)exp).jjtGetNumChildren());
+        assertEquals(4, ((SimpleNode) exp).jjtGetNumChildren());
     }
 
     public void testOrExpVarArgs() {
@@ -357,146 +335,182 @@ public class ExpressionTest extends ServerCase {
 
         Expression exp = e1.orExp(e2, e3, e4);
         assertEquals(exp.getType(), Expression.OR);
-        assertEquals(4, ((SimpleNode)exp).jjtGetNumChildren());
+        assertEquals(4, ((SimpleNode) exp).jjtGetNumChildren());
     }
-    
+
     // bitwise operations test
     public void testBitwiseNegate() {
-    	Expression exp = Expression.fromString("~7");
-    	
-    	assertEquals(Expression.BITWISE_NOT, exp.getType());
-    	assertEquals(1, ((SimpleNode) exp).jjtGetNumChildren());
-    	assertEquals(new Long(-8), exp.evaluate(new Object())); // ~7 = -8 in digital world
+        Expression exp = Expression.fromString("~7");
+
+        assertEquals(Expression.BITWISE_NOT, exp.getType());
+        assertEquals(1, ((SimpleNode) exp).jjtGetNumChildren());
+        assertEquals(new Long(-8), exp.evaluate(new Object())); // ~7 = -8 in
+                                                                // digital world
     }
-    
+
     public void testBitwiseAnd() {
-    	Expression exp = Expression.fromString("1 & 0");
-    	
-    	assertEquals(Expression.BITWISE_AND, exp.getType());
-    	assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-    	assertEquals(new Long(0), exp.evaluate(new Object()));
+        Expression exp = Expression.fromString("1 & 0");
+
+        assertEquals(Expression.BITWISE_AND, exp.getType());
+        assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+        assertEquals(new Long(0), exp.evaluate(new Object()));
     }
-    
+
     public void testBitwiseOr() {
-    	Expression exp = Expression.fromString("1 | 0");
-    	
-    	assertEquals(Expression.BITWISE_OR, exp.getType());
-    	assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-    	assertEquals(new Long(1), exp.evaluate(new Object()));
+        Expression exp = Expression.fromString("1 | 0");
+
+        assertEquals(Expression.BITWISE_OR, exp.getType());
+        assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+        assertEquals(new Long(1), exp.evaluate(new Object()));
     }
-    
+
     public void testBitwiseXor() {
-    	Expression exp = Expression.fromString("1 ^ 0");
-    	
-    	assertEquals(Expression.BITWISE_XOR, exp.getType());
-    	assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-    	assertEquals(new Long(1), exp.evaluate(new Object()));
+        Expression exp = Expression.fromString("1 ^ 0");
+
+        assertEquals(Expression.BITWISE_XOR, exp.getType());
+        assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+        assertEquals(new Long(1), exp.evaluate(new Object()));
     }
-    
+
     public void testBitwiseLeftShift() {
-    	Expression exp = Expression.fromString("7 << 2");
-    	
-    	assertEquals(Expression.BITWISE_LEFT_SHIFT, exp.getType());
-    	assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-    	assertEquals(new Long(28), exp.evaluate(new Object()));
+        Expression exp = Expression.fromString("7 << 2");
+
+        assertEquals(Expression.BITWISE_LEFT_SHIFT, exp.getType());
+        assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+        assertEquals(new Long(28), exp.evaluate(new Object()));
     }
-    
+
     public void testBitwiseRightShift() {
-    	Expression exp = Expression.fromString("7 >> 2");
-    	
-    	assertEquals(Expression.BITWISE_RIGHT_SHIFT, exp.getType());
-    	assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-    	
-    	assertEquals(new Long(1), exp.evaluate(new Object()));
+        Expression exp = Expression.fromString("7 >> 2");
+
+        assertEquals(Expression.BITWISE_RIGHT_SHIFT, exp.getType());
+        assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
+
+        assertEquals(new Long(1), exp.evaluate(new Object()));
     }
-    
+
     /**
      * (a | b) | c = a | (b | c)
      */
     public void testBitwiseAssociativity() {
-    	Expression e1 = Expression.fromString("(3010 | 2012) | 4095");
-    	Expression e2 = Expression.fromString("3010 | (2012 | 4095)");
-    	
-    	assertEquals(e1.evaluate(new Object()), e2.evaluate(new Object()));
+        Expression e1 = Expression.fromString("(3010 | 2012) | 4095");
+        Expression e2 = Expression.fromString("3010 | (2012 | 4095)");
+
+        assertEquals(e1.evaluate(new Object()), e2.evaluate(new Object()));
     }
-    
+
     /**
      * a | b = b | a
      */
     public void testBitwiseCommutativity() {
-    	Expression e1 = Expression.fromString("3010 | 4095");
-    	Expression e2 = Expression.fromString("4095 | 3010");
-    	
-    	assertEquals(e1.evaluate(new Object()), e2.evaluate(new Object()));
+        Expression e1 = Expression.fromString("3010 | 4095");
+        Expression e2 = Expression.fromString("4095 | 3010");
+
+        assertEquals(e1.evaluate(new Object()), e2.evaluate(new Object()));
     }
-    
+
     /**
      * a | (a & b) = a
      */
     public void testBitwiseAbsorption() {
-    	Expression e1 = Expression.fromString("2012 | (2012 & 3010)");
-    	Expression e2 = Expression.fromString("2012L"); // scalar becomes Long object
-    	
-    	assertEquals(e1.evaluate(new Object()), e2.evaluate(new Object()));
+        Expression e1 = Expression.fromString("2012 | (2012 & 3010)");
+        Expression e2 = Expression.fromString("2012L"); // scalar becomes Long
+                                                        // object
+
+        assertEquals(e1.evaluate(new Object()), e2.evaluate(new Object()));
     }
-    
+
     /**
-     *  a | (b & c) = (a | b) & (a | c)
+     * a | (b & c) = (a | b) & (a | c)
      */
     public void testBitwiseDistributivity() {
-    	Expression e1 = Expression.fromString("4095 | (7777 & 8888)");
-    	Expression e2 = Expression.fromString("(4095 | 7777) & (4095 | 8888)");
-    	
-    	assertEquals(e1.evaluate(new Object()), e2.evaluate(new Object()));
+        Expression e1 = Expression.fromString("4095 | (7777 & 8888)");
+        Expression e2 = Expression.fromString("(4095 | 7777) & (4095 | 8888)");
+
+        assertEquals(e1.evaluate(new Object()), e2.evaluate(new Object()));
     }
-    
+
     /**
-     * a | ~a = 1 
-     * But in Java computed result is -1 because of JVM represents negative numbers as positive ones: ~2 = -3;
-     * For instance, there are only 4 bits and that is why -3 means '1101' and 3 means '0011' because of '1101' + '0011' = (1)'0000' what is zero; but the same time '1101' is 13.
+     * a | ~a = 1 But in Java computed result is -1 because of JVM represents
+     * negative numbers as positive ones: ~2 = -3; For instance, there are only
+     * 4 bits and that is why -3 means '1101' and 3 means '0011' because of
+     * '1101' + '0011' = (1)'0000' what is zero; but the same time '1101' is 13.
      */
     public void testBitwiseComplements() {
-    	Expression e1 = Expression.fromString("5555 | ~5555");
-    	Expression e2 = Expression.fromString("9999 & ~9999");
-    	
-    	assertEquals(new Long(-1), e1.evaluate(new Object())); // ~0 = -1 that is the way how robots kill humans what means x | ~x = 1 in boolean algebra against java digital bitwise operations logics
-    	assertEquals(new Long(0), e2.evaluate(new Object()));
+        Expression e1 = Expression.fromString("5555 | ~5555");
+        Expression e2 = Expression.fromString("9999 & ~9999");
+
+        assertEquals(new Long(-1), e1.evaluate(new Object())); // ~0 = -1 that
+                                                               // is the way how
+                                                               // robots kill
+                                                               // humans what
+                                                               // means x | ~x =
+                                                               // 1 in boolean
+                                                               // algebra
+                                                               // against java
+                                                               // digital
+                                                               // bitwise
+                                                               // operations
+                                                               // logics
+        assertEquals(new Long(0), e2.evaluate(new Object()));
     }
-    
+
     /**
-     * Huntington equation n(n(x) + y) + n(n(x) + n(y)) = x where is 'n' is negotation (may be any other unary operation) and '+' is disjunction (OR operation, i.e. '|' bitwise operation).
+     * Huntington equation n(n(x) + y) + n(n(x) + n(y)) = x where is 'n' is
+     * negotation (may be any other unary operation) and '+' is disjunction (OR
+     * operation, i.e. '|' bitwise operation).
      */
     public void testBitwiseHuntingtonEquation() {
-    	Expression theHuntingEquation = Expression.fromString("~(~3748 | 4095) | ~(~3748 | ~4095)");
-    	
-    	assertEquals(new Long(3748), theHuntingEquation.evaluate(new Object()));
+        Expression theHuntingEquation = Expression.fromString("~(~3748 | 4095) | ~(~3748 | ~4095)");
+
+        assertEquals(new Long(3748), theHuntingEquation.evaluate(new Object()));
     }
-    
+
     /**
-     * Robbins equation n(n(x + y) + n(x + n(y))) = x where is 'n' is negotation and '+' is disjunction (OR operation, i.e. '|' bitwise operation).
-     * Every Robbins algebra is a Boolean algebra according to automated reasoning program EQP.
+     * Robbins equation n(n(x + y) + n(x + n(y))) = x where is 'n' is negotation
+     * and '+' is disjunction (OR operation, i.e. '|' bitwise operation). Every
+     * Robbins algebra is a Boolean algebra according to automated reasoning
+     * program EQP.
      */
     public void testBitwiseRobbinsEquation() {
-    	Expression theRobbinsEquation = Expression.fromString("~(~(5111 | 4095) | ~(5111 | ~4095))");
-    	
-    	assertEquals(new Long(5111), theRobbinsEquation.evaluate(new Object()) );
+        Expression theRobbinsEquation = Expression.fromString("~(~(5111 | 4095) | ~(5111 | ~4095))");
+
+        assertEquals(new Long(5111), theRobbinsEquation.evaluate(new Object()));
     }
-    
+
     /**
      * Bitwise and math operations are ruled by precedence.
      */
     public void testBitwisePrecedence() {
-    	Expression e1 = Expression.fromString("1 << 1 & 2"); // 1 << 1 = 2 and after that 2 & 2 = 2;
-    	Expression e2 = Expression.fromString("0 | 1 & ~(3 | ~3)"); // by java math precedence that means 0 | (1 & (~(3 | (~3))))
-    	Expression e3 = Expression.fromString("3 | ~(-3) + 2");    // JVM ~(-3) = 2 and then 2 + 2 is 4 what bitwise is 100, then 011 | 100 = 111 what means 3 + 4 = 7
-    	Expression e4 = Expression.fromString("2 * 2 | 2"); // (2 * 2) | 2 = 4 | 2 = '100' | '10' = '110' = 6
-    	Expression e5 = Expression.fromString("6 / 2 & 3"); // (6 / 2) & 3 = 3 & 3 = 3
-    	
-    	assertEquals(new Long(2), e1.evaluate(new Object()));
-    	assertEquals(new Long(0), e2.evaluate(new Object()));
-    	assertEquals(new Long(7), e3.evaluate(new Object()));
-    	assertEquals(new Long(6), e4.evaluate(new Object()));
-    	assertEquals(new Long(3), e5.evaluate(new Object()));
+        Expression e1 = Expression.fromString("1 << 1 & 2"); // 1 << 1 = 2 and
+                                                             // after that 2 & 2
+                                                             // = 2;
+        Expression e2 = Expression.fromString("0 | 1 & ~(3 | ~3)"); // by java
+                                                                    // math
+                                                                    // precedence
+                                                                    // that
+                                                                    // means 0 |
+                                                                    // (1 & (~(3
+                                                                    // | (~3))))
+        Expression e3 = Expression.fromString("3 | ~(-3) + 2"); // JVM ~(-3) = 2
+                                                                // and then 2 +
+                                                                // 2 is 4 what
+                                                                // bitwise is
+                                                                // 100, then 011
+                                                                // | 100 = 111
+                                                                // what means 3
+                                                                // + 4 = 7
+        Expression e4 = Expression.fromString("2 * 2 | 2"); // (2 * 2) | 2 = 4 |
+                                                            // 2 = '100' | '10'
+                                                            // = '110' = 6
+        Expression e5 = Expression.fromString("6 / 2 & 3"); // (6 / 2) & 3 = 3 &
+                                                            // 3 = 3
+
+        assertEquals(new Long(2), e1.evaluate(new Object()));
+        assertEquals(new Long(0), e2.evaluate(new Object()));
+        assertEquals(new Long(7), e3.evaluate(new Object()));
+        assertEquals(new Long(6), e4.evaluate(new Object()));
+        assertEquals(new Long(3), e5.evaluate(new Object()));
     }
     // bitwise
 }

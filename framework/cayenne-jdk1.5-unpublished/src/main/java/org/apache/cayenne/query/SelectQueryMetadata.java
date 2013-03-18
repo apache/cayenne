@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -46,23 +48,26 @@ class SelectQueryMetadata extends BaseQueryMetadata {
             // generate unique cache key...
             if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
 
-            }
-            else {
-                // create a unique key based on entity, qualifier, ordering and fetch
-                // offset and limit
+            } else {
+                // create a unique key based on entity, qualifier, ordering and
+                // fetch offset and limit
 
                 StringBuilder key = new StringBuilder();
 
                 ObjEntity entity = getObjEntity();
                 if (entity != null) {
                     key.append(entity.getName());
-                }
-                else if (dbEntity != null) {
+                } else if (dbEntity != null) {
                     key.append("db:").append(dbEntity.getName());
                 }
 
                 if (query.getQualifier() != null) {
-                    key.append('/').append(query.getQualifier());
+                    key.append('/');
+                    try {
+                        query.getQualifier().appendAsString(key);
+                    } catch (IOException e) {
+                        throw new CayenneRuntimeException("Unexpected IO Exception appending to StringBuilder", e);
+                    }
                 }
 
                 if (!query.getOrderings().isEmpty()) {
@@ -77,7 +82,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                         }
                     }
                 }
-                
+
                 if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
                     key.append('/');
                     if (query.getFetchOffset() > 0) {
@@ -87,7 +92,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
                         key.append('l').append(query.getFetchLimit());
                     }
                 }
-                
+
                 this.cacheKey = key.toString();
             }
 
@@ -132,8 +137,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
      */
     @Override
     public Map<String, String> getPathSplitAliases() {
-        return pathSplitAliases != null ? pathSplitAliases : Collections
-                .<String, String> emptyMap();
+        return pathSplitAliases != null ? pathSplitAliases : Collections.<String, String> emptyMap();
     }
 
     /**

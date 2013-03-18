@@ -18,8 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
@@ -29,12 +28,9 @@ public class ASTObjPathTest extends TestCase {
         assertEquals("x.y", new ASTObjPath("x.y").toString());
     }
 
-    public void testEncodeAsString() {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintWriter pw = new PrintWriter(out);
-        new ASTObjPath("x.y").encodeAsString(pw);
-        pw.close();
-
-        assertEquals("x.y", new String(out.toByteArray()));
+    public void testEncodeAsString() throws IOException {
+        StringBuilder buffer = new StringBuilder();
+        new ASTObjPath("x.y").appendAsString(buffer);
+        assertEquals("x.y", buffer.toString());
     }
 }

@@ -18,8 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
@@ -28,13 +27,12 @@ public class ASTDbPathTest extends TestCase {
     public void testToString() {
         assertEquals("db:x.y", new ASTDbPath("x.y").toString());
     }
-    
-    public void testEncodeAsString() {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintWriter pw = new PrintWriter(out);
-        new ASTDbPath("x.y").encodeAsString(pw);
-        pw.close();
-        
-        assertEquals("db:x.y", new String(out.toByteArray()));
+
+    public void testAppendAsString() throws IOException {
+        StringBuilder buffer = new StringBuilder();
+
+        new ASTDbPath("x.y").appendAsString(buffer);
+
+        assertEquals("db:x.y", buffer.toString());
     }
 }
