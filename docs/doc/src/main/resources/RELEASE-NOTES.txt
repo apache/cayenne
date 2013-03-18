@@ -41,7 +41,7 @@ CAY-1779 Flatten object entities for many to many relationships on reverse engin
 CAY-1781 Add StatelessContextRequestHandler as an alternative to the Session-based one
 CAY-1294 Generify query
 CAY-1785 SelectQuery<T> for DataRows
-CAY-1803 Define toString() in path expressions 
+CAY-1803 Optimize Expression conversion to String and EJBQL 
 
 Bug Fixes:
 
