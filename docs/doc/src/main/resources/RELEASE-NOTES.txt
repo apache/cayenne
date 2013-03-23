@@ -68,3 +68,4 @@ CAY-1780 cdbimport do not create xml file in resource folder
 CAY-1782 Deadlock when performing many concurrent inserts
 CAY-1783 JdbcPkGenerator.longPkFromDatabase would throw an exception if the PK value exceeds a range of Java int
 CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor
+CAY-1804 Serialisation of long[] type was not working correctly. 
