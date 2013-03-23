@@ -276,6 +276,9 @@ public class PropertyUtils {
             else if ("int".equals(className)) {
                 return Integer.class;
             }
+            else if ("long".equals(className)) {
+                return Long.class;
+            }
             else if ("short".equals(className)) {
                 return Short.class;
             }
@@ -310,6 +313,9 @@ public class PropertyUtils {
             else if ("int".equals(className)) {
                 return Integer.valueOf(0);
             }
+           else if ("long".equals(className)) {
+               return Long.valueOf(0);
+           }
             else if ("short".equals(className)) {
                 return Short.valueOf((short) 0);
             }
