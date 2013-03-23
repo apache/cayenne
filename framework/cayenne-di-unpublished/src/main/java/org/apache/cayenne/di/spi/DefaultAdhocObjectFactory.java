@@ -159,6 +159,9 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             else if ("int".equals(className)) {
                 return int[].class;
             }
+           else if ("long".equals(className)) {
+               return long[].class;
+           }
             else if ("short".equals(className)) {
                 return short[].class;
             }
