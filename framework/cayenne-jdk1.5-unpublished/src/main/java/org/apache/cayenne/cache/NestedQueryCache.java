@@ -32,14 +32,19 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * A {@link QueryCache} wrapper that introduces a key namespace on top of a delegate
- * shared cache. This way multiple cache users can share the same underlying cache without
- * a possibility of key conflicts, yet refresh the cache groups in a coordinated fashion.
+ * A {@link QueryCache} wrapper that introduces a key namespace on top of a
+ * delegate shared cache. This way multiple cache users can share the same
+ * underlying cache without a possibility of key conflicts, yet refresh the
+ * cache groups in a coordinated fashion.
  * 
  * @since 3.0
  */
 public class NestedQueryCache implements QueryCache {
 
+    // the idea is to be something short (to speed up comparisons), but clear
+    // and unlikely to create a conflict with application cache keys...
+    // fully-qualified class name that we used before was a bit too long
+    private static final String NAMESPACE_PREXIX = "#nested-";
     private static volatile int currentId;
 
     protected QueryCache delegate;
@@ -55,12 +60,12 @@ public class NestedQueryCache implements QueryCache {
 
     public NestedQueryCache(QueryCache delegate) {
         this.delegate = delegate;
-        this.namespace = getClass().getName() + nextInt() + ":";
+        this.namespace = NAMESPACE_PREXIX + nextInt() + ":";
     }
 
     /**
-     * Returns the actual implementation of the query cache that is wrapped by this
-     * NestedQueryCache.
+     * Returns the actual implementation of the query cache that is wrapped by
+     * this NestedQueryCache.
      */
     public QueryCache getDelegate() {
         return delegate;
@@ -70,7 +75,8 @@ public class NestedQueryCache implements QueryCache {
      * Clears the underlying shared cache.
      */
     public void clear() {
-        // seems pretty evil - it clears the keys that do not belong to our subset of the
+        // seems pretty evil - it clears the keys that do not belong to our
+        // subset of the
         // cache
         delegate.clear();
     }
@@ -84,7 +90,7 @@ public class NestedQueryCache implements QueryCache {
     public List get(QueryMetadata metadata) {
         return delegate.get(qualifiedMetadata(metadata));
     }
-    
+
     @SuppressWarnings("rawtypes")
     public void put(QueryMetadata metadata, List results) {
         delegate.put(qualifiedMetadata(metadata), results);
