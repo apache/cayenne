@@ -5,11 +5,11 @@ For the latest information visit project web site:
 http://cayenne.apache.org/
 
 To browse individual bug reports check out project issue tracker:
-http://issues.apache.org/cayenne/
+https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 3.1B3
-Date: 2013
+Date: not yet released
 ----------------------------------
 Bug Fixes Since 3.1B2:
 
@@ -18,7 +18,7 @@ CAY-1804 Serialisation of long[] type was not working correctly.
 
 ----------------------------------
 Release: 3.1B2
-Date: 2013
+Date: 18 February 2013
 ----------------------------------
 Changes/New Features Since 3.1B1:
 
