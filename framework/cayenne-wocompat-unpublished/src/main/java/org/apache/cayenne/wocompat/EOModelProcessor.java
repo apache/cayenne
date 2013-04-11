@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -47,11 +48,15 @@ import org.apache.cayenne.wocompat.parser.Parser;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Class for converting stored Apple EOModel mapping files to Cayenne DataMaps.
  */
 public class EOModelProcessor {
+    
+    private static final Log logger = LogFactory.getLog(EOModelProcessor.class);
 
     protected Predicate prototypeChecker;
 
@@ -648,7 +653,13 @@ public class EOModelProcessor {
             ObjRelationship flatRel = new ObjRelationship();
             flatRel.setName((String) relMap.get("name"));
             flatRel.setSourceEntity(e);
-            flatRel.setDbRelationshipPath(targetPath);
+            
+            try {
+                flatRel.setDbRelationshipPath(targetPath);
+            } catch (ExpressionException ex) {
+                logger.warn("Invalid relationship: " + targetPath);
+                continue;
+            }
 
             // find target entity
             Map entityInfo = info;

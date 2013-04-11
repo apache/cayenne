@@ -69,6 +69,19 @@ public class EOModelProcessorTest extends TestCase {
         assertEquals(0, entity.getRelationships().size());
         assertEquals(0, entity.getDbEntity().getRelationships().size());
     }
+    
+    public void testLoadFlattened() throws Exception {
+        URL url = getClass().getClassLoader().getResource("wotests/flattened.eomodeld/");
+        assertNotNull(url);
+
+        // see CAY-1806
+        DataMap map = processor.loadEOModel(url);
+        ObjEntity artistE = map.getObjEntity("Artist");
+        assertNotNull(artistE);
+        assertEquals(2, artistE.getRelationships().size());
+        assertNotNull(artistE.getRelationship("exhibitArray"));
+        assertNotNull(artistE.getRelationship("artistExhibitArray"));
+    }
 
     public void testLoadBrokenModel() throws Exception {
         DataMap map = processor.loadEOModel("art-with-errors.eomodeld");
