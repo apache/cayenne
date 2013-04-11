@@ -15,6 +15,7 @@ Bug Fixes Since 3.1B2:
 
 CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor
 CAY-1804 Serialisation of long[] type was not working correctly. 
+CAY-1806 Error importing eomodel 
 
 ----------------------------------
 Release: 3.1B2
