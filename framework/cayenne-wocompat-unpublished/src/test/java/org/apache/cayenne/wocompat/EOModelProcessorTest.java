@@ -71,11 +71,9 @@ public class EOModelProcessorTest extends TestCase {
     }
     
     public void testLoadFlattened() throws Exception {
-        URL url = getClass().getClassLoader().getResource("wotests/flattened.eomodeld/");
-        assertNotNull(url);
-
+      
         // see CAY-1806
-        DataMap map = processor.loadEOModel(url);
+        DataMap map = processor.loadEOModel("wotests/flattened.eomodeld");
         ObjEntity artistE = map.getObjEntity("Artist");
         assertNotNull(artistE);
         assertEquals(2, artistE.getRelationships().size());
