@@ -46,7 +46,7 @@ import org.apache.cayenne.reflect.PropertyUtils;
  *
  * @since 3.1 its predecessor was called DataObjectUtils
  */
-public final class Cayenne {
+public class Cayenne {
 
     /**
      * A special property denoting a size of the to-many collection, when encountered at

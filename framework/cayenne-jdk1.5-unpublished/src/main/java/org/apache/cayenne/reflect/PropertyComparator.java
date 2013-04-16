@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 /**
  * @since 3.1
  */
-final class PropertyComparator implements
+class PropertyComparator implements
         Comparator<Entry<String, Property>> {
 
     static final Comparator<Entry<String, Property>> comparator = new PropertyComparator();

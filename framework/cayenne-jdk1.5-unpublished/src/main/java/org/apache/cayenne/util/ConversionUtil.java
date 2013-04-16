@@ -30,7 +30,7 @@ import org.apache.cayenne.exp.ExpressionException;
  * 
  * @since 1.1
  */
-public final class ConversionUtil {
+public class ConversionUtil {
 
     public static int toInt(Object object, int defaultValue) {
         if (object == null) {

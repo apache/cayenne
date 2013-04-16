@@ -35,7 +35,7 @@ import com.caucho.hessian.io.HessianOutput;
  * 
  * @since 1.2
  */
-public final class HessianUtil {
+public class HessianUtil {
 
     /**
      * A utility method that clones an object using Hessian serialization/deserialization
