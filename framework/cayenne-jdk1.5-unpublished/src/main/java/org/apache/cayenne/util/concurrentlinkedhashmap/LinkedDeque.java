@@ -56,7 +56,7 @@ import java.util.NoSuchElementException;
  * 
  * @param <E> the type of elements held in this collection
  */
-final class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
+class LinkedDeque<E extends Linked<E>> extends AbstractCollection<E> {
 
     // This class provides a doubly-linked list that is optimized for the virtual
     // machine. The first and last elements are manipulated instead of a slightly
