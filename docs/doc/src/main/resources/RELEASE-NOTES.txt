@@ -42,6 +42,7 @@ CAY-1781 Add StatelessContextRequestHandler as an alternative to the Session-bas
 CAY-1294 Generify query
 CAY-1785 SelectQuery<T> for DataRows
 CAY-1803 Optimize Expression conversion to String and EJBQL 
+CAY-1809 Remove 'final' modifier from Cayenne, HessianUtil, PropertyComparator, ConversionUtil, and LinkedDeque
 
 Bug Fixes:
 
