@@ -11,6 +11,10 @@ https://issues.apache.org/jira/browse/CAY
 Release: 3.1B3
 Date: not yet released
 ----------------------------------
+Changes/New Features Since 3.1B1:
+
+CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
+
 Bug Fixes Since 3.1B2:
 
 CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor

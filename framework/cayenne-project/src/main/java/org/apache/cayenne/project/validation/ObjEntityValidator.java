@@ -18,8 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
@@ -31,10 +35,10 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
         validateName(entity, validationResult);
         validateClassName(entity, validationResult);
         validateSuperClassName(entity, validationResult);
+        validateAttributes(entity, validationResult);
 
         // validate DbEntity presence
         if (entity.getDbEntity() == null && !entity.isAbstract()) {
-
             addFailure(
                     validationResult,
                     entity,
@@ -108,7 +112,7 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
                     entity.getName(),
                     superClassName);
         }
-        
+
         if (entity.getDbEntityName() != null && entity.getSuperEntityName() != null) {
             addFailure(
                     validationResult,
@@ -121,6 +125,25 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
         DataMap map = entity.getDataMap();
         if (map == null) {
             return;
+        }
+    }
+
+    private void validateAttributes(ObjEntity entity, ValidationResult validationResult) {
+        Set<String> dbAttributeNames = new HashSet<String>();
+
+        for (ObjAttribute attribute : entity.getAttributes()) {
+            String dbAttributeName = attribute.getDbAttribute().getName();
+
+            if (Util.isEmptyString(dbAttributeName) == false) {
+                if (dbAttributeNames.contains(dbAttributeName)) {
+                    addFailure(validationResult,
+                               entity,
+                               "ObjEntity contains duplicate DbAttribute mappings (%s)",
+                               dbAttributeName);
+                }
+
+                dbAttributeNames.add(dbAttributeName);
+            }
         }
     }
 
