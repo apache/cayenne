@@ -43,6 +43,7 @@ CAY-1294 Generify query
 CAY-1785 SelectQuery<T> for DataRows
 CAY-1803 Optimize Expression conversion to String and EJBQL 
 CAY-1809 Remove 'final' modifier from Cayenne, HessianUtil, PropertyComparator, ConversionUtil, and LinkedDeque
+CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
 
 Bug Fixes:
 
