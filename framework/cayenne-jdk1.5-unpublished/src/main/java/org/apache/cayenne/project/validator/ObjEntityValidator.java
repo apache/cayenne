@@ -19,8 +19,12 @@
 
 package org.apache.cayenne.project.validator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.project.ProjectPath;
 import org.apache.cayenne.util.Util;
@@ -42,6 +46,7 @@ public class ObjEntityValidator extends TreeNodeValidator {
         validateName(ent, path, validator);
         validateClassName(ent, path, validator);
         validateSuperClassName(ent, path, validator);
+        validateAttributes(ent, path, validator);
 
         // validate DbEntity presence
         if (ent.getDbEntity() == null && !ent.isAbstract()) {
@@ -104,6 +109,23 @@ public class ObjEntityValidator extends TreeNodeValidator {
         DataMap map = (DataMap) path.getObjectParent();
         if (map == null) {
             return;
+        }
+    }
+
+
+    private void validateAttributes(ObjEntity entity, ProjectPath path, Validator validator) {
+        Set<String> dbAttributeNames = new HashSet<String>();
+
+        for (ObjAttribute attribute : entity.getAttributes()) {
+            String dbAttributeName = attribute.getDbAttribute().getName();
+
+            if (Util.isEmptyString(dbAttributeName) == false) {
+                if (dbAttributeNames.contains(dbAttributeName)) {
+                    validator.registerWarning("ObjEntity contains duplicate DbAttribute mappings (" + dbAttributeName + ")", path);
+                }
+
+                dbAttributeNames.add(dbAttributeName);
+            }
         }
     }
 
