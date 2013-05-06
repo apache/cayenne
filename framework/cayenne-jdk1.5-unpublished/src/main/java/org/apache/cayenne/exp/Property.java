@@ -118,7 +118,7 @@ public class Property<E> {
     public Expression likeInsensitive(E value) {
         return ExpressionFactory.likeIgnoreCaseExp(getName(), value);
     }
-    
+
     /**
      * @return An expression for a Database "NOT LIKE" query.
      */
@@ -162,12 +162,38 @@ public class Property<E> {
 
         return ExpressionFactory.inExp(getName(), values);
     }
-    
+
+    /**
+     * @return An expression for finding objects with values not in the given
+     *         set.
+     */
+    public Expression nin(E firstValue, E... moreValues) {
+
+        int moreValuesLength = moreValues != null ? moreValues.length : 0;
+
+        Object[] values = new Object[moreValuesLength + 1];
+        values[0] = firstValue;
+
+        if (moreValuesLength > 0) {
+            System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
+        }
+
+        return ExpressionFactory.notInExp(getName(), values);
+    }
+
     /**
      * @return An expression for finding objects with values in the given set.
      */
     public Expression in(Collection<E> values) {
         return ExpressionFactory.inExp(getName(), values);
+    }
+
+    /**
+     * @return An expression for finding objects with values not in the given
+     *         set.
+     */
+    public Expression nin(Collection<E> values) {
+        return ExpressionFactory.notInExp(getName(), values);
     }
 
     /**
@@ -273,7 +299,7 @@ public class Property<E> {
         node.setSemantics(PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
         return node;
     }
-    
+
     public PrefetchTreeNode disjointById() {
         PrefetchTreeNode node = prefetch();
         node.setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
