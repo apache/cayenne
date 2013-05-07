@@ -64,6 +64,11 @@ class ConverterFactory {
 
                 if (object instanceof Boolean) {
                     return object;
+                } else if (object instanceof Integer || object instanceof Long || object instanceof Short) {
+                	if (((Number)object).longValue() == 0)
+                		return Boolean.FALSE;
+                	else if (((Number)object).longValue() == 1)
+                		return Boolean.TRUE;
                 }
 
                 return "true".equalsIgnoreCase(object.toString())
