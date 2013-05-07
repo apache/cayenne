@@ -170,6 +170,11 @@ public class PropertyUtils {
                     + lastSegment
                     + "' in path '"
                     + nestedPropertyName
+                    + "'"
+                    + " to value '"
+                    + value
+                    + "' for object '"
+                    + object
                     + "'", e);
         }
 
