@@ -132,17 +132,13 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
         Set<String> dbAttributeNames = new HashSet<String>();
 
         for (ObjAttribute attribute : entity.getAttributes()) {
-            String dbAttributeName = attribute.getDbAttribute().getName();
+            String dbAttributePath = attribute.getDbAttributePath();
 
-            if (Util.isEmptyString(dbAttributeName) == false) {
-                if (dbAttributeNames.contains(dbAttributeName)) {
-                    addFailure(validationResult,
-                               entity,
-                               "ObjEntity contains duplicate DbAttribute mappings (%s)",
-                               dbAttributeName);
+            if (!Util.isEmptyString(dbAttributePath)) {
+                if (!dbAttributeNames.add(dbAttributePath)) {
+                    addFailure(validationResult, entity, "ObjEntity contains duplicate DbAttribute mappings (%s)",
+                            dbAttributePath);
                 }
-
-                dbAttributeNames.add(dbAttributeName);
             }
         }
     }
