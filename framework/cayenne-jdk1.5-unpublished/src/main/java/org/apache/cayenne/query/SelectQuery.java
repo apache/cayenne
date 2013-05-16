@@ -52,6 +52,17 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
     SelectQueryMetadata metaData = new SelectQueryMetadata();
     
     /**
+     * Creates a SelectQuery that selects objects of a given persistent class.
+     *
+     * @param rootClass the Class of objects fetched by this query.
+     * 
+     * @since 3.2
+     */
+    public static <T> SelectQuery<T> query(Class<T> rootClass) {
+        return new SelectQuery<T>(rootClass);
+    }
+
+    /**
      * Creates a SelectQuery that selects objects of a given persistent class that match
      * supplied qualifier.
      *
@@ -62,6 +73,20 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      */
     public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier) {
         return new SelectQuery<T>(rootClass, qualifier);
+    }
+    
+    /**
+     * Creates a SelectQuery that selects objects of a given persistent class that match
+     * supplied qualifier.
+     *
+     * @param rootClass the Class of objects fetched by this query.
+     * @param qualifier an Expression indicating which objects should be fetched.
+     * @param orderings defines how to order the results, may be null.
+     * 
+     * @since 3.2
+     */
+    public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier, List<Ordering> orderings) {
+        return new SelectQuery<T>(rootClass, qualifier, orderings);
     }
     
     /**

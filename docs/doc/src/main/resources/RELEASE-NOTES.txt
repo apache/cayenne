@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-1294 Generify query
 CAY-1646 Synchronize tabs in Modeler between ObjEntity and DbEntity editor panes
 CAY-1647 Easily switch to/from ObjEntity and DbEntity in Modeler
 CAY-1717 [PATCH] Implement JDBC compatibility layer methods
@@ -39,8 +40,8 @@ CAY-1772 Real support for DbEntity catalogs
 CAY-1778 TransactionManager to simplify user-managed transactions 
 CAY-1779 Flatten object entities for many to many relationships on reverse engineering 
 CAY-1781 Add StatelessContextRequestHandler as an alternative to the Session-based one
-CAY-1294 Generify query
 CAY-1785 SelectQuery<T> for DataRows
+CAY-1792 [PATCH] Supply additional factory methods for generic SelectQueries 
 CAY-1803 Optimize Expression conversion to String and EJBQL 
 CAY-1809 Remove 'final' modifier from Cayenne, HessianUtil, PropertyComparator, ConversionUtil, and LinkedDeque
 CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
