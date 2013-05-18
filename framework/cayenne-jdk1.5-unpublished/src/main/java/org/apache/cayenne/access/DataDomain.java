@@ -804,6 +804,17 @@ public class DataDomain implements QueryEngine, DataChannel {
         filters.remove(filter);
     }
 
+    /**
+     * Adds a listener, mapping its methods to events based on annotations. This
+     * is a shortcut for
+     * 'getEntityResolver().getCallbackRegistry().addListener(listener)'.
+     * 
+     * @since 3.2
+     */
+    public void addListener(Object listener) {
+        getEntityResolver().getCallbackRegistry().addListener(listener);
+    }
+
     abstract class DataDomainFilterChain implements DataChannelFilterChain {
 
         private int i;

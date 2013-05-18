@@ -24,12 +24,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.annotation.PostAdd;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -70,8 +78,7 @@ public class DataDomainTest extends ServerCase {
 
             domain.lookupDataNode(new DataMap("m3"));
             fail("must have thrown on missing Map to Node maping");
-        }
-        catch (CayenneRuntimeException e) {
+        } catch (CayenneRuntimeException e) {
             // expected
         }
     }
@@ -164,8 +171,7 @@ public class DataDomainTest extends ServerCase {
 
     public void testInitDataDomainWithDedicatedCache() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties
-                .put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
+        properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isSharedCacheEnabled());
@@ -173,9 +179,7 @@ public class DataDomainTest extends ServerCase {
 
     public void testInitDataDomainValidation() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(
-                DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
-                Boolean.TRUE.toString());
+        properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.TRUE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertTrue(domain.isValidatingObjectsOnCommit());
@@ -183,9 +187,7 @@ public class DataDomainTest extends ServerCase {
 
     public void testInitDataDomainNoValidation() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(
-                DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
-                Boolean.FALSE.toString());
+        properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isValidatingObjectsOnCommit());
@@ -193,9 +195,7 @@ public class DataDomainTest extends ServerCase {
 
     public void testDataDomainInternalTransactions() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(
-                DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY,
-                Boolean.FALSE.toString());
+        properties.put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isUsingExternalTransactions());
@@ -206,9 +206,7 @@ public class DataDomainTest extends ServerCase {
 
     public void testDataDomainExternalTransactions() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(
-                DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY,
-                Boolean.TRUE.toString());
+        properties.put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, Boolean.TRUE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertTrue(domain.isUsingExternalTransactions());
@@ -222,10 +220,7 @@ public class DataDomainTest extends ServerCase {
 
         final boolean[] cacheShutdown = new boolean[1];
 
-        DataRowStore cache = new DataRowStore(
-                "Y",
-                Collections.EMPTY_MAP,
-                new DefaultEventManager()) {
+        DataRowStore cache = new DataRowStore("Y", Collections.EMPTY_MAP, new DefaultEventManager()) {
 
             @Override
             public void shutdown() {
@@ -237,5 +232,47 @@ public class DataDomainTest extends ServerCase {
         domain.shutdown();
 
         assertTrue(cacheShutdown[0]);
+    }
+
+    public void testAddListener() {
+
+        DataDomain domain = runtime.getDataDomain();
+        PostAddListener listener = new PostAddListener();
+        domain.addListener(listener);
+
+        ObjectContext context = runtime.getContext();
+
+        context.newObject(Gallery.class);
+        assertEquals("e:Gallery;", listener.getAndReset());
+
+        context.newObject(Artist.class);
+        assertEquals("a:Artist;", listener.getAndReset());
+
+        context.newObject(Exhibit.class);
+        assertEquals("", listener.getAndReset());
+
+        context.newObject(Painting.class);
+        assertEquals("e:Painting;", listener.getAndReset());
+    }
+
+    class PostAddListener {
+
+        StringBuilder callbackBuffer = new StringBuilder();
+
+        @PostAdd({ Gallery.class, Painting.class })
+        void postAddEntities(Persistent object) {
+            callbackBuffer.append("e:" + object.getObjectId().getEntityName() + ";");
+        }
+
+        @PostAdd(entityAnnotations = Tag1.class)
+        void postAddAnnotated(Persistent object) {
+            callbackBuffer.append("a:" + object.getObjectId().getEntityName() + ";");
+        }
+
+        String getAndReset() {
+            String v = callbackBuffer.toString();
+            callbackBuffer = new StringBuilder();
+            return v;
+        }
     }
 }

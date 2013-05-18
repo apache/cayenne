@@ -47,6 +47,7 @@ CAY-1809 Remove 'final' modifier from Cayenne, HessianUtil, PropertyComparator, 
 CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
 CAY-1814 Support Property.nin 
 CAY-1819 When adding a filter, auto-register it as a listener 
+CAY-1820 DataDomain.addListener(Object) - a shortcut for adding annotated listeners 
 
 Bug Fixes:
 
