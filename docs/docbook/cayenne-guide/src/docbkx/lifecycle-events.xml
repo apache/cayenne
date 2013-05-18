@@ -194,11 +194,8 @@ public class Listener2 {
             methods. Now let's register them with
             runtime:<programlisting language="java">ServerRuntime runtime = ...
 
-LifecycleCallbackRegistry registry = 
-    runtime.getDataDomain().getEntityResolver().getCallbackRegistry();
-
-registry.addListener(new Listener1());
-registry.addListener(new Listener2());</programlisting></para>
+runtime.getDataDomain().addListener(new Listener1());
+runtime.getDataDomain().addListener(new Listener2());</programlisting></para>
         <para>Listeners in this example are very simple. However they don't have to be. Unlike
             Persistent objects, normally listeners initialization is managed by the application
             code, not Cayenne, so listeners may have knowledge of various application services,
@@ -310,9 +307,7 @@ ServerRuntime runtime = ...
 DataDomain domain = runtime.getDataDomain();
 
 // register filter
-domain.addFilter(counter);
-
-// register listener
-domain.getEntityResolver().getCallbackRegistry().addListener(counter);</programlisting></para>
+// this will also add it as a listener (since 3.2)
+domain.addFilter(counter);</programlisting></para>
     </section>
 </chapter>
