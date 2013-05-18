@@ -18,7 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
+
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilterChain;
@@ -30,17 +35,11 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.lifecycle.db.Auditable1;
 import org.apache.cayenne.lifecycle.db.AuditableChildUuid;
 import org.apache.cayenne.lifecycle.id.IdCoder;
-import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipFilter;
 import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class AuditableFilterTest extends TestCase {
 
@@ -52,15 +51,11 @@ public class AuditableFilterTest extends TestCase {
     protected void setUp() throws Exception {
         processor = mock(AuditableProcessor.class);
         resolver = mock(EntityResolver.class);
-        
+
         ObjEntity objectEntity = new ObjEntity("CayenneDataObject");
         when(resolver.lookupObjEntity(any(Object.class))).thenReturn(objectEntity);
 
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
-        // a filter is required to invalidate root objects after commit
-        ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();
-        runtime.getDataDomain().addFilter(filter);
-        runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(filter);
     }
 
     @Override
@@ -159,17 +154,16 @@ public class AuditableFilterTest extends TestCase {
         audited13.writeProperty("parent", auditedParent1);
 
         DataChannelFilterChain chain = mock(DataChannelFilterChain.class);
-        when(chain.onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC)).thenAnswer(
-                new Answer<GraphDiff>() {
+        when(chain.onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC)).thenAnswer(new Answer<GraphDiff>() {
 
-                    public GraphDiff answer(InvocationOnMock invocation) throws Throwable {
-                        filter.updateAudit(auditedParent1);
-                        filter.updateAuditChild(audited11);
-                        filter.updateAuditChild(audited12);
-                        filter.updateAuditChild(audited13);
-                        return mock(GraphDiff.class);
-                    }
-                });
+            public GraphDiff answer(InvocationOnMock invocation) throws Throwable {
+                filter.updateAudit(auditedParent1);
+                filter.updateAuditChild(audited11);
+                filter.updateAuditChild(audited12);
+                filter.updateAuditChild(audited13);
+                return mock(GraphDiff.class);
+            }
+        });
 
         filter.onSync(context, changes, DataChannel.FLUSH_CASCADE_SYNC, chain);
 
