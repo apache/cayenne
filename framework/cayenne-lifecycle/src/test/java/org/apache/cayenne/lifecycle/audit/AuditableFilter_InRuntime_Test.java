@@ -59,36 +59,21 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
 
         DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
 
-        auditable1 = new TableHelper(dbHelper, "AUDITABLE1").setColumns(
-                "ID",
+        auditable1 = new TableHelper(dbHelper, "AUDITABLE1").setColumns("ID", "CHAR_PROPERTY1");
+
+        auditableChild1 = new TableHelper(dbHelper, "AUDITABLE_CHILD1").setColumns("ID", "AUDITABLE1_ID",
                 "CHAR_PROPERTY1");
 
-        auditableChild1 = new TableHelper(dbHelper, "AUDITABLE_CHILD1").setColumns(
-                "ID",
-                "AUDITABLE1_ID",
+        auditableChild2 = new TableHelper(dbHelper, "AUDITABLE_CHILD2").setColumns("ID", "AUDITABLE1_ID",
                 "CHAR_PROPERTY1");
 
-        auditableChild2 = new TableHelper(dbHelper, "AUDITABLE_CHILD2").setColumns(
-                "ID",
-                "AUDITABLE1_ID",
-                "CHAR_PROPERTY1");
+        auditable2 = new TableHelper(dbHelper, "AUDITABLE2").setColumns("ID", "CHAR_PROPERTY1", "CHAR_PROPERTY2");
 
-        auditable2 = new TableHelper(dbHelper, "AUDITABLE2").setColumns(
-                "ID",
-                "CHAR_PROPERTY1",
-                "CHAR_PROPERTY2");
+        auditableChild3 = new TableHelper(dbHelper, "AUDITABLE_CHILD3").setColumns("ID", "AUDITABLE2_ID",
+                "CHAR_PROPERTY1", "CHAR_PROPERTY2");
 
-        auditableChild3 = new TableHelper(dbHelper, "AUDITABLE_CHILD3").setColumns(
-                "ID",
-                "AUDITABLE2_ID",
-                "CHAR_PROPERTY1",
-                "CHAR_PROPERTY2");
-
-        auditableChildUuid = new TableHelper(dbHelper, "AUDITABLE_CHILD_UUID").setColumns(
-                "ID",
-                "UUID",
-                "CHAR_PROPERTY1",
-                "CHAR_PROPERTY2");
+        auditableChildUuid = new TableHelper(dbHelper, "AUDITABLE_CHILD_UUID").setColumns("ID", "UUID",
+                "CHAR_PROPERTY1", "CHAR_PROPERTY2");
 
         auditableChild1.deleteAll();
         auditableChild2.deleteAll();
@@ -111,16 +96,12 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
 
         Processor processor = new Processor();
 
-        AuditableFilter filter = new AuditableFilter(
-                domain.getEntityResolver(),
-                processor);
+        AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
         domain.addFilter(filter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(filter);
 
         // prerequisite for BaseAuditableProcessor use
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(changeSetFilter);
 
         ObjectContext context = runtime.getContext();
 
@@ -154,16 +135,12 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
 
         Processor processor = new Processor();
 
-        AuditableFilter filter = new AuditableFilter(
-                domain.getEntityResolver(),
-                processor);
+        AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
         domain.addFilter(filter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(filter);
 
         // prerequisite for BaseAuditableProcessor use
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(changeSetFilter);
 
         ObjectContext context = runtime.getContext();
 
@@ -190,16 +167,12 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
 
         Processor processor = new Processor();
 
-        AuditableFilter filter = new AuditableFilter(
-                domain.getEntityResolver(),
-                processor);
+        AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
         domain.addFilter(filter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(filter);
 
         // prerequisite for BaseAuditableProcessor use
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(changeSetFilter);
 
         ObjectContext context = runtime.getContext();
 
@@ -229,16 +202,12 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
 
         Processor processor = new Processor();
 
-        AuditableFilter filter = new AuditableFilter(
-                domain.getEntityResolver(),
-                processor);
+        AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
         domain.addFilter(filter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(filter);
 
         // prerequisite for BaseAuditableProcessor use
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(changeSetFilter);
 
         ObjectContext context = runtime.getContext();
 
@@ -265,12 +234,10 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
 
         AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
         domain.addFilter(filter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(filter);
 
         // prerequisite for BaseAuditableProcessor use
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
-        domain.getEntityResolver().getCallbackRegistry().addListener(changeSetFilter);
 
         ObjectContext context = runtime.getContext();
         AuditableChildUuid ac = Cayenne.objectForPK(context, AuditableChildUuid.class, 1);
@@ -302,8 +269,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
 
         void reset() {
 
-            audited = new EnumMap<AuditableOperation, Collection<Object>>(
-                    AuditableOperation.class);
+            audited = new EnumMap<AuditableOperation, Collection<Object>>(AuditableOperation.class);
 
             for (AuditableOperation op : AuditableOperation.values()) {
                 audited.put(op, new ArrayList<Object>());
