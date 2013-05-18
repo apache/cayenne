@@ -52,10 +52,10 @@ import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.commons.collections.Transformer;
 
 /**
- * DataDomain performs query routing functions in Cayenne. DataDomain creates single data
- * source abstraction hiding multiple physical data sources from the user. When a child
- * DataContext sends a query to the DataDomain, it is transparently routed to an
- * appropriate DataNode.
+ * DataDomain performs query routing functions in Cayenne. DataDomain creates
+ * single data source abstraction hiding multiple physical data sources from the
+ * user. When a child DataContext sends a query to the DataDomain, it is
+ * transparently routed to an appropriate DataNode.
  */
 public class DataDomain implements QueryEngine, DataChannel {
 
@@ -123,9 +123,11 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Creates new DataDomain.
      * 
-     * @param name DataDomain name. Domain can be located using its name in the
+     * @param name
+     *            DataDomain name. Domain can be located using its name in the
      *            Configuration object.
-     * @param properties A Map containing domain configuration properties.
+     * @param properties
+     *            A Map containing domain configuration properties.
      */
     public DataDomain(String name, Map properties) {
         init(name);
@@ -138,7 +140,8 @@ public class DataDomain implements QueryEngine, DataChannel {
         this.nodesByDataMapName = new ConcurrentHashMap<String, DataNode>();
         this.nodes = new ConcurrentHashMap<String, DataNode>();
 
-        // properties are read-only, so no need for concurrent map, or any specific map
+        // properties are read-only, so no need for concurrent map, or any
+        // specific map
         // for that matter
         this.properties = Collections.EMPTY_MAP;
 
@@ -146,14 +149,14 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Checks that Domain is not stopped. Throws DomainStoppedException otherwise.
+     * Checks that Domain is not stopped. Throws DomainStoppedException
+     * otherwise.
      * 
      * @since 3.0
      */
     protected void checkStopped() throws DomainStoppedException {
         if (stopped) {
-            throw new DomainStoppedException("Domain "
-                    + name
+            throw new DomainStoppedException("Domain " + name
                     + " was shutdown and can no longer be used to access the database");
         }
     }
@@ -191,25 +194,19 @@ public class DataDomain implements QueryEngine, DataChannel {
     public void initWithProperties(Map<String, String> properties) {
 
         // clone properties to ensure that it is read-only internally
-        properties = properties != null
-                ? new HashMap<String, String>(properties)
-                : Collections.EMPTY_MAP;
+        properties = properties != null ? new HashMap<String, String>(properties) : Collections.EMPTY_MAP;
 
         String sharedCacheEnabled = properties.get(SHARED_CACHE_ENABLED_PROPERTY);
-        String validatingObjectsOnCommit = properties
-                .get(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY);
-        String usingExternalTransactions = properties
-                .get(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
+        String validatingObjectsOnCommit = properties.get(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY);
+        String usingExternalTransactions = properties.get(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
 
         // init ivars from properties
-        this.sharedCacheEnabled = (sharedCacheEnabled != null) ? "true"
-                .equalsIgnoreCase(sharedCacheEnabled) : SHARED_CACHE_ENABLED_DEFAULT;
-        this.validatingObjectsOnCommit = (validatingObjectsOnCommit != null)
-                ? "true".equalsIgnoreCase(validatingObjectsOnCommit)
-                : VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-        this.usingExternalTransactions = (usingExternalTransactions != null)
-                ? "true".equalsIgnoreCase(usingExternalTransactions)
-                : USING_EXTERNAL_TRANSACTIONS_DEFAULT;
+        this.sharedCacheEnabled = (sharedCacheEnabled != null) ? "true".equalsIgnoreCase(sharedCacheEnabled)
+                : SHARED_CACHE_ENABLED_DEFAULT;
+        this.validatingObjectsOnCommit = (validatingObjectsOnCommit != null) ? "true"
+                .equalsIgnoreCase(validatingObjectsOnCommit) : VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
+        this.usingExternalTransactions = (usingExternalTransactions != null) ? "true"
+                .equalsIgnoreCase(usingExternalTransactions) : USING_EXTERNAL_TRANSACTIONS_DEFAULT;
 
         this.properties = properties;
     }
@@ -254,10 +251,10 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns <code>true</code> if DataContexts produced by this DataDomain are using
-     * shared DataRowStore. Returns <code>false</code> if each DataContext would work with
-     * its own DataRowStore. Note that this setting can be overwritten per DataContext.
-     * See {@link #createDataContext(boolean)}.
+     * Returns <code>true</code> if DataContexts produced by this DataDomain are
+     * using shared DataRowStore. Returns <code>false</code> if each DataContext
+     * would work with its own DataRowStore. Note that this setting can be
+     * overwritten per DataContext. See {@link #createDataContext(boolean)}.
      */
     public boolean isSharedCacheEnabled() {
         return sharedCacheEnabled;
@@ -268,8 +265,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns whether child DataContexts default behavior is to perform object validation
-     * before commit is executed.
+     * Returns whether child DataContexts default behavior is to perform object
+     * validation before commit is executed.
      * 
      * @since 1.1
      */
@@ -278,8 +275,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Sets the property defining whether child DataContexts should perform object
-     * validation before commit is executed.
+     * Sets the property defining whether child DataContexts should perform
+     * object validation before commit is executed.
      * 
      * @since 1.1
      */
@@ -288,8 +285,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns whether this DataDomain should internally commit all transactions, or let
-     * container do that.
+     * Returns whether this DataDomain should internally commit all
+     * transactions, or let container do that.
      * 
      * @since 1.1
      */
@@ -298,8 +295,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Sets a property defining whether this DataDomain should internally commit all
-     * transactions, or let container do that.
+     * Sets a property defining whether this DataDomain should internally commit
+     * all transactions, or let container do that.
      * 
      * @since 1.1
      */
@@ -317,16 +314,16 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * @since 1.1
-     * @return TransactionDelegate associated with this DataDomain, or null if no delegate
-     *         exist.
+     * @return TransactionDelegate associated with this DataDomain, or null if
+     *         no delegate exist.
      */
     public TransactionDelegate getTransactionDelegate() {
         return transactionDelegate;
     }
 
     /**
-     * Initializes TransactionDelegate used by all DataContexts associated with this
-     * DataDomain.
+     * Initializes TransactionDelegate used by all DataContexts associated with
+     * this DataDomain.
      * 
      * @since 1.1
      */
@@ -335,8 +332,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns snapshots cache for this DataDomain, lazily initializing it on the first
-     * call if 'sharedCacheEnabled' flag is true.
+     * Returns snapshots cache for this DataDomain, lazily initializing it on
+     * the first call if 'sharedCacheEnabled' flag is true.
      */
     public DataRowStore getSharedSnapshotCache() {
         if (sharedSnapshotCache == null && sharedCacheEnabled) {
@@ -359,8 +356,9 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Shuts down the previous cache instance, sets cache to the new DataSowStore instance
-     * and updates two properties of the new DataSowStore: name and eventManager.
+     * Shuts down the previous cache instance, sets cache to the new
+     * DataSowStore instance and updates two properties of the new DataSowStore:
+     * name and eventManager.
      */
     public synchronized void setSharedSnapshotCache(DataRowStore snapshotCache) {
         if (this.sharedSnapshotCache != snapshotCache) {
@@ -389,8 +387,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Removes named DataMap from this DataDomain and any underlying DataNodes that
-     * include it.
+     * Removes named DataMap from this DataDomain and any underlying DataNodes
+     * that include it.
      * 
      * @since 3.1
      */
@@ -414,8 +412,9 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Removes a DataNode from DataDomain. Any maps previously associated with this node
-     * within domain will still be kept around, however they wan't be mapped to any node.
+     * Removes a DataNode from DataDomain. Any maps previously associated with
+     * this node within domain will still be kept around, however they wan't be
+     * mapped to any node.
      */
     public void removeDataNode(String nodeName) {
         DataNode removed = nodes.remove(nodeName);
@@ -440,7 +439,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns an unmodifiable collection of DataNodes associated with this domain.
+     * Returns an unmodifiable collection of DataNodes associated with this
+     * domain.
      */
     public Collection<DataNode> getDataNodes() {
         return Collections.unmodifiableCollection(nodes.values());
@@ -463,8 +463,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Creates and returns a new inactive transaction. Returned transaction is bound to
-     * the current execution thread.
+     * Creates and returns a new inactive transaction. Returned transaction is
+     * bound to the current execution thread.
      * <p>
      * If there is a TransactionDelegate, adds the delegate to the newly created
      * Transaction. Behavior of the returned Transaction depends on
@@ -475,21 +475,19 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public Transaction createTransaction() {
         if (isUsingExternalTransactions()) {
-            Transaction transaction = Transaction
-                    .externalTransaction(getTransactionDelegate());
+            Transaction transaction = Transaction.externalTransaction(getTransactionDelegate());
             transaction.setJdbcEventLogger(jdbcEventLogger);
             return transaction;
-        }
-        else {
-            Transaction transaction = Transaction
-                    .internalTransaction(getTransactionDelegate());
+        } else {
+            Transaction transaction = Transaction.internalTransaction(getTransactionDelegate());
             transaction.setJdbcEventLogger(jdbcEventLogger);
             return transaction;
         }
     }
 
     /**
-     * Returns registered DataNode whose name matches <code>name</code> parameter.
+     * Returns registered DataNode whose name matches <code>name</code>
+     * parameter.
      * 
      * @since 3.1
      */
@@ -498,7 +496,8 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns a DataNode that should handle queries for all entities in a DataMap.
+     * Returns a DataNode that should handle queries for all entities in a
+     * DataMap.
      * 
      * @since 1.1
      */
@@ -507,7 +506,8 @@ public class DataDomain implements QueryEngine, DataChannel {
         DataNode node = nodesByDataMapName.get(map.getName());
         if (node == null) {
 
-            // see if one of the node states has changed, and the map is now linked...
+            // see if one of the node states has changed, and the map is now
+            // linked...
             for (DataNode n : getDataNodes()) {
                 for (DataMap m : n.getDataMaps()) {
                     if (m == map) {
@@ -527,12 +527,9 @@ public class DataDomain implements QueryEngine, DataChannel {
                 if (defaultNode != null) {
                     nodesByDataMapName.put(map.getName(), defaultNode);
                     node = defaultNode;
-                }
-                else {
-                    throw new CayenneRuntimeException(
-                            "No DataNode configured for DataMap '"
-                                    + map.getName()
-                                    + "' and no default DataNode set");
+                } else {
+                    throw new CayenneRuntimeException("No DataNode configured for DataMap '" + map.getName()
+                            + "' and no default DataNode set");
                 }
             }
         }
@@ -576,17 +573,12 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Routes queries to appropriate DataNodes for execution.
      */
-    public void performQueries(
-            final Collection<? extends Query> queries,
-            final OperationObserver callback) {
+    public void performQueries(final Collection<? extends Query> queries, final OperationObserver callback) {
 
         runInTransaction(new Transformer() {
 
             public Object transform(Object input) {
-                new DataDomainLegacyQueryAction(
-                        DataDomain.this,
-                        new QueryChain(queries),
-                        callback).execute();
+                new DataDomainLegacyQueryAction(DataDomain.this, new QueryChain(queries), callback).execute();
                 return null;
             }
         });
@@ -605,19 +597,17 @@ public class DataDomain implements QueryEngine, DataChannel {
         return new DataDomainQueryFilterChain().onQuery(originatingContext, query);
     }
 
-    QueryResponse onQueryNoFilters(
-            final ObjectContext originatingContext,
-            final Query query) {
+    QueryResponse onQueryNoFilters(final ObjectContext originatingContext, final Query query) {
         // transaction note:
         // we don't wrap this code in transaction to reduce transaction scope to
         // just the DB operation for better performance ... query action will
         // start a transaction itself when and if needed
-        return new DataDomainQueryAction(originatingContext, DataDomain.this, query)
-                .execute();
+        return new DataDomainQueryAction(originatingContext, DataDomain.this, query).execute();
     }
 
     /**
-     * Returns an EntityResolver that stores mapping information for this domain.
+     * Returns an EntityResolver that stores mapping information for this
+     * domain.
      */
     public EntityResolver getEntityResolver() {
         if (entityResolver == null) {
@@ -632,52 +622,38 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @since 1.2
      */
-    public GraphDiff onSync(
-            final ObjectContext originatingContext,
-            final GraphDiff changes,
-            int syncType) {
+    public GraphDiff onSync(final ObjectContext originatingContext, final GraphDiff changes, int syncType) {
 
         checkStopped();
 
-        return new DataDomainSyncFilterChain().onSync(
-                originatingContext,
-                changes,
-                syncType);
+        return new DataDomainSyncFilterChain().onSync(originatingContext, changes, syncType);
     }
 
-    GraphDiff onSyncNoFilters(
-            final ObjectContext originatingContext,
-            final GraphDiff changes,
-            int syncType) {
-        DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction
-                .getCallbackAction(
-                        getEntityResolver().getCallbackRegistry(),
-                        originatingContext.getGraphManager(),
-                        changes,
-                        syncType);
+    GraphDiff onSyncNoFilters(final ObjectContext originatingContext, final GraphDiff changes, int syncType) {
+        DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction.getCallbackAction(
+                getEntityResolver().getCallbackRegistry(), originatingContext.getGraphManager(), changes, syncType);
 
         callbackAction.applyPreCommit();
 
         GraphDiff result;
         switch (syncType) {
-            case DataChannel.ROLLBACK_CASCADE_SYNC:
-                result = onSyncRollback(originatingContext);
-                break;
-            // "cascade" and "no_cascade" are the same from the DataDomain
-            // perspective,
-            // including transaction handling logic
-            case DataChannel.FLUSH_NOCASCADE_SYNC:
-            case DataChannel.FLUSH_CASCADE_SYNC:
-                result = (GraphDiff) runInTransaction(new Transformer() {
+        case DataChannel.ROLLBACK_CASCADE_SYNC:
+            result = onSyncRollback(originatingContext);
+            break;
+        // "cascade" and "no_cascade" are the same from the DataDomain
+        // perspective,
+        // including transaction handling logic
+        case DataChannel.FLUSH_NOCASCADE_SYNC:
+        case DataChannel.FLUSH_CASCADE_SYNC:
+            result = (GraphDiff) runInTransaction(new Transformer() {
 
-                    public Object transform(Object input) {
-                        return onSyncFlush(originatingContext, changes);
-                    }
-                });
-                break;
-            default:
-                throw new CayenneRuntimeException("Invalid synchronization type: "
-                        + syncType);
+                public Object transform(Object input) {
+                    return onSyncFlush(originatingContext, changes);
+                }
+            });
+            break;
+        default:
+            throw new CayenneRuntimeException("Invalid synchronization type: " + syncType);
         }
 
         callbackAction.applyPostCommit();
@@ -700,8 +676,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         if (!(originatingContext instanceof DataContext)) {
             throw new CayenneRuntimeException(
                     "No support for committing ObjectContexts that are not DataContexts yet. "
-                            + "Unsupported context: "
-                            + originatingContext);
+                            + "Unsupported context: " + originatingContext);
         }
 
         DataDomainFlushAction action = new DataDomainFlushAction(this);
@@ -711,12 +686,15 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Executes Transformer.transform() method in a transaction. Transaction policy is to
-     * check for the thread transaction, and use it if one exists. If it doesn't, a new
-     * transaction is created, with a scope limited to this method.
+     * Executes Transformer.transform() method in a transaction. Transaction
+     * policy is to check for the thread transaction, and use it if one exists.
+     * If it doesn't, a new transaction is created, with a scope limited to this
+     * method.
      */
-    // WARNING: (andrus) if we ever decide to make this method protected or public, we
-    // need to change the signature to avoid API dependency on commons-collections
+    // WARNING: (andrus) if we ever decide to make this method protected or
+    // public, we
+    // need to change the signature to avoid API dependency on
+    // commons-collections
     Object runInTransaction(Transformer operation) {
 
         // user or container-managed or nested transaction
@@ -734,27 +712,25 @@ public class DataDomain implements QueryEngine, DataChannel {
             Object result = operation.transform(null);
             transaction.commit();
             return result;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             transaction.setRollbackOnly();
 
             // must rethrow
             if (ex instanceof CayenneRuntimeException) {
                 throw (CayenneRuntimeException) ex;
-            }
-            else {
+            } else {
                 throw new CayenneRuntimeException(ex);
             }
-        }
-        finally {
+        } finally {
             Transaction.bindThreadTransaction(null);
             if (transaction.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
                 try {
                     transaction.rollback();
-                }
-                catch (Exception rollbackEx) {
-                    // although we don't expect an exception here, print the stack, as
-                    // there have been some Cayenne bugs already (CAY-557) that were
+                } catch (Exception rollbackEx) {
+                    // although we don't expect an exception here, print the
+                    // stack, as
+                    // there have been some Cayenne bugs already (CAY-557) that
+                    // were
                     // masked by this 'catch' clause.
                     jdbcEventLogger.logQueryError(rollbackEx);
                 }
@@ -796,8 +772,9 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Returns an unmodifiable list of filters registered with this DataDomain.
      * <p>
-     * Filter ordering note: filters are applied in reverse order of their occurrence in
-     * the filter list. I.e. the last filter in the list called first in the chain.
+     * Filter ordering note: filters are applied in reverse order of their
+     * occurrence in the filter list. I.e. the last filter in the list called
+     * first in the chain.
      * 
      * @since 3.1
      */
@@ -806,12 +783,15 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Adds a new filter, calling its 'init' method.
+     * Adds a new filter, immediately calling its 'init' method. Since 3.2 this
+     * method also registers passed filter as an event listener, if any of its
+     * methods have event annotations.
      * 
      * @since 3.1
      */
     public void addFilter(DataChannelFilter filter) {
         filter.init(this);
+        getEntityResolver().getCallbackRegistry().addListener(filter);
         filters.add(filter);
     }
 
@@ -844,44 +824,32 @@ public class DataDomain implements QueryEngine, DataChannel {
         public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
 
             DataChannelFilter filter = nextFilter();
-            return (filter != null)
-                    ? filter.onQuery(originatingContext, query, this)
-                    : onQueryNoFilters(originatingContext, query);
+            return (filter != null) ? filter.onQuery(originatingContext, query, this) : onQueryNoFilters(
+                    originatingContext, query);
         }
 
-        public GraphDiff onSync(
-                ObjectContext originatingContext,
-                GraphDiff changes,
-                int syncType) {
-            throw new UnsupportedOperationException(
-                    "It is illegal to call 'onSync' inside 'onQuery' chain");
+        public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+            throw new UnsupportedOperationException("It is illegal to call 'onSync' inside 'onQuery' chain");
         }
     }
 
     final class DataDomainSyncFilterChain extends DataDomainFilterChain {
 
-        public GraphDiff onSync(
-                final ObjectContext originatingContext,
-                final GraphDiff changes,
-                int syncType) {
+        public GraphDiff onSync(final ObjectContext originatingContext, final GraphDiff changes, int syncType) {
 
             DataChannelFilter filter = nextFilter();
-            return (filter != null) ? filter.onSync(
-                    originatingContext,
-                    changes,
-                    syncType,
-                    this) : onSyncNoFilters(originatingContext, changes, syncType);
+            return (filter != null) ? filter.onSync(originatingContext, changes, syncType, this) : onSyncNoFilters(
+                    originatingContext, changes, syncType);
         }
 
         public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
-            throw new UnsupportedOperationException(
-                    "It is illegal to call 'onQuery' inside 'onSync' chain");
+            throw new UnsupportedOperationException("It is illegal to call 'onQuery' inside 'onSync' chain");
         }
     }
 
     /**
-     * An optional DataNode that is used for DataMaps that are not linked to a DataNode
-     * explicitly.
+     * An optional DataNode that is used for DataMaps that are not linked to a
+     * DataNode explicitly.
      * 
      * @since 3.1
      */
@@ -897,13 +865,15 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns a maximum number of object IDs to match in a single query for queries that
-     * select objects based on collection of ObjectIds. This affects queries generated by
-     * Cayenne when processing paginated queries and DISJOINT_BY_ID prefetches and is
-     * intended to address database limitations on the size of SQL statements as well as
-     * to cap memory use in Cayenne when generating such queries. The default is 10000. It
-     * can be changed either by calling {@link #setMaxIdQualifierSize(int)} or changing
-     * the value for property {@link Constants#SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY}.
+     * Returns a maximum number of object IDs to match in a single query for
+     * queries that select objects based on collection of ObjectIds. This
+     * affects queries generated by Cayenne when processing paginated queries
+     * and DISJOINT_BY_ID prefetches and is intended to address database
+     * limitations on the size of SQL statements as well as to cap memory use in
+     * Cayenne when generating such queries. The default is 10000. It can be
+     * changed either by calling {@link #setMaxIdQualifierSize(int)} or changing
+     * the value for property
+     * {@link Constants#SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY}.
      * 
      * @since 3.1
      */
