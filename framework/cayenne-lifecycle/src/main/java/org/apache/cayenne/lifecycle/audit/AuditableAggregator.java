@@ -22,9 +22,11 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.cayenne.Persistent;
+
 /**
- * Aggregates audit events per audit root object, and passes them to delegate processor at
- * the end of the transaction.
+ * Aggregates audit events per audit root object, and passes them to delegate
+ * processor at the end of the transaction.
  * 
  * @since 3.1
  */
@@ -44,14 +46,14 @@ class AuditableAggregator {
 
     private AuditableProcessor delegate;
 
-    private Map<Object, AuditableOperation> ops;
+    private Map<Persistent, AuditableOperation> ops;
 
     AuditableAggregator(AuditableProcessor delegate) {
         this.delegate = delegate;
-        this.ops = new IdentityHashMap<Object, AuditableOperation>();
+        this.ops = new IdentityHashMap<Persistent, AuditableOperation>();
     }
 
-    void audit(Object object, AuditableOperation operation) {
+    void audit(Persistent object, AuditableOperation operation) {
         AuditableOperation oldOp = ops.put(object, operation);
         if (oldOp != null) {
             if (OP_PRECEDENCE[operation.ordinal()] < OP_PRECEDENCE[oldOp.ordinal()]) {
@@ -61,7 +63,7 @@ class AuditableAggregator {
     }
 
     void postSync() {
-        for (Entry<Object, AuditableOperation> op : ops.entrySet()) {
+        for (Entry<Persistent, AuditableOperation> op : ops.entrySet()) {
             delegate.audit(op.getKey(), op.getValue());
         }
     }

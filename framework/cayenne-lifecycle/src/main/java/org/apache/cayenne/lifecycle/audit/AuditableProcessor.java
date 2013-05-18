@@ -18,23 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
+import org.apache.cayenne.Persistent;
+
 /**
- * A superclass of application specific handlers of the {@link Auditable} annotation, that
- * provides basic needed callbacks.
+ * A superclass of application specific handlers of the {@link Auditable}
+ * annotation, that provides basic needed callbacks.
  * 
  * @since 3.1
  */
 public interface AuditableProcessor {
 
     /**
-     * A method called by {@link AuditableFilter} that should audit records as appropriate
-     * in a given application. Implementors may insert audit records in DB, log a message,
-     * etc.
+     * A method called by {@link AuditableFilter} that should audit records as
+     * appropriate in a given application. Implementors may insert audit records
+     * in DB, log a message, etc.
      * 
-     * @param object the root auditable object. This is an object that is either annotated
-     *            with {@link Auditable} or pointed to by another object annotated with
-     *            {@link AuditableChild}.
-     * @param operation a type of object change.
+     * @param object
+     *            the root auditable object. This is an object that is either
+     *            annotated with {@link Auditable} or pointed to by another
+     *            object annotated with {@link AuditableChild}.
+     * @param operation
+     *            a type of object change.
      */
-    void audit(Object object, AuditableOperation operation);
+    void audit(Persistent object, AuditableOperation operation);
 }

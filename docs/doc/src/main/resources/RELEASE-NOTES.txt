@@ -48,6 +48,7 @@ CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
 CAY-1814 Support Property.nin 
 CAY-1819 When adding a filter, auto-register it as a listener 
 CAY-1820 DataDomain.addListener(Object) - a shortcut for adding annotated listeners 
+CAY-1821 AuditableFilter and friends should explicitly work with Persistent instead of Object
 
 Bug Fixes:
 

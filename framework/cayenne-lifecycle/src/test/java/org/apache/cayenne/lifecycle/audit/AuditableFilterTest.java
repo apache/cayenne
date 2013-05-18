@@ -30,6 +30,7 @@ import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.lifecycle.db.Auditable1;
@@ -66,7 +67,7 @@ public class AuditableFilterTest extends TestCase {
     public void testInsertAudit() {
 
         AuditableFilter filter = new AuditableFilter(resolver, processor);
-        Object audited = new Object();
+        Persistent audited = mock(Persistent.class);
         filter.insertAudit(audited);
         filter.postSync();
 
@@ -76,7 +77,7 @@ public class AuditableFilterTest extends TestCase {
     public void testDeleteAudit() {
 
         AuditableFilter filter = new AuditableFilter(resolver, processor);
-        Object audited = new Object();
+        Persistent audited = mock(Persistent.class);
         filter.deleteAudit(audited);
         filter.postSync();
 
@@ -86,7 +87,7 @@ public class AuditableFilterTest extends TestCase {
     public void testUpdateAudit() {
 
         AuditableFilter filter = new AuditableFilter(resolver, processor);
-        Object audited = new CayenneDataObject();
+        Persistent audited = mock(Persistent.class);
         filter.updateAudit(audited);
         filter.postSync();
 
@@ -97,7 +98,7 @@ public class AuditableFilterTest extends TestCase {
 
         AuditableFilter filter = new AuditableFilter(resolver, processor);
 
-        Object auditedParent = new Object();
+        Persistent auditedParent = mock(Persistent.class);
         DataObject audited = new MockAuditableChild();
         audited.setObjectId(new ObjectId("MockAuditableChild", "a", 1));
         audited.writeProperty("parent", auditedParent);
@@ -145,7 +146,7 @@ public class AuditableFilterTest extends TestCase {
         ObjectContext context = mock(ObjectContext.class);
         GraphDiff changes = mock(GraphDiff.class);
 
-        final Object auditedParent1 = new CayenneDataObject();
+        final DataObject auditedParent1 = new CayenneDataObject();
         final DataObject audited11 = new MockAuditableChild();
         audited11.writeProperty("parent", auditedParent1);
         final DataObject audited12 = new MockAuditableChild();

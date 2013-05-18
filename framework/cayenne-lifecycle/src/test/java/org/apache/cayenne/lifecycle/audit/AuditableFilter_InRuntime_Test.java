@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.lifecycle.changeset.ChangeSetFilter;
@@ -276,7 +277,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
             }
         }
 
-        public void audit(Object object, AuditableOperation operation) {
+        public void audit(Persistent object, AuditableOperation operation) {
             audited.get(operation).add(object);
             size++;
         }
