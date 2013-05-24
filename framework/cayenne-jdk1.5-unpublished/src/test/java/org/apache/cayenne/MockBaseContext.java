@@ -69,10 +69,7 @@ public class MockBaseContext extends BaseContext {
     }
 
     @Override
-    protected GraphDiff onContextFlush(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            boolean cascade) {
+    protected GraphDiff onContextFlush(ObjectContext originatingContext, GraphDiff changes, boolean cascade) {
         return null;
     }
 
@@ -114,9 +111,9 @@ public class MockBaseContext extends BaseContext {
     public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
         return null;
     }
-    
+
     @Override
-    public <T> ResultIterator<T> iterate(Select<T> query) {
+    protected <T> ResultIterator<T> iterator(Select<T> query) {
         return null;
     }
 

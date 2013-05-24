@@ -32,7 +32,6 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.validation.ValidationException;
@@ -389,9 +388,9 @@ public class CayenneContext extends BaseContext {
      * 
      * @since 3.2
      */
-    @Override
-    public <T> ResultIterator<T> iterate(Select<T> query) {
+    protected <T> ResultIterator<T> iterator(org.apache.cayenne.query.Select<T> query) {
         List<T> objects = select(query);
         return new CollectionResultIterator<T>(objects);
     }
+
 }

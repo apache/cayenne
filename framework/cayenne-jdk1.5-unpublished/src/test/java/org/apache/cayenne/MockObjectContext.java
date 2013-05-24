@@ -22,12 +22,10 @@ package org.apache.cayenne;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * A noop ObjectContext used for unit testing.
@@ -88,7 +86,7 @@ public class MockObjectContext implements ObjectContext {
     public <T> List<T> select(Select<T> query) {
         return performQuery(query);
     }
-    
+
     public int[] performNonSelectingQuery(Query query) {
         return null;
     }
@@ -109,23 +107,13 @@ public class MockObjectContext implements ObjectContext {
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
     }
 
-    public void propertyChanged(
-            Persistent persistent,
-            String property,
-            Object oldValue,
-            Object newValue) {
+    public void propertyChanged(Persistent persistent, String property, Object oldValue, Object newValue) {
     }
 
-    public void addedToCollectionProperty(
-            Persistent object,
-            String property,
-            Persistent added) {
+    public void addedToCollectionProperty(Persistent object, String property, Persistent added) {
     }
 
-    public void removedFromCollectionProperty(
-            Persistent object,
-            String property,
-            Persistent removed) {
+    public void removedFromCollectionProperty(Persistent object, String property, Persistent removed) {
     }
 
     public Collection uncommittedObjects() {
@@ -160,8 +148,8 @@ public class MockObjectContext implements ObjectContext {
 
     public void setUserProperty(String key, Object value) {
     }
-    
-    public <T> ResultIterator<T> iterate(Select<T> query) {
-        return null;
+
+    public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
+
     }
 }

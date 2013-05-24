@@ -175,13 +175,13 @@ public interface ObjectContext extends Serializable {
     <T> List<T> select(Select<T> query);
 
     /**
-     * Returns an iterable object over the open result set. Note that teration
-     * must be wrapped in try/finally, and ResultIterator must be explicitly
-     * closed when iteration is finished.
+     * Creates a ResultIterator based on the provided query and passes it to a
+     * callback for processing. The caller does not need to worry about closing
+     * the iterator. Thius methoid takes care of it.
      * 
      * @since 3.2
      */
-    <T> ResultIterator<T> iterate(Select<T> query);
+    <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback);
 
     /**
      * Executes any kind of query providing the result in a form of

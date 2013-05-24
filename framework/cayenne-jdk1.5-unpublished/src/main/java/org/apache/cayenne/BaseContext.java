@@ -70,8 +70,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * 
      * @since 3.0
      * @return the ObjectContext associated with caller thread.
-     * @throws IllegalStateException if there is no ObjectContext bound to the current
-     *             thread.
+     * @throws IllegalStateException
+     *             if there is no ObjectContext bound to the current thread.
      */
     public static ObjectContext getThreadObjectContext() throws IllegalStateException {
         ObjectContext context = threadObjectContext.get();
@@ -83,9 +83,10 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Binds a ObjectContext to the current thread. ObjectContext can later be retrieved
-     * by users in the same thread by calling {@link BaseContext#getThreadObjectContext}.
-     * Using null parameter will unbind currently bound ObjectContext.
+     * Binds a ObjectContext to the current thread. ObjectContext can later be
+     * retrieved by users in the same thread by calling
+     * {@link BaseContext#getThreadObjectContext}. Using null parameter will
+     * unbind currently bound ObjectContext.
      * 
      * @since 3.0
      */
@@ -93,7 +94,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         threadObjectContext.set(context);
     }
 
-    // transient variables that should be reinitialized on deserialization from the
+    // transient variables that should be reinitialized on deserialization from
+    // the
     // registry
     protected transient DataChannel channel;
     protected transient QueryCache queryCache;
@@ -120,17 +122,18 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Checks whether this context is attached to Cayenne runtime stack and if not,
-     * attempts to attach itself to the runtime using Injector returned from the call to
-     * {@link CayenneRuntime#getThreadInjector()}. If thread Injector is not available and
-     * the context is not attached, throws CayenneRuntimeException.
+     * Checks whether this context is attached to Cayenne runtime stack and if
+     * not, attempts to attach itself to the runtime using Injector returned
+     * from the call to {@link CayenneRuntime#getThreadInjector()}. If thread
+     * Injector is not available and the context is not attached, throws
+     * CayenneRuntimeException.
      * <p>
-     * This method is called internally by the context before access to transient
-     * variables to allow the context to attach to the stack lazily following
-     * deserialization.
+     * This method is called internally by the context before access to
+     * transient variables to allow the context to attach to the stack lazily
+     * following deserialization.
      * 
-     * @return true if the context successfully attached to the thread runtime, false - if
-     *         it was already attached.
+     * @return true if the context successfully attached to the thread runtime,
+     *         false - if it was already attached.
      * @since 3.1
      */
     protected boolean attachToRuntimeIfNeeded() {
@@ -149,8 +152,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Attaches this context to the CayenneRuntime whose Injector is passed as an argument
-     * to this method.
+     * Attaches this context to the CayenneRuntime whose Injector is passed as
+     * an argument to this method.
      * 
      * @since 3.1
      */
@@ -208,8 +211,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Returns whether this ObjectContext performs object validation before commit is
-     * executed.
+     * Returns whether this ObjectContext performs object validation before
+     * commit is executed.
      * 
      * @since 1.1
      */
@@ -218,8 +221,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Sets the property defining whether this ObjectContext should perform object
-     * validation before commit is executed.
+     * Sets the property defining whether this ObjectContext should perform
+     * object validation before commit is executed.
      * 
      * @since 1.1
      */
@@ -253,12 +256,13 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                 return localObject;
             }
 
-            // create a hollow object, optimistically assuming that the ID we got from
-            // 'objectFromAnotherContext' is a valid ID either in the parent context or in
+            // create a hollow object, optimistically assuming that the ID we
+            // got from
+            // 'objectFromAnotherContext' is a valid ID either in the parent
+            // context or in
             // the DB. This essentially defers possible FaultFailureExceptions.
 
-            ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                    id.getEntityName());
+            ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
             Persistent persistent = (Persistent) descriptor.createObject();
 
             persistent.setObjectContext(this);
@@ -287,49 +291,48 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> select(Select<T> query) {
-    	return performQuery(query);
+        return performQuery(query);
     }
-    
+
     /**
      * @since 3.2
      */
-    public abstract <T> ResultIterator<T> iterate(Select<T> query);
-    
+    public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
+        ResultIterator<T> it = iterator(query);
+        try {
+            callback.iterate(it);
+        } finally {
+            it.close();
+        }
+    }
+
+    protected abstract <T> ResultIterator<T> iterator(Select<T> query);
+
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
 
             ObjectId oid = object.getObjectId();
-            List<?> objects = performQuery(new ObjectIdQuery(
-                    oid,
-                    false,
-                    ObjectIdQuery.CACHE));
+            List<?> objects = performQuery(new ObjectIdQuery(oid, false, ObjectIdQuery.CACHE));
 
             if (objects.size() == 0) {
                 throw new FaultFailureException(
-                        "Error resolving fault, no matching row exists in the database for ObjectId: "
-                                + oid);
-            }
-            else if (objects.size() > 1) {
+                        "Error resolving fault, no matching row exists in the database for ObjectId: " + oid);
+            } else if (objects.size() > 1) {
                 throw new FaultFailureException(
-                        "Error resolving fault, more than one row exists in the database for ObjectId: "
-                                + oid);
+                        "Error resolving fault, more than one row exists in the database for ObjectId: " + oid);
             }
 
             // sanity check...
             if (object.getPersistenceState() != PersistenceState.COMMITTED) {
 
-                String state = PersistenceState.persistenceStateName(object
-                        .getPersistenceState());
+                String state = PersistenceState.persistenceStateName(object.getPersistenceState());
 
-                // TODO: andrus 4/13/2006, modified and deleted states are possible due to
+                // TODO: andrus 4/13/2006, modified and deleted states are
+                // possible due to
                 // a race condition, should we handle them here?
 
-                throw new FaultFailureException(
-                        "Error resolving fault for ObjectId: "
-                                + oid
-                                + " and state ("
-                                + state
-                                + "). Possible cause - matching row is missing from the database.");
+                throw new FaultFailureException("Error resolving fault for ObjectId: " + oid + " and state (" + state
+                        + "). Possible cause - matching row is missing from the database.");
             }
         }
 
@@ -339,16 +342,17 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                     object.getObjectId().getEntityName());
             PropertyDescriptor propertyDescriptor = classDescriptor.getProperty(property);
 
-            // If we don't have a property descriptor, there's not much we can do.
-            // Let the caller know that the specified property could not be found and list
-            // all of the properties that could be so the caller knows what can be used.
+            // If we don't have a property descriptor, there's not much we can
+            // do.
+            // Let the caller know that the specified property could not be
+            // found and list
+            // all of the properties that could be so the caller knows what can
+            // be used.
             if (propertyDescriptor == null) {
                 final StringBuilder errorMessage = new StringBuilder();
 
-                errorMessage.append(String.format(
-                        "Property '%s' is not declared for entity '%s'.",
-                        property,
-                        object.getObjectId().getEntityName()));
+                errorMessage.append(String.format("Property '%s' is not declared for entity '%s'.", property, object
+                        .getObjectId().getEntityName()));
 
                 errorMessage.append(" Declared properties are: ");
 
@@ -382,8 +386,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                         errorMessage.append(String.format("'%s'", declaredProperty));
 
                         first = false;
-                    }
-                    else {
+                    } else {
                         errorMessage.append(String.format(", '%s'", declaredProperty));
                     }
                 }
@@ -398,11 +401,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
-    public void propertyChanged(
-            Persistent object,
-            String property,
-            Object oldValue,
-            Object newValue) {
+    public void propertyChanged(Persistent object, String property, Object oldValue, Object newValue) {
 
         graphAction.handlePropertyChange(object, property, oldValue, newValue);
     }
@@ -434,20 +433,16 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         return channel != null ? channel.getEventManager() : null;
     }
 
-    public GraphDiff onSync(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            int syncType) {
+    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
         switch (syncType) {
-            case DataChannel.ROLLBACK_CASCADE_SYNC:
-                return onContextRollback(originatingContext);
-            case DataChannel.FLUSH_NOCASCADE_SYNC:
-                return onContextFlush(originatingContext, changes, false);
-            case DataChannel.FLUSH_CASCADE_SYNC:
-                return onContextFlush(originatingContext, changes, true);
-            default:
-                throw new CayenneRuntimeException("Unrecognized SyncMessage type: "
-                        + syncType);
+        case DataChannel.ROLLBACK_CASCADE_SYNC:
+            return onContextRollback(originatingContext);
+        case DataChannel.FLUSH_NOCASCADE_SYNC:
+            return onContextFlush(originatingContext, changes, false);
+        case DataChannel.FLUSH_CASCADE_SYNC:
+            return onContextFlush(originatingContext, changes, true);
+        default:
+            throw new CayenneRuntimeException("Unrecognized SyncMessage type: " + syncType);
         }
     }
 
@@ -456,10 +451,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         return new CompoundDiff();
     }
 
-    protected abstract GraphDiff onContextFlush(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            boolean cascade);
+    protected abstract GraphDiff onContextFlush(ObjectContext originatingContext, GraphDiff changes, boolean cascade);
 
     /**
      * @since 1.2
@@ -519,7 +511,8 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Returns a map of user-defined properties associated with this DataContext.
+     * Returns a map of user-defined properties associated with this
+     * DataContext.
      * 
      * @since 3.0
      */
@@ -539,8 +532,9 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * Returns a user-defined property previously set via 'setUserProperty'. Note that it
-     * is a caller responsibility to synchronize access to properties.
+     * Returns a user-defined property previously set via 'setUserProperty'.
+     * Note that it is a caller responsibility to synchronize access to
+     * properties.
      * 
      * @since 3.0
      */
@@ -559,11 +553,12 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     }
 
     /**
-     * If ObjEntity qualifier is set, asks it to inject initial value to an object. Also
-     * performs all Persistent initialization operations
+     * If ObjEntity qualifier is set, asks it to inject initial value to an
+     * object. Also performs all Persistent initialization operations
      */
     protected void injectInitialValue(Object obj) {
-        // must follow this exact order of property initialization per CAY-653, i.e. have
+        // must follow this exact order of property initialization per CAY-653,
+        // i.e. have
         // the id and the context in place BEFORE setPersistence is called
 
         Persistent object = (Persistent) obj;
@@ -580,8 +575,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         ObjEntity entity;
         try {
             entity = getEntityResolver().lookupObjEntity(object.getClass());
-        }
-        catch (CayenneRuntimeException ex) {
+        } catch (CayenneRuntimeException ex) {
             // ObjEntity cannot be fetched, ignored
             entity = null;
         }
@@ -593,9 +587,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
 
         // invoke callbacks
-        getEntityResolver().getCallbackRegistry().performCallbacks(
-                LifecycleEvent.POST_ADD,
-                object);
+        getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_ADD, object);
     }
 
     /**

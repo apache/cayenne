@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.util;
 
 import java.io.IOException;
@@ -31,47 +30,46 @@ import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.query.Query;
 
 /**
- * OperationObserver that is used to track the execution
- * of SelectQueries with results returned as ResultIterator.
- *  
+ * OperationObserver that is used to track the execution of SelectQueries with
+ * results returned as ResultIterator.
+ * 
  */
 public class IteratedSelectObserver extends DefaultOperationObserver {
-	protected ResultIterator resultIterator;
+    protected ResultIterator resultIterator;
 
-	@Override
+    @Override
     public boolean isIteratedResult() {
-		return true;
-	}
+        return true;
+    }
 
-	@Override
+    @Override
     public void nextRows(Query query, List<?> dataRows) {
-		throw new CayenneRuntimeException("Results unexpectedly returned as list.");
-	}
+        throw new CayenneRuntimeException("Results unexpectedly returned as list.");
+    }
 
-	@Override
+    @Override
     public void nextRows(Query q, ResultIterator it) {
-	    // don't call super - it closes the iterator
-		resultIterator = it;
-	}
+        // don't call super - it closes the iterator
+        resultIterator = it;
+    }
 
-	public ResultIterator getResultIterator() throws CayenneException {
-		if (super.hasExceptions()) {
-			StringWriter str = new StringWriter();
-			PrintWriter out = new PrintWriter(str);
-			super.printExceptions(out);
+    public ResultIterator getResultIterator() {
+        if (super.hasExceptions()) {
+            StringWriter str = new StringWriter();
+            PrintWriter out = new PrintWriter(str);
+            super.printExceptions(out);
 
-			try {
-				out.close();
-				str.close();
-			} catch (IOException ioex) {
-				// this should never happen
-			}
+            try {
+                out.close();
+                str.close();
+            } catch (IOException ioex) {
+                // this should never happen
+            }
 
-			throw new CayenneException(
-				"Error getting ResultIterator: " + str.getBuffer());
-		}
+            throw new CayenneRuntimeException("Error getting ResultIterator: " + str.getBuffer());
+        }
 
-		return resultIterator;
-	}
+        return resultIterator;
+    }
 
 }

@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.BaseContext;
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObject;
@@ -783,12 +782,9 @@ public class DataContext extends BaseContext {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> ResultIterator<T> iterate(Select<T> query) {
-        try {
-            return performIteratedQuery(query);
-        } catch (CayenneException e) {
-            throw new CayenneRuntimeException(e);
-        }
+    @Override
+    protected <T> ResultIterator<T> iterator(Select<T> query) {
+        return performIteratedQuery(query);
     }
 
     /**
@@ -803,7 +799,7 @@ public class DataContext extends BaseContext {
     // TODO: deprecate once all selecting queries start implementing Select<T>
     // interface
     @SuppressWarnings({ "rawtypes" })
-    public ResultIterator performIteratedQuery(Query query) throws CayenneException {
+    public ResultIterator performIteratedQuery(Query query) {
         // TODO: use 3.2 TransactionManager
         if (Transaction.getThreadTransaction() != null) {
             return internalPerformIteratedQuery(query);
@@ -821,7 +817,7 @@ public class DataContext extends BaseContext {
             } catch (Exception e) {
                 Transaction.bindThreadTransaction(null);
                 tx.setRollbackOnly();
-                throw new CayenneException(e);
+                throw new CayenneRuntimeException(e);
             } finally {
                 // note: we are keeping the transaction bound to the current
                 // thread on
@@ -844,7 +840,7 @@ public class DataContext extends BaseContext {
     /**
      * Runs an iterated query in a transactional context provided by the caller.
      */
-    ResultIterator internalPerformIteratedQuery(Query query) throws CayenneException {
+    ResultIterator internalPerformIteratedQuery(Query query) {
         // note that for now DataChannel API does not support cursors (aka
         // ResultIterator), so we have to go directly to the DataDomain.
         IteratedSelectObserver observer = new IteratedSelectObserver();

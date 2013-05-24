@@ -29,7 +29,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
@@ -41,19 +40,19 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.Util;
 
 /**
- * A synchronized list that serves as a container of DataObjects. It is returned when a
- * paged query is performed by DataContext. On creation, only the first "page" is fully
- * resolved, for the rest of the objects only their ObjectIds are read. Pages following
- * the first page are resolved on demand only. On access to an element, the list would
- * ensure that this element as well as all its siblings on the same page are fully
- * resolved.
+ * A synchronized list that serves as a container of DataObjects. It is returned
+ * when a paged query is performed by DataContext. On creation, only the first
+ * "page" is fully resolved, for the rest of the objects only their ObjectIds
+ * are read. Pages following the first page are resolved on demand only. On
+ * access to an element, the list would ensure that this element as well as all
+ * its siblings on the same page are fully resolved.
  * <p>
- * The list can hold DataRows or DataObjects. Attempts to add any other object types will
- * result in an exception.
+ * The list can hold DataRows or DataObjects. Attempts to add any other object
+ * types will result in an exception.
  * </p>
  * <p>
- * Performance note: certain operations like <code>toArray</code> would trigger full list
- * fetch.
+ * Performance note: certain operations like <code>toArray</code> would trigger
+ * full list fetch.
  * </p>
  */
 public class IncrementalFaultList<E> implements List<E>, Serializable {
@@ -66,39 +65,45 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
     protected int unfetchedObjects;
 
     /**
-     * Stores a hint allowing to distinguish data rows from unfetched ids when the query
-     * fetches data rows.
+     * Stores a hint allowing to distinguish data rows from unfetched ids when
+     * the query fetches data rows.
      */
     protected int idWidth;
 
     private IncrementalListHelper helper;
 
     /**
-     * Defines the upper limit on the size of fetches. This is needed to avoid where
-     * clause size limitations.
+     * Defines the upper limit on the size of fetches. This is needed to avoid
+     * where clause size limitations.
      */
     protected int maxFetchSize;
 
-    // Don't confuse this with the JDBC ResultSet fetch size setting - this controls
-    // the where clause generation that is necessary to fetch specific records a page
-    // at a time. Some JDBC Drivers/Databases may have limits on statement length
-    // or complexity of the where clause - e.g., PostgreSQL having a default limit of
+    // Don't confuse this with the JDBC ResultSet fetch size setting - this
+    // controls
+    // the where clause generation that is necessary to fetch specific records a
+    // page
+    // at a time. Some JDBC Drivers/Databases may have limits on statement
+    // length
+    // or complexity of the where clause - e.g., PostgreSQL having a default
+    // limit of
     // 10,000 nested expressions.
 
     /**
      * Creates a new IncrementalFaultList using a given DataContext and query.
      * 
-     * @param dataContext DataContext used by IncrementalFaultList to fill itself with
+     * @param dataContext
+     *            DataContext used by IncrementalFaultList to fill itself with
      *            objects.
-     * @param query Main query used to retrieve data. Must have "pageSize" property set to
-     *            a value greater than zero.
-     * @param maxFetchSize maximum number of fetches in one query
+     * @param query
+     *            Main query used to retrieve data. Must have "pageSize"
+     *            property set to a value greater than zero.
+     * @param maxFetchSize
+     *            maximum number of fetches in one query
      */
     public IncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize) {
         QueryMetadata metadata = query.getMetaData(dataContext.getEntityResolver());
         if (metadata.getPageSize() <= 0) {
-            throw new CayenneRuntimeException("Not a paginated query; page size: "
-                    + metadata.getPageSize());
+            throw new CayenneRuntimeException("Not a paginated query; page size: " + metadata.getPageSize());
         }
 
         this.dataContext = dataContext;
@@ -106,8 +111,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
         this.rootEntity = metadata.getObjEntity();
 
         if (rootEntity == null) {
-            throw new CayenneRuntimeException(
-                    "Pagination is not supported for queries not rooted in an ObjEntity");
+            throw new CayenneRuntimeException("Pagination is not supported for queries not rooted in an ObjEntity");
         }
 
         // create an internal query, it is a partial replica of
@@ -133,8 +137,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
     IncrementalListHelper createHelper(QueryMetadata metadata) {
         if (metadata.isFetchingDataRows()) {
             return new DataRowListHelper();
-        }
-        else {
+        } else {
             return new PersistentListHelper();
         }
     }
@@ -147,8 +150,8 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
     }
 
     /**
-     * Performs initialization of the list of objects. Only the first page is fully
-     * resolved. For the rest of the list, only ObjectIds are read.
+     * Performs initialization of the list of objects. Only the first page is
+     * fully resolved. For the rest of the list, only ObjectIds are read.
      * 
      * @since 3.0
      */
@@ -156,23 +159,14 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
         elementsList.clear();
 
+        ResultIterator it = dataContext.performIteratedQuery(query);
         try {
-            long t1 = System.currentTimeMillis();
-            ResultIterator it = dataContext.performIteratedQuery(query);
-            try {
 
-                while (it.hasNextRow()) {
-                    elementsList.add(it.nextRow());
-                }
+            while (it.hasNextRow()) {
+                elementsList.add(it.nextRow());
             }
-            finally {
-                it.close();
-            }
-        }
-        catch (CayenneException e) {
-            throw new CayenneRuntimeException(
-                    "Error performing query.",
-                    Util.unwindException(e));
+        } finally {
+            it.close();
         }
 
         unfetchedObjects = elementsList.size();
@@ -186,8 +180,8 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
     }
 
     /**
-     * Checks that an object is of the same type as the rest of objects (DataObject or
-     * DataRows depending on the query type).
+     * Checks that an object is of the same type as the rest of objects
+     * (DataObject or DataRows depending on the query type).
      */
     private void validateListObject(Object object) throws IllegalArgumentException {
 
@@ -195,22 +189,19 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
         if (internalQuery.isFetchingDataRows()) {
             if (!(object instanceof Map)) {
-                throw new IllegalArgumentException(
-                        "Only Map objects can be stored in this list.");
+                throw new IllegalArgumentException("Only Map objects can be stored in this list.");
             }
-        }
-        else {
+        } else {
             if (!(object instanceof Persistent)) {
-                throw new IllegalArgumentException(
-                        "Only DataObjects can be stored in this list.");
+                throw new IllegalArgumentException("Only DataObjects can be stored in this list.");
             }
         }
     }
 
     /**
-     * Resolves a sublist of objects starting at <code>fromIndex</code> up to but not
-     * including <code>toIndex</code>. Internally performs bound checking and trims
-     * indexes accordingly.
+     * Resolves a sublist of objects starting at <code>fromIndex</code> up to
+     * but not including <code>toIndex</code>. Internally performs bound
+     * checking and trims indexes accordingly.
      */
     protected void resolveInterval(int fromIndex, int toIndex) {
         if (fromIndex >= toIndex) {
@@ -255,11 +246,8 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
             int fetchEnd = Math.min(qualsSize, fetchSize);
             int fetchBegin = 0;
             while (fetchBegin < qualsSize) {
-                SelectQuery<Object> query = new SelectQuery<Object>(
-                        rootEntity,
-                        ExpressionFactory.joinExp(
-                                Expression.OR,
-                                quals.subList(fetchBegin, fetchEnd)));
+                SelectQuery<Object> query = new SelectQuery<Object>(rootEntity, ExpressionFactory.joinExp(
+                        Expression.OR, quals.subList(fetchBegin, fetchEnd)));
 
                 query.setFetchingDataRows(fetchesDataRows);
 
@@ -309,11 +297,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
             // find missing ids
             StringBuilder buffer = new StringBuilder();
             buffer.append("Some ObjectIds are missing from the database. ");
-            buffer
-                    .append("Expected ")
-                    .append(ids.size())
-                    .append(", fetched ")
-                    .append(objects.size());
+            buffer.append("Expected ").append(ids.size()).append(", fetched ").append(objects.size());
 
             boolean first = true;
             for (Object id : ids) {
@@ -330,8 +314,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
                 if (!found) {
                     if (first) {
                         first = false;
-                    }
-                    else {
+                    } else {
                         buffer.append(", ");
                     }
 
@@ -340,17 +323,14 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
             }
 
             throw new CayenneRuntimeException(buffer.toString());
-        }
-        else if (objects.size() > ids.size()) {
-            throw new CayenneRuntimeException("Expected "
-                    + ids.size()
-                    + " objects, retrieved "
-                    + objects.size());
+        } else if (objects.size() > ids.size()) {
+            throw new CayenneRuntimeException("Expected " + ids.size() + " objects, retrieved " + objects.size());
         }
     }
 
     /**
-     * Returns zero-based index of the virtual "page" for a given array element index.
+     * Returns zero-based index of the virtual "page" for a given array element
+     * index.
      */
     public int pageIndex(int elementIndex) {
         if (elementIndex < 0 || elementIndex > size()) {
@@ -365,10 +345,11 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
     }
 
     /**
-     * Get the upper bound on the number of records to resolve in one round trip to the
-     * database. This setting governs the size/complexity of the where clause generated to
-     * retrieve the next page of records. If the fetch size is less than the page size,
-     * then multiple fetches will be made to resolve a page.
+     * Get the upper bound on the number of records to resolve in one round trip
+     * to the database. This setting governs the size/complexity of the where
+     * clause generated to retrieve the next page of records. If the fetch size
+     * is less than the page size, then multiple fetches will be made to resolve
+     * a page.
      */
     public int getMaxFetchSize() {
         return maxFetchSize;
@@ -397,21 +378,22 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
     }
 
     /**
-     * Returns a list iterator for this list. DataObjects are resolved a page (according
-     * to getPageSize()) at a time as necessary - when retrieved with next() or
-     * previous().
+     * Returns a list iterator for this list. DataObjects are resolved a page
+     * (according to getPageSize()) at a time as necessary - when retrieved with
+     * next() or previous().
      */
     public ListIterator<E> listIterator() {
         return new IncrementalListIterator(0);
     }
 
     /**
-     * Returns a list iterator of the elements in this list (in proper sequence), starting
-     * at the specified position in this list. The specified index indicates the first
-     * element that would be returned by an initial call to the next method. An initial
-     * call to the previous method would return the element with the specified index minus
-     * one. DataObjects are resolved a page at a time (according to getPageSize()) as
-     * necessary - when retrieved with next() or previous().
+     * Returns a list iterator of the elements in this list (in proper
+     * sequence), starting at the specified position in this list. The specified
+     * index indicates the first element that would be returned by an initial
+     * call to the next method. An initial call to the previous method would
+     * return the element with the specified index minus one. DataObjects are
+     * resolved a page at a time (according to getPageSize()) as necessary -
+     * when retrieved with next() or previous().
      */
     public ListIterator<E> listIterator(int index) {
         if (index < 0 || index > size()) {
@@ -422,8 +404,9 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
     }
 
     /**
-     * Return an iterator for this list. DataObjects are resolved a page (according to
-     * getPageSize()) at a time as necessary - when retrieved with next().
+     * Return an iterator for this list. DataObjects are resolved a page
+     * (according to getPageSize()) at a time as necessary - when retrieved with
+     * next().
      */
     public Iterator<E> iterator() {
         // by virtue of get(index)'s implementation, resolution of ids into
@@ -526,8 +509,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
                 resolveInterval(pageStart, pageStart + pageSize);
 
                 return (E) elements.get(index);
-            }
-            else {
+            } else {
                 return (E) o;
             }
         }
@@ -679,12 +661,12 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
         }
 
         /**
-         * Returns true if an object is not the type of object expected in the list. This
-         * method is not expected to perform thorough checking of the object type. What's
-         * important is the guarantee that an unresolved object representation will always
-         * return true for this method, and resolved will return false. Other types of
-         * objects that users may choose to add to the list will not be analyzed in
-         * detail.
+         * Returns true if an object is not the type of object expected in the
+         * list. This method is not expected to perform thorough checking of the
+         * object type. What's important is the guarantee that an unresolved
+         * object representation will always return true for this method, and
+         * resolved will return false. Other types of objects that users may
+         * choose to add to the list will not be analyzed in detail.
          */
         abstract boolean unresolvedSuspect(Object object);
 
@@ -701,10 +683,14 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
                 return true;
             }
 
-            // don't do a full check for object type matching the type of objects in the
-            // list... what's important is a quick "false" return if the object is of type
-            // representing unresolved objects.. furthermore, if inheritance is involved,
-            // we'll need an even more extensive check (see CAY-1142 on inheritance
+            // don't do a full check for object type matching the type of
+            // objects in the
+            // list... what's important is a quick "false" return if the object
+            // is of type
+            // representing unresolved objects.. furthermore, if inheritance is
+            // involved,
+            // we'll need an even more extensive check (see CAY-1142 on
+            // inheritance
             // issues).
 
             return false;
@@ -716,12 +702,8 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
             if (objectInTheList instanceof Persistent) {
                 // due to object uniquing this should be sufficient
                 return object == objectInTheList;
-            }
-            else {
-                return ((Persistent) object)
-                        .getObjectId()
-                        .getIdSnapshot()
-                        .equals(objectInTheList);
+            } else {
+                return ((Persistent) object).getObjectId().getIdSnapshot().equals(objectInTheList);
             }
         }
 
