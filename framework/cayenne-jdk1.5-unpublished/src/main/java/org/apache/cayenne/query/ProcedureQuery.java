@@ -324,6 +324,38 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     public void setCacheGroups(String... cacheGroups) {
         this.metaData.setCacheGroups(cacheGroups);
     }
+    
+    /**
+     * Instructs Cayenne to look for query results in the "local" cache when
+     * running the query. This is a short-hand notation for:
+     * 
+     * <pre>
+     * query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+     * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
+     * </pre>
+     * 
+     * @since 3.2
+     */
+    public void useLocalCache(String... cacheGroups) {
+        setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        setCacheGroups(cacheGroups);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "shared" cache when
+     * running the query. This is a short-hand notation for:
+     * 
+     * <pre>
+     * query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+     * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
+     * </pre>
+     * 
+     * @since 3.2
+     */
+    public void useSharedCache(String... cacheGroups) {
+        setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        setCacheGroups(cacheGroups);
+    }
 
     public int getFetchLimit() {
         return metaData.getFetchLimit();
