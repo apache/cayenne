@@ -452,7 +452,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     /**
      * Adds one or more aliases for the qualifier expression path. Aliases serve to
      * instruct Cayenne to generate separate sets of joins for overlapping paths, that
-     * maybe needed for complex conditions. An example of an <i>implicit<i> splits is this
+     * maybe needed for complex conditions. An example of an <i>implicit</i> splits is this
      * method: {@link ExpressionFactory#matchAllExp(String, Object...)}.
      *
      * @since 3.0
@@ -617,7 +617,7 @@ public class SelectQuery extends QualifiedQuery implements ParameterizedQuery,
     }
 
     /**
-     * Sets statement's fetch size (0 for no default size)
+     * Sets statement's fetch size (0 for default size)
      *
      * @since 3.0
      */
