@@ -50,6 +50,7 @@ CAY-1819 When adding a filter, auto-register it as a listener
 CAY-1820 DataDomain.addListener(Object) - a shortcut for adding annotated listeners 
 CAY-1821 AuditableFilter and friends should explicitly work with Persistent instead of Object
 CAY-1825 Simplify API for setting up query caching
+CAY-1828 SQLSelect - generics friendly fluent selecting sql query
 
 Bug Fixes:
 
