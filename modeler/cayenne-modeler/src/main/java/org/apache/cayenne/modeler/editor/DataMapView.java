@@ -155,15 +155,15 @@ public class DataMapView extends JPanel {
 
         // assemble
         FormLayout layout = new FormLayout(
-                "right:70dlu, 3dlu, fill:110dlu, 3dlu, fill:100",
+                "right:70dlu, 3dlu, fill:180dlu, 3dlu, fill:120",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("DataMap Configuration");
-        builder.append("DataMap Name:", name.getComponent(), 3);
+        builder.append("DataMap Name:", name.getComponent(), 2);
         builder.append("File:", location, 3);
-        builder.append("DataNode:", nodeSelector, 3);
+        builder.append("DataNode:", nodeSelector, 2);
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
 
         builder.appendSeparator("Entity Defaults");
