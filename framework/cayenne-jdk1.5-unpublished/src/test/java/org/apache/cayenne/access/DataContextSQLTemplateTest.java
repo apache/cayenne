@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.di.Inject;

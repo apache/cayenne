@@ -41,6 +41,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;

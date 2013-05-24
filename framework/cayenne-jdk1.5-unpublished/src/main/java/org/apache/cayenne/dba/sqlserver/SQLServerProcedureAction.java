@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.trans.ProcedureTranslator;

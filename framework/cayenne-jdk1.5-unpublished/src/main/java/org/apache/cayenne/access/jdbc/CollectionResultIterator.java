@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.access.ResultIterator;
+import org.apache.cayenne.ResultIterator;
 
 /**
  * A ResultIterator over a collection of objects.

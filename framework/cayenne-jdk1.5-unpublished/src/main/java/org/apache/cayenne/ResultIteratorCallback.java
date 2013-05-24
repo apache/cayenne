@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.ResultIterator;
 
 /**
  * @since 3.2

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;

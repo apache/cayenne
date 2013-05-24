@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.Query;
 
 /**

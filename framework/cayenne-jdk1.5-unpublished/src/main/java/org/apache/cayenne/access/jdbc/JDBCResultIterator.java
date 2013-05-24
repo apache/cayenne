@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.ResultIterator;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;

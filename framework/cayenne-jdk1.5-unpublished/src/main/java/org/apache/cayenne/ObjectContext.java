@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -177,7 +176,7 @@ public interface ObjectContext extends Serializable {
     /**
      * Creates a ResultIterator based on the provided query and passes it to a
      * callback for processing. The caller does not need to worry about closing
-     * the iterator. Thius methoid takes care of it.
+     * the iterator. This method takes care of it.
      * 
      * @since 3.2
      */

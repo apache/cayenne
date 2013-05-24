@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.map.DbEntity;

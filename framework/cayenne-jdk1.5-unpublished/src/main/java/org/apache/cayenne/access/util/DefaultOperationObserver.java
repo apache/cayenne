@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
 

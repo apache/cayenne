@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.apache.cayenne.access.ResultIterator;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.util.ResultIteratorIterator;
 
 /**

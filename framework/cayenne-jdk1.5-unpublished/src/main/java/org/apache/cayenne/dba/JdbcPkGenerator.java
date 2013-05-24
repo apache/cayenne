@@ -34,9 +34,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;

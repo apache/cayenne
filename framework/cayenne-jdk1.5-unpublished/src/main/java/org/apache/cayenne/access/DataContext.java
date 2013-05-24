@@ -40,6 +40,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;

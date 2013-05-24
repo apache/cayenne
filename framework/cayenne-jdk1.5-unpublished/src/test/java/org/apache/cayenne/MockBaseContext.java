@@ -21,7 +21,6 @@ package org.apache.cayenne;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;

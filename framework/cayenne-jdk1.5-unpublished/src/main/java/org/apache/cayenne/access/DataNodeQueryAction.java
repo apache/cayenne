@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 

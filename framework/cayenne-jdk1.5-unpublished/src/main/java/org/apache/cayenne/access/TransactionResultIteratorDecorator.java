@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ResultIterator;
 
 /**
  * Decorates ResultIterator to close active transaction when the iterator is

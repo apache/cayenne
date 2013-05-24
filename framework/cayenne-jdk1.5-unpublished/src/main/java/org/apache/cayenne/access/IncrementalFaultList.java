@@ -31,6 +31,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;

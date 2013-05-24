@@ -29,9 +29,9 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
-import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;

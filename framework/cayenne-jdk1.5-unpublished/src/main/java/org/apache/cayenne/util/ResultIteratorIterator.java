@@ -20,7 +20,7 @@ package org.apache.cayenne.util;
 
 import java.util.Iterator;
 
-import org.apache.cayenne.access.ResultIterator;
+import org.apache.cayenne.ResultIterator;
 
 public class ResultIteratorIterator<T> implements Iterator<T> {
 

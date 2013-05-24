@@ -36,6 +36,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;

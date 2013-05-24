@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.util.DefaultOperationObserver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;

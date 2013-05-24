@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.ResultIterator;
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.ResultIteratorIterator;
