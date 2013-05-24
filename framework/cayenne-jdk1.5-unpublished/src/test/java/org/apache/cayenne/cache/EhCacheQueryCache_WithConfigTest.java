@@ -21,81 +21,29 @@ package org.apache.cayenne.cache;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 import junit.framework.TestCase;
+import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.cayenne.query.QueryMetadata;
 
-public class EhCacheQueryCacheTest extends TestCase {
+public class EhCacheQueryCache_WithConfigTest extends TestCase {
 
-    private CacheManager cacheManager;
+    protected CacheManager cacheManager;
 
     @Override
     protected void setUp() throws Exception {
-        cacheManager = new CacheManager();
+        URL config = getClass().getResource("test-ehcache.xml");
+        assertNotNull(config);
+        cacheManager = new CacheManager(config);
     }
 
     @Override
     protected void tearDown() throws Exception {
         cacheManager.shutdown();
-    }
-
-    public void testGet() {
-
-        EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
-
-        QueryMetadata md = mock(QueryMetadata.class);
-        when(md.getCacheKey()).thenReturn("k1");
-
-        assertNull(cache.get(md));
-
-        List<?> results = new ArrayList<Object>();
-        cache.put(md, results);
-        assertSame(results, cache.get(md));
-    }
-
-    public void testGet_WithFactory() {
-
-        EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
-
-        Object[] lists = new Object[] { new ArrayList<Object>(), new ArrayList<Object>(), new ArrayList<Object>() };
-        QueryCacheEntryFactory factory = mock(QueryCacheEntryFactory.class);
-        when(factory.createObject()).thenReturn(lists[0], lists[1], lists[2]);
-
-        QueryMetadata md = mock(QueryMetadata.class);
-        when(md.getCacheKey()).thenReturn("k1");
-
-        assertEquals(lists[0], cache.get(md, factory));
-        assertEquals(lists[0], cache.get(md, factory));
-        assertEquals(lists[0], cache.get(md, factory));
-
-        List<?> results = new ArrayList<Object>();
-        cache.put(md, results);
-        assertSame(results, cache.get(md));
-    }
-
-    public void testGet_WithFactory_WithCacheGroups() {
-
-        EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
-
-        Object[] lists = new Object[] { new ArrayList<Object>(), new ArrayList<Object>(), new ArrayList<Object>() };
-        QueryCacheEntryFactory factory = mock(QueryCacheEntryFactory.class);
-        when(factory.createObject()).thenReturn(lists[0], lists[1], lists[2]);
-
-        QueryMetadata md = mock(QueryMetadata.class);
-        when(md.getCacheKey()).thenReturn("k1");
-        when(md.getCacheGroups()).thenReturn(new String[] { "cg1" });
-
-        assertEquals(lists[0], cache.get(md, factory));
-        assertEquals(lists[0], cache.get(md, factory));
-        assertEquals(lists[0], cache.get(md, factory));
-
-        List<?> results = new ArrayList<Object>();
-        cache.put(md, results);
-        assertSame(results, cache.get(md));
     }
 
     public void testRemoveGroup_WithFactory_WithCacheGroups() {
@@ -113,11 +61,24 @@ public class EhCacheQueryCacheTest extends TestCase {
         assertEquals(lists[0], cache.get(md, factory));
         assertEquals(lists[0], cache.get(md, factory));
 
+        Cache c1 = cache.cacheManager.getCache("cg1");
+        assertEquals(201, c1.getCacheConfiguration().getTimeToLiveSeconds());
+
+        // remove non-existing
         cache.removeGroup("cg0");
         assertEquals(lists[0], cache.get(md, factory));
+
+        Cache c2 = cache.cacheManager.getCache("cg1");
+        assertSame(c1, c2);
+        assertEquals(201, c2.getCacheConfiguration().getTimeToLiveSeconds());
 
         cache.removeGroup("cg1");
         assertEquals(lists[1], cache.get(md, factory));
 
+        // make sure the cache still has all the configured settings after
+        // 'removeGroup'
+        Cache c3 = cache.cacheManager.getCache("cg1");
+        assertSame(c1, c3);
+        assertEquals(201, c3.getCacheConfiguration().getTimeToLiveSeconds());
     }
 }

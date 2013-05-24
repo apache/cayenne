@@ -20,6 +20,7 @@ package org.apache.cayenne.cache;
 
 import java.util.List;
 
+import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -96,7 +97,7 @@ public class EhCacheQueryCache implements QueryCache {
 
         // create empty cache for cache group here, as we have a factory to
         // create an object, and should never ever return null from this
-        // method
+        // method.
         Ehcache cache = cacheManager.addCacheIfAbsent(cacheName);
         Element result = cache.get(key);
 
@@ -174,7 +175,10 @@ public class EhCacheQueryCache implements QueryCache {
     }
 
     public void removeGroup(String groupKey) {
-        cacheManager.removeCache(groupKey);
+        Ehcache cache = cacheManager.getEhcache(groupKey);
+        if(cache != null) {
+            cache.removeAll();
+        }
     }
 
     public void clear() {
