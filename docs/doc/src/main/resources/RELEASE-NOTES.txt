@@ -51,6 +51,7 @@ CAY-1820 DataDomain.addListener(Object) - a shortcut for adding annotated listen
 CAY-1821 AuditableFilter and friends should explicitly work with Persistent instead of Object
 CAY-1825 Simplify API for setting up query caching
 CAY-1828 SQLSelect - generics friendly fluent selecting sql query
+CAY-1829 Make ResultIterator implement Iterable<T>, create ObjectContext.iterate method
 
 Bug Fixes:
 
