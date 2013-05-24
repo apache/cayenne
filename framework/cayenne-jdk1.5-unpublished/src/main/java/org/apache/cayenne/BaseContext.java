@@ -305,7 +305,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
-    protected abstract <T> ResultIterator<T> iterator(Select<T> query);
+    public abstract <T> ResultIterator<T> iterator(Select<T> query);
 
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {

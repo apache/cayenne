@@ -152,4 +152,8 @@ public class MockObjectContext implements ObjectContext {
     public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
 
     }
+    
+    public <T> ResultIterator<T> iterator(Select<T> query) {
+        return null;
+    }
 }

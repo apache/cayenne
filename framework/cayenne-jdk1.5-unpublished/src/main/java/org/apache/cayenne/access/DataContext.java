@@ -785,7 +785,7 @@ public class DataContext extends BaseContext {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> ResultIterator<T> iterator(Select<T> query) {
+    public <T> ResultIterator<T> iterator(Select<T> query) {
         final ResultIterator<DataRow> rows = performIteratedQuery(query);
 
         QueryMetadata md = query.getMetaData(getEntityResolver());

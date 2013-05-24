@@ -387,7 +387,7 @@ public class CayenneContext extends BaseContext {
      * 
      * @since 3.2
      */
-    protected <T> ResultIterator<T> iterator(org.apache.cayenne.query.Select<T> query) {
+    public <T> ResultIterator<T> iterator(org.apache.cayenne.query.Select<T> query) {
         List<T> objects = select(query);
         return new CollectionResultIterator<T>(objects);
     }

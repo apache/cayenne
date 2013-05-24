@@ -183,6 +183,17 @@ public interface ObjectContext extends Serializable {
     <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback);
 
     /**
+     * Creates a ResultIterator based on the provided query. It is usually
+     * backed by an open result set and is useful for processing of large data
+     * sets, preservign a constant memory footpront. The caller must wrap
+     * iteration in try/finally and close the ResultIterator explicitly. Or use
+     * {@link #iterate(Select, ResultIteratorCallback)} as an alternative.
+     * 
+     * @since 3.2
+     */
+    <T> ResultIterator<T> iterator(Select<T> query);
+
+    /**
      * Executes any kind of query providing the result in a form of
      * QueryResponse.
      */

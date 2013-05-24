@@ -112,7 +112,7 @@ public class MockBaseContext extends BaseContext {
     }
 
     @Override
-    protected <T> ResultIterator<T> iterator(Select<T> query) {
+    public <T> ResultIterator<T> iterator(Select<T> query) {
         return null;
     }
 
