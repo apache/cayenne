@@ -16,17 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.util;
 
 import java.util.Iterator;
 
 import org.apache.cayenne.access.ResultIterator;
 
-class ResultIteratorIterator<T> implements Iterator<T> {
+public class ResultIteratorIterator<T> implements Iterator<T> {
 
     private ResultIterator<T> parent;
 
-    ResultIteratorIterator(ResultIterator<T> parent) {
+    public ResultIteratorIterator(ResultIterator<T> parent) {
         this.parent = parent;
     }
 

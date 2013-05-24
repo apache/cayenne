@@ -34,6 +34,7 @@ import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
+import org.apache.cayenne.util.ResultIteratorIterator;
 
 /**
  * A ResultIterator over the underlying JDBC ResultSet.

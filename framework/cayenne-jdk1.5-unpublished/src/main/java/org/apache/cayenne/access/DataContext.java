@@ -62,6 +62,7 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
+import org.apache.cayenne.util.ResultIteratorIterator;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -784,7 +785,53 @@ public class DataContext extends BaseContext {
     @SuppressWarnings("unchecked")
     @Override
     protected <T> ResultIterator<T> iterator(Select<T> query) {
-        return performIteratedQuery(query);
+        final ResultIterator<DataRow> rows = performIteratedQuery(query);
+
+        QueryMetadata md = query.getMetaData(getEntityResolver());
+        if (md.isFetchingDataRows()) {
+            return (ResultIterator<T>) rows;
+        } else {
+
+            // this is a bit optimized version of 'objectFromDataRow' with
+            // resolver cached for reuse... still the rest is pretty suboptimal
+            ClassDescriptor descriptor = md.getClassDescriptor();
+            final ObjectResolver resolver = new ObjectResolver(this, descriptor, true);
+            return new ResultIterator<T>() {
+
+                public Iterator<T> iterator() {
+                    return new ResultIteratorIterator<T>(this);
+                }
+
+                public List<T> allRows() {
+                    List<T> list = new ArrayList<T>();
+
+                    while (hasNextRow()) {
+                        list.add(nextRow());
+                    }
+
+                    return list;
+                }
+
+                public boolean hasNextRow() {
+                    return rows.hasNextRow();
+                }
+
+                public T nextRow() {
+                    DataRow row = rows.nextRow();
+                    List<T> objects = (List<T>) resolver
+                            .synchronizedObjectsFromDataRows(Collections.singletonList(row));
+                    return (T) objects.get(0);
+                }
+
+                public void skipRow() {
+                    rows.skipRow();
+                }
+
+                public void close() {
+                    rows.close();
+                }
+            };
+        }
     }
 
     /**
@@ -795,6 +842,11 @@ public class DataContext extends BaseContext {
      * an internal Cayenne transaction that originated in this method stays open
      * until the iterator is closed. So users should normally close the iterator
      * within the same thread that opened it.
+     * <p>
+     * Note that 'performIteratedQuery' always returns ResultIterator over
+     * DataRows. Use
+     * {@link #iterate(Select, org.apache.cayenne.ResultIteratorCallback)} to
+     * get access to objects.
      */
     // TODO: deprecate once all selecting queries start implementing Select<T>
     // interface

@@ -31,6 +31,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.util.ResultIteratorIterator;
 
 /**
  * A ResultIterator that does in-memory filtering of rows to return only
