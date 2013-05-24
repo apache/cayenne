@@ -14,6 +14,7 @@ Date: not yet released
 Changes/New Features Since 3.1B1:
 
 CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
+CAY-1822 Make DataMap editor fields wider 
 
 Bug Fixes Since 3.1B2:
 
