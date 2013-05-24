@@ -24,20 +24,23 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.access.ResultIterator;
+import org.apache.cayenne.access.jdbc.CollectionResultIterator;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * A default generic implementation of ObjectContext suitable for accessing Cayenne from
- * either an ORM or a client tiers. Communicates with Cayenne via a
+ * A default generic implementation of ObjectContext suitable for accessing
+ * Cayenne from either an ORM or a client tiers. Communicates with Cayenne via a
  * {@link org.apache.cayenne.DataChannel}.
  * 
  * @since 1.2
@@ -58,8 +61,8 @@ public class CayenneContext extends BaseContext {
 
     /**
      * Creates a new CayenneContext, initializing it with a channel instance.
-     * CayenneContext created using this constructor WILL NOT broadcast graph change
-     * events.
+     * CayenneContext created using this constructor WILL NOT broadcast graph
+     * change events.
      */
     public CayenneContext(DataChannel channel) {
         this(channel, false, false);
@@ -68,13 +71,9 @@ public class CayenneContext extends BaseContext {
     /**
      * Creates a new CayenneContext, initializing it with a channel.
      */
-    public CayenneContext(DataChannel channel, boolean changeEventsEnabled,
-            boolean lifecyleEventsEnabled) {
+    public CayenneContext(DataChannel channel, boolean changeEventsEnabled, boolean lifecyleEventsEnabled) {
 
-        graphManager = new CayenneContextGraphManager(
-                this,
-                changeEventsEnabled,
-                lifecyleEventsEnabled);
+        graphManager = new CayenneContextGraphManager(this, changeEventsEnabled, lifecyleEventsEnabled);
 
         if (channel != null) {
             attachToChannel(channel);
@@ -98,23 +97,25 @@ public class CayenneContext extends BaseContext {
             mergeHandler = new CayenneContextMergeHandler(this);
 
             // listen to our channel events...
-            // note that we must reset listener on channel switch, as there is no
+            // note that we must reset listener on channel switch, as there is
+            // no
             // guarantee that a new channel uses the same EventManager.
             EventUtil.listenForChannelEvents(channel, mergeHandler);
         }
     }
 
     /**
-     * Returns true if this context posts individual object modification events. Subject
-     * used for these events is <code>ObjectContext.GRAPH_CHANGED_SUBJECT</code>.
+     * Returns true if this context posts individual object modification events.
+     * Subject used for these events is
+     * <code>ObjectContext.GRAPH_CHANGED_SUBJECT</code>.
      */
     public boolean isChangeEventsEnabled() {
         return graphManager.changeEventsEnabled;
     }
 
     /**
-     * Returns true if this context posts lifecycle events. Subjects used for these events
-     * are
+     * Returns true if this context posts lifecycle events. Subjects used for
+     * these events are
      * <code>ObjectContext.GRAPH_COMMIT_STARTED_SUBJECT, ObjectContext.GRAPH_COMMITTED_SUBJECT,
      * ObjectContext.GRAPH_COMMIT_ABORTED_SUBJECT, ObjectContext.GRAPH_ROLLEDBACK_SUBJECT.</code>
      * .
@@ -133,9 +134,9 @@ public class CayenneContext extends BaseContext {
     }
 
     /**
-     * Commits changes to uncommitted objects. First checks if there are changes in this
-     * context and if any changes are detected, sends a commit message to remote Cayenne
-     * service via an internal instance of CayenneConnector.
+     * Commits changes to uncommitted objects. First checks if there are changes
+     * in this context and if any changes are detected, sends a commit message
+     * to remote Cayenne service via an internal instance of CayenneConnector.
      */
     @Override
     public void commitChanges() {
@@ -144,9 +145,7 @@ public class CayenneContext extends BaseContext {
 
     GraphDiff doCommitChanges(boolean cascade) {
 
-        int syncType = cascade
-                ? DataChannel.FLUSH_CASCADE_SYNC
-                : DataChannel.FLUSH_NOCASCADE_SYNC;
+        int syncType = cascade ? DataChannel.FLUSH_CASCADE_SYNC : DataChannel.FLUSH_NOCASCADE_SYNC;
 
         GraphDiff commitDiff = null;
 
@@ -161,15 +160,15 @@ public class CayenneContext extends BaseContext {
                         Persistent p = (Persistent) it.next();
                         if (p instanceof Validating) {
                             switch (p.getPersistenceState()) {
-                                case PersistenceState.NEW:
-                                    ((Validating) p).validateForInsert(result);
-                                    break;
-                                case PersistenceState.MODIFIED:
-                                    ((Validating) p).validateForUpdate(result);
-                                    break;
-                                case PersistenceState.DELETED:
-                                    ((Validating) p).validateForDelete(result);
-                                    break;
+                            case PersistenceState.NEW:
+                                ((Validating) p).validateForInsert(result);
+                                break;
+                            case PersistenceState.MODIFIED:
+                                ((Validating) p).validateForUpdate(result);
+                                break;
+                            case PersistenceState.DELETED:
+                                ((Validating) p).validateForDelete(result);
+                                break;
                             }
                         }
                     }
@@ -185,21 +184,20 @@ public class CayenneContext extends BaseContext {
 
                 try {
                     commitDiff = channel.onSync(this, changes, syncType);
-                }
-                catch (Throwable th) {
+                } catch (Throwable th) {
                     graphManager.graphCommitAborted();
 
                     if (th instanceof CayenneRuntimeException) {
                         throw (CayenneRuntimeException) th;
-                    }
-                    else {
+                    } else {
                         throw new CayenneRuntimeException("Commit error", th);
                     }
                 }
 
                 graphManager.graphCommitted(commitDiff);
 
-                // this event is caught by peer nested ObjectContexts to synchronize the
+                // this event is caught by peer nested ObjectContexts to
+                // synchronize the
                 // state
                 fireDataChannelCommitted(this, changes);
             }
@@ -250,12 +248,10 @@ public class CayenneContext extends BaseContext {
 
         ObjEntity entity = getEntityResolver().lookupObjEntity(persistentClass);
         if (entity == null) {
-            throw new CayenneRuntimeException("No entity mapped for class: "
-                    + persistentClass);
+            throw new CayenneRuntimeException("No entity mapped for class: " + persistentClass);
         }
 
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                entity.getName());
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         T object = (T) descriptor.createObject();
         descriptor.injectValueHolders(object);
         registerNewObject((Persistent) object, entity.getName(), descriptor);
@@ -272,8 +268,7 @@ public class CayenneContext extends BaseContext {
         }
 
         ObjEntity entity = getEntityResolver().lookupObjEntity(object.getClass());
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                entity.getName());
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         registerNewObject((Persistent) object, entity.getName(), descriptor);
     }
 
@@ -326,13 +321,10 @@ public class CayenneContext extends BaseContext {
 
     // ****** non-public methods ******
 
-    void registerNewObject(
-            Persistent object,
-            String entityName,
-            ClassDescriptor descriptor) {
+    void registerNewObject(Persistent object, String entityName, ClassDescriptor descriptor) {
         /**
-         * We should create new id only if it is not set for this object. It could have
-         * been created, for instance, in child context
+         * We should create new id only if it is not set for this object. It
+         * could have been created, for instance, in child context
          */
         ObjectId id = object.getObjectId();
         if (id == null) {
@@ -344,8 +336,7 @@ public class CayenneContext extends BaseContext {
     }
 
     Persistent createFault(ObjectId id) {
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                id.getEntityName());
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
 
         Persistent object;
         synchronized (graphManager) {
@@ -362,10 +353,7 @@ public class CayenneContext extends BaseContext {
     }
 
     @Override
-    protected GraphDiff onContextFlush(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            boolean cascade) {
+    protected GraphDiff onContextFlush(ObjectContext originatingContext, GraphDiff changes, boolean cascade) {
 
         boolean childContext = this != originatingContext && changes != null;
 
@@ -376,8 +364,7 @@ public class CayenneContext extends BaseContext {
             // setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.RECORD);
             try {
                 changes.apply(new CayenneContextChildDiffLoader(this));
-            }
-            finally {
+            } finally {
                 // setPropertyChangeProcessingStrategy(oldStrategy);
             }
 
@@ -388,10 +375,23 @@ public class CayenneContext extends BaseContext {
     }
 
     /**
-     * Returns <code>true</code> if there are any modified, deleted or new objects
-     * registered with this CayenneContext, <code>false</code> otherwise.
+     * Returns <code>true</code> if there are any modified, deleted or new
+     * objects registered with this CayenneContext, <code>false</code>
+     * otherwise.
      */
     public boolean hasChanges() {
         return graphManager.hasChanges();
+    }
+
+    /**
+     * This method simply returns an iterator over a list of selected objects.
+     * There's no performance benefit of using it vs. regular "select".
+     * 
+     * @since 3.2
+     */
+    @Override
+    public <T> ResultIterator<T> iterate(Select<T> query) {
+        List<T> objects = select(query);
+        return new CollectionResultIterator<T>(objects);
     }
 }

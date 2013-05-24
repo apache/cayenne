@@ -20,7 +20,7 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
@@ -38,7 +38,7 @@ class FullRowReader extends BaseRowReader<DataRow> {
     }
 
     @Override
-    public DataRow readRow(ResultSet resultSet) throws CayenneException {
+    public DataRow readRow(ResultSet resultSet) {
         try {
             DataRow dataRow = new DataRow(mapCapacity);
 
@@ -46,7 +46,8 @@ class FullRowReader extends BaseRowReader<DataRow> {
 
             // process result row columns,
             for (int i = 0; i < resultWidth; i++) {
-                // note: jdbc column indexes start from 1, not 0 unlike everywhere else
+                // note: jdbc column indexes start from 1, not 0 unlike
+                // everywhere else
                 Object val = converters[i].materializeObject(resultSet, i + 1, types[i]);
                 dataRow.put(labels[i], val);
             }
@@ -54,14 +55,11 @@ class FullRowReader extends BaseRowReader<DataRow> {
             postprocessRow(resultSet, dataRow);
 
             return dataRow;
-        }
-        catch (CayenneException cex) {
+        } catch (CayenneRuntimeException cex) {
             // rethrow unmodified
             throw cex;
-        }
-        catch (Exception otherex) {
-            throw new CayenneException("Exception materializing column.", Util
-                    .unwindException(otherex));
+        } catch (Exception otherex) {
+            throw new CayenneRuntimeException("Exception materializing column.", Util.unwindException(otherex));
         }
     }
 

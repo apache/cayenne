@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.CayenneRuntime;
@@ -282,13 +283,17 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     public abstract QueryResponse performGenericQuery(Query query);
 
-    @SuppressWarnings("unchecked")
     public abstract List performQuery(Query query);
 
     @SuppressWarnings("unchecked")
     public <T> List<T> select(Select<T> query) {
     	return performQuery(query);
     }
+    
+    /**
+     * @since 3.2
+     */
+    public abstract <T> ResultIterator<T> iterate(Select<T> query);
     
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {

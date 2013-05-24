@@ -20,44 +20,47 @@
 package org.apache.cayenne.access;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 
 /**
- * Decorates ResultIterator to close active transaction when the iterator is closed.
+ * Decorates ResultIterator to close active transaction when the iterator is
+ * closed.
  * 
  * @since 1.2
  */
-final class TransactionResultIteratorDecorator implements ResultIterator {
+final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
 
-    private ResultIterator result;
+    private ResultIterator<T> result;
     private Transaction tx;
 
-    public TransactionResultIteratorDecorator(ResultIterator result, Transaction tx) {
+    public TransactionResultIteratorDecorator(ResultIterator<T> result, Transaction tx) {
         this.result = result;
         this.tx = tx;
+    }
+
+    public Iterator<T> iterator() {
+        return result.iterator();
     }
 
     /**
      * Closes the result and commits the transaction.
      */
-    public void close() throws CayenneException {
+    public void close() {
 
         try {
             result.close();
             tx.commit();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             try {
                 tx.rollback();
-            }
-            catch (Exception rollbackEx) {
+            } catch (Exception rollbackEx) {
             }
 
-            throw new CayenneException(e);
-        }
-        finally {
+            throw new CayenneRuntimeException(e);
+        } finally {
             if (Transaction.getThreadTransaction() == tx) {
                 Transaction.bindThreadTransaction(null);
             }
@@ -67,8 +70,8 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public List<?> allRows() throws CayenneException {
-        List<Object> list = new ArrayList<Object>();
+    public List<T> allRows() {
+        List<T> list = new ArrayList<T>();
 
         while (hasNextRow()) {
             list.add(nextRow());
@@ -77,21 +80,21 @@ final class TransactionResultIteratorDecorator implements ResultIterator {
         return list;
     }
 
-    public boolean hasNextRow() throws CayenneException {
+    public boolean hasNextRow() {
         return result.hasNextRow();
     }
 
     /**
      * @since 3.0
      */
-    public Object nextRow() throws CayenneException {
+    public T nextRow() {
         return result.nextRow();
     }
 
     /**
      * @since 3.0
      */
-    public void skipRow() throws CayenneException {
+    public void skipRow() {
         result.skipRow();
     }
 }

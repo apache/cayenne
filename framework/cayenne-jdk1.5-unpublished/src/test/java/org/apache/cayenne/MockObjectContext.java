@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -158,5 +159,9 @@ public class MockObjectContext implements ObjectContext {
     }
 
     public void setUserProperty(String key, Object value) {
+    }
+    
+    public <T> ResultIterator<T> iterate(Select<T> query) {
+        return null;
     }
 }

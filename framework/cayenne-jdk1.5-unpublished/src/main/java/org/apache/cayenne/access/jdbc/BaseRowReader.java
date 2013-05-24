@@ -20,7 +20,6 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
@@ -55,7 +54,7 @@ abstract class BaseRowReader<T> implements RowReader<T> {
         }
     }
 
-    public abstract T readRow(ResultSet resultSet) throws CayenneException;
+    public abstract T readRow(ResultSet resultSet);
 
     public void setPostProcessor(DataRowPostProcessor postProcessor) {
         this.postProcessor = postProcessor;

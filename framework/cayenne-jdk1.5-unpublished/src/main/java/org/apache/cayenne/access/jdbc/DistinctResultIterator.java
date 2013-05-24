@@ -21,28 +21,30 @@ package org.apache.cayenne.access.jdbc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * A ResultIterator that does in-memory filtering of rows to return only distinct rows.
- * Distinct comparison is done by comparing ObjectIds created from each row. Internally
- * DistinctResultIterator wraps another ResultIterator that provides the actual rows.
+ * A ResultIterator that does in-memory filtering of rows to return only
+ * distinct rows. Distinct comparison is done by comparing ObjectIds created
+ * from each row. Internally DistinctResultIterator wraps another ResultIterator
+ * that provides the actual rows.
  * 
  * @since 3.0
  */
-public class DistinctResultIterator implements ResultIterator {
+public class DistinctResultIterator<T> implements ResultIterator<T> {
 
-    protected ResultIterator wrappedIterator;
+    protected ResultIterator<T> delegate;
     protected Set<Map<String, Object>> fetchedIds;
-    protected Object nextDataRow;
+    protected DataRow nextDataRow;
     protected DbEntity defaultEntity;
     protected boolean compareFullRows;
 
@@ -50,19 +52,19 @@ public class DistinctResultIterator implements ResultIterator {
      * Creates new DistinctResultIterator wrapping another ResultIterator.
      * 
      * @param wrappedIterator
-     * @param defaultEntity an entity needed to build ObjectIds for distinct comparison.
+     * @param defaultEntity
+     *            an entity needed to build ObjectIds for distinct comparison.
      */
-    public DistinctResultIterator(ResultIterator wrappedIterator, DbEntity defaultEntity,
-            boolean compareFullRows) throws CayenneException {
-        if (wrappedIterator == null) {
-            throw new CayenneException("Null wrapped iterator.");
+    public DistinctResultIterator(ResultIterator<T> delegate, DbEntity defaultEntity, boolean compareFullRows) {
+        if (delegate == null) {
+            throw new NullPointerException("Null wrapped iterator.");
         }
 
         if (defaultEntity == null) {
-            throw new CayenneException("Null defaultEntity.");
+            throw new NullPointerException("Null defaultEntity.");
         }
 
-        this.wrappedIterator = wrappedIterator;
+        this.delegate = delegate;
         this.defaultEntity = defaultEntity;
         this.fetchedIds = new HashSet<Map<String, Object>>();
         this.compareFullRows = compareFullRows;
@@ -71,17 +73,24 @@ public class DistinctResultIterator implements ResultIterator {
     }
 
     /**
+     * @since 3.2
+     */
+    public Iterator<T> iterator() {
+        return new ResultIteratorIterator<T>(this);
+    }
+
+    /**
      * CLoses underlying ResultIterator.
      */
-    public void close() throws CayenneException {
-        wrappedIterator.close();
+    public void close() {
+        delegate.close();
     }
 
     /**
      * @since 3.0
      */
-    public List<?> allRows() throws CayenneException {
-        List<Object> list = new ArrayList<Object>();
+    public List<T> allRows() {
+        List<T> list = new ArrayList<T>();
 
         while (this.hasNextRow()) {
             list.add(nextRow());
@@ -89,17 +98,18 @@ public class DistinctResultIterator implements ResultIterator {
         return list;
     }
 
-    public boolean hasNextRow() throws CayenneException {
+    public boolean hasNextRow() {
         return nextDataRow != null;
     }
 
-    public Object nextRow() throws CayenneException {
+    public T nextRow() {
         if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
+            throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Object row = nextDataRow;
+        // TODO: 
+        @SuppressWarnings("unchecked")
+        T row = (T) nextDataRow;
         checkNextRow();
         return row;
     }
@@ -107,30 +117,28 @@ public class DistinctResultIterator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public void skipRow() throws CayenneException {
+    public void skipRow() {
         if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
+            throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
         }
 
         checkNextRow();
     }
 
-    void checkNextRow() throws CayenneException {
+    void checkNextRow() {
 
         if (this.compareFullRows) {
             checkNextUniqueRow();
-        }
-        else {
+        } else {
             checkNextRowWithUniqueId();
         }
     }
 
-    void checkNextUniqueRow() throws CayenneException {
+    void checkNextUniqueRow() {
 
         nextDataRow = null;
-        while (wrappedIterator.hasNextRow()) {
-            DataRow next = (DataRow) wrappedIterator.nextRow();
+        while (delegate.hasNextRow()) {
+            DataRow next = (DataRow) delegate.nextRow();
 
             if (fetchedIds.add(next)) {
                 this.nextDataRow = next;
@@ -139,11 +147,11 @@ public class DistinctResultIterator implements ResultIterator {
         }
     }
 
-    void checkNextRowWithUniqueId() throws CayenneException {
+    void checkNextRowWithUniqueId() {
 
         nextDataRow = null;
-        while (wrappedIterator.hasNextRow()) {
-            DataRow next = (DataRow) wrappedIterator.nextRow();
+        while (delegate.hasNextRow()) {
+            DataRow next = (DataRow) delegate.nextRow();
 
             // create id map...
             // TODO: this can be optimized by creating an array with id keys

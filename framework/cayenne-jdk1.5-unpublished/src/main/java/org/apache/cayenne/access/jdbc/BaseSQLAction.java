@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -58,58 +57,41 @@ public abstract class BaseSQLAction implements SQLAction {
     /**
      * Helper method to process a ResultSet.
      */
-    protected void readResultSet(
-            ResultSet resultSet,
-            RowDescriptor descriptor,
-            Query query,
-            OperationObserver delegate) throws SQLException, Exception {
+    protected void readResultSet(ResultSet resultSet, RowDescriptor descriptor, Query query, OperationObserver delegate)
+            throws SQLException, Exception {
 
         long t1 = System.currentTimeMillis();
 
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
 
-        JDBCResultIterator resultReader = new JDBCResultIterator(
-                null,
-                null,
-                resultSet,
-                descriptor,
+        JDBCResultIterator<DataRow> resultReader = new JDBCResultIterator<DataRow>(null, null, resultSet, descriptor,
                 metadata);
 
-        LimitResultIterator it = new LimitResultIterator(
-                resultReader,
-                getInMemoryOffset(metadata.getFetchOffset()),
-                metadata.getFetchLimit());
+        LimitResultIterator<DataRow> it = new LimitResultIterator<DataRow>(resultReader,
+                getInMemoryOffset(metadata.getFetchOffset()), metadata.getFetchLimit());
 
         if (!delegate.isIteratedResult()) {
-            List<DataRow> resultRows = (List<DataRow>) it.allRows();
+            List<DataRow> resultRows = it.allRows();
             adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
             delegate.nextRows(query, resultRows);
-        }
-        else {
+        } else {
             try {
                 resultReader.setClosingConnection(true);
                 delegate.nextRows(query, it);
-            }
-            catch (Exception ex) {
-
-                try {
-                    it.close();
-                }
-                catch (CayenneException cex) {
-                    // ignore...
-                }
-
+            } catch (Exception ex) {
+                it.close();
                 throw ex;
             }
         }
     }
 
     /**
-     * Returns a value of the offset that will be used to rewind the ResultSet within the
-     * SQL action before reading the result rows. The default implementation returns
-     * 'queryOffset' argument. If the adapter supports setting offset at the SQL level,
-     * this method must be overridden to return zero to suppress manual offset.
+     * Returns a value of the offset that will be used to rewind the ResultSet
+     * within the SQL action before reading the result rows. The default
+     * implementation returns 'queryOffset' argument. If the adapter supports
+     * setting offset at the SQL level, this method must be overridden to return
+     * zero to suppress manual offset.
      * 
      * @since 3.0
      */

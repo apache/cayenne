@@ -20,7 +20,6 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.DbAttribute;
@@ -31,7 +30,7 @@ import org.apache.cayenne.util.Util;
 /**
  * @since 3.0
  */
-class IdRowReader extends BaseRowReader<Object> {
+class IdRowReader<T> extends BaseRowReader<T> {
 
     protected int[] pkIndices;
 
@@ -47,8 +46,7 @@ class IdRowReader extends BaseRowReader<Object> {
 
         // sanity check
         if (len == 0) {
-            throw new CayenneRuntimeException("Root DBEntity has no PK defined: "
-                    + dbEntity);
+            throw new CayenneRuntimeException("Root DBEntity has no PK defined: " + dbEntity);
         }
 
         int[] pk = new int[len];
@@ -64,42 +62,38 @@ class IdRowReader extends BaseRowReader<Object> {
     }
 
     @Override
-    public Object readRow(ResultSet resultSet) throws CayenneException {
+    public T readRow(ResultSet resultSet) {
         try {
             if (pkIndices.length == 1) {
                 return readSingleId(resultSet);
-            }
-            else {
+            } else {
                 return readIdMap(resultSet);
             }
-        }
-        catch (CayenneException cex) {
+        } catch (CayenneRuntimeException cex) {
             // rethrow unmodified
             throw cex;
-        }
-        catch (Exception otherex) {
-            throw new CayenneException("Exception materializing id column.", Util
-                    .unwindException(otherex));
+        } catch (Exception otherex) {
+            throw new CayenneRuntimeException("Exception materializing id column.", Util.unwindException(otherex));
         }
     }
 
-    private Object readSingleId(ResultSet resultSet) throws Exception {
+    private T readSingleId(ResultSet resultSet) throws Exception {
 
         // dereference column index
         int index = pkIndices[0];
 
         // note: jdbc column indexes start from 1, not 0 as in arrays
-        Object val = converters[index].materializeObject(
-                resultSet,
-                index + 1,
-                types[index]);
+        @SuppressWarnings("unchecked")
+        T val = (T) converters[index].materializeObject(resultSet, index + 1, types[index]);
 
-        // note that postProcessor overrides are not applied. ID mapping must be the
+        // note that postProcessor overrides are not applied. ID mapping must be
+        // the
         // same across inheritance hierarchy, so overrides do not make sense.
         return val;
     }
 
-    private Object readIdMap(ResultSet resultSet) throws Exception {
+    @SuppressWarnings("unchecked")
+    private T readIdMap(ResultSet resultSet) throws Exception {
 
         DataRow idRow = new DataRow(2);
         idRow.setEntityName(entityName);
@@ -111,10 +105,7 @@ class IdRowReader extends BaseRowReader<Object> {
             int index = pkIndices[i];
 
             // note: jdbc column indexes start from 1, not 0 as in arrays
-            Object val = converters[index].materializeObject(
-                    resultSet,
-                    index + 1,
-                    types[index]);
+            Object val = converters[index].materializeObject(resultSet, index + 1, types[index]);
             idRow.put(labels[index], val);
         }
 
@@ -122,6 +113,6 @@ class IdRowReader extends BaseRowReader<Object> {
             postProcessor.postprocessRow(resultSet, idRow);
         }
 
-        return idRow;
+        return (T) idRow;
     }
 }

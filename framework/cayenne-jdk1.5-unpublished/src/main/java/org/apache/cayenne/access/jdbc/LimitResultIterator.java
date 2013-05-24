@@ -19,18 +19,19 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.ResultIterator;
 
 /**
  * @since 3.0
  */
-public class LimitResultIterator implements ResultIterator {
+public class LimitResultIterator<T> implements ResultIterator<T> {
 
-    protected ResultIterator wrappedIterator;
+    protected ResultIterator<T> delegate;
     protected Map<String, Object> nextDataObjectIds;
 
     protected int fetchLimit;
@@ -39,13 +40,12 @@ public class LimitResultIterator implements ResultIterator {
 
     protected boolean nextRow;
 
-    public LimitResultIterator(ResultIterator wrappedIterator, int offset, int fetchLimit)
-            throws CayenneException {
+    public LimitResultIterator(ResultIterator<T> delegate, int offset, int fetchLimit) {
 
-        if (wrappedIterator == null) {
-            throw new CayenneException("Null wrapped iterator.");
+        if (delegate == null) {
+            throw new NullPointerException("Null delegate iterator.");
         }
-        this.wrappedIterator = wrappedIterator;
+        this.delegate = delegate;
         this.offset = offset;
         this.fetchLimit = fetchLimit;
 
@@ -54,54 +54,59 @@ public class LimitResultIterator implements ResultIterator {
 
     }
 
-    private void checkOffset() throws CayenneException {
-        for (int i = 0; i < offset && wrappedIterator.hasNextRow(); i++) {
-            wrappedIterator.nextRow();
+    /**
+     * @since 3.2
+     */
+    public Iterator<T> iterator() {
+        return new ResultIteratorIterator<T>(this);
+    }
+
+    private void checkOffset() {
+        for (int i = 0; i < offset && delegate.hasNextRow(); i++) {
+            delegate.nextRow();
         }
     }
 
-    private void checkNextRow() throws CayenneException {
+    private void checkNextRow() {
         nextRow = false;
 
-        if ((fetchLimit <= 0 || fetchedSoFar < fetchLimit)
-                && this.wrappedIterator.hasNextRow()) {
+        if ((fetchLimit <= 0 || fetchedSoFar < fetchLimit) && this.delegate.hasNextRow()) {
             nextRow = true;
             fetchedSoFar++;
         }
     }
 
-    public void close() throws CayenneException {
-        wrappedIterator.close();
+    public void close() {
+        delegate.close();
     }
 
     /**
      * @since 3.0
      */
-    public List<?> allRows() throws CayenneException {
+    public List<T> allRows() {
 
-        List<Object> list = new ArrayList<Object>();
+        List<T> list = new ArrayList<T>();
 
-        while (this.hasNextRow()) {
-            list.add(this.nextRow());
+        while (hasNextRow()) {
+            list.add(nextRow());
         }
 
         return list;
     }
 
-    public boolean hasNextRow() throws CayenneException {
+    public boolean hasNextRow() {
         return nextRow;
     }
 
     /**
      * @since 3.0
      */
-    public Object nextRow() throws CayenneException {
+    public T nextRow() {
         if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
+            throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Object row = wrappedIterator.nextRow();
+        T row = delegate.nextRow();
         checkNextRow();
         return row;
     }
@@ -109,7 +114,7 @@ public class LimitResultIterator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public void skipRow() throws CayenneException {
-        wrappedIterator.skipRow();
+    public void skipRow() {
+        delegate.skipRow();
     }
 }

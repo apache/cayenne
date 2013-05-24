@@ -55,6 +55,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -65,10 +66,10 @@ import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.Util;
 
 /**
- * The most common implementation of {@link ObjectContext}. DataContext is an isolated
- * container of an object graph, in a sense that any uncommitted changes to persistent
- * objects that are registered with the context, are not visible to the users of other
- * contexts.
+ * The most common implementation of {@link ObjectContext}. DataContext is an
+ * isolated container of an object graph, in a sense that any uncommitted
+ * changes to persistent objects that are registered with the context, are not
+ * visible to the users of other contexts.
  */
 public class DataContext extends BaseContext {
 
@@ -128,7 +129,8 @@ public class DataContext extends BaseContext {
             mergeHandler = new DataContextMergeHandler(this);
 
             // listen to our channel events...
-            // note that we must reset listener on channel switch, as there is no
+            // note that we must reset listener on channel switch, as there is
+            // no
             // guarantee that a new channel uses the same EventManager.
             EventUtil.listenForChannelEvents(channel, mergeHandler);
         }
@@ -143,12 +145,12 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Returns a DataDomain used by this DataContext. DataDomain is looked up in the
-     * DataChannel hierarchy. If a channel is not a DataDomain or a DataContext, null is
-     * returned.
+     * Returns a DataDomain used by this DataContext. DataDomain is looked up in
+     * the DataChannel hierarchy. If a channel is not a DataDomain or a
+     * DataContext, null is returned.
      * 
-     * @return DataDomain that is a direct or indirect parent of this DataContext in the
-     *         DataChannel hierarchy.
+     * @return DataDomain that is a direct or indirect parent of this
+     *         DataContext in the DataChannel hierarchy.
      * @since 1.1
      */
     public DataDomain getParentDataDomain() {
@@ -164,9 +166,7 @@ public class DataContext extends BaseContext {
 
         List response = channel.onQuery(this, new DataDomainQuery()).firstList();
 
-        if (response != null
-                && response.size() > 0
-                && response.get(0) instanceof DataDomain) {
+        if (response != null && response.size() > 0 && response.get(0) instanceof DataDomain) {
             return (DataDomain) response.get(0);
         }
 
@@ -174,8 +174,9 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Sets a DataContextDelegate for this context. Delegate is notified of certain events
-     * in the DataContext lifecycle and can customize DataContext behavior.
+     * Sets a DataContextDelegate for this context. Delegate is notified of
+     * certain events in the DataContext lifecycle and can customize DataContext
+     * behavior.
      * 
      * @since 1.1
      */
@@ -193,9 +194,9 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * @return a delegate instance if it is initialized, or a shared noop implementation
-     *         the context has no delegate. Useful to prevent extra null checks and
-     *         conditional logic in the code.
+     * @return a delegate instance if it is initialized, or a shared noop
+     *         implementation the context has no delegate. Useful to prevent
+     *         extra null checks and conditional logic in the code.
      * @since 1.1
      */
     DataContextDelegate nonNullDelegate() {
@@ -210,16 +211,16 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Returns <code>true</code> if there are any modified, deleted or new objects
-     * registered with this DataContext, <code>false</code> otherwise.
+     * Returns <code>true</code> if there are any modified, deleted or new
+     * objects registered with this DataContext, <code>false</code> otherwise.
      */
     public boolean hasChanges() {
         return getObjectStore().hasChanges();
     }
 
     /**
-     * Returns a list of objects that are registered with this DataContext and have a
-     * state PersistenceState.NEW
+     * Returns a list of objects that are registered with this DataContext and
+     * have a state PersistenceState.NEW
      */
     @Override
     public Collection<?> newObjects() {
@@ -227,8 +228,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Returns a list of objects that are registered with this DataContext and have a
-     * state PersistenceState.DELETED
+     * Returns a list of objects that are registered with this DataContext and
+     * have a state PersistenceState.DELETED
      */
     @Override
     public Collection<?> deletedObjects() {
@@ -236,8 +237,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Returns a list of objects that are registered with this DataContext and have a
-     * state PersistenceState.MODIFIED
+     * Returns a list of objects that are registered with this DataContext and
+     * have a state PersistenceState.MODIFIED
      */
     @Override
     public Collection<?> modifiedObjects() {
@@ -264,8 +265,7 @@ public class DataContext extends BaseContext {
         while (it.hasNext()) {
             Persistent object = (Persistent) it.next();
             int state = object.getPersistenceState();
-            if (state == PersistenceState.MODIFIED
-                    || state == PersistenceState.NEW
+            if (state == PersistenceState.MODIFIED || state == PersistenceState.NEW
                     || state == PersistenceState.DELETED) {
 
                 objects.add(object);
@@ -278,10 +278,10 @@ public class DataContext extends BaseContext {
     /**
      * Returns a DataRow reflecting current, possibly uncommitted, object state.
      * <p>
-     * <strong>Warning:</strong> This method will return a partial snapshot if an object
-     * or one of its related objects that propagate their keys to this object have
-     * temporary ids. DO NOT USE this method if you expect a DataRow to represent a
-     * complete object state.
+     * <strong>Warning:</strong> This method will return a partial snapshot if
+     * an object or one of its related objects that propagate their keys to this
+     * object have temporary ids. DO NOT USE this method if you expect a DataRow
+     * to represent a complete object state.
      * </p>
      * 
      * @since 1.1
@@ -289,15 +289,13 @@ public class DataContext extends BaseContext {
     public DataRow currentSnapshot(final Persistent object) {
 
         // for a HOLLOW object return snapshot from cache
-        if (object.getPersistenceState() == PersistenceState.HOLLOW
-                && object.getObjectContext() != null) {
+        if (object.getPersistenceState() == PersistenceState.HOLLOW && object.getObjectContext() != null) {
 
             return getObjectStore().getSnapshot(object.getObjectId());
         }
 
         ObjEntity entity = getEntityResolver().lookupObjEntity(object);
-        final ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                entity.getName());
+        final ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         final DataRow snapshot = new DataRow(10);
 
         descriptor.visitProperties(new PropertyVisitor() {
@@ -306,9 +304,7 @@ public class DataContext extends BaseContext {
                 ObjAttribute objAttr = property.getAttribute();
 
                 // processing compound attributes correctly
-                snapshot.put(
-                        objAttr.getDbAttributePath(),
-                        property.readPropertyDirectly(object));
+                snapshot.put(objAttr.getDbAttributePath(), property.readPropertyDirectly(object));
                 return true;
             }
 
@@ -333,13 +329,10 @@ public class DataContext extends BaseContext {
                 // if target is Fault, get id attributes from stored snapshot
                 // to avoid unneeded fault triggering
                 if (targetObject instanceof Fault) {
-                    DataRow storedSnapshot = getObjectStore().getSnapshot(
-                            object.getObjectId());
+                    DataRow storedSnapshot = getObjectStore().getSnapshot(object.getObjectId());
                     if (storedSnapshot == null) {
-                        throw new CayenneRuntimeException(
-                                "No matching objects found for ObjectId "
-                                        + object.getObjectId()
-                                        + ". Object may have been deleted externally.");
+                        throw new CayenneRuntimeException("No matching objects found for ObjectId "
+                                + object.getObjectId() + ". Object may have been deleted externally.");
                     }
 
                     DbRelationship dbRel = rel.getDbRelationships().get(0);
@@ -356,7 +349,8 @@ public class DataContext extends BaseContext {
                 Persistent target = (Persistent) targetObject;
                 Map<String, Object> idParts = target.getObjectId().getIdSnapshot();
 
-                // this may happen in uncommitted objects - see the warning in the JavaDoc
+                // this may happen in uncommitted objects - see the warning in
+                // the JavaDoc
                 // of
                 // this method.
                 if (idParts.isEmpty()) {
@@ -395,26 +389,22 @@ public class DataContext extends BaseContext {
      * 
      * @since 3.0
      */
-    public List objectsFromDataRows(
-            ClassDescriptor descriptor,
-            List<? extends DataRow> dataRows) {
-        // TODO: If data row cache is not available it means that current data context is
-        // child. We need to redirect this method call to parent data context as an
-        // internal query. It is not obvious and has some overhead. Redesign for nested
+    public List objectsFromDataRows(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
+        // TODO: If data row cache is not available it means that current data
+        // context is
+        // child. We need to redirect this method call to parent data context as
+        // an
+        // internal query. It is not obvious and has some overhead. Redesign for
+        // nested
         // contexts should be done.
         if (getObjectStore().getDataRowCache() == null) {
             return objectsFromDataRowsFromParentContext(descriptor, dataRows);
         }
-        return new ObjectResolver(this, descriptor, true)
-                .synchronizedObjectsFromDataRows(dataRows);
+        return new ObjectResolver(this, descriptor, true).synchronizedObjectsFromDataRows(dataRows);
     }
 
-    private List objectsFromDataRowsFromParentContext(
-            ClassDescriptor descriptor,
-            List<? extends DataRow> dataRows) {
-        return getChannel().onQuery(
-                this,
-                new ObjectsFromDataRowsQuery(descriptor, dataRows)).firstList();
+    private List objectsFromDataRowsFromParentContext(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
+        return getChannel().onQuery(this, new ObjectsFromDataRowsQuery(descriptor, dataRows)).firstList();
     }
 
     /**
@@ -423,24 +413,21 @@ public class DataContext extends BaseContext {
      * @see DataRow
      * @since 3.1
      */
-    public <T extends DataObject> T objectFromDataRow(
-            Class<T> objectClass,
-            DataRow dataRow) {
+    public <T extends DataObject> T objectFromDataRow(Class<T> objectClass, DataRow dataRow) {
         ObjEntity entity = this.getEntityResolver().lookupObjEntity(objectClass);
 
         if (entity == null) {
             throw new CayenneRuntimeException("Unmapped Java class: " + objectClass);
         }
 
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                entity.getName());
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         List<T> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
         return list.get(0);
     }
 
     /**
-     * Creates a DataObject from DataRow. This variety of the 'objectFromDataRow' method
-     * is normally used for generic classes.
+     * Creates a DataObject from DataRow. This variety of the
+     * 'objectFromDataRow' method is normally used for generic classes.
      * 
      * @see DataRow
      * @since 3.1
@@ -465,19 +452,20 @@ public class DataContext extends BaseContext {
 
         ObjEntity entity = getEntityResolver().lookupObjEntity(persistentClass);
         if (entity == null) {
-            throw new IllegalArgumentException("Class is not mapped with Cayenne: "
-                    + persistentClass.getName());
+            throw new IllegalArgumentException("Class is not mapped with Cayenne: " + persistentClass.getName());
         }
 
         return (T) newObject(entity.getName());
     }
 
     /**
-     * Instantiates a new object and registers it with this context. Object class is
-     * determined from the mapped entity. Object class must have a default constructor.
+     * Instantiates a new object and registers it with this context. Object
+     * class is determined from the mapped entity. Object class must have a
+     * default constructor.
      * <p/>
-     * <i>Note: in most cases {@link #newObject(Class)} method should be used, however
-     * this method is helpful when generic persistent classes are used.</i>
+     * <i>Note: in most cases {@link #newObject(Class)} method should be used,
+     * however this method is helpful when generic persistent classes are
+     * used.</i>
      * 
      * @since 3.0
      */
@@ -490,8 +478,7 @@ public class DataContext extends BaseContext {
         Persistent object;
         try {
             object = (Persistent) descriptor.createObject();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new CayenneRuntimeException("Error instantiating object.", ex);
         }
 
@@ -500,7 +487,8 @@ public class DataContext extends BaseContext {
 
         ObjectId id = new ObjectId(entityName);
 
-        // note that the order of initialization of persistence artifacts below is
+        // note that the order of initialization of persistence artifacts below
+        // is
         // important - do not change it lightly
         object.setObjectId(id);
 
@@ -510,13 +498,15 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Registers a transient object with the context, recursively registering all
-     * transient persistent objects attached to this object via relationships.
+     * Registers a transient object with the context, recursively registering
+     * all transient persistent objects attached to this object via
+     * relationships.
      * <p/>
-     * <i>Note that since 3.0 this method takes Object as an argument instead of a
-     * {@link DataObject}.</i>
+     * <i>Note that since 3.0 this method takes Object as an argument instead of
+     * a {@link DataObject}.</i>
      * 
-     * @param object new object that needs to be made persistent.
+     * @param object
+     *            new object that needs to be made persistent.
      */
     @Override
     public void registerNewObject(Object object) {
@@ -526,10 +516,8 @@ public class DataContext extends BaseContext {
 
         ObjEntity entity = getEntityResolver().lookupObjEntity(object);
         if (entity == null) {
-            throw new IllegalArgumentException(
-                    "Can't find ObjEntity for Persistent class: "
-                            + object.getClass().getName()
-                            + ", class is likely not mapped.");
+            throw new IllegalArgumentException("Can't find ObjEntity for Persistent class: "
+                    + object.getClass().getName() + ", class is likely not mapped.");
         }
 
         final Persistent persistent = (Persistent) object;
@@ -539,26 +527,23 @@ public class DataContext extends BaseContext {
             if (persistent.getObjectContext() == this) {
                 // already registered, just ignore
                 return;
+            } else if (persistent.getObjectContext() != null) {
+                throw new IllegalStateException("Persistent is already registered with another DataContext. "
+                        + "Try using 'localObjects()' instead.");
             }
-            else if (persistent.getObjectContext() != null) {
-                throw new IllegalStateException(
-                        "Persistent is already registered with another DataContext. "
-                                + "Try using 'localObjects()' instead.");
-            }
-        }
-        else {
+        } else {
             persistent.setObjectId(new ObjectId(entity.getName()));
         }
 
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                entity.getName());
+        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         if (descriptor == null) {
             throw new IllegalArgumentException("Invalid entity name: " + entity.getName());
         }
 
         injectInitialValue(object);
 
-        // now we need to find all arc changes, inject missing value holders and pull in
+        // now we need to find all arc changes, inject missing value holders and
+        // pull in
         // all transient connected objects
 
         descriptor.visitProperties(new PropertyVisitor() {
@@ -569,8 +554,7 @@ public class DataContext extends BaseContext {
                 if (!property.isFault(persistent)) {
 
                     Object value = property.readProperty(persistent);
-                    Collection<Map.Entry> collection = (value instanceof Map)
-                            ? ((Map) value).entrySet()
+                    Collection<Map.Entry> collection = (value instanceof Map) ? ((Map) value).entrySet()
                             : (Collection) value;
 
                     Iterator<Map.Entry> it = collection.iterator();
@@ -582,9 +566,7 @@ public class DataContext extends BaseContext {
 
                             // make sure it is registered
                             registerNewObject(targetDO);
-                            getObjectStore().arcCreated(
-                                    persistent.getObjectId(),
-                                    targetDO.getObjectId(),
+                            getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(),
                                     property.getName());
                         }
                     }
@@ -601,10 +583,7 @@ public class DataContext extends BaseContext {
 
                     // make sure it is registered
                     registerNewObject(targetDO);
-                    getObjectStore().arcCreated(
-                            persistent.getObjectId(),
-                            targetDO.getObjectId(),
-                            property.getName());
+                    getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), property.getName());
                 }
                 return true;
             }
@@ -616,9 +595,9 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Unregisters a Collection of DataObjects from the DataContext and the underlying
-     * ObjectStore. This operation also unsets DataContext and ObjectId for each object
-     * and changes its state to TRANSIENT.
+     * Unregisters a Collection of DataObjects from the DataContext and the
+     * underlying ObjectStore. This operation also unsets DataContext and
+     * ObjectId for each object and changes its state to TRANSIENT.
      * 
      * @see #invalidateObjects(Collection)
      */
@@ -627,8 +606,9 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * If the parent channel is a DataContext, reverts local changes to make this context
-     * look like the parent, if the parent channel is a DataDomain, reverts all changes.
+     * If the parent channel is a DataContext, reverts local changes to make
+     * this context look like the parent, if the parent channel is a DataDomain,
+     * reverts all changes.
      * 
      * @since 1.2
      */
@@ -643,8 +623,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Reverts any changes that have occurred to objects registered with DataContext; also
-     * performs cascading rollback of all parent DataContexts.
+     * Reverts any changes that have occurred to objects registered with
+     * DataContext; also performs cascading rollback of all parent DataContexts.
      */
     @Override
     public void rollbackChanges() {
@@ -652,7 +632,8 @@ public class DataContext extends BaseContext {
         if (objectStore.hasChanges()) {
             GraphDiff diff = getObjectStore().getChanges();
 
-            // call channel with changes BEFORE reverting them, so that any interceptors
+            // call channel with changes BEFORE reverting them, so that any
+            // interceptors
             // could record them
 
             if (channel != null) {
@@ -661,24 +642,21 @@ public class DataContext extends BaseContext {
 
             getObjectStore().objectsRolledBack();
             fireDataChannelRolledback(this, diff);
-        }
-        else {
+        } else {
             if (channel != null) {
-                channel.onSync(
-                        this,
-                        new CompoundDiff(),
-                        DataChannel.ROLLBACK_CASCADE_SYNC);
+                channel.onSync(this, new CompoundDiff(), DataChannel.ROLLBACK_CASCADE_SYNC);
             }
         }
 
     }
 
     /**
-     * "Flushes" the changes to the parent {@link DataChannel}. If the parent channel is a
-     * DataContext, it updates its objects with this context's changes, without a database
-     * update. If it is a DataDomain (the most common case), the changes are written to
-     * the database. To cause cascading commit all the way to the database, one must use
-     * {@link #commitChanges()}.
+     * "Flushes" the changes to the parent {@link DataChannel}. If the parent
+     * channel is a DataContext, it updates its objects with this context's
+     * changes, without a database update. If it is a DataDomain (the most
+     * common case), the changes are written to the database. To cause cascading
+     * commit all the way to the database, one must use {@link #commitChanges()}
+     * .
      * 
      * @since 1.2
      * @see #commitChanges()
@@ -689,8 +667,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Synchronizes object graph with the database. Executes needed insert, update and
-     * delete queries (generated internally).
+     * Synchronizes object graph with the database. Executes needed insert,
+     * update and delete queries (generated internally).
      */
     @Override
     public void commitChanges() throws CayenneRuntimeException {
@@ -698,10 +676,7 @@ public class DataContext extends BaseContext {
     }
 
     @Override
-    protected GraphDiff onContextFlush(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            boolean cascade) {
+    protected GraphDiff onContextFlush(ObjectContext originatingContext, GraphDiff changes, boolean cascade) {
 
         boolean childContext = this != originatingContext && changes != null;
 
@@ -713,8 +688,7 @@ public class DataContext extends BaseContext {
             }
 
             return (cascade) ? flushToParent(true) : new CompoundDiff();
-        }
-        finally {
+        } finally {
             if (childContext) {
                 getObjectStore().childContextSyncStopped();
             }
@@ -729,13 +703,10 @@ public class DataContext extends BaseContext {
     GraphDiff flushToParent(boolean cascade) {
 
         if (this.getChannel() == null) {
-            throw new CayenneRuntimeException(
-                    "Cannot commit changes - channel is not set.");
+            throw new CayenneRuntimeException("Cannot commit changes - channel is not set.");
         }
 
-        int syncType = cascade
-                ? DataChannel.FLUSH_CASCADE_SYNC
-                : DataChannel.FLUSH_NOCASCADE_SYNC;
+        int syncType = cascade ? DataChannel.FLUSH_CASCADE_SYNC : DataChannel.FLUSH_NOCASCADE_SYNC;
 
         ObjectStore objectStore = getObjectStore();
         GraphDiff parentChanges = null;
@@ -744,34 +715,36 @@ public class DataContext extends BaseContext {
         synchronized (objectStore) {
 
             ObjectStoreGraphDiff changes = objectStore.getChanges();
-            boolean noop = isValidatingObjectsOnCommit()
-                    ? changes.validateAndCheckNoop()
-                    : changes.isNoop();
+            boolean noop = isValidatingObjectsOnCommit() ? changes.validateAndCheckNoop() : changes.isNoop();
 
             if (noop) {
                 // need to clear phantom changes
                 objectStore.postprocessAfterPhantomCommit();
-            }
-            else {
+            } else {
 
                 try {
                     parentChanges = getChannel().onSync(this, changes, syncType);
 
-                    // note that this is a hack resulting from a fix to CAY-766... To
+                    // note that this is a hack resulting from a fix to
+                    // CAY-766... To
                     // support
                     // valid object state in PostPersist callback,
                     // 'postprocessAfterCommit' is
-                    // invoked by DataDomain.onSync(..). Unless the parent is DataContext,
+                    // invoked by DataDomain.onSync(..). Unless the parent is
+                    // DataContext,
                     // and
-                    // this method is not invoked!! As a result, PostPersist will contain
+                    // this method is not invoked!! As a result, PostPersist
+                    // will contain
                     // temp
-                    // ObjectIds in nested contexts and perm ones in flat contexts.
+                    // ObjectIds in nested contexts and perm ones in flat
+                    // contexts.
                     // Pending better callback design .....
                     if (objectStore.hasChanges()) {
                         objectStore.postprocessAfterCommit(parentChanges);
                     }
 
-                    // this event is caught by peer nested DataContexts to synchronize the
+                    // this event is caught by peer nested DataContexts to
+                    // synchronize the
                     // state
                     fireDataChannelCommitted(this, changes);
                 }
@@ -781,14 +754,14 @@ public class DataContext extends BaseContext {
 
                     if (unwound instanceof CayenneRuntimeException) {
                         throw (CayenneRuntimeException) unwound;
-                    }
-                    else {
+                    } else {
                         throw new CayenneRuntimeException("Commit Exception", unwound);
                     }
                 }
             }
 
-            // merge changes from parent as well as changes caused by lifecycle event
+            // merge changes from parent as well as changes caused by lifecycle
+            // event
             // callbacks/listeners...
 
             CompoundDiff diff = new CompoundDiff();
@@ -809,21 +782,35 @@ public class DataContext extends BaseContext {
 
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> ResultIterator<T> iterate(Select<T> query) {
+        try {
+            return performIteratedQuery(query);
+        } catch (CayenneException e) {
+            throw new CayenneRuntimeException(e);
+        }
+    }
+
     /**
-     * Performs a single database select query returning result as a ResultIterator. It is
-     * caller's responsibility to explicitly close the ResultIterator. A failure to do so
-     * will result in a database connection not being released. Another side effect of an
-     * open ResultIterator is that an internal Cayenne transaction that originated in this
-     * method stays open until the iterator is closed. So users should normally close the
-     * iterator within the same thread that opened it.
+     * Performs a single database select query returning result as a
+     * ResultIterator. It is caller's responsibility to explicitly close the
+     * ResultIterator. A failure to do so will result in a database connection
+     * not being released. Another side effect of an open ResultIterator is that
+     * an internal Cayenne transaction that originated in this method stays open
+     * until the iterator is closed. So users should normally close the iterator
+     * within the same thread that opened it.
      */
+    // TODO: deprecate once all selecting queries start implementing Select<T>
+    // interface
+    @SuppressWarnings({ "rawtypes" })
     public ResultIterator performIteratedQuery(Query query) throws CayenneException {
+        // TODO: use 3.2 TransactionManager
         if (Transaction.getThreadTransaction() != null) {
             return internalPerformIteratedQuery(query);
-        }
-        else {
+        } else {
 
-            // manually manage a transaction, so that a ResultIterator wrapper could close
+            // manually manage a transaction, so that a ResultIterator wrapper
+            // could close
             // it when it is done.
             Transaction tx = getParentDataDomain().createTransaction();
             Transaction.bindThreadTransaction(tx);
@@ -831,22 +818,21 @@ public class DataContext extends BaseContext {
             ResultIterator result;
             try {
                 result = internalPerformIteratedQuery(query);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Transaction.bindThreadTransaction(null);
                 tx.setRollbackOnly();
                 throw new CayenneException(e);
-            }
-            finally {
-                // note: we are keeping the transaction bound to the current thread on
-                // success - iterator will unbind it. Unsetting a transaction here would
+            } finally {
+                // note: we are keeping the transaction bound to the current
+                // thread on
+                // success - iterator will unbind it. Unsetting a transaction
+                // here would
                 // result in some strangeness, at least on Ingres
 
                 if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
                     try {
                         tx.rollback();
-                    }
-                    catch (Exception rollbackEx) {
+                    } catch (Exception rollbackEx) {
                     }
                 }
             }
@@ -856,9 +842,7 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Runs an iterated query in transactional context provided by the caller.
-     * 
-     * @since 1.2
+     * Runs an iterated query in a transactional context provided by the caller.
      */
     ResultIterator internalPerformIteratedQuery(Query query) throws CayenneException {
         // note that for now DataChannel API does not support cursors (aka
@@ -882,31 +866,30 @@ public class DataContext extends BaseContext {
         }
 
         if (this.getChannel() == null) {
-            throw new CayenneRuntimeException(
-                    "Can't run query - parent DataChannel is not set.");
+            throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
         return onQuery(this, query);
     }
 
     /**
-     * Performs a single selecting query. Various query setting control the behavior of
-     * this method and the results returned:
+     * Performs a single selecting query. Various query setting control the
+     * behavior of this method and the results returned:
      * <ul>
-     * <li>Query caching policy defines whether the results are retrieved from cache or
-     * fetched from the database. Note that queries that use caching must have a name that
-     * is used as a caching key.</li>
-     * <li>Query refreshing policy controls whether to refresh existing data objects and
-     * ignore any cached values.</li>
-     * <li>Query data rows policy defines whether the result should be returned as
-     * DataObjects or DataRows.</li>
+     * <li>Query caching policy defines whether the results are retrieved from
+     * cache or fetched from the database. Note that queries that use caching
+     * must have a name that is used as a caching key.</li>
+     * <li>Query refreshing policy controls whether to refresh existing data
+     * objects and ignore any cached values.</li>
+     * <li>Query data rows policy defines whether the result should be returned
+     * as DataObjects or DataRows.</li>
      * </ul>
      * <p>
      * <i>Since 1.2 takes any Query parameter, not just GenericSelectQuery</i>
      * </p>
      * 
-     * @return A list of DataObjects or a DataRows, depending on the value returned by
-     *         {@link QueryMetadata#isFetchingDataRows()}.
+     * @return A list of DataObjects or a DataRows, depending on the value
+     *         returned by {@link QueryMetadata#isFetchingDataRows()}.
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -921,8 +904,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * An implementation of a {@link DataChannel} method that is used by child contexts to
-     * execute queries. Not intended for direct use.
+     * An implementation of a {@link DataChannel} method that is used by child
+     * contexts to execute queries. Not intended for direct use.
      * 
      * @since 1.2
      */
@@ -931,8 +914,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Performs a single database query that does not select rows. Returns an array of
-     * update counts.
+     * Performs a single database query that does not select rows. Returns an
+     * array of update counts.
      * 
      * @since 1.1
      */
@@ -942,8 +925,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Performs a named mapped query that does not select rows. Returns an array of update
-     * counts.
+     * Performs a named mapped query that does not select rows. Returns an array
+     * of update counts.
      * 
      * @since 1.1
      */
@@ -952,8 +935,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Performs a named mapped non-selecting query using a map of parameters. Returns an
-     * array of update counts.
+     * Performs a named mapped non-selecting query using a map of parameters.
+     * Returns an array of update counts.
      * 
      * @since 1.1
      */
@@ -962,15 +945,18 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Returns a list of objects or DataRows for a named query stored in one of the
-     * DataMaps. Internally Cayenne uses a caching policy defined in the named query. If
-     * refresh flag is true, a refresh is forced no matter what the caching policy is.
+     * Returns a list of objects or DataRows for a named query stored in one of
+     * the DataMaps. Internally Cayenne uses a caching policy defined in the
+     * named query. If refresh flag is true, a refresh is forced no matter what
+     * the caching policy is.
      * 
-     * @param queryName a name of a GenericSelectQuery defined in one of the DataMaps. If
-     *            no such query is defined, this method will throw a
+     * @param queryName
+     *            a name of a GenericSelectQuery defined in one of the DataMaps.
+     *            If no such query is defined, this method will throw a
      *            CayenneRuntimeException.
-     * @param expireCachedLists A flag that determines whether refresh of <b>cached
-     *            lists</b> is required in case a query uses caching.
+     * @param expireCachedLists
+     *            A flag that determines whether refresh of <b>cached lists</b>
+     *            is required in case a query uses caching.
      * @since 1.1
      */
     public List<?> performQuery(String queryName, boolean expireCachedLists) {
@@ -978,30 +964,31 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * Returns a list of objects or DataRows for a named query stored in one of the
-     * DataMaps. Internally Cayenne uses a caching policy defined in the named query. If
-     * refresh flag is true, a refresh is forced no matter what the caching policy is.
+     * Returns a list of objects or DataRows for a named query stored in one of
+     * the DataMaps. Internally Cayenne uses a caching policy defined in the
+     * named query. If refresh flag is true, a refresh is forced no matter what
+     * the caching policy is.
      * 
-     * @param queryName a name of a GenericSelectQuery defined in one of the DataMaps. If
-     *            no such query is defined, this method will throw a
+     * @param queryName
+     *            a name of a GenericSelectQuery defined in one of the DataMaps.
+     *            If no such query is defined, this method will throw a
      *            CayenneRuntimeException.
-     * @param parameters A map of parameters to use with stored query.
-     * @param expireCachedLists A flag that determines whether refresh of <b>cached
-     *            lists</b> is required in case a query uses caching.
+     * @param parameters
+     *            A map of parameters to use with stored query.
+     * @param expireCachedLists
+     *            A flag that determines whether refresh of <b>cached lists</b>
+     *            is required in case a query uses caching.
      * @since 1.1
      */
-    public List<?> performQuery(
-            String queryName,
-            Map parameters,
-            boolean expireCachedLists) {
+    public List<?> performQuery(String queryName, Map parameters, boolean expireCachedLists) {
         NamedQuery query = new NamedQuery(queryName, parameters);
         query.setForceNoCache(expireCachedLists);
         return performQuery(query);
     }
 
     /**
-     * Returns <code>true</code> if the ObjectStore uses shared cache of a parent
-     * DataDomain.
+     * Returns <code>true</code> if the ObjectStore uses shared cache of a
+     * parent DataDomain.
      * 
      * @since 1.1
      */
@@ -1030,10 +1017,10 @@ public class DataContext extends BaseContext {
     }
 
     // serialization support
-    private void readObject(ObjectInputStream in) throws IOException,
-            ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 
-        // TODO: most of this should be in the superclass, especially the code connecting
+        // TODO: most of this should be in the superclass, especially the code
+        // connecting
         // super transient ivars
 
         // read non-transient properties
@@ -1049,7 +1036,8 @@ public class DataContext extends BaseContext {
         // because at deserialize time the datacontext may need to be different
         // than the one at serialize time (for programmer defined reasons).
         // So, when a DataObject is resurrected because it's DataContext was
-        // serialized, it will then set the objects DataContext to the correct one
+        // serialized, it will then set the objects DataContext to the correct
+        // one
         // If deserialized "otherwise", it will not have a DataContext.
 
         synchronized (getObjectStore()) {
@@ -1060,8 +1048,10 @@ public class DataContext extends BaseContext {
             }
         }
 
-        // ... deferring initialization of transient properties of this context till first
-        // access, so that it can attach to Cayenne runtime using appropriate thread
+        // ... deferring initialization of transient properties of this context
+        // till first
+        // access, so that it can attach to Cayenne runtime using appropriate
+        // thread
         // injector.
     }
 
@@ -1076,9 +1066,9 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * An internal version of {@link #localObject(Object)} that operates on ObjectId
-     * instead of Persistent, and wouldn't attempt to look up an object in the parent
-     * channel.
+     * An internal version of {@link #localObject(Object)} that operates on
+     * ObjectId instead of Persistent, and wouldn't attempt to look up an object
+     * in the parent channel.
      * 
      * @since 3.1
      */
@@ -1088,9 +1078,12 @@ public class DataContext extends BaseContext {
             throw new IllegalArgumentException("Null ObjectId");
         }
 
-        // have to synchronize almost the entire method to prevent multiple threads from
-        // messing up dataobjects per CAY-845. Originally only parts of "else" were
-        // synchronized, but we had to expand the lock scope to ensure consistent
+        // have to synchronize almost the entire method to prevent multiple
+        // threads from
+        // messing up dataobjects per CAY-845. Originally only parts of "else"
+        // were
+        // synchronized, but we had to expand the lock scope to ensure
+        // consistent
         // behavior.
         synchronized (getGraphManager()) {
             Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
@@ -1100,12 +1093,11 @@ public class DataContext extends BaseContext {
 
                 int state = cachedObject.getPersistenceState();
 
-                // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
-                if (state != PersistenceState.MODIFIED
-                        && state != PersistenceState.DELETED) {
+                // TODO: Andrus, 1/24/2006 implement smart merge for modified
+                // objects...
+                if (state != PersistenceState.MODIFIED && state != PersistenceState.DELETED) {
 
-                    ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                            id.getEntityName());
+                    ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
 
                     descriptor.injectValueHolders(cachedObject);
                 }
@@ -1114,8 +1106,7 @@ public class DataContext extends BaseContext {
             }
 
             // create and register a hollow object
-            ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
-                    id.getEntityName());
+            ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
             Persistent localObject = (Persistent) descriptor.createObject();
 
             localObject.setObjectContext(this);

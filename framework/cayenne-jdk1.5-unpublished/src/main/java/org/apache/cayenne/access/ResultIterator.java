@@ -21,49 +21,52 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.CayenneException;
-
 /**
- * Defines API of an iterator over the records returned as a result of SelectQuery
- * execution. Usually a ResultIterator is supported by an open java.sql.ResultSet,
- * therefore most of the methods would throw checked exceptions. ResultIterators must be
- * explicitly closed when the user is done working with them.
+ * Defines API of an iterator over the records returned as a result of
+ * SelectQuery execution. Usually a ResultIterator is supported by an open
+ * java.sql.ResultSet, therefore most of the methods would throw checked
+ * exceptions. ResultIterators must be explicitly closed when the user is done
+ * working with them.
  * <p>
- * Result "rows", depending on the query, may be represented as scalar values, DataRows,
- * or Object[] arrays containing a mix of scalars and DataRows.
+ * Result "rows", depending on the query, may be represented as scalar values,
+ * DataRows, or Object[] arrays containing a mix of scalars and DataRows.
  */
-public interface ResultIterator {
+public interface ResultIterator<T> extends Iterable<T> {
 
     /**
      * Returns all yet unread rows from ResultSet without closing it.
      * 
      * @since 3.0
      */
-    List<?> allRows() throws CayenneException;
+    List<T> allRows();
 
     /**
-     * Returns true if there is at least one more record that can be read from the
-     * iterator.
+     * Returns true if there is at least one more record that can be read from
+     * the iterator.
      */
-    boolean hasNextRow() throws CayenneException;
+    boolean hasNextRow();
 
     /**
-     * Returns the next result row that is, depending on the query, may be a scalar value,
-     * a DataRow, or an Object[] array containing a mix of scalars and DataRows.
+     * Returns the next result row that is, depending on the query, may be a
+     * scalar value, a DataRow, or an Object[] array containing a mix of scalars
+     * and DataRows.
      * 
      * @since 3.0
      */
-    Object nextRow() throws CayenneException;
+    T nextRow();
 
     /**
+     * Goes past current row. If the row is not needed, this may save some time
+     * on data conversion.
+     * 
      * @since 3.0
      */
-    void skipRow() throws CayenneException;
+    void skipRow();
 
     /**
-     * Closes ResultIterator and associated ResultSet. This method must be called
-     * explicitly when the user is finished processing the records. Otherwise unused
-     * database resources will not be released properly.
+     * Closes ResultIterator and associated ResultSet. This method must be
+     * called explicitly when the user is finished processing the records.
+     * Otherwise unused database resources will not be released properly.
      */
-    void close() throws CayenneException;
+    void close();
 }

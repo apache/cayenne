@@ -39,19 +39,20 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * An engine to port data between two DataNodes. These nodes can potentially connect to
- * databases from different vendors. The only assumption is that all of the DbEntities
- * (tables) being ported are present in both source and destination databases and are
- * adequately described by Cayenne mapping.
+ * An engine to port data between two DataNodes. These nodes can potentially
+ * connect to databases from different vendors. The only assumption is that all
+ * of the DbEntities (tables) being ported are present in both source and
+ * destination databases and are adequately described by Cayenne mapping.
  * <p>
- * DataPort implements a Cayenne-based algorithm to read data from source DataNode and
- * write to destination DataNode. It uses DataPortDelegate interface to externalize
- * various things, such as determining what entities to port (include/exclude from port
- * based on some criteria), logging the progress of port operation, qualifying the
- * queries, etc.
+ * DataPort implements a Cayenne-based algorithm to read data from source
+ * DataNode and write to destination DataNode. It uses DataPortDelegate
+ * interface to externalize various things, such as determining what entities to
+ * port (include/exclude from port based on some criteria), logging the progress
+ * of port operation, qualifying the queries, etc.
  * </p>
  * 
- * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples package.
+ * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples
+ *        package.
  * @deprecated since 3.2
  */
 @Deprecated
@@ -78,9 +79,9 @@ public class DataPort {
     }
 
     /**
-     * Runs DataPort. The instance must be fully configured by the time this method is
-     * invoked, having its delegate, source and destinatio nodes, and a list of entities
-     * set up.
+     * Runs DataPort. The instance must be fully configured by the time this
+     * method is invoked, having its delegate, source and destinatio nodes, and
+     * a list of entities set up.
      */
     public void execute() throws CayenneException {
         // sanity check
@@ -92,11 +93,11 @@ public class DataPort {
             throw new CayenneException("Can't port data, destination node is null.");
         }
 
-        // the simple equality check may actually detect problems with misconfigred nodes
+        // the simple equality check may actually detect problems with
+        // misconfigred nodes
         // it is not as dumb as it may look at first
         if (sourceNode == destinationNode) {
-            throw new CayenneException(
-                    "Can't port data, source and target nodes are the same.");
+            throw new CayenneException("Can't port data, source and target nodes are the same.");
         }
 
         if (entities == null || entities.isEmpty()) {
@@ -145,8 +146,7 @@ public class DataPort {
         while (it.hasNext()) {
             DbEntity entity = (DbEntity) it.next();
 
-            Query query = new SQLTemplate(entity, "DELETE FROM "
-                    + entity.getFullyQualifiedName());
+            Query query = new SQLTemplate(entity, "DELETE FROM " + entity.getFullyQualifiedName());
 
             // notify delegate that delete is about to happen
             if (delegate != null) {
@@ -201,10 +201,7 @@ public class DataPort {
             select.setFetchingDataRows(true);
 
             // delegate is allowed to substitute query
-            Query query = (delegate != null) ? delegate.willPortEntity(
-                    this,
-                    entity,
-                    select) : select;
+            Query query = (delegate != null) ? delegate.willPortEntity(this, entity, select) : select;
 
             sourceNode.performQueries(Collections.singletonList(query), observer);
             ResultIterator result = observer.getResultIterator();
@@ -217,19 +214,17 @@ public class DataPort {
                 // and not run out of memory.
                 int currentRow = 0;
 
-                // even if we don't use intermediate batch commits, we still need to
+                // even if we don't use intermediate batch commits, we still
+                // need to
                 // estimate batch insert size
                 int batchSize = insertBatchSize > 0 ? insertBatchSize : INSERT_BATCH_SIZE;
 
                 while (result.hasNextRow()) {
-                    if (insertBatchSize > 0
-                            && currentRow > 0
-                            && currentRow % insertBatchSize == 0) {
-                        // end of the batch detected... commit and start a new insert
+                    if (insertBatchSize > 0 && currentRow > 0 && currentRow % insertBatchSize == 0) {
+                        // end of the batch detected... commit and start a new
+                        // insert
                         // query
-                        destinationNode.performQueries(
-                                Collections.singletonList((Query) insert),
-                                insertObserver);
+                        destinationNode.performQueries(Collections.singletonList((Query) insert), insertObserver);
                         insert = new InsertBatchQuery(entity, batchSize);
                         insertObserver.clear();
                     }
@@ -242,22 +237,16 @@ public class DataPort {
 
                 // commit remaining batch if needed
                 if (insert.size() > 0) {
-                    destinationNode.performQueries(
-                            Collections.singletonList((Query) insert),
-                            insertObserver);
+                    destinationNode.performQueries(Collections.singletonList((Query) insert), insertObserver);
                 }
 
                 if (delegate != null) {
                     delegate.didPortEntity(this, entity, currentRow);
                 }
-            }
-            finally {
-                try {
-                    // don't forget to close ResultIterator
-                    result.close();
-                }
-                catch (CayenneException ex) {
-                }
+            } finally {
+
+                // don't forget to close ResultIterator
+                result.close();
             }
         }
     }
@@ -275,8 +264,8 @@ public class DataPort {
     }
 
     /**
-     * Sets the initial list of entities to process. This list can be later modified by
-     * the delegate.
+     * Sets the initial list of entities to process. This list can be later
+     * modified by the delegate.
      */
     public void setEntities(Collection entities) {
         this.entities = entities;
@@ -308,16 +297,16 @@ public class DataPort {
     }
 
     /**
-     * Returns true if a DataPort was configured to delete all data from the destination
-     * tables.
+     * Returns true if a DataPort was configured to delete all data from the
+     * destination tables.
      */
     public boolean isCleaningDestination() {
         return cleaningDestination;
     }
 
     /**
-     * Defines whether DataPort should delete all data from destination tables before
-     * doing the port.
+     * Defines whether DataPort should delete all data from destination tables
+     * before doing the port.
      */
     public void setCleaningDestination(boolean cleaningDestination) {
         this.cleaningDestination = cleaningDestination;
@@ -328,9 +317,10 @@ public class DataPort {
     }
 
     /**
-     * Sets a parameter used for tuning insert batches. If set to a value greater than
-     * zero, DataPort will commit every N rows. If set to value less or equal to zero,
-     * DataPort will commit only once at the end of the insert.
+     * Sets a parameter used for tuning insert batches. If set to a value
+     * greater than zero, DataPort will commit every N rows. If set to value
+     * less or equal to zero, DataPort will commit only once at the end of the
+     * insert.
      */
     public void setInsertBatchSize(int insertBatchSize) {
         this.insertBatchSize = insertBatchSize;

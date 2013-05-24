@@ -20,7 +20,7 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.util.Util;
@@ -28,7 +28,7 @@ import org.apache.cayenne.util.Util;
 /**
  * @since 3.0
  */
-class ScalarRowReader implements RowReader<Object> {
+class ScalarRowReader<T> implements RowReader<T> {
 
     private ExtendedType converter;
     private int index;
@@ -42,17 +42,15 @@ class ScalarRowReader implements RowReader<Object> {
         this.index = scalarIndex + 1;
     }
 
-    public Object readRow(ResultSet resultSet) throws CayenneException {
+    @SuppressWarnings("unchecked")
+    public T readRow(ResultSet resultSet) {
         try {
-            return converter.materializeObject(resultSet, index, type);
-        }
-        catch (CayenneException cex) {
+            return (T) converter.materializeObject(resultSet, index, type);
+        } catch (CayenneRuntimeException cex) {
             // rethrow unmodified
             throw cex;
-        }
-        catch (Exception otherex) {
-            throw new CayenneException("Exception materializing column.", Util
-                    .unwindException(otherex));
+        } catch (Exception otherex) {
+            throw new CayenneRuntimeException("Exception materializing column.", Util.unwindException(otherex));
         }
     }
 

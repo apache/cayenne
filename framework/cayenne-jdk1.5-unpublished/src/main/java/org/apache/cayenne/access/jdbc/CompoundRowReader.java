@@ -20,8 +20,6 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
 
-import org.apache.cayenne.CayenneException;
-
 /**
  * A row reader for complex result sets resolved as object arrays.
  * 
@@ -39,7 +37,7 @@ class CompoundRowReader implements RowReader<Object[]> {
         this.readers[pos] = reader;
     }
 
-    public Object[] readRow(ResultSet resultSet) throws CayenneException {
+    public Object[] readRow(ResultSet resultSet) {
 
         int width = readers.length;
         Object[] row = new Object[width];

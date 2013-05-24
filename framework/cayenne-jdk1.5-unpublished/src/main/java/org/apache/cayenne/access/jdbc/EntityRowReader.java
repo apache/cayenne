@@ -20,7 +20,7 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.query.EntityResultSegment;
@@ -62,17 +62,17 @@ class EntityRowReader implements RowReader<DataRow> {
             this.converters[i] = converters[startIndex + i];
             types[i] = columns[startIndex + i].getJdbcType();
 
-            // query translator may change the order of fields compare to the entity
+            // query translator may change the order of fields compare to the
+            // entity
             // result, so figure out DataRow labels by doing reverse lookup of
             // RowDescriptor labels...
             if (columns[startIndex + i].getDataRowKey().contains(".")) {
-                // if the dataRowKey contains ".", it is prefetched column and we can use
+                // if the dataRowKey contains ".", it is prefetched column and
+                // we can use
                 // it instead of search the name by alias
                 labels[i] = columns[startIndex + i].getDataRowKey();
-            }
-            else {
-                labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i]
-                        .getDataRowKey());
+            } else {
+                labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i].getDataRowKey());
             }
         }
     }
@@ -81,7 +81,7 @@ class EntityRowReader implements RowReader<DataRow> {
         this.postProcessor = postProcessor;
     }
 
-    public DataRow readRow(ResultSet resultSet) throws CayenneException {
+    public DataRow readRow(ResultSet resultSet) {
 
         try {
             DataRow row = new DataRow(mapCapacity);
@@ -90,23 +90,18 @@ class EntityRowReader implements RowReader<DataRow> {
             for (int i = 0; i < len; i++) {
 
                 // note: jdbc column indexes start from 1, not 0 as in arrays
-                Object val = converters[i].materializeObject(resultSet, startIndex
-                        + i
-                        + 1, types[i]);
+                Object val = converters[i].materializeObject(resultSet, startIndex + i + 1, types[i]);
                 row.put(labels[i], val);
             }
 
             postprocessRow(resultSet, row);
 
             return row;
-        }
-        catch (CayenneException cex) {
+        } catch (CayenneRuntimeException cex) {
             // rethrow unmodified
             throw cex;
-        }
-        catch (Exception otherex) {
-            throw new CayenneException("Exception materializing id column.", Util
-                    .unwindException(otherex));
+        } catch (Exception otherex) {
+            throw new CayenneRuntimeException("Exception materializing id column.", Util.unwindException(otherex));
         }
     }
 

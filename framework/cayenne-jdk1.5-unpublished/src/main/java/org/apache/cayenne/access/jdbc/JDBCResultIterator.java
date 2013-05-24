@@ -24,7 +24,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
@@ -38,7 +40,7 @@ import org.apache.cayenne.query.ScalarResultSegment;
  * 
  * @since 1.2
  */
-public class JDBCResultIterator implements ResultIterator {
+public class JDBCResultIterator<T> implements ResultIterator<T> {
 
     // Connection information
     protected Connection connection;
@@ -55,16 +57,15 @@ public class JDBCResultIterator implements ResultIterator {
 
     protected boolean nextRow;
 
-    private RowReader<?> rowReader;
+    private RowReader<T> rowReader;
 
     /**
      * Creates new JDBCResultIterator that reads from provided ResultSet.
      * 
      * @since 3.0
      */
-    public JDBCResultIterator(Connection connection, Statement statement,
-            ResultSet resultSet, RowDescriptor descriptor, QueryMetadata queryMetadata)
-            throws CayenneException {
+    public JDBCResultIterator(Connection connection, Statement statement, ResultSet resultSet,
+            RowDescriptor descriptor, QueryMetadata queryMetadata) throws CayenneException {
 
         this.connection = connection;
         this.statement = statement;
@@ -80,11 +81,17 @@ public class JDBCResultIterator implements ResultIterator {
     }
 
     /**
+     * @since 3.2
+     */
+    public Iterator<T> iterator() {
+        return new ResultIteratorIterator<T>(this);
+    }
+
+    /**
      * RowReader factory method.
      */
-    private RowReader<?> createRowReader(
-            RowDescriptor descriptor,
-            QueryMetadata queryMetadata) {
+    @SuppressWarnings("unchecked")
+    private RowReader<T> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
 
         List<Object> rsMapping = queryMetadata.getResultSetMapping();
         if (rsMapping != null) {
@@ -92,83 +99,64 @@ public class JDBCResultIterator implements ResultIterator {
             int resultWidth = rsMapping.size();
             if (resultWidth == 0) {
                 throw new CayenneRuntimeException("Empty result descriptor");
-            }
-            else if (resultWidth == 1) {
+            } else if (resultWidth == 1) {
 
                 Object segment = rsMapping.get(0);
 
                 if (segment instanceof EntityResultSegment) {
-                    return createEntityRowReader(
-                            descriptor,
-                            (EntityResultSegment) segment);
+                    return createEntityRowReader(descriptor, (EntityResultSegment) segment);
+                } else {
+                    return new ScalarRowReader<T>(descriptor, (ScalarResultSegment) segment);
                 }
-                else {
-                    return new ScalarRowReader(descriptor, (ScalarResultSegment) segment);
-                }
-            }
-            else {
+            } else {
                 CompoundRowReader reader = new CompoundRowReader(resultWidth);
 
                 for (int i = 0; i < resultWidth; i++) {
                     Object segment = rsMapping.get(i);
 
                     if (segment instanceof EntityResultSegment) {
-                        reader.addRowReader(i, createEntityRowReader(
-                                descriptor,
-                                (EntityResultSegment) segment));
-                    }
-                    else {
-                        reader.addRowReader(i, new ScalarRowReader(
-                                descriptor,
-                                (ScalarResultSegment) segment));
+                        reader.addRowReader(i, createEntityRowReader(descriptor, (EntityResultSegment) segment));
+                    } else {
+                        reader.addRowReader(i, new ScalarRowReader<Object>(descriptor, (ScalarResultSegment) segment));
                     }
                 }
 
-                return reader;
+                return (RowReader<T>) reader;
             }
-        }
-        else {
+        } else {
             return createFullRowReader(descriptor, queryMetadata);
         }
     }
 
-    private RowReader<?> createEntityRowReader(
-            RowDescriptor descriptor,
-            EntityResultSegment resultMetadata) {
+    @SuppressWarnings("unchecked")
+    private RowReader<T> createEntityRowReader(RowDescriptor descriptor, EntityResultSegment resultMetadata) {
 
         if (queryMetadata.getPageSize() > 0) {
-            return new IdRowReader(descriptor, queryMetadata);
-        }
-        else if (resultMetadata.getClassDescriptor() != null
-                && resultMetadata.getClassDescriptor().hasSubclasses()) {
-            return new InheritanceAwareEntityRowReader(descriptor, resultMetadata);
-        }
-        else {
-            return new EntityRowReader(descriptor, resultMetadata);
+            return new IdRowReader<T>(descriptor, queryMetadata);
+        } else if (resultMetadata.getClassDescriptor() != null && resultMetadata.getClassDescriptor().hasSubclasses()) {
+            return (RowReader<T>) new InheritanceAwareEntityRowReader(descriptor, resultMetadata);
+        } else {
+            return (RowReader<T>) new EntityRowReader(descriptor, resultMetadata);
         }
     }
 
-    private RowReader<?> createFullRowReader(
-            RowDescriptor descriptor,
-            QueryMetadata queryMetadata) {
+    @SuppressWarnings("unchecked")
+    private RowReader<T> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
 
         if (queryMetadata.getPageSize() > 0) {
-            return new IdRowReader(descriptor, queryMetadata);
-        }
-        else if (queryMetadata.getClassDescriptor() != null
-                && queryMetadata.getClassDescriptor().hasSubclasses()) {
-            return new InheritanceAwareRowReader(descriptor, queryMetadata);
-        }
-        else {
-            return new FullRowReader(descriptor, queryMetadata);
+            return new IdRowReader<T>(descriptor, queryMetadata);
+        } else if (queryMetadata.getClassDescriptor() != null && queryMetadata.getClassDescriptor().hasSubclasses()) {
+            return (RowReader<T>) new InheritanceAwareRowReader(descriptor, queryMetadata);
+        } else {
+            return (RowReader<T>) new FullRowReader(descriptor, queryMetadata);
         }
     }
 
     /**
      * @since 3.0
      */
-    public List<?> allRows() throws CayenneException {
-        List<Object> list = new ArrayList<Object>();
+    public List<T> allRows() {
+        List<T> list = new ArrayList<T>();
 
         while (hasNextRow()) {
             list.add(nextRow());
@@ -178,8 +166,8 @@ public class JDBCResultIterator implements ResultIterator {
     }
 
     /**
-     * Returns true if there is at least one more record that can be read from the
-     * iterator.
+     * Returns true if there is at least one more record that can be read from
+     * the iterator.
      */
     public boolean hasNextRow() {
         return nextRow;
@@ -188,13 +176,12 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public Object nextRow() throws CayenneException {
+    public T nextRow() {
         if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
+            throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        Object row = rowReader.readRow(resultSet);
+        T row = rowReader.readRow(resultSet);
         checkNextRow();
         return row;
     }
@@ -202,20 +189,19 @@ public class JDBCResultIterator implements ResultIterator {
     /**
      * @since 3.0
      */
-    public void skipRow() throws CayenneException {
+    public void skipRow() {
         if (!hasNextRow()) {
-            throw new CayenneException(
-                    "An attempt to read uninitialized row or past the end of the iterator.");
+            throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
         }
         checkNextRow();
     }
 
     /**
-     * Closes ResultIterator and associated ResultSet. This method must be called
-     * explicitly when the user is finished processing the records. Otherwise unused
-     * database resources will not be released properly.
+     * Closes ResultIterator and associated ResultSet. This method must be
+     * called explicitly when the user is finished processing the records.
+     * Otherwise unused database resources will not be released properly.
      */
-    public void close() throws CayenneException {
+    public void close() throws NoSuchElementException {
         if (!closed) {
             nextRow = false;
 
@@ -223,22 +209,22 @@ public class JDBCResultIterator implements ResultIterator {
 
             try {
                 resultSet.close();
-            }
-            catch (SQLException e1) {
+            } catch (SQLException e1) {
                 errors.append("Error closing ResultSet.");
             }
 
             if (statement != null) {
                 try {
                     statement.close();
-                }
-                catch (SQLException e2) {
+                } catch (SQLException e2) {
                     errors.append("Error closing PreparedStatement.");
                 }
             }
 
-            // TODO: andrus, 5/8/2006 - closing connection within JDBCResultIterator is
-            // obsolete as this is bound to transaction closing in DataContext. Deprecate
+            // TODO: andrus, 5/8/2006 - closing connection within
+            // JDBCResultIterator is
+            // obsolete as this is bound to transaction closing in DataContext.
+            // Deprecate
             // this after 1.2
 
             // close connection, if this object was explicitly configured to be
@@ -246,15 +232,13 @@ public class JDBCResultIterator implements ResultIterator {
             if (connection != null && isClosingConnection()) {
                 try {
                     connection.close();
-                }
-                catch (SQLException e3) {
+                } catch (SQLException e3) {
                     errors.append("Error closing Connection.");
                 }
             }
 
             if (errors.length() > 0) {
-                throw new CayenneException("Error closing ResultIterator: "
-                        + errors.toString());
+                throw new CayenneRuntimeException("Error closing ResultIterator: " + errors.toString());
             }
 
             closed = true;
@@ -262,25 +246,24 @@ public class JDBCResultIterator implements ResultIterator {
     }
 
     /**
-     * Moves internal ResultSet cursor position down one row. Checks if the next row is
-     * available.
+     * Moves internal ResultSet cursor position down one row. Checks if the next
+     * row is available.
      */
-    protected void checkNextRow() throws CayenneException {
+    protected void checkNextRow() {
         nextRow = false;
         try {
             if (resultSet.next()) {
                 nextRow = true;
             }
-        }
-        catch (SQLException e) {
-            throw new CayenneException("Error rewinding ResultSet", e);
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error rewinding ResultSet", e);
         }
     }
 
     /**
      * Returns <code>true</code> if this iterator is responsible for closing its
-     * connection, otherwise a user of the iterator must close the connection after
-     * closing the iterator.
+     * connection, otherwise a user of the iterator must close the connection
+     * after closing the iterator.
      */
     public boolean isClosingConnection() {
         return closingConnection;
@@ -297,7 +280,8 @@ public class JDBCResultIterator implements ResultIterator {
         return rowDescriptor;
     }
 
-    // TODO: andrus 11/27/2008 refactor the postprocessor hack into a special row reader.
+    // TODO: andrus 11/27/2008 refactor the postprocessor hack into a special
+    // row reader.
     void setPostProcessor(DataRowPostProcessor postProcessor) {
 
         if (rowReader != null) {

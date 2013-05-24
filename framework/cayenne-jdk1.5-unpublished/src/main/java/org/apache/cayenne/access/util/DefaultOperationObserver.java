@@ -25,19 +25,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.ResultIterator;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
 
 /**
- * Simple implementation of OperationObserver interface. Useful as a superclass of other
- * implementations of OperationObserver. This implementation only tracks transaction
- * events and exceptions.
+ * Simple implementation of OperationObserver interface. Useful as a superclass
+ * of other implementations of OperationObserver. This implementation only
+ * tracks transaction events and exceptions.
  * <p>
- * <i>This operation observer is unsafe to use in application, since it doesn't rethrow
- * the exceptions immediately, and may cause the database to hang.</i>
+ * <i>This operation observer is unsafe to use in application, since it doesn't
+ * rethrow the exceptions immediately, and may cause the database to hang.</i>
  * </p>
  * 
  */
@@ -53,8 +52,7 @@ public class DefaultOperationObserver implements OperationObserver {
         if (globalExceptions.size() > 0) {
             if (globalExceptions.size() == 1) {
                 out.println("Global Exception:");
-            }
-            else {
+            } else {
                 out.println("Global Exceptions:");
             }
 
@@ -66,8 +64,7 @@ public class DefaultOperationObserver implements OperationObserver {
         if (queryExceptions.size() > 0) {
             if (queryExceptions.size() == 1) {
                 out.println("Query Exception:");
-            }
-            else {
+            } else {
                 out.println("Query Exceptions:");
             }
 
@@ -78,19 +75,25 @@ public class DefaultOperationObserver implements OperationObserver {
         }
     }
 
-    /** Returns a list of global exceptions that occured during data operation run. */
+    /**
+     * Returns a list of global exceptions that occured during data operation
+     * run.
+     */
     public List<Throwable> getGlobalExceptions() {
         return globalExceptions;
     }
 
-    /** Returns a list of exceptions that occured during data operation run by query. */
+    /**
+     * Returns a list of exceptions that occured during data operation run by
+     * query.
+     */
     public Map<Query, Throwable> getQueryExceptions() {
         return queryExceptions;
     }
 
     /**
-     * Returns <code>true</code> if at least one exception was registered during query
-     * execution.
+     * Returns <code>true</code> if at least one exception was registered during
+     * query execution.
      */
     public boolean hasExceptions() {
         return globalExceptions.size() > 0 || queryExceptions.size() > 0;
@@ -108,36 +111,24 @@ public class DefaultOperationObserver implements OperationObserver {
     }
 
     /**
-     * Closes ResultIterator without reading its data. If you implement a custom subclass,
-     * only call super if closing the iterator is what you need.
+     * Closes ResultIterator without reading its data. If you implement a custom
+     * subclass, only call super if closing the iterator is what you need.
      */
     public void nextRows(Query query, ResultIterator it) {
         if (it != null) {
-            try {
-                it.close();
-            }
-            catch (CayenneException ex) {
-                // don't throw here....
-                nextQueryException(query, ex);
-            }
+            it.close();
         }
     }
 
     /**
-     * Closes ResultIterator without reading its data. If you implement a custom subclass,
-     * only call super if closing the iterator is what you need.
+     * Closes ResultIterator without reading its data. If you implement a custom
+     * subclass, only call super if closing the iterator is what you need.
      * 
      * @since 3.0
      */
     public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
         if (keysIterator != null) {
-            try {
-                keysIterator.close();
-            }
-            catch (CayenneException ex) {
-                // don't throw here....
-                nextQueryException(query, ex);
-            }
+            keysIterator.close();
         }
     }
 
