@@ -137,49 +137,44 @@ for(DataRow row : rows) {
             idea to do so. You can optimize processing of very large result sets with two techniques
             discussed in this and the following chapter - iterated and paginated queries. </para>
         <para>Iterated query is not actually a special query. Any selecting query can be executed in
-            iterated mode by the DataContext (like in the previous example, a cast to DataContext is
-            needed). DataContext returns an object called <code>ResultIterator</code> that is backed
-            by an open ResultSet. Data is read from ResultIterator one row at a time until it is
-            exhausted. Data comes as a DataRows regardless of whether the orginating query was
-            configured to fetch DataRows or not. A ResultIterator must be explicitly closed to avoid
-            JDBC resource leak.</para>
-        <para>Iterated query provides constant memory performance for arbitrarily large ResultSets.
-            This is true at least on the Cayenne end, as JDBC driver may still decide to bring the
-            entire ResultSet into the JVM memory. </para>
-        <para>Here is a full
-            example:<programlisting language="java">// you need to cast ObjectContext to DataContext to get access to 'performIteratedQuery'
-DataContext dataContext = (DataContext) context;
+            iterated mode by an ObjectContext. ObjectContext creates an object called
+                <code>ResultIterator</code> that is backed by an open ResultSet. Iterator provides
+            constant memory performance for arbitrarily large ResultSets. This is true at least on
+            the Cayenne end, as JDBC driver may still decide to bring the entire ResultSet into the
+            JVM memory. </para>
+        <para>Data is read from ResultIterator one row/object at a time until it is exhausted. There
+            are two styles of accessing ResultIterator - direct access which requires explicit
+            closing to avoid JDBC resources leak, or a callback that lets Cayenne handle resource
+            management. In both cases iteration can be performed using "for" loop, as ResultIterator
+            is "Iterable".</para>
+        <para>Direct access.  Here common sense tells us that ResultIterators instances should be
+            processed and closed as soon as possible to release the DB connection. E.g. storing open
+            iterators between HTTP requests for unpredictable length of time would quickly exhaust
+            the connection
+            pool.<programlisting language="java">// create a regular query
+SelectQuery&lt;Artist> q = new SelectQuery&lt;Artist>(Artist.class);
 
-// create a regular query
-SelectQuery q = new SelectQuery(Artist.class);
-
-// ResultIterator operations all throw checked CayenneException
-// moreover 'finally' is required to close it
+ResultIterator&lt;Artist> it = context.iterator(q);
 try {
+    for(Artist a : it) {
+       // do something with the object...
+       ...
+    }           
+}
+finally {
+    it.close();
+}</programlisting></para>
+        <para>Same thing with a
+            callback:<programlisting>SelectQuery&lt;Artist> q = new SelectQuery&lt;Artist>(Artist.class);
 
-    ResultIterator it = dataContext.performIteratedQuery(q);
-
-    try {
-        while(it.hasNextRow()) {
-            // normally we'd read a row, process its data, and throw it away
-            // this gives us constant memory performance
-            Map row = (Map) it.nextRow();
-            
-            // do something with the row...
+context.iterate(q, new ResultIteratorCallback&lt;Artist>() {
+    public void iterate(ResultIterator&lt;Artist> it) {
+        for(Artist a : it) {
+            // do something with the object...
             ...
         }
     }
-    finally {
-        it.close();
-    }
-}
-catch(CayenneException e) {
-   e.printStackTrace();
-}
-</programlisting>Also
-            common sense tells us that ResultIterators should be processed and closed as soon as
-            possible to release the DB connection. E.g. storing open iterators between HTTP requests
-            and for unpredictable length of time would quickly exhaust the connection pool.</para>
+});</programlisting></para>
     </section>
     <section xml:id="paginated-queries">
         <title>Paginated Queries</title>
