@@ -592,10 +592,11 @@ public class DataContextTest extends ServerCase {
         SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
 
         context.iterate(q1, new ResultIteratorCallback<Artist>() {
-            public void iterate(ResultIterator<Artist> iterator) {
+            public void iterate(ResultIterator<Artist> it) {
                 int count = 0;
 
-                for (Artist a : iterator) {
+                for (Artist a : it) {
+                    assertNotNull(a.getArtistName());
                     count++;
                 }
 
@@ -604,12 +605,52 @@ public class DataContextTest extends ServerCase {
         });
     }
 
+    public void testIterateDataRows() throws Exception {
+
+        createArtistsDataSet();
+
+        SelectQuery<DataRow> q1 = SelectQuery.dataRowQuery(Artist.class, null);
+
+        context.iterate(q1, new ResultIteratorCallback<DataRow>() {
+            public void iterate(ResultIterator<DataRow> it) {
+                int count = 0;
+
+                for (DataRow a : it) {
+                    assertNotNull(a.get("ARTIST_ID"));
+                    count++;
+                }
+
+                assertEquals(7, count);
+            }
+        });
+    }
+
+    public void testIterator() throws Exception {
+
+        createArtistsDataSet();
+
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+
+        ResultIterator<Artist> it = context.iterator(q1);
+        try {
+            int count = 0;
+
+            for (Artist a : it) {
+                count++;
+            }
+
+            assertEquals(7, count);
+        } finally {
+            it.close();
+        }
+    }
+
     public void testPerformIteratedQuery1() throws Exception {
 
         createArtistsDataSet();
 
-        SelectQuery q1 = new SelectQuery(Artist.class);
-        ResultIterator it = context.performIteratedQuery(q1);
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+        ResultIterator<?> it = context.performIteratedQuery(q1);
 
         try {
             int count = 0;
