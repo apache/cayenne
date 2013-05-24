@@ -20,11 +20,9 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -70,8 +68,8 @@ public class DataContextPaginatedQueryTest extends ServerCase {
 
         createArtistsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+        query.addOrdering(Artist.ARTIST_NAME.asc());
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         query.setPageSize(5);
 

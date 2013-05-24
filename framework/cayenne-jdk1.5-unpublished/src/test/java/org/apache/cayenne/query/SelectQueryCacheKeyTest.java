@@ -48,7 +48,7 @@ public class SelectQueryCacheKeyTest extends ServerCase {
 
     public void testLocalCache() {
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
 
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
@@ -57,15 +57,53 @@ public class SelectQueryCacheKeyTest extends ServerCase {
         assertNotNull(md1.getCacheKey());
     }
 
+    public void testUseLocalCache() {
+
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+        q1.useLocalCache();
+
+        QueryMetadata md1 = q1.getMetaData(resolver);
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
+        assertNotNull(md1.getCacheKey());
+        assertEquals(0, md1.getCacheGroups().length);
+        
+        SelectQuery<Artist> q2 = new SelectQuery<Artist>(Artist.class);
+        q2.useLocalCache("g1", "g2");
+
+        QueryMetadata md2 = q2.getMetaData(resolver);
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md2.getCacheStrategy());
+        assertNotNull(md2.getCacheKey());
+        assertEquals(2, md2.getCacheGroups().length);
+    }
+
     public void testSharedCache() {
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
 
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         QueryMetadata md1 = query.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
+    }
+    
+    public void testUseSharedCache() {
+
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+        q1.useSharedCache();
+
+        QueryMetadata md1 = q1.getMetaData(resolver);
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
+        assertNotNull(md1.getCacheKey());
+        assertEquals(0, md1.getCacheGroups().length);
+        
+        SelectQuery<Artist> q2 = new SelectQuery<Artist>(Artist.class);
+        q2.useSharedCache("g1", "g2");
+
+        QueryMetadata md2 = q2.getMetaData(resolver);
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md2.getCacheStrategy());
+        assertNotNull(md2.getCacheKey());
+        assertEquals(2, md2.getCacheGroups().length);
     }
 
     public void testNamedQuery() {
@@ -92,12 +130,9 @@ public class SelectQueryCacheKeyTest extends ServerCase {
         q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
-        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
-                .getMetaData(resolver)
-                .getCacheKey());
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
 
-        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(
-                q3.getMetaData(resolver).getCacheKey()));
+        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q3.getMetaData(resolver).getCacheKey()));
     }
 
     public void testUniqueKeyEntityQualifier() {
@@ -115,12 +150,9 @@ public class SelectQueryCacheKeyTest extends ServerCase {
         q3.setQualifier(ExpressionFactory.matchExp("a", "c"));
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
-        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
-                .getMetaData(resolver)
-                .getCacheKey());
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
 
-        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(
-                q3.getMetaData(resolver).getCacheKey()));
+        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q3.getMetaData(resolver).getCacheKey()));
     }
 
     public void testUniqueKeyEntityFetchLimit() {
@@ -141,13 +173,9 @@ public class SelectQueryCacheKeyTest extends ServerCase {
         q4.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
-        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
-                .getMetaData(resolver)
-                .getCacheKey());
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
 
-        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(
-                q3.getMetaData(resolver).getCacheKey()));
-        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(
-                q4.getMetaData(resolver).getCacheKey()));
+        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q3.getMetaData(resolver).getCacheKey()));
+        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q4.getMetaData(resolver).getCacheKey()));
     }
 }
