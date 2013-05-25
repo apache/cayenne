@@ -181,4 +181,35 @@ public class SQLSelectTest extends ServerCase {
 
         assertEquals("artist3", a.getArtistName());
     }
+
+    public void test_SelectLong() throws Exception {
+
+        createArtistsDataSet();
+
+        long id = SQLSelect.scalarQuery(Long.class, "SELECT ARTIST_ID FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
+                .bind("a", "artist3").selectOne(context);
+
+        assertEquals(3l, id);
+    }
+
+    public void test_SelectLongArray() throws Exception {
+
+        createArtistsDataSet();
+
+        List<Long> ids = SQLSelect.scalarQuery(Long.class, "SELECT ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID").select(
+                context);
+
+        assertEquals(20, ids.size());
+        assertEquals(2l, ids.get(1).longValue());
+    }
+
+    public void test_SelectCount() throws Exception {
+
+        createArtistsDataSet();
+
+        int c = SQLSelect.scalarQuery(Integer.class, "SELECT COUNT(*) FROM ARTIST").bind("a", "artist3")
+                .selectOne(context);
+
+        assertEquals(20, c);
+    }
 }

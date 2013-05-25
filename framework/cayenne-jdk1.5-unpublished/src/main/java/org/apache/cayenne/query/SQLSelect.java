@@ -29,6 +29,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.SQLResult;
 
 /**
  * A selecting query based on raw SQL and featuring fluent API.
@@ -59,12 +60,31 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
      * Creates a query that selects DataObjects.
      */
     public static <T> SQLSelect<T> query(Class<T> type, String sql) {
+        return new SQLSelect<T>(type, sql);
+    }
+
+    /**
+     * Creates a query that selects scalar values and uses default routing.
+     */
+    public static <T> SQLSelect<T> scalarQuery(Class<T> type, String sql) {
         SQLSelect<T> query = new SQLSelect<T>(sql);
-        query.type = type;
+        query.scalarType = type;
         return query;
     }
 
-    protected Class<T> type;
+    /**
+     * Creates a query that selects scalar values and uses routing based on the
+     * provided DataMap name.
+     */
+    public static <T> SQLSelect<T> scalarQuery(Class<T> type, String dataMapName, String sql) {
+        SQLSelect<T> query = new SQLSelect<T>(sql);
+        query.dataMapName = dataMapName;
+        query.scalarType = type;
+        return query;
+    }
+
+    protected Class<T> persistentType;
+    protected Class<T> scalarType;
     protected String dataMapName;
     protected StringBuilder sqlBuffer;
     protected QueryCacheStrategy cacheStrategy;
@@ -80,8 +100,8 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
         this(null, sql);
     }
 
-    public SQLSelect(Class<T> type, String sql) {
-        this.type = type;
+    public SQLSelect(Class<T> persistentType, String sql) {
+        this.persistentType = persistentType;
         this.sqlBuffer = sql != null ? new StringBuilder(sql) : new StringBuilder();
         this.parameters = new HashMap<String, Object>();
         this.limit = QueryMetadata.FETCH_LIMIT_DEFAULT;
@@ -98,7 +118,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
     }
 
     /**
-     * Selects a sinlge object using provided context. Essentially the inversion
+     * Selects a single object using provided context. Essentially the inversion
      * of "Cayenne.objectForSelect(context, query)".
      */
     public T selectOne(ObjectContext context) {
@@ -106,7 +126,11 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
     }
 
     public boolean isFetchingDataRows() {
-        return type == null;
+        return persistentType == null;
+    }
+    
+    public boolean isFetchingScalars() {
+        return scalarType != null;
     }
 
     public String getSql() {
@@ -144,8 +168,8 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
         Object root;
 
-        if (type != null) {
-            root = type;
+        if (persistentType != null) {
+            root = persistentType;
         } else if (dataMapName != null) {
             DataMap map = resolver.getDataMap(dataMapName);
             if (map == null) {
@@ -179,6 +203,12 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
         template.setFetchOffset(offset);
         template.setPageSize(pageSize);
         template.setStatementFetchSize(statementFetchSize);
+        
+        if(isFetchingScalars()) {
+            SQLResult resultMap = new SQLResult();
+            resultMap.addColumnResult("x");
+            template.setResult(resultMap);
+        }
 
         return template;
     }
