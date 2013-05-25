@@ -116,10 +116,7 @@ public class RowDescriptorBuilder {
         int outputLen = 0;
         for (int i = 0; i < rsLen; i++) {
             String rowkey = resolveDataRowKeyFromResultSet(i + 1);
-            if (rowkey.length() == 0) {
-                // escape this ColumnDescriptor, cause column name is empty
-                continue;
-            }
+            
             // resolve column descriptor from 'columns' or create new
             rsColumns[outputLen] = getColumnDescriptor(rowkey, columns, i + 1);
             outputLen++;

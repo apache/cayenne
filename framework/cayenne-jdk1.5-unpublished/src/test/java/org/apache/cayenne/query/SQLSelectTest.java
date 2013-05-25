@@ -207,8 +207,7 @@ public class SQLSelectTest extends ServerCase {
 
         createArtistsDataSet();
 
-        int c = SQLSelect.scalarQuery(Integer.class, "SELECT COUNT(*) FROM ARTIST").bind("a", "artist3")
-                .selectOne(context);
+        int c = SQLSelect.scalarQuery(Integer.class, "SELECT COUNT(*) FROM ARTIST").selectOne(context);
 
         assertEquals(20, c);
     }
