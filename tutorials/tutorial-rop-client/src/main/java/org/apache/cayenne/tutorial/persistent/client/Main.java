@@ -27,7 +27,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 
 public class Main {
@@ -80,14 +79,14 @@ public class Main {
         SelectQuery<Painting> select1 = SelectQuery.query(Painting.class);
         List<Painting> paintings1 = context.select(select1);
 
-        Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(Painting.NAME_PROPERTY, "gi%");
+        Expression qualifier2 = Painting.NAME.likeInsensitive("gi%");
         SelectQuery<Painting> select2 = SelectQuery.query(Painting.class, qualifier2);
         List<Painting> paintings2 = context.select(select2);
     }
 
     static void deleteTutorial(ObjectContext context) {
         // Delete object examples
-        Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY, "Pablo Picasso");
+        Expression qualifier = Artist.NAME.eq("Pablo Picasso");
         SelectQuery<Artist> selectToDelete = SelectQuery.query(Artist.class, qualifier);
         Artist picasso = (Artist) Cayenne.objectForQuery(context, selectToDelete);
 
