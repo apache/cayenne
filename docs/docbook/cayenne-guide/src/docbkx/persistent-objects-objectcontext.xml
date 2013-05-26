@@ -7,7 +7,7 @@
         <para>ObjectContext is an interface that users normally work with to access the database. It
             provides the API to execute database operations and to manage persistent objects. A
             context is obtained from the
-            ServerRuntime:<programlisting language="java">ObjectContext context = runtime.getContext();</programlisting></para>
+            ServerRuntime:<programlisting language="java">ObjectContext context = runtime.newContext();</programlisting></para>
         <para>The call above creates a new instance of ObjectContext that can access the database via this
             runtime. ObjectContext is a single "work area" in Cayenne, storing persistent objects.
             ObjectContext guarantees that for each database row with a unique ID it will contain at
@@ -143,7 +143,7 @@ context.deleteObjects(artist2, artist3, artist4);</programlisting>Additionally
             common operation. E.g. to improve performance a user might utilize a single shared
             context to select and cache data, and then occasionally transfer some selected objects
             to another context to modify and commit
-            them:<programlisting language="java">ObjectContext editingContext = runtime.getContext();
+            them:<programlisting language="java">ObjectContext editingContext = runtime.newContext();
 Artist localArtist = editingContext.localObject(artist);</programlisting></para>
         <para>Often an appliction needs to inspect mapping metadata. This information is stored in
             the EntityResolver object, accessible via the
@@ -185,8 +185,8 @@ Artist localArtist = editingContext.localObject(artist);</programlisting></para>
             separate JVM and communicates with its parent via a web service. ROP is discussed in
             details in the following chapters. Here we concentrate on the same-VM nesting.</para>
         <para>To create a nested context, use an instance of ServerRuntime, passing it the desired
-            parent:<programlisting language="java">ObjectContext parent = runtime.getContext();
-ObjectContext nested = runtime.getContext((DataChannel) parent);</programlisting>From
+            parent:<programlisting language="java">ObjectContext parent = runtime.newContext();
+ObjectContext nested = runtime.newContext((DataChannel) parent);</programlisting>From
             here a nested context operates just like a regular context (you can perform queries,
             create and delete objects, etc.). The only difference is that commit and rollback
             operations can either be limited to synchronization with the parent, or cascade all the

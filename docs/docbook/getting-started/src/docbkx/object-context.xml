@@ -37,7 +37,7 @@ public class Main {
     public static void main(String[] args) {
         ServerRuntime cayenneRuntime = new ServerRuntime(
                 "cayenne-project.xml");
-        ObjectContext context = cayenneRuntime.getContext();
+        ObjectContext context = cayenneRuntime.newContext();
     }
 }</programlisting></para>
                 <para>ObjectContext is an isolated "session" in Cayenne that provides all needed API
