@@ -32,72 +32,68 @@ import org.apache.cayenne.query.SelectQuery;
 
 public class Main {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		Map<String, String> properties = new HashMap<String, String>();
-		properties.put(Constants.ROP_SERVICE_URL_PROPERTY,
-				"http://localhost:8080/tutorial-rop-server/cayenne-service");
-		properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
-		properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial-rop-server/cayenne-service");
+        properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
+        properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
 
-		ClientRuntime runtime = new ClientRuntime(properties);
+        ClientRuntime runtime = new ClientRuntime(properties);
 
-		ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
 
-		newObjectsTutorial(context);
-		selectTutorial(context);
-		deleteTutorial(context);
-	}
+        newObjectsTutorial(context);
+        selectTutorial(context);
+        deleteTutorial(context);
+    }
 
-	static void newObjectsTutorial(ObjectContext context) {
+    static void newObjectsTutorial(ObjectContext context) {
 
-		// creating new Artist
-		Artist picasso = context.newObject(Artist.class);
-		picasso.setName("Pablo Picasso");
+        // creating new Artist
+        Artist picasso = context.newObject(Artist.class);
+        picasso.setName("Pablo Picasso");
 
-		// Creating other objects
-		Gallery metropolitan = context.newObject(Gallery.class);
-		metropolitan.setName("Metropolitan Museum of Art");
+        // Creating other objects
+        Gallery metropolitan = context.newObject(Gallery.class);
+        metropolitan.setName("Metropolitan Museum of Art");
 
-		Painting girl = context.newObject(Painting.class);
-		girl.setName("Girl Reading at a Table");
+        Painting girl = context.newObject(Painting.class);
+        girl.setName("Girl Reading at a Table");
 
-		Painting stein = context.newObject(Painting.class);
-		stein.setName("Gertrude Stein");
+        Painting stein = context.newObject(Painting.class);
+        stein.setName("Gertrude Stein");
 
-		// connecting objects together via relationships
-		picasso.addToPaintings(girl);
-		picasso.addToPaintings(stein);
+        // connecting objects together via relationships
+        picasso.addToPaintings(girl);
+        picasso.addToPaintings(stein);
 
-		girl.setGallery(metropolitan);
-		stein.setGallery(metropolitan);
+        girl.setGallery(metropolitan);
+        stein.setGallery(metropolitan);
 
-		// saving all the changes above
-		context.commitChanges();
-	}
+        // saving all the changes above
+        context.commitChanges();
+    }
 
-	static void selectTutorial(ObjectContext context) {
-		// SelectQuery examples
-		SelectQuery<Painting> select1 = SelectQuery.query(Painting.class, null);
-		List<Painting> paintings1 = context.performQuery(select1);
+    static void selectTutorial(ObjectContext context) {
+        // SelectQuery examples
+        SelectQuery<Painting> select1 = SelectQuery.query(Painting.class);
+        List<Painting> paintings1 = context.select(select1);
 
-		Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
-				Painting.NAME_PROPERTY, "gi%");
-		SelectQuery<Painting> select2 = SelectQuery.query(Painting.class, qualifier2);
-		List<Painting> paintings2 = context.performQuery(select2);
-	}
+        Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(Painting.NAME_PROPERTY, "gi%");
+        SelectQuery<Painting> select2 = SelectQuery.query(Painting.class, qualifier2);
+        List<Painting> paintings2 = context.select(select2);
+    }
 
-	static void deleteTutorial(ObjectContext context) {
-		// Delete object examples
-		Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
-				"Pablo Picasso");
-		SelectQuery<Artist> selectToDelete = SelectQuery.query(Artist.class, qualifier);
-		Artist picasso = (Artist) Cayenne.objectForQuery(context,
-				selectToDelete);
+    static void deleteTutorial(ObjectContext context) {
+        // Delete object examples
+        Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY, "Pablo Picasso");
+        SelectQuery<Artist> selectToDelete = SelectQuery.query(Artist.class, qualifier);
+        Artist picasso = (Artist) Cayenne.objectForQuery(context, selectToDelete);
 
-		if (picasso != null) {
-			context.deleteObjects(picasso);
-			context.commitChanges();
-		}
-	}
+        if (picasso != null) {
+            context.deleteObjects(picasso);
+            context.commitChanges();
+        }
+    }
 }

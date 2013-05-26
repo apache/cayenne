@@ -3,6 +3,7 @@ package org.apache.cayenne.tutorial.persistent.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.tutorial.persistent.Painting;
 
 /**
@@ -13,10 +14,15 @@ import org.apache.cayenne.tutorial.persistent.Painting;
  */
 public abstract class _Gallery extends CayenneDataObject {
 
+    @Deprecated
     public static final String NAME_PROPERTY = "name";
+    @Deprecated
     public static final String PAINTINGS_PROPERTY = "paintings";
 
     public static final String ID_PK_COLUMN = "ID";
+
+    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<List<Painting>> PAINTINGS = new Property<List<Painting>>("paintings");
 
     public void setName(String name) {
         writeProperty("name", name);

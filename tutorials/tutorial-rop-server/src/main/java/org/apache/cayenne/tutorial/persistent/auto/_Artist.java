@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.tutorial.persistent.Painting;
 
 /**
@@ -14,11 +15,18 @@ import org.apache.cayenne.tutorial.persistent.Painting;
  */
 public abstract class _Artist extends CayenneDataObject {
 
+    @Deprecated
     public static final String DATE_OF_BIRTH_PROPERTY = "dateOfBirth";
+    @Deprecated
     public static final String NAME_PROPERTY = "name";
+    @Deprecated
     public static final String PAINTINGS_PROPERTY = "paintings";
 
     public static final String ID_PK_COLUMN = "ID";
+
+    public static final Property<Date> DATE_OF_BIRTH = new Property<Date>("dateOfBirth");
+    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<List<Painting>> PAINTINGS = new Property<List<Painting>>("paintings");
 
     public void setDateOfBirth(Date dateOfBirth) {
         writeProperty("dateOfBirth", dateOfBirth);
