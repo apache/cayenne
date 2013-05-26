@@ -32,7 +32,7 @@ public class NestedObjectContextRollbackTest extends RemoteCayenneCase {
     private ClientRuntime runtime;
 
     public void testRollbackChanges() {
-        ObjectContext child1 = runtime.getContext(clientContext);
+        ObjectContext child1 = runtime.newContext(clientContext);
         
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
@@ -51,7 +51,7 @@ public class NestedObjectContextRollbackTest extends RemoteCayenneCase {
     }
     
     public void testRollbackChangesLocally() {
-        ObjectContext child1 = runtime.getContext(clientContext);
+        ObjectContext child1 = runtime.newContext(clientContext);
         
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());

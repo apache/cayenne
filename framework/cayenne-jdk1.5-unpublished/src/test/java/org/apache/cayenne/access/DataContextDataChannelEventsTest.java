@@ -99,7 +99,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents(context, listener);
 
-        ObjectContext childContext = runtime.getContext(context);
+        ObjectContext childContext = runtime.newContext(context);
 
         Artist a1 = childContext.localObject(a);
 
@@ -142,7 +142,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
     }
 
     public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
-        ObjectContext childPeer1 = runtime.getContext(context);
+        ObjectContext childPeer1 = runtime.newContext(context);
 
         Artist a = childPeer1.newObject(Artist.class);
         a.setArtistName("X");
@@ -151,7 +151,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         final MockChannelListener listener = new MockChannelListener();
         EventUtil.listenForChannelEvents((DataChannel) childPeer1, listener);
 
-        ObjectContext childPeer2 = runtime.getContext(context);
+        ObjectContext childPeer2 = runtime.newContext(context);
 
         Artist a1 = childPeer2.localObject(a);
 

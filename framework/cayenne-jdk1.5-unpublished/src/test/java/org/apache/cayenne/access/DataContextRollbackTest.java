@@ -92,7 +92,7 @@ public class DataContextRollbackTest extends ServerCase {
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
-        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -123,7 +123,7 @@ public class DataContextRollbackTest extends ServerCase {
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
-        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -155,7 +155,7 @@ public class DataContextRollbackTest extends ServerCase {
         assertEquals(1, artist.getPaintingArray().size());
         context.commitChanges();
 
-        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
         SelectQuery query = new SelectQuery(Painting.class);
@@ -185,7 +185,7 @@ public class DataContextRollbackTest extends ServerCase {
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been deleted from the db
 
-        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -212,7 +212,7 @@ public class DataContextRollbackTest extends ServerCase {
         context.commitChanges();
 
         // .. and ensure that the correct data is in the db
-        DataContext freshContext = (DataContext) serverRuntime.getContext();
+        DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
         SelectQuery query = new SelectQuery(Artist.class);

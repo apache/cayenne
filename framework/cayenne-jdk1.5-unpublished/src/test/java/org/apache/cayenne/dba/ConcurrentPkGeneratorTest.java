@@ -50,7 +50,7 @@ public class ConcurrentPkGeneratorTest extends ServerCase {
 		final DataMap dataMap = runtime.getDataDomain().getDataMap("qualified");
 		
 		// clear out the table
-		ObjectContext context = runtime.getContext();
+		ObjectContext context = runtime.newContext();
 		List<Qualified1> qualified1s = context.select(SelectQuery.query(Qualified1.class, null));
 		context.deleteObjects(qualified1s);
 		context.commitChanges();
@@ -61,7 +61,7 @@ public class ConcurrentPkGeneratorTest extends ServerCase {
 		Runnable task = new Runnable() {
 			public void run() {
 				try {
-					ObjectContext context = runtime.getContext();
+					ObjectContext context = runtime.newContext();
 					for (ObjEntity entity : dataMap.getObjEntities()) {
 						context.newObject(entity.getJavaClass());
 					}

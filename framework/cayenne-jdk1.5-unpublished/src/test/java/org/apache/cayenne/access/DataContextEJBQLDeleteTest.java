@@ -125,7 +125,7 @@ public class DataContextEJBQLDeleteTest extends ServerCase {
         assertEquals(1, count.length);
         assertEquals(1, count[0]);
 
-        ObjectContext freshContext = runtime.getContext();
+        ObjectContext freshContext = runtime.newContext();
 
         assertNotNull(Cayenne.objectForPK(freshContext, Painting.class, 33001));
         assertNull(Cayenne.objectForPK(freshContext, Painting.class, 33002));

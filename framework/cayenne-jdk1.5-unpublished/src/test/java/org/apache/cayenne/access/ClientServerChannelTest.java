@@ -214,7 +214,7 @@ public class ClientServerChannelTest extends ClientCase {
                 return super.onQuery(context, query);
             }
         };
-        DataContext context = (DataContext) runtime.getContext(parent);
+        DataContext context = (DataContext) runtime.newContext(parent);
 
         QueryMessage message = new QueryMessage(new MockQuery());
         new ClientServerChannel(context).onQuery(null, message.getQuery());

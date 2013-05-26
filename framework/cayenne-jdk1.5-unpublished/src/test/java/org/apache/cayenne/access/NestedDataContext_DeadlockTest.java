@@ -73,7 +73,7 @@ public class NestedDataContext_DeadlockTest extends ServerCase {
         Random rnd = new Random(System.currentTimeMillis());
         for (int i = 0; i < threads.length; i++) {
             threads[i] = new UpdateThread("UpdateThread-" + i,
-                    runtime.getContext(parent), rnd);
+                    runtime.newContext(parent), rnd);
         }
 
         for (int i = 0; i < threads.length; i++) {

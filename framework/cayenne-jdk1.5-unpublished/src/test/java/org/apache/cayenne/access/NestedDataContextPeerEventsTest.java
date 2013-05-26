@@ -40,14 +40,14 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 
 	public void testPeerObjectUpdatedTempOID() throws Exception {
 
-		ObjectContext peer1 = runtime.getContext(context);
+		ObjectContext peer1 = runtime.newContext(context);
 		final Artist a1 = peer1.newObject(Artist.class);
 		a1.setArtistName("Y");
 
 		ObjectId a1TempId = a1.getObjectId();
 		assertTrue(a1TempId.isTemporary());
 
-		ObjectContext peer2 = runtime.getContext(context);
+		ObjectContext peer2 = runtime.newContext(context);
 		final Artist a2 = peer2.localObject(a1);
 
 		assertEquals(a1TempId, a2.getObjectId());
@@ -71,10 +71,10 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 		a.setArtistName("X");
 		context.commitChanges();
 
-		ObjectContext peer1 = runtime.getContext(context);
+		ObjectContext peer1 = runtime.newContext(context);
 		Artist a1 = peer1.localObject(a);
 
-		final ObjectContext peer2 = runtime.getContext(context);
+		final ObjectContext peer2 = runtime.newContext(context);
 		final Artist a2 = peer2.localObject(a);
 
 		a1.setArtistName("Y");
@@ -107,11 +107,11 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 		altA.setArtistName("Y");
 		context.commitChanges();
 
-		ObjectContext peer1 = runtime.getContext(context);
+		ObjectContext peer1 = runtime.newContext(context);
 		Painting p1 = peer1.localObject(p);
 		Artist altA1 = peer1.localObject(altA);
 
-		final ObjectContext peer2 = runtime.getContext(context);
+		final ObjectContext peer2 = runtime.newContext(context);
 		final Painting p2 = peer2.localObject(p);
 		final Artist altA2 = peer2.localObject(altA);
 		Artist a2 = peer2.localObject(a);
@@ -151,11 +151,11 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 		// pause to let the context events propagate
 		Thread.sleep(500);
 
-		ObjectContext peer1 = runtime.getContext(context);
+		ObjectContext peer1 = runtime.newContext(context);
 		Painting py1 = peer1.localObject(py);
 		Artist a1 = peer1.localObject(a);
 
-		final ObjectContext peer2 = runtime.getContext(context);
+		final ObjectContext peer2 = runtime.newContext(context);
 		final Painting py2 = peer2.localObject(py);
 		final Artist a2 = peer2.localObject(a);
 

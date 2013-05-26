@@ -96,7 +96,7 @@ public class DataContextSerializationTest extends ServerCase {
 
     public void testSerializeNestedChannel() throws Exception {
 
-        ObjectContext child = runtime.getContext(context);
+        ObjectContext child = runtime.newContext(context);
 
         ObjectContext deserializedContext = Util.cloneViaSerialization(child);
 

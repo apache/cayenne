@@ -35,7 +35,7 @@ public class NestedDataContextRollbackTest extends ServerCase {
     private DataContext context;
 
     public void testRollbackChanges() {
-        ObjectContext child1 = runtime.getContext(context);
+        ObjectContext child1 = runtime.newContext(context);
 
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());
@@ -52,7 +52,7 @@ public class NestedDataContextRollbackTest extends ServerCase {
     }
 
     public void testRollbackChangesLocally() {
-        ObjectContext child1 = runtime.getContext(context);
+        ObjectContext child1 = runtime.newContext(context);
 
         assertFalse(context.hasChanges());
         assertFalse(child1.hasChanges());

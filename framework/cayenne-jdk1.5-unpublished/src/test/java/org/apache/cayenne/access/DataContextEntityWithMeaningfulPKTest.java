@@ -107,7 +107,7 @@ public class DataContextEntityWithMeaningfulPKTest extends ServerCase {
         context.commitChanges();
 
         // must be able to resolve to-many relationship
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
         List objects = context.performQuery(new SelectQuery(MeaningfulPKTest1.class));
         assertEquals(1, objects.size());
         obj = (MeaningfulPKTest1) objects.get(0);

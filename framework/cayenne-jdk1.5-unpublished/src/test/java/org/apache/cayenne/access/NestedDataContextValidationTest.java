@@ -52,7 +52,7 @@ public class NestedDataContextValidationTest extends ServerCase {
     public void testValidateOnCommitToParent() {
         context.setValidatingObjectsOnCommit(true);
 
-        ObjectContext childContext = runtime.getContext(context);
+        ObjectContext childContext = runtime.newContext(context);
         assertTrue(
                 "Child context must have inherited the validation flag from parent",
                 ((DataContext) childContext).isValidatingObjectsOnCommit());

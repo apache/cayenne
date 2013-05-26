@@ -236,7 +236,7 @@ public class CayenneDataObjectRelationshipsTest extends ServerCase {
         Artist artist = context.newObject(Artist.class);
 
         // ...and this object in another context
-        Painting painting = runtime.getContext().newObject(Painting.class);
+        Painting painting = runtime.newContext().newObject(Painting.class);
 
         // Check setting a toOne relationship
         try {

@@ -73,7 +73,7 @@ public class ShallowMergeOperation_ClientTest extends ClientCase {
 
     public void testMerge_Relationship() throws Exception {
 
-        ObjectContext childContext = runtime.getContext(context);
+        ObjectContext childContext = runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         ClientMtTable1 _new = context.newObject(ClientMtTable1.class);
@@ -95,7 +95,7 @@ public class ShallowMergeOperation_ClientTest extends ClientCase {
 
     public void testMerge_NoOverride() throws Exception {
 
-        ObjectContext childContext = runtime.getContext(context);
+        ObjectContext childContext = runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         final ClientMtTable1 modified = context.newObject(ClientMtTable1.class);
@@ -129,7 +129,7 @@ public class ShallowMergeOperation_ClientTest extends ClientCase {
 
         createMtTable1DataSet();
 
-        final ObjectContext childContext = runtime.getContext(context);
+        final ObjectContext childContext = runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         final ClientMtTable1 _new = context.newObject(ClientMtTable1.class);

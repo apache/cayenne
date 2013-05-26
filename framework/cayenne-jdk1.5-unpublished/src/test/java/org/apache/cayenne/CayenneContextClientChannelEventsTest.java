@@ -80,8 +80,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
 
     public void testSyncNewObject() throws Exception {
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
         assertNotSame(c1, c2);
 
         ClientMtTable1 o1 = c1.newObject(ClientMtTable1.class);
@@ -105,8 +105,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
 
     public void testSyncNewDeletedObject() throws Exception {
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
         assertNotSame(c1, c2);
 
         // insert, then delete - this shouldn't propagate via an event.
@@ -130,8 +130,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
 
     public void testSyncNewObjectIntoDirtyContext() throws Exception {
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
         assertNotSame(c1, c2);
 
         // make sure c2 has uncommitted changes
@@ -159,8 +159,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
 
         tMtTable1.insert(1, "g1", "s1");
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
         assertNotSame(c1, c2);
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
@@ -191,8 +191,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         tMtTable1.insert(2, "g2", "s2");
         tMtTable2.insert(1, 1, "g1");
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
 
         ClientMtTable2 o1 = (ClientMtTable2) Cayenne.objectForQuery(
                 c1,
@@ -224,8 +224,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         tMtTable1.insert(1, "g1", "s1");
         tMtTable2.insert(1, 1, "g1");
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
@@ -257,8 +257,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         tMtTable1.insert(1, "g1", "s1");
         tMtTable2.insert(1, 1, "g1");
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
@@ -293,8 +293,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         tMtJoin45.insert(1, 1);
         tMtJoin45.insert(1, 2);
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
 
         ClientMtTable4 o1 = (ClientMtTable4) Cayenne.objectForQuery(
                 c1,
@@ -324,8 +324,8 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
 
     public void testSyncManyToManyRelationship1() throws Exception {
 
-        CayenneContext c1 = (CayenneContext) runtime.getContext();
-        CayenneContext c2 = (CayenneContext) runtime.getContext();
+        CayenneContext c1 = (CayenneContext) runtime.newContext();
+        CayenneContext c2 = (CayenneContext) runtime.newContext();
 
         ClientMtTable4 o1 = c1.newObject(ClientMtTable4.class);
         ClientMtTable5 o1r = c1.newObject(ClientMtTable5.class);

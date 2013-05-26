@@ -31,6 +31,6 @@ public class ServerCaseObjectContextProvider implements Provider<ObjectContext> 
     protected Provider<ServerRuntime> serverRuntimeProvider;
 
     public ObjectContext get() throws ConfigurationException {
-        return serverRuntimeProvider.get().getContext();
+        return serverRuntimeProvider.get().newContext();
     }
 }

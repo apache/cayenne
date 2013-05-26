@@ -104,7 +104,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
 
         Auditable1 a2 = Cayenne.objectForPK(context, Auditable1.class, 2);
         AuditableChild2 a21 = Cayenne.objectForPK(context, AuditableChild2.class, 1);
@@ -143,7 +143,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
 
         Auditable1 a2 = Cayenne.objectForPK(context, Auditable1.class, 2);
         AuditableChild1 a21 = Cayenne.objectForPK(context, AuditableChild1.class, 1);
@@ -175,7 +175,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
 
         Auditable2 a1 = Cayenne.objectForPK(context, Auditable2.class, 1);
         Auditable2 a2 = Cayenne.objectForPK(context, Auditable2.class, 2);
@@ -210,7 +210,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
 
         AuditableChild3 ac1 = Cayenne.objectForPK(context, AuditableChild3.class, 1);
 
@@ -240,7 +240,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         ChangeSetFilter changeSetFilter = new ChangeSetFilter();
         domain.addFilter(changeSetFilter);
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
         AuditableChildUuid ac = Cayenne.objectForPK(context, AuditableChildUuid.class, 1);
         Auditable1 a1 = Cayenne.objectForPK(context, Auditable1.class, 1);
         IdCoder refHandler = new IdCoder(domain.getEntityResolver());

@@ -47,7 +47,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
 
         Master a1 = parentContext2.localObject(a);
 
-        final ObjectContext child = runtime.getContext(parentContext1);
+        final ObjectContext child = runtime.newContext(parentContext1);
         final Master a2 = child.localObject(a);
 
         a1.setName("Y");
@@ -80,7 +80,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         Child p1 = parentContext2.localObject(p);
         Master altA1 = parentContext2.localObject(altA);
 
-        final ObjectContext childContext1 = runtime.getContext(parentContext1);
+        final ObjectContext childContext1 = runtime.newContext(parentContext1);
         final Child p2 = childContext1.localObject(p);
         final Master altA2 = childContext1.localObject(altA);
         Master a2 = childContext1.localObject(a);
@@ -116,7 +116,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         Child py1 = parentContext2.localObject(py);
         Master a1 = parentContext2.localObject(a);
 
-        final ObjectContext peer2 = runtime.getContext(parentContext1);
+        final ObjectContext peer2 = runtime.newContext(parentContext1);
         final Child py2 = peer2.localObject(py);
         final Master a2 = peer2.localObject(a);
 

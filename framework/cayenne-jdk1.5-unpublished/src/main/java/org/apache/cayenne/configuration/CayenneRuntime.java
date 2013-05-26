@@ -29,11 +29,11 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 
 /**
- * A superclass of various Cayenne runtime stacks. A Runtime is the main access point to
- * Cayenne for a user application. It provides a default Cayenne configuration as well as
- * a way to customize this configuration via a built-in dependency injection (DI)
- * container. In fact implementation-wise, Runtime object is just a convenience thin
- * wrapper around a DI {@link Injector}.
+ * A superclass of various Cayenne runtime stacks. A Runtime is the main access
+ * point to Cayenne for a user application. It provides a default Cayenne
+ * configuration as well as a way to customize this configuration via a built-in
+ * dependency injection (DI) container. In fact implementation-wise, Runtime
+ * object is just a convenience thin wrapper around a DI {@link Injector}.
  * 
  * @since 3.1
  */
@@ -41,19 +41,21 @@ public abstract class CayenneRuntime {
 
     /**
      * A holder of an Injector bound to the current thread. Used mainly to allow
-     * serializable contexts to attach to correct Cayenne stack on deserialization.
+     * serializable contexts to attach to correct Cayenne stack on
+     * deserialization.
      * 
      * @since 3.1
      */
     protected static final ThreadLocal<Injector> threadInjector = new ThreadLocal<Injector>();
 
     /**
-     * Binds a DI {@link Injector} bound to the current thread. It is primarily intended
-     * for deserialization of ObjectContexts.
+     * Binds a DI {@link Injector} bound to the current thread. It is primarily
+     * intended for deserialization of ObjectContexts.
      * <p>
-     * {@link CayenneFilter} will automatically bind the right injector to each request
-     * thread. If you are not using CayenneFilter, your application is responsible for
-     * calling this method at appropriate points of the lifecycle.
+     * {@link CayenneFilter} will automatically bind the right injector to each
+     * request thread. If you are not using CayenneFilter, your application is
+     * responsible for calling this method at appropriate points of the
+     * lifecycle.
      * 
      * @since 3.1
      */
@@ -62,8 +64,8 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Returns the {@link Injector} bound to the current thread. Will return null if none
-     * is bound.
+     * Returns the {@link Injector} bound to the current thread. Will return
+     * null if none is bound.
      * 
      * @since 3.1
      */
@@ -75,14 +77,13 @@ public abstract class CayenneRuntime {
     protected Module[] modules;
 
     /**
-     * Internal helper method to add special extra modules in subclass constructors.
+     * Internal helper method to add special extra modules in subclass
+     * constructors.
      */
     protected static Module[] mergeModules(Module mainModule, Module... extraModules) {
 
         if (extraModules == null || extraModules.length == 0) {
-            return new Module[] {
-                mainModule
-            };
+            return new Module[] { mainModule };
         }
 
         Module[] allModules = new Module[extraModules.length + 1];
@@ -93,16 +94,13 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Internal helper method to add special extra modules in subclass constructors.
+     * Internal helper method to add special extra modules in subclass
+     * constructors.
      */
-    protected static Module[] mergeModules(
-            Module mainModule,
-            Collection<Module> extraModules) {
+    protected static Module[] mergeModules(Module mainModule, Collection<Module> extraModules) {
 
         if (extraModules == null || extraModules.isEmpty()) {
-            return new Module[] {
-                mainModule
-            };
+            return new Module[] { mainModule };
         }
 
         Module[] allModules = new Module[extraModules.size() + 1];
@@ -112,8 +110,8 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Creates a CayenneRuntime with configuration based on the supplied array of DI
-     * modules.
+     * Creates a CayenneRuntime with configuration based on the supplied array
+     * of DI modules.
      */
     public CayenneRuntime(Module... modules) {
 
@@ -126,15 +124,14 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Creates a CayenneRuntime with configuration based on the supplied collection of DI
-     * modules.
+     * Creates a CayenneRuntime with configuration based on the supplied
+     * collection of DI modules.
      */
     public CayenneRuntime(Collection<Module> modules) {
 
         if (modules == null) {
             this.modules = new Module[0];
-        }
-        else {
+        } else {
             this.modules = modules.toArray(new Module[modules.size()]);
         }
 
@@ -156,10 +153,11 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Shuts down the DI injector of this runtime, giving all services that need to
-     * release some resources a chance to do that.
+     * Shuts down the DI injector of this runtime, giving all services that need
+     * to release some resources a chance to do that.
      */
-    // the following annotation is for environments that manage CayenneRuntimes within
+    // the following annotation is for environments that manage CayenneRuntimes
+    // within
     // another DI registry (e.g. unit tests)
     @BeforeScopeEnd
     public void shutdown() {
@@ -174,19 +172,40 @@ public abstract class CayenneRuntime {
     }
 
     /**
-     * Returns a new ObjectContext instance based on the runtime's main DataChannel.
+     * Returns a new ObjectContext instance based on the runtime's main
+     * DataChannel.
+     * 
+     * @since 3.2
      */
-    public ObjectContext getContext() {
+    public ObjectContext newContext() {
         return injector.getInstance(ObjectContextFactory.class).createContext();
     }
 
     /**
-     * Returns a new ObjectContext which is a child of the specified DataChannel. This
-     * method is used for creation of nested ObjectContexts, with parent ObjectContext
-     * passed as an argument.
+     * Returns a new ObjectContext which is a child of the specified
+     * DataChannel. This method is used for creation of nested ObjectContexts,
+     * with parent ObjectContext passed as an argument.
+     * 
+     * @since 3.2
      */
+    public ObjectContext newContext(DataChannel parentChannel) {
+        return injector.getInstance(ObjectContextFactory.class).createContext(parentChannel);
+    }
+
+    /**
+     * @deprecated since 3.1 use better named {@link #newContext()} instead.
+     */
+    @Deprecated
+    public ObjectContext getContext() {
+        return newContext();
+    }
+
+    /**
+     * @deprecated since 3.1 use better named {@link #newContext(DataChannel)}
+     *             instead.
+     */
+    @Deprecated
     public ObjectContext getContext(DataChannel parentChannel) {
-        return injector.getInstance(ObjectContextFactory.class).createContext(
-                parentChannel);
+        return newContext(parentChannel);
     }
 }

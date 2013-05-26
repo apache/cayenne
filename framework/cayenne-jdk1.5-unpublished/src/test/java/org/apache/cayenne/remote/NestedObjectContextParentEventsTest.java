@@ -45,7 +45,7 @@ public class NestedObjectContextParentEventsTest extends RemoteCayenneCase {
     }
 
     public void testParentUpdatedId() throws Exception {
-        ObjectContext child = runtime.getContext(clientContext);
+        ObjectContext child = runtime.newContext(clientContext);
 
         ClientMtTable1 ac = child.newObject(ClientMtTable1.class);
         ac.setGlobalAttribute1("X");

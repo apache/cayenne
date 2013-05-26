@@ -167,7 +167,7 @@ public class DataContextLocalObjectTest extends ServerCase {
 
         final Artist a1 = context1.newObject(Artist.class);
 
-        final ObjectContext nestedContext = runtime.getContext(context1);
+        final ObjectContext nestedContext = runtime.newContext(context1);
 
         interceptor.runWithQueriesBlocked(new UnitTestClosure() {
 

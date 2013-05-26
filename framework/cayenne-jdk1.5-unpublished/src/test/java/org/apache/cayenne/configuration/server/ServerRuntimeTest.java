@@ -184,7 +184,7 @@ public class ServerRuntimeTest extends TestCase {
         };
 
         ServerRuntime runtime = new ServerRuntime("mnYw", module);
-        assertSame(context, runtime.getContext());
-        assertSame(context, runtime.getContext());
+        assertSame(context, runtime.newContext());
+        assertSame(context, runtime.newContext());
     }
 }

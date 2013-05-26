@@ -110,7 +110,7 @@ public class AuditableFilterTest extends TestCase {
 
     public void testUpdateAuditChildByObjectIdRelationship() {
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
         Auditable1 auditedParent = context.newObject(Auditable1.class);
         AuditableChildUuid audited = context.newObject(AuditableChildUuid.class);
 

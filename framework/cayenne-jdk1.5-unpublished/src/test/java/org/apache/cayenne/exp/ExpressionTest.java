@@ -230,7 +230,7 @@ public class ExpressionTest extends ServerCase {
 
         assertTrue(context instanceof DataContext);
 
-        DataContext context2 = (DataContext) runtime.getContext();
+        DataContext context2 = (DataContext) runtime.newContext();
 
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("Equals");

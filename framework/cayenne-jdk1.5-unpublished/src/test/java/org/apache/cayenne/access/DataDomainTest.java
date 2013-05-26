@@ -240,7 +240,7 @@ public class DataDomainTest extends ServerCase {
         PostAddListener listener = new PostAddListener();
         domain.addListener(listener);
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
 
         context.newObject(Gallery.class);
         assertEquals("e:Gallery;", listener.getAndReset());

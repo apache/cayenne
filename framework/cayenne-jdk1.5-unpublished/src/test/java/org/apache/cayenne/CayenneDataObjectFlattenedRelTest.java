@@ -140,7 +140,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         assertFalse(context.hasChanges());
 
         // refetch artist with a different context
-        ObjectContext context2 = runtime.getContext();
+        ObjectContext context2 = runtime.newContext();
         a1 = Cayenne.objectForPK(context2, Artist.class, 33001);
         groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());

@@ -115,7 +115,7 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testCreateChildDataContext() {
         context.setValidatingObjectsOnCommit(true);
 
-        ObjectContext child1 = runtime.getContext(context);
+        ObjectContext child1 = runtime.newContext(context);
 
         assertNotNull(child1);
         assertSame(context, child1.getChannel());
@@ -123,14 +123,14 @@ public class NestedDataContextReadTest extends ServerCase {
 
         context.setValidatingObjectsOnCommit(false);
 
-        ObjectContext child2 = runtime.getContext(context);
+        ObjectContext child2 = runtime.newContext(context);
 
         assertNotNull(child2);
         assertSame(context, child2.getChannel());
         assertFalse(((DataContext) child2).isValidatingObjectsOnCommit());
 
         // second level of nesting
-        ObjectContext child21 = runtime.getContext((DataChannel) child2);
+        ObjectContext child21 = runtime.newContext((DataChannel) child2);
 
         assertNotNull(child21);
         assertSame(child2, child21.getChannel());
@@ -140,7 +140,7 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testSelect() throws Exception {
         createArtistsDataSet();
 
-        ObjectContext child = runtime.getContext(context);
+        ObjectContext child = runtime.newContext(context);
 
         // test how different object states appear in the child on select
 
@@ -181,7 +181,7 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testReadToOneRelationship() throws Exception {
         createRelationshipDataSet();
 
-        final ObjectContext child = runtime.getContext(context);
+        final ObjectContext child = runtime.newContext(context);
 
         // test how different object states appear in the child on select
 
@@ -280,7 +280,7 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testPrefetchingToOne() throws Exception {
         createPrefetchingDataSet();
 
-        final ObjectContext child = runtime.getContext(context);
+        final ObjectContext child = runtime.newContext(context);
 
         final ObjectId prefetchedId = new ObjectId(
                 "Artist",
@@ -318,7 +318,7 @@ public class NestedDataContextReadTest extends ServerCase {
     public void testPrefetchingToMany() throws Exception {
         createPrefetchingDataSet();
 
-        final ObjectContext child = runtime.getContext(context);
+        final ObjectContext child = runtime.newContext(context);
 
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
@@ -358,7 +358,7 @@ public class NestedDataContextReadTest extends ServerCase {
 
     public void testObjectFromDataRow() throws Exception {
 
-        DataContext childContext = (DataContext) runtime.getContext(context);
+        DataContext childContext = (DataContext) runtime.newContext(context);
 
         DataRow row = new DataRow(8);
         row.put("ARTIST_ID", 5l);

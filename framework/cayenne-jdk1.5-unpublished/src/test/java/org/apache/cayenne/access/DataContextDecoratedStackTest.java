@@ -59,7 +59,7 @@ public class DataContextDecoratedStackTest extends ServerCase {
     public void testCommitDecorated() {
         DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = (DataContext) runtime.getContext(decorator);
+        DataContext context = (DataContext) runtime.newContext(decorator);
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");
@@ -83,7 +83,7 @@ public class DataContextDecoratedStackTest extends ServerCase {
     public void testGetParentDataDomain() {
         DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = (DataContext) runtime.getContext(decorator);
+        DataContext context = (DataContext) runtime.newContext(decorator);
 
         assertSame(dd, context.getParentDataDomain());
     }

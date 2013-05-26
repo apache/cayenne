@@ -184,7 +184,7 @@ public class CDOOne2ManyTest extends ServerCase {
 
         context.commitChanges();
 
-        ObjectContext context2 = runtime.getContext();
+        ObjectContext context2 = runtime.newContext();
 
         // test database data
         Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
@@ -202,7 +202,7 @@ public class CDOOne2ManyTest extends ServerCase {
 
         context.commitChanges();
 
-        ObjectContext context2 = runtime.getContext();
+        ObjectContext context2 = runtime.newContext();
 
         // test database data
         Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
@@ -219,7 +219,7 @@ public class CDOOne2ManyTest extends ServerCase {
         // do save II
         context2.commitChanges();
 
-        ObjectContext context3 = runtime.getContext();
+        ObjectContext context3 = runtime.newContext();
 
         Painting p3 = (Painting) Cayenne.objectForQuery(context3, new SelectQuery(
                 Painting.class));
@@ -244,7 +244,7 @@ public class CDOOne2ManyTest extends ServerCase {
 
         context.commitChanges();
 
-        ObjectContext context2 = runtime.getContext();
+        ObjectContext context2 = runtime.newContext();
 
         // test database data
         Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
@@ -262,7 +262,7 @@ public class CDOOne2ManyTest extends ServerCase {
         // do save II
         context2.commitChanges();
 
-        ObjectContext context3 = runtime.getContext();
+        ObjectContext context3 = runtime.newContext();
 
         Artist a3 = (Artist) Cayenne.objectForQuery(context3, new SelectQuery(
                 Artist.class));

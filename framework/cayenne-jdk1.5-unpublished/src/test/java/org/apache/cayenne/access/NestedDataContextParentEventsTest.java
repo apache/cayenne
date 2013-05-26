@@ -37,7 +37,7 @@ public class NestedDataContextParentEventsTest extends ServerCase {
     private DataContext context;
 
     public void testParentUpdatedId() throws Exception {
-        ObjectContext child1 = runtime.getContext(context);
+        ObjectContext child1 = runtime.newContext(context);
 
         final Artist ac = child1.newObject(Artist.class);
         ac.setArtistName("X");

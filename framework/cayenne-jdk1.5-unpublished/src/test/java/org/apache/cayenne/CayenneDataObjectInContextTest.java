@@ -75,7 +75,7 @@ public class CayenneDataObjectInContextTest extends ServerCase {
         assertSame(object, context.getGraphManager().getNode(tempID));
 
         // registering in another context should throw an exception
-        ObjectContext anotherContext = runtime.getContext();
+        ObjectContext anotherContext = runtime.newContext();
         try {
             anotherContext.registerNewObject(object);
             fail("registerNewObject should've failed - object is already in another context");

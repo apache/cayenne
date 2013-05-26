@@ -119,11 +119,11 @@ public class ClientRuntimeTest extends TestCase {
 
         ClientRuntime runtime = new ClientRuntime(properties, extraModule);
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
         assertNotNull(context);
         assertTrue(context instanceof CayenneContext);
         assertNotSame("ObjectContext must not be a singleton", context, runtime
-                .getContext());
+                .newContext());
 
         CayenneContext clientContext = (CayenneContext) context;
         assertNotNull(clientContext.getChannel());

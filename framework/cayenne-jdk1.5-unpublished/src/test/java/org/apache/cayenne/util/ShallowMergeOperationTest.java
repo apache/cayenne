@@ -75,7 +75,7 @@ public class ShallowMergeOperationTest extends ServerCase {
 
     public void testMerge_Relationship() throws Exception {
 
-        ObjectContext childContext = runtime.getContext(context);
+        ObjectContext childContext = runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         Artist _new = context.newObject(Artist.class);
@@ -99,7 +99,7 @@ public class ShallowMergeOperationTest extends ServerCase {
     public void testMerge_NoOverride() throws Exception {
         createArtistsDataSet();
 
-        ObjectContext childContext = runtime.getContext(context);
+        ObjectContext childContext = runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         int modifiedId = 33003;
@@ -139,7 +139,7 @@ public class ShallowMergeOperationTest extends ServerCase {
     public void testMerge_PersistenceStates() throws Exception {
         createArtistsDataSet();
 
-        final ObjectContext childContext = runtime.getContext(context);
+        final ObjectContext childContext = runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         final Artist _new = context.newObject(Artist.class);

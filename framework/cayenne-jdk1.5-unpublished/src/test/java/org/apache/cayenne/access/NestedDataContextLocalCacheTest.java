@@ -59,7 +59,7 @@ public class NestedDataContextLocalCacheTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        ObjectContext child1 = runtime.getContext(context);
+        ObjectContext child1 = runtime.newContext(context);
 
         assertNull(((BaseContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));

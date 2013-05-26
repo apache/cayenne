@@ -30,6 +30,6 @@ public class ClientCaseObjectContextProvider implements Provider<ObjectContext> 
     protected Provider<ClientRuntime> clientRuntimeProvider;
 
     public ObjectContext get() throws ConfigurationException {
-        return clientRuntimeProvider.get().getContext();
+        return clientRuntimeProvider.get().newContext();
     }
 }

@@ -65,7 +65,7 @@ public class ObjectIdRelationshipHandlerTest extends TestCase {
 
         e1Table.insert(1);
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
         E1 e1 = (E1) Cayenne.objectForQuery(context, new SelectQuery(E1.class));
 
         UuidRoot1 r1 = context.newObject(UuidRoot1.class);
@@ -86,7 +86,7 @@ public class ObjectIdRelationshipHandlerTest extends TestCase {
 
     public void testRelate_New() throws Exception {
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
         E1 e1 = context.newObject(E1.class);
 
         UuidRoot1 r1 = context.newObject(UuidRoot1.class);
@@ -112,7 +112,7 @@ public class ObjectIdRelationshipHandlerTest extends TestCase {
         e1Table.insert(1);
         rootTable.insert(1, "E1:1");
 
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
 
         UuidRoot1 r1 = Cayenne.objectForPK(context, UuidRoot1.class, 1);
         assertEquals("E1:1", r1.getUuid());
