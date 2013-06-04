@@ -20,14 +20,10 @@
 package org.apache.cayenne.unit;
 
 import java.sql.Connection;
-import java.sql.Types;
 import java.util.Collection;
 
-import org.apache.cayenne.access.DataContextProcedureQueryTest;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureParameter;
 
 public class PostgresUnitDbAdapter extends UnitDbAdapter {
 
@@ -36,8 +32,7 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
     }
 
     @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
+    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
         // avoid dropping constraints...
     }
 
@@ -64,25 +59,6 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
             executeDDL(con, "postgresql", "create-update-sp.sql");
             executeDDL(con, "postgresql", "create-update-sp2.sql");
             executeDDL(con, "postgresql", "create-out-sp.sql");
-        }
-    }
-
-    @Override
-    public void tweakProcedure(Procedure proc) {
-        if (DataContextProcedureQueryTest.OUT_STORED_PROCEDURE.equals(proc.getName())
-                && proc.getCallParameters().size() == 2) {
-
-            proc.clearCallParameters();
-            proc.addCallParameter(new ProcedureParameter(
-                    "out_param",
-                    Types.INTEGER,
-                    ProcedureParameter.OUT_PARAMETER));
-
-            proc.addCallParameter(new ProcedureParameter(
-                    "in_param",
-                    Types.INTEGER,
-                    ProcedureParameter.IN_PARAMETER));
-            proc.setReturningValue(true);
         }
     }
 }
