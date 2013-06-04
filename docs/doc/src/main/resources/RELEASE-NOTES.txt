@@ -83,3 +83,5 @@ CAY-1804 Serialisation of long[] type was not working correctly.
 CAY-1806 Error importing eomodel 
 CAY-1817 NPE during Validate Project 
 CAY-1827 EhCache region corresponding to a cache group loses its settings after 'removeGroup'
+CAY-1832 Exception when modifying objects in postLoad callback
+

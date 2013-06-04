@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -226,6 +228,47 @@ public class DataDomainCallbacksTest extends ServerCase {
         assertSame(a2, listener.getPublicCalledbackEntity());
     }
 
+    public void testPostLoad_ThatModifiesObject() {
+        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+
+        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        MockCallingBackListener listener = new MockCallingBackListener() {
+        	@Override
+        	public void publicCallback(Object entity) {
+        		super.publicCallback(entity);
+        		Artist a = (Artist)entity;
+        		a.setArtistName("Changed"); // modify object during postLoad callback
+        	}
+        };
+        registry.addListener(
+                LifecycleEvent.POST_LOAD,
+                Artist.class,
+                listener,
+                "publicCallback");
+
+        Artist a1 = context.newObject(Artist.class);
+        a1.setArtistName("XX");
+        Painting p1 = context.newObject(Painting.class);
+        p1.setToArtist(a1);
+        p1.setPaintingTitle("XXX");
+        context.commitChanges();
+
+        context.invalidateObjects(a1, p1);
+
+        SelectQuery q = new SelectQuery(Painting.class);
+        p1 = (Painting) context1.performQuery(q).get(0);
+
+        // this should be a hollow object, so no callback just yet
+        a1 = p1.getToArtist();
+        assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
+        assertEquals(0, a1.getPostLoaded());
+        assertNull(listener.getPublicCalledbackEntity());
+
+        a1.getArtistName();
+        assertEquals(1, a1.getPostLoaded());
+        assertSame(a1, listener.getPublicCalledbackEntity());
+    }
+    
     public void testPreUpdate() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();

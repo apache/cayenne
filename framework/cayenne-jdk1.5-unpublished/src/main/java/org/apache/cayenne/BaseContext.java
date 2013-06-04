@@ -321,18 +321,18 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                         "Error resolving fault, more than one row exists in the database for ObjectId: " + oid);
             }
 
+            // 5/28/2013 - Commented out this block to allow for modifying objects in the postLoad callback
             // sanity check...
-            if (object.getPersistenceState() != PersistenceState.COMMITTED) {
-
-                String state = PersistenceState.persistenceStateName(object.getPersistenceState());
-
-                // TODO: andrus 4/13/2006, modified and deleted states are
-                // possible due to
-                // a race condition, should we handle them here?
-
-                throw new FaultFailureException("Error resolving fault for ObjectId: " + oid + " and state (" + state
-                        + "). Possible cause - matching row is missing from the database.");
-            }
+//            if (object.getPersistenceState() != PersistenceState.COMMITTED) {
+//
+//                String state = PersistenceState.persistenceStateName(object.getPersistenceState());
+//
+//                // TODO: andrus 4/13/2006, modified and deleted states are
+//                // possible due to
+//                // a race condition, should we handle them here?
+//                throw new FaultFailureException("Error resolving fault for ObjectId: " + oid + " and state (" + state
+//                        + "). Possible cause - matching row is missing from the database.");
+//            }
         }
 
         // resolve relationship fault
