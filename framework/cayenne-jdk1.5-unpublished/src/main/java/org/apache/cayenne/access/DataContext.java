@@ -414,7 +414,7 @@ public class DataContext extends BaseContext {
      * @see DataRow
      * @since 3.1
      */
-    public <T extends DataObject> T objectFromDataRow(Class<T> objectClass, DataRow dataRow) {
+    public <T extends Persistent> T objectFromDataRow(Class<T> objectClass, DataRow dataRow) {
         ObjEntity entity = this.getEntityResolver().lookupObjEntity(objectClass);
 
         if (entity == null) {
