@@ -88,8 +88,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
 
         try {
             context.performGenericQuery(q);
-        }
-        finally {
+        } finally {
             Transaction.bindThreadTransaction(null);
             t.commit();
         }
@@ -124,8 +123,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
 
         try {
             context.performGenericQuery(q);
-        }
-        finally {
+        } finally {
             Transaction.bindThreadTransaction(null);
             t.commit();
         }
@@ -202,9 +200,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
         createArtist(1000.0);
 
         // test ProcedureQuery with Procedure as root
-        Procedure proc = context
-                .getEntityResolver()
-                .getProcedure(SELECT_STORED_PROCEDURE);
+        Procedure proc = context.getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
         ProcedureQuery q = new ProcedureQuery(proc);
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", new Integer(3000));
@@ -301,9 +297,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
         assertEquals(1, rows.size());
         Object row = rows.get(0);
         assertNotNull(row);
-        assertTrue(
-                "Unexpected row class: " + row.getClass().getName(),
-                row instanceof Map<?, ?>);
+        assertTrue("Unexpected row class: " + row.getClass().getName(), row instanceof Map<?, ?>);
         Map<?, ?> outParams = (Map<?, ?>) row;
         Number price = (Number) outParams.get("out_param");
         assertNotNull("Null result... row content: " + row, price);
@@ -348,9 +342,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
         createArtist(1000.0);
 
         // test ProcedureQuery with Procedure as root
-        Procedure proc = context
-                .getEntityResolver()
-                .getProcedure(SELECT_STORED_PROCEDURE);
+        Procedure proc = context.getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
         ProcedureQuery q = new ProcedureQuery(proc);
         q.setFetchingDataRows(true);
         q.addParameter("aName", "An Artist");
@@ -383,18 +375,21 @@ public class DataContextProcedureQueryTest extends ServerCase {
     }
 
     protected List<DataRow> runProcedureSelect(ProcedureQuery q) throws Exception {
-        // Sybase blows whenever a transaction wraps a SP, so turn off transactions
+        // Sybase blows whenever a transaction wraps a SP, so turn off
+        // transactions
 
-        boolean transactionsFlag = context
-                .getParentDataDomain()
-                .isUsingExternalTransactions();
+        // TODO: it is quite the opposite with PostgreSQL. If an SP returns an
+        // open refcursor, it actually expects a TX in progress, so while we
+        // don't have refcursor unit tests, this is something to keep in mind
+        // e.g. http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
+
+        boolean transactionsFlag = context.getParentDataDomain().isUsingExternalTransactions();
 
         context.getParentDataDomain().setUsingExternalTransactions(true);
 
         try {
             return context.performQuery(q);
-        }
-        finally {
+        } finally {
             context.getParentDataDomain().setUsingExternalTransactions(transactionsFlag);
         }
     }
