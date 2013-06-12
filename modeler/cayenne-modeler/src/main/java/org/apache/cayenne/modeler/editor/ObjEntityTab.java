@@ -211,9 +211,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         };
 
         // assemble
-        FormLayout layout = new FormLayout(
-                "right:100dlu, 3dlu, fill:143dlu",
-                "");
+        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
