@@ -63,7 +63,6 @@ import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -103,7 +102,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     protected TextAdapter superClassName;
     protected TextAdapter qualifier;
     protected JComboBox dbEntityCombo;
-    protected JButton syncWithDbEntityButton;
     protected JComboBox superEntityCombo;
     protected JButton tableLabel;
     protected JCheckBox readOnly;
@@ -194,9 +192,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         tableLabel.setMargin(new Insets(0, 0, 0, 0));
         tableLabel.setBorder(null);
 
-        syncWithDbEntityButton = new JButton("Sync w/DbEntity");
-        syncWithDbEntityButton.setIcon(ModelerUtil.buildIcon("icon-sync.gif"));
-        syncWithDbEntityButton.setToolTipText("Sync this ObjEntity with its DBEntity");
 
         isAbstract = new JCheckBox();
         serverOnly = new JCheckBox();
@@ -217,36 +212,35 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         // assemble
         FormLayout layout = new FormLayout(
-                "right:100dlu, 3dlu, fill:135dlu, 3dlu, pref",
+                "right:100dlu, 3dlu, fill:143dlu",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
         builder.appendSeparator("ObjEntity Configuration");
-        builder.append("ObjEntity Name:", name.getComponent(), 3);
-        builder.append("Inheritance:", superEntityCombo, 3);
-        builder.append(tableLabel, dbEntityCombo, syncWithDbEntityButton);
-        isAbstractLabel = builder.append("Abstract class:", isAbstract, 3);
-
+        builder.append("ObjEntity Name:", name.getComponent());
+        builder.append("Inheritance:", superEntityCombo);
+        builder.append(tableLabel, dbEntityCombo);
+        isAbstractLabel = builder.append("Abstract class:", isAbstract);
         builder.appendSeparator();
 
-        builder.append("Java Class:", className.getComponent(), 3);
-        superclassLabel = builder.append("Superclass:", superClassName.getComponent(), 3);
-        builder.append("Qualifier:", qualifier.getComponent(), 3);
-        builder.append("Read-Only:", readOnly, 3);
-        builder.append("Optimistic Locking:", optimisticLocking, 3);
+        builder.append("Java Class:", className.getComponent());
+     
+        superclassLabel = builder.append("Superclass:", superClassName.getComponent());
+        builder.append("Qualifier:", qualifier.getComponent());
+        builder.append("Read-Only:", readOnly);
+        builder.append("Optimistic Locking:", optimisticLocking);
         // add callback-related stuff
-        builder.append("Exclude superclass listeners:", excludeSuperclassListeners, 3);
-        builder.append("Exclude default listeners:", excludeDefaultListeners, 3);
+        builder.append("Exclude superclass listeners:", excludeSuperclassListeners);
+        builder.append("Exclude default listeners:", excludeDefaultListeners);
 
         clientSeparator = builder.appendSeparator("Java Client");
-        serverOnlyLabel = builder.append("Not for Client Use:", serverOnly, 3);
+        serverOnlyLabel = builder.append("Not for Client Use:", serverOnly);
         clientClassNameLabel = builder.append("Client Java Class:", clientClassName
-                .getComponent(), 3);
+                .getComponent());
         clientSuperClassNameLabel = builder.append(
                 "Client Superclass:",
-                clientSuperClassName.getComponent(),
-                3);
+                clientSuperClassName.getComponent());
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }
@@ -262,7 +256,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
                 // Change DbEntity for current ObjEntity
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 DbEntity dbEntity = (DbEntity) dbEntityCombo.getSelectedItem();
-                syncWithDbEntityButton.setEnabled(dbEntity != null);
+       
 
                 if (dbEntity != entity.getDbEntity()) {
                     entity.setDbEntity(dbEntity);
@@ -355,8 +349,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         });
 
-        syncWithDbEntityButton.addActionListener(new ObjEntitySyncAction(mediator
-                .getApplication()));
+ 
 
         readOnly.addActionListener(new ActionListener() {
 
@@ -650,8 +643,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     void toggleEnabled(boolean directTableMapping, boolean clientFieldsEnabled) {
         superClassName.getComponent().setEnabled(directTableMapping);
         superclassLabel.setEnabled(directTableMapping);
-
-        syncWithDbEntityButton.setEnabled(dbEntityCombo.getSelectedItem() != null);
 
         clientSuperClassName.getComponent().setEnabled(
                 directTableMapping && clientFieldsEnabled);
