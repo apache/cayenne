@@ -129,7 +129,7 @@
 	<db-entity name="CLOB_TEST_RELATION">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="ID_CLOB" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="VALUE" type="INTEGER"/>
+		<db-attribute name="CVALUE" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="COMPOUND_FK_TEST">
 		<db-attribute name="F_KEY1" type="VARCHAR" length="20"/>
@@ -407,7 +407,7 @@
 	</obj-entity>
 	<obj-entity name="ClobTestRelation" className="org.apache.cayenne.testdo.testmap.ClobTestRelation" dbEntityName="CLOB_TEST_RELATION">
 		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
-		<obj-attribute name="value" type="java.lang.Integer" db-attribute-path="VALUE"/>
+		<obj-attribute name="value" type="java.lang.Integer" db-attribute-path="CVALUE"/>
 	</obj-entity>
 	<obj-entity name="CompoundFkTestEntity" className="org.apache.cayenne.testdo.testmap.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
