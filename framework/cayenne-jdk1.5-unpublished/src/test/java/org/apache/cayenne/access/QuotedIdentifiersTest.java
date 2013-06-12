@@ -49,8 +49,8 @@ public class QuotedIdentifiersTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("QUOTED_ADDRESS");
         dbHelper.deleteAll("quote Person");
+        dbHelper.deleteAll("QUOTED_ADDRESS");
 
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");
