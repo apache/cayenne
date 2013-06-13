@@ -207,11 +207,11 @@ public class ObjEntityValidator extends TreeNodeValidator {
     }
 
     private void addAttributeWarning(Validator validator, String entityName, String objAttributeName, String dbAttributeName, ProjectPath path) {
-        validator.registerWarning("ObjEntity " + entityName + " contains duplicate DbRelationship mappings (" + objAttributeName + " -> " + dbAttributeName + ")", path);
+        validator.registerWarning("ObjEntity " + entityName + " contains duplicate DbAttribute mappings (" + objAttributeName + " -> " + dbAttributeName + ")", path);
     }
 
     private void addRelationshipWarning(Validator validator, String entityName, String relationshipName, String relationshipPath, ProjectPath path) {
-        validator.registerWarning("ObjEntity " + entityName + " contains duplicate DbRelationship mappings (" + relationshipName + " -> " + relationshipPath + ")", path);
+        validator.registerWarning("ObjEntity " + entityName + " contains duplicate ObjRelationship mappings (" + relationshipName + " -> " + relationshipPath + ")", path);
     }
 
     protected void validateName(ObjEntity entity, ProjectPath path, Validator validator) {
