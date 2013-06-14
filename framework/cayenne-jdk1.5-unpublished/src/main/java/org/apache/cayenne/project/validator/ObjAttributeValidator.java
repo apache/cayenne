@@ -99,7 +99,7 @@ public class ObjAttributeValidator extends TreeNodeValidator {
 
                 Iterator<EmbeddableAttribute> it = embAttributes.iterator();
                 while (it.hasNext()) {
-                    EmbeddableAttribute embAttr = (EmbeddableAttribute) it.next();
+                    EmbeddableAttribute embAttr = it.next();
                     String dbAttributeName;
                     if (attrOverrides.size() > 0
                             && attrOverrides.containsKey(embAttr.getName())) {
@@ -123,7 +123,6 @@ public class ObjAttributeValidator extends TreeNodeValidator {
                     }
                 }
             }
-
         }
         else if (attribute.getDbAttribute() == null) {
             validator.registerWarning("ObjAttribute has no DbAttribute mapping.", path);
@@ -136,5 +135,26 @@ public class ObjAttributeValidator extends TreeNodeValidator {
                     + attribute.getDbAttributeName(), path);
         }
 
+        checkForDuplicates(path, validator, attribute);
+    }
+
+    private void checkForDuplicates(ProjectPath path, Validator validator, ObjAttribute attribute) {
+        if (attribute != null && attribute.getName() != null && attribute.isInherited() == false && attribute.isFlattened() == false) {
+            ObjEntity entity = (ObjEntity) attribute.getEntity();
+
+            for (ObjAttribute comparisonAttribute : entity.getAttributes()) {
+                if (attribute != comparisonAttribute) {
+                    String dbAttributeName = attribute.getDbAttributeName();
+
+                    if (dbAttributeName != null) {
+                        if (dbAttributeName.equals(comparisonAttribute.getDbAttributeName()))
+                            validator.registerWarning("ObjEntity " + entity.getName() +
+                                                      " contains duplicate DbAttribute mapping (" +
+                                                      attribute.getName() + " -> " + dbAttributeName + ")", path);
+                        return;
+                    }
+                }
+            }
+        }
     }
 }

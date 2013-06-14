@@ -127,7 +127,7 @@ public class ObjRelationshipValidator extends TreeNodeValidator {
                         break;
                     }
                 }
-                
+
                 if (check) {
                     validator
                             .registerWarning(
@@ -135,6 +135,28 @@ public class ObjRelationshipValidator extends TreeNodeValidator {
                                             + objRelationshipIdentifier(rel)
                                             + " has a Nullify delete rule and a mandatory reverse relationship ",
                                     path);
+                }
+            }
+        }
+
+        checkForDuplicates(path, validator, rel);
+    }
+
+    private void checkForDuplicates(ProjectPath path, Validator validator, ObjRelationship relationship) {
+        if (relationship != null && relationship.getName() != null && relationship.getTargetEntityName() != null && relationship.isFlattened() == false) {
+            ObjEntity entity             = (ObjEntity) relationship.getSourceEntity();
+            String    dbRelationshipPath = relationship.getTargetEntityName() + "." + relationship.getDbRelationshipPath();
+
+            if (dbRelationshipPath != null) {
+                for (ObjRelationship comparisonRelationship : entity.getRelationships()) {
+                    if (relationship != comparisonRelationship) {
+                        String comparisonDbRelationshipPath = comparisonRelationship.getTargetEntityName() + "." + comparisonRelationship.getDbRelationshipPath();
+
+                        if (dbRelationshipPath.equals(comparisonDbRelationshipPath)) {
+                            validator.registerWarning("ObjEntity " + entity.getName() + " contains duplicate ObjRelationship mappings (" + relationship.getName() + " -> " + dbRelationshipPath + ")", path);
+                            return;
+                        }
+                    }
                 }
             }
         }
