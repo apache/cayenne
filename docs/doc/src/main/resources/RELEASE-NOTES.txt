@@ -54,6 +54,7 @@ CAY-1823 remove ":sync w/DbEntity" button from ObjEntity - it is redundant and a
 CAY-1825 Simplify API for setting up query caching
 CAY-1828 SQLSelect - generics friendly fluent selecting sql query
 CAY-1829 Make ResultIterator implement Iterable<T>, create ObjectContext.iterate method
+CAY-1836 Firebird Adapter 
 
 Bug Fixes:
 
