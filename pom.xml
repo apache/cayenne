@@ -764,6 +764,23 @@
 			</activation>
 		</profile>
 		<profile>
+			<id>firebird</id>
+			<activation>
+				<property>
+					<name>cayenneTestConnection</name>
+					<value>firebird</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.firebirdsql.jdbc</groupId>
+					<artifactId>jaybird-jdk16</artifactId>
+					<version>2.2.3</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
 			<id>frontbase</id>
 			<activation>
 				<property>

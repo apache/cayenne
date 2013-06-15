@@ -66,6 +66,7 @@ import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
+import org.apache.cayenne.dba.firebird.FirebirdSniffer;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
 import org.apache.cayenne.dba.h2.H2Sniffer;
 import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
@@ -135,6 +136,7 @@ public class ServerModule implements Module {
         // add their own to install custom adapters automatically
         binder
                 .bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST)
+                .add(new FirebirdSniffer(objectFactory))
                 .add(new OpenBaseSniffer(objectFactory))
                 .add(new FrontBaseSniffer(objectFactory))
                 .add(new IngresSniffer(objectFactory))
