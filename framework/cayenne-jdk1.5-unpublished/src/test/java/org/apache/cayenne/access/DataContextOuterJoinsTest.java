@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.sql.Types;
 import java.util.List;
+import java.sql.Types;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
@@ -71,6 +71,7 @@ public class DataContextOuterJoinsTest extends ServerCase {
                 "ARTIST_ID");
 
         artistGroupHelper.deleteAll();
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.NULL).execute();
         artgroupHelper.deleteAll();
         paintingHelper.deleteAll();
         artistHelper.deleteAll();

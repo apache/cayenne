@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
@@ -49,11 +50,12 @@ public class DataContextDeleteRulesTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ARTGROUP");
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.NULL).execute();
+        dbHelper.deleteAll("ARTGROUP");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("EXHIBIT");
         dbHelper.deleteAll("GALLERY");

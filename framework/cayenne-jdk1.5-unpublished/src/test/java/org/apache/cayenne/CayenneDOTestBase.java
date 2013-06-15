@@ -20,6 +20,7 @@ package org.apache.cayenne;
  ****************************************************************/
 
 import java.util.List;
+import java.sql.Types;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -52,6 +53,7 @@ public abstract class CayenneDOTestBase extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("EXHIBIT");
         dbHelper.deleteAll("GALLERY");

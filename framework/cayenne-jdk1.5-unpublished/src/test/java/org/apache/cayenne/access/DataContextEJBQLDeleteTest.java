@@ -56,6 +56,8 @@ public class DataContextEJBQLDeleteTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("MEANINGFUL_PK_DEP");
+        dbHelper.deleteAll("MEANINGFUL_PK_TEST1");
 
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(

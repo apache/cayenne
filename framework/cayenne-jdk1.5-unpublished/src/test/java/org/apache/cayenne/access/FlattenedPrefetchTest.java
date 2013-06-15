@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.sql.Types;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -64,6 +65,7 @@ public class FlattenedPrefetchTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.NULL).execute();
         dbHelper.deleteAll("ARTGROUP");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");

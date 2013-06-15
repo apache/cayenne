@@ -20,6 +20,7 @@
 package org.apache.cayenne;
 
 import java.util.List;
+import java.sql.Types;
 
 import org.apache.cayenne.access.MockDataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -63,6 +64,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.NULL).execute();
         dbHelper.deleteAll("ARTGROUP");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");

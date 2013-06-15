@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import java.sql.Date;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,7 +79,9 @@ public class JointPrefetchTest extends ServerCase {
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT"); // table artist_exhibit depends on artist and exhibit
         dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("EXHIBIT"); // table exhibit depends on gallery
         dbHelper.deleteAll("GALLERY");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
