@@ -48,6 +48,8 @@ public class AshwoodEntitySorterTest extends ServerCase {
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
+        dbHelper.deleteAll("FK_OF_DIFFERENT_TYPE");
+        dbHelper.deleteAll("MEANINGFUL_FK");
         dbHelper.deleteAll("RELATIONSHIP_HELPER");
 
         tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
