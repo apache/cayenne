@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
+import org.apache.cayenne.dba.firebird.FirebirdAdapter;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
@@ -37,7 +38,8 @@ import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 
 /**
- * Contains mappings for guessing defaults for various adapter and JDBC settings.
+ * Contains mappings for guessing defaults for various adapter and JDBC
+ * settings.
  * 
  */
 public class AdapterMapping {
@@ -60,130 +62,67 @@ public class AdapterMapping {
         // TODO: make configuration external...
 
         // drivers
-        jdbcDriverToAdapterMap.put("oracle.jdbc.driver.OracleDriver", OracleAdapter.class
-                .getName());
-        jdbcDriverToAdapterMap.put("com.sybase.jdbc2.jdbc.SybDriver", SybaseAdapter.class
-                .getName());
+        jdbcDriverToAdapterMap.put("oracle.jdbc.driver.OracleDriver", OracleAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("com.sybase.jdbc2.jdbc.SybDriver", SybaseAdapter.class.getName());
         jdbcDriverToAdapterMap.put("com.mysql.jdbc.Driver", MySQLAdapter.class.getName());
-        jdbcDriverToAdapterMap.put("com.ibm.db2.jcc.DB2Driver", DB2Adapter.class
-                .getName());
-        jdbcDriverToAdapterMap
-                .put("org.hsqldb.jdbcDriver", HSQLDBAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("com.ibm.db2.jcc.DB2Driver", DB2Adapter.class.getName());
+        jdbcDriverToAdapterMap.put("org.hsqldb.jdbcDriver", HSQLDBAdapter.class.getName());
         jdbcDriverToAdapterMap.put("org.h2.Driver", H2Adapter.class.getName());
-        jdbcDriverToAdapterMap.put("org.postgresql.Driver", PostgresAdapter.class
-                .getName());
-        jdbcDriverToAdapterMap.put("com.openbase.jdbc.ObDriver", OpenBaseAdapter.class
-                .getName());
-        jdbcDriverToAdapterMap.put(
-                "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-                SQLServerAdapter.class.getName());
-        jdbcDriverToAdapterMap.put(
-                "org.apache.derby.jdbc.EmbeddedDriver",
-                DerbyAdapter.class.getName());
-        jdbcDriverToAdapterMap.put("jdbc.FrontBase.FBJDriver", FrontBaseAdapter.class
-                .getName());
-        jdbcDriverToAdapterMap.put("com.ingres.jdbc.IngresDriver", IngresAdapter.class
-                .getName());
+        jdbcDriverToAdapterMap.put("org.postgresql.Driver", PostgresAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("com.openbase.jdbc.ObDriver", OpenBaseAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("com.microsoft.sqlserver.jdbc.SQLServerDriver", SQLServerAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("org.apache.derby.jdbc.EmbeddedDriver", DerbyAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("jdbc.FrontBase.FBJDriver", FrontBaseAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("com.ingres.jdbc.IngresDriver", IngresAdapter.class.getName());
         jdbcDriverToAdapterMap.put("org.sqlite.JDBC", SQLiteAdapter.class.getName());
+        jdbcDriverToAdapterMap.put("org.firebirdsql.jdbc.FBDriver", FirebirdAdapter.class.getName());
 
         // urls
-        adapterToJDBCURLMap.put(
-                OracleAdapter.class.getName(),
-                "jdbc:oracle:thin:@//localhost:1521/database");
-        adapterToJDBCURLMap.put(
-                SybaseAdapter.class.getName(),
-                "jdbc:sybase:Tds:localhost:port/database");
-        adapterToJDBCURLMap.put(
-                MySQLAdapter.class.getName(),
-                "jdbc:mysql://localhost/database");
-        adapterToJDBCURLMap.put(
-                DB2Adapter.class.getName(),
-                "jdbc:db2://localhost:port/database");
-        adapterToJDBCURLMap.put(
-                HSQLDBAdapter.class.getName(),
-                "jdbc:hsqldb:hsql://localhost/database");
-        adapterToJDBCURLMap.put(
-                H2Adapter.class.getName(),
-                "jdbc:h2:mem:database;MVCC=TRUE");
-        adapterToJDBCURLMap.put(
-                PostgresAdapter.class.getName(),
-                "jdbc:postgresql://localhost:5432/database");
-        adapterToJDBCURLMap.put(
-                OpenBaseAdapter.class.getName(),
-                "jdbc:openbase://localhost/database");
-        adapterToJDBCURLMap
-                .put(
-                        SQLServerAdapter.class.getName(),
-                        "jdbc:sqlserver://localhost:1433;databaseName=database;SelectMethod=cursor");
+        adapterToJDBCURLMap.put(OracleAdapter.class.getName(), "jdbc:oracle:thin:@//localhost:1521/database");
+        adapterToJDBCURLMap.put(SybaseAdapter.class.getName(), "jdbc:sybase:Tds:localhost:port/database");
+        adapterToJDBCURLMap.put(MySQLAdapter.class.getName(), "jdbc:mysql://localhost/database");
+        adapterToJDBCURLMap.put(DB2Adapter.class.getName(), "jdbc:db2://localhost:port/database");
+        adapterToJDBCURLMap.put(HSQLDBAdapter.class.getName(), "jdbc:hsqldb:hsql://localhost/database");
+        adapterToJDBCURLMap.put(H2Adapter.class.getName(), "jdbc:h2:mem:database;MVCC=TRUE");
+        adapterToJDBCURLMap.put(PostgresAdapter.class.getName(), "jdbc:postgresql://localhost:5432/database");
+        adapterToJDBCURLMap.put(OpenBaseAdapter.class.getName(), "jdbc:openbase://localhost/database");
+        adapterToJDBCURLMap.put(SQLServerAdapter.class.getName(),
+                "jdbc:sqlserver://localhost:1433;databaseName=database;SelectMethod=cursor");
         adapterToJDBCURLMap.put(SQLiteAdapter.class.getName(), "jdbc:sqlite:testdb");
+        adapterToJDBCURLMap.put(FirebirdAdapter.class.getName(), "jdbc:firebirdsql:localhost/3050:database.fdb");
 
-        // TODO: embedded Derby Mode... change to client-server once we figure it out
-        adapterToJDBCURLMap.put(
-                DerbyAdapter.class.getName(),
-                "jdbc:derby:testdb;create=true");
+        // TODO: embedded Derby Mode... change to client-server once we figure
+        // it out
+        adapterToJDBCURLMap.put(DerbyAdapter.class.getName(), "jdbc:derby:testdb;create=true");
 
-        adapterToJDBCURLMap.put(
-                FrontBaseAdapter.class.getName(),
-                "jdbc:FrontBase://localhost/database");
-        adapterToJDBCURLMap.put(
-                IngresAdapter.class.getName(),
-                "jdbc:ingres://127.0.0.1:II7/database");
+        adapterToJDBCURLMap.put(FrontBaseAdapter.class.getName(), "jdbc:FrontBase://localhost/database");
+        adapterToJDBCURLMap.put(IngresAdapter.class.getName(), "jdbc:ingres://127.0.0.1:II7/database");
 
         // adapters
-        adapterToJDBCDriverMap.put(
-                OracleAdapter.class.getName(),
-                "oracle.jdbc.driver.OracleDriver");
-        adapterToJDBCDriverMap.put(
-                SybaseAdapter.class.getName(),
-                "com.sybase.jdbc2.jdbc.SybDriver");
+        adapterToJDBCDriverMap.put(OracleAdapter.class.getName(), "oracle.jdbc.driver.OracleDriver");
+        adapterToJDBCDriverMap.put(SybaseAdapter.class.getName(), "com.sybase.jdbc2.jdbc.SybDriver");
         adapterToJDBCDriverMap.put(MySQLAdapter.class.getName(), "com.mysql.jdbc.Driver");
-        adapterToJDBCDriverMap.put(
-                DB2Adapter.class.getName(),
-                "com.ibm.db2.jcc.DB2Driver");
-        adapterToJDBCDriverMap
-                .put(HSQLDBAdapter.class.getName(), "org.hsqldb.jdbcDriver");
+        adapterToJDBCDriverMap.put(DB2Adapter.class.getName(), "com.ibm.db2.jcc.DB2Driver");
+        adapterToJDBCDriverMap.put(HSQLDBAdapter.class.getName(), "org.hsqldb.jdbcDriver");
         adapterToJDBCDriverMap.put(H2Adapter.class.getName(), "org.h2.Driver");
-        adapterToJDBCDriverMap.put(
-                PostgresAdapter.class.getName(),
-                "org.postgresql.Driver");
-        adapterToJDBCDriverMap.put(
-                OpenBaseAdapter.class.getName(),
-                "com.openbase.jdbc.ObDriver");
-        adapterToJDBCDriverMap.put(
-                SQLServerAdapter.class.getName(),
-                "com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        adapterToJDBCDriverMap.put(
-                DerbyAdapter.class.getName(),
-                "org.apache.derby.jdbc.EmbeddedDriver");
+        adapterToJDBCDriverMap.put(PostgresAdapter.class.getName(), "org.postgresql.Driver");
+        adapterToJDBCDriverMap.put(OpenBaseAdapter.class.getName(), "com.openbase.jdbc.ObDriver");
+        adapterToJDBCDriverMap.put(SQLServerAdapter.class.getName(), "com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        adapterToJDBCDriverMap.put(DerbyAdapter.class.getName(), "org.apache.derby.jdbc.EmbeddedDriver");
 
-        adapterToJDBCDriverMap.put(
-                FrontBaseAdapter.class.getName(),
-                "jdbc.FrontBase.FBJDriver");
+        adapterToJDBCDriverMap.put(FrontBaseAdapter.class.getName(), "jdbc.FrontBase.FBJDriver");
 
-        adapterToJDBCDriverMap.put(
-                IngresAdapter.class.getName(),
-                "com.ingres.jdbc.IngresDriver");
+        adapterToJDBCDriverMap.put(IngresAdapter.class.getName(), "com.ingres.jdbc.IngresDriver");
         adapterToJDBCDriverMap.put(SQLiteAdapter.class.getName(), "org.sqlite.JDBC");
+        adapterToJDBCDriverMap.put(FirebirdAdapter.class.getName(), "org.firebirdsql.jdbc.FBDriver");
 
         // EOF plugins...
-        eofPluginToAdapterMap.put(
-                "com.webobjects.jdbcadaptor.SybasePlugIn",
-                SybaseAdapter.class.getName());
-        eofPluginToAdapterMap.put(
-                "com.webobjects.jdbcadaptor.MerantPlugIn",
-                SQLServerAdapter.class.getName());
-        eofPluginToAdapterMap.put(
-                "com.webobjects.jdbcadaptor.MicrosoftPlugIn",
-                SQLServerAdapter.class.getName());
-        eofPluginToAdapterMap.put(
-                "com.webobjects.jdbcadaptor.MySQLPlugIn",
-                MySQLAdapter.class.getName());
-        eofPluginToAdapterMap.put(
-                "com.webobjects.jdbcadaptor.OraclePlugIn",
-                OracleAdapter.class.getName());
-        eofPluginToAdapterMap.put(
-                "com.webobjects.jdbcadaptor.FrontbasePlugIn",
-                FrontBaseAdapter.class.getName());
+        eofPluginToAdapterMap.put("com.webobjects.jdbcadaptor.SybasePlugIn", SybaseAdapter.class.getName());
+        eofPluginToAdapterMap.put("com.webobjects.jdbcadaptor.MerantPlugIn", SQLServerAdapter.class.getName());
+        eofPluginToAdapterMap.put("com.webobjects.jdbcadaptor.MicrosoftPlugIn", SQLServerAdapter.class.getName());
+        eofPluginToAdapterMap.put("com.webobjects.jdbcadaptor.MySQLPlugIn", MySQLAdapter.class.getName());
+        eofPluginToAdapterMap.put("com.webobjects.jdbcadaptor.OraclePlugIn", OracleAdapter.class.getName());
+        eofPluginToAdapterMap.put("com.webobjects.jdbcadaptor.FrontbasePlugIn", FrontBaseAdapter.class.getName());
         eofPluginToAdapterMap.put("PostgresqlPlugIn", PostgresAdapter.class.getName());
     }
 
