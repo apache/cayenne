@@ -71,6 +71,7 @@ public abstract class MergeCase extends ServerCase {
     protected void setUpAfterInjection() throws Exception {
 
         dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.NULL).execute();
         dbHelper.deleteAll("ARTGROUP");
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
