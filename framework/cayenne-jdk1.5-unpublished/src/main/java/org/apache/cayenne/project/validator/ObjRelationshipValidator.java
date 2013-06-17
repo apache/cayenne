@@ -142,19 +142,42 @@ public class ObjRelationshipValidator extends TreeNodeValidator {
         checkForDuplicates(path, validator, rel);
     }
 
-    private void checkForDuplicates(ProjectPath path, Validator validator, ObjRelationship relationship) {
-        if (relationship != null && relationship.getName() != null && relationship.getTargetEntityName() != null && relationship.isFlattened() == false) {
-            ObjEntity entity             = (ObjEntity) relationship.getSourceEntity();
-            String    dbRelationshipPath = relationship.getTargetEntityName() + "." + relationship.getDbRelationshipPath();
+    /**
+     * Per CAY-1813, make sure two (or more) ObjRelationships do not map to the
+     * same database path.
+     */
+    private void checkForDuplicates(ProjectPath     path,
+                                    Validator       validator,
+                                    ObjRelationship relationship) {
+        if (relationship                       != null &&
+            relationship.getName()             != null &&
+            relationship.getTargetEntityName() != null) {
+
+            String dbRelationshipPath =
+                       relationship.getTargetEntityName() +
+                       "." +
+                       relationship.getDbRelationshipPath();
 
             if (dbRelationshipPath != null) {
+                ObjEntity entity = (ObjEntity) relationship.getSourceEntity();
+
                 for (ObjRelationship comparisonRelationship : entity.getRelationships()) {
                     if (relationship != comparisonRelationship) {
-                        String comparisonDbRelationshipPath = comparisonRelationship.getTargetEntityName() + "." + comparisonRelationship.getDbRelationshipPath();
+                        String comparisonDbRelationshipPath =
+                                   comparisonRelationship.getTargetEntityName() +
+                                   "." +
+                                   comparisonRelationship.getDbRelationshipPath();
 
                         if (dbRelationshipPath.equals(comparisonDbRelationshipPath)) {
-                            validator.registerWarning("ObjEntity " + entity.getName() + " contains duplicate ObjRelationship mappings (" + relationship.getName() + " -> " + dbRelationshipPath + ")", path);
-                            return;
+                            validator.registerWarning
+                                ("ObjEntity " +
+                                 entity.getName() +
+                                 " contains a duplicate ObjRelationship mapping (" +
+                                 relationship.getName() +
+                                 " -> " +
+                                 dbRelationshipPath +
+                                 ")", path);
+                            return; // Duplicate found, stop.
                         }
                     }
                 }

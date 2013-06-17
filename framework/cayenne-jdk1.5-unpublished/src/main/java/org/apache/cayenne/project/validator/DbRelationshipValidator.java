@@ -19,8 +19,11 @@
 
 package org.apache.cayenne.project.validator;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.project.ProjectPath;
@@ -89,8 +92,73 @@ public class DbRelationshipValidator extends TreeNodeValidator {
                                 path);
             }
         }
+
+        checkForDuplicates(path, validator, rel);
     }
-    
+
+    private String getJoins(DbRelationship relationship) {
+        List<String> joins = new ArrayList<String>();
+
+        for (DbJoin join : relationship.getJoins()) {
+            StringBuilder builder = new StringBuilder();
+
+            builder.append("[");
+            builder.append("source=").append(join.getSourceName());
+            builder.append(",");
+            builder.append("target=").append(join.getTargetName());
+            builder.append("]");
+
+            joins.add(builder.toString());
+        }
+
+        Collections.sort(joins);
+
+        return Util.join(joins, ",");
+    }
+
+    /**
+     * Per CAY-1813, make sure two (or more) DbRelationships do not map to the
+     * same database path.
+     */
+    private void checkForDuplicates(ProjectPath    path,
+                                    Validator      validator,
+                                    DbRelationship relationship) {
+        if (relationship                       != null &&
+            relationship.getName()             != null &&
+            relationship.getTargetEntityName() != null) {
+
+            String dbRelationshipPath =
+                       relationship.getTargetEntityName() +
+                       "." +
+                       getJoins(relationship);
+
+            if (dbRelationshipPath != null) {
+                DbEntity entity = (DbEntity) relationship.getSourceEntity();
+
+                for (DbRelationship comparisonRelationship : entity.getRelationships()) {
+                    if (relationship != comparisonRelationship) {
+                        String comparisonDbRelationshipPath =
+                                   comparisonRelationship.getTargetEntityName() +
+                                   "." +
+                                   getJoins(comparisonRelationship);
+
+                        if (dbRelationshipPath.equals(comparisonDbRelationshipPath)) {
+                            validator.registerWarning
+                                ("DbEntity " +
+                                 entity.getName() +
+                                 " contains a duplicate DbRelationship mapping (" +
+                                 relationship.getName() +
+                                 " -> " +
+                                 dbRelationshipPath +
+                                 ")", path);
+                            return; // Duplicate found, stop.
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public String dbRelationshipIdentifier(DbRelationship rel)
     {
         if (null == rel.getSourceEntity())

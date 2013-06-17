@@ -138,20 +138,34 @@ public class ObjAttributeValidator extends TreeNodeValidator {
         checkForDuplicates(path, validator, attribute);
     }
 
-    private void checkForDuplicates(ProjectPath path, Validator validator, ObjAttribute attribute) {
-        if (attribute != null && attribute.getName() != null && attribute.isInherited() == false && attribute.isFlattened() == false) {
+    /**
+     * Per CAY-1813, make sure two (or more) ObjAttributes do not map to the
+     * same database path.
+     */
+    private void checkForDuplicates(ProjectPath  path,
+                                    Validator    validator,
+                                    ObjAttribute attribute) {
+        if (attribute               != null &&
+            attribute.getName()     != null &&
+            attribute.isInherited() == false) {
+
             ObjEntity entity = (ObjEntity) attribute.getEntity();
 
             for (ObjAttribute comparisonAttribute : entity.getAttributes()) {
                 if (attribute != comparisonAttribute) {
-                    String dbAttributeName = attribute.getDbAttributeName();
+                    String dbAttributePath = attribute.getDbAttributePath();
 
-                    if (dbAttributeName != null) {
-                        if (dbAttributeName.equals(comparisonAttribute.getDbAttributeName()))
-                            validator.registerWarning("ObjEntity " + entity.getName() +
-                                                      " contains duplicate DbAttribute mapping (" +
-                                                      attribute.getName() + " -> " + dbAttributeName + ")", path);
-                        return;
+                    if (dbAttributePath != null) {
+                        if (dbAttributePath.equals(comparisonAttribute.getDbAttributePath()))
+                            validator.registerWarning
+                                ("ObjEntity " +
+                                 entity.getName() +
+                                 " contains a duplicate DbAttribute mapping (" +
+                                 attribute.getName() +
+                                 " -> " +
+                                 dbAttributePath +
+                                 ")", path);
+                        return; // Duplicate found, stop.
                     }
                 }
             }
