@@ -57,7 +57,7 @@ import org.xml.sax.XMLReader;
 
 /**
  * Contains various unorganized static utility methods used across Cayenne.
- * 
+ *
  */
 public class Util {
 
@@ -86,6 +86,29 @@ public class Util {
             in.close();
         }
         return buf.toString();
+    }
+
+    /**
+     * @param strings The list of strings to join.
+     * @param separator The separator between the strings.
+     * @return A single string of all the input strings separated by the separator.
+     */
+    public static String join(List<String> strings, String separator) {
+        if (strings == null || strings.size() == 0)
+            return "";
+
+        if (separator == null)
+            separator = "";
+
+        StringBuilder builder = new StringBuilder();
+
+        for (String string : strings) {
+            if (builder.length() > 0)
+                builder.append(separator);
+            builder.append(string);
+        }
+
+        return builder.toString();
     }
 
     /**
@@ -168,7 +191,7 @@ public class Util {
     /**
      * Reads data from the input and writes it to the output, until the end of the input
      * stream.
-     * 
+     *
      * @param in
      * @param out
      * @param bufSizeHint
@@ -273,7 +296,7 @@ public class Util {
      * Compares two objects similar to "Comparable.compareTo(Object)". Unlike
      * Comparable.compareTo(..), this method doesn't throw an exception if any of the two
      * objects is null.
-     * 
+     *
      * @since 1.1
      */
     public static <T> int nullSafeCompare(boolean nullsFirst, Comparable<T> o1, T o2) {
@@ -357,7 +380,7 @@ public class Util {
 
     /**
      * Returns an unqualified class name for the fully qualified name.
-     * 
+     *
      * @since 3.0
      */
     public static String stripPackageName(String className) {
@@ -374,7 +397,7 @@ public class Util {
 
     /**
      * Creates a mutable map out of two arrays with keys and values.
-     * 
+     *
      * @since 1.2
      */
     public static <K, V> Map<K, V> toMap(K[] keys, V[] values) {
@@ -424,7 +447,7 @@ public class Util {
 
     /**
      * Strips "\n", "\r\n", "\r" from the argument string.
-     * 
+     *
      * @since 1.2
      */
     public static String stripLineBreaks(String string, String replaceWith) {
@@ -489,7 +512,7 @@ public class Util {
 
     /**
      * Trims long strings substituting middle part with "...".
-     * 
+     *
      * @param str String to trim.
      * @param maxLength maximum allowable length. Must be at least 5, or an
      *            IllegalArgumentException is thrown.
@@ -554,7 +577,7 @@ public class Util {
     /**
      * Returns true if a Member is accessible via reflection under normal Java access
      * controls.
-     * 
+     *
      * @since 1.2
      */
     public static boolean isAccessible(Member member) {
@@ -565,7 +588,7 @@ public class Util {
     /**
      * Creates a Java class, handling regular class names as well as single-dimensional
      * arrays and primitive types.
-     * 
+     *
      * @since 1.2
      */
     public static Class<?> getJavaClass(String className) throws ClassNotFoundException {
