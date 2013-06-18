@@ -125,6 +125,29 @@ public class Util {
     }
 
     /**
+     * @param strings The list of strings to join.
+     * @param separator The separator between the strings.
+     * @return A single string of all the input strings separated by the separator.
+     */
+    public static String join(List<String> strings, String separator) {
+        if (strings == null || strings.size() == 0)
+            return "";
+
+        if (separator == null)
+            separator = "";
+
+        StringBuilder builder = new StringBuilder();
+
+        for (String string : strings) {
+            if (builder.length() > 0)
+                builder.append(separator);
+            builder.append(string);
+        }
+
+        return builder.toString();
+    }
+
+    /**
      * Copies file contents from source to destination. Makes up for the lack of file
      * copying utilities in Java
      * 
