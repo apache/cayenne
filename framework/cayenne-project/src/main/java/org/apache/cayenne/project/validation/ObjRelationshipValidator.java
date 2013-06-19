@@ -133,34 +133,76 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
                 }
             }
         }
-        
+
         // check for relationships with same source and target entities
         ObjEntity entity = (ObjEntity) relationship.getSourceEntity();
         for (ObjRelationship rel : entity.getRelationships()) {
             if (relationship.getDbRelationshipPath() != null && relationship.getDbRelationshipPath().equals(rel.getDbRelationshipPath())) {
-                if (relationship != rel && 
+                if (relationship != rel &&
                         relationship.getTargetEntity() == rel.getTargetEntity() &&
                         relationship.getSourceEntity() == rel.getSourceEntity()) {
                     addFailure(
-                            validationResult, 
-                            relationship, 
-                            "ObjectRelationship '%s' duplicates relationship '%s'", 
-                            toString(relationship), 
+                            validationResult,
+                            relationship,
+                            "ObjectRelationship '%s' duplicates relationship '%s'",
+                            toString(relationship),
                             toString(rel));
                 }
             }
         }
-        
+
         // check for invalid relationships in inherited entities
         if (relationship.getReverseRelationship() != null) {
             ObjRelationship revRel = relationship.getReverseRelationship();
-            if (relationship.getSourceEntity() != revRel.getTargetEntity() 
+            if (relationship.getSourceEntity() != revRel.getTargetEntity()
                     || relationship.getTargetEntity() != revRel.getSourceEntity()) {
                 addFailure(
                         validationResult,
                         revRel,
                         "Usage of super entity's relationships '%s' as reversed relationships for sub entity is discouraged",
                         toString(revRel));
+            }
+        }
+
+        checkForDuplicates(relationship, validationResult);
+    }
+
+    /**
+     * Per CAY-1813, make sure two (or more) ObjRelationships do not map to the
+     * same database path.
+     */
+    private void checkForDuplicates(ObjRelationship  relationship,
+                                    ValidationResult validationResult) {
+        if (relationship                       != null &&
+            relationship.getName()             != null &&
+            relationship.getTargetEntityName() != null) {
+
+            String dbRelationshipPath =
+                       relationship.getTargetEntityName() +
+                       "." +
+                       relationship.getDbRelationshipPath();
+
+            if (dbRelationshipPath != null) {
+                ObjEntity entity = (ObjEntity) relationship.getSourceEntity();
+
+                for (ObjRelationship comparisonRelationship : entity.getRelationships()) {
+                    if (relationship != comparisonRelationship) {
+                        String comparisonDbRelationshipPath =
+                                   comparisonRelationship.getTargetEntityName() +
+                                   "." +
+                                   comparisonRelationship.getDbRelationshipPath();
+
+                        if (dbRelationshipPath.equals(comparisonDbRelationshipPath)) {
+                            addFailure(validationResult,
+                                       relationship,
+                                       "ObjEntity '%s' contains a duplicate ObjRelationship mapping ('%s' -> '%s')",
+                                       entity.getName(),
+                                       relationship.getName(),
+                                       dbRelationshipPath);
+                            return; // Duplicate found, stop.
+                        }
+                    }
+                }
             }
         }
     }

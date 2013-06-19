@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
@@ -93,6 +98,67 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
                         invalidChars);
             }
         }
+
+        checkForDuplicates(relationship, validationResult);
+    }
+
+    /**
+     * Per CAY-1813, make sure two (or more) DbRelationships do not map to the
+     * same database path.
+     */
+    private void checkForDuplicates(DbRelationship relationship, ValidationResult validationResult) {
+        if (relationship                       != null &&
+            relationship.getName()             != null &&
+            relationship.getTargetEntityName() != null) {
+
+            String dbRelationshipPath =
+                       relationship.getTargetEntityName() +
+                       "." +
+                       getJoins(relationship);
+
+            if (dbRelationshipPath != null) {
+                DbEntity entity = (DbEntity) relationship.getSourceEntity();
+
+                for (DbRelationship comparisonRelationship : entity.getRelationships()) {
+                    if (relationship != comparisonRelationship) {
+                        String comparisonDbRelationshipPath =
+                                   comparisonRelationship.getTargetEntityName() +
+                                   "." +
+                                   getJoins(comparisonRelationship);
+
+                        if (dbRelationshipPath.equals(comparisonDbRelationshipPath)) {
+                            addFailure(validationResult,
+                                       relationship,
+                                       "DbEntity '%s' contains a duplicate DbRelationship mapping ('%s' -> '%s')",
+                                       entity.getName(),
+                                       relationship.getName(),
+                                       dbRelationshipPath);
+                            return; // Duplicate found, stop.
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private String getJoins(DbRelationship relationship) {
+        List<String> joins = new ArrayList<String>();
+
+        for (DbJoin join : relationship.getJoins()) {
+            StringBuilder builder = new StringBuilder();
+
+            builder.append("[");
+            builder.append("source=").append(join.getSourceName());
+            builder.append(",");
+            builder.append("target=").append(join.getTargetName());
+            builder.append("]");
+
+            joins.add(builder.toString());
+        }
+
+        Collections.sort(joins);
+
+        return Util.join(joins, ",");
     }
 
     private String toString(DbRelationship relationship) {
@@ -102,5 +168,4 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
 
         return relationship.getSourceEntity().getName() + "." + relationship.getName();
     }
-
 }
