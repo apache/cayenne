@@ -156,7 +156,7 @@ public class ObjAttributeValidator extends TreeNodeValidator {
                     String dbAttributePath = attribute.getDbAttributePath();
 
                     if (dbAttributePath != null) {
-                        if (dbAttributePath.equals(comparisonAttribute.getDbAttributePath()))
+                        if (dbAttributePath.equals(comparisonAttribute.getDbAttributePath())) {
                             validator.registerWarning
                                 ("ObjEntity " +
                                  entity.getName() +
@@ -165,7 +165,8 @@ public class ObjAttributeValidator extends TreeNodeValidator {
                                  " -> " +
                                  dbAttributePath +
                                  ")", path);
-                        return; // Duplicate found, stop.
+                            return; // Duplicate found, stop.
+                        }
                     }
                 }
             }
