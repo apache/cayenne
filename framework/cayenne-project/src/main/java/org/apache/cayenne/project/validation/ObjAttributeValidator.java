@@ -148,5 +148,40 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
                     attribute.getName(),
                     attribute.getDbAttributeName());
         }
+
+        checkForDuplicates(attribute, validationResult);
+    }
+
+    /**
+     * Per CAY-1813, make sure two (or more) ObjAttributes do not map to the
+     * same database path.
+     */
+    private void checkForDuplicates(ObjAttribute     attribute,
+                                    ValidationResult validationResult) {
+        if (attribute               != null &&
+            attribute.getName()     != null &&
+            attribute.isInherited() == false) {
+
+            ObjEntity entity = (ObjEntity) attribute.getEntity();
+
+            for (ObjAttribute comparisonAttribute : entity.getAttributes()) {
+                if (attribute != comparisonAttribute) {
+                    String dbAttributePath = attribute.getDbAttributePath();
+
+                    if (dbAttributePath != null) {
+                        if (dbAttributePath.equals(comparisonAttribute.getDbAttributePath())) {
+                            addFailure
+                                (validationResult,
+                                 attribute,
+                                 "ObjEntity '%s' contains a duplicate DbAttribute mapping ('%s' -> '%s')",
+                                 entity.getName(),
+                                 attribute.getName(),
+                                 dbAttributePath);
+                            return; // Duplicate found, stop.
+                        }
+                    }
+                }
+            }
+        }
     }
 }
