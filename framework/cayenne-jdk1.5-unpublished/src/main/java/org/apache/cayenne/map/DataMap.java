@@ -30,6 +30,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -1314,5 +1316,14 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         }
 
         return null;
+    }
+
+    public ObjEntity getObjEntity(Persistent object) {
+        ObjectId id = object.getObjectId();
+        if (id != null) {
+            return getObjEntity(id.getEntityName());
+        } else {
+            return getObjEntity(object.getClass());
+        }
     }
 }

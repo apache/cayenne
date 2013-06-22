@@ -37,38 +37,36 @@ import org.apache.cayenne.reflect.PropertyUtils;
 /**
  * Various utils for processing persistent objects and their properties
  * <p>
- * <i>DataObjects and Primary Keys: All methods that allow to extract primary key values
- * or use primary keys to find objects are provided for convenience. Still the author's
- * belief is that integer sequential primary keys are meaningless in the object model and
- * are pure database artifacts. Therefore relying heavily on direct access to PK provided
- * via this class (or other such Cayenne API) is not a clean design practice in many
- * cases, and sometimes may actually lead to security issues. </i>
+ * <i>DataObjects and Primary Keys: All methods that allow to extract primary
+ * key values or use primary keys to find objects are provided for convenience.
+ * Still the author's belief is that integer sequential primary keys are
+ * meaningless in the object model and are pure database artifacts. Therefore
+ * relying heavily on direct access to PK provided via this class (or other such
+ * Cayenne API) is not a clean design practice in many cases, and sometimes may
+ * actually lead to security issues. </i>
  * </p>
- *
+ * 
  * @since 3.1 its predecessor was called DataObjectUtils
  */
 public class Cayenne {
 
     /**
-     * A special property denoting a size of the to-many collection, when encountered at
-     * the end of the path</p>
+     * A special property denoting a size of the to-many collection, when
+     * encountered at the end of the path</p>
      */
     final static String PROPERTY_COLLECTION_SIZE = "@size";
 
     /**
-     * Returns mapped ObjEntity for object. If an object is transient or is not mapped
-     * returns null.
+     * Returns mapped ObjEntity for object. If an object is transient or is not
+     * mapped returns null.
      */
     public static ObjEntity getObjEntity(Persistent p) {
-        return (p.getObjectContext() != null) ? p
-                .getObjectContext()
-                .getEntityResolver()
-                .lookupObjEntity(p) : null;
+        return (p.getObjectContext() != null) ? p.getObjectContext().getEntityResolver().getObjEntity(p) : null;
     }
 
     /**
-     * Returns class descriptor for the object or null if the object is not registered
-     * with an ObjectContext or descriptor was not found.
+     * Returns class descriptor for the object or null if the object is not
+     * registered with an ObjectContext or descriptor was not found.
      */
     public static ClassDescriptor getClassDescriptor(Persistent object) {
 
@@ -78,14 +76,14 @@ public class Cayenne {
             return null;
         }
 
-        return context.getEntityResolver().getClassDescriptor(
-                object.getObjectId().getEntityName());
+        return context.getEntityResolver().getClassDescriptor(object.getObjectId().getEntityName());
     }
 
     /**
      * Returns property descriptor for specified property.
-     *
-     * @param properyName path to the property
+     * 
+     * @param properyName
+     *            path to the property
      * @return property descriptor, <code>null</code> if not found
      */
     public static PropertyDescriptor getProperty(Persistent object, String properyName) {
@@ -97,22 +95,23 @@ public class Cayenne {
     }
 
     /**
-     * Returns a value of the property identified by a property path. Supports reading
-     * both mapped and unmapped properties. Unmapped properties are accessed in a manner
-     * consistent with JavaBeans specification.
+     * Returns a value of the property identified by a property path. Supports
+     * reading both mapped and unmapped properties. Unmapped properties are
+     * accessed in a manner consistent with JavaBeans specification.
      * <p>
-     * Property path (or nested property) is a dot-separated path used to traverse object
-     * relationships until the final object is found. If a null object found while
-     * traversing path, null is returned. If a list is encountered in the middle of the
-     * path, CayenneRuntimeException is thrown. Unlike
-     * {@link #readPropertyDirectly(String)}, this method will resolve an object if it is
-     * HOLLOW.
+     * Property path (or nested property) is a dot-separated path used to
+     * traverse object relationships until the final object is found. If a null
+     * object found while traversing path, null is returned. If a list is
+     * encountered in the middle of the path, CayenneRuntimeException is thrown.
+     * Unlike {@link #readPropertyDirectly(String)}, this method will resolve an
+     * object if it is HOLLOW.
      * <p>
      * Examples:
      * </p>
      * <ul>
      * <li>Read this object property:<br>
-     * <code>String name = (String)Cayenne.readNestedProperty(artist, "name");</code><br>
+     * <code>String name = (String)Cayenne.readNestedProperty(artist, "name");</code>
+     * <br>
      * <br>
      * </li>
      * <li>Read an object related to this object:<br>
@@ -141,11 +140,9 @@ public class Cayenne {
 
         if (o == null) {
             return null;
-        }
-        else if (o instanceof DataObject) {
+        } else if (o instanceof DataObject) {
             return ((DataObject) o).readNestedProperty(path);
-        }
-        else if (o instanceof Collection<?>) {
+        } else if (o instanceof Collection<?>) {
 
             // This allows people to put @size at the end of a property
             // path and be able to find out the size of a relationship.
@@ -157,9 +154,7 @@ public class Cayenne {
             }
 
             // Support for collection property in the middle of the path
-            Collection<Object> result = o instanceof List<?>
-                    ? new ArrayList<Object>()
-                    : new HashSet<Object>();
+            Collection<Object> result = o instanceof List<?> ? new ArrayList<Object>() : new HashSet<Object>();
 
             for (Object item : collection) {
                 if (item instanceof DataObject) {
@@ -169,11 +164,11 @@ public class Cayenne {
                     if (rest instanceof Collection<?>) {
 
                         // We don't want nested collections. E.g.
-                        // readNestedProperty("paintingArray.paintingTitle") should return
+                        // readNestedProperty("paintingArray.paintingTitle")
+                        // should return
                         // List<String>
                         result.addAll((Collection<?>) rest);
-                    }
-                    else {
+                    } else {
                         result.add(rest);
                     }
                 }
@@ -183,20 +178,17 @@ public class Cayenne {
         }
 
         if ((null == path) || (0 == path.length())) {
-            throw new IllegalArgumentException(
-                    "the path must be supplied in order to lookup a nested property");
+            throw new IllegalArgumentException("the path must be supplied in order to lookup a nested property");
         }
 
         int dotIndex = path.indexOf('.');
 
         if (0 == dotIndex) {
-            throw new IllegalArgumentException(
-                    "the path is invalid because it starts with a period character");
+            throw new IllegalArgumentException("the path is invalid because it starts with a period character");
         }
 
         if (dotIndex == path.length() - 1) {
-            throw new IllegalArgumentException(
-                    "the path is invalid because it ends with a period character");
+            throw new IllegalArgumentException("the path is invalid because it ends with a period character");
         }
 
         if (-1 == dotIndex) {
@@ -234,24 +226,33 @@ public class Cayenne {
     }
 
     /**
-     * Constructs a dotted path from a list of strings.  Useful for creating
-     * more complex paths while preserving compilation safety.  For example,
-     * instead of saying:
+     * Constructs a dotted path from a list of strings. Useful for creating more
+     * complex paths while preserving compilation safety. For example, instead
+     * of saying:
      * <p>
-     * <pre>orderings.add(new Ordering("department.name", SortOrder.ASCENDING));</pre>
+     * 
+     * <pre>
+     * orderings.add(new Ordering(&quot;department.name&quot;, SortOrder.ASCENDING));
+     * </pre>
      * <p>
      * You can use makePath() with the constants generated by Cayenne Modeler:
      * <p>
-     * <pre>orderings.add(new Ordering(Cayenne.makePath(USER.DEPARTMENT_PROPERTY, Department.NAME_PROPERTY), SortOrder.ASCENDING));</pre>
+     * 
+     * <pre>
+     * orderings.add(new Ordering(Cayenne.makePath(USER.DEPARTMENT_PROPERTY, Department.NAME_PROPERTY), SortOrder.ASCENDING));
+     * </pre>
      * <p>
-     * @param pathParts The varargs list of paths to join.
-     * @return A string of all the paths joined by a "." (used by Cayenne in queries and orderings).
-     * <p>
+     * 
+     * @param pathParts
+     *            The varargs list of paths to join.
+     * @return A string of all the paths joined by a "." (used by Cayenne in
+     *         queries and orderings).
+     *         <p>
      * @since 3.1
      */
-    public static String makePath(String...pathParts) {
-        StringBuilder builder   = new StringBuilder();
-        String        separator = "";
+    public static String makePath(String... pathParts) {
+        StringBuilder builder = new StringBuilder();
+        String separator = "";
 
         for (String path : pathParts) {
             builder.append(separator).append(path);
@@ -262,59 +263,55 @@ public class Cayenne {
     }
 
     /**
-     * Returns an int primary key value for a persistent object. Only works for single
-     * column numeric primary keys. If an object is transient or has an ObjectId that can
-     * not be converted to an int PK, an exception is thrown.
+     * Returns an int primary key value for a persistent object. Only works for
+     * single column numeric primary keys. If an object is transient or has an
+     * ObjectId that can not be converted to an int PK, an exception is thrown.
      */
     public static long longPKForObject(Persistent dataObject) {
         Object value = pkForObject(dataObject);
 
         if (!(value instanceof Number)) {
-            throw new CayenneRuntimeException("PK is not a number: "
-                    + dataObject.getObjectId());
+            throw new CayenneRuntimeException("PK is not a number: " + dataObject.getObjectId());
         }
 
         return ((Number) value).longValue();
     }
 
     /**
-     * Returns an int primary key value for a persistent object. Only works for single
-     * column numeric primary keys. If an object is transient or has an ObjectId that can
-     * not be converted to an int PK, an exception is thrown.
+     * Returns an int primary key value for a persistent object. Only works for
+     * single column numeric primary keys. If an object is transient or has an
+     * ObjectId that can not be converted to an int PK, an exception is thrown.
      */
     public static int intPKForObject(Persistent dataObject) {
         Object value = pkForObject(dataObject);
 
         if (!(value instanceof Number)) {
-            throw new CayenneRuntimeException("PK is not a number: "
-                    + dataObject.getObjectId());
+            throw new CayenneRuntimeException("PK is not a number: " + dataObject.getObjectId());
         }
 
         return ((Number) value).intValue();
     }
 
     /**
-     * Returns a primary key value for a persistent object. Only works for single column
-     * primary keys. If an object is transient or has a compound ObjectId, an exception is
-     * thrown.
+     * Returns a primary key value for a persistent object. Only works for
+     * single column primary keys. If an object is transient or has a compound
+     * ObjectId, an exception is thrown.
      */
     public static Object pkForObject(Persistent dataObject) {
         Map<String, Object> pk = extractObjectId(dataObject);
 
         if (pk.size() != 1) {
-            throw new CayenneRuntimeException("Expected single column PK, got "
-                    + pk.size()
-                    + " columns, ID: "
-                    + pk);
+            throw new CayenneRuntimeException("Expected single column PK, got " + pk.size() + " columns, ID: " + pk);
         }
 
         return pk.entrySet().iterator().next().getValue();
     }
 
     /**
-     * Returns a primary key map for a persistent object. This method is the most generic
-     * out of all methods for primary key retrieval. It will work for all possible types
-     * of primary keys. If an object is transient, an exception is thrown.
+     * Returns a primary key map for a persistent object. This method is the
+     * most generic out of all methods for primary key retrieval. It will work
+     * for all possible types of primary keys. If an object is transient, an
+     * exception is thrown.
      */
     public static Map<String, Object> compoundPKForObject(Persistent dataObject) {
         return Collections.unmodifiableMap(extractObjectId(dataObject));
@@ -332,10 +329,7 @@ public class Cayenne {
 
         // replacement ID is more tricky... do some sanity check...
         if (id.isReplacementIdAttached()) {
-            ObjEntity objEntity = dataObject
-                    .getObjectContext()
-                    .getEntityResolver()
-                    .lookupObjEntity(dataObject);
+            ObjEntity objEntity = dataObject.getObjectContext().getEntityResolver().getObjEntity(dataObject);
 
             if (objEntity != null) {
                 DbEntity entity = objEntity.getDbEntity();
@@ -349,73 +343,66 @@ public class Cayenne {
     }
 
     /**
-     * Returns an object matching an int primary key. If the object is mapped to use
-     * non-integer PK or a compound PK, CayenneRuntimeException is thrown.
+     * Returns an object matching an int primary key. If the object is mapped to
+     * use non-integer PK or a compound PK, CayenneRuntimeException is thrown.
      * <p>
-     * If this object is already cached in the ObjectStore, it is returned without a
-     * query. Otherwise a query is built and executed against the database.
+     * If this object is already cached in the ObjectStore, it is returned
+     * without a query. Otherwise a query is built and executed against the
+     * database.
      * </p>
-     *
+     * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static <T> T objectForPK(
-            ObjectContext context,
-            Class<T> dataObjectClass,
-            int pk) {
-        return (T) objectForPK(context, buildId(context, dataObjectClass, Integer
-                .valueOf(pk)));
+    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, int pk) {
+        return (T) objectForPK(context, buildId(context, dataObjectClass, Integer.valueOf(pk)));
     }
 
     /**
-     * Returns an object matching an Object primary key. If the object is mapped to use a
-     * compound PK, CayenneRuntimeException is thrown.
+     * Returns an object matching an Object primary key. If the object is mapped
+     * to use a compound PK, CayenneRuntimeException is thrown.
      * <p>
-     * If this object is already cached in the ObjectStore, it is returned without a
-     * query. Otherwise a query is built and executed against the database.
+     * If this object is already cached in the ObjectStore, it is returned
+     * without a query. Otherwise a query is built and executed against the
+     * database.
      * </p>
-     *
+     * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static <T> T objectForPK(
-            ObjectContext context,
-            Class<T> dataObjectClass,
-            Object pk) {
+    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Object pk) {
 
         return (T) objectForPK(context, buildId(context, dataObjectClass, pk));
     }
 
     /**
-     * Returns an object matching a primary key. PK map parameter should use database PK
-     * column names as keys.
+     * Returns an object matching a primary key. PK map parameter should use
+     * database PK column names as keys.
      * <p>
-     * If this object is already cached in the ObjectStore, it is returned without a
-     * query. Otherwise a query is built and executed against the database.
+     * If this object is already cached in the ObjectStore, it is returned
+     * without a query. Otherwise a query is built and executed against the
+     * database.
      * </p>
-     *
+     * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static <T> T objectForPK(
-            ObjectContext context,
-            Class<T> dataObjectClass,
-            Map<String, ?> pk) {
+    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Map<String, ?> pk) {
 
         ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
         if (entity == null) {
-            throw new CayenneRuntimeException("Non-existent ObjEntity for class: "
-                    + dataObjectClass);
+            throw new CayenneRuntimeException("Non-existent ObjEntity for class: " + dataObjectClass);
         }
 
         return (T) objectForPK(context, new ObjectId(entity.getName(), pk));
     }
 
     /**
-     * Returns an object matching an int primary key. If the object is mapped to use
-     * non-integer PK or a compound PK, CayenneRuntimeException is thrown.
+     * Returns an object matching an int primary key. If the object is mapped to
+     * use non-integer PK or a compound PK, CayenneRuntimeException is thrown.
      * <p>
-     * If this object is already cached in the ObjectStore, it is returned without a
-     * query. Otherwise a query is built and executed against the database.
+     * If this object is already cached in the ObjectStore, it is returned
+     * without a query. Otherwise a query is built and executed against the
+     * database.
      * </p>
-     *
+     * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
     public static Object objectForPK(ObjectContext context, String objEntityName, int pk) {
@@ -423,36 +410,32 @@ public class Cayenne {
     }
 
     /**
-     * Returns an object matching an Object primary key. If the object is mapped to use a
-     * compound PK, CayenneRuntimeException is thrown.
+     * Returns an object matching an Object primary key. If the object is mapped
+     * to use a compound PK, CayenneRuntimeException is thrown.
      * <p>
-     * If this object is already cached in the ObjectStore, it is returned without a
-     * query. Otherwise a query is built and executed against the database.
+     * If this object is already cached in the ObjectStore, it is returned
+     * without a query. Otherwise a query is built and executed against the
+     * database.
      * </p>
-     *
+     * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static Object objectForPK(
-            ObjectContext context,
-            String objEntityName,
-            Object pk) {
+    public static Object objectForPK(ObjectContext context, String objEntityName, Object pk) {
         return objectForPK(context, buildId(context, objEntityName, pk));
     }
 
     /**
-     * Returns an object matching a primary key. PK map parameter should use database PK
-     * column names as keys.
+     * Returns an object matching a primary key. PK map parameter should use
+     * database PK column names as keys.
      * <p>
-     * If this object is already cached in the ObjectStore, it is returned without a
-     * query. Otherwise a query is built and executed against the database.
+     * If this object is already cached in the ObjectStore, it is returned
+     * without a query. Otherwise a query is built and executed against the
+     * database.
      * </p>
-     *
+     * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static Object objectForPK(
-            ObjectContext context,
-            String objEntityName,
-            Map<String, ?> pk) {
+    public static Object objectForPK(ObjectContext context, String objEntityName, Map<String, ?> pk) {
         if (objEntityName == null) {
             throw new IllegalArgumentException("Null ObjEntity name.");
         }
@@ -461,50 +444,48 @@ public class Cayenne {
     }
 
     /**
-     * Returns an object matching ObjectId. If this object is already cached in the
-     * ObjectStore, it is returned without a query. Otherwise a query is built and
-     * executed against the database.
-     *
-     * @return A persistent object that matched the id, null if no matching objects were
-     *         found
-     * @throws CayenneRuntimeException if more than one object matched ObjectId.
+     * Returns an object matching ObjectId. If this object is already cached in
+     * the ObjectStore, it is returned without a query. Otherwise a query is
+     * built and executed against the database.
+     * 
+     * @return A persistent object that matched the id, null if no matching
+     *         objects were found
+     * @throws CayenneRuntimeException
+     *             if more than one object matched ObjectId.
      */
     public static Object objectForPK(ObjectContext context, ObjectId id) {
         return objectForQuery(context, new ObjectIdQuery(id, false, ObjectIdQuery.CACHE));
     }
 
     /**
-     * Returns an object or a DataRow that is a result of a given query. If query returns
-     * more than one object, an exception is thrown. If query returns no objects, null is
-     * returned.
+     * Returns an object or a DataRow that is a result of a given query. If
+     * query returns more than one object, an exception is thrown. If query
+     * returns no objects, null is returned.
      */
     public static Object objectForQuery(ObjectContext context, Query query) {
         List<?> objects = context.performQuery(query);
 
         if (objects.size() == 0) {
             return null;
-        }
-        else if (objects.size() > 1) {
-            throw new CayenneRuntimeException(
-                    "Expected zero or one object, instead query matched: "
-                            + objects.size());
+        } else if (objects.size() > 1) {
+            throw new CayenneRuntimeException("Expected zero or one object, instead query matched: " + objects.size());
         }
 
         return objects.get(0);
     }
 
     /**
-     * Returns an object or a DataRow that is a result of a given query. If query returns
-     * more than one object, an exception is thrown. If query returns no objects, null is
-     * returned.
+     * Returns an object or a DataRow that is a result of a given query. If
+     * query returns more than one object, an exception is thrown. If query
+     * returns no objects, null is returned.
      * 
      * @since 3.2
      */
     @SuppressWarnings("unchecked")
-	public static <T> T objectForSelect(ObjectContext context, Select<T> query) {
-    	return (T) objectForQuery(context, query);
+    public static <T> T objectForSelect(ObjectContext context, Select<T> query) {
+        return (T) objectForQuery(context, query);
     }
-    
+
     static ObjectId buildId(ObjectContext context, String objEntityName, Object pk) {
         if (pk == null) {
             throw new IllegalArgumentException("Null PK");
@@ -521,9 +502,7 @@ public class Cayenne {
 
         Collection<String> pkAttributes = entity.getPrimaryKeyNames();
         if (pkAttributes.size() != 1) {
-            throw new CayenneRuntimeException("PK contains "
-                    + pkAttributes.size()
-                    + " columns, expected 1.");
+            throw new CayenneRuntimeException("PK contains " + pkAttributes.size() + " columns, expected 1.");
         }
 
         String attr = pkAttributes.iterator().next();
@@ -541,15 +520,12 @@ public class Cayenne {
 
         ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
         if (entity == null) {
-            throw new CayenneRuntimeException("Unmapped DataObject Class: "
-                    + dataObjectClass.getName());
+            throw new CayenneRuntimeException("Unmapped DataObject Class: " + dataObjectClass.getName());
         }
 
         Collection<String> pkAttributes = entity.getPrimaryKeyNames();
         if (pkAttributes.size() != 1) {
-            throw new CayenneRuntimeException("PK contains "
-                    + pkAttributes.size()
-                    + " columns, expected 1.");
+            throw new CayenneRuntimeException("PK contains " + pkAttributes.size() + " columns, expected 1.");
         }
 
         String attr = pkAttributes.iterator().next();

@@ -295,7 +295,7 @@ public class DataContext extends BaseContext {
             return getObjectStore().getSnapshot(object.getObjectId());
         }
 
-        ObjEntity entity = getEntityResolver().lookupObjEntity(object);
+        ObjEntity entity = getEntityResolver().getObjEntity(object);
         final ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         final DataRow snapshot = new DataRow(10);
 
@@ -515,7 +515,7 @@ public class DataContext extends BaseContext {
             throw new NullPointerException("Can't register null object.");
         }
 
-        ObjEntity entity = getEntityResolver().lookupObjEntity(object);
+        ObjEntity entity = getEntityResolver().getObjEntity((Persistent) object);
         if (entity == null) {
             throw new IllegalArgumentException("Can't find ObjEntity for Persistent class: "
                     + object.getClass().getName() + ", class is likely not mapped.");

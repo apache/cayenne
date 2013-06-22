@@ -575,12 +575,18 @@ public class EntityResolver implements MappingNamespace, Serializable {
         return getObjEntity(entityClass);
     }
 
+    public ObjEntity getObjEntity(Persistent object) {
+        return mappingCache.getObjEntity(object);
+    }
+
     /**
      * Looks in the DataMap's that this object was created with for the
      * ObjEntity that services the specified data Object
      * 
      * @return the required ObjEntity, or null if none matches the specifier
+     * @since 3.2 a corresponding getObjEntity method should be used.
      */
+    @Deprecated
     public ObjEntity lookupObjEntity(Object object) {
         if (object instanceof ObjEntity) {
             return (ObjEntity) object;

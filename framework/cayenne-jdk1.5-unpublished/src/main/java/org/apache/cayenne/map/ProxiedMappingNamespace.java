@@ -20,6 +20,7 @@ package org.apache.cayenne.map;
 
 import java.util.Collection;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -71,6 +72,10 @@ abstract class ProxiedMappingNamespace implements MappingNamespace {
 
     public ObjEntity getObjEntity(Class<?> entityClass) {
         return getDelegate().getObjEntity(entityClass);
+    }
+    
+    public ObjEntity getObjEntity(Persistent object) {
+        return getDelegate().getObjEntity(object);
     }
 
     public ObjEntity getObjEntity(String name) {

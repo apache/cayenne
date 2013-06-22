@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
@@ -114,6 +115,11 @@ public class MockMappingNamespace implements MappingNamespace {
     }
     
     public Collection<SQLResult> getResults() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public ObjEntity getObjEntity(Persistent object) {
         // TODO Auto-generated method stub
         return null;
     }

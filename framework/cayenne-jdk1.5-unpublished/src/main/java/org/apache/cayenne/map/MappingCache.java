@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
 import org.apache.commons.collections.collection.CompositeCollection;
 import org.apache.commons.logging.Log;
@@ -192,6 +194,15 @@ class MappingCache implements MappingNamespace {
         }
 
         return entity;
+    }
+    
+    public ObjEntity getObjEntity(Persistent object) {
+        ObjectId id = object.getObjectId();
+        if (id != null) {
+            return getObjEntity(id.getEntityName());
+        } else {
+            return getObjEntity(object.getClass());
+        }
     }
 
     public ObjEntity getObjEntity(String name) {

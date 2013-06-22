@@ -132,7 +132,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                 } else if (root instanceof DataMap) {
                     this.dataMap = (DataMap) root;
                 } else if (root instanceof Persistent) {
-                    entity = resolver.lookupObjEntity(root);
+                    entity = resolver.getObjEntity((Persistent) root);
                     if (entity != null) {
                         this.dbEntity = entity.getDbEntity();
                         this.dataMap = entity.getDataMap();

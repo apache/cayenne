@@ -55,13 +55,13 @@ public class EntityResolverTest extends ServerCase {
 
     public void testLookupObjEntityByInstance() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
-        assertIsArtistObjEntity(resolver.lookupObjEntity(new Artist()));
+        assertIsArtistObjEntity(resolver.getObjEntity(new Artist()));
     }
 
     public void testLookupObjEntityByDataobject() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         Artist artist = (Artist) context.newObject("Artist");
-        assertIsArtistObjEntity(resolver.lookupObjEntity(artist));
+        assertIsArtistObjEntity(resolver.getObjEntity(artist));
     }
 
     public void testGetDataMapList() {

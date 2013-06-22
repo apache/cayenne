@@ -21,6 +21,7 @@ package org.apache.cayenne.map;
 
 import java.util.Collection;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -109,4 +110,9 @@ public interface MappingNamespace {
      * @since 3.2
      */
     ObjEntity getObjEntity(Class<?> entityClass);
+    
+    /**
+     * @since 3.2
+     */
+    ObjEntity getObjEntity(Persistent object);
 }
