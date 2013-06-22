@@ -38,7 +38,6 @@ import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.collections.collection.CompositeCollection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -60,7 +59,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected boolean indexedByClass;
 
     protected Collection<DataMap> maps;
-    protected transient MappingCache mappingCache;
+    protected transient MappingNamespace mappingCache;
     protected EntityResolver clientEntityResolver;
 
     // must be transient, as resolver may get deserialized in another VM, and
@@ -319,63 +318,33 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Returns all DbEntities.
      */
     public Collection<DbEntity> getDbEntities() {
-        CompositeCollection c = new CompositeCollection();
-        for (DataMap map : getDataMaps()) {
-            c.addComposited(map.getDbEntities());
-        }
-
-        return c;
+        return mappingCache.getDbEntities();
     }
 
     public Collection<ObjEntity> getObjEntities() {
-        CompositeCollection c = new CompositeCollection();
-        for (DataMap map : getDataMaps()) {
-            c.addComposited(map.getObjEntities());
-        }
-
-        return c;
+        return mappingCache.getObjEntities();
     }
 
     /**
      * @since 3.0
      */
     public Collection<Embeddable> getEmbeddables() {
-        CompositeCollection c = new CompositeCollection();
-        for (DataMap map : getDataMaps()) {
-            c.addComposited(map.getEmbeddables());
-        }
-
-        return c;
+        return mappingCache.getEmbeddables();
     }
 
     /**
      * @since 3.0
      */
     public Collection<SQLResult> getResultSets() {
-        CompositeCollection c = new CompositeCollection();
-        for (DataMap map : getDataMaps()) {
-            c.addComposited(map.getResults());
-        }
-
-        return c;
+        return mappingCache.getResultSets();
     }
 
     public Collection<Procedure> getProcedures() {
-        CompositeCollection c = new CompositeCollection();
-        for (DataMap map : getDataMaps()) {
-            c.addComposited(map.getProcedures());
-        }
-
-        return c;
+        return mappingCache.getProcedures();
     }
 
     public Collection<Query> getQueries() {
-        CompositeCollection c = new CompositeCollection();
-        for (DataMap map : getDataMaps()) {
-            c.addComposited(map.getQueries());
-        }
-
-        return c;
+        return mappingCache.getQueries();
     }
 
     public DbEntity getDbEntity(String name) {
@@ -481,14 +450,14 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.2
      */
     public void refreshMappingCache() {
-        mappingCache = new ProxiedMappingCache() {
+        mappingCache = new ProxiedMappingNamespace() {
 
             @Override
             protected MappingCache createDelegate() {
-                return new DefaultMappingCache(maps);
+                return new MappingCache(maps);
             }
         };
-        
+
         clientEntityResolver = null;
     }
 
@@ -523,14 +492,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Returns EntityInheritanceTree representing inheritance hierarchy that
-     * starts with a given ObjEntity as root, and includes all its subentities.
-     * Returns non-null object for all existing entities, even those that don't
-     * have super or subclasses.
-     * 
-     * @since 3.0
+     * @since 3.2
      */
-    public EntityInheritanceTree lookupInheritanceTree(String entityName) {
+    public EntityInheritanceTree getInheritanceTree(String entityName) {
 
         EntityInheritanceTree tree = mappingCache.getInheritanceTree(entityName);
 
@@ -545,6 +509,15 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         return tree;
+
+    }
+
+    /**
+     * @deprecated since 3.2 use {@link #getInheritanceTree(String)}.
+     */
+    @Deprecated
+    public EntityInheritanceTree lookupInheritanceTree(String entityName) {
+        return getInheritanceTree(entityName);
     }
 
     /**
@@ -553,17 +526,26 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * 
      * @return the required ObjEntity or null if there is none that matches the
      *         specifier
+     * 
+     * @since 3.2
      */
-    public ObjEntity lookupObjEntity(Class<?> aClass) {
-        ObjEntity result = mappingCache.getObjEntity(aClass);
+    public ObjEntity getObjEntity(Class<?> entityClass) {
+        ObjEntity result = mappingCache.getObjEntity(entityClass);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = mappingCache.getObjEntity(aClass);
+            result = mappingCache.getObjEntity(entityClass);
         }
 
         return result;
+    }
+
+    /**
+     * @deprecated since 3.2, use {@link #getObjEntity(Class)}.
+     */
+    public ObjEntity lookupObjEntity(Class<?> entityClass) {
+        return getObjEntity(entityClass);
     }
 
     /**

@@ -97,4 +97,24 @@ public class MockMappingNamespace implements MappingNamespace {
     public Collection<Query> getQueries() {
         return queries.values();
     }
+    
+    public Collection<Embeddable> getEmbeddables() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public EntityInheritanceTree getInheritanceTree(String entityName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public ObjEntity getObjEntity(Class<?> entityClass) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    public Collection<SQLResult> getResultSets() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

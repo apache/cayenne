@@ -18,16 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import java.util.Collection;
+
 import org.apache.cayenne.query.Query;
 
 /**
  * A proxy for lazy on-demand initialization of the mapping cache.
  */
-abstract class ProxiedMappingCache implements MappingCache {
+abstract class ProxiedMappingNamespace implements MappingNamespace {
 
-    private volatile MappingCache delegate;
+    private volatile MappingNamespace delegate;
 
-    MappingCache getDelegate() {
+    MappingNamespace getDelegate() {
 
         if (delegate == null) {
 
@@ -41,7 +43,7 @@ abstract class ProxiedMappingCache implements MappingCache {
         return delegate;
     }
 
-    protected abstract MappingCache createDelegate();
+    protected abstract MappingNamespace createDelegate();
 
     public Embeddable getEmbeddable(String className) {
         return getDelegate().getEmbeddable(className);
@@ -73,6 +75,30 @@ abstract class ProxiedMappingCache implements MappingCache {
 
     public ObjEntity getObjEntity(String name) {
         return getDelegate().getObjEntity(name);
+    }
+
+    public Collection<DbEntity> getDbEntities() {
+        return getDelegate().getDbEntities();
+    }
+
+    public Collection<ObjEntity> getObjEntities() {
+        return getDelegate().getObjEntities();
+    }
+
+    public Collection<Procedure> getProcedures() {
+        return getDelegate().getProcedures();
+    }
+
+    public Collection<Query> getQueries() {
+        return getDelegate().getQueries();
+    }
+
+    public Collection<Embeddable> getEmbeddables() {
+        return getDelegate().getEmbeddables();
+    }
+    
+    public Collection<SQLResult> getResultSets() {
+        return getDelegate().getResultSets();
     }
 
 }

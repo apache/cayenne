@@ -61,13 +61,9 @@ public class CreateTableToModelTest extends MergeCase {
         execute(token);
 
         ObjEntity objEntity = null;
-        for (ObjEntity candiate : map.getObjEntities()) {
-            if (candiate.getDbEntity() == null) {
-                continue;
-            }
-            if (candiate.getDbEntity().getName()
-                    .equalsIgnoreCase(dbEntity.getName())) {
-                objEntity = candiate;
+        for (ObjEntity candidate : map.getObjEntities()) {
+            if (dbEntity.getName().equalsIgnoreCase(candidate.getDbEntityName())) {
+                objEntity = candidate;
                 break;
             }
         }
@@ -98,5 +94,4 @@ public class CreateTableToModelTest extends MergeCase {
         assertTokensAndExecute(1, 0);
         assertTokensAndExecute(0, 0);
     }
-
 }

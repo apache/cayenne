@@ -24,20 +24,25 @@ import java.util.Collection;
 import org.apache.cayenne.query.Query;
 
 /**
- * Defines API of a container of DbEntities, ObjEntities, Procedures, Queries and other
- * mapping objects.
+ * Defines API of a container of DbEntities, ObjEntities, Procedures, Queries
+ * and other mapping objects.
  * 
  * @since 1.1
  */
 public interface MappingNamespace {
 
     /**
-     * Returns an {@link Embeddable} matching class name or null if such Embeddable is not
-     * mapped.
+     * Returns an {@link Embeddable} matching class name or null if such
+     * Embeddable is not mapped.
      * 
      * @since 3.0
      */
     Embeddable getEmbeddable(String className);
+    
+    /**
+     * @since 3.2
+     */
+    Collection<Embeddable> getEmbeddables();
 
     /**
      * Returns a named result set mapping.
@@ -45,22 +50,27 @@ public interface MappingNamespace {
      * @since 3.0
      */
     SQLResult getResult(String name);
+    
+    /**
+     * @since 3.2
+     */
+    Collection<SQLResult> getResultSets();
 
     /**
-     * Returns DbEntity for a given name, or null if no such DbEntity is found in the
-     * MappingNamespace.
+     * Returns DbEntity for a given name, or null if no such DbEntity is found
+     * in the MappingNamespace.
      */
     DbEntity getDbEntity(String name);
 
     /**
-     * Returns ObjEntity for a given name, or null if no such ObjEntity is found in the
-     * MappingNamespace.
+     * Returns ObjEntity for a given name, or null if no such ObjEntity is found
+     * in the MappingNamespace.
      */
     ObjEntity getObjEntity(String name);
 
     /**
-     * Returns Procedure for a given name, or null if no such Procedure is found in the
-     * MappingNamespace.
+     * Returns Procedure for a given name, or null if no such Procedure is found
+     * in the MappingNamespace.
      */
     Procedure getProcedure(String name);
 
@@ -89,4 +99,14 @@ public interface MappingNamespace {
      * Returns all Queries in the namespace.
      */
     Collection<Query> getQueries();
+
+    /**
+     * @since 3.2
+     */
+    EntityInheritanceTree getInheritanceTree(String entityName);
+
+    /**
+     * @since 3.2
+     */
+    ObjEntity getObjEntity(Class<?> entityClass);
 }
