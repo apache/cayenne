@@ -18,187 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.Query;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-/**
- * @since 3.2
- */
-class MappingCache {
+interface MappingCache {
 
-    private static final ObjEntity OBJ_DUPLICATE_MARKER = new ObjEntity();
+    Embeddable getEmbeddable(String className);
 
-    protected static final Log logger = LogFactory.getLog(MappingCache.class);
+    SQLResult getResult(String name);
 
-    protected Map<String, Query> queryCache;
-    protected Map<String, Embeddable> embeddableCache;
-    protected Map<String, SQLResult> resultsCache;
-    protected Map<String, DbEntity> dbEntityCache;
-    protected Map<String, ObjEntity> objEntityCache;
-    protected Map<String, Procedure> procedureCache;
-    protected Map<String, EntityInheritanceTree> entityInheritanceCache;
+    EntityInheritanceTree getInheritanceTree(String entityName);
 
-    MappingCache(Collection<DataMap> maps) {
-        this.embeddableCache = new HashMap<String, Embeddable>();
-        this.queryCache = new HashMap<String, Query>();
-        this.dbEntityCache = new HashMap<String, DbEntity>();
-        this.objEntityCache = new HashMap<String, ObjEntity>();
-        this.procedureCache = new HashMap<String, Procedure>();
-        this.entityInheritanceCache = new HashMap<String, EntityInheritanceTree>();
-        this.resultsCache = new HashMap<String, SQLResult>();
+    Procedure getProcedure(String procedureName);
 
-        index(maps);
-    }
+    Query getQuery(String queryName);
 
-    private void index(Collection<DataMap> maps) {
+    DbEntity getDbEntity(String name);
 
-        // index DbEntities separately and before ObjEntities to avoid infinite
-        // loops when looking up DbEntities during ObjEntity index op
+    ObjEntity getObjEntity(Class<?> entityClass);
 
-        for (DataMap map : maps) {
-            for (DbEntity de : map.getDbEntities()) {
-                dbEntityCache.put(de.getName(), de);
-            }
-        }
-
-        for (DataMap map : maps) {
-
-            // index ObjEntities
-            for (ObjEntity oe : map.getObjEntities()) {
-
-                // index by name
-                objEntityCache.put(oe.getName(), oe);
-
-                // index by class.. use class name as a key to avoid class
-                // loading here...
-                String className = oe.getJavaClassName();
-                if (className == null) {
-                    continue;
-                }
-
-                String classKey = classKey(className);
-
-                // allow duplicates, but put a special marker indicating
-                // that this entity can't be looked up by class
-                Object existing = objEntityCache.get(classKey);
-                if (existing != null) {
-
-                    if (existing != OBJ_DUPLICATE_MARKER) {
-                        objEntityCache.put(classKey, OBJ_DUPLICATE_MARKER);
-                    }
-                } else {
-                    objEntityCache.put(classKey, oe);
-                }
-            }
-
-            // index stored procedures
-            for (Procedure proc : map.getProcedures()) {
-                procedureCache.put(proc.getName(), proc);
-            }
-
-            // index embeddables
-            embeddableCache.putAll(map.getEmbeddableMap());
-
-            // index queries
-            for (Query query : map.getQueries()) {
-                String name = query.getName();
-                Object existingQuery = queryCache.put(name, query);
-
-                if (existingQuery != null && query != existingQuery) {
-                    throw new CayenneRuntimeException("More than one Query for name" + name);
-                }
-            }
-        }
-
-        // restart the map iterator to index inheritance
-        for (DataMap map : maps) {
-
-            // index ObjEntity inheritance
-            for (ObjEntity oe : map.getObjEntities()) {
-
-                // build inheritance tree
-                EntityInheritanceTree node = entityInheritanceCache.get(oe.getName());
-                if (node == null) {
-                    node = new EntityInheritanceTree(oe);
-                    entityInheritanceCache.put(oe.getName(), node);
-                }
-
-                String superOEName = oe.getSuperEntityName();
-                if (superOEName != null) {
-                    EntityInheritanceTree superNode = entityInheritanceCache.get(superOEName);
-
-                    if (superNode == null) {
-                        // do direct entity lookup to avoid recursive cache
-                        // rebuild
-                        ObjEntity superOE = objEntityCache.get(superOEName);
-                        if (superOE != null) {
-                            superNode = new EntityInheritanceTree(superOE);
-                            entityInheritanceCache.put(superOEName, superNode);
-                        } else {
-                            // bad mapping? Or most likely some classloader
-                            // issue
-                            logger.warn("No super entity mapping for '" + superOEName + "'");
-                            continue;
-                        }
-                    }
-
-                    superNode.addChildNode(node);
-                }
-            }
-        }
-    }
-
-    /**
-     * Generates a map key for the object class.
-     */
-    private String classKey(String className) {
-        // need to ensure that there is no conflict with entity names... I guess
-        // such prefix is enough to guarantee that:
-        return "^cl^" + className;
-    }
-
-    Embeddable getEmbeddable(String className) {
-        return embeddableCache.get(className);
-    }
-
-    SQLResult getResult(String name) {
-        return resultsCache.get(name);
-    }
-
-    EntityInheritanceTree getInheritanceTree(String entityName) {
-        return entityInheritanceCache.get(entityName);
-    }
-
-    Procedure getProcedure(String procedureName) {
-        return procedureCache.get(procedureName);
-    }
-
-    Query getQuery(String queryName) {
-        return queryCache.get(queryName);
-    }
-
-    DbEntity getDbEntity(String name) {
-        return dbEntityCache.get(name);
-    }
-
-    ObjEntity getObjEntity(Class<?> entityClass) {
-        return getObjEntity(classKey(entityClass.getName()));
-    }
-
-    ObjEntity getObjEntity(String name) {
-        ObjEntity entity = objEntityCache.get(name);
-
-        if (entity == OBJ_DUPLICATE_MARKER) {
-            throw new CayenneRuntimeException("Can't perform lookup. There is more than one ObjEntity mapped to "
-                    + name);
-        }
-
-        return entity;
-    }
+    ObjEntity getObjEntity(String name);
 }

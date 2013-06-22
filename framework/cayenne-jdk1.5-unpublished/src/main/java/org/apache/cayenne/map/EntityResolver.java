@@ -60,7 +60,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected boolean indexedByClass;
 
     protected Collection<DataMap> maps;
-    protected transient MappingCache entityCache;
+    protected transient MappingCache mappingCache;
     protected EntityResolver clientEntityResolver;
 
     // must be transient, as resolver may get deserialized in another VM, and
@@ -379,24 +379,24 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     public DbEntity getDbEntity(String name) {
-        DbEntity result = entityCache.getDbEntity(name);
+        DbEntity result = mappingCache.getDbEntity(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = entityCache.getDbEntity(name);
+            result = mappingCache.getDbEntity(name);
         }
 
         return result;
     }
 
     public ObjEntity getObjEntity(String name) {
-        ObjEntity result = entityCache.getObjEntity(name);
+        ObjEntity result = mappingCache.getObjEntity(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = entityCache.getObjEntity(name);
+            result = mappingCache.getObjEntity(name);
         }
 
         return result;
@@ -414,13 +414,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     public Embeddable getEmbeddable(String className) {
-        Embeddable result = entityCache.getEmbeddable(className);
+        Embeddable result = mappingCache.getEmbeddable(className);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = entityCache.getEmbeddable(className);
+            result = mappingCache.getEmbeddable(className);
         }
 
         return result;
@@ -430,13 +430,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     public SQLResult getResult(String name) {
-        SQLResult result = entityCache.getResult(name);
+        SQLResult result = mappingCache.getResult(name);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = entityCache.getResult(name);
+            result = mappingCache.getResult(name);
         }
 
         return result;
@@ -481,7 +481,14 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.2
      */
     public void refreshMappingCache() {
-        entityCache = new MappingCache(maps);
+        mappingCache = new ProxiedMappingCache() {
+
+            @Override
+            protected MappingCache createDelegate() {
+                return new DefaultMappingCache(maps);
+            }
+        };
+        
         clientEntityResolver = null;
     }
 
@@ -525,7 +532,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public EntityInheritanceTree lookupInheritanceTree(String entityName) {
 
-        EntityInheritanceTree tree = entityCache.getInheritanceTree(entityName);
+        EntityInheritanceTree tree = mappingCache.getInheritanceTree(entityName);
 
         if (tree == null) {
             // since we keep inheritance trees for all entities, null means
@@ -534,7 +541,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             // rebuild cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            tree = entityCache.getInheritanceTree(entityName);
+            tree = mappingCache.getInheritanceTree(entityName);
         }
 
         return tree;
@@ -548,12 +555,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
      *         specifier
      */
     public ObjEntity lookupObjEntity(Class<?> aClass) {
-        ObjEntity result = entityCache.getObjEntity(aClass);
+        ObjEntity result = mappingCache.getObjEntity(aClass);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = entityCache.getObjEntity(aClass);
+            result = mappingCache.getObjEntity(aClass);
         }
 
         return result;
@@ -588,12 +595,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     public Procedure lookupProcedure(String procedureName) {
 
-        Procedure result = entityCache.getProcedure(procedureName);
+        Procedure result = mappingCache.getProcedure(procedureName);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = entityCache.getProcedure(procedureName);
+            result = mappingCache.getProcedure(procedureName);
         }
 
         return result;
@@ -603,13 +610,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Returns a named query or null if no query exists for a given name.
      */
     public Query lookupQuery(String name) {
-        Query result = entityCache.getQuery(name);
+        Query result = mappingCache.getQuery(name);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = entityCache.getQuery(name);
+            result = mappingCache.getQuery(name);
         }
         return result;
     }
