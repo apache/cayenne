@@ -88,7 +88,7 @@ public class QuotedIdentifiersTest extends ServerCase {
     public void testPrefetchQuote() throws Exception {
         DbEntity entity = context
                 .getEntityResolver()
-                .lookupObjEntity(QuoteAdress.class)
+                .getObjEntity(QuoteAdress.class)
                 .getDbEntity();
         List idAttributes = Collections.singletonList(entity.getAttribute("City"));
         List updatedAttributes = Collections.singletonList(entity.getAttribute("City"));

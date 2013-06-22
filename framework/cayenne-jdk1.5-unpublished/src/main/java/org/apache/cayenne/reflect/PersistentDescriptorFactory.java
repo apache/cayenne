@@ -61,18 +61,15 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     protected ClassDescriptor getDescriptor(ObjEntity entity, Class<?> entityClass) {
         String superEntityName = entity.getSuperEntityName();
 
-        ClassDescriptor superDescriptor = (superEntityName != null) ? descriptorMap
-                .getDescriptor(superEntityName) : null;
+        ClassDescriptor superDescriptor = (superEntityName != null) ? descriptorMap.getDescriptor(superEntityName)
+                : null;
 
         PersistentDescriptor descriptor = createDescriptor();
 
         descriptor.setEntity(entity);
         descriptor.setSuperclassDescriptor(superDescriptor);
         descriptor.setObjectClass(entityClass);
-        descriptor.setPersistenceStateAccessor(new BeanAccessor(
-                entityClass,
-                "persistenceState",
-                Integer.TYPE));
+        descriptor.setPersistenceStateAccessor(new BeanAccessor(entityClass, "persistenceState", Integer.TYPE));
 
         // only include this entity attributes and skip superclasses...
         for (Attribute attribute : descriptor.getEntity().getDeclaredAttributes()) {
@@ -82,48 +79,37 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 for (ObjAttribute objAttribute : embedded.getAttributes()) {
                     createEmbeddedAttributeProperty(descriptor, embedded, objAttribute);
                 }
-            }
-            else if (attribute instanceof ObjAttribute) {
+            } else if (attribute instanceof ObjAttribute) {
                 createAttributeProperty(descriptor, (ObjAttribute) attribute);
             }
         }
 
         // only include this entity relationships and skip superclasses...
-        for (Relationship relationship : descriptor
-                .getEntity()
-                .getDeclaredRelationships()) {
+        for (Relationship relationship : descriptor.getEntity().getDeclaredRelationships()) {
 
             ObjRelationship objRelationship = (ObjRelationship) relationship;
 
             if (relationship.isToMany()) {
 
                 String collectionType = objRelationship.getCollectionType();
-                if (collectionType == null
-                        || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
+                if (collectionType == null || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
                     createToManyListProperty(descriptor, objRelationship);
-                }
-                else if (collectionType.equals("java.util.Map")) {
+                } else if (collectionType.equals("java.util.Map")) {
                     createToManyMapProperty(descriptor, objRelationship);
-                }
-                else if (collectionType.equals("java.util.Set")) {
+                } else if (collectionType.equals("java.util.Set")) {
                     createToManySetProperty(descriptor, objRelationship);
-                }
-                else if (collectionType.equals("java.util.Collection")) {
+                } else if (collectionType.equals("java.util.Collection")) {
                     createToManyCollectionProperty(descriptor, objRelationship);
+                } else {
+                    throw new IllegalArgumentException("Unsupported to-many collection type: " + collectionType);
                 }
-                else {
-                    throw new IllegalArgumentException(
-                            "Unsupported to-many collection type: " + collectionType);
-                }
-            }
-            else {
+            } else {
                 createToOneProperty(descriptor, objRelationship);
             }
         }
 
-        EntityInheritanceTree inheritanceTree = descriptorMap
-                .getResolver()
-                .lookupInheritanceTree(descriptor.getEntity().getName());
+        EntityInheritanceTree inheritanceTree = descriptorMap.getResolver().getInheritanceTree(
+                descriptor.getEntity().getName());
         descriptor.setEntityInheritanceTree(inheritanceTree);
         indexSubclassDescriptors(descriptor, inheritanceTree);
         indexQualifiers(descriptor, inheritanceTree);
@@ -132,7 +118,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         indexRootDbEntities(descriptor, inheritanceTree);
 
         indexSuperclassProperties(descriptor);
-        
+
         descriptor.sortProperties();
 
         return descriptor;
@@ -142,21 +128,14 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         return new PersistentDescriptor();
     }
 
-    protected void createAttributeProperty(
-            PersistentDescriptor descriptor,
-            ObjAttribute attribute) {
+    protected void createAttributeProperty(PersistentDescriptor descriptor, ObjAttribute attribute) {
         Class<?> propertyType = attribute.getJavaClass();
         Accessor accessor = createAccessor(descriptor, attribute.getName(), propertyType);
-        descriptor.addDeclaredProperty(new SimpleAttributeProperty(
-                descriptor,
-                accessor,
-                attribute));
+        descriptor.addDeclaredProperty(new SimpleAttributeProperty(descriptor, accessor, attribute));
     }
 
-    protected void createEmbeddedAttributeProperty(
-            PersistentDescriptor descriptor,
-            EmbeddedAttribute embeddedAttribute,
-            ObjAttribute attribute) {
+    protected void createEmbeddedAttributeProperty(PersistentDescriptor descriptor,
+            EmbeddedAttribute embeddedAttribute, ObjAttribute attribute) {
 
         Class<?> embeddableClass = embeddedAttribute.getJavaClass();
 
@@ -170,53 +149,31 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
         EmbeddableDescriptor embeddableDescriptor = createEmbeddableDescriptor(embeddedAttribute);
 
-        Accessor embeddedAccessor = createAccessor(descriptor, embeddedAttribute
-                .getName(), embeddableClass);
-        Accessor embeddedableAccessor = createEmbeddableAccessor(
-                embeddableDescriptor,
-                embeddableName,
+        Accessor embeddedAccessor = createAccessor(descriptor, embeddedAttribute.getName(), embeddableClass);
+        Accessor embeddedableAccessor = createEmbeddableAccessor(embeddableDescriptor, embeddableName,
                 attribute.getJavaClass());
 
-        Accessor accessor = new EmbeddedFieldAccessor(
-                embeddableDescriptor,
-                embeddedAccessor,
-                embeddedableAccessor);
-        descriptor.addDeclaredProperty(new SimpleAttributeProperty(
-                descriptor,
-                accessor,
-                attribute));
+        Accessor accessor = new EmbeddedFieldAccessor(embeddableDescriptor, embeddedAccessor, embeddedableAccessor);
+        descriptor.addDeclaredProperty(new SimpleAttributeProperty(descriptor, accessor, attribute));
     }
 
-    protected abstract void createToOneProperty(
-            PersistentDescriptor descriptor,
-            ObjRelationship relationship);
+    protected abstract void createToOneProperty(PersistentDescriptor descriptor, ObjRelationship relationship);
 
-    protected abstract void createToManySetProperty(
-            PersistentDescriptor descriptor,
-            ObjRelationship relationship);
+    protected abstract void createToManySetProperty(PersistentDescriptor descriptor, ObjRelationship relationship);
 
-    protected abstract void createToManyMapProperty(
-            PersistentDescriptor descriptor,
-            ObjRelationship relationship);
+    protected abstract void createToManyMapProperty(PersistentDescriptor descriptor, ObjRelationship relationship);
 
-    protected abstract void createToManyListProperty(
-            PersistentDescriptor descriptor,
-            ObjRelationship relationship);
+    protected abstract void createToManyListProperty(PersistentDescriptor descriptor, ObjRelationship relationship);
 
-    protected abstract void createToManyCollectionProperty(
-            PersistentDescriptor descriptor,
-            ObjRelationship relationship);
+    protected abstract void createToManyCollectionProperty(PersistentDescriptor descriptor, ObjRelationship relationship);
 
-    protected void indexSubclassDescriptors(
-            PersistentDescriptor descriptor,
-            EntityInheritanceTree inheritanceTree) {
+    protected void indexSubclassDescriptors(PersistentDescriptor descriptor, EntityInheritanceTree inheritanceTree) {
 
         if (inheritanceTree != null) {
 
             for (EntityInheritanceTree child : inheritanceTree.getChildren()) {
                 ObjEntity childEntity = child.getEntity();
-                descriptor.addSubclassDescriptor(
-                        childEntity.getClassName(),
+                descriptor.addSubclassDescriptor(childEntity.getClassName(),
                         descriptorMap.getDescriptor(childEntity.getName()));
 
                 indexSubclassDescriptors(descriptor, child);
@@ -224,9 +181,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         }
     }
 
-    protected void indexRootDbEntities(
-            PersistentDescriptor descriptor,
-            EntityInheritanceTree inheritanceTree) {
+    protected void indexRootDbEntities(PersistentDescriptor descriptor, EntityInheritanceTree inheritanceTree) {
 
         if (inheritanceTree != null) {
 
@@ -238,28 +193,24 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         }
     }
 
-    private void appendDeclaredRootDbEntity(
-            PersistentDescriptor descriptor,
-            ObjEntity entity) {
+    private void appendDeclaredRootDbEntity(PersistentDescriptor descriptor, ObjEntity entity) {
 
         DbEntity dbEntity = entity.getDbEntity();
         if (dbEntity != null) {
-            // descriptor takes care of weeding off duplicates, which are likely in cases
+            // descriptor takes care of weeding off duplicates, which are likely
+            // in cases
             // of non-horizontal inheritance
             descriptor.addRootDbEntity(dbEntity);
         }
     }
 
-    protected void indexQualifiers(
-            final PersistentDescriptor descriptor,
-            EntityInheritanceTree inheritanceTree) {
+    protected void indexQualifiers(final PersistentDescriptor descriptor, EntityInheritanceTree inheritanceTree) {
 
         Expression qualifier;
 
         if (inheritanceTree != null) {
             qualifier = inheritanceTree.qualifierForEntityAndSubclasses();
-        }
-        else {
+        } else {
             qualifier = descriptor.getEntity().getDeclaredQualifier();
         }
 
@@ -277,13 +228,10 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 public void startNode(Expression node, Expression parentNode) {
                     if (node.getType() == Expression.DB_PATH) {
                         String path = node.getOperand(0).toString();
-                        final DbAttribute attribute = (DbAttribute) dbEntity
-                                .getAttribute(path);
+                        final DbAttribute attribute = (DbAttribute) dbEntity.getAttribute(path);
                         if (attribute != null) {
 
-                            ObjAttribute objectAttribute = descriptor
-                                    .getEntity()
-                                    .getAttributeForDbAttribute(attribute);
+                            ObjAttribute objectAttribute = descriptor.getEntity().getAttributeForDbAttribute(attribute);
 
                             if (objectAttribute == null) {
                                 objectAttribute = new ObjAttribute(attribute.getName()) {
@@ -295,18 +243,17 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                                 };
 
                                 // we semi-officially DO NOT support inheritance
-                                // descriptors based on related entities, so here we
+                                // descriptors based on related entities, so
+                                // here we
                                 // assume that DbAttribute is rooted in the root
                                 // DbEntity, and no relationship is involved.
                                 objectAttribute.setDbAttributePath(attribute.getName());
-                                objectAttribute.setType(TypesMapping
-                                        .getJavaBySqlType(attribute.getType()));
+                                objectAttribute.setType(TypesMapping.getJavaBySqlType(attribute.getType()));
                             }
 
                             attributes.put(objectAttribute.getName(), objectAttribute);
                         }
-                    }
-                    else if (node.getType() == Expression.OBJ_PATH) {
+                    } else if (node.getType() == Expression.OBJ_PATH) {
                         String path = node.getOperand(0).toString();
                         ObjAttribute attribute = (ObjAttribute) descriptor.getEntity().getAttribute(path);
                         attributes.put(path, attribute);
@@ -330,9 +277,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
                 public boolean visitAttribute(AttributeProperty property) {
                     // decorate super property to return an overridden attribute
-                    descriptor.addSuperProperty(new AttributePropertyDecorator(
-                            descriptor,
-                            property));
+                    descriptor.addSuperProperty(new AttributePropertyDecorator(descriptor, property));
                     return true;
                 }
 
@@ -352,19 +297,15 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     /**
      * Creates an accessor for the property.
      */
-    protected Accessor createAccessor(
-            PersistentDescriptor descriptor,
-            String propertyName,
-            Class<?> propertyType) throws PropertyException {
+    protected Accessor createAccessor(PersistentDescriptor descriptor, String propertyName, Class<?> propertyType)
+            throws PropertyException {
         return new FieldAccessor(descriptor.getObjectClass(), propertyName, propertyType);
     }
 
     /**
      * Creates an accessor to read a map key for a given relationship.
      */
-    protected Accessor createMapKeyAccessor(
-            ObjRelationship relationship,
-            ClassDescriptor targetDescriptor) {
+    protected Accessor createMapKeyAccessor(ObjRelationship relationship, ClassDescriptor targetDescriptor) {
 
         String mapKey = relationship.getMapKey();
         if (mapKey != null) {
@@ -377,9 +318,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     /**
      * Creates an accessor for the property of the embeddable class.
      */
-    protected Accessor createEmbeddableAccessor(
-            EmbeddableDescriptor descriptor,
-            String propertyName,
+    protected Accessor createEmbeddableAccessor(EmbeddableDescriptor descriptor, String propertyName,
             Class<?> propertyType) {
         return new FieldAccessor(descriptor.getObjectClass(), propertyName, propertyType);
     }
@@ -387,13 +326,10 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
     /**
      * Creates a descriptor of the embedded property.
      */
-    protected EmbeddableDescriptor createEmbeddableDescriptor(
-            EmbeddedAttribute embeddedAttribute) {
-        // TODO: andrus, 11/19/2007 = avoid creation of descriptor for every property of
+    protected EmbeddableDescriptor createEmbeddableDescriptor(EmbeddedAttribute embeddedAttribute) {
+        // TODO: andrus, 11/19/2007 = avoid creation of descriptor for every
+        // property of
         // embeddable; look up reusable descriptor instead.
-        return new FieldEmbeddableDescriptor(
-                embeddedAttribute.getEmbeddable(),
-                "owner",
-                "embeddedProperty");
+        return new FieldEmbeddableDescriptor(embeddedAttribute.getEmbeddable(), "owner", "embeddedProperty");
     }
 }

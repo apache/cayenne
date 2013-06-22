@@ -415,7 +415,7 @@ public class DataContext extends BaseContext {
      * @since 3.1
      */
     public <T extends Persistent> T objectFromDataRow(Class<T> objectClass, DataRow dataRow) {
-        ObjEntity entity = this.getEntityResolver().lookupObjEntity(objectClass);
+        ObjEntity entity = this.getEntityResolver().getObjEntity(objectClass);
 
         if (entity == null) {
             throw new CayenneRuntimeException("Unmapped Java class: " + objectClass);
@@ -451,7 +451,7 @@ public class DataContext extends BaseContext {
             throw new NullPointerException("Null 'persistentClass'");
         }
 
-        ObjEntity entity = getEntityResolver().lookupObjEntity(persistentClass);
+        ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
         if (entity == null) {
             throw new IllegalArgumentException("Class is not mapped with Cayenne: " + persistentClass.getName());
         }

@@ -419,7 +419,7 @@ public class ObjRelationshipTest extends ServerCase {
 		EntityResolver resolver = new EntityResolver(
 				Collections.singleton(dataMap));
 
-		ObjEntity iv2Sub1 = resolver.lookupObjEntity(Iv2Sub1.class);
+		ObjEntity iv2Sub1 = resolver.getObjEntity(Iv2Sub1.class);
 		ObjRelationship x = (ObjRelationship) iv2Sub1
 				.getRelationship(Iv2Sub1.X_PROPERTY);
 		assertTrue(x.isFlattened());

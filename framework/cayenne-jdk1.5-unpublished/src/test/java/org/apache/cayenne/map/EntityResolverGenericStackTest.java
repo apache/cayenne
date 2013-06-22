@@ -44,10 +44,10 @@ public class EntityResolverGenericStackTest extends ServerCase {
         assertNotNull(g2);
 
         assertNotSame(g1, g2);
-        assertNull(resolver.lookupObjEntity(Object.class));
+        assertNull(resolver.getObjEntity(Object.class));
 
         try {
-            resolver.lookupObjEntity(CayenneDataObject.class);
+            resolver.getObjEntity(CayenneDataObject.class);
             fail("two entities mapped to the same class... resolver must have thrown.");
         }
         catch (CayenneRuntimeException e) {

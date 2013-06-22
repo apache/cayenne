@@ -399,7 +399,7 @@ public class Cayenne {
             Class<T> dataObjectClass,
             Map<String, ?> pk) {
 
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(dataObjectClass);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
         if (entity == null) {
             throw new CayenneRuntimeException("Non-existent ObjEntity for class: "
                     + dataObjectClass);
@@ -539,7 +539,7 @@ public class Cayenne {
             throw new IllegalArgumentException("Null DataObject class.");
         }
 
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(dataObjectClass);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
         if (entity == null) {
             throw new CayenneRuntimeException("Unmapped DataObject Class: "
                     + dataObjectClass.getName());

@@ -26,9 +26,9 @@ import java.util.Map;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * A metadata object that defines how a row in a result set can be converted to result
- * objects. SQLResult can be mapped to a single scalar, a single entity or a mix of
- * scalars and entities that is represented as an Object[].
+ * A metadata object that defines how a row in a result set can be converted to
+ * result objects. SQLResult can be mapped to a single scalar, a single entity
+ * or a mix of scalars and entities that is represented as an Object[].
  * 
  * @since 3.0
  */
@@ -55,32 +55,22 @@ public class SQLResult {
         int offset = 0;
         for (Object component : getComponents()) {
             if (component instanceof String) {
-                resolvedComponents.add(new DefaultScalarResultSegment(
-                        (String) component,
-                        offset));
+                resolvedComponents.add(new DefaultScalarResultSegment((String) component, offset));
                 offset = offset + 1;
-            }
-            else if (component instanceof EntityResult) {
+            } else if (component instanceof EntityResult) {
                 EntityResult entityResult = (EntityResult) component;
                 Map<String, String> fields = entityResult.getDbFields(resolver);
 
                 String entityName = entityResult.getEntityName();
                 if (entityName == null) {
-                    entityName = resolver
-                            .lookupObjEntity(entityResult.getEntityClass())
-                            .getName();
+                    entityName = resolver.getObjEntity(entityResult.getEntityClass()).getName();
                 }
 
                 ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
-                resolvedComponents.add(new DefaultEntityResultSegment(
-                        classDescriptor,
-                        fields,
-                        offset));
+                resolvedComponents.add(new DefaultEntityResultSegment(classDescriptor, fields, offset));
                 offset = offset + fields.size();
-            }
-            else {
-                throw new IllegalArgumentException(
-                        "Unsupported result descriptor component: " + component);
+            } else {
+                throw new IllegalArgumentException("Unsupported result descriptor component: " + component);
             }
         }
 
@@ -103,12 +93,13 @@ public class SQLResult {
     }
 
     /**
-     * Returns a list of "uncompiled" result descriptors. Column descriptors are returned
-     * as Strings, entity descriptors - as {@link EntityResult}. To get fully resolved
-     * descriptors, use {@link #getResolvedComponents(EntityResolver)}.
+     * Returns a list of "uncompiled" result descriptors. Column descriptors are
+     * returned as Strings, entity descriptors - as {@link EntityResult}. To get
+     * fully resolved descriptors, use
+     * {@link #getResolvedComponents(EntityResolver)}.
      */
     public List<Object> getComponents() {
-        return resultDescriptors != null ? resultDescriptors : Collections.EMPTY_LIST;
+        return resultDescriptors != null ? resultDescriptors : Collections.emptyList();
     }
 
     public void addEntityResult(EntityResult entityResult) {

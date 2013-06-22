@@ -52,8 +52,8 @@ public class ClientEntityResolverTest extends ClientCase {
                     + clientResolver.getObjEntities());
         }
 
-        assertNotNull(clientResolver.lookupObjEntity(ClientMtTable1.class));
-        assertNull(clientResolver.lookupObjEntity(MtTable1.class));
+        assertNotNull(clientResolver.getObjEntity(ClientMtTable1.class));
+        assertNull(clientResolver.getObjEntity(MtTable1.class));
     }
 
     public void testSerializabilityWithHessian() throws Exception {

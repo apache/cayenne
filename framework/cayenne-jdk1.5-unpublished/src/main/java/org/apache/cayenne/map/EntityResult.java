@@ -81,7 +81,7 @@ public class EntityResult {
             return resolver.getObjEntity(entityName);
         }
         else if (entityClass != null) {
-            return resolver.lookupObjEntity(entityClass);
+            return resolver.getObjEntity(entityClass);
         }
         else {
             throw new IllegalStateException("Both entity name and class are null");

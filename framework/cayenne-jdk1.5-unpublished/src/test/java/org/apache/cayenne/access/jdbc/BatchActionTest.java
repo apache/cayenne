@@ -35,7 +35,7 @@ public class BatchActionTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
-    
+
     @Inject
     private AdhocObjectFactory objectFactory;
 
@@ -45,12 +45,11 @@ public class BatchActionTest extends ServerCase {
         // test with adapter that supports keys
         JdbcAdapter adapter = buildAdapter(true);
 
-        InsertBatchQuery batch1 = new InsertBatchQuery(resolver.lookupObjEntity(
-                GeneratedColumnTestEntity.class).getDbEntity(), 5);
+        InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
+                .getDbEntity(), 5);
         assertTrue(new BatchAction(batch1, adapter, resolver).hasGeneratedKeys());
 
-        InsertBatchQuery batch2 = new InsertBatchQuery(resolver.lookupObjEntity(
-                Artist.class).getDbEntity(), 5);
+        InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch2, adapter, resolver).hasGeneratedKeys());
     }
 
@@ -60,19 +59,16 @@ public class BatchActionTest extends ServerCase {
         // test with adapter that does not support keys...
         JdbcAdapter adapter = buildAdapter(false);
 
-        InsertBatchQuery batch1 = new InsertBatchQuery(resolver.lookupObjEntity(
-                GeneratedColumnTestEntity.class).getDbEntity(), 5);
+        InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
+                .getDbEntity(), 5);
         assertFalse(new BatchAction(batch1, adapter, resolver).hasGeneratedKeys());
 
-        InsertBatchQuery batch2 = new InsertBatchQuery(resolver.lookupObjEntity(
-                Artist.class).getDbEntity(), 5);
+        InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch2, adapter, resolver).hasGeneratedKeys());
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
-        JdbcAdapter adapter = objectFactory.newInstance(
-                JdbcAdapter.class, 
-                JdbcAdapter.class.getName());
+        JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
         adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
         return adapter;
     }

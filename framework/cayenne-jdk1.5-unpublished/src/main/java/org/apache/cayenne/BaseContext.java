@@ -573,7 +573,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
         ObjEntity entity;
         try {
-            entity = getEntityResolver().lookupObjEntity(object.getClass());
+            entity = getEntityResolver().getObjEntity(object.getClass());
         } catch (CayenneRuntimeException ex) {
             // ObjEntity cannot be fetched, ignored
             entity = null;

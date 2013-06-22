@@ -68,8 +68,7 @@ public class DeleteRulesTest extends ServerCase {
         try {
             context.deleteObjects(test1);
             fail("Should have thrown an exception");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // GOOD!
         }
         context.commitChanges();
@@ -120,8 +119,7 @@ public class DeleteRulesTest extends ServerCase {
             assertTrue(b.getUntitledRel().contains(a));
             context.commitChanges();
 
-        }
-        finally {
+        } finally {
             changeDeleteRule(oldRule);
         }
     }
@@ -146,8 +144,7 @@ public class DeleteRulesTest extends ServerCase {
             assertEquals(PersistenceState.DELETED, a.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
             context.commitChanges();
-        }
-        finally {
+        } finally {
             changeDeleteRule(oldRule);
             restoreReverse(reverse);
         }
@@ -172,8 +169,7 @@ public class DeleteRulesTest extends ServerCase {
 
             assertEquals(PersistenceState.TRANSIENT, a.getPersistenceState());
             assertEquals(PersistenceState.TRANSIENT, b.getPersistenceState());
-        }
-        finally {
+        } finally {
             changeDeleteRule(oldRule);
         }
     }
@@ -197,8 +193,7 @@ public class DeleteRulesTest extends ServerCase {
             context.commitChanges();
             assertEquals(PersistenceState.TRANSIENT, a.getPersistenceState());
             assertEquals(PersistenceState.TRANSIENT, b.getPersistenceState());
-        }
-        finally {
+        } finally {
             changeDeleteRule(oldRule);
             restoreReverse(reverse);
         }
@@ -223,8 +218,7 @@ public class DeleteRulesTest extends ServerCase {
             assertEquals(PersistenceState.MODIFIED, b.getPersistenceState());
             assertFalse(b.getUntitledRel().contains(a));
             context.commitChanges();
-        }
-        finally {
+        } finally {
             changeDeleteRule(oldRule);
         }
     }
@@ -248,8 +242,7 @@ public class DeleteRulesTest extends ServerCase {
             assertEquals(PersistenceState.DELETED, a.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
             context.commitChanges();
-        }
-        finally {
+        } finally {
             changeDeleteRule(oldRule);
             restoreReverse(reverse);
         }
@@ -268,13 +261,11 @@ public class DeleteRulesTest extends ServerCase {
             try {
                 context.deleteObjects(a);
                 fail("Must have thrown a deny exception..");
-            }
-            catch (DeleteDenyException ex) {
+            } catch (DeleteDenyException ex) {
                 // expected... but check further
                 assertJoinNotDeleted(a, b);
             }
-        }
-        finally {
+        } finally {
             changeDeleteRule(oldRule);
         }
     }
@@ -293,59 +284,47 @@ public class DeleteRulesTest extends ServerCase {
             try {
                 context.deleteObjects(a);
                 fail("Must have thrown a deny exception..");
-            }
-            catch (DeleteDenyException ex) {
+            } catch (DeleteDenyException ex) {
                 // expected... but check further
                 assertJoinNotDeleted(a, b);
             }
-        }
-        finally {
+        } finally {
             changeDeleteRule(oldRule);
             restoreReverse(reverse);
         }
     }
 
     private int changeDeleteRule(int deleteRule) {
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(
-                DeleteRuleFlatA.class);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = (ObjRelationship) entity
-                .getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = (ObjRelationship) entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
         int oldRule = relationship.getDeleteRule();
         relationship.setDeleteRule(deleteRule);
         return oldRule;
     }
 
     private ObjRelationship unsetReverse() {
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(
-                DeleteRuleFlatA.class);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = (ObjRelationship) entity
-                .getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = (ObjRelationship) entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
         ObjRelationship reverse = relationship.getReverseRelationship();
 
         if (reverse != null) {
             reverse.getSourceEntity().removeRelationship(reverse.getName());
-            context.getEntityResolver().getClassDescriptorMap().removeDescriptor(
-                    "DeleteRuleFlatA");
-            context.getEntityResolver().getClassDescriptorMap().removeDescriptor(
-                    "DeleteRuleFlatB");
+            context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
+            context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
         }
 
         return reverse;
     }
 
     private void restoreReverse(ObjRelationship reverse) {
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(
-                DeleteRuleFlatA.class);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = (ObjRelationship) entity
-                .getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = (ObjRelationship) entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
         relationship.getTargetEntity().addRelationship(reverse);
-        context.getEntityResolver().getClassDescriptorMap().removeDescriptor(
-                "DeleteRuleFlatA");
-        context.getEntityResolver().getClassDescriptorMap().removeDescriptor(
-                "DeleteRuleFlatB");
+        context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
+        context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
     }
 
     private void assertJoinDeleted(DeleteRuleFlatA a, DeleteRuleFlatB b) {
@@ -362,8 +341,7 @@ public class DeleteRulesTest extends ServerCase {
                 ArcOperation arcDelete = (ArcOperation) diff;
                 if (arcDelete.getNodeId().equals(a.getObjectId())
                         && arcDelete.getTargetNodeId().equals(b.getObjectId())
-                        && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B_PROPERTY)
-                        && arcDelete.isDelete()) {
+                        && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B_PROPERTY) && arcDelete.isDelete()) {
                     return;
                 }
             }
@@ -385,9 +363,7 @@ public class DeleteRulesTest extends ServerCase {
                     ArcOperation arcDelete = (ArcOperation) diff;
                     if (arcDelete.getNodeId().equals(a.getObjectId())
                             && arcDelete.getTargetNodeId().equals(b.getObjectId())
-                            && arcDelete.getArcId().equals(
-                                    DeleteRuleFlatA.FLAT_B_PROPERTY)
-                            && !arcDelete.isDelete()) {
+                            && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B_PROPERTY) && !arcDelete.isDelete()) {
                         fail("Join was  deleted for flattened relationship");
                     }
                 }

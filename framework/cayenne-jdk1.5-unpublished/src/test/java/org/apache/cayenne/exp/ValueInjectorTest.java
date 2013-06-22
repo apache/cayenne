@@ -30,8 +30,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class ValueInjectorTest extends RemoteCayenneCase {
 
     public void test() {
-        ObjEntity entity = serverContext.getEntityResolver().lookupObjEntity(
-                MtTable1Subclass.class);
+        ObjEntity entity = serverContext.getEntityResolver().getObjEntity(MtTable1Subclass.class);
         Expression qualifier = entity.getDeclaredQualifier();
 
         try {
@@ -39,21 +38,18 @@ public class ValueInjectorTest extends RemoteCayenneCase {
             assertEquals(ee.getGlobalAttribute1(), "sub1");
 
             // check AND
-            entity.setDeclaredQualifier(qualifier.andExp(Expression
-                    .fromString("serverAttribute1 = 'sa'")));
+            entity.setDeclaredQualifier(qualifier.andExp(Expression.fromString("serverAttribute1 = 'sa'")));
             ee = serverContext.newObject(MtTable1Subclass.class);
             assertEquals(ee.getGlobalAttribute1(), "sub1");
             assertEquals(ee.getServerAttribute1(), "sa");
-        }
-        finally {
+        } finally {
             entity.setDeclaredQualifier(qualifier);
         }
     }
 
     public void testRemote() {
         ObjectContext context = createROPContext();
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(
-                ClientMtTable1Subclass.class);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(ClientMtTable1Subclass.class);
         Expression qualifier = entity.getDeclaredQualifier();
 
         try {
@@ -61,13 +57,11 @@ public class ValueInjectorTest extends RemoteCayenneCase {
             assertEquals(ee.getGlobalAttribute1(), "sub1");
 
             // check AND
-            entity.setDeclaredQualifier(qualifier.andExp(Expression
-                    .fromString("serverAttribute1 = 'sa'")));
+            entity.setDeclaredQualifier(qualifier.andExp(Expression.fromString("serverAttribute1 = 'sa'")));
             ee = context.newObject(ClientMtTable1Subclass.class);
             assertEquals(ee.getGlobalAttribute1(), "sub1");
             assertEquals(ee.getServerAttribute1(), "sa");
-        }
-        finally {
+        } finally {
             entity.setDeclaredQualifier(qualifier);
         }
     }

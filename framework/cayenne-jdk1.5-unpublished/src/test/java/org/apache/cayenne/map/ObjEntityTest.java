@@ -92,8 +92,7 @@ public class ObjEntityTest extends ServerCase {
     }
 
     public void testGetPrimaryKeys() {
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(
-                "Artist");
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         Collection<ObjAttribute> pks = artistE.getPrimaryKeys();
         assertEquals(1, pks.size());
 
@@ -114,10 +113,7 @@ public class ObjEntityTest extends ServerCase {
         assertNull(clientPk.getEntity());
         assertFalse(clientArtistE.getAttributes().contains(pk));
 
-        ObjEntity meaningfulPKE = runtime
-                .getDataDomain()
-                .getEntityResolver()
-                .getObjEntity("MeaningfulPKTest1");
+        ObjEntity meaningfulPKE = runtime.getDataDomain().getEntityResolver().getObjEntity("MeaningfulPKTest1");
         Collection<ObjAttribute> mpks = meaningfulPKE.getPrimaryKeys();
         assertEquals(1, mpks.size());
 
@@ -135,8 +131,7 @@ public class ObjEntityTest extends ServerCase {
 
     public void testAttributes() {
         // ObjEntity artistE = getObjEntity("Artist");
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(
-                "Artist");
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjAttribute attr = (ObjAttribute) artistE.getAttribute("artistName");
 
         assertEquals(attr.getMaxLength(), attr.getDbAttribute().getMaxLength());
@@ -144,33 +139,28 @@ public class ObjEntityTest extends ServerCase {
     }
 
     public void testLastPathComponent() {
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(
-                "Artist");
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
 
         Map<String, String> aliases = new HashMap<String, String>();
         aliases.put("a", "paintingArray.toGallery");
 
-        PathComponent<ObjAttribute, ObjRelationship> lastAttribute = artistE
-                .lastPathComponent(
-                        Expression.fromString("paintingArray.paintingTitle"),
-                        aliases);
+        PathComponent<ObjAttribute, ObjRelationship> lastAttribute = artistE.lastPathComponent(
+                Expression.fromString("paintingArray.paintingTitle"), aliases);
         assertTrue(lastAttribute.getAttribute() != null);
         assertEquals("paintingTitle", lastAttribute.getAttribute().getName());
 
-        PathComponent<ObjAttribute, ObjRelationship> lastRelationship = artistE
-                .lastPathComponent(
-                        Expression.fromString("paintingArray.toGallery"),
-                        aliases);
+        PathComponent<ObjAttribute, ObjRelationship> lastRelationship = artistE.lastPathComponent(
+                Expression.fromString("paintingArray.toGallery"), aliases);
         assertTrue(lastRelationship.getRelationship() != null);
         assertEquals("toGallery", lastRelationship.getRelationship().getName());
 
-        PathComponent<ObjAttribute, ObjRelationship> lastLeftJoinRelationship = artistE
-                .lastPathComponent(new ASTObjPath("paintingArray+.toGallery+"), aliases);
+        PathComponent<ObjAttribute, ObjRelationship> lastLeftJoinRelationship = artistE.lastPathComponent(
+                new ASTObjPath("paintingArray+.toGallery+"), aliases);
         assertTrue(lastLeftJoinRelationship.getRelationship() != null);
         assertEquals("toGallery", lastLeftJoinRelationship.getRelationship().getName());
 
-        PathComponent<ObjAttribute, ObjRelationship> lastAliasedRelationship = artistE
-                .lastPathComponent(new ASTObjPath("a"), aliases);
+        PathComponent<ObjAttribute, ObjRelationship> lastAliasedRelationship = artistE.lastPathComponent(
+                new ASTObjPath("a"), aliases);
         assertTrue(lastAliasedRelationship.getRelationship() != null);
         assertEquals("toGallery", lastAliasedRelationship.getRelationship().getName());
     }
@@ -206,8 +196,7 @@ public class ObjEntityTest extends ServerCase {
     public void testClientAllowed() {
         ObjEntity e1 = new ObjEntity("e1");
 
-        assertFalse("No parent DataMap should have automatically disabled client.", e1
-                .isClientAllowed());
+        assertFalse("No parent DataMap should have automatically disabled client.", e1.isClientAllowed());
 
         DataMap map = new DataMap("m1");
         e1.setDataMap(map);
@@ -339,8 +328,7 @@ public class ObjEntityTest extends ServerCase {
         try {
             entity.getDbEntity();
             fail("Without a container ObjENtity shouldn't resolve DbEntity");
-        }
-        catch (CayenneRuntimeException ex) {
+        } catch (CayenneRuntimeException ex) {
             // expected
         }
     }
@@ -363,10 +351,8 @@ public class ObjEntityTest extends ServerCase {
         ObjEntity ae = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         DbEntity dae = ae.getDbEntity();
 
-        assertNull(ae.getAttributeForDbAttribute((DbAttribute) dae
-                .getAttribute("ARTIST_ID")));
-        assertNotNull(ae.getAttributeForDbAttribute((DbAttribute) dae
-                .getAttribute("ARTIST_NAME")));
+        assertNull(ae.getAttributeForDbAttribute((DbAttribute) dae.getAttribute("ARTIST_ID")));
+        assertNotNull(ae.getAttributeForDbAttribute((DbAttribute) dae.getAttribute("ARTIST_NAME")));
     }
 
     public void testRelationshipForDbRelationship() throws Exception {
@@ -374,8 +360,7 @@ public class ObjEntityTest extends ServerCase {
         DbEntity dae = ae.getDbEntity();
 
         assertNull(ae.getRelationshipForDbRelationship(new DbRelationship()));
-        assertNotNull(ae.getRelationshipForDbRelationship((DbRelationship) dae
-                .getRelationship("paintingArray")));
+        assertNotNull(ae.getRelationshipForDbRelationship((DbRelationship) dae.getRelationship("paintingArray")));
     }
 
     public void testReadOnly() throws Exception {
@@ -386,70 +371,46 @@ public class ObjEntityTest extends ServerCase {
     }
 
     public void testTranslateToRelatedEntityIndependentPath() throws Exception {
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
-                Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
         Expression e1 = Expression.fromString("paintingArray");
-        Expression translated = artistE
-                .translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:toArtist.paintingArray"), translated);
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
+        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray"), translated);
     }
 
     public void testTranslateToRelatedEntityTrimmedPath() throws Exception {
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
-                Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
         Expression e1 = Expression.fromString("artistExhibitArray.toExhibit");
-        Expression translated = artistE
-                .translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression
-                .fromString("db:toArtist.artistExhibitArray.toExhibit"), translated);
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
+        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.artistExhibitArray.toExhibit"),
+                translated);
     }
 
     public void testTranslateToRelatedEntitySplitHalfWay() throws Exception {
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
-                Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
         Expression e1 = Expression.fromString("paintingArray.toPaintingInfo.textReview");
-        Expression translated = artistE.translateToRelatedEntity(
-                e1,
-                "paintingArray.toGallery");
-        assertEquals(
-                "failure: " + translated,
-                Expression
-                        .fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"),
-                translated);
+        Expression translated = artistE.translateToRelatedEntity(e1, "paintingArray.toGallery");
+        assertEquals("failure: " + translated,
+                Expression.fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
     }
 
     public void testTranslateToRelatedEntityMatchingPath() throws Exception {
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
-                Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
         Expression e1 = Expression.fromString("artistExhibitArray.toExhibit");
-        Expression translated = artistE.translateToRelatedEntity(
-                e1,
-                "artistExhibitArray.toExhibit");
-        assertEquals(
-                "failure: " + translated,
-                Expression
-                        .fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"),
-                translated);
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray.toExhibit");
+        assertEquals("failure: " + translated,
+                Expression.fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
     }
 
     public void testTranslateToRelatedEntityMultiplePaths() throws Exception {
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(
-                Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = Expression
-                .fromString("paintingArray = $p and artistExhibitArray.toExhibit.closingDate = $d");
-        Expression translated = artistE
-                .translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(
-                "failure: " + translated,
-                Expression
-                        .fromString("db:toArtist.paintingArray = $p "
-                                + "and db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE = $d"),
-                translated);
+        Expression e1 = Expression.fromString("paintingArray = $p and artistExhibitArray.toExhibit.closingDate = $d");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
+        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray = $p "
+                + "and db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE = $d"), translated);
     }
 
     public void testTranslateNullArg() {

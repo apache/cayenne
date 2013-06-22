@@ -37,10 +37,8 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityTest extends ServerCa
     private EntityResolver resolver;
 
     public void testPrefetchEmployee() throws Exception {
-        ObjEntity departmentEntity = resolver.lookupObjEntity(Department.class);
-        SelectQuery q = new SelectQuery(Employee.class, ExpressionFactory.matchExp(
-                "name",
-                "abc"));
+        ObjEntity departmentEntity = resolver.getObjEntity(Department.class);
+        SelectQuery q = new SelectQuery(Employee.class, ExpressionFactory.matchExp("name", "abc"));
 
         q.addPrefetch(Employee.TO_DEPARTMENT_PROPERTY);
 
@@ -53,16 +51,13 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityTest extends ServerCa
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
 
         assertSame(departmentEntity, prefetch.getRoot());
-        assertEquals(Expression.fromString("db:employees.NAME = 'abc' "
-                + "and (db:employees.PERSON_TYPE = 'EE' "
+        assertEquals(Expression.fromString("db:employees.NAME = 'abc' " + "and (db:employees.PERSON_TYPE = 'EE' "
                 + "or db:employees.PERSON_TYPE = 'EM')"), prefetch.getQualifier());
     }
 
     public void testPrefetchManager() throws Exception {
-        ObjEntity departmentEntity = resolver.lookupObjEntity(Department.class);
-        SelectQuery q = new SelectQuery(Manager.class, ExpressionFactory.matchExp(
-                "name",
-                "abc"));
+        ObjEntity departmentEntity = resolver.getObjEntity(Department.class);
+        SelectQuery q = new SelectQuery(Manager.class, ExpressionFactory.matchExp("name", "abc"));
 
         q.addPrefetch(Employee.TO_DEPARTMENT_PROPERTY);
 
@@ -74,9 +69,7 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityTest extends ServerCa
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
         assertSame(departmentEntity, prefetch.getRoot());
-        assertEquals(
-                Expression
-                        .fromString("db:employees.NAME = 'abc' and db:employees.PERSON_TYPE = 'EM'"),
+        assertEquals(Expression.fromString("db:employees.NAME = 'abc' and db:employees.PERSON_TYPE = 'EM'"),
                 prefetch.getQualifier());
     }
 }

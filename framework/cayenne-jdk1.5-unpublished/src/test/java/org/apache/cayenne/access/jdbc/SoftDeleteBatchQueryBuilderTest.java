@@ -50,86 +50,60 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     protected DbAdapter adapter;
-    
+
     @Inject
     private UnitDbAdapter unitAdapter;
-    
+
     @Inject
     private AdhocObjectFactory objectFactory;
 
     private DeleteBatchQueryBuilder createBuilder() {
-        JdbcAdapter adapter = objectFactory.newInstance(
-                JdbcAdapter.class, 
-                JdbcAdapter.class.getName());
+        JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
         return createBuilder(adapter);
     }
 
     private DeleteBatchQueryBuilder createBuilder(JdbcAdapter adapter) {
-        return (DeleteBatchQueryBuilder) new SoftDeleteQueryBuilderFactory()
-                .createDeleteQueryBuilder(adapter);
+        return (DeleteBatchQueryBuilder) new SoftDeleteQueryBuilderFactory().createDeleteQueryBuilder(adapter);
     }
 
     public void testCreateSqlString() throws Exception {
-        DbEntity entity = context
-                .getEntityResolver()
-                .lookupObjEntity(SoftTest.class)
-                .getDbEntity();
+        DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
 
-        List<DbAttribute> idAttributes = Collections.singletonList((DbAttribute) entity
-                .getAttribute("SOFT_TEST_ID"));
+        List<DbAttribute> idAttributes = Collections.singletonList((DbAttribute) entity.getAttribute("SOFT_TEST_ID"));
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
         DeleteBatchQueryBuilder builder = createBuilder();
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
-        assertEquals("UPDATE "
-                + entity.getName()
-                + " SET DELETED = ? WHERE SOFT_TEST_ID = ?", generatedSql);
+        assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE SOFT_TEST_ID = ?", generatedSql);
     }
 
     public void testCreateSqlStringWithNulls() throws Exception {
-        DbEntity entity = context
-                .getEntityResolver()
-                .lookupObjEntity(SoftTest.class)
-                .getDbEntity();
+        DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
 
-        List<DbAttribute> idAttributes = Arrays.asList((DbAttribute) entity
-                .getAttribute("SOFT_TEST_ID"), (DbAttribute) entity.getAttribute("NAME"));
+        List<DbAttribute> idAttributes = Arrays.asList((DbAttribute) entity.getAttribute("SOFT_TEST_ID"),
+                (DbAttribute) entity.getAttribute("NAME"));
 
         Collection<String> nullAttributes = Collections.singleton("NAME");
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(
-                entity,
-                idAttributes,
-                nullAttributes,
-                1);
+        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
         DeleteBatchQueryBuilder builder = createBuilder();
         String generatedSql = builder.createSqlString(deleteQuery);
         assertNotNull(generatedSql);
-        assertEquals(
-                "UPDATE "
-                        + entity.getName()
-                        + " SET DELETED = ? WHERE SOFT_TEST_ID = ? AND NAME IS NULL",
+        assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE SOFT_TEST_ID = ? AND NAME IS NULL",
                 generatedSql);
     }
 
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
-        DbEntity entity = context
-                .getEntityResolver()
-                .lookupObjEntity(SoftTest.class)
-                .getDbEntity();
+        DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-            List<DbAttribute> idAttributes = Collections
-                    .singletonList((DbAttribute) entity.getAttribute("SOFT_TEST_ID"));
+            List<DbAttribute> idAttributes = Collections.singletonList((DbAttribute) entity
+                    .getAttribute("SOFT_TEST_ID"));
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(
-                    entity,
-                    idAttributes,
-                    null,
-                    1);
+            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
             DeleteBatchQueryBuilder builder = createBuilder(adapter);
             String generatedSql = builder.createSqlString(deleteQuery);
@@ -138,21 +112,9 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
             String charEnd = unitAdapter.getIdentifiersEndQuote();
 
             assertNotNull(generatedSql);
-            assertEquals("UPDATE "
-                    + charStart
-                    + entity.getName()
-                    + charEnd
-                    + " SET "
-                    + charStart
-                    + "DELETED"
-                    + charEnd
-                    + " = ? WHERE "
-                    + charStart
-                    + "SOFT_TEST_ID"
-                    + charEnd
-                    + " = ?", generatedSql);
-        }
-        finally {
+            assertEquals("UPDATE " + charStart + entity.getName() + charEnd + " SET " + charStart + "DELETED" + charEnd
+                    + " = ? WHERE " + charStart + "SOFT_TEST_ID" + charEnd + " = ?", generatedSql);
+        } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }
 
@@ -160,8 +122,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
     public void testUpdate() throws Exception {
 
-        final DbEntity entity = context.getEntityResolver().lookupObjEntity(
-                SoftTest.class).getDbEntity();
+        final DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
 
         JdbcAdapter adapter = (JdbcAdapter) this.adapter;
         BatchQueryBuilderFactory oldFactory = adapter.getBatchQueryBuilderFactory();
@@ -178,9 +139,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
                 @Override
                 protected void assertResult() throws Exception {
-                    query
-                            .setQualifier(ExpressionFactory.matchExp("name", test
-                                    .getName()));
+                    query.setQualifier(ExpressionFactory.matchExp("name", test.getName()));
                     assertEquals(1, context.performQuery(query).size());
 
                     query.andQualifier(ExpressionFactory.matchDbExp("DELETED", true));
@@ -196,20 +155,15 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
                 @Override
                 protected void assertResult() throws Exception {
-                    query
-                            .setQualifier(ExpressionFactory.matchExp("name", test
-                                    .getName()));
+                    query.setQualifier(ExpressionFactory.matchExp("name", test.getName()));
                     assertEquals(0, context.performQuery(query).size());
 
-                    SQLTemplate template = new SQLTemplate(
-                            entity,
-                            "SELECT * FROM SOFT_TEST");
+                    SQLTemplate template = new SQLTemplate(entity, "SELECT * FROM SOFT_TEST");
                     template.setFetchingDataRows(true);
                     assertEquals(1, context.performQuery(template).size());
                 }
             }.runTest(200);
-        }
-        finally {
+        } finally {
             context.performQuery(new SQLTemplate(entity, "DELETE FROM SOFT_TEST"));
             adapter.setBatchQueryBuilderFactory(oldFactory);
         }

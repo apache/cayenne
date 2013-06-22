@@ -44,30 +44,22 @@ public class EntityResolverTest extends ServerCase {
     private DataContext context;
 
     public void testGetObjEntity() {
-        EntityResolver resolver = new EntityResolver(runtime
-                .getDataDomain()
-                .getDataMaps());
+        EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity("Artist"));
     }
 
     public void testLookupObjEntityByClass() {
-        EntityResolver resolver = new EntityResolver(runtime
-                .getDataDomain()
-                .getDataMaps());
-        assertIsArtistObjEntity(resolver.lookupObjEntity(Artist.class));
+        EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
+        assertIsArtistObjEntity(resolver.getObjEntity(Artist.class));
     }
 
     public void testLookupObjEntityByInstance() {
-        EntityResolver resolver = new EntityResolver(runtime
-                .getDataDomain()
-                .getDataMaps());
+        EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.lookupObjEntity(new Artist()));
     }
 
     public void testLookupObjEntityByDataobject() {
-        EntityResolver resolver = new EntityResolver(runtime
-                .getDataDomain()
-                .getDataMaps());
+        EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         Artist artist = (Artist) context.newObject("Artist");
         assertIsArtistObjEntity(resolver.lookupObjEntity(artist));
     }
@@ -91,7 +83,7 @@ public class EntityResolverTest extends ServerCase {
         // create empty resolver
         EntityResolver resolver = new EntityResolver();
         assertEquals(0, resolver.getDataMaps().size());
-        assertNull(resolver.lookupObjEntity(Object.class));
+        assertNull(resolver.getObjEntity(Object.class));
 
         DataMap m1 = new DataMap();
         ObjEntity oe1 = new ObjEntity("test");
@@ -101,7 +93,7 @@ public class EntityResolverTest extends ServerCase {
         resolver.addDataMap(m1);
 
         assertEquals(1, resolver.getDataMaps().size());
-        assertSame(oe1, resolver.lookupObjEntity(Object.class));
+        assertSame(oe1, resolver.getObjEntity(Object.class));
         assertEquals(resolver, m1.getNamespace());
     }
 
@@ -116,12 +108,12 @@ public class EntityResolverTest extends ServerCase {
         EntityResolver resolver = new EntityResolver(list);
 
         assertEquals(1, resolver.getDataMaps().size());
-        assertSame(oe1, resolver.lookupObjEntity(Object.class));
+        assertSame(oe1, resolver.getObjEntity(Object.class));
 
         resolver.removeDataMap(m1);
 
         assertEquals(0, resolver.getDataMaps().size());
-        assertNull(resolver.lookupObjEntity(Object.class));
+        assertNull(resolver.getObjEntity(Object.class));
     }
 
     public void testAddObjEntity() {
@@ -134,13 +126,13 @@ public class EntityResolverTest extends ServerCase {
         list.add(m1);
         EntityResolver resolver = new EntityResolver(list);
 
-        assertSame(oe1, resolver.lookupObjEntity(Object.class));
+        assertSame(oe1, resolver.getObjEntity(Object.class));
 
         ObjEntity oe2 = new ObjEntity("test2");
         oe2.setClassName(String.class.getName());
         m1.addObjEntity(oe2);
 
-        assertSame(oe2, resolver.lookupObjEntity(String.class));
+        assertSame(oe2, resolver.getObjEntity(String.class));
     }
 
     public void testGetQuery() {
@@ -160,26 +152,9 @@ public class EntityResolverTest extends ServerCase {
         assertSame(q2, resolver.getQuery("query2"));
     }
 
-    private void assertIsArtistDbEntity(DbEntity ae) {
-        assertNotNull(ae);
-        assertEquals(ae, getDbEntity("ARTIST"));
-    }
-
     private void assertIsArtistObjEntity(ObjEntity ae) {
         assertNotNull(ae);
         assertEquals(ae, getObjEntity("Artist"));
-    }
-
-    private DbEntity getDbEntity(String dbEntityName) {
-        for (DataMap map : runtime.getDataDomain().getDataMaps()) {
-            for (DbEntity e : map.getDbEntities()) {
-                if (dbEntityName.equals(e.getName())) {
-                    return e;
-                }
-            }
-        }
-
-        throw new CayenneRuntimeException("No DbEntity found: " + dbEntityName);
     }
 
     private ObjEntity getObjEntity(String objEntityName) {

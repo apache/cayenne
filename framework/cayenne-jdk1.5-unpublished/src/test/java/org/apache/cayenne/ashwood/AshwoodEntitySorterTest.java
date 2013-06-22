@@ -56,15 +56,8 @@ public class AshwoodEntitySorterTest extends ServerCase {
         tRelationshipHelper.setColumns("RELATIONSHIP_HELPER_ID", "NAME");
 
         tReflexiveAndToOne = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
-        tReflexiveAndToOne.setColumns(
-                "REFLEXIVE_AND_TO_ONE_ID",
-                "PARENT_ID",
-                "RELATIONSHIP_HELPER_ID",
-                "NAME").setColumnTypes(
-                Types.INTEGER,
-                Types.INTEGER,
-                Types.INTEGER,
-                Types.VARCHAR);
+        tReflexiveAndToOne.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID", "RELATIONSHIP_HELPER_ID", "NAME")
+                .setColumnTypes(Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.VARCHAR);
     }
 
     public void testSortObjectsForEntityReflexiveWithFaults() throws Exception {
@@ -73,12 +66,11 @@ public class AshwoodEntitySorterTest extends ServerCase {
         tReflexiveAndToOne.insert(1, null, 1, "r1");
         tReflexiveAndToOne.insert(2, 1, 1, "r2");
         tReflexiveAndToOne.insert(3, 2, 1, "r3");
-        
+
         AshwoodEntitySorter sorter = new AshwoodEntitySorter();
         sorter.setEntityResolver(context.getEntityResolver());
 
-        ObjEntity entity = context.getEntityResolver().lookupObjEntity(
-                ReflexiveAndToOne.class);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(ReflexiveAndToOne.class);
 
         List<?> objects = context.performQuery(new SelectQuery(ReflexiveAndToOne.class));
         Collections.shuffle(objects);

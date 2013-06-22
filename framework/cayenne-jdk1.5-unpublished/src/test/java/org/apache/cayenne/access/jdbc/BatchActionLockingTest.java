@@ -64,7 +64,7 @@ public class BatchActionLockingTest extends ServerCase {
         JdbcAdapter adapter = buildAdapter(true);
 
         DbEntity dbEntity = resolver
-                .lookupObjEntity(SimpleLockingTestEntity.class)
+                .getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
         List<DbAttribute> qualifierAttributes = Arrays.asList((DbAttribute) dbEntity
@@ -112,7 +112,7 @@ public class BatchActionLockingTest extends ServerCase {
         JdbcAdapter adapter = buildAdapter(true);
 
         DbEntity dbEntity = resolver
-                .lookupObjEntity(SimpleLockingTestEntity.class)
+                .getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
         List<DbAttribute> qualifierAttributes = Arrays.asList((DbAttribute) dbEntity

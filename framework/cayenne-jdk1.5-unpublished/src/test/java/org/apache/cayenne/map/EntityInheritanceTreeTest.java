@@ -74,7 +74,7 @@ public class EntityInheritanceTreeTest extends TestCase {
         // creating EntityInheritanceTree via EntityResolver to ensure the entities are
         // indexed
         EntityResolver resolver = new EntityResolver(Collections.singleton(dataMap));
-        EntityInheritanceTree t1 = resolver.lookupInheritanceTree("E1");
+        EntityInheritanceTree t1 = resolver.getInheritanceTree("E1");
 
         DataRow row11 = new DataRow(5);
         row11.put("x", 1);

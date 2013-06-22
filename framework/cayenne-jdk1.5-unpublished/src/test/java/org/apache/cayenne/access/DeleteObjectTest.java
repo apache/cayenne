@@ -113,7 +113,8 @@ public class DeleteObjectTest extends ServerCase {
         }
     }
 
-    // Similar to testDeleteObjects2, but extract ObjectContext instead of DataContext.
+    // Similar to testDeleteObjects2, but extract ObjectContext instead of
+    // DataContext.
     public void testDeleteObjects2() throws Exception {
         createObjectsDataSet();
 
@@ -154,11 +155,10 @@ public class DeleteObjectTest extends ServerCase {
 
         context.deleteObjects(paintings);
 
-        // as Painting -> Artist has Nullify rule, relationship list has to be cleaned up,
+        // as Painting -> Artist has Nullify rule, relationship list has to be
+        // cleaned up,
         // and no exceptions thrown on concurrent modification...
-        ObjRelationship r = (ObjRelationship) context
-                .getEntityResolver()
-                .lookupObjEntity(Painting.class)
+        ObjRelationship r = (ObjRelationship) context.getEntityResolver().getObjEntity(Painting.class)
                 .getRelationship("toArtist");
         assertEquals(DeleteRule.NULLIFY, r.getDeleteRule());
         assertEquals(0, paintings.size());

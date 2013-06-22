@@ -337,9 +337,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     @Deprecated
     public Collection<SQLResult> getResultSets() {
-       return getResults();
+        return getResults();
     }
-    
+
     /**
      * @since 3.2
      */
@@ -379,12 +379,31 @@ public class EntityResolver implements MappingNamespace, Serializable {
         return result;
     }
 
-    public Procedure getProcedure(String name) {
-        return lookupProcedure(name);
+    public Procedure getProcedure(String procedureName) {
+        Procedure result = mappingCache.getProcedure(procedureName);
+        if (result == null) {
+            // reconstruct cache just in case some of the datamaps
+            // have changed and now contain the required information
+            refreshMappingCache();
+            result = mappingCache.getProcedure(procedureName);
+        }
+
+        return result;
     }
 
+    /**
+     * Returns a named query or null if no query exists for a given name.
+     */
     public Query getQuery(String name) {
-        return lookupQuery(name);
+        Query result = mappingCache.getQuery(name);
+
+        if (result == null) {
+            // reconstruct cache just in case some of the datamaps
+            // have changed and now contain the required information
+            refreshMappingCache();
+            result = mappingCache.getQuery(name);
+        }
+        return result;
     }
 
     /**
@@ -573,42 +592,34 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 return getObjEntity(id.getEntityName());
             }
         } else if (object instanceof Class) {
-            return lookupObjEntity((Class<?>) object);
+            return getObjEntity((Class<?>) object);
         }
 
-        return lookupObjEntity(object.getClass());
+        return getObjEntity(object.getClass());
     }
 
+    /**
+     * @deprecated since 3.2. Use q.getMetaData(resolver).getProcedure()
+     */
+    @Deprecated
     public Procedure lookupProcedure(Query q) {
         return q.getMetaData(this).getProcedure();
     }
 
+    /**
+     * @deprecated since 3.2 use {@link #getProcedure(String)}.
+     */
+    @Deprecated
     public Procedure lookupProcedure(String procedureName) {
-
-        Procedure result = mappingCache.getProcedure(procedureName);
-        if (result == null) {
-            // reconstruct cache just in case some of the datamaps
-            // have changed and now contain the required information
-            refreshMappingCache();
-            result = mappingCache.getProcedure(procedureName);
-        }
-
-        return result;
+        return getProcedure(procedureName);
     }
 
     /**
-     * Returns a named query or null if no query exists for a given name.
+     * @deprecated since 3.2 use {@link #getQuery(String)}.
      */
+    @Deprecated
     public Query lookupQuery(String name) {
-        Query result = mappingCache.getQuery(name);
-
-        if (result == null) {
-            // reconstruct cache just in case some of the datamaps
-            // have changed and now contain the required information
-            refreshMappingCache();
-            result = mappingCache.getQuery(name);
-        }
-        return result;
+        return getQuery(name);
     }
 
     public synchronized void removeDataMap(DataMap map) {

@@ -83,15 +83,8 @@ public class DataContextPrefetchTest extends ServerCase {
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
         tPainting = new TableHelper(dbHelper, "PAINTING");
-        tPainting.setColumns(
-                "PAINTING_ID",
-                "PAINTING_TITLE",
-                "ARTIST_ID",
-                "ESTIMATED_PRICE").setColumnTypes(
-                Types.INTEGER,
-                Types.VARCHAR,
-                Types.BIGINT,
-                Types.DECIMAL);
+        tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.DECIMAL);
 
         tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
@@ -143,7 +136,7 @@ public class DataContextPrefetchTest extends ServerCase {
         tArtistExhibit.insert(101, 3);
         tArtistExhibit.insert(101, 4);
     }
-    
+
     public void testPrefetchToMany_ViaProperty() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -166,8 +159,7 @@ public class DataContextPrefetchTest extends ServerCase {
                     assertEquals(1, toMany.size());
 
                     Painting p = (Painting) toMany.get(0);
-                    assertEquals("Invalid prefetched painting:" + p, "p_"
-                            + a.getArtistName(), p.getPaintingTitle());
+                    assertEquals("Invalid prefetched painting:" + p, "p_" + a.getArtistName(), p.getPaintingTitle());
                 }
             }
         });
@@ -179,8 +171,7 @@ public class DataContextPrefetchTest extends ServerCase {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name1", "artist2");
         params.put("name2", "artist3");
-        Expression e = Expression
-                .fromString("artistName = $name1 or artistName = $name2");
+        Expression e = Expression.fromString("artistName = $name1 or artistName = $name2");
         SelectQuery q = new SelectQuery("Artist", e.expWithParameters(params));
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
 
@@ -193,8 +184,7 @@ public class DataContextPrefetchTest extends ServerCase {
                 assertEquals(2, artists.size());
 
                 Artist a1 = artists.get(0);
-                List<?> toMany = (List<?>) a1
-                        .readPropertyDirectly(Artist.PAINTING_ARRAY_PROPERTY);
+                List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.PAINTING_ARRAY_PROPERTY);
                 assertNotNull(toMany);
                 assertFalse(((ValueHolder) toMany).isFault());
                 assertEquals(1, toMany.size());
@@ -203,8 +193,7 @@ public class DataContextPrefetchTest extends ServerCase {
                 assertEquals("p_" + a1.getArtistName(), p1.getPaintingTitle());
 
                 Artist a2 = artists.get(1);
-                List<?> toMany2 = (List<?>) a2
-                        .readPropertyDirectly(Artist.PAINTING_ARRAY_PROPERTY);
+                List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.PAINTING_ARRAY_PROPERTY);
                 assertNotNull(toMany2);
                 assertFalse(((ValueHolder) toMany2).isFault());
                 assertEquals(1, toMany2.size());
@@ -237,24 +226,22 @@ public class DataContextPrefetchTest extends ServerCase {
                     assertEquals(1, toMany.size());
 
                     Painting p = (Painting) toMany.get(0);
-                    assertEquals("Invalid prefetched painting:" + p, "p_"
-                            + a.getArtistName(), p.getPaintingTitle());
+                    assertEquals("Invalid prefetched painting:" + p, "p_" + a.getArtistName(), p.getPaintingTitle());
                 }
             }
         });
     }
-    
+
     /**
-     * Test that a to-many relationship is initialized when a target entity has a compound
-     * PK only partially involved in relationship.
+     * Test that a to-many relationship is initialized when a target entity has
+     * a compound PK only partially involved in relationship.
      */
     public void testPrefetchToMany_OnJoinTableDisjoinedPrefetch() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addPrefetch(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         final List<Artist> artists = context.performQuery(q);
@@ -266,34 +253,29 @@ public class DataContextPrefetchTest extends ServerCase {
 
                 Artist a1 = artists.get(0);
                 assertEquals("artist2", a1.getArtistName());
-                List<?> toMany = (List<?>) a1
-                        .readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
+                List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
                 assertNotNull(toMany);
                 assertFalse(((ValueHolder) toMany).isFault());
                 assertEquals(2, toMany.size());
 
                 ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
-                assertEquals(PersistenceState.COMMITTED, artistExhibit
-                        .getPersistenceState());
+                assertEquals(PersistenceState.COMMITTED, artistExhibit.getPersistenceState());
                 assertSame(a1, artistExhibit.getToArtist());
 
                 Artist a2 = artists.get(1);
                 assertEquals("artist3", a2.getArtistName());
-                List<?> toMany2 = (List<?>) a2
-                        .readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
+                List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
                 assertNotNull(toMany2);
                 assertFalse(((ValueHolder) toMany2).isFault());
                 assertEquals(3, toMany2.size());
 
                 ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
-                assertEquals(PersistenceState.COMMITTED, artistExhibit2
-                        .getPersistenceState());
+                assertEquals(PersistenceState.COMMITTED, artistExhibit2.getPersistenceState());
                 assertSame(a2, artistExhibit2.getToArtist());
             }
         });
     }
-    
-    
+
     public void testPrefetchToManyOnJoinTableJoinedPrefetch_ViaProperty() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
@@ -335,15 +317,14 @@ public class DataContextPrefetchTest extends ServerCase {
     }
 
     /**
-     * Test that a to-many relationship is initialized when a target entity has a compound
-     * PK only partially involved in relationship.
+     * Test that a to-many relationship is initialized when a target entity has
+     * a compound PK only partially involved in relationship.
      */
     public void testPrefetchToManyOnJoinTableJoinedPrefetch() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addPrefetch("artistExhibitArray").setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch("artistExhibitArray").setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
 
         final List<Artist> artists = context.performQuery(q);
@@ -362,21 +343,18 @@ public class DataContextPrefetchTest extends ServerCase {
                 assertEquals(2, toMany.size());
 
                 ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
-                assertEquals(PersistenceState.COMMITTED, artistExhibit
-                        .getPersistenceState());
+                assertEquals(PersistenceState.COMMITTED, artistExhibit.getPersistenceState());
                 assertSame(a1, artistExhibit.getToArtist());
 
                 Artist a2 = artists.get(1);
                 assertEquals("artist3", a2.getArtistName());
-                List<?> toMany2 = (List<?>) a2
-                        .readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
+                List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY);
                 assertNotNull(toMany2);
                 assertFalse(((ValueHolder) toMany2).isFault());
                 assertEquals(3, toMany2.size());
 
                 ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
-                assertEquals(PersistenceState.COMMITTED, artistExhibit2
-                        .getPersistenceState());
+                assertEquals(PersistenceState.COMMITTED, artistExhibit2.getPersistenceState());
                 assertSame(a2, artistExhibit2.getToArtist());
             }
         });
@@ -389,10 +367,8 @@ public class DataContextPrefetchTest extends ServerCase {
     public void testPrefetch_ToManyNoReverse() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
-        ObjEntity paintingEntity = context.getEntityResolver().lookupObjEntity(
-                Painting.class);
-        ObjRelationship relationship = (ObjRelationship) paintingEntity
-                .getRelationship("toArtist");
+        ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
+        ObjRelationship relationship = (ObjRelationship) paintingEntity.getRelationship("toArtist");
         paintingEntity.removeRelationship("toArtist");
 
         try {
@@ -410,8 +386,7 @@ public class DataContextPrefetchTest extends ServerCase {
                     assertFalse(((ValueHolder) toMany).isFault());
                 }
             });
-        }
-        finally {
+        } finally {
             paintingEntity.addRelationship(relationship);
         }
     }
@@ -419,10 +394,8 @@ public class DataContextPrefetchTest extends ServerCase {
     public void testPrefetch_ToManyNoReverseWithQualifier() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
-        ObjEntity paintingEntity = context.getEntityResolver().lookupObjEntity(
-                Painting.class);
-        ObjRelationship relationship = (ObjRelationship) paintingEntity
-                .getRelationship("toArtist");
+        ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
+        ObjRelationship relationship = (ObjRelationship) paintingEntity.getRelationship("toArtist");
         paintingEntity.removeRelationship("toArtist");
 
         try {
@@ -444,8 +417,7 @@ public class DataContextPrefetchTest extends ServerCase {
                 }
             });
 
-        }
-        finally {
+        } finally {
             paintingEntity.addRelationship(relationship);
         }
     }
@@ -466,8 +438,7 @@ public class DataContextPrefetchTest extends ServerCase {
 
                 Object toOnePrefetch = p1.readNestedProperty("toArtist");
                 assertNotNull(toOnePrefetch);
-                assertTrue(
-                        "Expected Artist, got: " + toOnePrefetch.getClass().getName(),
+                assertTrue("Expected Artist, got: " + toOnePrefetch.getClass().getName(),
                         toOnePrefetch instanceof Artist);
 
                 Artist a1 = (Artist) toOnePrefetch;
@@ -520,9 +491,7 @@ public class DataContextPrefetchTest extends ServerCase {
 
                 ArtGroup fetchedChild = results.get(0);
                 // The parent must be fully fetched, not just HOLLOW (a fault)
-                assertEquals(PersistenceState.COMMITTED, fetchedChild
-                        .getToParentGroup()
-                        .getPersistenceState());
+                assertEquals(PersistenceState.COMMITTED, fetchedChild.getToParentGroup().getPersistenceState());
             }
         });
     }
@@ -545,9 +514,7 @@ public class DataContextPrefetchTest extends ServerCase {
                 Painting painting = results.get(0);
 
                 // The parent must be fully fetched, not just HOLLOW (a fault)
-                assertEquals(PersistenceState.COMMITTED, painting
-                        .getToArtist()
-                        .getPersistenceState());
+                assertEquals(PersistenceState.COMMITTED, painting.getToArtist().getPersistenceState());
             }
         });
     }
@@ -559,7 +526,8 @@ public class DataContextPrefetchTest extends ServerCase {
         SelectQuery artistQuery = new SelectQuery(Artist.class, artistExp);
         Artist artist1 = (Artist) context.performQuery(artistQuery).get(0);
 
-        // find the painting not matching the artist (this is the case where such prefetch
+        // find the painting not matching the artist (this is the case where
+        // such prefetch
         // at least makes sense)
         Expression exp = ExpressionFactory.noMatchExp("toArtist", artist1);
 
@@ -623,7 +591,8 @@ public class DataContextPrefetchTest extends ServerCase {
         SelectQuery q = new SelectQuery(Artist.class, e);
         q.addPrefetch("paintingArray");
 
-        // prefetch with query using date in qualifier used to fail on SQL Server
+        // prefetch with query using date in qualifier used to fail on SQL
+        // Server
         // see CAY-119 for details
         context.performQuery(q);
     }
@@ -660,7 +629,8 @@ public class DataContextPrefetchTest extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-                // per CAY-499 second run of a cached query with prefetches (i.e. when the
+                // per CAY-499 second run of a cached query with prefetches
+                // (i.e. when the
                 // result is served from cache) used to throw an exception...
 
                 List<Painting> cachedResult = context.performQuery(q);
@@ -670,8 +640,7 @@ public class DataContextPrefetchTest extends ServerCase {
 
                 Object toOnePrefetch = p1.readNestedProperty("toArtist");
                 assertNotNull(toOnePrefetch);
-                assertTrue(
-                        "Expected Artist, got: " + toOnePrefetch.getClass().getName(),
+                assertTrue("Expected Artist, got: " + toOnePrefetch.getClass().getName(),
                         toOnePrefetch instanceof Artist);
 
                 Artist a1 = (Artist) toOnePrefetch;
@@ -695,7 +664,8 @@ public class DataContextPrefetchTest extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
             public void execute() {
-                // per CAY-499 second run of a cached query with prefetches (i.e. when the
+                // per CAY-499 second run of a cached query with prefetches
+                // (i.e. when the
                 // result is served from cache) used to throw an exception...
 
                 List<Painting> cachedResult = context.performQuery(q);
@@ -705,8 +675,7 @@ public class DataContextPrefetchTest extends ServerCase {
 
                 Object toOnePrefetch = p1.readNestedProperty("toArtist");
                 assertNotNull(toOnePrefetch);
-                assertTrue(
-                        "Expected Artist, got: " + toOnePrefetch.getClass().getName(),
+                assertTrue("Expected Artist, got: " + toOnePrefetch.getClass().getName(),
                         toOnePrefetch instanceof Artist);
 
                 Artist a1 = (Artist) toOnePrefetch;

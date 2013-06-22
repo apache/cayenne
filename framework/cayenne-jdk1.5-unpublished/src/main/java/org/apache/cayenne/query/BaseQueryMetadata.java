@@ -98,14 +98,13 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
             if (root != null) {
                 if (root instanceof Class<?>) {
-                    entity = resolver.lookupObjEntity((Class<?>) root);
-                    if (entity == null) { // entity not found, try to resolve it with
+                    entity = resolver.getObjEntity((Class<?>) root);
+                    if (entity == null) { // entity not found, try to resolve it
+                                          // with
                         // client resolver
-                        EntityResolver clientResolver = resolver
-                                .getClientEntityResolver();
+                        EntityResolver clientResolver = resolver.getClientEntityResolver();
                         if (clientResolver != resolver) {
-                            ObjEntity clientEntity = clientResolver
-                                    .lookupObjEntity((Class<?>) root);
+                            ObjEntity clientEntity = clientResolver.getObjEntity((Class<?>) root);
 
                             if (clientEntity != null) {
                                 entity = resolver.getObjEntity(clientEntity.getName());
@@ -117,27 +116,22 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
                         this.dbEntity = entity.getDbEntity();
                         this.dataMap = entity.getDataMap();
                     }
-                }
-                else if (root instanceof ObjEntity) {
+                } else if (root instanceof ObjEntity) {
                     entity = (ObjEntity) root;
                     this.dbEntity = entity.getDbEntity();
                     this.dataMap = entity.getDataMap();
-                }
-                else if (root instanceof String) {
+                } else if (root instanceof String) {
                     entity = resolver.getObjEntity((String) root);
                     if (entity != null) {
                         this.dbEntity = entity.getDbEntity();
                         this.dataMap = entity.getDataMap();
                     }
-                }
-                else if (root instanceof DbEntity) {
+                } else if (root instanceof DbEntity) {
                     this.dbEntity = (DbEntity) root;
                     this.dataMap = dbEntity.getDataMap();
-                }
-                else if (root instanceof DataMap) {
+                } else if (root instanceof DataMap) {
                     this.dataMap = (DataMap) root;
-                }
-                else if (root instanceof Persistent) {
+                } else if (root instanceof Persistent) {
                     entity = resolver.lookupObjEntity(root);
                     if (entity != null) {
                         this.dbEntity = entity.getDbEntity();
@@ -168,44 +162,35 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
         Object fetchOffset = properties.get(QueryMetadata.FETCH_OFFSET_PROPERTY);
         Object fetchLimit = properties.get(QueryMetadata.FETCH_LIMIT_PROPERTY);
         Object pageSize = properties.get(QueryMetadata.PAGE_SIZE_PROPERTY);
-        Object statementFetchSize = properties
-                .get(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY);
-        Object fetchingDataRows = properties
-                .get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY);
+        Object statementFetchSize = properties.get(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY);
+        Object fetchingDataRows = properties.get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY);
 
         Object cacheStrategy = properties.get(QueryMetadata.CACHE_STRATEGY_PROPERTY);
 
         Object cacheGroups = properties.get(QueryMetadata.CACHE_GROUPS_PROPERTY);
 
         // init ivars from properties
-        this.fetchOffset = (fetchOffset != null) ? Integer.parseInt(fetchOffset
-                .toString()) : QueryMetadata.FETCH_OFFSET_DEFAULT;
+        this.fetchOffset = (fetchOffset != null) ? Integer.parseInt(fetchOffset.toString())
+                : QueryMetadata.FETCH_OFFSET_DEFAULT;
 
-        this.fetchLimit = (fetchLimit != null)
-                ? Integer.parseInt(fetchLimit.toString())
+        this.fetchLimit = (fetchLimit != null) ? Integer.parseInt(fetchLimit.toString())
                 : QueryMetadata.FETCH_LIMIT_DEFAULT;
 
-        this.pageSize = (pageSize != null)
-                ? Integer.parseInt(pageSize.toString())
-                : QueryMetadata.PAGE_SIZE_DEFAULT;
+        this.pageSize = (pageSize != null) ? Integer.parseInt(pageSize.toString()) : QueryMetadata.PAGE_SIZE_DEFAULT;
 
-        this.statementFetchSize = (statementFetchSize != null)
-                ? Integer.parseInt(statementFetchSize.toString())
+        this.statementFetchSize = (statementFetchSize != null) ? Integer.parseInt(statementFetchSize.toString())
                 : QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
 
-        this.fetchingDataRows = (fetchingDataRows != null)
-                ? "true".equalsIgnoreCase(fetchingDataRows.toString())
+        this.fetchingDataRows = (fetchingDataRows != null) ? "true".equalsIgnoreCase(fetchingDataRows.toString())
                 : QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
 
-        this.cacheStrategy = (cacheStrategy != null) ? QueryCacheStrategy
-                .safeValueOf(cacheStrategy.toString()) : QueryCacheStrategy
-                .getDefaultStrategy();
+        this.cacheStrategy = (cacheStrategy != null) ? QueryCacheStrategy.safeValueOf(cacheStrategy.toString())
+                : QueryCacheStrategy.getDefaultStrategy();
 
         this.cacheGroups = null;
         if (cacheGroups instanceof String[]) {
             this.cacheGroups = (String[]) cacheGroups;
-        }
-        else if (cacheGroups instanceof String) {
+        } else if (cacheGroups instanceof String) {
             StringTokenizer toks = new StringTokenizer(cacheGroups.toString(), ",");
             this.cacheGroups = new String[toks.countTokens()];
             for (int i = 0; i < this.cacheGroups.length; i++) {
@@ -217,9 +202,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
     public void encodeAsXML(XMLEncoder encoder) {
 
         if (fetchingDataRows != QueryMetadata.FETCHING_DATA_ROWS_DEFAULT) {
-            encoder.printProperty(
-                    QueryMetadata.FETCHING_DATA_ROWS_PROPERTY,
-                    fetchingDataRows);
+            encoder.printProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, fetchingDataRows);
         }
 
         if (fetchOffset != QueryMetadata.FETCH_OFFSET_DEFAULT) {
@@ -234,16 +217,12 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
             encoder.printProperty(QueryMetadata.PAGE_SIZE_PROPERTY, pageSize);
         }
 
-        if (cacheStrategy != null
-                && QueryCacheStrategy.getDefaultStrategy() != cacheStrategy) {
-            encoder.printProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, cacheStrategy
-                    .name());
+        if (cacheStrategy != null && QueryCacheStrategy.getDefaultStrategy() != cacheStrategy) {
+            encoder.printProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, cacheStrategy.name());
         }
 
         if (statementFetchSize != QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT) {
-            encoder.printProperty(
-                    QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY,
-                    statementFetchSize);
+            encoder.printProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, statementFetchSize);
         }
 
         if (prefetchTree != null) {

@@ -215,9 +215,7 @@ public class SelectQueryTest extends ServerCase {
 
     public void testSelectAllObjectsRootObjEntity() throws Exception {
         createArtistsDataSet();
-        ObjEntity artistEntity = context
-                .getEntityResolver()
-                .lookupObjEntity(Artist.class);
+        ObjEntity artistEntity = context.getEntityResolver().getObjEntity(Artist.class);
         SelectQuery query = new SelectQuery(artistEntity);
 
         List<?> objects = context.performQuery(query);
@@ -245,9 +243,7 @@ public class SelectQueryTest extends ServerCase {
     public void testSelectNotLikeIgnoreCaseSingleWildcardMatch() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
-        Expression qual = ExpressionFactory.notLikeIgnoreCaseExp(
-                "artistName",
-                "aRtIsT11%");
+        Expression qual = ExpressionFactory.notLikeIgnoreCaseExp("artistName", "aRtIsT11%");
         query.setQualifier(qual);
         List<?> objects = context.performQuery(query);
         assertEquals(19, objects.size());
@@ -333,12 +329,11 @@ public class SelectQueryTest extends ServerCase {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
 
-            // see CAY-1539... CLOB column causes suppression of DISTINCT in SQL, and
+            // see CAY-1539... CLOB column causes suppression of DISTINCT in
+            // SQL, and
             // hence the offset processing is done in memory
             SelectQuery query = new SelectQuery(ClobTestEntity.class);
-            query.addOrdering(
-                    "db:" + ClobTestEntity.CLOB_TEST_ID_PK_COLUMN,
-                    SortOrder.ASCENDING);
+            query.addOrdering("db:" + ClobTestEntity.CLOB_TEST_ID_PK_COLUMN, SortOrder.ASCENDING);
             query.setFetchLimit(1);
             query.setFetchOffset(1);
             query.setDistinct(true);
@@ -385,9 +380,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = Expression.fromString("artistName in $list");
         query.setQualifier(qual);
-        query = query.queryWithParameters(Collections.singletonMap("list", new Object[] {
-                "artist1", "artist2"
-        }));
+        query = query.queryWithParameters(Collections.singletonMap("list", new Object[] { "artist1", "artist2" }));
         List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
     }
@@ -397,9 +390,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = Expression.fromString("artistName in $list");
         query.setQualifier(qual);
-        query = query.queryWithParameters(Collections.singletonMap(
-                "list",
-                new Object[] {}));
+        query = query.queryWithParameters(Collections.singletonMap("list", new Object[] {}));
         List<?> objects = context.performQuery(query);
         assertEquals(0, objects.size());
     }
@@ -409,9 +400,7 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         Expression qual = Expression.fromString("artistName not in $list");
         query.setQualifier(qual);
-        query = query.queryWithParameters(Collections.singletonMap(
-                "list",
-                new Object[] {}));
+        query = query.queryWithParameters(Collections.singletonMap("list", new Object[] {}));
         List<?> objects = context.performQuery(query);
         assertEquals(20, objects.size());
     }
@@ -453,8 +442,7 @@ public class SelectQueryTest extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseNot(new ASTBitwiseNot(new ASTObjPath(
-                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY)));
+        Expression left = new ASTBitwiseNot(new ASTBitwiseNot(new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY)));
         Expression right = new ASTScalar(2);
         Expression greater = new ASTGreater();
         greater.setOperand(0, left);
@@ -476,8 +464,8 @@ public class SelectQueryTest extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseOr(new Object[] {new ASTObjPath(
-                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1)});
+        Expression left = new ASTBitwiseOr(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
+                new ASTScalar(1) });
         Expression right = new ASTScalar(1);
         Expression equal = new ASTEqual();
         equal.setOperand(0, left);
@@ -499,8 +487,8 @@ public class SelectQueryTest extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseAnd(new Object[] {new ASTObjPath(
-                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1)});
+        Expression left = new ASTBitwiseAnd(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
+                new ASTScalar(1) });
         Expression right = new ASTScalar(0);
         Expression equal = new ASTEqual();
         equal.setOperand(0, left);
@@ -522,8 +510,8 @@ public class SelectQueryTest extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseXor(new Object[] {new ASTObjPath(
-                ReturnTypesMap1.INTEGER_COLUMN_PROPERTY), new ASTScalar(1)});
+        Expression left = new ASTBitwiseXor(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
+                new ASTScalar(1) });
         Expression right = new ASTScalar(5);
         Expression equal = new ASTEqual();
         equal.setOperand(0, left);
@@ -569,16 +557,14 @@ public class SelectQueryTest extends ServerCase {
     }
 
     /**
-     * Tests that all queries specified in prefetch are executed in a more complex
-     * prefetch scenario.
+     * Tests that all queries specified in prefetch are executed in a more
+     * complex prefetch scenario.
      */
     public void testRouteWithPrefetches() {
         EntityResolver resolver = context.getEntityResolver();
         MockQueryRouter router = new MockQueryRouter();
 
-        SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
-                "artistName",
-                "a"));
+        SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp("artistName", "a"));
 
         q.route(router, resolver, null);
         assertEquals(1, router.getQueryCount());
@@ -605,26 +591,23 @@ public class SelectQueryTest extends ServerCase {
     }
 
     /**
-     * Tests that all queries specified in prefetch are executed in a more complex
-     * prefetch scenario with no reverse obj relationships.
+     * Tests that all queries specified in prefetch are executed in a more
+     * complex prefetch scenario with no reverse obj relationships.
      */
     public void testRouteQueryWithPrefetchesNoReverse() {
 
         EntityResolver resolver = context.getEntityResolver();
-        ObjEntity paintingEntity = resolver.lookupObjEntity(Painting.class);
-        ObjEntity galleryEntity = resolver.lookupObjEntity(Gallery.class);
-        ObjEntity artistExhibitEntity = resolver.lookupObjEntity(ArtistExhibit.class);
-        ObjEntity exhibitEntity = resolver.lookupObjEntity(Exhibit.class);
-        ObjRelationship paintingToArtistRel = (ObjRelationship) paintingEntity
-                .getRelationship("toArtist");
+        ObjEntity paintingEntity = resolver.getObjEntity(Painting.class);
+        ObjEntity galleryEntity = resolver.getObjEntity(Gallery.class);
+        ObjEntity artistExhibitEntity = resolver.getObjEntity(ArtistExhibit.class);
+        ObjEntity exhibitEntity = resolver.getObjEntity(Exhibit.class);
+        ObjRelationship paintingToArtistRel = (ObjRelationship) paintingEntity.getRelationship("toArtist");
         paintingEntity.removeRelationship("toArtist");
 
-        ObjRelationship galleryToPaintingRel = (ObjRelationship) galleryEntity
-                .getRelationship("paintingArray");
+        ObjRelationship galleryToPaintingRel = (ObjRelationship) galleryEntity.getRelationship("paintingArray");
         galleryEntity.removeRelationship("paintingArray");
 
-        ObjRelationship artistExhibitToArtistRel = (ObjRelationship) artistExhibitEntity
-                .getRelationship("toArtist");
+        ObjRelationship artistExhibitToArtistRel = (ObjRelationship) artistExhibitEntity.getRelationship("toArtist");
         artistExhibitEntity.removeRelationship("toArtist");
 
         ObjRelationship exhibitToArtistExhibitRel = (ObjRelationship) exhibitEntity
@@ -641,8 +624,7 @@ public class SelectQueryTest extends ServerCase {
             MockQueryRouter router = new MockQueryRouter();
             q.route(router, resolver, null);
             assertEquals(4, router.getQueryCount());
-        }
-        finally {
+        } finally {
             paintingEntity.addRelationship(paintingToArtistRel);
             galleryEntity.addRelationship(galleryToPaintingRel);
             artistExhibitEntity.addRelationship(artistExhibitToArtistRel);
@@ -651,18 +633,21 @@ public class SelectQueryTest extends ServerCase {
     }
 
     /**
-     * Test prefetching with qualifier on the root query being the path to the prefetch.
+     * Test prefetching with qualifier on the root query being the path to the
+     * prefetch.
      */
     public void testRouteQueryWithPrefetchesPrefetchExpressionPath() {
 
-        // find the painting not matching the artist (this is the case where such prefetch
+        // find the painting not matching the artist (this is the case where
+        // such prefetch
         // at least makes sense)
         Expression exp = ExpressionFactory.noMatchExp("toArtist", new Object());
 
         SelectQuery q = new SelectQuery(Painting.class, exp);
         q.addPrefetch("toArtist");
 
-        // test how prefetches are resolved in this case - this was a stumbling block for
+        // test how prefetches are resolved in this case - this was a stumbling
+        // block for
         // a while
         EntityResolver resolver = context.getEntityResolver();
         MockQueryRouter router = new MockQueryRouter();
@@ -672,18 +657,14 @@ public class SelectQueryTest extends ServerCase {
 
     public void testLeftJoinAndPrefetchToMany() throws Exception {
         createArtistsDataSet();
-        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
-                "paintingArray+.toGallery",
-                null));
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp("paintingArray+.toGallery", null));
         query.addPrefetch("artistExhibitArray");
         context.performQuery(query);
     }
 
     public void testLeftJoinAndPrefetchToOne() throws Exception {
         createArtistsDataSet();
-        SelectQuery query = new SelectQuery(Painting.class, ExpressionFactory.matchExp(
-                "toArtist+.artistName",
-                null));
+        SelectQuery query = new SelectQuery(Painting.class, ExpressionFactory.matchExp("toArtist+.artistName", null));
         query.addPrefetch("toGallery");
         context.performQuery(query);
     }
@@ -701,7 +682,8 @@ public class SelectQueryTest extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
 
         query.setQualifier(ExpressionFactory.matchExp(a2));
-        Object res = Cayenne.objectForQuery(context, query);// exception if >1 result
+        Object res = Cayenne.objectForQuery(context, query);// exception if >1
+                                                            // result
         assertSame(res, a2);
         assertTrue(query.getQualifier().match(res));
 
@@ -714,9 +696,7 @@ public class SelectQueryTest extends ServerCase {
         assertTrue(query.getQualifier().match(a1));
         assertTrue(query.getQualifier().match(a3));
 
-        assertEquals(
-                query.getQualifier(),
-                ExpressionFactory.matchAnyExp(Arrays.asList(a1, a3)));
+        assertEquals(query.getQualifier(), ExpressionFactory.matchAnyExp(Arrays.asList(a1, a3)));
     }
 
     public void testSelect_WithOrdering() {
@@ -743,16 +723,15 @@ public class SelectQueryTest extends ServerCase {
      * Tests INs with more than 1000 elements
      */
     public void testSelectLongIn() {
-        // not all adapters strip INs, so we just make sure query with such qualifier
+        // not all adapters strip INs, so we just make sure query with such
+        // qualifier
         // fires OK
         Object[] numbers = new String[2009];
         for (int i = 0; i < numbers.length; i++) {
             numbers[i] = "" + i;
         }
 
-        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.inExp(
-                "artistName",
-                numbers));
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.inExp("artistName", numbers));
         context.performQuery(query);
     }
 

@@ -172,7 +172,7 @@ public class ProcedureTranslator {
     }
 
     public Procedure getProcedure() {
-        return entityResolver.lookupProcedure(query);
+        return query.getMetaData(entityResolver).getProcedure();
     }
 
     public ProcedureQuery getProcedureQuery() {

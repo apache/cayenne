@@ -65,10 +65,10 @@ public class ClientServerChannelTest extends ClientCase {
 
     @Inject
     protected DataChannelInterceptor queryInterceptor;
-    
+
     @Inject
     protected JdbcEventLogger logger;
-    
+
     @Inject
     private ServerRuntime runtime;
 
@@ -104,9 +104,8 @@ public class ClientServerChannelTest extends ClientCase {
     public void testGetEntityResolver() throws Exception {
         EntityResolver resolver = clientServerChannel.getEntityResolver();
         assertNotNull(resolver);
-        assertNull(resolver.lookupObjEntity(ClientMtTable1.class));
-        assertNotNull(resolver.getClientEntityResolver().lookupObjEntity(
-                ClientMtTable1.class));
+        assertNull(resolver.getObjEntity(ClientMtTable1.class));
+        assertNotNull(resolver.getClientEntityResolver().getObjEntity(ClientMtTable1.class));
     }
 
     public void testSynchronizeCommit() throws Exception {
@@ -114,16 +113,13 @@ public class ClientServerChannelTest extends ClientCase {
         SelectQuery query = new SelectQuery(MtTable1.class);
 
         // no changes...
-        clientServerChannel.onSync(
-                serverContext,
-                new MockGraphDiff(),
-                DataChannel.FLUSH_CASCADE_SYNC);
+        clientServerChannel.onSync(serverContext, new MockGraphDiff(), DataChannel.FLUSH_CASCADE_SYNC);
 
         assertEquals(0, serverContext.performQuery(query).size());
 
         // introduce changes
-        clientServerChannel.onSync(serverContext, new NodeCreateOperation(new ObjectId(
-                "MtTable1")), DataChannel.FLUSH_CASCADE_SYNC);
+        clientServerChannel.onSync(serverContext, new NodeCreateOperation(new ObjectId("MtTable1")),
+                DataChannel.FLUSH_CASCADE_SYNC);
 
         assertEquals(1, serverContext.performQuery(query).size());
     }
@@ -146,16 +142,12 @@ public class ClientServerChannelTest extends ClientCase {
         ClientMtTable1 clientObject = (ClientMtTable1) result;
         assertNotNull(clientObject.getObjectId());
 
-        assertEquals(
-                new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 55),
-                clientObject.getObjectId());
+        assertEquals(new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 55), clientObject.getObjectId());
     }
 
     public void testPerformQueryValuePropagation() throws Exception {
 
-        byte[] bytes = new byte[] {
-                1, 2, 3
-        };
+        byte[] bytes = new byte[] { 1, 2, 3 };
 
         tMtTable3.insert(1, bytes, "abc", 4);
 
@@ -175,9 +167,7 @@ public class ClientServerChannelTest extends ClientCase {
 
         assertEquals("abc", clientObject.getCharColumn());
         assertEquals(new Integer(4), clientObject.getIntColumn());
-        assertTrue(new EqualsBuilder()
-                .append(clientObject.getBinaryColumn(), bytes)
-                .isEquals());
+        assertTrue(new EqualsBuilder().append(clientObject.getBinaryColumn(), bytes).isEquals());
     }
 
     public void testPerformQueryPropagationInheritance() throws Exception {
@@ -195,9 +185,7 @@ public class ClientServerChannelTest extends ClientCase {
         assertEquals(1, results.size());
 
         Object result = results.get(0);
-        assertTrue(
-                "Result is of wrong type: " + result,
-                result instanceof ClientMtTable1Subclass);
+        assertTrue("Result is of wrong type: " + result, result instanceof ClientMtTable1Subclass);
         ClientMtTable1Subclass clientObject = (ClientMtTable1Subclass) result;
 
         assertEquals("sub1", clientObject.getGlobalAttribute1());

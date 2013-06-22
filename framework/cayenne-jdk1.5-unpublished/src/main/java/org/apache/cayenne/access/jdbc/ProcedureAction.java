@@ -189,7 +189,7 @@ public class ProcedureAction extends BaseSQLAction {
      * Returns stored procedure for an internal query.
      */
     protected Procedure getProcedure() {
-        return getEntityResolver().lookupProcedure(query);
+        return query.getMetaData(getEntityResolver()).getProcedure();
     }
 
     /**

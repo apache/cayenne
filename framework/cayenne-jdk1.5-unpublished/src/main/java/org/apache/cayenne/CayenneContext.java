@@ -244,7 +244,7 @@ public class CayenneContext extends BaseContext {
             throw new NullPointerException("Persistent class can't be null.");
         }
 
-        ObjEntity entity = getEntityResolver().lookupObjEntity(persistentClass);
+        ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
         if (entity == null) {
             throw new CayenneRuntimeException("No entity mapped for class: " + persistentClass);
         }
@@ -265,7 +265,7 @@ public class CayenneContext extends BaseContext {
             throw new NullPointerException("An attempt to register null object.");
         }
 
-        ObjEntity entity = getEntityResolver().lookupObjEntity(object.getClass());
+        ObjEntity entity = getEntityResolver().getObjEntity(object.getClass());
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         registerNewObject((Persistent) object, entity.getName(), descriptor);
     }
@@ -274,7 +274,6 @@ public class CayenneContext extends BaseContext {
      * Runs a query, returning result as list.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public List performQuery(Query query) {
         List result = onQuery(this, query).firstList();
         return result != null ? result : new ArrayList<Object>(1);

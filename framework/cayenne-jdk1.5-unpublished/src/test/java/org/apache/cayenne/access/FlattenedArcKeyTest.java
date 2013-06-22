@@ -37,8 +37,7 @@ public class FlattenedArcKeyTest extends ServerCase {
     public void testAttributes() {
         ObjectId src = new ObjectId("X");
         ObjectId target = new ObjectId("Y");
-        ObjRelationship r1 = (ObjRelationship) entityResolver.lookupObjEntity(
-                FlattenedTest3.class).getRelationship(
+        ObjRelationship r1 = (ObjRelationship) entityResolver.getObjEntity(FlattenedTest3.class).getRelationship(
                 FlattenedTest3.TO_FT1_PROPERTY);
 
         FlattenedArcKey update = new FlattenedArcKey(src, target, r1);
@@ -47,20 +46,17 @@ public class FlattenedArcKeyTest extends ServerCase {
         assertSame(target, update.id2.getSourceId());
         assertSame(r1, update.relationship);
     }
-    
+
     public void testHashCode() {
         ObjectId src = new ObjectId("X");
         ObjectId target = new ObjectId("Y");
-        ObjRelationship r1 = (ObjRelationship) entityResolver.lookupObjEntity(
-                FlattenedTest3.class).getRelationship(
+        ObjRelationship r1 = (ObjRelationship) entityResolver.getObjEntity(FlattenedTest3.class).getRelationship(
                 FlattenedTest3.TO_FT1_PROPERTY);
 
         FlattenedArcKey update = new FlattenedArcKey(src, target, r1);
-        FlattenedArcKey update1 = new FlattenedArcKey(target, src,
-                r1.getReverseRelationship());
+        FlattenedArcKey update1 = new FlattenedArcKey(target, src, r1.getReverseRelationship());
 
-        ObjRelationship r3 = (ObjRelationship) entityResolver.lookupObjEntity(
-                FlattenedTest1.class).getRelationship(
+        ObjRelationship r3 = (ObjRelationship) entityResolver.getObjEntity(FlattenedTest1.class).getRelationship(
                 FlattenedTest1.FT3OVER_COMPLEX_PROPERTY);
 
         FlattenedArcKey update2 = new FlattenedArcKey(target, src, r3);
@@ -76,16 +72,13 @@ public class FlattenedArcKeyTest extends ServerCase {
     public void testEquals() {
         ObjectId src = new ObjectId("X");
         ObjectId target = new ObjectId("Y");
-        ObjRelationship r1 = (ObjRelationship) entityResolver.lookupObjEntity(
-                FlattenedTest3.class).getRelationship(
+        ObjRelationship r1 = (ObjRelationship) entityResolver.getObjEntity(FlattenedTest3.class).getRelationship(
                 FlattenedTest3.TO_FT1_PROPERTY);
 
         FlattenedArcKey update = new FlattenedArcKey(src, target, r1);
-        FlattenedArcKey update1 = new FlattenedArcKey(target, src,
-                r1.getReverseRelationship());
+        FlattenedArcKey update1 = new FlattenedArcKey(target, src, r1.getReverseRelationship());
 
-        ObjRelationship r3 = (ObjRelationship) entityResolver.lookupObjEntity(
-                FlattenedTest1.class).getRelationship(
+        ObjRelationship r3 = (ObjRelationship) entityResolver.getObjEntity(FlattenedTest1.class).getRelationship(
                 FlattenedTest1.FT3OVER_COMPLEX_PROPERTY);
 
         FlattenedArcKey update2 = new FlattenedArcKey(target, src, r3);

@@ -54,7 +54,7 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
     }
 
     public void testCreateSqlString() throws Exception {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(SimpleLockingTestEntity.class)
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
@@ -67,7 +67,7 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
     }
 
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().lookupObjEntity(SimpleLockingTestEntity.class)
+        DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
         try {
 

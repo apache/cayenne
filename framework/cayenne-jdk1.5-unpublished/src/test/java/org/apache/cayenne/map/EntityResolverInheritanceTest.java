@@ -29,22 +29,22 @@ public class EntityResolverInheritanceTest extends ServerCase {
     @Inject
     private EntityResolver resolver;
 
-    public void testLookupAbstractPersonTree() throws Exception {
-        EntityInheritanceTree tree = resolver.lookupInheritanceTree("AbstractPerson");
+    public void testGetAbstractPersonTree() throws Exception {
+        EntityInheritanceTree tree = resolver.getInheritanceTree("AbstractPerson");
         assertNotNull(tree);
         assertEquals(2, tree.getChildrenCount());
         assertSame(resolver.getObjEntity("AbstractPerson"), tree.getEntity());
     }
 
-    public void testLookupEmployeeTree() throws Exception {
-        EntityInheritanceTree tree = resolver.lookupInheritanceTree("Employee");
+    public void testGetEmployeeTree() throws Exception {
+        EntityInheritanceTree tree = resolver.getInheritanceTree("Employee");
         assertNotNull(tree);
         assertEquals(1, tree.getChildrenCount());
         assertSame(resolver.getObjEntity("Employee"), tree.getEntity());
     }
 
-    public void testLookupManagerTree() throws Exception {
-        EntityInheritanceTree tree = resolver.lookupInheritanceTree("Manager");
+    public void testGetManagerTree() throws Exception {
+        EntityInheritanceTree tree = resolver.getInheritanceTree("Manager");
         assertNotNull(tree);
         assertEquals(0, tree.getChildrenCount());
     }
@@ -67,10 +67,10 @@ public class EntityResolverInheritanceTest extends ServerCase {
         map.addObjEntity(sub1);
         map.addObjEntity(sub2);
 
-        assertNull(resolver.lookupInheritanceTree("super1"));
+        assertNull(resolver.getInheritanceTree("super1"));
 
         resolver.addDataMap(map);
-        EntityInheritanceTree tree = resolver.lookupInheritanceTree("super1");
+        EntityInheritanceTree tree = resolver.getInheritanceTree("super1");
         assertNotNull(tree);
         assertEquals(2, tree.getChildrenCount());
         assertSame(super1, tree.getEntity());
