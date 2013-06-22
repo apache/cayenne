@@ -45,9 +45,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Represents a virtual shared namespace for zero or more DataMaps. Unlike DataMap,
- * EntityResolver is intended to work as a runtime container of mapping. DataMaps can be
- * added or removed dynamically at runtime.
+ * Represents a virtual shared namespace for zero or more DataMaps. Unlike
+ * DataMap, EntityResolver is intended to work as a runtime container of
+ * mapping. DataMaps can be added or removed dynamically at runtime.
  * <p>
  * EntityResolver is thread-safe.
  * </p>
@@ -60,6 +60,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     protected static final Log logger = LogFactory.getLog(EntityResolver.class);
 
+    @Deprecated
     protected boolean indexedByClass;
 
     protected Collection<DataMap> maps;
@@ -73,7 +74,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected transient Map<String, EntityInheritanceTree> entityInheritanceCache;
     protected EntityResolver clientEntityResolver;
 
-    // must be transient, as resolver may get deserialized in another VM, and descriptor
+    // must be transient, as resolver may get deserialized in another VM, and
+    // descriptor
     // recompilation will be desired.
     protected transient ClassDescriptorMap classDescriptorMap;
 
@@ -90,8 +92,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Initialization of EntityResolver. Used in constructor and in Java deserialization
-     * process
+     * Initialization of EntityResolver. Used in constructor and in Java
+     * deserialization process
      */
     private void init() {
         this.indexedByClass = true;
@@ -116,8 +118,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     /**
      * Updates missing mapping artifacts that can be guessed from other mapping
-     * information. This implementation creates missing reverse relationships, marking
-     * newly created relationships as "runtime".
+     * information. This implementation creates missing reverse relationships,
+     * marking newly created relationships as "runtime".
      * 
      * @since 3.0
      */
@@ -128,7 +130,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
             for (DbEntity entity : map.getDbEntities()) {
 
-                // iterate by copy to avoid concurrency modification errors on reflexive
+                // iterate by copy to avoid concurrency modification errors on
+                // reflexive
                 // relationships
                 Object[] relationships = entity.getRelationships().toArray();
                 for (int i = 0; i < relationships.length; i++) {
@@ -141,10 +144,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         reverse.setRuntime(true);
                         targetEntity.addRelationship(reverse);
 
-                        logger.info("added runtime complimentary DbRelationship from "
-                                + targetEntity.getName()
-                                + " to "
-                                + reverse.getTargetEntityName());
+                        logger.info("added runtime complimentary DbRelationship from " + targetEntity.getName()
+                                + " to " + reverse.getTargetEntityName());
                     }
                 }
             }
@@ -154,8 +155,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     /**
      * Updates missing mapping artifacts that can be guessed from other mapping
-     * information. This implementation creates missing reverse relationships, marking
-     * newly created relationships as "runtime".
+     * information. This implementation creates missing reverse relationships,
+     * marking newly created relationships as "runtime".
      * 
      * @since 3.0
      */
@@ -166,24 +167,22 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
             for (ObjEntity entity : map.getObjEntities()) {
 
-                // iterate by copy to avoid concurrency modification errors on reflexive
+                // iterate by copy to avoid concurrency modification errors on
+                // reflexive
                 // relationships
                 Object[] relationships = entity.getRelationships().toArray();
                 for (int i = 0; i < relationships.length; i++) {
                     ObjRelationship relationship = (ObjRelationship) relationships[i];
                     if (relationship.getReverseRelationship() == null) {
-                        ObjRelationship reverse = relationship
-                                .createReverseRelationship();
+                        ObjRelationship reverse = relationship.createReverseRelationship();
 
                         Entity targetEntity = reverse.getSourceEntity();
                         reverse.setName(makeUniqueRelationshipName(targetEntity));
                         reverse.setRuntime(true);
                         targetEntity.addRelationship(reverse);
 
-                        logger.info("added runtime complimentary ObjRelationship from "
-                                + targetEntity.getName()
-                                + " to "
-                                + reverse.getTargetEntityName());
+                        logger.info("added runtime complimentary ObjRelationship from " + targetEntity.getName()
+                                + " to " + reverse.getTargetEntityName());
                     }
                 }
             }
@@ -198,8 +197,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             }
         }
 
-        throw new CayenneRuntimeException(
-                "Could not come up with a unique relationship name");
+        throw new CayenneRuntimeException("Could not come up with a unique relationship name");
     }
 
     /**
@@ -207,8 +205,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     synchronized void initCallbacks() {
         if (callbackRegistry == null) {
-            LifecycleCallbackRegistry callbackRegistry = new LifecycleCallbackRegistry(
-                    this);
+            LifecycleCallbackRegistry callbackRegistry = new LifecycleCallbackRegistry(this);
 
             // load default callbacks
             for (DataMap map : maps) {
@@ -219,18 +216,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         continue;
                     }
 
-                    CallbackDescriptor[] callbacks = listener
-                            .getCallbackMap()
-                            .getCallbacks();
+                    CallbackDescriptor[] callbacks = listener.getCallbackMap().getCallbacks();
                     for (CallbackDescriptor callback : callbacks) {
 
                         for (String method : callback.getCallbackMethods()) {
 
                             // note that callbacks[i].getCallbackType() == i
-                            callbackRegistry.addDefaultListener(
-                                    callback.getCallbackType(),
-                                    listenerInstance,
-                                    method);
+                            callbackRegistry.addDefaultListener(callback.getCallbackType(), listenerInstance, method);
                         }
                     }
                 }
@@ -247,16 +239,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         continue;
                     }
 
-                    CallbackDescriptor[] callbacks = listener
-                            .getCallbackMap()
-                            .getCallbacks();
+                    CallbackDescriptor[] callbacks = listener.getCallbackMap().getCallbacks();
                     for (CallbackDescriptor callback : callbacks) {
 
                         for (String method : callback.getCallbackMethods()) {
-                            callbackRegistry.addListener(
-                                    callback.getCallbackType(),
-                                    entityClass,
-                                    listenerInstance,
+                            callbackRegistry.addListener(callback.getCallbackType(), entityClass, listenerInstance,
                                     method);
                         }
                     }
@@ -265,10 +252,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
                 for (CallbackDescriptor callback : callbacks) {
                     for (String method : callback.getCallbackMethods()) {
-                        callbackRegistry.addListener(
-                                callback.getCallbackType(),
-                                entityClass,
-                                method);
+                        callbackRegistry.addListener(callback.getCallbackType(), entityClass, method);
                     }
                 }
             }
@@ -290,25 +274,21 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         try {
             listenerClass = Util.getJavaClass(listener.getClassName());
-        }
-        catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException("Invalid listener class: "
-                    + listener.getClassName(), e);
+        } catch (ClassNotFoundException e) {
+            throw new CayenneRuntimeException("Invalid listener class: " + listener.getClassName(), e);
         }
 
         try {
             return listenerClass.newInstance();
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException("Listener class "
-                    + listener.getClassName()
+        } catch (Exception e) {
+            throw new CayenneRuntimeException("Listener class " + listener.getClassName()
                     + " default constructor call failed", e);
         }
     }
 
     /**
-     * Returns a {@link LifecycleCallbackRegistry} for handling callbacks. Registry is
-     * lazily initialized on first call.
+     * Returns a {@link LifecycleCallbackRegistry} for handling callbacks.
+     * Registry is lazily initialized on first call.
      * 
      * @since 3.0
      */
@@ -321,9 +301,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Sets a lifecycle callbacks registry of the EntityResolver. Users rarely if ever
-     * need to call this method as Cayenne would instantiate a registry itself as needed
-     * based on mapped configuration.
+     * Sets a lifecycle callbacks registry of the EntityResolver. Users rarely
+     * if ever need to call this method as Cayenne would instantiate a registry
+     * itself as needed based on mapped configuration.
      * 
      * @since 3.0
      */
@@ -332,8 +312,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Returns ClientEntityResolver with mapping information that only includes entities
-     * available on CWS Client Tier.
+     * Returns ClientEntityResolver with mapping information that only includes
+     * entities available on CWS Client Tier.
      * 
      * @since 1.2
      */
@@ -476,8 +456,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Returns ClassDescriptor for the ObjEntity matching the name. Returns null if no
-     * matching entity exists.
+     * Returns ClassDescriptor for the ObjEntity matching the name. Returns null
+     * if no matching entity exists.
      * 
      * @since 1.2
      */
@@ -498,9 +478,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Removes all entity mappings from the cache. Cache can be rebuilt either explicitly
-     * by calling <code>constructCache</code>, or on demand by calling any of the
-     * <code>lookup...</code> methods.
+     * Removes all entity mappings from the cache. Cache can be rebuilt either
+     * explicitly by calling <code>constructCache</code>, or on demand by
+     * calling any of the <code>lookup...</code> methods.
      */
     public synchronized void clearCache() {
         queryCache.clear();
@@ -514,15 +494,16 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Creates caches of DbEntities by ObjEntity, DataObject class, and ObjEntity name
-     * using internal list of maps.
+     * Creates caches of DbEntities by ObjEntity, DataObject class, and
+     * ObjEntity name using internal list of maps.
      */
     protected synchronized void constructCache() {
         clearCache();
 
         // rebuild index
 
-        // index DbEntities separately and before ObjEntities to avoid infinite loops when
+        // index DbEntities separately and before ObjEntities to avoid infinite
+        // loops when
         // looking up DbEntities during ObjEntity index op
 
         for (DataMap map : maps) {
@@ -539,27 +520,26 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 // index by name
                 objEntityCache.put(oe.getName(), oe);
 
-                // index by class.. use class name as a key to avoid class loading here...
-                if (indexedByClass) {
-                    String className = oe.getJavaClassName();
-                    if (className == null) {
-                        continue;
-                    }
+                // index by class.. use class name as a key to avoid class
+                // loading here...
+                String className = oe.getJavaClassName();
+                if (className == null) {
+                    continue;
+                }
 
-                    String classKey = classKey(className);
+                String classKey = classKey(className);
 
-                    // allow duplicates, but put a special marker indicating that this
-                    // entity can't be looked up by class
-                    Object existing = objEntityCache.get(classKey);
-                    if (existing != null) {
+                // allow duplicates, but put a special marker indicating
+                // that this
+                // entity can't be looked up by class
+                Object existing = objEntityCache.get(classKey);
+                if (existing != null) {
 
-                        if (existing != DUPLICATE_MARKER) {
-                            objEntityCache.put(classKey, DUPLICATE_MARKER);
-                        }
+                    if (existing != DUPLICATE_MARKER) {
+                        objEntityCache.put(classKey, DUPLICATE_MARKER);
                     }
-                    else {
-                        objEntityCache.put(classKey, oe);
-                    }
+                } else {
+                    objEntityCache.put(classKey, oe);
                 }
             }
 
@@ -577,8 +557,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 Object existingQuery = queryCache.put(name, query);
 
                 if (existingQuery != null && query != existingQuery) {
-                    throw new CayenneRuntimeException("More than one Query for name"
-                            + name);
+                    throw new CayenneRuntimeException("More than one Query for name" + name);
                 }
             }
         }
@@ -598,21 +577,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                 String superOEName = oe.getSuperEntityName();
                 if (superOEName != null) {
-                    EntityInheritanceTree superNode = entityInheritanceCache
-                            .get(superOEName);
+                    EntityInheritanceTree superNode = entityInheritanceCache.get(superOEName);
 
                     if (superNode == null) {
-                        // do direct entity lookup to avoid recursive cache rebuild
+                        // do direct entity lookup to avoid recursive cache
+                        // rebuild
                         ObjEntity superOE = objEntityCache.get(superOEName);
                         if (superOE != null) {
                             superNode = new EntityInheritanceTree(superOE);
                             entityInheritanceCache.put(superOEName, superNode);
-                        }
-                        else {
-                            // bad mapping? Or most likely some classloader issue
-                            logger.warn("No super entity mapping for '"
-                                    + superOEName
-                                    + "'");
+                        } else {
+                            // bad mapping? Or most likely some classloader
+                            // issue
+                            logger.warn("No super entity mapping for '" + superOEName + "'");
                             continue;
                         }
                     }
@@ -654,9 +631,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Returns EntityInheritanceTree representing inheritance hierarchy that starts with a
-     * given ObjEntity as root, and includes all its subentities. Returns non-null object
-     * for all existing entities, even those that don't have super or subclasses.
+     * Returns EntityInheritanceTree representing inheritance hierarchy that
+     * starts with a given ObjEntity as root, and includes all its subentities.
+     * Returns non-null object for all existing entities, even those that don't
+     * have super or subclasses.
      * 
      * @since 3.0
      */
@@ -678,22 +656,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Looks in the DataMap's that this object was created with for the ObjEntity that
-     * maps to the services the specified class
+     * Looks in the DataMap's that this object was created with for the
+     * ObjEntity that maps to the services the specified class
      * 
-     * @return the required ObjEntity or null if there is none that matches the specifier
+     * @return the required ObjEntity or null if there is none that matches the
+     *         specifier
      */
     public synchronized ObjEntity lookupObjEntity(Class<?> aClass) {
-        if (!indexedByClass) {
-            throw new CayenneRuntimeException("Class index is disabled.");
-        }
-
         return _lookupObjEntity(classKey(aClass.getName()));
     }
 
     /**
-     * Looks in the DataMap's that this object was created with for the ObjEntity that
-     * services the specified data Object
+     * Looks in the DataMap's that this object was created with for the
+     * ObjEntity that services the specified data Object
      * 
      * @return the required ObjEntity, or null if none matches the specifier
      */
@@ -707,8 +682,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             if (id != null) {
                 return _lookupObjEntity(id.getEntityName());
             }
-        }
-        else if (object instanceof Class) {
+        } else if (object instanceof Class) {
             return lookupObjEntity((Class<?>) object);
         }
 
@@ -753,10 +727,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
     }
 
+    /**
+     * @deprecated since 3.2. There's no replacement. This property is
+     *             meaningless and is no longer respected by the code.
+     */
+    @Deprecated
     public boolean isIndexedByClass() {
         return indexedByClass;
     }
 
+    /**
+     * @deprecated since 3.2. There's no replacement. This property is
+     *             meaningless.
+     */
     public void setIndexedByClass(boolean b) {
         indexedByClass = b;
     }
@@ -767,17 +750,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     protected String classKey(String className) {
-        // need to ensure that there is no conflict with entity names... I guess such
+        // need to ensure that there is no conflict with entity names... I guess
+        // such
         // prefix is enough to guarantee that:
         return "^cl^" + className;
     }
 
     /**
-     * Internal usage only - provides the type-unsafe implementation which services the
-     * four typesafe public lookupDbEntity methods Looks in the DataMap's that this object
-     * was created with for the ObjEntity that maps to the specified object. Object may be
-     * a Entity name, ObjEntity, DataObject class (Class object for a class which
-     * implements the DataObject interface), or a DataObject instance itself
+     * Internal usage only - provides the type-unsafe implementation which
+     * services the four typesafe public lookupDbEntity methods Looks in the
+     * DataMap's that this object was created with for the ObjEntity that maps
+     * to the specified object. Object may be a Entity name, ObjEntity,
+     * DataObject class (Class object for a class which implements the
+     * DataObject interface), or a DataObject instance itself
      * 
      * @return the required DbEntity, or null if none matches the specifier
      */
@@ -795,22 +780,23 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         if (result == DUPLICATE_MARKER) {
-            throw new CayenneRuntimeException(
-                    "Can't perform lookup. There is more than one DbEntity mapped to "
-                            + object);
+            throw new CayenneRuntimeException("Can't perform lookup. There is more than one DbEntity mapped to "
+                    + object);
         }
 
         return (DbEntity) result;
     }
 
     /**
-     * Internal usage only - provides the type-unsafe implementation which services the
-     * three typesafe public lookupObjEntity methods Looks in the DataMap's that this
-     * object was created with for the ObjEntity that maps to the specified object. Object
-     * may be a Entity name, DataObject instance or DataObject class (Class object for a
-     * class which implements the DataObject interface)
+     * Internal usage only - provides the type-unsafe implementation which
+     * services the three typesafe public lookupObjEntity methods Looks in the
+     * DataMap's that this object was created with for the ObjEntity that maps
+     * to the specified object. Object may be a Entity name, DataObject instance
+     * or DataObject class (Class object for a class which implements the
+     * DataObject interface)
      * 
-     * @return the required ObjEntity or null if there is none that matches the specifier
+     * @return the required ObjEntity or null if there is none that matches the
+     *         specifier
      */
     protected ObjEntity _lookupObjEntity(String key) {
 
@@ -823,17 +809,15 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         if (result == DUPLICATE_MARKER) {
-            throw new CayenneRuntimeException(
-                    "Can't perform lookup. There is more than one ObjEntity mapped to "
-                            + key);
+            throw new CayenneRuntimeException("Can't perform lookup. There is more than one ObjEntity mapped to " + key);
         }
 
         return (ObjEntity) result;
     }
 
     /**
-     * Returns an object that compiles and stores {@link ClassDescriptor} instances for
-     * all entities.
+     * Returns an object that compiles and stores {@link ClassDescriptor}
+     * instances for all entities.
      * 
      * @since 3.0
      */
@@ -843,13 +827,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
             FaultFactory faultFactory = new SingletonFaultFactory();
 
             // add factories in reverse of the desired chain order
-            classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(
-                    classDescriptorMap));
-            classDescriptorMap.addFactory(new DataObjectDescriptorFactory(
-                    classDescriptorMap,
-                    faultFactory));
+            classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(classDescriptorMap));
+            classDescriptorMap.addFactory(new DataObjectDescriptorFactory(classDescriptorMap, faultFactory));
 
-            // since ClassDescriptorMap is not synchronized, we need to prefill it with
+            // since ClassDescriptorMap is not synchronized, we need to prefill
+            // it with
             // entity proxies here.
             for (DataMap map : maps) {
                 for (String entityName : map.getObjEntityMap().keySet()) {
@@ -864,10 +846,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Sets an optional {@link EntityListenerFactory} that should be used to create entity
-     * listeners. Note that changing the factory does not affect already created
-     * listeners. So refresh the existing listners, call "setCallbackRegistry(null)" after
-     * setting the listener.
+     * Sets an optional {@link EntityListenerFactory} that should be used to
+     * create entity listeners. Note that changing the factory does not affect
+     * already created listeners. So refresh the existing listners, call
+     * "setCallbackRegistry(null)" after setting the listener.
      * 
      * @since 3.0
      */
@@ -876,11 +858,10 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Java default deserialization seems not to invoke constructor by default - invoking
-     * it manually
+     * Java default deserialization seems not to invoke constructor by default -
+     * invoking it manually
      */
-    private void readObject(ObjectInputStream in) throws IOException,
-            ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         init();
         in.defaultReadObject();
     }
