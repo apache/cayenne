@@ -107,7 +107,7 @@ public class ProjectUtil {
         // important - clear parent namespace:
         MappingNamespace ns = map.getNamespace();
         if (ns instanceof EntityResolver) {
-            ((EntityResolver) ns).clearCache();
+            ((EntityResolver) ns).refreshMappingCache();
         }
     }
 
@@ -134,7 +134,7 @@ public class ProjectUtil {
         // important - clear parent namespace:
         MappingNamespace ns = map.getNamespace();
         if (ns instanceof EntityResolver) {
-            ((EntityResolver) ns).clearCache();
+            ((EntityResolver) ns).refreshMappingCache();
         }
     }
 
@@ -153,7 +153,7 @@ public class ProjectUtil {
         // important - clear parent namespace:
         MappingNamespace ns = map.getNamespace();
         if (ns instanceof EntityResolver) {
-            ((EntityResolver) ns).clearCache();
+            ((EntityResolver) ns).refreshMappingCache();
         }
     }
 
@@ -178,7 +178,7 @@ public class ProjectUtil {
             // important - clear parent namespace:
             MappingNamespace ns = map.getNamespace();
             if (ns instanceof EntityResolver) {
-                ((EntityResolver) ns).clearCache();
+                ((EntityResolver) ns).refreshMappingCache();
             }
         }
     }

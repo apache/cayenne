@@ -454,7 +454,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
     private void clearDataMapCache(DataMap dataMap) {
         MappingNamespace ns = dataMap.getNamespace();
         if (ns instanceof EntityResolver) {
-            ((EntityResolver) ns).clearCache();
+            ((EntityResolver) ns).refreshMappingCache();
         }
     }
 

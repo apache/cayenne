@@ -1229,7 +1229,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
                 // important - clear parent namespace:
                 MappingNamespace ns = getNamespace();
                 if (ns instanceof EntityResolver) {
-                    ((EntityResolver) ns).clearCache();
+                    ((EntityResolver) ns).refreshMappingCache();
                 }
             }
         }
@@ -1271,7 +1271,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
                 // important - clear parent namespace:
                 MappingNamespace ns = getNamespace();
                 if (ns instanceof EntityResolver) {
-                    ((EntityResolver) ns).clearCache();
+                    ((EntityResolver) ns).refreshMappingCache();
                 }
             }
         }

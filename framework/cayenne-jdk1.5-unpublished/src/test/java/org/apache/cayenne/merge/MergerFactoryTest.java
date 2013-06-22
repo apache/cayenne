@@ -164,7 +164,7 @@ public class MergerFactoryTest extends MergeCase {
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        resolver.clearCache();
+        resolver.refreshMappingCache();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
@@ -221,14 +221,14 @@ public class MergerFactoryTest extends MergeCase {
         // remove relationships
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
-        resolver.clearCache();
+        resolver.refreshMappingCache();
         assertTokensAndExecute(1, 1);
         assertTokensAndExecute(0, 0);
 
         // clear up
         // map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        resolver.clearCache();
+        resolver.refreshMappingCache();
         // assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
@@ -288,14 +288,14 @@ public class MergerFactoryTest extends MergeCase {
         // remove relationships
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
-        resolver.clearCache();
+        resolver.refreshMappingCache();
         assertTokensAndExecute(1, 1);
         assertTokensAndExecute(0, 0);
 
         // clear up
         // map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        resolver.clearCache();
+        resolver.refreshMappingCache();
         // assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));

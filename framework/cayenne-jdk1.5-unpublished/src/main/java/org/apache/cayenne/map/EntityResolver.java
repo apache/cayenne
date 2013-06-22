@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -56,27 +54,17 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EntityResolver implements MappingNamespace, Serializable {
 
-    static final ObjEntity DUPLICATE_MARKER = new ObjEntity();
-
     protected static final Log logger = LogFactory.getLog(EntityResolver.class);
 
     @Deprecated
     protected boolean indexedByClass;
 
     protected Collection<DataMap> maps;
-
-    protected transient Map<String, Query> queryCache;
-    protected transient Map<String, Embeddable> embeddableCache;
-    protected transient Map<String, SQLResult> resultsCache;
-    protected transient Map<String, DbEntity> dbEntityCache;
-    protected transient Map<String, ObjEntity> objEntityCache;
-    protected transient Map<String, Procedure> procedureCache;
-    protected transient Map<String, EntityInheritanceTree> entityInheritanceCache;
+    protected transient MappingCache entityCache;
     protected EntityResolver clientEntityResolver;
 
     // must be transient, as resolver may get deserialized in another VM, and
-    // descriptor
-    // recompilation will be desired.
+    // descriptor recompilation will be desired.
     protected transient ClassDescriptorMap classDescriptorMap;
 
     // callbacks are not serializable
@@ -85,35 +73,18 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected EntityListenerFactory entityListenerFactory;
 
     /**
-     * Creates new EntityResolver.
+     * Creates new empty EntityResolver.
      */
     public EntityResolver() {
-        init();
-    }
-
-    /**
-     * Initialization of EntityResolver. Used in constructor and in Java
-     * deserialization process
-     */
-    private void init() {
-        this.indexedByClass = true;
-        this.maps = new ArrayList<DataMap>(3);
-        this.embeddableCache = new HashMap<String, Embeddable>();
-        this.queryCache = new HashMap<String, Query>();
-        this.dbEntityCache = new HashMap<String, DbEntity>();
-        this.objEntityCache = new HashMap<String, ObjEntity>();
-        this.procedureCache = new HashMap<String, Procedure>();
-        this.entityInheritanceCache = new HashMap<String, EntityInheritanceTree>();
-        this.resultsCache = new HashMap<String, SQLResult>();
+        this(Collections.<DataMap> emptyList());
     }
 
     /**
      * Creates new EntityResolver that indexes a collection of DataMaps.
      */
     public EntityResolver(Collection<DataMap> dataMaps) {
-        this();
-        this.maps.addAll(dataMaps); // Take a copy
-        this.constructCache();
+        this.maps = new ArrayList<DataMap>(dataMaps);
+        refreshMappingCache();
     }
 
     /**
@@ -408,11 +379,27 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     public DbEntity getDbEntity(String name) {
-        return _lookupDbEntity(name);
+        DbEntity result = entityCache.getDbEntity(name);
+        if (result == null) {
+            // reconstruct cache just in case some of the datamaps
+            // have changed and now contain the required information
+            refreshMappingCache();
+            result = entityCache.getDbEntity(name);
+        }
+
+        return result;
     }
 
     public ObjEntity getObjEntity(String name) {
-        return _lookupObjEntity(name);
+        ObjEntity result = entityCache.getObjEntity(name);
+        if (result == null) {
+            // reconstruct cache just in case some of the datamaps
+            // have changed and now contain the required information
+            refreshMappingCache();
+            result = entityCache.getObjEntity(name);
+        }
+
+        return result;
     }
 
     public Procedure getProcedure(String name) {
@@ -427,13 +414,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     public Embeddable getEmbeddable(String className) {
-        Embeddable result = embeddableCache.get(className);
+        Embeddable result = entityCache.getEmbeddable(className);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
-            constructCache();
-            result = embeddableCache.get(className);
+            refreshMappingCache();
+            result = entityCache.getEmbeddable(className);
         }
 
         return result;
@@ -443,13 +430,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     public SQLResult getResult(String name) {
-        SQLResult result = resultsCache.get(name);
+        SQLResult result = entityCache.getResult(name);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
-            constructCache();
-            result = resultsCache.get(name);
+            refreshMappingCache();
+            result = entityCache.getResult(name);
         }
 
         return result;
@@ -473,137 +460,35 @@ public class EntityResolver implements MappingNamespace, Serializable {
         if (!maps.contains(map)) {
             maps.add(map);
             map.setNamespace(this);
-            clearCache();
+            refreshMappingCache();
         }
     }
 
     /**
-     * Removes all entity mappings from the cache. Cache can be rebuilt either
-     * explicitly by calling <code>constructCache</code>, or on demand by
-     * calling any of the <code>lookup...</code> methods.
+     * Removes all entity mappings from the cache.
+     * 
+     * @deprecated since 3.2 in favor of {@link #refreshMappingCache()}.
      */
-    public synchronized void clearCache() {
-        queryCache.clear();
-        dbEntityCache.clear();
-        objEntityCache.clear();
-        procedureCache.clear();
-        entityInheritanceCache.clear();
-        resultsCache.clear();
-        embeddableCache.clear();
+    @Deprecated
+    public void clearCache() {
+        refreshMappingCache();
+    }
+
+    /**
+     * Refreshes entity cache to reflect the current state of the DataMaps in
+     * the EntityResolver.
+     * 
+     * @since 3.2
+     */
+    public void refreshMappingCache() {
+        entityCache = new MappingCache(maps);
         clientEntityResolver = null;
-    }
-
-    /**
-     * Creates caches of DbEntities by ObjEntity, DataObject class, and
-     * ObjEntity name using internal list of maps.
-     */
-    protected synchronized void constructCache() {
-        clearCache();
-
-        // rebuild index
-
-        // index DbEntities separately and before ObjEntities to avoid infinite
-        // loops when
-        // looking up DbEntities during ObjEntity index op
-
-        for (DataMap map : maps) {
-            for (DbEntity de : map.getDbEntities()) {
-                dbEntityCache.put(de.getName(), de);
-            }
-        }
-
-        for (DataMap map : maps) {
-
-            // index ObjEntities
-            for (ObjEntity oe : map.getObjEntities()) {
-
-                // index by name
-                objEntityCache.put(oe.getName(), oe);
-
-                // index by class.. use class name as a key to avoid class
-                // loading here...
-                String className = oe.getJavaClassName();
-                if (className == null) {
-                    continue;
-                }
-
-                String classKey = classKey(className);
-
-                // allow duplicates, but put a special marker indicating
-                // that this
-                // entity can't be looked up by class
-                Object existing = objEntityCache.get(classKey);
-                if (existing != null) {
-
-                    if (existing != DUPLICATE_MARKER) {
-                        objEntityCache.put(classKey, DUPLICATE_MARKER);
-                    }
-                } else {
-                    objEntityCache.put(classKey, oe);
-                }
-            }
-
-            // index stored procedures
-            for (Procedure proc : map.getProcedures()) {
-                procedureCache.put(proc.getName(), proc);
-            }
-
-            // index embeddables
-            embeddableCache.putAll(map.getEmbeddableMap());
-
-            // index queries
-            for (Query query : map.getQueries()) {
-                String name = query.getName();
-                Object existingQuery = queryCache.put(name, query);
-
-                if (existingQuery != null && query != existingQuery) {
-                    throw new CayenneRuntimeException("More than one Query for name" + name);
-                }
-            }
-        }
-
-        // restart the map iterator to index inheritance
-        for (DataMap map : maps) {
-
-            // index ObjEntity inheritance
-            for (ObjEntity oe : map.getObjEntities()) {
-
-                // build inheritance tree
-                EntityInheritanceTree node = entityInheritanceCache.get(oe.getName());
-                if (node == null) {
-                    node = new EntityInheritanceTree(oe);
-                    entityInheritanceCache.put(oe.getName(), node);
-                }
-
-                String superOEName = oe.getSuperEntityName();
-                if (superOEName != null) {
-                    EntityInheritanceTree superNode = entityInheritanceCache.get(superOEName);
-
-                    if (superNode == null) {
-                        // do direct entity lookup to avoid recursive cache
-                        // rebuild
-                        ObjEntity superOE = objEntityCache.get(superOEName);
-                        if (superOE != null) {
-                            superNode = new EntityInheritanceTree(superOE);
-                            entityInheritanceCache.put(superOEName, superNode);
-                        } else {
-                            // bad mapping? Or most likely some classloader
-                            // issue
-                            logger.warn("No super entity mapping for '" + superOEName + "'");
-                            continue;
-                        }
-                    }
-
-                    superNode.addChildNode(node);
-                }
-            }
-        }
     }
 
     /**
      * Returns a DataMap matching the name.
      */
-    public synchronized DataMap getDataMap(String mapName) {
+    public DataMap getDataMap(String mapName) {
         if (mapName == null) {
             return null;
         }
@@ -620,7 +505,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     public synchronized void setDataMaps(Collection<DataMap> maps) {
         this.maps.clear();
         this.maps.addAll(maps);
-        clearCache();
+        refreshMappingCache();
     }
 
     /**
@@ -640,7 +525,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public EntityInheritanceTree lookupInheritanceTree(String entityName) {
 
-        EntityInheritanceTree tree = entityInheritanceCache.get(entityName);
+        EntityInheritanceTree tree = entityCache.getInheritanceTree(entityName);
 
         if (tree == null) {
             // since we keep inheritance trees for all entities, null means
@@ -648,8 +533,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
             // rebuild cache just in case some of the datamaps
             // have changed and now contain the required information
-            constructCache();
-            tree = entityInheritanceCache.get(entityName);
+            refreshMappingCache();
+            tree = entityCache.getInheritanceTree(entityName);
         }
 
         return tree;
@@ -662,8 +547,16 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @return the required ObjEntity or null if there is none that matches the
      *         specifier
      */
-    public synchronized ObjEntity lookupObjEntity(Class<?> aClass) {
-        return _lookupObjEntity(classKey(aClass.getName()));
+    public ObjEntity lookupObjEntity(Class<?> aClass) {
+        ObjEntity result = entityCache.getObjEntity(aClass);
+        if (result == null) {
+            // reconstruct cache just in case some of the datamaps
+            // have changed and now contain the required information
+            refreshMappingCache();
+            result = entityCache.getObjEntity(aClass);
+        }
+
+        return result;
     }
 
     /**
@@ -672,7 +565,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * 
      * @return the required ObjEntity, or null if none matches the specifier
      */
-    public synchronized ObjEntity lookupObjEntity(Object object) {
+    public ObjEntity lookupObjEntity(Object object) {
         if (object instanceof ObjEntity) {
             return (ObjEntity) object;
         }
@@ -680,7 +573,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         if (object instanceof Persistent) {
             ObjectId id = ((Persistent) object).getObjectId();
             if (id != null) {
-                return _lookupObjEntity(id.getEntityName());
+                return getObjEntity(id.getEntityName());
             }
         } else if (object instanceof Class) {
             return lookupObjEntity((Class<?>) object);
@@ -695,12 +588,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     public Procedure lookupProcedure(String procedureName) {
 
-        Procedure result = procedureCache.get(procedureName);
+        Procedure result = entityCache.getProcedure(procedureName);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
-            constructCache();
-            result = procedureCache.get(procedureName);
+            refreshMappingCache();
+            result = entityCache.getProcedure(procedureName);
         }
 
         return result;
@@ -709,21 +602,21 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns a named query or null if no query exists for a given name.
      */
-    public synchronized Query lookupQuery(String name) {
-        Query result = queryCache.get(name);
+    public Query lookupQuery(String name) {
+        Query result = entityCache.getQuery(name);
 
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
-            constructCache();
-            result = queryCache.get(name);
+            refreshMappingCache();
+            result = entityCache.getQuery(name);
         }
         return result;
     }
 
     public synchronized void removeDataMap(DataMap map) {
         if (maps.remove(map)) {
-            clearCache();
+            refreshMappingCache();
         }
     }
 
@@ -745,77 +638,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Generates a map key for the object class.
-     * 
-     * @since 3.0
-     */
-    protected String classKey(String className) {
-        // need to ensure that there is no conflict with entity names... I guess
-        // such
-        // prefix is enough to guarantee that:
-        return "^cl^" + className;
-    }
-
-    /**
-     * Internal usage only - provides the type-unsafe implementation which
-     * services the four typesafe public lookupDbEntity methods Looks in the
-     * DataMap's that this object was created with for the ObjEntity that maps
-     * to the specified object. Object may be a Entity name, ObjEntity,
-     * DataObject class (Class object for a class which implements the
-     * DataObject interface), or a DataObject instance itself
-     * 
-     * @return the required DbEntity, or null if none matches the specifier
-     */
-    protected DbEntity _lookupDbEntity(Object object) {
-        if (object instanceof DbEntity) {
-            return (DbEntity) object;
-        }
-
-        Object result = dbEntityCache.get(object);
-        if (result == null) {
-            // reconstruct cache just in case some of the datamaps
-            // have changed and now contain the required information
-            constructCache();
-            result = dbEntityCache.get(object);
-        }
-
-        if (result == DUPLICATE_MARKER) {
-            throw new CayenneRuntimeException("Can't perform lookup. There is more than one DbEntity mapped to "
-                    + object);
-        }
-
-        return (DbEntity) result;
-    }
-
-    /**
-     * Internal usage only - provides the type-unsafe implementation which
-     * services the three typesafe public lookupObjEntity methods Looks in the
-     * DataMap's that this object was created with for the ObjEntity that maps
-     * to the specified object. Object may be a Entity name, DataObject instance
-     * or DataObject class (Class object for a class which implements the
-     * DataObject interface)
-     * 
-     * @return the required ObjEntity or null if there is none that matches the
-     *         specifier
-     */
-    protected ObjEntity _lookupObjEntity(String key) {
-
-        Object result = objEntityCache.get(key);
-        if (result == null) {
-            // reconstruct cache just in case some of the datamaps
-            // have changed and now contain the required information
-            constructCache();
-            result = objEntityCache.get(key);
-        }
-
-        if (result == DUPLICATE_MARKER) {
-            throw new CayenneRuntimeException("Can't perform lookup. There is more than one ObjEntity mapped to " + key);
-        }
-
-        return (ObjEntity) result;
-    }
-
-    /**
      * Returns an object that compiles and stores {@link ClassDescriptor}
      * instances for all entities.
      * 
@@ -831,8 +653,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
             classDescriptorMap.addFactory(new DataObjectDescriptorFactory(classDescriptorMap, faultFactory));
 
             // since ClassDescriptorMap is not synchronized, we need to prefill
-            // it with
-            // entity proxies here.
+            // it with entity proxies here.
             for (DataMap map : maps) {
                 for (String entityName : map.getObjEntityMap().keySet()) {
                     classDescriptorMap.getDescriptor(entityName);
@@ -862,7 +683,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * invoking it manually
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        init();
         in.defaultReadObject();
+        refreshMappingCache();
     }
 }

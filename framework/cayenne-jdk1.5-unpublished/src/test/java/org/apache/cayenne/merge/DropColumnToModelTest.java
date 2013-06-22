@@ -82,7 +82,7 @@ public class DropColumnToModelTest extends MergeCase {
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        resolver.clearCache();
+        resolver.refreshMappingCache();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
@@ -206,7 +206,7 @@ public class DropColumnToModelTest extends MergeCase {
         map.removeDbEntity(dbEntity1.getName(), true);
         map.removeObjEntity(objEntity2.getName(), true);
         map.removeDbEntity(dbEntity2.getName(), true);
-        resolver.clearCache();
+        resolver.refreshMappingCache();
         assertNull(map.getObjEntity(objEntity1.getName()));
         assertNull(map.getDbEntity(dbEntity1.getName()));
         assertNull(map.getObjEntity(objEntity2.getName()));
