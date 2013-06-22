@@ -41,6 +41,7 @@ CAY-1778 TransactionManager to simplify user-managed transactions
 CAY-1779 Flatten object entities for many to many relationships on reverse engineering 
 CAY-1781 Add StatelessContextRequestHandler as an alternative to the Session-based one
 CAY-1785 SelectQuery<T> for DataRows
+CAY-1789 Lock-free EntityResolver 
 CAY-1792 [PATCH] Supply additional factory methods for generic SelectQueries 
 CAY-1803 Optimize Expression conversion to String and EJBQL 
 CAY-1809 Remove 'final' modifier from Cayenne, HessianUtil, PropertyComparator, ConversionUtil, and LinkedDeque
