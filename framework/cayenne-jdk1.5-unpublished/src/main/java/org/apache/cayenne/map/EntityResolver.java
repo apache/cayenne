@@ -64,7 +64,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     // must be transient, as resolver may get deserialized in another VM, and
     // descriptor recompilation will be desired.
-    protected transient ClassDescriptorMap classDescriptorMap;
+    protected transient volatile ClassDescriptorMap classDescriptorMap;
 
     // callbacks are not serializable
     protected transient LifecycleCallbackRegistry callbackRegistry;
@@ -444,7 +444,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * 
      * @since 1.2
      */
-    public synchronized ClassDescriptor getClassDescriptor(String entityName) {
+    public ClassDescriptor getClassDescriptor(String entityName) {
         if (entityName == null) {
             throw new IllegalArgumentException("Null entityName");
         }
@@ -659,22 +659,30 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public ClassDescriptorMap getClassDescriptorMap() {
         if (classDescriptorMap == null) {
-            ClassDescriptorMap classDescriptorMap = new ClassDescriptorMap(this);
-            FaultFactory faultFactory = new SingletonFaultFactory();
 
-            // add factories in reverse of the desired chain order
-            classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(classDescriptorMap));
-            classDescriptorMap.addFactory(new DataObjectDescriptorFactory(classDescriptorMap, faultFactory));
+            synchronized (this) {
 
-            // since ClassDescriptorMap is not synchronized, we need to prefill
-            // it with entity proxies here.
-            for (DataMap map : maps) {
-                for (String entityName : map.getObjEntityMap().keySet()) {
-                    classDescriptorMap.getDescriptor(entityName);
+                if (classDescriptorMap == null) {
+
+                    ClassDescriptorMap classDescriptorMap = new ClassDescriptorMap(this);
+                    FaultFactory faultFactory = new SingletonFaultFactory();
+
+                    // add factories in reverse of the desired chain order
+                    classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(classDescriptorMap));
+                    classDescriptorMap.addFactory(new DataObjectDescriptorFactory(classDescriptorMap, faultFactory));
+
+                    // since ClassDescriptorMap is not synchronized, we need to
+                    // prefill
+                    // it with entity proxies here.
+                    for (DataMap map : maps) {
+                        for (String entityName : map.getObjEntityMap().keySet()) {
+                            classDescriptorMap.getDescriptor(entityName);
+                        }
+                    }
+
+                    this.classDescriptorMap = classDescriptorMap;
                 }
             }
-
-            this.classDescriptorMap = classDescriptorMap;
         }
 
         return classDescriptorMap;

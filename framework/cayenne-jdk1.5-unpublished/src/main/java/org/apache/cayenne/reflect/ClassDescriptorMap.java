@@ -28,10 +28,11 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
- * An object that holds class descriptors for mapped entities, compiling new descriptors
- * on demand using an internal chain of descriptor factories. Note that the object is ot
- * synchronized internally, so it has to be prefilled with descriptors by the caller on
- * initialization via calling 'getDescriptor' for all mapped entities.
+ * An object that holds class descriptors for mapped entities, compiling new
+ * descriptors on demand using an internal chain of descriptor factories. Note
+ * that the object is not synchronized internally, so it has to be prefilled
+ * with descriptors by the caller on initialization via calling 'getDescriptor'
+ * for all mapped entities.
  * 
  * @since 3.0
  */
@@ -83,8 +84,7 @@ public class ClassDescriptorMap {
     public void addDescriptor(String entityName, ClassDescriptor descriptor) {
         if (descriptor == null) {
             removeDescriptor(entityName);
-        }
-        else {
+        } else {
             descriptors.put(entityName, descriptor);
         }
     }
@@ -103,9 +103,9 @@ public class ClassDescriptorMap {
     }
 
     /**
-     * Creates a descriptor wrapper that will compile the underlying descriptor on demand.
-     * Using proxy indirection is needed to compile relationships of descriptors to other
-     * descriptors that are not compiled yet.
+     * Creates a descriptor wrapper that will compile the underlying descriptor
+     * on demand. Using proxy indirection is needed to compile relationships of
+     * descriptors to other descriptors that are not compiled yet.
      */
     protected ClassDescriptor createProxyDescriptor(String entityName) {
         ClassDescriptor descriptor = new LazyClassDescriptorDecorator(this, entityName);
@@ -118,11 +118,12 @@ public class ClassDescriptorMap {
      */
     protected ClassDescriptor createDescriptor(String entityName) {
 
-        // scan the factory chain until some factory returns a non-null descriptor;
-        // scanning is done in reverse order so that the factories added last take higher
+        // scan the factory chain until some factory returns a non-null
+        // descriptor;
+        // scanning is done in reverse order so that the factories added last
+        // take higher
         // precedence...
-        ListIterator<ClassDescriptorFactory> it = factories
-                .listIterator(factories.size());
+        ListIterator<ClassDescriptorFactory> it = factories.listIterator(factories.size());
         while (it.hasPrevious()) {
             ClassDescriptorFactory factory = it.previous();
             ClassDescriptor descriptor = factory.getDescriptor(entityName);
@@ -132,7 +133,6 @@ public class ClassDescriptorMap {
             }
         }
 
-        throw new CayenneRuntimeException("Failed to create descriptor for entity: "
-                + entityName);
+        throw new CayenneRuntimeException("Failed to create descriptor for entity: " + entityName);
     }
 }
