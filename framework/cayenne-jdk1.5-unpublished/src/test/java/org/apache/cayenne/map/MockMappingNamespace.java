@@ -113,7 +113,7 @@ public class MockMappingNamespace implements MappingNamespace {
         return null;
     }
     
-    public Collection<SQLResult> getResultSets() {
+    public Collection<SQLResult> getResults() {
         // TODO Auto-generated method stub
         return null;
     }

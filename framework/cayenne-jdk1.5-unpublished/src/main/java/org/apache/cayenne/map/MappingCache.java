@@ -38,27 +38,27 @@ class MappingCache implements MappingNamespace {
     protected static final Log logger = LogFactory.getLog(MappingCache.class);
 
     protected Collection<DataMap> maps;
-    protected Map<String, Query> queryCache;
-    protected Map<String, Embeddable> embeddableCache;
-    protected Map<String, SQLResult> resultsCache;
-    protected Map<String, DbEntity> dbEntityCache;
-    protected Map<String, ObjEntity> objEntityCache;
-    protected Map<String, ObjEntity> objEntityClassCache;
-    protected Map<String, Procedure> procedureCache;
+    protected Map<String, Query> queries;
+    protected Map<String, Embeddable> embeddables;
+    protected Map<String, SQLResult> results;
+    protected Map<String, DbEntity> dbEntities;
+    protected Map<String, ObjEntity> objEntities;
+    protected Map<String, ObjEntity> objEntitiesByClassName;
+    protected Map<String, Procedure> procedures;
     protected Map<String, EntityInheritanceTree> entityInheritanceCache;
 
     MappingCache(Collection<DataMap> maps) {
 
         this.maps = maps;
 
-        this.embeddableCache = new HashMap<String, Embeddable>();
-        this.queryCache = new HashMap<String, Query>();
-        this.dbEntityCache = new HashMap<String, DbEntity>();
-        this.objEntityCache = new HashMap<String, ObjEntity>();
-        this.objEntityClassCache = new HashMap<String, ObjEntity>();
-        this.procedureCache = new HashMap<String, Procedure>();
+        this.embeddables = new HashMap<String, Embeddable>();
+        this.queries = new HashMap<String, Query>();
+        this.dbEntities = new HashMap<String, DbEntity>();
+        this.objEntities = new HashMap<String, ObjEntity>();
+        this.objEntitiesByClassName = new HashMap<String, ObjEntity>();
+        this.procedures = new HashMap<String, Procedure>();
         this.entityInheritanceCache = new HashMap<String, EntityInheritanceTree>();
-        this.resultsCache = new HashMap<String, SQLResult>();
+        this.results = new HashMap<String, SQLResult>();
 
         index();
     }
@@ -70,7 +70,7 @@ class MappingCache implements MappingNamespace {
 
         for (DataMap map : maps) {
             for (DbEntity de : map.getDbEntities()) {
-                dbEntityCache.put(de.getName(), de);
+                dbEntities.put(de.getName(), de);
             }
         }
 
@@ -80,7 +80,7 @@ class MappingCache implements MappingNamespace {
             for (ObjEntity oe : map.getObjEntities()) {
 
                 // index by name
-                objEntityCache.put(oe.getName(), oe);
+                objEntities.put(oe.getName(), oe);
 
                 // index by class.. use class name as a key to avoid class
                 // loading here...
@@ -91,29 +91,29 @@ class MappingCache implements MappingNamespace {
 
                 // allow duplicates, but put a special marker indicating
                 // that this entity can't be looked up by class
-                Object existing = objEntityClassCache.get(className);
+                Object existing = objEntitiesByClassName.get(className);
                 if (existing != null) {
 
                     if (existing != OBJ_DUPLICATE_MARKER) {
-                        objEntityClassCache.put(className, OBJ_DUPLICATE_MARKER);
+                        objEntitiesByClassName.put(className, OBJ_DUPLICATE_MARKER);
                     }
                 } else {
-                    objEntityClassCache.put(className, oe);
+                    objEntitiesByClassName.put(className, oe);
                 }
             }
 
             // index stored procedures
             for (Procedure proc : map.getProcedures()) {
-                procedureCache.put(proc.getName(), proc);
+                procedures.put(proc.getName(), proc);
             }
 
             // index embeddables
-            embeddableCache.putAll(map.getEmbeddableMap());
+            embeddables.putAll(map.getEmbeddableMap());
 
             // index queries
             for (Query query : map.getQueries()) {
                 String name = query.getName();
-                Object existingQuery = queryCache.put(name, query);
+                Object existingQuery = queries.put(name, query);
 
                 if (existingQuery != null && query != existingQuery) {
                     throw new CayenneRuntimeException("More than one Query for name" + name);
@@ -141,7 +141,7 @@ class MappingCache implements MappingNamespace {
                     if (superNode == null) {
                         // do direct entity lookup to avoid recursive cache
                         // rebuild
-                        ObjEntity superOE = objEntityCache.get(superOEName);
+                        ObjEntity superOE = objEntities.get(superOEName);
                         if (superOE != null) {
                             superNode = new EntityInheritanceTree(superOE);
                             entityInheritanceCache.put(superOEName, superNode);
@@ -160,11 +160,11 @@ class MappingCache implements MappingNamespace {
     }
 
     public Embeddable getEmbeddable(String className) {
-        return embeddableCache.get(className);
+        return embeddables.get(className);
     }
 
     public SQLResult getResult(String name) {
-        return resultsCache.get(name);
+        return results.get(name);
     }
 
     public EntityInheritanceTree getInheritanceTree(String entityName) {
@@ -172,19 +172,19 @@ class MappingCache implements MappingNamespace {
     }
 
     public Procedure getProcedure(String procedureName) {
-        return procedureCache.get(procedureName);
+        return procedures.get(procedureName);
     }
 
     public Query getQuery(String queryName) {
-        return queryCache.get(queryName);
+        return queries.get(queryName);
     }
 
     public DbEntity getDbEntity(String name) {
-        return dbEntityCache.get(name);
+        return dbEntities.get(name);
     }
 
     public ObjEntity getObjEntity(Class<?> entityClass) {
-        ObjEntity entity = objEntityClassCache.get(entityClass.getName());
+        ObjEntity entity = objEntitiesByClassName.get(entityClass.getName());
 
         if (entity == OBJ_DUPLICATE_MARKER) {
             throw new CayenneRuntimeException("Can't perform lookup. There is more than one ObjEntity mapped to "
@@ -195,7 +195,7 @@ class MappingCache implements MappingNamespace {
     }
 
     public ObjEntity getObjEntity(String name) {
-        return objEntityCache.get(name);
+        return objEntities.get(name);
     }
 
     public Collection<DbEntity> getDbEntities() {
@@ -268,7 +268,7 @@ class MappingCache implements MappingNamespace {
         return c;
     }
 
-    public Collection<SQLResult> getResultSets() {
+    public Collection<SQLResult> getResults() {
         // TODO: LEGACY SUPPORT:
         // some downstream code (like Modeler and merge framework) expect
         // always fresh list here, so instead of doing the right thing of
@@ -276,7 +276,7 @@ class MappingCache implements MappingNamespace {
         // the list of DataMaps.
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : maps) {
-            c.addComposited(map.getResultSets());
+            c.addComposited(map.getResults());
         }
 
         return c;

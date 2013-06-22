@@ -1315,11 +1315,4 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
         return null;
     }
-
-    /**
-     * @since 3.2
-     */
-    public Collection<SQLResult> getResultSets() {
-        return results.values();
-    }
 }

@@ -97,8 +97,8 @@ abstract class ProxiedMappingNamespace implements MappingNamespace {
         return getDelegate().getEmbeddables();
     }
     
-    public Collection<SQLResult> getResultSets() {
-        return getDelegate().getResultSets();
+    public Collection<SQLResult> getResults() {
+        return getDelegate().getResults();
     }
 
 }

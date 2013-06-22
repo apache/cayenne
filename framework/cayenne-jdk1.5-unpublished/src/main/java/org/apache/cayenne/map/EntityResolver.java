@@ -333,10 +333,18 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @since 3.0
+     * @deprecated since 3.2 use {@link #getResults()}.
      */
+    @Deprecated
     public Collection<SQLResult> getResultSets() {
-        return mappingCache.getResultSets();
+       return getResults();
+    }
+    
+    /**
+     * @since 3.2
+     */
+    public Collection<SQLResult> getResults() {
+        return mappingCache.getResults();
     }
 
     public Collection<Procedure> getProcedures() {

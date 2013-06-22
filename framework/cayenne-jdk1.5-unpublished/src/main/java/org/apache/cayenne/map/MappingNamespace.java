@@ -54,7 +54,7 @@ public interface MappingNamespace {
     /**
      * @since 3.2
      */
-    Collection<SQLResult> getResultSets();
+    Collection<SQLResult> getResults();
 
     /**
      * Returns DbEntity for a given name, or null if no such DbEntity is found
