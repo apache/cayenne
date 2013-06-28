@@ -44,8 +44,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 
 /**
- * A registry of lifecycle callbacks for all callback event types. Valid event types are
- * defined in {@link LifecycleEvent} enum.
+ * A registry of lifecycle callbacks for all callback event types. Valid event
+ * types are defined in {@link LifecycleEvent} enum.
  * 
  * @since 3.0
  */
@@ -63,7 +63,8 @@ public class LifecycleCallbackRegistry {
 
         this.entityResolver = resolver;
 
-        // initialize callbacks map in constructor to avoid synchronization issues
+        // initialize callbacks map in constructor to avoid synchronization
+        // issues
         // downstream.
         this.eventCallbacks = new LifecycleCallbackEventHandler[LifecycleEvent.values().length];
         for (int i = 0; i < eventCallbacks.length; i++) {
@@ -98,9 +99,10 @@ public class LifecycleCallbackRegistry {
     }
 
     /**
-     * Registers a {@link LifecycleListener} for all events on all entities. Note that
-     * listeners are not required to implement {@link LifecycleListener} interface. Other
-     * methods in this class can be used to register arbitrary listeners.
+     * Registers a {@link LifecycleListener} for all events on all entities.
+     * Note that listeners are not required to implement
+     * {@link LifecycleListener} interface. Other methods in this class can be
+     * used to register arbitrary listeners.
      */
     public void addDefaultListener(LifecycleListener listener) {
         addDefaultListener(LifecycleEvent.POST_ADD, listener, "postAdd");
@@ -114,17 +116,19 @@ public class LifecycleCallbackRegistry {
     }
 
     /**
-     * Registers a callback method to be invoked on a provided non-entity object when a
-     * lifecycle event occurs on any entity that does not suppress default callbacks.
+     * Registers a callback method to be invoked on a provided non-entity object
+     * when a lifecycle event occurs on any entity that does not suppress
+     * default callbacks.
      */
     public void addDefaultListener(LifecycleEvent type, Object listener, String methodName) {
         eventCallbacks[type.ordinal()].addDefaultListener(listener, methodName);
     }
 
     /**
-     * Registers a {@link LifecycleListener} for all events on all entities. Note that
-     * listeners are not required to implement {@link LifecycleListener} interface. Other
-     * methods in this class can be used to register arbitrary listeners.
+     * Registers a {@link LifecycleListener} for all events on all entities.
+     * Note that listeners are not required to implement
+     * {@link LifecycleListener} interface. Other methods in this class can be
+     * used to register arbitrary listeners.
      */
     public void addListener(Class<?> entityClass, LifecycleListener listener) {
         addListener(LifecycleEvent.POST_ADD, entityClass, listener, "postAdd");
@@ -138,20 +142,16 @@ public class LifecycleCallbackRegistry {
     }
 
     /**
-     * Registers callback method to be invoked on a provided non-entity object when a
-     * lifecycle event occurs for a specific entity.
+     * Registers callback method to be invoked on a provided non-entity object
+     * when a lifecycle event occurs for a specific entity.
      */
-    public void addListener(
-            LifecycleEvent type,
-            Class<?> entityClass,
-            Object listener,
-            String methodName) {
+    public void addListener(LifecycleEvent type, Class<?> entityClass, Object listener, String methodName) {
         eventCallbacks[type.ordinal()].addListener(entityClass, listener, methodName);
     }
 
     /**
-     * Registers a callback method to be invoked on an entity class instances when a
-     * lifecycle event occurs.
+     * Registers a callback method to be invoked on an entity class instances
+     * when a lifecycle event occurs.
      */
     public void addListener(LifecycleEvent type, Class<?> entityClass, String methodName) {
         eventCallbacks[type.ordinal()].addListener(entityClass, methodName);
@@ -172,19 +172,18 @@ public class LifecycleCallbackRegistry {
             for (Method m : listenerType.getDeclaredMethods()) {
 
                 for (Annotation a : m.getAnnotations()) {
-                    AnnotationReader reader = getAnnotationsMap().get(
-                            a.annotationType().getName());
+                    AnnotationReader reader = getAnnotationsMap().get(a.annotationType().getName());
 
                     if (reader != null) {
 
                         Set<Class<?>> types = new HashSet<Class<?>>();
-                        
+
                         Class<?>[] entities = reader.entities(a);
-                        Class<? extends Annotation>[] entityAnnotations = 
-                                reader.entityAnnotations(a);
-                        
+                        Class<? extends Annotation>[] entityAnnotations = reader.entityAnnotations(a);
+
                         for (Class<?> type : entities) {
-                            // TODO: ignoring entity subclasses? whenever we add those,
+                            // TODO: ignoring entity subclasses? whenever we add
+                            // those,
                             // take
                             // into account "exlcudeSuperclassListeners" flag
                             types.add(type);
@@ -195,17 +194,12 @@ public class LifecycleCallbackRegistry {
                         }
 
                         for (Class<?> type : types) {
-                            eventCallbacks[reader.eventType().ordinal()].addListener(
-                                    type,
-                                    listener,
-                                    m);
+                            eventCallbacks[reader.eventType().ordinal()].addListener(type, listener, m);
                         }
-                        
-                        // if no entities specified then adding global callback 
+
+                        // if no entities specified then adding global callback
                         if (entities.length == 0 && entityAnnotations.length == 0) {
-                            eventCallbacks[reader.eventType().ordinal()].addDefaultListener(
-                                    listener, 
-                                    m.getName());
+                            eventCallbacks[reader.eventType().ordinal()].addDefaultListener(listener, m.getName());
                         }
                     }
                 }
@@ -388,11 +382,9 @@ public class LifecycleCallbackRegistry {
         return annotationsMap;
     }
 
-    private Collection<Class<?>> getAnnotatedEntities(
-            Class<? extends Annotation> annotationType) {
+    private Collection<Class<?>> getAnnotatedEntities(Class<? extends Annotation> annotationType) {
 
-        Collection<Class<?>> entities = entitiesByAnnotation
-                .get(annotationType.getName());
+        Collection<Class<?>> entities = entitiesByAnnotation.get(annotationType.getName());
 
         if (entities == null) {
 
@@ -403,26 +395,24 @@ public class LifecycleCallbackRegistry {
                 Class<?> entityType;
                 try {
                     entityType = Util.getJavaClass(entity.getClassName());
-                }
-                catch (ClassNotFoundException e) {
-                    throw new CayenneRuntimeException("Class not found: "
-                            + entity.getClassName(), e);
+                } catch (ClassNotFoundException e) {
+                    throw new CayenneRuntimeException("Class not found: " + entity.getClassName(), e);
                 }
 
                 // ensure that we don't register the same callback for multiple
-                // classes in the same hierarchy, so find the topmost type using a given
+                // classes in the same hierarchy, so find the topmost type using
+                // a given
                 // annotation and register it once
 
-                // TODO: This ignores "excludeSuperclassListeners" setting, which is
+                // TODO: This ignores "excludeSuperclassListeners" setting,
+                // which is
                 // not possible with annotations anyways
 
-                while (entityType != null
-                        && entityType.isAnnotationPresent(annotationType)) {
+                while (entityType != null && entityType.isAnnotationPresent(annotationType)) {
 
                     Class<?> superType = entityType.getSuperclass();
 
-                    if (superType == null
-                            || !superType.isAnnotationPresent(annotationType)) {
+                    if (superType == null || !superType.isAnnotationPresent(annotationType)) {
                         entities.add(entityType);
                         break;
                     }
