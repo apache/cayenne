@@ -226,7 +226,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
                 for (CallbackDescriptor callback : callbacks) {
                     for (String method : callback.getCallbackMethods()) {
-                        callbackRegistry.addListener(callback.getCallbackType(), entityClass, method);
+                        callbackRegistry.addCallback(callback.getCallbackType(), entityClass, method);
                     }
                 }
             }

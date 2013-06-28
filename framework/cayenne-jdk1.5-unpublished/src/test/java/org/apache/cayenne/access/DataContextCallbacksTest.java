@@ -67,7 +67,7 @@ public class DataContextCallbacksTest extends ServerCase {
         assertNotNull(a1);
         assertFalse(a1.isPostAdded());
 
-        registry.addListener(LifecycleEvent.POST_ADD, Artist.class, "postAddCallback");
+        registry.addCallback(LifecycleEvent.POST_ADD, Artist.class, "postAddCallback");
 
         Artist a2 = context.newObject(Artist.class);
         assertNotNull(a2);
@@ -105,7 +105,7 @@ public class DataContextCallbacksTest extends ServerCase {
         context.commitChanges();
         assertFalse(a1.isPrePersisted());
 
-        registry.addListener(
+        registry.addCallback(
                 LifecycleEvent.PRE_PERSIST,
                 Artist.class,
                 "prePersistCallback");
@@ -145,7 +145,7 @@ public class DataContextCallbacksTest extends ServerCase {
         assertFalse(a1.isPreRemoved());
 
         registry
-                .addListener(LifecycleEvent.PRE_REMOVE, Artist.class, "preRemoveCallback");
+                .addCallback(LifecycleEvent.PRE_REMOVE, Artist.class, "preRemoveCallback");
 
         Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("XX");
