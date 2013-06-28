@@ -8,6 +8,14 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 3.2M2
+Date: 
+----------------------------------
+Changes/New Features:
+
+CAY-1559 Use Lifecycle Annotations as markers on PersistentObject methods 
+
+----------------------------------
 Release: 3.2M1
 Date: 
 ----------------------------------
