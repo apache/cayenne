@@ -18,11 +18,48 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 /**
  * @deprecated since 3.2 moved to {@link org.apache.cayenne.ResultIterator} and
  *             significantly reworked.
  */
 @Deprecated
-public interface ResultIterator<T> extends org.apache.cayenne.ResultIterator<T> {
+public interface ResultIterator<T> {
+    /**
+     * Returns all yet unread rows from ResultSet without closing it.
+     * 
+     * @since 3.0
+     */
+    List<T> allRows();
 
+    /**
+     * Returns true if there is at least one more record that can be read from
+     * the iterator.
+     */
+    boolean hasNextRow();
+
+    /**
+     * Returns the next result row that is, depending on the query, may be a
+     * scalar value, a DataRow, or an Object[] array containing a mix of scalars
+     * and DataRows.
+     * 
+     * @since 3.0
+     */
+    T nextRow();
+
+    /**
+     * Goes past current row. If the row is not needed, this may save some time
+     * on data conversion.
+     * 
+     * @since 3.0
+     */
+    void skipRow();
+
+    /**
+     * Closes ResultIterator and associated ResultSet. This method must be
+     * called explicitly when the user is finished processing the records.
+     * Otherwise unused database resources will not be released properly.
+     */
+    void close();
 }
