@@ -691,6 +691,25 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2</version>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.rat</groupId>
+				<artifactId>apache-rat-plugin</artifactId>
+				<version>0.8</version>
+				<configuration>
+					<excludes>
+						<exclude>**/target</exclude>
+						<exclude>**/MANIFEST.MF</exclude>
+						<exclude>**/*.plist</exclude>
+						<exclude>**/*.graffle</exclude>
+						<exclude>**/.*</exclude>
+						<exclude>**/.*/**</exclude>
+						<exclude>**/CLOVER.txt</exclude>
+						<exclude>**/*.map.xml</exclude>
+						<exclude>**/*.css</exclude>
+						<exclude>**/*.properties</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<distributionManagement>
