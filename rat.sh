@@ -51,6 +51,8 @@ java -jar $RAT -d $DIR \
 	-e '_*.java' \
 	-e '*.plist' \
 	-e 'index.eomodeld' \
+	-e 'DiagramLayout' \
+	-e 'excludes.txt' \
 	-e '*.map.xml' \
 	-e 'cayenne-*.xml' \
 	-e 'CLOVER.txt' \
