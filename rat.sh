@@ -52,9 +52,6 @@ java -jar $RAT -d $DIR \
 	-e '*.plist' \
 	-e 'index.eomodeld' \
 	-e '*.fspec' \
-	-e '*.wod' \
-	-e '*.woo' \
-	-e 'project.pbxproj' \
 	-e 'DiagramLayout' \
 	-e 'excludes.txt' \
 	-e '*.map.xml' \
