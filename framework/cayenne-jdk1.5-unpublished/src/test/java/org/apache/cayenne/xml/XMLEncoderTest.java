@@ -35,12 +35,11 @@ public class XMLEncoderTest extends TestCase {
 
     static final String XML_DATA_DIR = "xmlcoding/";
     static final boolean windows;
-    
+
     static {
         if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
             windows = true;
-        }
-        else {
+        } else {
             windows = false;
         }
     }
@@ -70,18 +69,37 @@ public class XMLEncoderTest extends TestCase {
     }
 
     private String loadTestFileAsString(String filename) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(ResourceUtil
-                .getResource(XML_DATA_DIR + filename).openStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(ResourceUtil.getResource(XML_DATA_DIR + filename)
+                .openStream()));
         StringBuffer comp = new StringBuffer();
+        boolean inComment = false;
         while (in.ready()) {
-            comp.append(in.readLine());
+
+            String line = in.readLine();
+
+            // strip license header
+            if (!inComment) {
+                if (line.trim().startsWith("<!--")) {
+                    inComment = true;
+                    continue;
+                }
+            }
+            else {
+                if(line.contains("-->")) {
+                    inComment = false;
+                }
+                
+                continue;
+            }
+
+            comp.append(line);
             if (windows) {
                 comp.append("\r");
             }
             comp.append("\n");
         }
         in.close();
-        
+
         return comp.toString();
     }
 
@@ -100,7 +118,8 @@ public class XMLEncoderTest extends TestCase {
         String result = encoder.encode("TestObjects", obj1);
 
         String comp = loadTestFileAsString("encoded-complex-collection.xml");
-        // there are differences in attribute order encoding, so there can be more than
+        // there are differences in attribute order encoding, so there can be
+        // more than
         // one valid output depending on the parser used...
 
         if (!comp.equals(result)) {
@@ -110,8 +129,8 @@ public class XMLEncoderTest extends TestCase {
     }
 
     public void testSimpleMapping() throws Exception {
-        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(
-                XML_DATA_DIR + "simple-mapping.xml").toExternalForm());
+        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(XML_DATA_DIR + "simple-mapping.xml")
+                .toExternalForm());
         TestObject test = new TestObject();
         test.setAge(57);
         test.setName("George");
@@ -120,68 +139,68 @@ public class XMLEncoderTest extends TestCase {
         String result = encoder.encode(test);
 
         String comp = loadTestFileAsString("simple-mapped.xml");
-        
+
         assertEquals(comp, result);
     }
-    
-    //  Added test for 1-to-1 relationship mappings, per CAY-597.
+
+    // Added test for 1-to-1 relationship mappings, per CAY-597.
     public void test1To1Mapping() throws Exception {
-        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(
-                XML_DATA_DIR + "1to1-mapping.xml").toExternalForm());
-        
+        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(XML_DATA_DIR + "1to1-mapping.xml")
+                .toExternalForm());
+
         TestObject grandParent = new TestObject();
         grandParent.setAge(117);
         grandParent.setName("Sue");
         grandParent.setOpen(false);
-        
+
         TestObject parent = new TestObject();
         parent.setAge(94);
         parent.setName("Bill");
         parent.setOpen(true);
         parent.setParent(grandParent);
-        
+
         TestObject child = new TestObject();
         child.setAge(57);
         child.setName("George");
         child.setOpen(false);
         child.setParent(parent);
-        
+
         String result = encoder.encode(child);
 
         String comp = loadTestFileAsString("1to1-mapped.xml");
-        
+
         assertEquals(comp, result);
     }
-    
+
     // Added test for 1-to-1 relationships, per CAY-597.
     public void testEncode1To1() throws Exception {
         TestObject grandParent = new TestObject();
         grandParent.setAge(117);
         grandParent.setName("Sue");
         grandParent.setOpen(false);
-        
+
         TestObject parent = new TestObject();
         parent.setAge(94);
         parent.setName("Bill");
         parent.setOpen(true);
         parent.setParent(grandParent);
-        
+
         TestObject child = new TestObject();
         child.setAge(57);
         child.setName("George");
         child.setOpen(false);
         child.setParent(parent);
-        
+
         String xml = new XMLEncoder().encode("Test", child);
 
         String comp = loadTestFileAsString("1to1-encoded.xml");
-        
+
         assertEquals(comp, xml);
     }
 
     public void testCollectionMapping() throws Exception {
-        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(
-                XML_DATA_DIR + "collection-mapping.xml").toExternalForm());
+        XMLEncoder encoder = new XMLEncoder(ResourceUtil.getResource(XML_DATA_DIR + "collection-mapping.xml")
+                .toExternalForm());
         TestObject george = new TestObject();
         george.setAge(76);
         george.setName("George");
@@ -208,7 +227,7 @@ public class XMLEncoderTest extends TestCase {
         String xml = new XMLEncoder().encode("EncodedTestList", dataObjects);
 
         String comp = loadTestFileAsString("data-objects-encoded.xml");
-        
+
         assertEquals(comp, xml);
     }
 
@@ -219,10 +238,8 @@ public class XMLEncoderTest extends TestCase {
         dataObjects.add(new TestObject("Mary", 28, false));
         dataObjects.add(new TestObject("Joe", 31, true));
 
-        String xml = new XMLEncoder(ResourceUtil.getResource(
-                XML_DATA_DIR + "simple-mapping.xml").toExternalForm()).encode(
-                "EncodedTestList",
-                dataObjects);
+        String xml = new XMLEncoder(ResourceUtil.getResource(XML_DATA_DIR + "simple-mapping.xml").toExternalForm())
+                .encode("EncodedTestList", dataObjects);
 
         String comp = loadTestFileAsString("data-objects-mapped.xml");
 

@@ -141,7 +141,8 @@ public class UtilTest extends TestCase {
     }
 
     public void testCopyJarUrl() throws Exception {
-        URL fileInJar = getClass().getClassLoader().getResource("testfile1.txt");
+        // using a completely unrelated file to test copy op
+        URL fileInJar = getClass().getClassLoader().getResource("dbcp.properties");
         assertNotNull(fileInJar);
 
         // skipping test if file not in jar
