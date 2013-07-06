@@ -49,6 +49,7 @@ java -jar $RAT -d $DIR \
 	-e '.project' \
 	-e '.gitignore' \
 	-e '*.graffle' \
+	-e '*.psd' \
 	-e '_*.java' \
 	-e '*.plist' \
 	-e 'index.eomodeld' \
