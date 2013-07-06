@@ -51,11 +51,19 @@ java -jar $RAT -d $DIR \
 	-e '_*.java' \
 	-e '*.plist' \
 	-e 'index.eomodeld' \
+	-e '*.fspec' \
+	-e '*.wod' \
+	-e '*.woo' \
+	-e 'project.pbxproj' \
 	-e 'DiagramLayout' \
 	-e 'excludes.txt' \
 	-e '*.map.xml' \
 	-e 'cayenne-*.xml' \
+	-e 'cayenne.xml' \
+	-e '*.driver.xml' \
 	-e 'CLOVER.txt' \
+	-e '*.html' \
+	-e '*.css' \
 	-e 'derby.log'
 
 
