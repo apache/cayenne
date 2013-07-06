@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements. See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,14 +15,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Note that entries must be regex matching the file name
-# AFAIAK directory name matching is not supported
+#
+# Runs Rat checks on the source code. Prints report to STDOUT.
+#
+# Usage:
+#    
+#  ./rat.sh /path/to/apache-rat.jar > report.txt
+#
 
-.+\.plist$
-.+\.graffle$
-^\.gitignore$
-^\.classpath$
-^\.project$
-CLOVER.txt$
-.+\.map.xml$
-_[^\/]+\.java$
+DIR=`dirname "$0"`
+NAME=`basename "$0"`
+
+RAT="$@"
+if [[ -z $RAT ]]
+then
+    echo "*** No rat jar specified" 1>&2
+    exit 1
+fi
+
+if [[ ! -f $RAT ]] 
+then
+     echo "*** $RAT is not a file" 1>&2
+     exit 1
+fi
+
+echo "Deleting 'target' dirs..." 1>&2
+( find $DIR -type d -name target | xargs rm -rf )
+
+echo "Running rat, this may take a while..." 1>&2
+
+java -jar $RAT -d $DIR \
+	-e '.classpath' \
+	-e '.project' \
+	-e '.gitignore' \
+	-e '_*.java' \
+	-e '*.plist' \
+	-e 'index.eomodeld' \
+	-e '*.map.xml' \
+	-e 'cayenne-*.xml' \
+	-e 'CLOVER.txt' \
+	-e 'derby.log'
+
+
