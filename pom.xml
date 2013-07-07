@@ -21,7 +21,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
-	<version>3.2M1</version>
+	<version>3.2M2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -197,12 +197,12 @@
 	</licenses>
 	<scm>
 		<connection>
-			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/tags/cayenne-parent-3.2M1
+			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/trunk
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/tags/cayenne-parent-3.2M1
+			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/trunk
 		</developerConnection>
-		<url>http://svn.apache.org/viewvc/cayenne/main/tags/cayenne-parent-3.2M1</url>
+		<url>http://svn.apache.org/viewvc/cayenne/main/trunk</url>
 	</scm>
 	<organization>
 		<name>Apache Cayenne</name>
