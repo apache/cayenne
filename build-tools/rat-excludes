@@ -15,7 +15,7 @@
 
 
 #
-# Used by buildbot, but not by Maven
+# Used by buildbot, but not by Maven or rat.sh
 #
 # For now manually keeping in sync with 'rat.sh'
 #
