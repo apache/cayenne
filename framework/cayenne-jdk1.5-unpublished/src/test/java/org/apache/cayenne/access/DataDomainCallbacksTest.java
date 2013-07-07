@@ -65,7 +65,7 @@ public class DataDomainCallbacksTest extends ServerCase {
     public void testPostLoad() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
         registry.addListener(
                 LifecycleEvent.POST_LOAD,
@@ -119,7 +119,7 @@ public class DataDomainCallbacksTest extends ServerCase {
     public void testPostLoad_MixedResult() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
         registry.addListener(
                 LifecycleEvent.POST_LOAD,
@@ -142,7 +142,7 @@ public class DataDomainCallbacksTest extends ServerCase {
     public void testPostLoad_Relationship() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
         registry.addListener(
                 LifecycleEvent.POST_LOAD,
@@ -176,7 +176,7 @@ public class DataDomainCallbacksTest extends ServerCase {
     public void testPostLoad_Prefetch() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
         registry.addListener(
                 LifecycleEvent.POST_LOAD,
@@ -209,7 +209,7 @@ public class DataDomainCallbacksTest extends ServerCase {
         a1.setArtistName("XX");
         context.commitChanges();
 
-        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener();
         registry.addListener(
                 LifecycleEvent.POST_LOAD,
@@ -231,7 +231,7 @@ public class DataDomainCallbacksTest extends ServerCase {
     public void testPostLoad_ThatModifiesObject() {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
-        registry.addListener(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
         MockCallingBackListener listener = new MockCallingBackListener() {
         	@Override
         	public void publicCallback(Object entity) {
@@ -283,7 +283,7 @@ public class DataDomainCallbacksTest extends ServerCase {
         assertFalse(a1.isPreUpdated());
 
         registry
-                .addListener(LifecycleEvent.PRE_UPDATE, Artist.class, "preUpdateCallback");
+                .addCallback(LifecycleEvent.PRE_UPDATE, Artist.class, "preUpdateCallback");
         a1.setArtistName("ZZ");
         context.commitChanges();
         assertTrue(a1.isPreUpdated());
@@ -318,7 +318,7 @@ public class DataDomainCallbacksTest extends ServerCase {
         context.commitChanges();
         assertFalse(a1.isPostUpdated());
 
-        registry.addListener(
+        registry.addCallback(
                 LifecycleEvent.POST_UPDATE,
                 Artist.class,
                 "postUpdateCallback");
@@ -351,7 +351,7 @@ public class DataDomainCallbacksTest extends ServerCase {
         a1.setArtistName("XX");
         context.commitChanges();
 
-        registry.addListener(
+        registry.addCallback(
                 LifecycleEvent.POST_REMOVE,
                 Artist.class,
                 "postRemoveCallback");
@@ -444,7 +444,7 @@ public class DataDomainCallbacksTest extends ServerCase {
         context.commitChanges();
         assertFalse(a1.isPostPersisted());
 
-        registry.addListener(
+        registry.addCallback(
                 LifecycleEvent.POST_PERSIST,
                 Artist.class,
                 "postPersistCallback");

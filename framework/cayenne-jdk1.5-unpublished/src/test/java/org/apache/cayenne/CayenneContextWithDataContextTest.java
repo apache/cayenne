@@ -207,7 +207,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
                 .getCallbackRegistry();
 
         try {
-            callbackRegistry.addListener(
+            callbackRegistry.addCallback(
                     LifecycleEvent.POST_ADD,
                     MtTable1.class,
                     "prePersistMethod");

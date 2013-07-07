@@ -19,6 +19,7 @@
 package org.apache.cayenne.map;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -195,7 +196,7 @@ class MappingCache implements MappingNamespace {
 
         return entity;
     }
-    
+
     public ObjEntity getObjEntity(Persistent object) {
         ObjectId id = object.getObjectId();
         if (id != null) {
@@ -215,6 +216,15 @@ class MappingCache implements MappingNamespace {
         // always fresh list here, so instead of doing the right thing of
         // refreshing the cache and returning cache.entries(), we are scanning
         // the list of DataMaps.
+
+        if (maps.size() == 0) {
+            return Collections.emptyList();
+        }
+        
+        if (maps.size() == 1) {
+            return maps.iterator().next().getDbEntities();
+        }
+
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : maps) {
             c.addComposited(map.getDbEntities());
@@ -229,6 +239,14 @@ class MappingCache implements MappingNamespace {
         // always fresh list here, so instead of doing the right thing of
         // refreshing the cache and returning cache.entries(), we are scanning
         // the list of DataMaps.
+        if (maps.size() == 0) {
+            return Collections.emptyList();
+        }
+        
+        if (maps.size() == 1) {
+            return maps.iterator().next().getProcedures();
+        }
+        
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : maps) {
             c.addComposited(map.getProcedures());
@@ -243,6 +261,14 @@ class MappingCache implements MappingNamespace {
         // always fresh list here, so instead of doing the right thing of
         // refreshing the cache and returning cache.entries(), we are scanning
         // the list of DataMaps.
+        if (maps.size() == 0) {
+            return Collections.emptyList();
+        }
+        
+        if (maps.size() == 1) {
+            return maps.iterator().next().getQueries();
+        }
+        
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : maps) {
             c.addComposited(map.getQueries());
@@ -257,6 +283,14 @@ class MappingCache implements MappingNamespace {
         // always fresh list here, so instead of doing the right thing of
         // refreshing the cache and returning cache.entries(), we are scanning
         // the list of DataMaps.
+        if (maps.size() == 0) {
+            return Collections.emptyList();
+        }
+        
+        if (maps.size() == 1) {
+            return maps.iterator().next().getObjEntities();
+        }
+        
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : maps) {
             c.addComposited(map.getObjEntities());
@@ -271,6 +305,14 @@ class MappingCache implements MappingNamespace {
         // always fresh list here, so instead of doing the right thing of
         // refreshing the cache and returning cache.entries(), we are scanning
         // the list of DataMaps.
+        if (maps.size() == 0) {
+            return Collections.emptyList();
+        }
+        
+        if (maps.size() == 1) {
+            return maps.iterator().next().getEmbeddables();
+        }
+        
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : maps) {
             c.addComposited(map.getEmbeddables());
@@ -285,6 +327,15 @@ class MappingCache implements MappingNamespace {
         // always fresh list here, so instead of doing the right thing of
         // refreshing the cache and returning cache.entries(), we are scanning
         // the list of DataMaps.
+        
+        if (maps.size() == 0) {
+            return Collections.emptyList();
+        }
+        
+        if (maps.size() == 1) {
+            return maps.iterator().next().getResults();
+        }
+        
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : maps) {
             c.addComposited(map.getResults());

@@ -1,8 +1,0 @@
-**/*.plist
-**/*.graffle
-**/.*
-**/.*/**
-**/CLOVER.txt
-**/*.map.xml
-**/*.css
-**/*.properties

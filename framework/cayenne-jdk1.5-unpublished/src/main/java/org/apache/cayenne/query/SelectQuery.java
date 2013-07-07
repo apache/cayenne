@@ -96,6 +96,19 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
     }
 
     /**
+     * @since 3.2
+     */
+    public static SelectQuery<DataRow> dataRowQuery(Class<?> rootClass) {
+        // create a query replica that would fetch DataRows
+        SelectQuery<DataRow> query = new SelectQuery<DataRow>();
+
+        query.setRoot(rootClass);
+        query.metaData.setFetchingDataRows(true);
+
+        return query;
+    }
+
+    /**
      * Creates a SelectQuery that selects DataRows that correspond to a given
      * persistent class that match supplied qualifier.
      * 
@@ -107,14 +120,17 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      * @since 3.2
      */
     public static SelectQuery<DataRow> dataRowQuery(Class<?> rootClass, Expression qualifier) {
-        // create a query replica that would fetch DataRows
-        SelectQuery<DataRow> query = new SelectQuery<DataRow>();
-
-        query.setRoot(rootClass);
-
+        SelectQuery<DataRow> query = dataRowQuery(rootClass);
         query.setQualifier(qualifier);
-        query.metaData.setFetchingDataRows(true);
+        return query;
+    }
 
+    /**
+     * @since 3.2
+     */
+    public static SelectQuery<DataRow> dataRowQuery(Class<?> rootClass, Expression qualifier, List<Ordering> orderings) {
+        SelectQuery<DataRow> query = dataRowQuery(rootClass, qualifier);
+        query.addOrderings(orderings);
         return query;
     }
 
