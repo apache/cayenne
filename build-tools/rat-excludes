@@ -20,20 +20,20 @@
 # For now manually keeping in sync with 'rat.sh'
 #
 
-.classpath
-.project
-.gitignore
-_*.java
-*.plist
-index.eomodeld
-*.fspec
-DiagramLayout
-excludes.txt
-*.map.xml
-cayenne-*.xml
-cayenne.xml
-*.driver.xml
-CLOVER.txt
-*.html
-*.css
-derby.log
+**/.classpath
+**/.project
+**/.gitignore
+**/_*.java
+**/*.plist
+**/index.eomodeld
+**/*.fspec
+**/DiagramLayout
+**/excludes.txt
+**/*.map.xml
+**/cayenne-*.xml
+**/cayenne.xml
+**/*.driver.xml
+**/CLOVER.txt
+**/*.html
+**/*.css
+**/derby.log
