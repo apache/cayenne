@@ -24,7 +24,6 @@
 #
 
 DIR=`dirname "$0"`
-NAME=`basename "$0"`
 
 RAT="$@"
 if [[ -z $RAT ]]
