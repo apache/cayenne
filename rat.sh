@@ -43,6 +43,7 @@ echo "Deleting 'target' dirs..." 1>&2
 
 echo "Running rat, this may take a while..." 1>&2
 
+# TODO: read excludes from buildbot config at 'build-tools/rat-excludes'
 java -jar $RAT -d $DIR \
 	-e '.classpath' \
 	-e '.project' \
