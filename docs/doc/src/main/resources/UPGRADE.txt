@@ -4,6 +4,14 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+UPGRADING TO 3.2M2
+
+* Managing listeners in the Modeler is counterproductive and confusing,
+  so support for them was removed from the Modeler per CAY-1842. If you have
+  any listeners in the model, delete them from XML, and start using annotations,
+  and register them in runtime:
+
+  runtime.getDataDomain().addListener(myListener);
 
 UPGRADING TO 3.1B1
 

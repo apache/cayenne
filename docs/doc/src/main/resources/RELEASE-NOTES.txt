@@ -13,6 +13,14 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-1842  Remove Listeners support from the Modeler 
+
+----------------------------------
+Release: 3.2M1
+Date: 
+----------------------------------
+Changes/New Features:
+
 CAY-1294 Generify query
 CAY-1646 Synchronize tabs in Modeler between ObjEntity and DbEntity editor panes
 CAY-1647 Easily switch to/from ObjEntity and DbEntity in Modeler
