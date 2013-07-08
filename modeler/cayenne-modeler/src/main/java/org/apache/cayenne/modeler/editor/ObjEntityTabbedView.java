@@ -62,10 +62,6 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
      * callback methods on ObjEntity tab
      */
     protected AbstractCallbackMethodsTab callbacksPanel;
-    /**
-     * callback methods on ObjEntity's entity listeners tab
-     */
-    protected JPanel listenersPanel;
 
     public ObjEntityTabbedView(ProjectController projectController) {
         this.projectController = projectController;
@@ -92,9 +88,6 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
 
         callbacksPanel = new ObjEntityCallbackMethodsTab(projectController);
         addTab("Callbacks", callbacksPanel);
-
-        listenersPanel = new ObjEntityCallbackListenersTab(projectController);
-        addTab("Listeners", listenersPanel);
     }
 
     private void initController() {
