@@ -17,6 +17,7 @@ CAY-1584 Improve Cayenne modeler re-ordering named query in the cayenne map xml
 CAY-1590 DDL generation without a live datasource
 CAY-1605 Switch Cayenne to use unified Maven repository
 CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
+CAY-1845 Upgrade javadoc plugin to 2.9.1 
 
 Bug Fixes Since 3.0.2:
 
