@@ -564,6 +564,15 @@
 		      <version>1.0-beta-7</version>
 		    </extension>
 		</extensions>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-remote-resources-plugin</artifactId>
+					<version>1.4</version>                             
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		
 		<plugins>
 			<plugin>
