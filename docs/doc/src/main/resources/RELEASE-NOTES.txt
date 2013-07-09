@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-1842  Remove Listeners support from the Modeler 
+CAY-1845  Upgrade javadoc plugin to 2.9.1 
 
 ----------------------------------
 Release: 3.2M1
