@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataObject;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
@@ -172,11 +174,21 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
         node.setIncoming(arc);
         if (node.getParent() != null && !node.isJointPrefetch()) {
+            
+            long txStartRowVersion;
+            if (mainResultRows.isEmpty()) {
+                txStartRowVersion = DataObject.DEFAULT_VERSION;
+            } else {
+                DataRow firstRow = (DataRow) mainResultRows.get(0);
+                txStartRowVersion = firstRow.getVersion();
+            }
+            
             node.setResolver(new HierarchicalObjectResolverNode(
                     node,
                     context,
                     descriptor,
-                    queryMetadata.isRefreshingObjects()));
+                    queryMetadata.isRefreshingObjects(), 
+                    txStartRowVersion));
         }
         else {
             node.setResolver(new ObjectResolver(context, descriptor, queryMetadata

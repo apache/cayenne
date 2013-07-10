@@ -19,24 +19,26 @@
 package org.apache.cayenne.access;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 class HierarchicalObjectResolverNode extends ObjectResolver {
 
     private PrefetchProcessorNode node;
+    private long txStartRowVersion;
 
     HierarchicalObjectResolverNode(PrefetchProcessorNode node, DataContext context, ClassDescriptor descriptor,
-            boolean refresh) {
+            boolean refresh, long txStartRowVersion) {
         super(context, descriptor, refresh);
         this.node = node;
+        this.txStartRowVersion = txStartRowVersion;
     }
 
     @Override
@@ -48,15 +50,7 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
 
         List<Persistent> results = new ArrayList<Persistent>(rows.size());
 
-        // here we can get the same object repeated multiple times in case of
-        // many-to-many between prefetched and main entity... this is needed to
-        // connect prefetched objects to the main objects. To avoid needlessly
-        // refreshing
-        // the same object multiple times, track which objectids area already
-        // loaded in
-        // this pass
-        Map<ObjectId, Persistent> seen = new HashMap<ObjectId, Persistent>();
-
+        GraphManager graphManager = context.getGraphManager();
         for (DataRow row : rows) {
 
             // determine entity to use
@@ -67,15 +61,24 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
             // has all needed metadata already cached.
             ObjectId anId = createObjectId(row, classDescriptor.getEntity(), null);
 
-            Persistent object = seen.get(anId);
+            // skip processing of objects that were already processed in this
+            // transaction, either by this node or by some other node...
+            // added per CAY-1695 ..
 
-            if (object == null) {
+            // TODO: is it going to have any side effects? It is run from the
+            // synchronized block, so I guess other threads can't stick their
+            // versions of this object in here?
+            // TODO: also this logic implies that main rows are always fetched
+            // first... I guess this has to stay true if prefetching is
+            // involved.
+
+            Persistent object = (Persistent) graphManager.getNode(anId);
+            if (object == null || ((DataObject) object).getSnapshotVersion() < txStartRowVersion) {
                 object = objectFromDataRow(row, anId, classDescriptor);
 
                 if (object == null) {
                     throw new CayenneRuntimeException("Can't build Object from row: " + row);
                 }
-                seen.put(anId, object);
             }
 
             // keep the dupe objects (and data rows) around, as there maybe an
