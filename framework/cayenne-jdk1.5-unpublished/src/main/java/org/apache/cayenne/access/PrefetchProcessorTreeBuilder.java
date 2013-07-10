@@ -173,16 +173,20 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         node.setDataRows(rows);
 
         node.setIncoming(arc);
-        if (node.getParent() != null && !node.isJointPrefetch()) {
-            
-            long txStartRowVersion;
-            if (mainResultRows.isEmpty()) {
-                txStartRowVersion = DataObject.DEFAULT_VERSION;
-            } else {
-                DataRow firstRow = (DataRow) mainResultRows.get(0);
-                txStartRowVersion = firstRow.getVersion();
-            }
-            
+        
+        // TODO: is txStartRowVersion guessed
+        // correctly? i.e. the main rows are always fetched
+        // first? I guess this has to stay true if prefetching is
+        // involved.
+        long txStartRowVersion;
+        if (mainResultRows.isEmpty()) {
+            txStartRowVersion = DataObject.DEFAULT_VERSION;
+        } else {
+            DataRow firstRow = (DataRow) mainResultRows.get(0);
+            txStartRowVersion = firstRow.getVersion();
+        }
+        
+        if (node.getParent() != null && !node.isJointPrefetch()) { 
             node.setResolver(new HierarchicalObjectResolverNode(
                     node,
                     context,
@@ -191,8 +195,8 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
                     txStartRowVersion));
         }
         else {
-            node.setResolver(new ObjectResolver(context, descriptor, queryMetadata
-                    .isRefreshingObjects()));
+            node.setResolver(new PrefetchObjectResolver(context, descriptor, queryMetadata
+                    .isRefreshingObjects(), txStartRowVersion));
         }
 
         if (node.getParent() == null || node.getParent().isPhantom()) {

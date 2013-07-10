@@ -702,9 +702,54 @@ public class DataContextPrefetchTest extends ServerCase {
                 assertEquals(1, results.size());
 
                 Painting p0 = results.get(0);
-                PaintingInfo pi0 = (PaintingInfo) p0.readProperty(Painting.TO_PAINTING_INFO.getName());
+                PaintingInfo pi0 = (PaintingInfo) p0.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
                 assertNotNull(pi0);
-                assertNotNull(pi0.readProperty(PaintingInfo.PAINTING.getName()));
+                assertNotNull(pi0.readPropertyDirectly(PaintingInfo.PAINTING.getName()));
+            }
+        });
+    }
+
+    public void testPrefetchPaintingOverToOneAndToMany() throws Exception {
+        createArtistWithTwoPaintingsAndTwoInfosDataSet();
+
+        SelectQuery<Painting> query = new SelectQuery<Painting>(Painting.class);
+        query.andQualifier(Painting.PAINTING_TITLE.eq("p_artist2"));
+        query.addPrefetch(Painting.TO_ARTIST.disjoint());
+        query.addPrefetch(Painting.TO_ARTIST.dot(Artist.PAINTING_ARRAY).disjoint());
+        final List<Painting> results = context.select(query);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                assertEquals(1, results.size());
+
+                Painting p0 = results.get(0);
+                Artist a0 = (Artist) p0.readPropertyDirectly(Painting.TO_ARTIST.getName());
+                assertNotNull(a0);
+                List<?> paintings = (List<?>) a0.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+                assertEquals(2, paintings.size());
+            }
+        });
+    }
+    
+    public void testPrefetchToOneWithBackRelationship_Joint() throws Exception {
+        createArtistWithTwoPaintingsAndTwoInfosDataSet();
+
+        SelectQuery<Painting> query = new SelectQuery<Painting>(Painting.class);
+        query.andQualifier(Painting.PAINTING_TITLE.eq("p_artist2"));
+        query.addPrefetch(Painting.TO_PAINTING_INFO.joint());
+        query.addPrefetch(Painting.TO_PAINTING_INFO.dot(PaintingInfo.PAINTING).joint());
+        final List<Painting> results = context.select(query);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                assertEquals(1, results.size());
+
+                Painting p0 = results.get(0);
+                PaintingInfo pi0 = (PaintingInfo) p0.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
+                assertNotNull(pi0);
+                assertNotNull(pi0.readPropertyDirectly(PaintingInfo.PAINTING.getName()));
             }
         });
     }
