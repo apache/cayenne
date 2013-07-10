@@ -33,8 +33,8 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
 
     private PrefetchProcessorNode node;
 
-    HierarchicalObjectResolverNode(PrefetchProcessorNode node, DataContext context,
-            ClassDescriptor descriptor, boolean refresh) {
+    HierarchicalObjectResolverNode(PrefetchProcessorNode node, DataContext context, ClassDescriptor descriptor,
+            boolean refresh) {
         super(context, descriptor, refresh);
         this.node = node;
     }
@@ -50,18 +50,20 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
 
         // here we can get the same object repeated multiple times in case of
         // many-to-many between prefetched and main entity... this is needed to
-        // connect prefetched objects to the main objects. To avoid needlessly refreshing
-        // the same object multiple times, track which objectids area already loaded in
+        // connect prefetched objects to the main objects. To avoid needlessly
+        // refreshing
+        // the same object multiple times, track which objectids area already
+        // loaded in
         // this pass
         Map<ObjectId, Persistent> seen = new HashMap<ObjectId, Persistent>();
 
         for (DataRow row : rows) {
 
             // determine entity to use
-            ClassDescriptor classDescriptor = descriptorResolutionStrategy
-                    .descriptorForRow(row);
+            ClassDescriptor classDescriptor = descriptorResolutionStrategy.descriptorForRow(row);
 
-            // not using DataRow.createObjectId for performance reasons - ObjectResolver
+            // not using DataRow.createObjectId for performance reasons -
+            // ObjectResolver
             // has all needed metadata already cached.
             ObjectId anId = createObjectId(row, classDescriptor.getEntity(), null);
 
@@ -71,13 +73,13 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
                 object = objectFromDataRow(row, anId, classDescriptor);
 
                 if (object == null) {
-                    throw new CayenneRuntimeException("Can't build Object from row: "
-                            + row);
+                    throw new CayenneRuntimeException("Can't build Object from row: " + row);
                 }
                 seen.put(anId, object);
             }
 
-            // keep the dupe objects (and data rows) around, as there maybe an attached
+            // keep the dupe objects (and data rows) around, as there maybe an
+            // attached
             // joint prefetch...
             results.add(object);
 
@@ -86,10 +88,14 @@ class HierarchicalObjectResolverNode extends ObjectResolver {
 
         // now deal with snapshots
 
-        // TODO: refactoring: dupes will clutter the lists and cause extra processing...
-        // removal of dupes happens only downstream, as we need the objects matching
-        // fetched rows for joint prefetch resolving... maybe pushback unique and
-        // non-unique lists to the "node", instead of returning a single list from this
+        // TODO: refactoring: dupes will clutter the lists and cause extra
+        // processing...
+        // removal of dupes happens only downstream, as we need the objects
+        // matching
+        // fetched rows for joint prefetch resolving... maybe pushback unique
+        // and
+        // non-unique lists to the "node", instead of returning a single list
+        // from this
         // method
         cache.snapshotsUpdatedForObjects(results, rows, refreshObjects);
 
