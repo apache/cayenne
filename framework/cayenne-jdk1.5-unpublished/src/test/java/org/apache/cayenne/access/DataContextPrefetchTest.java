@@ -686,4 +686,26 @@ public class DataContextPrefetchTest extends ServerCase {
             }
         });
     }
+
+    public void testPrefetchToOneWithBackRelationship() throws Exception {
+        createArtistWithTwoPaintingsAndTwoInfosDataSet();
+
+        SelectQuery<Painting> query = new SelectQuery<Painting>(Painting.class);
+        query.andQualifier(Painting.PAINTING_TITLE.eq("p_artist2"));
+        query.addPrefetch(Painting.TO_PAINTING_INFO.disjoint());
+        query.addPrefetch(Painting.TO_PAINTING_INFO.dot(PaintingInfo.PAINTING).disjoint());
+        final List<Painting> results = context.select(query);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                assertEquals(1, results.size());
+
+                Painting p0 = results.get(0);
+                PaintingInfo pi0 = (PaintingInfo) p0.readProperty(Painting.TO_PAINTING_INFO.getName());
+                assertNotNull(pi0);
+                assertNotNull(pi0.readProperty(PaintingInfo.PAINTING.getName()));
+            }
+        });
+    }
 }
