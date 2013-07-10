@@ -16,6 +16,10 @@ Changes/New Features:
 CAY-1842  Remove Listeners support from the Modeler 
 CAY-1845  Upgrade javadoc plugin to 2.9.1 
 
+Bug Fixes:
+
+CAY-1695 Unexpected null value in bidirectional one-to-one prefetch 
+
 ----------------------------------
 Release: 3.2M1
 Date: 
