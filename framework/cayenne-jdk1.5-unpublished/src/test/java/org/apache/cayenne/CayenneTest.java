@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.nio.channels.Selector;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -182,7 +181,7 @@ public class CayenneTest extends ServerCase {
 
         SelectQuery<Artist> query = SelectQuery.query(Artist.class, ExpressionFactory.matchDbExp("ARTIST_NAME", "artist2"));
 
-        Artist object = Cayenne.objectForSelect(context, query);
+        Artist object = context.selectOne(query);
 
         assertNotNull(object);
         assertTrue(object instanceof Artist);

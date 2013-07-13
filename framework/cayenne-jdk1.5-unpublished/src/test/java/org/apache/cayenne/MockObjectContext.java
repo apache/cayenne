@@ -86,6 +86,10 @@ public class MockObjectContext implements ObjectContext {
     public <T> List<T> select(Select<T> query) {
         return performQuery(query);
     }
+    
+    public <T> T selectOne(Select<T> query) {
+        return null;
+    }
 
     public int[] performNonSelectingQuery(Query query) {
         return null;

@@ -288,9 +288,27 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
 
     public abstract List performQuery(Query query);
 
+    /**
+     * @since 3.2
+     */
     @SuppressWarnings("unchecked")
     public <T> List<T> select(Select<T> query) {
         return performQuery(query);
+    }
+
+    /**
+     * @since 3.2
+     */
+    public <T> T selectOne(Select<T> query) {
+        List<T> objects = select(query);
+
+        if (objects.size() == 0) {
+            return null;
+        } else if (objects.size() > 1) {
+            throw new CayenneRuntimeException("Expected zero or one object, instead query matched: " + objects.size());
+        }
+
+        return objects.get(0);
     }
 
     /**
@@ -321,18 +339,23 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                         "Error resolving fault, more than one row exists in the database for ObjectId: " + oid);
             }
 
-            // 5/28/2013 - Commented out this block to allow for modifying objects in the postLoad callback
+            // 5/28/2013 - Commented out this block to allow for modifying
+            // objects in the postLoad callback
             // sanity check...
-//            if (object.getPersistenceState() != PersistenceState.COMMITTED) {
-//
-//                String state = PersistenceState.persistenceStateName(object.getPersistenceState());
-//
-//                // TODO: andrus 4/13/2006, modified and deleted states are
-//                // possible due to
-//                // a race condition, should we handle them here?
-//                throw new FaultFailureException("Error resolving fault for ObjectId: " + oid + " and state (" + state
-//                        + "). Possible cause - matching row is missing from the database.");
-//            }
+            // if (object.getPersistenceState() != PersistenceState.COMMITTED) {
+            //
+            // String state =
+            // PersistenceState.persistenceStateName(object.getPersistenceState());
+            //
+            // // TODO: andrus 4/13/2006, modified and deleted states are
+            // // possible due to
+            // // a race condition, should we handle them here?
+            // throw new
+            // FaultFailureException("Error resolving fault for ObjectId: " +
+            // oid + " and state (" + state
+            // +
+            // "). Possible cause - matching row is missing from the database.");
+            // }
         }
 
         // resolve relationship fault

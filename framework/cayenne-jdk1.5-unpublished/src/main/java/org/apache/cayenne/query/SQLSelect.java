@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -122,7 +121,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
      * of "Cayenne.objectForSelect(context, query)".
      */
     public T selectOne(ObjectContext context) {
-        return Cayenne.objectForSelect(context, this);
+        return context.selectOne(this);
     }
 
     public boolean isFetchingDataRows() {

@@ -102,7 +102,7 @@ public class SQLSelectTest extends ServerCase {
         q1.getParameters().put("a", "artist3");
 
         assertFalse(q1.isFetchingDataRows());
-        Artist a = Cayenne.objectForSelect(context, q1);
+        Artist a = context.selectOne(q1);
         assertEquals("artist3", a.getArtistName());
     }
 

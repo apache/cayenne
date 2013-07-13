@@ -170,8 +170,19 @@ public interface ObjectContext extends Serializable {
     /**
      * Executes a selecting query, returning a list of persistent objects or
      * data rows.
+     * 
+     * @since 3.2
      */
     <T> List<T> select(Select<T> query);
+
+    /**
+     * Executes a selecting query, returning either NULL if query matched no
+     * objects, or a single object. If query matches more than one object,
+     * {@link CayenneRuntimeException} is thrown.
+     * 
+     * @since 3.2
+     */
+    <T> T selectOne(Select<T> query);
 
     /**
      * Creates a ResultIterator based on the provided query and passes it to a
