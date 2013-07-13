@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.util;
 
+import static org.mockito.Mockito.mock;
 import junit.framework.TestCase;
 
-import org.apache.cayenne.MockObjectContext;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.graph.GraphMap;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 
@@ -31,14 +31,12 @@ public class PersistentObjectHolderTest extends TestCase {
 
     public void testSetInitialValue() {
 
-        MockObjectContext context = new MockObjectContext(new GraphMap());
+        ObjectContext context = mock(ObjectContext.class);
 
         ClientMtTable2 o = new ClientMtTable2();
         o.setPersistenceState(PersistenceState.COMMITTED);
         o.setObjectContext(context);
-        PersistentObjectHolder holder = new PersistentObjectHolder(
-                o,
-                ClientMtTable2.TABLE1_PROPERTY);
+        PersistentObjectHolder holder = new PersistentObjectHolder(o, ClientMtTable2.TABLE1_PROPERTY);
 
         assertTrue(holder.isFault());
         ClientMtTable1 o1 = new ClientMtTable1();
@@ -50,14 +48,12 @@ public class PersistentObjectHolderTest extends TestCase {
     }
 
     public void testInvalidate() {
-        MockObjectContext context = new MockObjectContext(new GraphMap());
+        ObjectContext context = mock(ObjectContext.class);
 
         ClientMtTable2 o = new ClientMtTable2();
         o.setPersistenceState(PersistenceState.COMMITTED);
         o.setObjectContext(context);
-        PersistentObjectHolder holder = new PersistentObjectHolder(
-                o,
-                ClientMtTable2.TABLE1_PROPERTY);
+        PersistentObjectHolder holder = new PersistentObjectHolder(o, ClientMtTable2.TABLE1_PROPERTY);
 
         assertTrue(holder.isFault());
         ClientMtTable1 o1 = new ClientMtTable1();

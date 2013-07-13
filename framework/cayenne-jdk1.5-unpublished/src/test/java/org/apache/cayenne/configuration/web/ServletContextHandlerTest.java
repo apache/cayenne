@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import static org.mockito.Mockito.mock;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.MockDataChannel;
-import org.apache.cayenne.MockObjectContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
@@ -48,11 +48,11 @@ public class ServletContextHandlerTest extends TestCase {
                         new ObjectContextFactory() {
 
                             public ObjectContext createContext(DataChannel parent) {
-                                return new MockObjectContext();
+                                return mock(ObjectContext.class);
                             }
 
                             public ObjectContext createContext() {
-                                return new MockObjectContext();
+                                return mock(ObjectContext.class);
                             }
                         });
             }

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne;
 
+import static org.mockito.Mockito.mock;
+
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -26,7 +28,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 public class PersistentObjectTest extends ServerCase {
 
     public void testObjectContext() {
-        MockObjectContext context = new MockObjectContext();
+        ObjectContext context = mock(ObjectContext.class);
         PersistentObject object = new MockPersistentObject();
 
         assertNull(object.getObjectContext());

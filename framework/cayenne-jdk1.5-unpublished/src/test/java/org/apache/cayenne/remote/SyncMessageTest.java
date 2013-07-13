@@ -19,22 +19,21 @@
 
 package org.apache.cayenne.remote;
 
+import static org.mockito.Mockito.mock;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.MockObjectContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.SyncMessage;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 
 public class SyncMessageTest extends TestCase {
 
     public void testConstructor() {
-        ObjectContext source = new MockObjectContext();
+        ObjectContext source = mock(ObjectContext.class);
         GraphDiff diff = new CompoundDiff();
         SyncMessage message = new SyncMessage(source, DataChannel.FLUSH_NOCASCADE_SYNC, diff);
 
@@ -45,7 +44,7 @@ public class SyncMessageTest extends TestCase {
 
     public void testHessianSerialization() throws Exception {
         // id must be a serializable object; source doesn't have to be
-        ObjectContext source = new MockObjectContext();
+        ObjectContext source = mock(ObjectContext.class);
         GraphDiff diff = new NodeCreateOperation("id-string");
         SyncMessage message = new SyncMessage(source, DataChannel.FLUSH_NOCASCADE_SYNC, diff);
 
@@ -60,7 +59,7 @@ public class SyncMessageTest extends TestCase {
     }
 
     public void testConstructorInvalid() {
-        ObjectContext source = new MockObjectContext();
+        ObjectContext source = mock(ObjectContext.class);
         new SyncMessage(source, DataChannel.FLUSH_NOCASCADE_SYNC, new CompoundDiff());
         new SyncMessage(source, DataChannel.FLUSH_CASCADE_SYNC, new CompoundDiff());
         new SyncMessage(null, DataChannel.ROLLBACK_CASCADE_SYNC, new CompoundDiff());
