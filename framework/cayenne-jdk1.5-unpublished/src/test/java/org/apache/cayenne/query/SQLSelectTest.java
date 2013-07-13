@@ -20,7 +20,6 @@ package org.apache.cayenne.query;
 
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -207,7 +206,7 @@ public class SQLSelectTest extends ServerCase {
 
         createArtistsDataSet();
 
-        int c = SQLSelect.scalarQuery(Integer.class, "SELECT COUNT(*) FROM ARTIST").selectOne(context);
+        int c = SQLSelect.scalarQuery(Integer.class, "SELECT #result('COUNT(*)' 'int') FROM ARTIST").selectOne(context);
 
         assertEquals(20, c);
     }
