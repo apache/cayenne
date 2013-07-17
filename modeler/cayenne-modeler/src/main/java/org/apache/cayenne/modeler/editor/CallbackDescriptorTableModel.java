@@ -34,9 +34,8 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
  */
 public class CallbackDescriptorTableModel extends CayenneTableModel {
 
-    private static final int COLUMN_COUNT = 2;
-    public static final int METHOD_NUMBER = 0;
-    public static final int METHOD_NAME = 1;
+    private static final int COLUMN_COUNT = 1;
+    public static final int METHOD_NAME = 0;
     protected ObjEntity entity;
     protected CallbackDescriptor callbackDescriptor;
 
@@ -100,14 +99,7 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      * @return the value Object at the specified cell
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
-            case METHOD_NUMBER:
-                return rowIndex + 1;
-            case METHOD_NAME:
-                return getCallbackMethod(rowIndex);
-        }
-
-        return null;
+    	return getCallbackMethod(rowIndex);
     }
 
     /**
@@ -122,14 +114,7 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      * @return column name
      */
     public String getColumnName(int column) {
-        switch (column) {
-            case METHOD_NUMBER:
-                return "No.";
-            case METHOD_NAME:
-                return "Method";
-        }
-
-        return null;
+        return callbackDescriptor.getCallbackType().name();
     }
 
     /**
@@ -140,12 +125,6 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      * @return true
      */
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
-            case METHOD_NAME:
-                return true;
-            case METHOD_NUMBER:
-                return false;
-        }
         return true;
     }
 

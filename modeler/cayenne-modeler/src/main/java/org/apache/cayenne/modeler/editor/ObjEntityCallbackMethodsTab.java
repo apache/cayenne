@@ -48,13 +48,11 @@ public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab  {
      */
     protected void initController() {
         super.initController();
-        //mediator.addObjEntityDisplayListener(this);
+
         addComponentListener(
                 new ComponentAdapter() {
                     public void componentShown(ComponentEvent e) {
-                        mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
-                        updateCallbackTypeCounters();
-                        rebuildTable();
+                        rebuildTables();
                     }
                 }
         );
@@ -63,9 +61,7 @@ public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab  {
                 new ObjEntityDisplayListener() {
                     public void currentObjEntityChanged(EntityDisplayEvent e) {
                         if (ObjEntityCallbackMethodsTab.this.isVisible()) {
-                            mediator.setCurrentCallbackType((CallbackType)callbackTypeCombo.getSelectedItem());
-                            updateCallbackTypeCounters();
-                            rebuildTable();
+                            rebuildTables();
                         }
                     }
                 }
