@@ -211,7 +211,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         
         if (callbackMap != null) {
         	for(CallbackType callbackType : callbackTypes) {
-        		builder.append(CreateTable(callbackType));
+        		builder.append(createTable(callbackType));
             }
         }
 
@@ -219,7 +219,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         validate();
     }
 
-    private JPanel CreateTable(final CallbackType callbackType)
+    private JPanel createTable(final CallbackType callbackType)
     {
    	
     	final CayenneTable cayenneTable = new CayenneTable();
