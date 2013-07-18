@@ -50,6 +50,8 @@ ${importUtils.generate()}
 
 public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassName} extends ${baseClassName} {
 
+    private static final long serialVersionUID = 1L; 
+     
 ## Create property names
 #foreach( $attr in ${object.DeclaredAttributes} )
     @Deprecated
