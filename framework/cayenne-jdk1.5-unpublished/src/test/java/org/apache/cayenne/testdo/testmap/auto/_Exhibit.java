@@ -16,6 +16,8 @@ import org.apache.cayenne.testdo.testmap.Gallery;
  */
 public abstract class _Exhibit extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String CLOSING_DATE_PROPERTY = "closingDate";
     @Deprecated

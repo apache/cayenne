@@ -13,6 +13,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _CalendarEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String CALENDAR_FIELD_PROPERTY = "calendarField";
 

@@ -15,6 +15,8 @@ import org.apache.cayenne.testdo.testmap.Box;
  */
 public abstract class _Thing extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String VOLUME_PROPERTY = "volume";
     @Deprecated

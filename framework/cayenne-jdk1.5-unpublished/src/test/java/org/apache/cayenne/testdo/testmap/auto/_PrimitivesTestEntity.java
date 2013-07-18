@@ -11,6 +11,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _PrimitivesTestEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String BOOLEAN_COLUMN_PROPERTY = "booleanColumn";
     @Deprecated

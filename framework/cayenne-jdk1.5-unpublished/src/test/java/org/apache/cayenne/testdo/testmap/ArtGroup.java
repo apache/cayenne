@@ -22,7 +22,6 @@ import org.apache.cayenne.testdo.testmap.auto._ArtGroup;
 
 public class ArtGroup extends _ArtGroup {
 
+    private static final long serialVersionUID = 1L; 
+
 }
-
-
-

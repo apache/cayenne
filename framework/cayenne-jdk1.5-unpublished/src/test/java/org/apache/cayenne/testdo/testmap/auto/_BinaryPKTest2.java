@@ -12,6 +12,8 @@ import org.apache.cayenne.testdo.testmap.BinaryPKTest1;
  */
 public abstract class _BinaryPKTest2 extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String DETAIL_NAME_PROPERTY = "detailName";
     @Deprecated

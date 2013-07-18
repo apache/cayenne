@@ -12,6 +12,8 @@ import org.apache.cayenne.testdo.testmap.Box;
  */
 public abstract class _BoxInfo extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String COLOR_PROPERTY = "color";
     @Deprecated

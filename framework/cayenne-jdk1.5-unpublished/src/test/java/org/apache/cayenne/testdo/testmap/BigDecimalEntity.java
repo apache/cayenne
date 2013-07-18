@@ -22,7 +22,6 @@ import org.apache.cayenne.testdo.testmap.auto._BigDecimalEntity;
 
 public class BigDecimalEntity extends _BigDecimalEntity {
 
+    private static final long serialVersionUID = 1L; 
+
 }
-
-
-

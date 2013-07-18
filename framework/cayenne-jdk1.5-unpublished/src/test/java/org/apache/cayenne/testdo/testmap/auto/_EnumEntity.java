@@ -12,6 +12,8 @@ import org.apache.cayenne.testdo.testmap.Enum1;
  */
 public abstract class _EnumEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String ENUM_ATTRIBUTE_PROPERTY = "enumAttribute";
 

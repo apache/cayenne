@@ -13,6 +13,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _ArtistCallbackTest extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String ARTIST_NAME_PROPERTY = "artistName";
     @Deprecated

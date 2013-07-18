@@ -14,6 +14,8 @@ import org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy2;
  */
 public abstract class _MixedPersistenceStrategy extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String DESCRIPTION_PROPERTY = "description";
     @Deprecated

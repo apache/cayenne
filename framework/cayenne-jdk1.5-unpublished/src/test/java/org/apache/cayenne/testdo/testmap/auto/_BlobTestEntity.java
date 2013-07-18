@@ -11,6 +11,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _BlobTestEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String BLOB_COL_PROPERTY = "blobCol";
 

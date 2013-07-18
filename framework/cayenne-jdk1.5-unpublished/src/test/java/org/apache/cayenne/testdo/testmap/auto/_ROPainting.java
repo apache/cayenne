@@ -14,6 +14,8 @@ import org.apache.cayenne.testdo.testmap.Artist;
  */
 public abstract class _ROPainting extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String ESTIMATED_PRICE_PROPERTY = "estimatedPrice";
     @Deprecated

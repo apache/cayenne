@@ -14,6 +14,8 @@ import org.apache.cayenne.testdo.testmap.ClobTestRelation;
  */
 public abstract class _ClobTestEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String CLOB_COL_PROPERTY = "clobCol";
     @Deprecated

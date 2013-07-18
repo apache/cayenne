@@ -14,6 +14,8 @@ import org.apache.cayenne.testdo.testmap.GeneratedColumnCompKey;
  */
 public abstract class _GeneratedColumnCompMaster extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String NAME_PROPERTY = "name";
     @Deprecated

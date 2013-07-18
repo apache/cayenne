@@ -12,6 +12,8 @@ import org.apache.cayenne.testdo.testmap.MeaningfulPKTest1;
  */
 public abstract class _MeaningfulPKDep extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String DESCR_PROPERTY = "descr";
     @Deprecated

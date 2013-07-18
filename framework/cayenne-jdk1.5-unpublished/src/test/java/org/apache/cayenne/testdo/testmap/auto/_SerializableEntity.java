@@ -12,6 +12,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _SerializableEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String SERIALIZABLE_FIELD_PROPERTY = "serializableField";
 

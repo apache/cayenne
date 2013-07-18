@@ -22,9 +22,10 @@ import org.apache.cayenne.testdo.testmap.auto._ArtistCallbackTest;
 
 /**
  * Class for testing callbacks
- *
  */
 public class ArtistCallbackTest extends _ArtistCallbackTest {
+    private static final long serialVersionUID = 1L; 
+    
     public void prePersistEntityObjEntity() {}
     public void postPersistEntityObjEntity() {}
     public void preUpdateEntityObjEntity() {}

@@ -11,6 +11,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _MeaningfulGeneratedColumnTestEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String GENERATED_COLUMN_PROPERTY = "generatedColumn";
     @Deprecated

@@ -16,16 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.testdo.testmap;
 
 import org.apache.cayenne.CayenneDataObject;
 
 /**
- * This class exists solely to enable testing of arbitrary superclasses for ObjEntities.  
- * It has no functionality at this stage (nor is any likely)
- * 
+ * This class exists solely to enable testing of arbitrary superclasses for
+ * ObjEntities. It has no functionality at this stage (nor is any likely)
  */
 public class ArtDataObject extends CayenneDataObject {
+
+    private static final long serialVersionUID = -1350981440925237535L;
 
 }

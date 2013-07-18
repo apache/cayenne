@@ -14,6 +14,8 @@ import org.apache.cayenne.testdo.testmap.GeneratedF2;
  */
 public abstract class _GeneratedF1 extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String F2_PROPERTY = "f2";
 

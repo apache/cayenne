@@ -13,6 +13,8 @@ import org.apache.cayenne.testdo.testmap.Thing;
  */
 public abstract class _Ball extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String THING_VOLUME_PROPERTY = "thingVolume";
     @Deprecated

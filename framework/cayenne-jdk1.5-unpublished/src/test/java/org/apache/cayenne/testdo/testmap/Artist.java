@@ -25,6 +25,8 @@ import org.apache.cayenne.validation.ValidationResult;
 
 @Tag1
 public class Artist extends _Artist {
+    
+    private static final long serialVersionUID = 1L; 
 
     protected transient ValidationDelegate validationDelegate;
     protected boolean validateForSaveCalled;

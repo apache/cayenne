@@ -13,6 +13,8 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
  */
 public abstract class _ArtistExhibit extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String TO_ARTIST_PROPERTY = "toArtist";
     @Deprecated

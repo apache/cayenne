@@ -11,6 +11,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _DecimalPKTest1 extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String DECIMAL_PK_PROPERTY = "decimalPK";
     @Deprecated

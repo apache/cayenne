@@ -22,4 +22,6 @@ import org.apache.cayenne.testdo.testmap.auto._Ball;
 
 public class Ball extends _Ball {
 
+    private static final long serialVersionUID = 1L; 
+
 }

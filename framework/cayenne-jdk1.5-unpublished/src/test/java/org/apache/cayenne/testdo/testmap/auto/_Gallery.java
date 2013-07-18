@@ -15,6 +15,8 @@ import org.apache.cayenne.testdo.testmap.Painting;
  */
 public abstract class _Gallery extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String GALLERY_NAME_PROPERTY = "galleryName";
     @Deprecated

@@ -14,6 +14,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String BIGINT_COLUMN_PROPERTY = "bigintColumn";
     @Deprecated

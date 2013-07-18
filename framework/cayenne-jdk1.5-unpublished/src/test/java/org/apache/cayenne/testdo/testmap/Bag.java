@@ -22,4 +22,6 @@ import org.apache.cayenne.testdo.testmap.auto._Bag;
 
 public class Bag extends _Bag {
 
+    private static final long serialVersionUID = 1L; 
+
 }

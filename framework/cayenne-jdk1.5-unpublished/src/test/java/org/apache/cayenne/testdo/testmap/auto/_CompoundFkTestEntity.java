@@ -12,6 +12,8 @@ import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
  */
 public abstract class _CompoundFkTestEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String NAME_PROPERTY = "name";
     @Deprecated

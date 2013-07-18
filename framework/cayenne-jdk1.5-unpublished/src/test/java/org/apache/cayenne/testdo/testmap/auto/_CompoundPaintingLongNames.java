@@ -17,6 +17,8 @@ import org.apache.cayenne.testdo.testmap.ROArtist;
  */
 public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String ARTIST_LONG_NAME_PROPERTY = "artistLongName";
     @Deprecated

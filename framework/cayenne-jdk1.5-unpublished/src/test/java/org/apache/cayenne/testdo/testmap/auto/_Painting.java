@@ -16,6 +16,8 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
  */
 public abstract class _Painting extends ArtDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String ESTIMATED_PRICE_PROPERTY = "estimatedPrice";
     @Deprecated

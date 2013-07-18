@@ -12,6 +12,8 @@ import org.apache.cayenne.testdo.testmap.GeneratedColumnDep;
  */
 public abstract class _GeneratedColumnTestEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String NAME_PROPERTY = "name";
     @Deprecated

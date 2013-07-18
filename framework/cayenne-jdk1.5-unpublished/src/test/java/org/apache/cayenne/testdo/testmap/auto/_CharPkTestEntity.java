@@ -14,6 +14,8 @@ import org.apache.cayenne.testdo.testmap.CharFkTestEntity;
  */
 public abstract class _CharPkTestEntity extends CayenneDataObject {
 
+    private static final long serialVersionUID = 1L; 
+
     @Deprecated
     public static final String OTHER_COL_PROPERTY = "otherCol";
     @Deprecated

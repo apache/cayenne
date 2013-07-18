@@ -22,7 +22,6 @@ import org.apache.cayenne.testdo.testmap.auto._ArraysEntity;
 
 public class ArraysEntity extends _ArraysEntity {
 
+    private static final long serialVersionUID = 1L; 
+
 }
-
-
-

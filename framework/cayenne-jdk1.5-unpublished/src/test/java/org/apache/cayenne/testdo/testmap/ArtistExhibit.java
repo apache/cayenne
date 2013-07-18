@@ -22,7 +22,6 @@ import org.apache.cayenne.testdo.testmap.auto._ArtistExhibit;
 
 public class ArtistExhibit extends _ArtistExhibit {
 
+    private static final long serialVersionUID = 1L; 
+
 }
-
-
-
