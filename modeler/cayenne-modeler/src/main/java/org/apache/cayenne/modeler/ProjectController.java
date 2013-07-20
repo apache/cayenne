@@ -238,7 +238,7 @@ public class ProjectController extends CayenneController {
      * Project files watcher. When project file is changed, user will be asked
      * to confirm loading the changes
      */
-    ProjectWatchdog watchdog;
+    private ProjectFileChangeTracker watchdog;
 
     public ProjectController(CayenneModelerController parent) {
         super(parent);
@@ -275,7 +275,8 @@ public class ProjectController extends CayenneController {
                 }
             } else {
                 if (watchdog == null) {
-                    watchdog = new ProjectWatchdog(this);
+                    watchdog = new ProjectFileChangeTracker(this);
+                    watchdog.setDaemon(true);
                     watchdog.start();
                 }
 
@@ -1617,7 +1618,7 @@ public class ProjectController extends CayenneController {
     /**
      * @return the project files' watcher
      */
-    public ProjectWatchdog getProjectWatcher() {
+    public ProjectFileChangeTracker getProjectWatcher() {
         return watchdog;
     }
 
