@@ -56,9 +56,6 @@ public class ProjectFileChangeTracker extends Thread {
     protected boolean paused;
     protected ProjectController mediator;
 
-    /**
-     * Creates new watchdog for a specified project
-     */
     public ProjectFileChangeTracker(ProjectController mediator) {
 
         this.files = new ConcurrentHashMap<String, FileInfo>();

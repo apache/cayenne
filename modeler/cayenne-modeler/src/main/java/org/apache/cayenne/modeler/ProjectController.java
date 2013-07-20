@@ -238,7 +238,7 @@ public class ProjectController extends CayenneController {
      * Project files watcher. When project file is changed, user will be asked
      * to confirm loading the changes
      */
-    private ProjectFileChangeTracker watchdog;
+    private ProjectFileChangeTracker fileChangeTracker;
 
     public ProjectController(CayenneModelerController parent) {
         super(parent);
@@ -269,18 +269,18 @@ public class ProjectController extends CayenneController {
             if (project == null) {
                 this.entityResolver = null;
 
-                if (watchdog != null) {
-                    watchdog.interrupt();
-                    watchdog = null;
+                if (fileChangeTracker != null) {
+                    fileChangeTracker.interrupt();
+                    fileChangeTracker = null;
                 }
             } else {
-                if (watchdog == null) {
-                    watchdog = new ProjectFileChangeTracker(this);
-                    watchdog.setDaemon(true);
-                    watchdog.start();
+                if (fileChangeTracker == null) {
+                    fileChangeTracker = new ProjectFileChangeTracker(this);
+                    fileChangeTracker.setDaemon(true);
+                    fileChangeTracker.start();
                 }
 
-                watchdog.reconfigure();
+                fileChangeTracker.reconfigure();
 
                 entityResolver = new EntityResolver(
                         ((DataChannelDescriptor) currentProject.getRootNode()).getDataMaps());
@@ -1615,11 +1615,8 @@ public class ProjectController extends CayenneController {
         }
     }
 
-    /**
-     * @return the project files' watcher
-     */
-    public ProjectFileChangeTracker getProjectWatcher() {
-        return watchdog;
+    public ProjectFileChangeTracker getFileChangeTracker() {
+        return fileChangeTracker;
     }
 
     /**

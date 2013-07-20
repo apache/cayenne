@@ -91,7 +91,7 @@ public class SaveAsAction extends CayenneAction {
             return false;
         }
 
-        getProjectController().getProjectWatcher().pauseWatching();
+        getProjectController().getFileChangeTracker().pauseWatching();
 
         URL url = projectDir.toURL();
 
@@ -144,7 +144,7 @@ public class SaveAsAction extends CayenneAction {
         /**
          * Reset the watcher now
          */
-        getProjectController().getProjectWatcher().reconfigure();
+        getProjectController().getFileChangeTracker().reconfigure();
 
         return true;
     }

@@ -63,7 +63,7 @@ public class SaveAction extends SaveAsAction {
 
             String oldPath = p.getConfigurationResource().getURL().getPath();
 
-            getProjectController().getProjectWatcher().pauseWatching();
+            getProjectController().getFileChangeTracker().pauseWatching();
 
             ProjectSaver saver = getApplication().getInjector().getInstance(
                     ProjectSaver.class);
@@ -92,7 +92,7 @@ public class SaveAction extends SaveAsAction {
             /**
              * Reset the watcher now
              */
-            getProjectController().getProjectWatcher().reconfigure();
+            getProjectController().getFileChangeTracker().reconfigure();
         }
 
         return true;

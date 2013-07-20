@@ -165,8 +165,8 @@ public class OpenProjectAction extends ProjectAction {
                     if (upgraded != null) {
                         Project project = openProjectResourse(upgraded, controller);
 
-                        getProjectController().getProjectWatcher().pauseWatching();
-                        getProjectController().getProjectWatcher().reconfigure();
+                        getProjectController().getFileChangeTracker().pauseWatching();
+                        getProjectController().getFileChangeTracker().reconfigure();
 
                         // if project file name changed
                         // need upgrade all
