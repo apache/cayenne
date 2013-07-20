@@ -421,7 +421,7 @@ public abstract class NamedObjectFactory {
         @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             Entity ent = (Entity) namingContext;
-            return ent.getAttribute(name) != null;
+            return ent.getAttribute(name) != null || ent.getRelationship(name) != null;
         }
     }
 
@@ -479,7 +479,7 @@ public abstract class NamedObjectFactory {
         @Override
         protected boolean isNameInUse(String name, Object namingContext) {
             Entity ent = (Entity) namingContext;
-            return ent.getRelationship(name) != null;
+            return ent.getRelationship(name) != null || ent.getAttribute(name) != null;
         }
 
         /**
