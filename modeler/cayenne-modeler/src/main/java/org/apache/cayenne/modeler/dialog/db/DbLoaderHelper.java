@@ -61,11 +61,10 @@ public class DbLoaderHelper {
 
     private static Log logObj = LogFactory.getLog(DbLoaderHelper.class);
 
-    // TODO: this is a temp hack... need to delegate to DbAdapter, or configurable in
+    // TODO: this is a temp hack... need to delegate to DbAdapter, or
+    // configurable in
     // preferences...
-    private static final Collection<String> EXCLUDED_TABLES = Arrays.asList(
-            "AUTO_PK_SUPPORT",
-            "auto_pk_support");
+    private static final Collection<String> EXCLUDED_TABLES = Arrays.asList("AUTO_PK_SUPPORT", "auto_pk_support");
 
     static DbLoaderMergeDialog mergeDialog;
 
@@ -92,7 +91,7 @@ public class DbLoaderHelper {
      */
     protected List<ObjEntity> addedObjEntities;
 
-    static synchronized DbLoaderMergeDialog getMergeDialogInstance() {
+    static DbLoaderMergeDialog getMergeDialogInstance() {
         if (mergeDialog == null) {
             mergeDialog = new DbLoaderMergeDialog(Application.getFrame());
         }
@@ -100,8 +99,7 @@ public class DbLoaderHelper {
         return mergeDialog;
     }
 
-    public DbLoaderHelper(ProjectController mediator, Connection connection,
-            DbAdapter adapter, String dbUserName) {
+    public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter, String dbUserName) {
         this.dbUserName = dbUserName;
         this.mediator = mediator;
         this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
@@ -132,16 +130,15 @@ public class DbLoaderHelper {
     }
 
     /**
-     * Performs reverse engineering of the DB using internal DbLoader. This method should
-     * be invoked outside EventDispatchThread, or it will throw an exception.
+     * Performs reverse engineering of the DB using internal DbLoader. This
+     * method should be invoked outside EventDispatchThread, or it will throw an
+     * exception.
      */
     public void execute() {
         stoppingReverseEngineering = false;
 
         // load schemas...
-        LongRunningTask loadSchemasTask = new LoadSchemasTask(
-                Application.getFrame(),
-                "Loading Schemas");
+        LongRunningTask loadSchemasTask = new LoadSchemasTask(Application.getFrame(), "Loading Schemas");
 
         loadSchemasTask.startAndWait();
 
@@ -149,10 +146,7 @@ public class DbLoaderHelper {
             return;
         }
 
-        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(
-                schemas,
-                dbUserName,
-                false);
+        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, dbUserName, false);
 
         try {
             // since we are not inside EventDisptahcer Thread, must run it via
@@ -164,8 +158,7 @@ public class DbLoaderHelper {
                     dialog.dispose();
                 }
             });
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             processException(th, "Error Reengineering Database");
             return;
         }
@@ -184,9 +177,7 @@ public class DbLoaderHelper {
         this.loader.setNamingStrategy(dialog.getNamingStrategy());
 
         // load DataMap...
-        LongRunningTask loadDataMapTask = new LoadDataMapTask(
-                Application.getFrame(),
-                "Reengineering DB");
+        LongRunningTask loadDataMapTask = new LoadDataMapTask(Application.getFrame(), "Reengineering DB");
         loadDataMapTask.startAndWait();
     }
 
@@ -196,10 +187,7 @@ public class DbLoaderHelper {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
-                JOptionPane.showMessageDialog(
-                        Application.getFrame(),
-                        th.getMessage(),
-                        message,
+                JOptionPane.showMessageDialog(Application.getFrame(), th.getMessage(), message,
                         JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -211,8 +199,7 @@ public class DbLoaderHelper {
             if (loader.getConnection() != null) {
                 loader.getConnection().close();
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             logObj.warn("Error closing connection.", e);
         }
     }
@@ -242,12 +229,12 @@ public class DbLoaderHelper {
 
             loadStatusNote = "Importing table '" + entity.getName() + "'...";
 
-            // TODO: hack to prevent PK tables from being visible... this should really be
+            // TODO: hack to prevent PK tables from being visible... this should
+            // really be
             // delegated to DbAdapter to decide...
             if (EXCLUDED_TABLES.contains(entity.getName()) && entity.getDataMap() != null) {
                 entity.getDataMap().removeDbEntity(entity.getName());
-            }
-            else if (existingMap) {
+            } else if (existingMap) {
                 mediator.fireDbEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
             }
         }
@@ -267,10 +254,7 @@ public class DbLoaderHelper {
             checkCanceled();
 
             if (existingMap) {
-                mediator.fireDbEntityEvent(new EntityEvent(
-                        Application.getFrame(),
-                        entity,
-                        MapEvent.REMOVE));
+                mediator.fireDbEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
             }
         }
 
@@ -278,10 +262,7 @@ public class DbLoaderHelper {
             checkCanceled();
 
             if (existingMap) {
-                mediator.fireObjEntityEvent(new EntityEvent(
-                        Application.getFrame(),
-                        entity,
-                        MapEvent.REMOVE));
+                mediator.fireObjEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
             }
         }
 
@@ -342,8 +323,7 @@ public class DbLoaderHelper {
 
             try {
                 schemas = loader.getSchemas();
-            }
-            catch (Throwable th) {
+            } catch (Throwable th) {
                 processException(th, "Error Loading Schemas");
             }
         }
@@ -365,9 +345,8 @@ public class DbLoaderHelper {
 
             if (!existingMap) {
                 dataMap = (DataMap) NamedObjectFactory.createObject(DataMap.class, null);
-                dataMap.setName(NamedObjectFactory.createName(
-                        DataMap.class,
-                        (DataChannelDescriptor) mediator.getProject().getRootNode()));
+                dataMap.setName(NamedObjectFactory.createName(DataMap.class, (DataChannelDescriptor) mediator
+                        .getProject().getRootNode()));
                 dataMap.setDefaultSchema(schemaName);
             }
 
@@ -387,8 +366,7 @@ public class DbLoaderHelper {
                 for (ObjEntity addedObjEntity : addedObjEntities) {
                     DeleteRuleUpdater.updateObjEntity(addedObjEntity);
                 }
-            }
-            catch (Throwable th) {
+            } catch (Throwable th) {
                 if (!isCanceled()) {
                     processException(th, "Error Reengineering Database");
                 }
@@ -397,13 +375,8 @@ public class DbLoaderHelper {
             if (loadProcedures) {
                 loadStatusNote = "Importing procedures...";
                 try {
-                    loader
-                            .loadProceduresFromDB(
-                                    schemaName,
-                                    procedureNamePattern,
-                                    dataMap);
-                }
-                catch (Throwable th) {
+                    loader.loadProceduresFromDB(schemaName, procedureNamePattern, dataMap);
+                } catch (Throwable th) {
                     if (!isCanceled()) {
                         processException(th, "Error Reengineering Database");
                     }
@@ -415,21 +388,15 @@ public class DbLoaderHelper {
             // fire up events
             loadStatusNote = "Updating view...";
             if (mediator.getCurrentDataMap() != null) {
-                mediator.fireDataMapEvent(new DataMapEvent(
-                        Application.getFrame(),
-                        dataMap,
-                        MapEvent.CHANGE));
-                mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(Application
-                        .getFrame(), dataMap, (DataChannelDescriptor) mediator
-                        .getProject()
-                        .getRootNode(), mediator.getCurrentDataNode()));
-            }
-            else {
-                DataChannelDescriptor currentDomain = (DataChannelDescriptor) mediator
-                        .getProject().getRootNode();
+                mediator.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.CHANGE));
+                mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(Application.getFrame(), dataMap,
+                        (DataChannelDescriptor) mediator.getProject().getRootNode(), mediator.getCurrentDataNode()));
+            } else {
+                DataChannelDescriptor currentDomain = (DataChannelDescriptor) mediator.getProject().getRootNode();
                 Resource baseResource = currentDomain.getConfigurationSource();
 
-                // this will be new data map so need to set configuration source for it
+                // this will be new data map so need to set configuration source
+                // for it
                 if (baseResource != null) {
                     Resource dataMapResource = baseResource.getRelativeResource(dataMap.getName());
                     dataMap.setConfigurationSource(dataMapResource);

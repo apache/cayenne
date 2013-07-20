@@ -32,8 +32,7 @@ class JEditTextAreaUndoable extends JEditTextArea {
     private UndoableEditListener undoListener;
 
     JEditTextAreaUndoable() {
-        this.undoListener = new JTextFieldUndoListener(new JEditTextAreaUndoableAdapter(
-                this));
+        this.undoListener = new JTextFieldUndoListener(new JEditTextAreaUndoableAdapter(this));
 
         this.getDocument().addUndoableEditListener(this.undoListener);
     }
@@ -43,8 +42,7 @@ class JEditTextAreaUndoable extends JEditTextArea {
         this.getDocument().removeUndoableEditListener(this.undoListener);
         try {
             super.setText(t);
-        }
-        finally {
+        } finally {
             this.getDocument().addUndoableEditListener(this.undoListener);
         }
     }
@@ -52,7 +50,7 @@ class JEditTextAreaUndoable extends JEditTextArea {
     private static class JEditTextAreaUndoableAdapter extends JTextField {
 
         @Override
-        public synchronized void addFocusListener(FocusListener l) {
+        public void addFocusListener(FocusListener l) {
             if (textArea != null) {
                 textArea.addFocusListener(l);
             }

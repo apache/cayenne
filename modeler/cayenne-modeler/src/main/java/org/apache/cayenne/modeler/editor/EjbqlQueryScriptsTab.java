@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -72,16 +73,12 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
             public void insertUpdate(DocumentEvent e) {
                 try {
-                    String text = scriptArea
-                            .getDocument()
-                            .getText(e.getOffset(), 1)
-                            .toString();
+                    String text = scriptArea.getDocument().getText(e.getOffset(), 1).toString();
                     if (text.equals(" ") || text.equals("\n") || text.equals("\t")) {
                         getQuery().setEjbqlStatement(scriptArea.getText());
                         validateEJBQL();
                     }
-                }
-                catch (BadLocationException e1) {
+                } catch (BadLocationException e1) {
                     e1.printStackTrace();
                 }
             }
@@ -111,25 +108,20 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             boolean pasteOrCut;
 
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_END
-                        || e.getKeyCode() == KeyEvent.VK_HOME
-                        || e.getKeyCode() == KeyEvent.VK_LEFT
-                        || e.getKeyCode() == KeyEvent.VK_RIGHT
-                        || e.getKeyCode() == KeyEvent.VK_UP
-                        || e.getKeyCode() == KeyEvent.VK_UNDO) {
+                if (e.getKeyCode() == KeyEvent.VK_END || e.getKeyCode() == KeyEvent.VK_HOME
+                        || e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT
+                        || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_UNDO) {
                     getQuery().setEjbqlStatement(scriptArea.getText());
                     validateEJBQL();
                 }
-                if ((e.getKeyCode() == KeyEvent.VK_V || e.getKeyCode() == KeyEvent.VK_X)
-                        && e.isControlDown()) {
+                if ((e.getKeyCode() == KeyEvent.VK_V || e.getKeyCode() == KeyEvent.VK_X) && e.isControlDown()) {
                     pasteOrCut = true;
                 }
             }
 
             public void keyReleased(KeyEvent e) {
 
-                if ((pasteOrCut && e.getKeyCode() == KeyEvent.VK_CONTROL)
-                        || e.getKeyCode() == KeyEvent.VK_DELETE) {
+                if ((pasteOrCut && e.getKeyCode() == KeyEvent.VK_CONTROL) || e.getKeyCode() == KeyEvent.VK_DELETE) {
                     scriptArea.removeHighlightText();
                     getQuery().setEjbqlStatement(scriptArea.getText());
                     validateEJBQL();
@@ -169,8 +161,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         Document doc = e.getDocument();
         try {
             setEJBQL(doc.getText(0, doc.getLength()));
-        }
-        catch (BadLocationException e1) {
+        } catch (BadLocationException e1) {
             e1.printStackTrace();
         }
     }
@@ -213,23 +204,24 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     void validateEJBQL() {
-        PositionException positionException = ejbqlQueryValidator.validateEJBQL(
-                getQuery(),
-                new EntityResolver(((DataChannelDescriptor) mediator
-                        .getProject()
-                        .getRootNode()).getDataMaps()));
+        final PositionException positionException = ejbqlQueryValidator.validateEJBQL(getQuery(), new EntityResolver(
+                ((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps()));
         if (positionException != null) {
-            if (positionException.getBeginLine() != null
-                    || positionException.getBeginColumn() != null
-                    || positionException.getLength() != null) {
-                scriptArea.setHighlightText(
-                        positionException.getBeginLine(),
-                        positionException.getBeginColumn(),
-                        positionException.getLength(),
-                        positionException.getMessage());
-            }
-            else {
-                scriptArea.removeHighlightText();
+
+            if (!SwingUtilities.isEventDispatchThread()) {
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    public void run() {
+                        if (positionException.getBeginLine() != null || positionException.getBeginColumn() != null
+                                || positionException.getLength() != null) {
+                            scriptArea.setHighlightText(positionException.getBeginLine(),
+                                    positionException.getBeginColumn(), positionException.getLength(),
+                                    positionException.getMessage());
+                        } else {
+                            scriptArea.removeHighlightText();
+                        }
+                    }
+                });
             }
         }
     }
@@ -252,8 +244,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             running = true;
             while (running) {
                 int caretPosition = scriptArea.getCaretPosition();
-                if (previousCaretPosition != 0
-                        && previousCaretPosition == caretPosition
+                if (previousCaretPosition != 0 && previousCaretPosition == caretPosition
                         && validateCaretPosition != previousCaretPosition) {
                     validateEJBQL();
                     validateCaretPosition = caretPosition;
@@ -262,8 +253,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 synchronized (timer) {
                     try {
                         timer.wait(DELAY);
-                    }
-                    catch (InterruptedException e) {
+                    } catch (InterruptedException e) {
                     }
                 }
             }

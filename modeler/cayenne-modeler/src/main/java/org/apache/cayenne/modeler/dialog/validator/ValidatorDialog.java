@@ -67,9 +67,7 @@ public class ValidatorDialog extends CayenneDialog {
     protected JButton refreshButton;
     protected List<ValidationFailure> validationObjects;
 
-    public static synchronized void showDialog(
-            CayenneModelerFrame frame,
-            List<ValidationFailure> list) {
+    public static void showDialog(CayenneModelerFrame frame, List<ValidationFailure> list) {
         if (instance == null) {
             instance = new ValidatorDialog(frame);
             instance.centerWindow();
@@ -79,15 +77,14 @@ public class ValidatorDialog extends CayenneDialog {
         instance.setVisible(true);
     }
 
-    public static synchronized void showValidationSuccess(CayenneModelerFrame editor) {
+    public static void showValidationSuccess(CayenneModelerFrame editor) {
 
         if (instance != null) {
             instance.dispose();
             instance = null;
         }
 
-        JOptionPane
-                .showMessageDialog(Application.getFrame(), "Cayenne project is valid.");
+        JOptionPane.showMessageDialog(Application.getFrame(), "Cayenne project is valid.");
     }
 
     protected ValidatorDialog(CayenneModelerFrame editor) {
@@ -109,22 +106,15 @@ public class ValidatorDialog extends CayenneDialog {
         problemsTable.setRowMargin(3);
         problemsTable.setCellSelectionEnabled(false);
         problemsTable.setRowSelectionAllowed(true);
-        problemsTable.setDefaultRenderer(
-                ValidationFailure.class,
-                new ValidationRenderer());
+        problemsTable.setDefaultRenderer(ValidationFailure.class, new ValidationRenderer());
 
         // assemble
         CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "fill:200dlu:grow",
-                "pref, 3dlu, fill:40dlu:grow"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, 3dlu, fill:40dlu:grow"));
 
         builder.setDefaultDialogBorder();
 
-        builder
-                .addLabel(
-                        "Click on any row below to go to the object that has a validation problem:",
-                        cc.xy(1, 1));
+        builder.addLabel("Click on any row below to go to the object that has a validation problem:", cc.xy(1, 1));
         builder.add(new JScrollPane(problemsTable), cc.xy(1, 3));
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -142,13 +132,12 @@ public class ValidatorDialog extends CayenneDialog {
     private void initController() {
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        problemsTable.getSelectionModel().addListSelectionListener(
-                new ListSelectionListener() {
+        problemsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
-                    public void valueChanged(ListSelectionEvent e) {
-                        showFailedObject();
-                    }
-                });
+            public void valueChanged(ListSelectionEvent e) {
+                showFailedObject();
+            }
+        });
 
         closeButton.addActionListener(new ActionListener() {
 
@@ -161,8 +150,7 @@ public class ValidatorDialog extends CayenneDialog {
         refreshButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                Application.getInstance().getActionManager().getAction(
-                        ValidateAction.class).actionPerformed(e);
+                Application.getInstance().getActionManager().getAction(ValidateAction.class).actionPerformed(e);
             }
         });
 
@@ -186,12 +174,9 @@ public class ValidatorDialog extends CayenneDialog {
 
     private void showFailedObject() {
         if (problemsTable.getSelectedRow() >= 0) {
-            ValidationFailure obj = (ValidationFailure) problemsTable
-                    .getModel()
-                    .getValueAt(problemsTable.getSelectedRow(), 0);
-            ValidationDisplayHandler.getErrorMsg(obj).displayField(
-                    getMediator(),
-                    super.getParentEditor());
+            ValidationFailure obj = (ValidationFailure) problemsTable.getModel().getValueAt(
+                    problemsTable.getSelectedRow(), 0);
+            ValidationDisplayHandler.getErrorMsg(obj).displayField(getMediator(), super.getParentEditor());
         }
     }
 
@@ -225,13 +210,8 @@ public class ValidatorDialog extends CayenneDialog {
     // a renderer for the error message
     class ValidationRenderer extends DefaultTableCellRenderer {
 
-        public Component getTableCellRendererComponent(
-                JTable table,
-                Object value,
-                boolean isSelected,
-                boolean hasFocus,
-                int row,
-                int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                boolean hasFocus, int row, int column) {
 
             boolean error = false;
             if (value != null) {
@@ -240,13 +220,7 @@ public class ValidatorDialog extends CayenneDialog {
             }
 
             setBackground(error ? ERROR_COLOR : WARNING_COLOR);
-            return super.getTableCellRendererComponent(
-                    table,
-                    value,
-                    isSelected,
-                    hasFocus,
-                    row,
-                    column);
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 }

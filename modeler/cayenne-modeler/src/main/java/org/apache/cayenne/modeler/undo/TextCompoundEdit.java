@@ -71,15 +71,12 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         this.editor = editor;
         this.listener = listener;
 
-        EditorView editorView = ((CayenneModelerFrame) Application
-                .getInstance()
-                .getFrameController()
-                .getView()).getView();
+        EditorView editorView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView())
+                .getView();
 
         treePath = editorView.getProjectTreeView().getSelectionPath();
 
-        DefaultMutableTreeNode newPath = (DefaultMutableTreeNode) treePath
-                .getLastPathComponent();
+        DefaultMutableTreeNode newPath = (DefaultMutableTreeNode) treePath.getLastPathComponent();
 
         targetObject = newPath.getUserObject();
 
@@ -97,11 +94,9 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         if (targetObject instanceof SQLTemplate) {
             tabbedPane = editorView.getSqlTemplateView();
-            
+
             if (tabbedPane != null) {
-                selectedItem = ((SQLTemplateTabbedView) tabbedPane)
-                        .getScriptsTab()
-                        .getSelectedIndex();
+                selectedItem = ((SQLTemplateTabbedView) tabbedPane).getScriptsTab().getSelectedIndex();
             }
         }
 
@@ -128,20 +123,16 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private void restoreSelections() {
 
-        EditorView editorView = ((CayenneModelerFrame) Application
-                .getInstance()
-                .getFrameController()
-                .getView()).getView();
+        EditorView editorView = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView())
+                .getView();
 
         editorView.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
 
         if (tabbedPane != null) {
             tabbedPane.setSelectedIndex(selectedTabIndex);
-            
+
             if (tabbedPane instanceof SQLTemplateTabbedView) {
-                ((SQLTemplateTabbedView) tabbedPane)
-                        .getScriptsTab()
-                        .setSelectedIndex(selectedItem);
+                ((SQLTemplateTabbedView) tabbedPane).getScriptsTab().setSelectedIndex(selectedItem);
             }
         }
     }
@@ -174,8 +165,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         if (canRedo()) {
             super.redo();
-        }
-        else {
+        } else {
             die();
         }
 
@@ -189,8 +179,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         if (canUndo()) {
             super.undo();
-        }
-        else {
+        } else {
             die();
         }
 
@@ -203,12 +192,12 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
     }
 
     @Override
-    public synchronized String getRedoPresentationName() {
+    public String getRedoPresentationName() {
         return "Redo Text Change";
     }
 
     @Override
-    public synchronized String getUndoPresentationName() {
+    public String getUndoPresentationName() {
         return "Undo Text Change";
     }
 

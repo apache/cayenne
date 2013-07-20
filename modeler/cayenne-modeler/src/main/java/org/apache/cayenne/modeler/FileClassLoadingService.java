@@ -43,10 +43,11 @@ public class FileClassLoadingService implements ClassLoadingService {
     }
 
     /**
-     * Returns class for a given name, loading it if needed from configured locations.
+     * Returns class for a given name, loading it if needed from configured
+     * locations.
      */
     @SuppressWarnings("all")
-    public synchronized <T> Class<T> loadClass(Class<T> interfaceType, String className) throws ClassNotFoundException {
+    public <T> Class<T> loadClass(Class<T> interfaceType, String className) throws ClassNotFoundException {
         return (Class<T>) nonNullClassLoader().loadClass(className);
     }
 
@@ -60,11 +61,11 @@ public class FileClassLoadingService implements ClassLoadingService {
     /**
      * Returns an unmodifiable list of configured CLASSPATH locations.
      */
-    public synchronized List<File> getPathFiles() {
+    public List<File> getPathFiles() {
         return Collections.unmodifiableList(pathFiles);
     }
 
-    public synchronized void setPathFiles(Collection<File> files) {
+    public void setPathFiles(Collection<File> files) {
 
         pathFiles.clear();
         classLoader = null;
@@ -87,8 +88,7 @@ public class FileClassLoadingService implements ClassLoadingService {
         if (classLoader != null) {
             try {
                 classLoader.addURL(file.toURI().toURL());
-            }
-            catch (MalformedURLException ex) {
+            } catch (MalformedURLException ex) {
                 return;
             }
         }
@@ -96,7 +96,7 @@ public class FileClassLoadingService implements ClassLoadingService {
         pathFiles.add(file);
     }
 
-    private synchronized FileClassLoader nonNullClassLoader() {
+    private FileClassLoader nonNullClassLoader() {
         // init class loader on demand
         if (classLoader == null) {
             classLoader = new FileClassLoader(getClass().getClassLoader(), pathFiles);
@@ -119,8 +119,7 @@ public class FileClassLoadingService implements ClassLoadingService {
                 // I guess here we have to quetly ignore invalid URLs...
                 try {
                     addURL(file.toURI().toURL());
-                }
-                catch (MalformedURLException ex) {
+                } catch (MalformedURLException ex) {
                 }
             }
         }

@@ -48,8 +48,7 @@ import org.jgraph.JGraph;
 /**
  * Tab for editing graphical representation of a dataDomain
  */
-public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
-        ItemListener {
+public class DataDomainGraphTab extends JPanel implements DomainDisplayListener, ItemListener {
 
     /**
      * mediator instance
@@ -106,9 +105,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
         diagramCombo = Application.getWidgetFactory().createComboBox(names, false);
         diagramCombo.addItemListener(this);
 
-        toolbar
-                .add(new RebuildGraphAction(this, Application.getInstance())
-                        .buildButton());
+        toolbar.add(new RebuildGraphAction(this, Application.getInstance()).buildButton());
         toolbar.add(new SaveAsImageAction(this, Application.getInstance()).buildButton());
         toolbar.addSeparator();
         toolbar.add(new ZoomInAction(this, Application.getInstance()).buildButton());
@@ -132,8 +129,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             diagramCombo.setSelectedIndex(entity instanceof ObjEntity ? 1 : 0);
             refresh();
 
-            GraphBuilder builder = getGraphRegistry().getGraphMap(domain).get(
-                    getSelectedType());
+            GraphBuilder builder = getGraphRegistry().getGraphMap(domain).get(getSelectedType());
 
             Object cell = builder.getEntityCell(entity.getName());
 
@@ -141,8 +137,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
                 graph.setSelectionCell(cell);
                 graph.scrollCellToVisible(cell);
             }
-        }
-        else if (domain != e.getDomain()) {
+        } else if (domain != e.getDomain()) {
             needRebuild = true;
             domain = e.getDomain();
 
@@ -153,9 +148,10 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     }
 
     /**
-     * Rebuilds graph from a domain, if it is not yet built Otherwise, takes it from cache
+     * Rebuilds graph from a domain, if it is not yet built Otherwise, takes it
+     * from cache
      */
-    public synchronized void refresh() {
+    public void refresh() {
         if (needRebuild && domain != null) {
             graph = getGraphRegistry().loadGraph(mediator, domain, getSelectedType());
             scrollPane.setViewportView(graph);
@@ -171,13 +167,10 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     /**
      * Rebuilds graph, deleting existing if needed
      */
-    public synchronized void rebuild() {
+    public void rebuild() {
         if (domain != null) {
-            JOptionPane pane = new JOptionPane(
-                    "Rebuilding graph from domain will cause all user"
-                            + " changes to be lost. Continue?",
-                    JOptionPane.QUESTION_MESSAGE,
-                    JOptionPane.YES_NO_OPTION);
+            JOptionPane pane = new JOptionPane("Rebuilding graph from domain will cause all user"
+                    + " changes to be lost. Continue?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
 
             JDialog dialog = pane.createDialog(Application.getFrame(), "Confirm Rebuild");
             dialog.setVisible(true);

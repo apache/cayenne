@@ -17,21 +17,21 @@
 package org.apache.cayenne.modeler.util;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * FileWatchdog is a watcher for files' change. If one of the files has changed or been
- * removed, a {@link #doOnChange(org.apache.cayenne.modeler.util.FileWatchdog.FileInfo)}
- * or {@link #doOnRemove(org.apache.cayenne.modeler.util.FileWatchdog.FileInfo) method}
- * will be called
+ * FileWatchdog is a watcher for files' change. If one of the files has changed
+ * or been removed, a
+ * {@link #doOnChange(org.apache.cayenne.modeler.util.FileWatchdog.FileInfo)} or
+ * {@link #doOnRemove(org.apache.cayenne.modeler.util.FileWatchdog.FileInfo)
+ * method} will be called
  * 
  * Original code taken from Log4J project
  * 
@@ -49,7 +49,8 @@ public abstract class FileWatchdog extends Thread {
     protected Map<String, FileInfo> filesInfo;
 
     /**
-     * The delay to observe between every check. By default set {@link #DEFAULT_DELAY}.
+     * The delay to observe between every check. By default set
+     * {@link #DEFAULT_DELAY}.
      */
     protected long delay = DEFAULT_DELAY;
 
@@ -59,8 +60,8 @@ public abstract class FileWatchdog extends Thread {
     protected boolean paused;
 
     /**
-     * This flags shows whether only one or multiple notifications will be fired when
-     * several files change
+     * This flags shows whether only one or multiple notifications will be fired
+     * when several files change
      */
     protected boolean singleNotification;
 
@@ -72,21 +73,21 @@ public abstract class FileWatchdog extends Thread {
     private static Log log = LogFactory.getLog(FileWatchdog.class);
 
     protected FileWatchdog() {
-        filesInfo = Collections.synchronizedMap(new HashMap<String, FileInfo>());
+        filesInfo = new ConcurrentHashMap<String, FileInfo>();
         setDaemon(true);
     }
 
     /**
-     * Sets whether only one or multiple notifications will be fired when several files
-     * change
+     * Sets whether only one or multiple notifications will be fired when
+     * several files change
      */
     public void setSingleNotification(boolean b) {
         singleNotification = b;
     }
 
     /**
-     * Returns whether only one or multiple notifications will be fired when several files
-     * change
+     * Returns whether only one or multiple notifications will be fired when
+     * several files change
      */
     public boolean isSingleNotification() {
         return singleNotification;
@@ -95,37 +96,32 @@ public abstract class FileWatchdog extends Thread {
     /**
      * Adds a new file to watch
      * 
-     * @param location path of file
+     * @param location
+     *            path of file
      */
     public void addFile(String location) {
-        synchronized (sync) {
-            try {
-                filesInfo.put(location, new FileInfo(location));
-            }
-            catch (SecurityException e) {
-                log.error("SecurityException adding file " + location, e);
-            }
+        try {
+            filesInfo.put(location, new FileInfo(location));
+        } catch (SecurityException e) {
+            log.error("SecurityException adding file " + location, e);
         }
     }
 
     /**
      * Turns off watching for a specified file
      * 
-     * @param location path of file
+     * @param location
+     *            path of file
      */
     public void removeFile(String location) {
-        synchronized (sync) {
-            filesInfo.remove(location);
-        }
+        filesInfo.remove(location);
     }
 
     /**
      * Turns off watching for all files
      */
     public void removeAllFiles() {
-        synchronized (sync) {
-            filesInfo.clear();
-        }
+        filesInfo.clear();
     }
 
     /**
@@ -138,67 +134,66 @@ public abstract class FileWatchdog extends Thread {
     /**
      * Invoked when one of the watched files has changed
      * 
-     * @param fileInfo Changed file info
+     * @param fileInfo
+     *            Changed file info
      */
     protected abstract void doOnChange(FileInfo fileInfo);
 
     /**
      * Invoked when one of the watched files has been removed
      * 
-     * @param fileInfo Changed file info
+     * @param fileInfo
+     *            Changed file info
      */
     protected abstract void doOnRemove(FileInfo fileInfo);
 
     protected void check() {
-        synchronized (sync) {
-            if (paused)
+        if (paused)
+            return;
+
+        List<FileInfo> changed = new Vector<FileInfo>();
+        List<FileInfo> deleted = new Vector<FileInfo>();
+
+        for (Iterator<FileInfo> it = filesInfo.values().iterator(); it.hasNext();) {
+            FileInfo fi = it.next();
+
+            boolean fileExists;
+            try {
+                fileExists = fi.getFile().exists();
+            } catch (SecurityException e) {
+                log.error("SecurityException checking file " + fi.getFile().getPath(), e);
+
+                // we still process with other files
+                continue;
+            }
+
+            if (fileExists) {
+                long l = fi.getFile().lastModified(); // this can also throw
+                                                      // a
+                                                      // SecurityException
+                if (l > fi.getLastModified()) { // however, if we reached
+                                                // this point
+                                                // this
+                    fi.setLastModified(l); // is very unlikely.
+                    changed.add(fi);
+                }
+            } else if (fi.getLastModified() != -1) // the file has been
+                                                   // removed
+            {
+                deleted.add(fi);
+                it.remove(); // no point to watch the file now
+            }
+        }
+
+        for (FileInfo aDeleted : deleted) {
+            doOnRemove(aDeleted);
+            if (singleNotification)
                 return;
-
-            List<FileInfo> changed = new Vector<FileInfo>();
-            List<FileInfo> deleted = new Vector<FileInfo>();
-
-            for (Iterator<FileInfo> it = filesInfo.values().iterator(); it.hasNext();) {
-                FileInfo fi = it.next();
-
-                boolean fileExists;
-                try {
-                    fileExists = fi.getFile().exists();
-                }
-                catch (SecurityException e) {
-                    log.error(
-                            "SecurityException checking file " + fi.getFile().getPath(),
-                            e);
-
-                    // we still process with other files
-                    continue;
-                }
-
-                if (fileExists) {
-                    long l = fi.getFile().lastModified(); // this can also throw a
-                                                            // SecurityException
-                    if (l > fi.getLastModified()) { // however, if we reached this point
-                                                    // this
-                        fi.setLastModified(l); // is very unlikely.
-                        changed.add(fi);
-                    }
-                }
-                else if (fi.getLastModified() != -1) // the file has been removed
-                {
-                    deleted.add(fi);
-                    it.remove(); // no point to watch the file now
-                }
-            }
-
-            for (FileInfo aDeleted : deleted) {
-                doOnRemove(aDeleted);
-                if (singleNotification)
-                    return;
-            }
-            for (FileInfo aChanged : changed) {
-                doOnChange(aChanged);
-                if (singleNotification)
-                    return;
-            }
+        }
+        for (FileInfo aChanged : changed) {
+            doOnChange(aChanged);
+            if (singleNotification)
+                return;
         }
     }
 
@@ -207,8 +202,7 @@ public abstract class FileWatchdog extends Thread {
             try {
                 Thread.sleep(delay);
                 check();
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 // someone asked to stop
                 return;
             }
@@ -216,12 +210,11 @@ public abstract class FileWatchdog extends Thread {
     }
 
     /**
-     * Tells watcher to pause watching for some time. Useful before changing files
+     * Tells watcher to pause watching for some time. Useful before changing
+     * files
      */
     public void pauseWatching() {
-        synchronized (sync) {
-            paused = true;
-        }
+        paused = true;
     }
 
     /**
@@ -232,7 +225,8 @@ public abstract class FileWatchdog extends Thread {
     }
 
     /**
-     * Class to store information about files (last modification time & File pointer)
+     * Class to store information about files (last modification time & File
+     * pointer)
      */
     protected class FileInfo {
 
@@ -249,7 +243,8 @@ public abstract class FileWatchdog extends Thread {
         /**
          * Creates new object
          * 
-         * @param location the file path
+         * @param location
+         *            the file path
          */
         public FileInfo(String location) {
             file = new File(location);

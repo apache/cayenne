@@ -18,67 +18,61 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.validator;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
+
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.WidgetFactory;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.util.ProjectUtil;
 
-
-import javax.swing.table.TableColumn;
-import javax.swing.JTable;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JScrollPane;
-import javax.swing.JPanel;
-import javax.swing.JDialog;
-import java.util.List;
-import java.util.LinkedList;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-
-
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.builder.PanelBuilder;
 
 /**
  * Dialog for resolving name collision.
  * 
  */
 public class DuplicatedAttributesDialog extends CayenneDialog {
-    
+
     protected static DuplicatedAttributesDialog instance;
-    
+
     static final String DELETE_ACTION = "delete";
     static final String RENAME_ACTION = "rename";
-    
+
     public static final String CANCEL_RESULT = "cancel";
     public static final String PROCEEDED_RESULT = "proceeded";
-    
+
     static String result = CANCEL_RESULT;
-    
+
     protected List<DuplicatedAttributeInfo> duplicatedAttributes;
-    
+
     protected ObjEntity superEntity;
     protected ObjEntity entity;
-    
+
     protected JTable attributesTable;
     protected JButton cancelButton;
     protected JButton proceedButton;
 
-    public static synchronized void showDialog(
-            CayenneModelerFrame editor,
-            List<ObjAttribute> duplicatedAttributes,
-            ObjEntity superEntity,
-            ObjEntity entity) {
+    public static void showDialog(CayenneModelerFrame editor, List<ObjAttribute> duplicatedAttributes,
+            ObjEntity superEntity, ObjEntity entity) {
 
         if (instance == null) {
             instance = new DuplicatedAttributesDialog(editor);
@@ -96,7 +90,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         super(editor, "Duplicated Attributes", true);
 
         result = CANCEL_RESULT;
-        
+
         initView();
         initController();
     }
@@ -109,22 +103,16 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
         // assemble
         CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "fill:200dlu:grow",
-                "pref, 3dlu, top:40dlu:grow"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout("fill:200dlu:grow", "pref, 3dlu, top:40dlu:grow"));
 
         builder.setDefaultDialogBorder();
 
-        builder
-                .addLabel(
-                        "Select actions for duplicated attributes:",
-                        cc.xy(1, 1));
+        builder.addLabel("Select actions for duplicated attributes:", cc.xy(1, 1));
         builder.add(new JScrollPane(attributesTable), cc.xy(1, 3));
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
         buttons.add(proceedButton);
-        
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
@@ -162,7 +150,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
     private void updateTable() {
         TableColumn actionColumn = attributesTable.getColumnModel().getColumn(DuplicatedAttributeTableModel.ACTION);
-        JComboBox actionsCombo = Application.getWidgetFactory().createComboBox(new String[]{DELETE_ACTION, RENAME_ACTION}, false);
+        JComboBox actionsCombo = Application.getWidgetFactory().createComboBox(
+                new String[] { DELETE_ACTION, RENAME_ACTION }, false);
         actionColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(actionsCombo));
     }
 
@@ -176,20 +165,21 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
             }
         }
     }
-    
+
     public void setDuplicatedAttributes(List<ObjAttribute> attributes) {
         if (duplicatedAttributes == null) {
             duplicatedAttributes = new LinkedList<DuplicatedAttributeInfo>();
         }
-        
+
         duplicatedAttributes.clear();
-        
+
         for (ObjAttribute attribute : attributes) {
-            DuplicatedAttributeInfo attributeInfo = new DuplicatedAttributeInfo(attribute.getName(), attribute.getType(),
-                    ((ObjAttribute) superEntity.getAttribute(attribute.getName())).getType(), DELETE_ACTION);
+            DuplicatedAttributeInfo attributeInfo = new DuplicatedAttributeInfo(attribute.getName(),
+                    attribute.getType(), ((ObjAttribute) superEntity.getAttribute(attribute.getName())).getType(),
+                    DELETE_ACTION);
             duplicatedAttributes.add(attributeInfo);
         }
-        
+
         attributesTable.setModel(new DuplicatedAttributeTableModel(getMediator(), this, duplicatedAttributes));
 
     }
@@ -203,7 +193,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
     }
 
     class DuplicatedAttributeTableModel extends CayenneTableModel {
-        
+
         static final int ATTRIBUTE_NAME = 0;
         static final int PARENT_TYPE = 1;
         static final int TYPE = 2;
@@ -218,17 +208,18 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
         public void setUpdatedValueAt(Object newValue, int row, int column) {
             DuplicatedAttributeInfo attributeInfo = duplicatedAttributes.get(row);
-            if(column == ATTRIBUTE_NAME) {
+            if (column == ATTRIBUTE_NAME) {
                 attributeInfo.setNewName(newValue.toString());
                 attributeInfo.setAction(RENAME_ACTION);
-                //TODO: add warn if new valuew equals the old one or name equals to another attribute name.
+                // TODO: add warn if new valuew equals the old one or name
+                // equals to another attribute name.
                 this.fireTableDataChanged();
             }
 
             if (column == ACTION) {
                 attributeInfo.setAction(newValue.toString());
             }
-            
+
         }
 
         public Class<?> getElementsClass() {
@@ -242,20 +233,18 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         public Object getValueAt(int row, int col) {
             DuplicatedAttributeInfo attributeInfo = duplicatedAttributes.get(row);
             switch (col) {
-                case ATTRIBUTE_NAME:
-                    return attributeInfo.getNewName();
-                case PARENT_TYPE:
-                    return attributeInfo.getParentType();
-                case TYPE:
-                    return attributeInfo.getType();
-                case ACTION:
-                    return attributeInfo.getAction();
-                
+            case ATTRIBUTE_NAME:
+                return attributeInfo.getNewName();
+            case PARENT_TYPE:
+                return attributeInfo.getParentType();
+            case TYPE:
+                return attributeInfo.getType();
+            case ACTION:
+                return attributeInfo.getAction();
+
             }
             return "";
         }
-        
-        
 
         public boolean isCellEditable(int row, int column) {
             if (column == ACTION || column == ATTRIBUTE_NAME) {
@@ -266,20 +255,20 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
         public String getColumnName(int column) {
             switch (column) {
-                case ATTRIBUTE_NAME:
-                    return "Name";
-                case PARENT_TYPE:
-                    return "Type in super entity";
-                case TYPE :
-                    return "Type";
-                case ACTION:
-                    return "Action";
+            case ATTRIBUTE_NAME:
+                return "Name";
+            case PARENT_TYPE:
+                return "Type in super entity";
+            case TYPE:
+                return "Type";
+            case ACTION:
+                return "Action";
             }
             return " ";
         }
 
         public Class getColumnClass(int column) {
-          return String.class;
+            return String.class;
         }
 
         @Override
@@ -335,5 +324,5 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
             this.newName = newName;
         }
     }
-    
+
 }

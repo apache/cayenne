@@ -26,7 +26,6 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -47,19 +46,16 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-
 /**
- * A simple non-editable tree browser with multiple columns 
- * for display and navigation of a tree structure. This type of
- * browser is ideal for showing deeply (or infinitely) nested 
- * trees/graphs. The most famous example of its use is Mac OS X 
- * Finder column view. 
+ * A simple non-editable tree browser with multiple columns for display and
+ * navigation of a tree structure. This type of browser is ideal for showing
+ * deeply (or infinitely) nested trees/graphs. The most famous example of its
+ * use is Mac OS X Finder column view.
  * 
  * <p>
- * MultiColumnBrowser starts at the root of the tree
- * and automatically expands to the right as navigation goes deeper. 
- * MultiColumnBrowser uses the same TreeModel as a regular JTree 
- * for its navigation model.
+ * MultiColumnBrowser starts at the root of the tree and automatically expands
+ * to the right as navigation goes deeper. MultiColumnBrowser uses the same
+ * TreeModel as a regular JTree for its navigation model.
  * </p>
  * 
  * <p>
@@ -70,8 +66,7 @@ import javax.swing.tree.TreePath;
  */
 public class MultiColumnBrowser extends JPanel {
 
-    protected static final ImageIcon rightArrow =
-        ModelerUtil.buildIcon("scroll_right.gif");
+    protected static final ImageIcon rightArrow = ModelerUtil.buildIcon("scroll_right.gif");
 
     public static final int DEFAULT_MIN_COLUMNS_COUNT = 3;
 
@@ -84,7 +79,7 @@ public class MultiColumnBrowser extends JPanel {
     protected List<BrowserPanel> columns;
     protected ListSelectionListener browserSelector;
     protected List<TreeSelectionListener> treeSelectionListeners;
-    
+
     /**
      * Whether firing of TreeSelectionListeners is disabled now
      */
@@ -96,31 +91,24 @@ public class MultiColumnBrowser extends JPanel {
 
     public MultiColumnBrowser(int minColumns) {
         if (minColumns < DEFAULT_MIN_COLUMNS_COUNT) {
-            throw new IllegalArgumentException(
-                "Expected "
-                    + DEFAULT_MIN_COLUMNS_COUNT
-                    + " or more columns, got: "
+            throw new IllegalArgumentException("Expected " + DEFAULT_MIN_COLUMNS_COUNT + " or more columns, got: "
                     + minColumns);
         }
 
         this.minColumns = minColumns;
         this.browserSelector = new PanelController();
-        this.treeSelectionListeners = Collections.synchronizedList(new ArrayList<TreeSelectionListener>());
+        this.treeSelectionListeners = new ArrayList<TreeSelectionListener>();
         initView();
     }
 
     public void addTreeSelectionListener(TreeSelectionListener listener) {
-        synchronized (treeSelectionListeners) {
-            if (listener != null && !treeSelectionListeners.contains(listener)) {
-                treeSelectionListeners.add(listener);
-            }
+        if (listener != null && !treeSelectionListeners.contains(listener)) {
+            treeSelectionListeners.add(listener);
         }
     }
 
     public void removeTreeSelectionListener(TreeSelectionListener listener) {
-        synchronized (treeSelectionListeners) {
-            treeSelectionListeners.remove(listener);
-        }
+        treeSelectionListeners.remove(listener);
     }
 
     /**
@@ -130,12 +118,10 @@ public class MultiColumnBrowser extends JPanel {
         if (fireDisabled) {
             return;
         }
-        
-        TreeSelectionEvent e =
-            new TreeSelectionEvent(this, new TreePath(selectionPath), false, null, null);
-        synchronized (treeSelectionListeners) {
-            for (TreeSelectionListener listener : treeSelectionListeners)
-                listener.valueChanged(e);
+
+        TreeSelectionEvent e = new TreeSelectionEvent(this, new TreePath(selectionPath), false, null, null);
+        for (TreeSelectionListener listener : treeSelectionListeners) {
+            listener.valueChanged(e);
         }
     }
 
@@ -145,31 +131,29 @@ public class MultiColumnBrowser extends JPanel {
     public TreePath getSelectionPath() {
         return new TreePath(selectionPath);
     }
-    
+
     /**
      * Sets new selection path and fires an event
      */
     public void setSelectionPath(TreePath path) {
         try {
             fireDisabled = true;
-            
+
             for (int i = 0; i < path.getPathCount(); i++) {
                 selectRow(path.getPathComponent(i), i, path);
             }
-        }
-        finally {
+        } finally {
             fireDisabled = false;
         }
     }
-    
+
     /**
      * Selects one path component
      */
     protected void selectRow(Object row, int index, TreePath path) {
         if (index > 0 && columns.get(index - 1).getSelectedValue() != row) {
             columns.get(index - 1).setSelectedValue(row, true);
-        }
-        else { //update
+        } else { // update
             updateFromModel(row, index - 1);
         }
     }
@@ -201,9 +185,9 @@ public class MultiColumnBrowser extends JPanel {
     }
 
     /**
-     * Resets currently used renderer to default one that will
-     * use the "name" property of objects and display a small
-     * arrow to the right of all non-leaf nodes.
+     * Resets currently used renderer to default one that will use the "name"
+     * property of objects and display a small arrow to the right of all
+     * non-leaf nodes.
      */
     public void setDefaultRenderer() {
         if (!(renderer instanceof MultiColumnBrowserRenderer)) {
@@ -221,7 +205,7 @@ public class MultiColumnBrowser extends JPanel {
     /**
      * Initializes the renderer of column cells.
      */
-    public synchronized void setRenderer(ListCellRenderer renderer) {
+    public void setRenderer(ListCellRenderer renderer) {
         if (this.renderer != renderer) {
             this.renderer = renderer;
 
@@ -236,7 +220,7 @@ public class MultiColumnBrowser extends JPanel {
     /**
      * Initializes browser model.
      */
-    public synchronized void setModel(TreeModel model) {
+    public void setModel(TreeModel model) {
         if (model == null) {
             throw new NullPointerException("Null tree model.");
         }
@@ -268,13 +252,13 @@ public class MultiColumnBrowser extends JPanel {
     // ====================================================
 
     private void initView() {
-        columns = Collections.synchronizedList(new ArrayList<BrowserPanel>(minColumns));
+        columns = new ArrayList<BrowserPanel>(minColumns);
         adjustViewColumns(minColumns);
     }
 
     /**
-     * Expands or contracts the view by <code>delta</code> columns.
-     * Never contracts the view below <code>minColumns</code>.
+     * Expands or contracts the view by <code>delta</code> columns. Never
+     * contracts the view below <code>minColumns</code>.
      */
     private void adjustViewColumns(int delta) {
         if (delta == 0) {
@@ -286,8 +270,7 @@ public class MultiColumnBrowser extends JPanel {
             for (int i = 0; i < delta; i++) {
                 appendColumn();
             }
-        }
-        else {
+        } else {
             for (int i = -delta; i > 0 && columns.size() > minColumns; i--) {
                 removeLastColumn();
             }
@@ -302,10 +285,7 @@ public class MultiColumnBrowser extends JPanel {
         installColumn(panel);
 
         columns.add(panel);
-        JScrollPane scroller =
-            new JScrollPane(
-                panel,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        JScrollPane scroller = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         // note - it is important to set prefrred size on scroller,
@@ -317,7 +297,7 @@ public class MultiColumnBrowser extends JPanel {
         add(scroller);
         return panel;
     }
-    
+
     /**
      * Installs all needed columns and renderers to a new column
      */
@@ -340,14 +320,14 @@ public class MultiColumnBrowser extends JPanel {
         remove(index);
         return panel;
     }
-    
+
     /**
      * Clears selection in browser and removes all unnessesary columns
      */
     public void clearSelection() {
         updateFromModel(model.getRoot(), -1);
     }
-    
+
     /**
      * Removes all local listeners from the column
      */
@@ -356,8 +336,8 @@ public class MultiColumnBrowser extends JPanel {
     }
 
     /**
-     * Refreshes preferred size of the browser to
-     * reflect current number of columns.
+     * Refreshes preferred size of the browser to reflect current number of
+     * columns.
      */
     private void refreshPreferredSize() {
         if (preferredColumnSize != null) {
@@ -393,30 +373,30 @@ public class MultiColumnBrowser extends JPanel {
             viewport.scrollRectToVisible(rectangle);
         }
     }
-    
+
     /**
      * Rebuilds view for the new object selection.
      */
-    protected synchronized void updateFromModel(Object selectedNode, int panelIndex) {
+    protected void updateFromModel(Object selectedNode, int panelIndex) {
         updateFromModel(selectedNode, panelIndex, true);
     }
 
     /**
      * Rebuilds view for the new object selection.
-     * @param load Whether children are loaded automatically
+     * 
+     * @param load
+     *            Whether children are loaded automatically
      */
-    protected synchronized void updateFromModel(Object selectedNode, int panelIndex, boolean load) {
-        if(selectionPath == null) {
+    protected void updateFromModel(Object selectedNode, int panelIndex, boolean load) {
+        if (selectionPath == null) {
             selectionPath = new Object[0];
         }
-        
+
         // clean up extra columns
         int lastIndex = selectionPath.length;
 
-        // check array range to handle race conditions 
-        for (int i = panelIndex + 1;
-            i <= lastIndex && i >= 0 && i < columns.size();
-            i++) {
+        // check array range to handle race conditions
+        for (int i = panelIndex + 1; i <= lastIndex && i >= 0 && i < columns.size(); i++) {
             BrowserPanel column = columns.get(i);
             column.getSelectionModel().clearSelection();
             column.setRootNode(null);
@@ -426,11 +406,11 @@ public class MultiColumnBrowser extends JPanel {
         this.selectionPath = rebuildPath(selectionPath, selectedNode, panelIndex);
 
         if (load) {
-            // a selectedNode is contained in "panelIndex" column, 
+            // a selectedNode is contained in "panelIndex" column,
             // but its children are in the next column.
             panelIndex++;
         }
-        
+
         // expand/contract columns as needed
         adjustViewColumns(panelIndex + 1 - columns.size());
 
@@ -446,10 +426,10 @@ public class MultiColumnBrowser extends JPanel {
         fireTreeSelectionEvent(selectionPath);
     }
 
-    /** 
-     * Builds a TreePath to the new node, that is known to be a peer or a child 
-     * of one of the path components. As the method walks the current path backwards,
-     * it cleans columns that are not common with the new path.
+    /**
+     * Builds a TreePath to the new node, that is known to be a peer or a child
+     * of one of the path components. As the method walks the current path
+     * backwards, it cleans columns that are not common with the new path.
      */
     private Object[] rebuildPath(Object[] path, Object node, int panelIndex) {
         Object[] newPath = new Object[panelIndex + 2];
@@ -477,10 +457,7 @@ public class MultiColumnBrowser extends JPanel {
             this.children = (treeNode != null) ? model.getChildCount(treeNode) : 0;
 
             // must fire an event to refresh the view
-            super.fireContentsChanged(
-                MultiColumnBrowser.this,
-                0,
-                Math.max(oldChildren, children));
+            super.fireContentsChanged(MultiColumnBrowser.this, 0, Math.max(oldChildren, children));
         }
 
         public Object getElementAt(int index) {
@@ -530,7 +507,7 @@ public class MultiColumnBrowser extends JPanel {
     }
 
     // ====================================================
-    // Default renderer that shows non-leaf nodes with a 
+    // Default renderer that shows non-leaf nodes with a
     // small right arrow. Unfortunately we can't subclass
     // DefaultListCellRenerer since it extends JLabel that
     // does not allow the layout that we need.
@@ -558,20 +535,11 @@ public class MultiColumnBrowser extends JPanel {
             nonLeafPanel.add((Component) nonLeafTextRenderer, BorderLayout.WEST);
         }
 
-        public Component getListCellRendererComponent(
-            JList list,
-            Object value,
-            int index,
-            boolean isSelected,
-            boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                boolean cellHasFocus) {
 
             if (getModel().isLeaf(value)) {
-                return leafRenderer.getListCellRendererComponent(
-                    list,
-                    value,
-                    index,
-                    isSelected,
-                    cellHasFocus);
+                return leafRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             }
 
             Object renderedValue = ModelerUtil.getObjectName(value);
@@ -580,12 +548,7 @@ public class MultiColumnBrowser extends JPanel {
                 renderedValue = " ";
             }
 
-            Component text =
-                nonLeafTextRenderer.getListCellRendererComponent(
-                    list,
-                    renderedValue,
-                    index,
-                    isSelected,
+            Component text = nonLeafTextRenderer.getListCellRendererComponent(list, renderedValue, index, isSelected,
                     cellHasFocus);
 
             nonLeafPanel.setComponentOrientation(text.getComponentOrientation());

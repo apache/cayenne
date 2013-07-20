@@ -17,13 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.modeler.util;
 
 /**
- * A circular array is an array of fixed size as objects are added it will push objects
- * off of the end to allow space for new objects to be added. This is useful for things
- * like a fixed history size for a navigation tool.
+ * A circular array is an array of fixed size as objects are added it will push
+ * objects off of the end to allow space for new objects to be added. This is
+ * useful for things like a fixed history size for a navigation tool.
  * 
  * @since 1.2
  */
@@ -38,7 +37,8 @@ public class CircularArray extends Object {
     /**
      * Creates an array of capacity size.
      * 
-     * @param capacity - size of the new array
+     * @param capacity
+     *            - size of the new array
      */
     public CircularArray(int capacity) {
         if (capacity <= 0) {
@@ -51,7 +51,7 @@ public class CircularArray extends Object {
     /**
      * Clears out the contents of the array.
      */
-    public synchronized void clear() {
+    public void clear() {
         array = new Object[capacity];
         head = 0;
         tail = 0;
@@ -66,12 +66,13 @@ public class CircularArray extends Object {
     }
 
     /**
-     * Adds a new object to the array. If the array is full it will push the oldest item
-     * out of the array.
+     * Adds a new object to the array. If the array is full it will push the
+     * oldest item out of the array.
      * 
-     * @param obj - the object to be added
+     * @param obj
+     *            - the object to be added
      */
-    public synchronized void add(Object obj) {
+    public void add(Object obj) {
         // we have wrapped and we have to move the head pointer
         if (count == capacity && tail == head) {
             head = (head + 1) % capacity;
@@ -112,7 +113,8 @@ public class CircularArray extends Object {
     /**
      * Returns true if the array contains the specified object.
      * 
-     * @param obj the object to be checked
+     * @param obj
+     *            the object to be checked
      */
     public boolean contains(Object obj) {
         return indexOf(obj) >= 0;
@@ -121,9 +123,10 @@ public class CircularArray extends Object {
     /**
      * Gets the object at the specified index.
      * 
-     * @param index the index of the object to be retrieved
+     * @param index
+     *            the index of the object to be retrieved
      */
-    public synchronized Object get(int index) {
+    public Object get(int index) {
         rangeCheck(index);
         if (count == 0) {
             return null;
@@ -134,9 +137,10 @@ public class CircularArray extends Object {
     /**
      * Returns the index of the specified object
      * 
-     * @param obj the object that is being searched for
+     * @param obj
+     *            the object that is being searched for
      */
-    public synchronized int indexOf(Object obj) {
+    public int indexOf(Object obj) {
         for (int i = 0; i < capacity; i++) {
             int index = convert(i);
             if (array[index] == obj) {
@@ -150,13 +154,14 @@ public class CircularArray extends Object {
     /**
      * Removes the specified object from the array
      * 
-     * @param i the index of the object to be removed
+     * @param i
+     *            the index of the object to be removed
      */
-    public synchronized void remove(Object obj) {
+    public void remove(Object obj) {
         if (count == 0) {
             return;
         }
-        
+
         int i = indexOf(obj);
 
         while (i >= 0) {
@@ -168,14 +173,12 @@ public class CircularArray extends Object {
                 head = (head + 1) % capacity;
                 array[pos] = null;
                 count--;
-            }
-            else if (pos == tail) {
+            } else if (pos == tail) {
                 // move the tail back one
                 tail = (tail - 1 + capacity) % capacity;
                 array[pos] = null;
                 count--;
-            }
-            else {
+            } else {
                 // create a brand new array and start it back out at zero
                 Object[] a = new Object[capacity];
                 int destPos = 0;
@@ -201,8 +204,7 @@ public class CircularArray extends Object {
                         if (len > 0) {
                             System.arraycopy(array, 0, a, destPos, len);
                         }
-                    }
-                    else if (head > pos) {
+                    } else if (head > pos) {
                         // copy from head to end of array
                         len = capacity - head;
                         if (len > 0) {
@@ -223,8 +225,7 @@ public class CircularArray extends Object {
                             System.arraycopy(array, pos + 1, a, destPos, len);
                         }
                     }
-                }
-                else if (head < tail) {
+                } else if (head < tail) {
                     // copy from head to position -1
                     len = pos - head;
                     if (len > 0) {
@@ -238,8 +239,7 @@ public class CircularArray extends Object {
                         System.arraycopy(array, pos + 1, a, destPos, len);
                         destPos += len;
                     }
-                }
-                else if (head > tail) {
+                } else if (head > tail) {
                     if (head < pos) {
                         // copy from head to position
                         len = pos - head;
@@ -258,8 +258,7 @@ public class CircularArray extends Object {
                         if (len > 0) {
                             System.arraycopy(array, 0, a, destPos, len);
                         }
-                    }
-                    else if (head > pos) {
+                    } else if (head > pos) {
                         // copy from head to end of array
                         len = capacity - head;
                         if (len > 0) {
@@ -291,13 +290,14 @@ public class CircularArray extends Object {
     }
 
     /**
-     * Resizes the array to the specified new size. If the new capacity is smaller than
-     * the current object count in the array, it will keep the newCapacity most recent
-     * objects.
+     * Resizes the array to the specified new size. If the new capacity is
+     * smaller than the current object count in the array, it will keep the
+     * newCapacity most recent objects.
      * 
-     * @param newCapacity the new capacity of the array
+     * @param newCapacity
+     *            the new capacity of the array
      */
-    public synchronized void resize(int newCapacity) {
+    public void resize(int newCapacity) {
         int i = 0;
         int offset = 0;
         if (newCapacity < count) {
@@ -330,7 +330,7 @@ public class CircularArray extends Object {
     /**
      * Converts the array to an Object array.
      */
-    public synchronized Object[] toArray() {
+    public Object[] toArray() {
         Object[] o = new Object[capacity];
         for (int i = 0; i < capacity; i++) {
             o[i] = array[convert(i)];
@@ -338,7 +338,7 @@ public class CircularArray extends Object {
         return o;
     }
 
-    public synchronized String internalRep() {
+    public String internalRep() {
         Object o = null;
 
         StringBuffer sb = new StringBuffer();
@@ -349,8 +349,7 @@ public class CircularArray extends Object {
             o = array[i];
             if (o == null) {
                 sb.append("null");
-            }
-            else {
+            } else {
                 sb.append(o.toString());
             }
             if (i == head || i == tail) {
@@ -391,8 +390,7 @@ public class CircularArray extends Object {
             }
             if (o == null) {
                 sb.append("null");
-            }
-            else {
+            } else {
                 sb.append(o.toString());
             }
         }

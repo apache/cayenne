@@ -41,20 +41,19 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
 
-/** 
+/**
  * Displays the Cayenne license and build information.
  */
-// Implementation note - the data displayed here is 
-// static and very simple, so there is no need to implement complex Scope MVC 
+// Implementation note - the data displayed here is
+// static and very simple, so there is no need to implement complex Scope MVC
 // triad, though it might be beneficial to use strings file
 public class AboutDialog extends JFrame implements FocusListener, KeyListener, MouseListener {
 
-    
     private JLabel license, info;
     private static String infoString;
     private static ImageIcon logoImage;
 
-    static synchronized ImageIcon getLogoImage() {
+    static ImageIcon getLogoImage() {
         if (logoImage == null) {
             logoImage = ModelerUtil.buildIcon("logo.jpg");
         }
@@ -64,7 +63,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
     /**
      * Builds and returns CayenneModeler info string.
      */
-    static synchronized String getInfoString() {
+    static String getInfoString() {
         if (infoString == null) {
 
             double maxMemory = (double) Runtime.getRuntime().maxMemory() / 1024 / 1024;
@@ -78,14 +77,8 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
             buffer.append("</font>");
 
             buffer.append("<font size='-2' face='Arial,Helvetica'>");
-            buffer.append("<br>JVM: "
-                    + System.getProperty("java.vm.name")
-                    + " "
-                    + System.getProperty("java.version"));
-            buffer.append(String.format(
-                    "<br>Memory: used %.2f MB, max %.2f MB",
-                    totalMemory - freeMemory,
-                    maxMemory));
+            buffer.append("<br>JVM: " + System.getProperty("java.vm.name") + " " + System.getProperty("java.version"));
+            buffer.append(String.format("<br>Memory: used %.2f MB, max %.2f MB", totalMemory - freeMemory, maxMemory));
 
             String version = LocalizedStringsHandler.getString("cayenne.version");
             if (version != null) {
@@ -117,7 +110,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
         addFocusListener(this);
         addKeyListener(this);
         setLocationRelativeTo(null); // centre on screen
-        
+
         final JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         panel.setBackground(Color.WHITE);
@@ -135,7 +128,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
         gridBagConstraints_1.insets = new Insets(0, 12, 0, 0);
         panel.add(license, gridBagConstraints_1);
         license.setText("<html><font size='-1' face='Arial,Helvetica'>Available under the Apache license.</font></html>");
-        
+
         info = new JLabel();
         final GridBagConstraints gridBagConstraints_2 = new GridBagConstraints();
         gridBagConstraints_2.fill = GridBagConstraints.HORIZONTAL;
@@ -145,16 +138,16 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
         gridBagConstraints_2.insets = new Insets(6, 12, 12, 12);
         panel.add(info, gridBagConstraints_2);
         info.setText(getInfoString());
-        
+
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
-    
+
     public void keyPressed(KeyEvent e) {
         dispose();
     }
-   
+
     public void focusLost(FocusEvent e) {
         dispose();
     }

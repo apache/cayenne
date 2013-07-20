@@ -55,16 +55,15 @@ import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 
-public class ObjRelationshipInfo extends CayenneController implements
-    TreeSelectionListener {
-    
+public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
+
     static final String COLLECTION_TYPE_MAP = "java.util.Map";
     static final String COLLECTION_TYPE_SET = "java.util.Set";
     static final String COLLECTION_TYPE_COLLECTION = "java.util.Collection";
     static final String DEFAULT_MAP_KEY = "ID (default)";
-    
+
     protected ObjRelationship relationship;
-    
+
     protected List<DbRelationship> dbRelationships;
 
     protected List<DbRelationship> savedDbRelationships;
@@ -78,7 +77,7 @@ public class ObjRelationshipInfo extends CayenneController implements
     protected ObjRelationshipInfoView view;
     protected String currentPath;
     protected ProjectController mediator;
-    
+
     /**
      * Starts options dialog.
      */
@@ -90,15 +89,15 @@ public class ObjRelationshipInfo extends CayenneController implements
         centerView();
         view.setVisible(true);
     }
-   
-    public ObjRelationshipInfo(ProjectController mediator,ObjRelationship relationship) {
+
+    public ObjRelationshipInfo(ProjectController mediator, ObjRelationship relationship) {
         super(mediator);
         this.view = new ObjRelationshipInfoView(mediator);
-        this.mediator=mediator;
+        this.mediator = mediator;
         ObjEntity target = getObjectTarget();
         getPathBrowser().addTreeSelectionListener(this);
         setObjectTarget(target);
-        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());    
+        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
         this.relationship = relationship;
         this.relationshipName = relationship.getName();
         view.relationshipName.setText(relationshipName);
@@ -123,11 +122,11 @@ public class ObjRelationshipInfo extends CayenneController implements
         targetCollections.add(ObjRelationship.DEFAULT_COLLECTION_TYPE);
         targetCollections.add(COLLECTION_TYPE_MAP);
         targetCollections.add(COLLECTION_TYPE_SET);
-        
-        for( String s : targetCollections) {
+
+        for (String s : targetCollections) {
             view.collectionTypeCombo.addItem(s);
         }
-       
+
         this.mapKeys = new ArrayList<String>();
         initMapKeys();
 
@@ -135,13 +134,13 @@ public class ObjRelationshipInfo extends CayenneController implements
         dbRelationships = new ArrayList<DbRelationship>(relationship.getDbRelationships());
         selectPath();
         updateCollectionChoosers();
-       
+
         // add dummy last relationship if we are not connected
         connectEnds();
         initFromModel();
         initController();
     }
-    
+
     private void initController() {
         view.getCancelButton().addActionListener(new ActionListener() {
 
@@ -166,21 +165,21 @@ public class ObjRelationshipInfo extends CayenneController implements
             public void actionPerformed(ActionEvent e) {
                 selectPath();
             }
-        });  
+        });
         view.getCollectionTypeCombo().addActionListener(new ActionListener() {
-            
+
             public void actionPerformed(ActionEvent e) {
                 setCollectionType();
             }
         });
         view.getMapKeysCombo().addActionListener(new ActionListener() {
-            
+
             public void actionPerformed(ActionEvent e) {
                 setMapKey();
             }
         });
     }
-    
+
     void initFromModel() {
 
         if (view.pathBrowser.getModel() == null) {
@@ -198,7 +197,8 @@ public class ObjRelationshipInfo extends CayenneController implements
                     }
 
                     /**
-                     * We do not allow A->B->A chains, where relationships are to-one
+                     * We do not allow A->B->A chains, where relationships are
+                     * to-one
                      */
                     DbRelationship prev = (DbRelationship) node;
                     return !(!rel.isToMany() && prev.getReverseRelationship() == rel);
@@ -211,7 +211,7 @@ public class ObjRelationshipInfo extends CayenneController implements
             setSelectionPath(getSavedDbRelationships());
         }
     }
-    
+
     /**
      * Selects path in browser
      */
@@ -223,30 +223,29 @@ public class ObjRelationshipInfo extends CayenneController implements
 
         view.pathBrowser.setSelectionPath(new TreePath(path));
     }
-    
+
     public void setCollectionType() {
-        setTargetCollection((String)view.collectionTypeCombo.getSelectedItem());
-        
-        if (COLLECTION_TYPE_MAP.equals(targetCollection)){
+        setTargetCollection((String) view.collectionTypeCombo.getSelectedItem());
+
+        if (COLLECTION_TYPE_MAP.equals(targetCollection)) {
             view.mapKeysLabel.setEnabled(true);
             view.mapKeysCombo.setEnabled(true);
             setMapKey();
-        }
-        else {
+        } else {
             view.mapKeysLabel.setEnabled(false);
             view.mapKeysCombo.setEnabled(false);
         }
     }
-    
+
     public void setMapKey() {
-        setMapKey((String)view.mapKeysCombo.getSelectedItem());
+        setMapKey((String) view.mapKeysCombo.getSelectedItem());
     }
 
     @Override
     public Component getView() {
         return view;
     }
- 
+
     public void setSavedDbRelationships(List<DbRelationship> rels) {
         this.savedDbRelationships = rels;
 
@@ -260,9 +259,9 @@ public class ObjRelationshipInfo extends CayenneController implements
         }
 
         currentPath = currPath;
-        view.currentPathLabel.setText(currPath);   
+        view.currentPathLabel.setText(currPath);
     }
-    
+
     public void selectPath() {
         setSavedDbRelationships(new ArrayList<DbRelationship>(dbRelationships));
     }
@@ -274,7 +273,7 @@ public class ObjRelationshipInfo extends CayenneController implements
         setSelectionPath(getSavedDbRelationships());
         setDbRelationships(getSavedDbRelationships());
     }
-    
+
     /**
      * Updates 'collection type' and 'map keys' comboboxes
      */
@@ -287,15 +286,14 @@ public class ObjRelationshipInfo extends CayenneController implements
         }
 
         boolean mapKeysEnabled = collectionTypeEnabled
-                && ObjRelationshipInfo.COLLECTION_TYPE_MAP
-                        .equals(view.collectionTypeCombo.getSelectedItem());
+                && ObjRelationshipInfo.COLLECTION_TYPE_MAP.equals(view.collectionTypeCombo.getSelectedItem());
         view.mapKeysCombo.setEnabled(mapKeysEnabled);
         view.mapKeysLabel.setEnabled(mapKeysEnabled);
         if (mapKeysEnabled) {
             view.mapKeysCombo.setSelectedItem(mapKey);
         }
     }
-    
+
     /**
      * Clears paths and selections in browser
      */
@@ -306,55 +304,47 @@ public class ObjRelationshipInfo extends CayenneController implements
 
     protected void saveMapping() {
         if (!getDbRelationships().equals(getSavedDbRelationships())) {
-            if (JOptionPane.showConfirmDialog(
-                    (Component) getView(),
-                    "You have changed Db Relationship path. Do you want it to be saved?",
-                    "Save ObjRelationship",
+            if (JOptionPane.showConfirmDialog((Component) getView(),
+                    "You have changed Db Relationship path. Do you want it to be saved?", "Save ObjRelationship",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 selectPath();
             }
         }
 
         if (savePath()) {
-            mediator.fireObjRelationshipEvent(new RelationshipEvent(Application
-                    .getFrame(), getRelationship(), getRelationship()
-                    .getSourceEntity()));
+            mediator.fireObjRelationshipEvent(new RelationshipEvent(Application.getFrame(), getRelationship(),
+                    getRelationship().getSourceEntity()));
         }
-        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName()); 
+        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
         view.dispose();
     }
-    
+
     /**
      * @return relationship path browser
      */
     public MultiColumnBrowser getPathBrowser() {
         return view.pathBrowser;
     }
-    
+
     /**
-     * Creates a new relationship connecting currently selected source entity with
-     * ObjRelationship target entity. User is allowed to edit the relationship, change its
-     * name, and create joins.
+     * Creates a new relationship connecting currently selected source entity
+     * with ObjRelationship target entity. User is allowed to edit the
+     * relationship, change its name, and create joins.
      */
     protected void createRelationship() {
-      
+
         DbRelationship dbRel = getLastRelationship();
         DbEntity source = dbRel != null ? (DbEntity) dbRel.getTargetEntity() : null;
 
-        DbRelationshipTarget targetModel = new DbRelationshipTarget(mediator,
-                getStartEntity(),
-                source);
+        DbRelationshipTarget targetModel = new DbRelationshipTarget(mediator, getStartEntity(), source);
         targetModel.startupAction();
 
         if (!targetModel.isSavePressed()) {
             return;
         }
 
-        DbRelationship dbRelationship = (DbRelationship) NamedObjectFactory
-                .createRelationship(
-                        targetModel.getSource(),
-                        targetModel.getTarget(),
-                        targetModel.isToMany());
+        DbRelationship dbRelationship = (DbRelationship) NamedObjectFactory.createRelationship(targetModel.getSource(),
+                targetModel.getTarget(), targetModel.isToMany());
 
         // note: NamedObjectFactory doesn't set source or target, just the name
         dbRelationship.setSourceEntity(targetModel.getSource());
@@ -362,20 +352,18 @@ public class ObjRelationshipInfo extends CayenneController implements
         dbRelationship.setToMany(targetModel.isToMany());
         targetModel.getSource().addRelationship(dbRelationship);
 
-        // TODO: creating relationship outside of ResolveDbRelationshipDialog confuses it
+        // TODO: creating relationship outside of ResolveDbRelationshipDialog
+        // confuses it
         // to send incorrect event - CHANGE instead of ADD
-        ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(
-                dbRelationship);
+        ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(dbRelationship);
 
         dialog.setVisible(true);
         if (dialog.isCancelPressed()) {
             targetModel.getSource().removeRelationship(dbRelationship.getName());
-        }
-        else {
+        } else {
             MultiColumnBrowser pathBrowser = getPathBrowser();
-            Object[] oldPath = targetModel.isSource1Selected() ? new Object[] {
-                    getStartEntity()
-                } : pathBrowser.getSelectionPath().getPath();
+            Object[] oldPath = targetModel.isSource1Selected() ? new Object[] { getStartEntity() } : pathBrowser
+                    .getSelectionPath().getPath();
 
             /**
              * Update the view
@@ -383,9 +371,7 @@ public class ObjRelationshipInfo extends CayenneController implements
             EntityTreeModel treeModel = (EntityTreeModel) pathBrowser.getModel();
             treeModel.invalidate();
 
-            pathBrowser.setSelectionPath(new TreePath(new Object[] {
-                getStartEntity()
-            }));
+            pathBrowser.setSelectionPath(new TreePath(new Object[] { getStartEntity() }));
             pathBrowser.repaint();
 
             Object[] path = new Object[oldPath.length + 1];
@@ -397,7 +383,7 @@ public class ObjRelationshipInfo extends CayenneController implements
 
         dialog.dispose();
     }
-    
+
     /**
      * Sets list of DB Relationships current ObjRelationship is mapped to
      */
@@ -412,39 +398,39 @@ public class ObjRelationshipInfo extends CayenneController implements
 
         Relationship rel = (Relationship) selectedPath.getLastPathComponent();
         DbEntity target = (DbEntity) rel.getTargetEntity();
-         /**
+        /**
          * Initialize root with one of mapped ObjEntities.
          */
         Collection<ObjEntity> objEntities = target.getDataMap().getMappedEntities(target);
 
-        List<DbRelationship> relPath = new Vector<DbRelationship>(selectedPath
-                .getPathCount() - 1);
+        List<DbRelationship> relPath = new Vector<DbRelationship>(selectedPath.getPathCount() - 1);
         for (int i = 1; i < selectedPath.getPathCount(); i++) {
             relPath.add((DbRelationship) selectedPath.getPathComponent(i));
         }
         setDbRelationships(relPath);
-        setObjectTarget(objEntities.size() == 0 ? null : objEntities
-                .iterator()
-                .next());
+        setObjectTarget(objEntities.size() == 0 ? null : objEntities.iterator().next());
 
         updateCollectionChoosers();
     }
+
     public void setObjectTarget(ObjEntity objectTarget) {
         if (this.objectTarget != objectTarget) {
-             this.objectTarget = objectTarget;
-             view.targetCombo.setSelectedItem(objectTarget);
+            this.objectTarget = objectTarget;
+            view.targetCombo.setSelectedItem(objectTarget);
 
             // init available map keys
             initMapKeys();
         }
     }
+
     private void initMapKeys() {
         this.mapKeys.clear();
 
         mapKeys.add(DEFAULT_MAP_KEY);
 
         /**
-         * Object target can be null when selected target DbEntity has no ObjEntities
+         * Object target can be null when selected target DbEntity has no
+         * ObjEntities
          */
         if (objectTarget == null) {
             return;
@@ -454,15 +440,15 @@ public class ObjRelationshipInfo extends CayenneController implements
             mapKeys.add(attribute.getName());
         }
         view.mapKeysCombo.removeAllItems();
-        for(String s :mapKeys)
+        for (String s : mapKeys)
             view.mapKeysCombo.addItem(s);
-        
+
         if (mapKey != null && !mapKeys.contains(mapKey)) {
             mapKey = DEFAULT_MAP_KEY;
             view.mapKeysCombo.setSelectedItem(mapKey);
         }
     }
-    
+
     /**
      * Places in objectTargets list all ObjEntities for specified DbEntity
      */
@@ -477,8 +463,8 @@ public class ObjRelationshipInfo extends CayenneController implements
             Collections.sort(objectTargets, Comparators.getNamedObjectComparator());
         }
         view.targetCombo.removeAllItems();
-        for( ObjEntity s : objectTargets) {
-           view.targetCombo.addItem(s.getName());
+        for (ObjEntity s : objectTargets) {
+            view.targetCombo.addItem(s.getName());
         }
     }
 
@@ -501,11 +487,11 @@ public class ObjRelationshipInfo extends CayenneController implements
     }
 
     /**
-     * @return last relationship in the path, or <code>null</code> if path is empty
+     * @return last relationship in the path, or <code>null</code> if path is
+     *         empty
      */
     public DbRelationship getLastRelationship() {
-        return dbRelationships.size() == 0 ? null : dbRelationships.get(dbRelationships
-                .size() - 1);
+        return dbRelationships.size() == 0 ? null : dbRelationships.get(dbRelationships.size() - 1);
     }
 
     /**
@@ -514,13 +500,11 @@ public class ObjRelationshipInfo extends CayenneController implements
     public void setDbRelationships(List<DbRelationship> rels) {
         this.dbRelationships = rels;
 
-        updateTargetCombo(rels.size() > 0 ? (DbEntity) rels
-                .get(rels.size() - 1)
-                .getTargetEntity() : null);
-        
+        updateTargetCombo(rels.size() > 0 ? (DbEntity) rels.get(rels.size() - 1).getTargetEntity() : null);
+
         updateCollectionChoosers();
     }
-    
+
     /**
      * Returns currently selected target of the ObjRelationship.
      */
@@ -547,7 +531,7 @@ public class ObjRelationshipInfo extends CayenneController implements
     /**
      * Processes relationship path when path component at index was changed.
      */
-    public synchronized void relationshipChanged(int index) {
+    public void relationshipChanged(int index) {
         // strip everything starting from the index
         breakChain(index);
 
@@ -556,7 +540,8 @@ public class ObjRelationshipInfo extends CayenneController implements
     }
 
     public boolean isToMany() {
-        // copied algorithm from ObjRelationship.calculateToMany(), only iterating through
+        // copied algorithm from ObjRelationship.calculateToMany(), only
+        // iterating through
         // the unsaved dbrels selection.
 
         for (DbRelationship relationship : dbRelationships) {
@@ -567,11 +552,11 @@ public class ObjRelationshipInfo extends CayenneController implements
 
         return false;
     }
-    
+
     /**
      * Stores current state of the model in the internal ObjRelationship.
      */
-    public synchronized boolean savePath() {
+    public boolean savePath() {
         boolean hasChanges = false;
 
         boolean oldToMany = relationship.isToMany();
@@ -582,27 +567,21 @@ public class ObjRelationshipInfo extends CayenneController implements
         }
 
         if (savedDbRelationships.size() > 0) {
-            DbEntity lastEntity = (DbEntity) savedDbRelationships.get(
-                    savedDbRelationships.size() - 1).getTargetEntity();
+            DbEntity lastEntity = (DbEntity) savedDbRelationships.get(savedDbRelationships.size() - 1)
+                    .getTargetEntity();
 
             if (objectTarget == null || objectTarget.getDbEntity() != lastEntity) {
                 /**
-                 * Entities in combobox and path browser do not match. In this case, we
-                 * rely on the browser and automatically select one of lastEntity's
-                 * ObjEntities
+                 * Entities in combobox and path browser do not match. In this
+                 * case, we rely on the browser and automatically select one of
+                 * lastEntity's ObjEntities
                  */
-                Collection<ObjEntity> objEntities = lastEntity
-                        .getDataMap()
-                        .getMappedEntities(lastEntity);
-                objectTarget = objEntities.size() == 0 ? null : objEntities
-                        .iterator()
-                        .next();
+                Collection<ObjEntity> objEntities = lastEntity.getDataMap().getMappedEntities(lastEntity);
+                objectTarget = objEntities.size() == 0 ? null : objEntities.iterator().next();
             }
         }
 
-        if (objectTarget == null
-                || !Util.nullSafeEquals(objectTarget.getName(), relationship
-                        .getTargetEntityName())) {
+        if (objectTarget == null || !Util.nullSafeEquals(objectTarget.getName(), relationship.getTargetEntityName())) {
             hasChanges = true;
 
             // note on events notification - this needs to be propagated
@@ -616,8 +595,7 @@ public class ObjRelationshipInfo extends CayenneController implements
         if (oldPath.size() != savedDbRelationships.size()) {
             hasChanges = true;
             updatePath();
-        }
-        else {
+        } else {
             for (int i = 0; i < oldPath.size(); i++) {
                 DbRelationship next = savedDbRelationships.get(i);
 
@@ -629,8 +607,7 @@ public class ObjRelationshipInfo extends CayenneController implements
             }
         }
 
-        String collectionType = ObjRelationship.DEFAULT_COLLECTION_TYPE
-                .equals(targetCollection)
+        String collectionType = ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(targetCollection)
                 || !relationship.isToMany() ? null : targetCollection;
         if (!Util.nullSafeEquals(collectionType, relationship.getCollectionType())) {
             hasChanges = true;
@@ -638,16 +615,16 @@ public class ObjRelationshipInfo extends CayenneController implements
         }
 
         // map key only makes sense for Map relationships
-        String mapKey = COLLECTION_TYPE_MAP.equals(collectionType)
-                && !DEFAULT_MAP_KEY.equals(this.mapKey) ? this.mapKey : null;
+        String mapKey = COLLECTION_TYPE_MAP.equals(collectionType) && !DEFAULT_MAP_KEY.equals(this.mapKey) ? this.mapKey
+                : null;
         if (!Util.nullSafeEquals(mapKey, relationship.getMapKey())) {
             hasChanges = true;
             relationship.setMapKey(mapKey);
         }
 
         /**
-         * As of CAY-436 here we check if to-many property has changed during the editing,
-         * and if so, delete rule must be reset to default value
+         * As of CAY-436 here we check if to-many property has changed during
+         * the editing, and if so, delete rule must be reset to default value
          */
         if (hasChanges && relationship.isToMany() != oldToMany) {
             DeleteRuleUpdater.updateObjRelationship(relationship);
@@ -676,6 +653,7 @@ public class ObjRelationshipInfo extends CayenneController implements
             dbRelationships.remove(dbRelationships.size() - 1);
         }
     }
+
     // Connects last selected DbRelationship in the path to the
     // last DbEntity, creating a dummy relationship if needed.
     private void connectEnds() {
@@ -694,8 +672,7 @@ public class ObjRelationshipInfo extends CayenneController implements
             Entity source = (last == null) ? getStartEntity() : last.getTargetEntity();
             if (source != null) {
 
-                Relationship anyConnector = source != null ? source
-                        .getAnyRelationship(target) : null;
+                Relationship anyConnector = source != null ? source.getAnyRelationship(target) : null;
 
                 if (anyConnector != null) {
                     dbRelationships.add((DbRelationship) anyConnector);
@@ -705,18 +682,17 @@ public class ObjRelationshipInfo extends CayenneController implements
     }
 
     /**
-     * Checks if the entity can be edited with this inspector. NOTE: As of CAY-1077,
-     * relationship inspector can be opened even if no target entity was set.
+     * Checks if the entity can be edited with this inspector. NOTE: As of
+     * CAY-1077, relationship inspector can be opened even if no target entity
+     * was set.
      */
     private void validateCanMap() {
         if (relationship.getSourceEntity() == null) {
-            throw new CayenneRuntimeException(
-                    "Can't map relationship without source entity.");
+            throw new CayenneRuntimeException("Can't map relationship without source entity.");
         }
 
         if (getStartEntity() == null) {
-            throw new CayenneRuntimeException(
-                    "Can't map relationship without source DbEntity.");
+            throw new CayenneRuntimeException("Can't map relationship without source DbEntity.");
         }
     }
 
@@ -726,7 +702,8 @@ public class ObjRelationshipInfo extends CayenneController implements
 
     public DbEntity getEndEntity() {
         /**
-         * Object target can be null when selected target DbEntity has no ObjEntities
+         * Object target can be null when selected target DbEntity has no
+         * ObjEntities
          */
         if (objectTarget == null) {
             return null;

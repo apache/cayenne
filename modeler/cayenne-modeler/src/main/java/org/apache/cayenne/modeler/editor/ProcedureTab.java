@@ -45,11 +45,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- * A panel for editing stored procedure general settings, such as name, schema, etc.
+ * A panel for editing stored procedure general settings, such as name, schema,
+ * etc.
  * 
  */
-public class ProcedureTab extends JPanel implements ProcedureDisplayListener,
-        ExistingSelectionProcessor {
+public class ProcedureTab extends JPanel implements ProcedureDisplayListener, ExistingSelectionProcessor {
 
     protected ProjectController eventController;
     protected TextAdapter name;
@@ -87,8 +87,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener,
         returnValueHelp.setFont(returnValueHelp.getFont().deriveFont(10));
 
         // assemble
-        FormLayout layout = new FormLayout(
-                "right:max(50dlu;pref), 3dlu, left:max(20dlu;pref), 3dlu, fill:150dlu",
+        FormLayout layout = new FormLayout("right:max(50dlu;pref), 3dlu, left:max(20dlu;pref), 3dlu, fill:150dlu",
                 "p, 3dlu, p, 3dlu, p, 3dlu, p");
 
         CellConstraints cc = new CellConstraints();
@@ -115,29 +114,24 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener,
                 Procedure procedure = eventController.getCurrentProcedure();
                 if (procedure != null && !ignoreChange) {
                     procedure.setReturningValue(returnsValue.isSelected());
-                    eventController.fireProcedureEvent(new ProcedureEvent(
-                            ProcedureTab.this,
-                            procedure));
+                    eventController.fireProcedureEvent(new ProcedureEvent(ProcedureTab.this, procedure));
                 }
             }
         });
 
         eventController.addProcedureDisplayListener(this);
     }
-    
+
     public void processExistingSelection(EventObject e) {
-        ProcedureDisplayEvent pde = new ProcedureDisplayEvent(
-                this,
-                eventController.getCurrentProcedure(),
-                eventController.getCurrentDataMap(),
-                (DataChannelDescriptor)eventController.getProject().getRootNode());
+        ProcedureDisplayEvent pde = new ProcedureDisplayEvent(this, eventController.getCurrentProcedure(),
+                eventController.getCurrentDataMap(), (DataChannelDescriptor) eventController.getProject().getRootNode());
         eventController.fireProcedureDisplayEvent(pde);
     }
 
     /**
      * Invoked when currently selected Procedure object is changed.
      */
-    public synchronized void currentProcedureChanged(ProcedureDisplayEvent e) {
+    public void currentProcedureChanged(ProcedureDisplayEvent e) {
         Procedure procedure = e.getProcedure();
         if (procedure == null || !e.isProcedureChanged()) {
             return;
@@ -164,18 +158,14 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener,
 
         if (newName == null) {
             throw new ValidationException("Procedure name is required.");
-        }
-        else if (procedure.getDataMap().getProcedure(newName) == null) {
+        } else if (procedure.getDataMap().getProcedure(newName) == null) {
             // completely new name, set new name for entity
             ProcedureEvent e = new ProcedureEvent(this, procedure, procedure.getName());
             ProjectUtil.setProcedureName(procedure.getDataMap(), procedure, newName);
             eventController.fireProcedureEvent(e);
-        }
-        else {
+        } else {
             // there is an entity with the same name
-            throw new ValidationException("There is another procedure with name '"
-                    + newName
-                    + "'.");
+            throw new ValidationException("There is another procedure with name '" + newName + "'.");
         }
     }
 

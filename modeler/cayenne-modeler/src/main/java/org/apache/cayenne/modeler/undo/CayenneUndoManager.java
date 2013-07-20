@@ -37,20 +37,20 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
     }
 
     @Override
-    public synchronized void discardAllEdits() {
+    public void discardAllEdits() {
         super.discardAllEdits();
         updateUI();
     }
 
     @Override
-    public synchronized boolean addEdit(UndoableEdit anEdit) {
+    public boolean addEdit(UndoableEdit anEdit) {
         boolean result = super.addEdit(anEdit);
         updateUI();
         return result;
     }
 
     @Override
-    public synchronized void redo() throws CannotRedoException {
+    public void redo() throws CannotRedoException {
         UndoableEdit e = editToBeRedone();
 
         if (e instanceof TextCompoundEdit) {
@@ -61,8 +61,7 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
             super.redo();
 
             edit.stopWatchingCaretPosition();
-        }
-        else {
+        } else {
             super.redo();
         }
 
@@ -70,7 +69,7 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
     }
 
     @Override
-    public synchronized void undo() throws CannotUndoException {
+    public void undo() throws CannotUndoException {
         UndoableEdit e = editToBeUndone();
 
         if (e instanceof TextCompoundEdit) {
@@ -81,8 +80,7 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
             super.undo();
 
             edit.stopWatchingCaretPosition();
-        }
-        else {
+        } else {
             super.undo();
         }
 
@@ -90,11 +88,9 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
     }
 
     private void updateUI() {
-        CayenneAction undoAction = application.getActionManager().getAction(
-                UndoAction.class);
+        CayenneAction undoAction = application.getActionManager().getAction(UndoAction.class);
 
-        CayenneAction redoAction = application.getActionManager().getAction(
-                RedoAction.class);
+        CayenneAction redoAction = application.getActionManager().getAction(RedoAction.class);
 
         undoAction.setEnabled(canUndo());
         redoAction.setEnabled(canRedo());
