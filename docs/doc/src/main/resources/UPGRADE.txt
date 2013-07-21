@@ -6,6 +6,9 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 3.2M2
 
+* Minimal required JDK version is now 1.6 (both for modeler and runtime). This is a pretty conservative 
+  requirement, considering that even Java 1.6 has been EOL'd by Oracle on Feb 2013.
+
 * Managing listeners in the Modeler is counterproductive and confusing,
   so support for them was removed from the Modeler per CAY-1842. If you have
   any listeners in the model, delete them from XML, and start using annotations,
