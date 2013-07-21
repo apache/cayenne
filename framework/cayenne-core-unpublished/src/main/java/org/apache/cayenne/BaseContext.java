@@ -177,12 +177,16 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         setEntityResolver(channel.getEntityResolver());
     }
 
+    @Override
     public abstract void commitChanges();
 
+    @Override
     public abstract void commitChangesToParent();
 
+    @Override
     public abstract Collection<?> deletedObjects();
 
+    @Override
     public DataChannel getChannel() {
         attachToRuntimeIfNeeded();
         return channel;
@@ -197,6 +201,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         this.channel = channel;
     }
 
+    @Override
     public EntityResolver getEntityResolver() {
         attachToRuntimeIfNeeded();
         return entityResolver;
@@ -232,6 +237,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * @since 3.1
      */
+    @Override
     public <T> T localObject(T objectFromAnotherContext) {
 
         if (objectFromAnotherContext == null) {
@@ -274,24 +280,32 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
+    @Override
     public abstract GraphManager getGraphManager();
 
+    @Override
     public abstract Collection<?> modifiedObjects();
 
+    @Override
     public abstract <T> T newObject(Class<T> persistentClass);
 
+    @Override
     public abstract void registerNewObject(Object object);
 
+    @Override
     public abstract Collection<?> newObjects();
 
+    @Override
     public abstract QueryResponse performGenericQuery(Query query);
 
+    @Override
     public abstract List performQuery(Query query);
 
     /**
      * @since 3.2
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T> List<T> select(Select<T> query) {
         return performQuery(query);
     }
@@ -299,6 +313,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * @since 3.2
      */
+    @Override
     public <T> T selectOne(Select<T> query) {
         List<T> objects = select(query);
 
@@ -314,6 +329,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * @since 3.2
      */
+    @Override
     public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
         ResultIterator<T> it = iterator(query);
         try {
@@ -323,8 +339,10 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
+    @Override
     public abstract <T> ResultIterator<T> iterator(Select<T> query);
 
+    @Override
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
 
@@ -381,19 +399,19 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
                 // Grab each of the declared properties.
                 final List<String> properties = new ArrayList<String>();
                 classDescriptor.visitProperties(new PropertyVisitor() {
-
+                    @Override
                     public boolean visitAttribute(final AttributeProperty property) {
                         properties.add(property.getName());
 
                         return true;
                     }
-
+                    @Override
                     public boolean visitToOne(final ToOneProperty property) {
                         properties.add(property.getName());
 
                         return true;
                     }
-
+                    @Override
                     public boolean visitToMany(final ToManyProperty property) {
                         properties.add(property.getName());
 
@@ -422,16 +440,19 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
             propertyDescriptor.readProperty(object);
         }
     }
-
+    
+    @Override
     public void propertyChanged(Persistent object, String property, Object oldValue, Object newValue) {
-
         graphAction.handlePropertyChange(object, property, oldValue, newValue);
     }
 
+    @Override
     public abstract void rollbackChanges();
 
+    @Override
     public abstract void rollbackChangesLocally();
 
+    @Override
     public abstract Collection<?> uncommittedObjects();
 
     public QueryCache getQueryCache() {
@@ -451,10 +472,12 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public EventManager getEventManager() {
         return channel != null ? channel.getEventManager() : null;
     }
 
+    @Override
     public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
         switch (syncType) {
         case DataChannel.ROLLBACK_CASCADE_SYNC:
@@ -511,6 +534,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
+    @Override
     public void invalidateObjects(Collection<?> objects) {
 
         // don't allow null collections as a matter of coding discipline
@@ -526,6 +550,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * @since 3.1
      */
+    @Override
     public <T> void invalidateObjects(T... objects) {
         if (objects != null && objects.length > 0) {
             performGenericQuery(new RefreshQuery(Arrays.asList(objects)));
@@ -560,6 +585,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * 
      * @since 3.0
      */
+    @Override
     public Object getUserProperty(String key) {
         return getUserProperties().get(key);
     }
@@ -570,6 +596,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * 
      * @since 3.0
      */
+    @Override
     public void setUserProperty(String key, Object value) {
         getUserProperties().put(key, value);
     }
@@ -615,6 +642,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
     /**
      * @since 3.1
      */
+    @Override
     public <T> void deleteObjects(T... objects) throws DeleteDenyException {
         if (objects == null || objects.length == 0) {
             return;
@@ -627,6 +655,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
         }
     }
 
+    @Override
     public void deleteObjects(Collection<?> objects) throws DeleteDenyException {
         if (objects.isEmpty()) {
             return;
