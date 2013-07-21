@@ -97,7 +97,7 @@ public interface QueryResponse {
      * null if the query has no lists. Note that this method resets current iterator to an
      * undefined state.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     List firstList();
 
     /**
