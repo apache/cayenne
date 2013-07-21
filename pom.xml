@@ -719,26 +719,7 @@
 			<url>https://repository.apache.org/service/local/staging/deploy/maven2</url>
 		</repository>
 	</distributionManagement>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<detectOfflineLinks>false</detectOfflineLinks>
-					<showProtected>true</showProtected>
-					<showPackage>false</showPackage>
-					<links>
-						<link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-						<link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_1/</link>
-						<link>http://commons.apache.org/dbcp/apidocs/</link>
-						<link>http://commons.apache.org/logging/commons-logging-1.1.1/apidocs/</link>
-					</links>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
+	
 	<profiles>
 
 		<!-- Profile that generates assemblies after the build -->
