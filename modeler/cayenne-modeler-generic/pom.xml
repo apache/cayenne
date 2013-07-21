@@ -47,7 +47,7 @@
 		-->
 		<dependency>
 			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-jdk1.5-unpublished</artifactId>
+			<artifactId>cayenne-core-unpublished</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
