@@ -139,4 +139,17 @@ public interface Constants {
      * clause size limitations and memory usage efficiency.
      */
     public static final String SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY = "cayenne.server.max_id_qualifier_size";
+
+    /** Defines if database uses case-insensitive collation */
+    public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
+    
+    /** 
+     * A integer property that enables logging for just long running queries (rather than all queries). 
+     * The value is the minimum number of milliseconds a query must run before is logged. 
+     * A value less than or equal to zero (the default) disables this feature. 
+     * 
+     * @since 3.2 
+     * */
+    public final static String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.server.query_execution_time_logging_threshold";
+    
 }

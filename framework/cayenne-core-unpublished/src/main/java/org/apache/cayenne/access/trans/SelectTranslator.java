@@ -109,7 +109,9 @@ public class SelectTranslator extends QueryAssembler {
      */
     @Override
     public String createSqlString() throws Exception {
-
+    	if (cachedSqlString != null)
+    		return cachedSqlString;
+    	
         DataMap dataMap = queryMetadata.getDataMap();
         JoinStack joins = getJoinStack();
 
@@ -196,7 +198,8 @@ public class SelectTranslator extends QueryAssembler {
             appendLimitAndOffsetClauses(queryBuf);
         }
 
-        return queryBuf.toString();
+        cachedSqlString = queryBuf.toString();
+        return cachedSqlString;
     }
 
     /**

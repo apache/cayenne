@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -52,6 +54,10 @@ public class FormattedCommonsJdbcEventLogger extends CommonsJdbcEventLogger {
         KEYWORDS.put(" case ", "CASE");
     }
 
+    public FormattedCommonsJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
+    	super(runtimeProperties);
+    }
+    
     private String formatQuery(String sql) {
         Map<Integer, String> scanResult = scanQuery(sql);
         Iterator<Integer> iter = scanResult.keySet().iterator();

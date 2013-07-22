@@ -44,6 +44,7 @@ public abstract class QueryAssembler {
 
     protected Query query;
     protected QueryMetadata queryMetadata;
+    protected String cachedSqlString;
     protected Connection connection;
     protected DbAdapter adapter;
     protected EntityResolver entityResolver;
@@ -135,6 +136,7 @@ public abstract class QueryAssembler {
         else {
             queryMetadata = null;
         }
+        cachedSqlString = null;
     }
 
     public DbEntity getRootDbEntity() {

@@ -60,9 +60,6 @@ import org.apache.cayenne.util.Util;
  */
 public class JdbcAdapter implements DbAdapter {
 
-    // defines if database uses case-insensitive collation
-    public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
-
     private PkGenerator pkGenerator;
     protected QuotingStrategy quotingStrategy;
 
@@ -96,8 +93,8 @@ public class JdbcAdapter implements DbAdapter {
         // init defaults
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
-        this.caseInsensitiveCollations = runtimeProperties.getBoolean(CI_PROPERTY, false);
-
+        this.caseInsensitiveCollations = runtimeProperties.getBoolean(Constants.CI_PROPERTY, false);
+        
         // TODO: andrus 05.02.2010 - ideally this should be injected
         this.resourceLocator = new ClassLoaderResourceLocator();
 
@@ -581,4 +578,5 @@ public class JdbcAdapter implements DbAdapter {
     public void setBatchQueryBuilderFactory(BatchQueryBuilderFactory batchQueryBuilderFactory) {
         this.batchQueryBuilderFactory = batchQueryBuilderFactory;
     }
+    
 }

@@ -75,6 +75,9 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
     public void logSelectCount(int count, long time) {
     }
 
+    public void logSelectCount(int count, long time, String sql) {
+    }
+	
     public void logUpdateCount(int count) {
     }
 

@@ -73,8 +73,11 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bindMap(Constants.PROPERTIES_MAP);
+
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             }
         };
 
@@ -171,8 +174,11 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bindMap(Constants.PROPERTIES_MAP);
+
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             }
         };
 

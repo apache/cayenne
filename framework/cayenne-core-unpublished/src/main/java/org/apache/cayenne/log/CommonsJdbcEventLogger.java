@@ -23,9 +23,14 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.Util;
@@ -42,6 +47,12 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
     private static final Log logger = LogFactory.getLog(CommonsJdbcEventLogger.class);
 
     private static final int TRIM_VALUES_THRESHOLD = 30;
+
+    protected long queryExecutionTimeLoggingThreshold;
+    
+    public CommonsJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
+    	this.queryExecutionTimeLoggingThreshold = runtimeProperties.getLong(Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY, 0);
+    }
 
     void sqlLiteralForObject(StringBuilder buffer, Object object) {
         if (object == null) {
@@ -314,7 +325,11 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
     }
 
     public void logSelectCount(int count, long time) {
-        if (isLoggable()) {
+    	logSelectCount(count, time, null);
+    }
+    
+    public void logSelectCount(int count, long time, String sql) {
+        if (isLoggable() || (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold)) {
             StringBuilder buf = new StringBuilder();
 
             if (count == 1) {
@@ -329,6 +344,14 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
             }
 
             logger.info(buf.toString());
+
+            buf.setLength(0);
+            if (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold) {
+            	buf.append("Query time exceeded threshold (").append(time).append(" ms): ");
+            	buf.append(sql);
+            	String message = buf.toString();
+            	logger.warn(message, new CayenneRuntimeException(message));
+            }
         }
     }
 

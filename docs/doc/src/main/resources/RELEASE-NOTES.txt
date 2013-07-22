@@ -74,6 +74,7 @@ CAY-1828 SQLSelect - generics friendly fluent selecting sql query
 CAY-1829 Make ResultIterator implement Iterable<T>, create ObjectContext.iterate method
 CAY-1836 Firebird Adapter 
 CAY-1838 Deprecate EntityResolver.indexedByClassProperty
+CAY-1840 Conditionally log slow / long-running queries
 
 Bug Fixes:
 

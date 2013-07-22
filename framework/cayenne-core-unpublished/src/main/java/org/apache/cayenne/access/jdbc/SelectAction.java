@@ -175,7 +175,9 @@ public class SelectAction extends BaseSQLAction {
 
             adapter.getJdbcEventLogger().logSelectCount(
                     resultRows.size(),
-                    System.currentTimeMillis() - t1);
+                    System.currentTimeMillis() - t1,
+                    translator.createSqlString());
+            
             observer.nextRows(query, resultRows);
         }
         else {

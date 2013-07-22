@@ -64,7 +64,17 @@ public interface JdbcEventLogger {
             boolean isInserting);
 
     void logSelectCount(int count, long time);
-
+    
+    /**
+     * 
+     * @param count
+     * @param time (milliseconds) time query took to run
+     * @param sql SQL that was executed, printed when time exceeds timeThreshold
+     * 
+     * @since 3.2
+     */
+    void logSelectCount(int count, long time, String sql);
+    
     void logUpdateCount(int count);
 
     void logBeginTransaction(String transactionLabel);

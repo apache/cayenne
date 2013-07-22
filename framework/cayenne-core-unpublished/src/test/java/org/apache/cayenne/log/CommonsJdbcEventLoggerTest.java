@@ -18,8 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
+import java.util.Collections;
+
 import junit.framework.TestCase;
 
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.util.IDUtil;
 
 public class CommonsJdbcEventLoggerTest extends TestCase {
@@ -28,7 +31,7 @@ public class CommonsJdbcEventLoggerTest extends TestCase {
         StringBuilder buf = new StringBuilder();
 
         // test unsupported type
-        new CommonsJdbcEventLogger().sqlLiteralForObject(buf, new Object());
+        new CommonsJdbcEventLogger(new DefaultRuntimeProperties(Collections.EMPTY_MAP)).sqlLiteralForObject(buf, new Object());
         assertTrue(buf.length() > 0);
     }
 

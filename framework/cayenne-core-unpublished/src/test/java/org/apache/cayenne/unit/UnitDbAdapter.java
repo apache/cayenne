@@ -34,9 +34,9 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -218,7 +218,7 @@ public class UnitDbAdapter {
     }
 
     public boolean supportsCaseSensitiveLike() {
-        return !runtimeProperties.getBoolean(JdbcAdapter.CI_PROPERTY, false);
+        return !runtimeProperties.getBoolean(Constants.CI_PROPERTY, false);
     }
 
     public boolean supportsCaseInsensitiveOrder() {
