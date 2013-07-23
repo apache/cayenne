@@ -333,15 +333,6 @@
 	<obj-entity name="ArtistCallbackTest" className="org.apache.cayenne.testdo.testmap.ArtistCallbackTest" dbEntityName="ARTIST_CT" exclude-superclass-listeners="true" exclude-default-listeners="true">
 		<obj-attribute name="artistName" type="java.lang.String"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
-		<entity-listener class="org.apache.cayenne.testdo.testmap.EntityListenerObjEntity">
-			<post-add method-name="prePersistEntityListener"/>
-			<post-persist method-name="postPersistEntityListener"/>
-			<pre-update method-name="preUpdateEntityListener"/>
-			<post-update method-name="postUpdateEntityListener"/>
-			<pre-remove method-name="preRemoveEntityListener"/>
-			<post-remove method-name="postRemoveEntityListener"/>
-			<post-load method-name="postLoadEntityListener"/>
-		</entity-listener>
 		<post-add method-name="prePersistEntityObjEntity"/>
 		<post-persist method-name="postPersistEntityObjEntity"/>
 		<pre-update method-name="preUpdateEntityObjEntity"/>

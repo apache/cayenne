@@ -83,7 +83,6 @@ public class MapLoader extends DefaultHandler {
     public static final String PROCEDURE_PARAMETER_TAG = "procedure-parameter";
 
     // lifecycle listeners and callbacks related
-    public static final String ENTITY_LISTENER_TAG = "entity-listener";
     public static final String POST_ADD_TAG = "post-add";
     public static final String PRE_PERSIST_TAG = "pre-persist";
     public static final String POST_PERSIST_TAG = "post-persist";
@@ -142,7 +141,6 @@ public class MapLoader extends DefaultHandler {
     private DataMap dataMap;
     private DbEntity dbEntity;
     private ObjEntity objEntity;
-    private EntityListener entityListener;
     private Embeddable embeddable;
     private EmbeddedAttribute embeddedAttribute;
     private DbRelationship dbRelationship;
@@ -348,14 +346,6 @@ public class MapLoader extends DefaultHandler {
                 else {
                     processStartDataMapProperty(attributes);
                 }
-            }
-        });
-
-        startTagOpMap.put(ENTITY_LISTENER_TAG, new StartClosure() {
-
-            @Override
-            void execute(Attributes attributes) throws SAXException {
-                processStartEntitylistener(attributes);
             }
         });
 
@@ -574,44 +564,15 @@ public class MapLoader extends DefaultHandler {
                 processEndQueryPrefetch();
             }
         });
-
-        endTagOpMap.put(ENTITY_LISTENER_TAG, new EndClosure() {
-
-            @Override
-            void execute() throws SAXException {
-                processEndEntitylistener();
-            }
-        });
     }
 
     private void processStartDataMap(Attributes attributes) {
         this.mapVersion = attributes.getValue("", "project-version");
     }
 
-    private void processStartEntitylistener(Attributes attributes) {
-        entityListener = new EntityListener(attributes.getValue("", "class"));
-        if (objEntity != null) {
-            // we are inside of obj-entity tag
-            objEntity.addEntityListener(entityListener);
-        }
-        else if (dataMap != null) {
-            // we are inside of datamap tag
-            logger
-                    .warn("DataMap listeners are no longer supported. See UPGRADE.txt for more information.");
-        }
-    }
-
-    private void processEndEntitylistener() {
-        entityListener = null;
-    }
-
     private void processStartPostAdd(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
-        if (entityListener != null) {
-            // new "entity-listener" tag as a child of "obj-entity"
-            entityListener.getCallbackMap().getPostAdd().addCallbackMethod(methodName);
-        }
-        else if (objEntity != null) {
+        if (objEntity != null) {
             // new callback tags - children of "obj-entity"
             objEntity.getCallbackMap().getPostAdd().addCallbackMethod(methodName);
         }
@@ -628,14 +589,7 @@ public class MapLoader extends DefaultHandler {
 
             String methodName = attributes.getValue("", "method-name");
 
-            if (entityListener != null) {
-                // new "entity-listener" tag as a child of "obj-entity"
-                entityListener
-                        .getCallbackMap()
-                        .getPrePersist()
-                        .addCallbackMethod(methodName);
-            }
-            else if (objEntity != null) {
+            if (objEntity != null) {
                 // new callback tags - children of "obj-entity"
                 objEntity.getCallbackMap().getPrePersist().addCallbackMethod(methodName);
             }
@@ -644,63 +598,42 @@ public class MapLoader extends DefaultHandler {
 
     private void processStartPostPersist(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
-        if (entityListener != null) {
-            entityListener
-                    .getCallbackMap()
-                    .getPostPersist()
-                    .addCallbackMethod(methodName);
-        }
-        else if (objEntity != null) {
+        if (objEntity != null) {
             objEntity.getCallbackMap().getPostPersist().addCallbackMethod(methodName);
         }
     }
 
     private void processStartPreUpdate(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
-        if (entityListener != null) {
-            entityListener.getCallbackMap().getPreUpdate().addCallbackMethod(methodName);
-        }
-        else if (objEntity != null) {
+        if (objEntity != null) {
             objEntity.getCallbackMap().getPreUpdate().addCallbackMethod(methodName);
         }
     }
 
     private void processStartPostUpdate(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
-        if (entityListener != null) {
-            entityListener.getCallbackMap().getPostUpdate().addCallbackMethod(methodName);
-        }
-        else if (objEntity != null) {
+        if (objEntity != null) {
             objEntity.getCallbackMap().getPostUpdate().addCallbackMethod(methodName);
         }
     }
 
     private void processStartPreRemove(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
-        if (entityListener != null) {
-            entityListener.getCallbackMap().getPreRemove().addCallbackMethod(methodName);
-        }
-        else if (objEntity != null) {
+        if (objEntity != null) {
             objEntity.getCallbackMap().getPreRemove().addCallbackMethod(methodName);
         }
     }
 
     private void processStartPostRemove(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
-        if (entityListener != null) {
-            entityListener.getCallbackMap().getPostRemove().addCallbackMethod(methodName);
-        }
-        else if (objEntity != null) {
+        if (objEntity != null) {
             objEntity.getCallbackMap().getPostRemove().addCallbackMethod(methodName);
         }
     }
 
     private void processStartPostLoad(Attributes attributes) {
         String methodName = attributes.getValue("", "method-name");
-        if (entityListener != null) {
-            entityListener.getCallbackMap().getPostLoad().addCallbackMethod(methodName);
-        }
-        else if (objEntity != null) {
+        if (objEntity != null) {
             objEntity.getCallbackMap().getPostLoad().addCallbackMethod(methodName);
         }
     }
