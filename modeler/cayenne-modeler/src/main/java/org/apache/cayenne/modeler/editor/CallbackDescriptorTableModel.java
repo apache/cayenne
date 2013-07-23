@@ -38,6 +38,7 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
     public static final int METHOD_NAME = 0;
     protected ObjEntity entity;
     protected CallbackDescriptor callbackDescriptor;
+    protected CallbackType callbackType;
 
     /**
      * constructor
@@ -48,9 +49,10 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      * @param callbackDescriptor callback descriptor instance
      */
     public CallbackDescriptorTableModel(ProjectController mediator, Object eventSource,
-            List objectList, CallbackDescriptor callbackDescriptor) {
+            List objectList, CallbackDescriptor callbackDescriptor, CallbackType callbackType) {
         super(mediator, eventSource, objectList);
         this.callbackDescriptor = callbackDescriptor;
+        this.callbackType = callbackType;
     }
 
     /**
@@ -114,7 +116,7 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      * @return column name
      */
     public String getColumnName(int column) {
-        return callbackDescriptor.getCallbackType().name();
+        return callbackType.getName();
     }
 
     /**
