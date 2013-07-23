@@ -62,7 +62,7 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     public String getSupportedVersion() {
-        return "6";
+        return "7";
     }
 
     public void save(Project project) {

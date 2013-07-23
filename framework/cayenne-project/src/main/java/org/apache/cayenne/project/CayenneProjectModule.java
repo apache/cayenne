@@ -21,7 +21,7 @@ package org.apache.cayenne.project;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.upgrade.ProjectUpgrader;
-import org.apache.cayenne.project.upgrade.v6.ProjectUpgrader_V6;
+import org.apache.cayenne.project.upgrade.v7.ProjectUpgrader_V7;
 import org.apache.cayenne.project.validation.DefaultProjectValidator;
 import org.apache.cayenne.project.validation.ProjectValidator;
 
@@ -36,7 +36,7 @@ public class CayenneProjectModule implements Module {
     public void configure(Binder binder) {
         binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class);
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-        binder.bind(ProjectUpgrader.class).to(ProjectUpgrader_V6.class);
+        binder.bind(ProjectUpgrader.class).to(ProjectUpgrader_V7.class);
         binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class);
         binder.bind(ConfigurationNodeParentGetter.class).to(
                 DefaultConfigurationNodeParentGetter.class);

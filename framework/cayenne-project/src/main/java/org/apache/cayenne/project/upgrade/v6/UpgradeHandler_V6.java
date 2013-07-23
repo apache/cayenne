@@ -94,7 +94,7 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
     }
 
     @Override
-    protected Resource doPerformUpgrade() throws ConfigurationException {
+    protected Resource doPerformUpgrade(UpgradeMetaData metaData) throws ConfigurationException {
 
         List<DataChannelDescriptor> domains = projectLoader.load(projectSource);
         if (domains.isEmpty()) {
