@@ -37,7 +37,6 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
-import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -68,8 +67,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     // callbacks are not serializable
     protected transient LifecycleCallbackRegistry callbackRegistry;
-
-    protected EntityListenerFactory entityListenerFactory;
 
     /**
      * Creates new empty EntityResolver.
@@ -177,47 +174,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
         if (callbackRegistry == null) {
             LifecycleCallbackRegistry callbackRegistry = new LifecycleCallbackRegistry(this);
 
-            // load default callbacks
-            for (DataMap map : maps) {
-
-                for (EntityListener listener : map.getDefaultEntityListeners()) {
-                    Object listenerInstance = createListener(listener, null);
-                    if (listenerInstance == null) {
-                        continue;
-                    }
-
-                    CallbackDescriptor[] callbacks = listener.getCallbackMap().getCallbacks();
-                    for (CallbackDescriptor callback : callbacks) {
-
-                        for (String method : callback.getCallbackMethods()) {
-
-                            // note that callbacks[i].getCallbackType() == i
-                            callbackRegistry.addDefaultListener(callback.getCallbackType(), listenerInstance, method);
-                        }
-                    }
-                }
-            }
-
             // load entity callbacks
             for (ObjEntity entity : getObjEntities()) {
                 Class<?> entityClass = entity.getJavaClass();
-
-                // external listeners go first, entity's own callbacks go next
-                for (EntityListener listener : entity.getEntityListeners()) {
-                    Object listenerInstance = createListener(listener, entity);
-                    if (listenerInstance == null) {
-                        continue;
-                    }
-
-                    CallbackDescriptor[] callbacks = listener.getCallbackMap().getCallbacks();
-                    for (CallbackDescriptor callback : callbacks) {
-
-                        for (String method : callback.getCallbackMethods()) {
-                            callbackRegistry.addListener(callback.getCallbackType(), entityClass, listenerInstance,
-                                    method);
-                        }
-                    }
-                }
 
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
                 for (CallbackDescriptor callback : callbacks) {
@@ -228,31 +187,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
             }
 
             this.callbackRegistry = callbackRegistry;
-        }
-    }
-
-    /**
-     * Creates a listener instance.
-     */
-    private Object createListener(EntityListener listener, ObjEntity entity) {
-
-        if (entityListenerFactory != null) {
-            return entityListenerFactory.createListener(listener, entity);
-        }
-
-        Class<?> listenerClass;
-
-        try {
-            listenerClass = Util.getJavaClass(listener.getClassName());
-        } catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException("Invalid listener class: " + listener.getClassName(), e);
-        }
-
-        try {
-            return listenerClass.newInstance();
-        } catch (Exception e) {
-            throw new CayenneRuntimeException("Listener class " + listener.getClassName()
-                    + " default constructor call failed", e);
         }
     }
 
@@ -689,15 +623,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Sets an optional {@link EntityListenerFactory} that should be used to
-     * create entity listeners. Note that changing the factory does not affect
-     * already created listeners. So refresh the existing listners, call
-     * "setCallbackRegistry(null)" after setting the listener.
-     * 
      * @since 3.0
+     * @deprecated since 3.2 this method does nothing, as EntityResolver no
+     *             longer loads listeners from its DataMaps.
      */
+    @Deprecated
     public void setEntityListenerFactory(EntityListenerFactory entityListenerFactory) {
-        this.entityListenerFactory = entityListenerFactory;
+        // noop
     }
 
     /**

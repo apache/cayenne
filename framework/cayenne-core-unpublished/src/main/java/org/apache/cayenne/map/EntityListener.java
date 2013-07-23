@@ -24,11 +24,14 @@ import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
- * A mapping descriptor of an entity listener class that declares one or more callback
- * methods to be notified of the entity events.
+ * A mapping descriptor of an entity listener class that declares one or more
+ * callback methods to be notified of the entity events.
  * 
  * @since 3.0
+ * @deprecated since 3.2, as EntityResolver no longer loads listeners from its
+ *             DataMaps.
  */
+@Deprecated
 public class EntityListener implements Serializable, XMLSerializable {
 
     protected String className;
@@ -53,6 +56,7 @@ public class EntityListener implements Serializable, XMLSerializable {
 
     /**
      * Returns an object that stores callback methods of this listener.
+     * 
      * @return callback map
      */
     public CallbackMap getCallbackMap() {
