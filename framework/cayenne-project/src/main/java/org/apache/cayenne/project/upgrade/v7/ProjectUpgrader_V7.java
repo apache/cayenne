@@ -17,7 +17,6 @@ public class ProjectUpgrader_V7 implements ProjectUpgrader {
 
     public UpgradeHandler getUpgradeHandler(Resource projectSource) {
         UpgradeHandler_V7 handler = new UpgradeHandler_V7(projectSource);
-        System.out.println("PH OK");
         injector.injectMembers(handler);
         return handler;
     }
