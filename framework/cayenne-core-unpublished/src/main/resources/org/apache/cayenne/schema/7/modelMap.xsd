@@ -25,9 +25,9 @@
 	are usually combined in one shared namespace, so the elements of the DataMap
 	may reference objects from other DataMaps.
 --> 
-<xs:schema targetNamespace="http://cayenne.apache.org/schema/3.0/modelMap"
-	xmlns:cay="http://cayenne.apache.org/schema/3.0/modelMap"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3">
+<xs:schema targetNamespace="http://cayenne.apache.org/schema/7/modelMap"
+	xmlns:cay="http://cayenne.apache.org/schema/7/modelMap"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="7">
 	<xs:element name="data-map">
 		<xs:complexType>
 			<xs:sequence>
@@ -39,7 +39,6 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:db-relationship"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-relationship"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:query"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:entity-listener"/>
 			</xs:sequence>
 			<xs:attribute name="project-version" use="required" type="xs:string"/>
 		</xs:complexType>
@@ -87,7 +86,6 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embedded-attribute"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:obj-attribute"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:attribute-override"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:entity-listener"/>
 				
 				<!--  Callbacks -->
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-add"/>
@@ -109,8 +107,6 @@
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="superClassName" use="optional" type="xs:string"/>
 			<xs:attribute name="superEntityName" use="optional" type="xs:string"/>
-			<xs:attribute name="exclude-superclass-listeners" use="optional" type="xs:boolean"/>
-			<xs:attribute name="exclude-default-listeners" use="optional" type="xs:boolean"/>
 			<xs:attribute name="serverOnly" use="optional" type="xs:boolean"/>
 		</xs:complexType>
 	</xs:element>
@@ -266,21 +262,6 @@
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="schema" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="entity-listener">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-add"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-persist"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-persist"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-update"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-update"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:pre-remove"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-remove"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:post-load"/>
-			</xs:sequence>
-			<xs:attribute name="class" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="pre-update">
