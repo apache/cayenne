@@ -143,6 +143,10 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     private SortedMap<String, Query> queryMap;
     private SortedMap<String, SQLResult> results;
 
+    /**
+     * @deprecated since 3.2 unused as listeners are no longer tied to a
+     *             DataMap.
+     */
     private List<EntityListener> defaultEntityListeners;
 
     /**
@@ -773,7 +777,10 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      * generic Collection is returned.
      * 
      * @since 3.0
+     * @deprecated since 3.2 unused as listeners are no longer tied to a
+     *             DataMap.
      */
+    @Deprecated
     public List<EntityListener> getDefaultEntityListeners() {
         return Collections.unmodifiableList(defaultEntityListeners);
     }
@@ -784,7 +791,10 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      * @since 3.0
      * @throws IllegalArgumentException
      *             if a listener for the same class name is already registered.
+     * @deprecated since 3.2 unused as listeners are no longer tied to a
+     *             DataMap.
      */
+    @Deprecated
     public void addDefaultEntityListener(EntityListener listener) {
         for (EntityListener next : defaultEntityListeners) {
             if (listener.getClassName().equals(next.getClassName())) {
@@ -799,7 +809,10 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      * Removes a listener matching class name.
      * 
      * @since 3.0
+     * @deprecated since 3.2 unused as listeners are no longer tied to a
+     *             DataMap.
      */
+    @Deprecated
     public void removeDefaultEntityListener(String className) {
         Iterator<EntityListener> it = defaultEntityListeners.iterator();
         while (it.hasNext()) {
@@ -813,7 +826,10 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
     /**
      * @since 3.0
+     * @deprecated since 3.2 unused, as listeners are no longer tied to a
+     *             DataMap.
      */
+    @Deprecated
     public EntityListener getDefaultEntityListener(String className) {
         for (EntityListener listener : defaultEntityListeners) {
             if (className.equals(listener.getClassName())) {
