@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataObject;
+import java.util.Map;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -29,12 +30,12 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  */
 class PrefetchObjectResolver extends ObjectResolver {
 
-    long txStartRowVersion;
+    private Map<ObjectId, Persistent> seen;
 
-    public PrefetchObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh,
-            long txStartRowVersion) {
+    PrefetchObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh,
+            Map<ObjectId, Persistent> seen) {
         super(context, descriptor, refresh);
-        this.txStartRowVersion = txStartRowVersion;
+        this.seen = seen;
     }
 
     @Override
@@ -43,15 +44,13 @@ class PrefetchObjectResolver extends ObjectResolver {
         // transaction, either by this node or by some other node...
         // added per CAY-1695 ..
 
-        // TODO: is it going to have any side effects? It is run from the
-        // synchronized block, so I guess other threads can't stick their
-        // versions of this object in here?
-        Persistent object = (Persistent) context.getGraphManager().getNode(anId);
-        if (object != null && ((DataObject) object).getSnapshotVersion() >= txStartRowVersion) {
-            return object;
+        Persistent object = seen.get(anId);
+        if (object == null) {
+            object = super.objectFromDataRow(row, anId, classDescriptor);
+            seen.put(anId, object);
         }
 
-        return super.objectFromDataRow(row, anId, classDescriptor);
+        return object;
     }
 
 }

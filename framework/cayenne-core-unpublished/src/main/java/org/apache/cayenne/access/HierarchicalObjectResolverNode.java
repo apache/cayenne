@@ -20,6 +20,7 @@ package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
@@ -32,8 +33,8 @@ class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
     private PrefetchProcessorNode node;
 
     HierarchicalObjectResolverNode(PrefetchProcessorNode node, DataContext context, ClassDescriptor descriptor,
-            boolean refresh, long txStartRowVersion) {
-        super(context, descriptor, refresh, txStartRowVersion);
+            boolean refresh, Map<ObjectId, Persistent> seen) {
+        super(context, descriptor, refresh, seen);
         this.node = node;
     }
 

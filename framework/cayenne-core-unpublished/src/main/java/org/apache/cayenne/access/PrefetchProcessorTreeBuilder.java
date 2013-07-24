@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
@@ -41,26 +42,35 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     private ClassDescriptor descriptor;
     private List mainResultRows;
     private Map extraResultsByPath;
+    private Map<ObjectId, Persistent> seen;
 
-    PrefetchProcessorTreeBuilder(HierarchicalObjectResolver objectTreeResolver,
-            List mainResultRows, Map extraResultsByPath) {
+    PrefetchProcessorTreeBuilder(HierarchicalObjectResolver objectTreeResolver, List mainResultRows,
+            Map extraResultsByPath) {
         this.context = objectTreeResolver.context;
         this.queryMetadata = objectTreeResolver.queryMetadata;
         this.mainResultRows = mainResultRows;
         this.extraResultsByPath = extraResultsByPath;
-        this.descriptor=objectTreeResolver.descriptor;
+        this.descriptor = objectTreeResolver.descriptor;
     }
 
     PrefetchProcessorNode buildTree(PrefetchTreeNode tree) {
         // reset state
         this.nodeStack = new LinkedList<PrefetchProcessorNode>();
+
+        // 'seen' is used to avoid re-processing objects already processed in a
+        // given prefetch query (see CAY-1695 for why this is bad). It is
+        // essentially a map of all objects fetched in a given transaction
+
+        // TODO: there are other places that are attempting to track objects in
+        // a tx... can we reuse 'seen' map from here?
+        this.seen = new HashMap<ObjectId, Persistent>();
+
         this.root = null;
 
         tree.traverse(this);
 
         if (root == null) {
-            throw new CayenneRuntimeException(
-                    "Failed to create prefetch processing tree.");
+            throw new CayenneRuntimeException("Failed to create prefetch processing tree.");
         }
 
         return root;
@@ -71,10 +81,8 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         // root should be treated as disjoint
         if (getParent() == null) {
             return startDisjointPrefetch(node);
-        }
-        else {
-            PrefetchProcessorNode decorated = new PrefetchProcessorNode(getParent(), node
-                    .getName());
+        } else {
+            PrefetchProcessorNode decorated = new PrefetchProcessorNode(getParent(), node.getName());
 
             decorated.setPhantom(true);
             return addNode(decorated);
@@ -82,21 +90,23 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     }
 
     private PrefetchProcessorNode createDisjointNode(PrefetchTreeNode node) {
-        // TODO, Andrus, 11/16/2005 - minor inefficiency: 'adjacentJointNodes' would
+        // TODO, Andrus, 11/16/2005 - minor inefficiency: 'adjacentJointNodes'
+        // would
         // grab ALL nodes, we just need to find first and stop...
-        PrefetchProcessorNode decorated = !node.adjacentJointNodes().isEmpty()
-                ? new PrefetchProcessorJointNode(getParent(), node.getName())
-                : new PrefetchProcessorNode(getParent(), node.getName());
+        PrefetchProcessorNode decorated = !node.adjacentJointNodes().isEmpty() ? new PrefetchProcessorJointNode(
+                getParent(), node.getName()) : new PrefetchProcessorNode(getParent(), node.getName());
         decorated.setPhantom(false);
         return decorated;
     }
 
     public boolean startDisjointPrefetch(PrefetchTreeNode node) {
-        // look ahead for joint children as joint children will require a different
+        // look ahead for joint children as joint children will require a
+        // different
         // node type.
         PrefetchProcessorNode decorated = createDisjointNode(node);
 
-        // semantics has to be "DISJOINT" even if the node is joint, as semantics
+        // semantics has to be "DISJOINT" even if the node is joint, as
+        // semantics
         // defines relationship with parent..
         decorated.setSemantics(PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
         return addNode(decorated);
@@ -110,17 +120,14 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     }
 
     public boolean startJointPrefetch(PrefetchTreeNode node) {
-        PrefetchProcessorJointNode decorated = new PrefetchProcessorJointNode(
-                getParent(),
-                node.getName());
+        PrefetchProcessorJointNode decorated = new PrefetchProcessorJointNode(getParent(), node.getName());
         decorated.setPhantom(false);
         decorated.setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         boolean result = addNode(decorated);
 
         // set "jointChildren" flag on all nodes in the same "join group"
         PrefetchProcessorNode groupNode = decorated;
-        while (groupNode.getParent() != null && !groupNode.isDisjointPrefetch()
-                && !groupNode.isDisjointByIdPrefetch()) {
+        while (groupNode.getParent() != null && !groupNode.isDisjointPrefetch() && !groupNode.isDisjointByIdPrefetch()) {
             groupNode = (PrefetchProcessorNode) groupNode.getParent();
             groupNode.setJointChildren(true);
         }
@@ -148,23 +155,19 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
         if (currentNode != null) {
             rows = (List) extraResultsByPath.get(node.getPath());
-            arc = (ArcProperty) currentNode.getResolver().getDescriptor().getProperty(
-                    node.getName());
+            arc = (ArcProperty) currentNode.getResolver().getDescriptor().getProperty(node.getName());
 
             if (arc == null) {
-                throw new CayenneRuntimeException("No relationship with name '"
-                        + node.getName()
-                        + "' found in entity "
+                throw new CayenneRuntimeException("No relationship with name '" + node.getName() + "' found in entity "
                         + currentNode.getResolver().getEntity().getName());
             }
 
             descriptor = arc.getTargetDescriptor();
-        }
-        else {
+        } else {
             arc = null;
-            if(this.descriptor!=null){
-                descriptor=this.descriptor;
-            }else{
+            if (this.descriptor != null) {
+                descriptor = this.descriptor;
+            } else {
                 descriptor = queryMetadata.getClassDescriptor();
             }
             rows = mainResultRows;
@@ -173,52 +176,22 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         node.setDataRows(rows);
 
         node.setIncoming(arc);
-        
-        // TODO: is txStartRowVersion guessed
-        // correctly? i.e. the main rows are always fetched
-        // first? I guess this has to stay true if prefetching is
-        // involved.
-        long txStartRowVersion;
-        if (mainResultRows.isEmpty()) {
-            txStartRowVersion = DataObject.DEFAULT_VERSION;
+
+        if (node.getParent() != null && !node.isJointPrefetch()) {
+            node.setResolver(new HierarchicalObjectResolverNode(node, context, descriptor, queryMetadata
+                    .isRefreshingObjects(), seen));
         } else {
-            DataRow firstRow = (DataRow) mainResultRows.get(0);
-            txStartRowVersion = firstRow.getVersion();
-        }
-        
-        if (node.getParent() != null && !node.isJointPrefetch()) { 
-            node.setResolver(new HierarchicalObjectResolverNode(
-                    node,
-                    context,
-                    descriptor,
-                    queryMetadata.isRefreshingObjects(), 
-                    txStartRowVersion));
-        }
-        else {
-            node.setResolver(new PrefetchObjectResolver(context, descriptor, queryMetadata
-                    .isRefreshingObjects(), txStartRowVersion));
+            node.setResolver(new PrefetchObjectResolver(context, descriptor, queryMetadata.isRefreshingObjects(), seen));
         }
 
         if (node.getParent() == null || node.getParent().isPhantom()) {
             node.setParentAttachmentStrategy(new NoopParentAttachmentStrategy());
-        }
-        else if (node.isJointPrefetch()) {
-            node
-                    .setParentAttachmentStrategy(new StackLookupParentAttachmentStrategy(
-                            node));
-        }
-        else if (node
-                .getIncoming()
-                .getRelationship()
-                .isSourceIndependentFromTargetChange()) {
-            node.setParentAttachmentStrategy(new JoinedIdParentAttachementStrategy(
-                    context.getGraphManager(),
-                    node));
-        }
-        else {
-            node
-                    .setParentAttachmentStrategy(new ResultScanParentAttachmentStrategy(
-                            node));
+        } else if (node.isJointPrefetch()) {
+            node.setParentAttachmentStrategy(new StackLookupParentAttachmentStrategy(node));
+        } else if (node.getIncoming().getRelationship().isSourceIndependentFromTargetChange()) {
+            node.setParentAttachmentStrategy(new JoinedIdParentAttachementStrategy(context.getGraphManager(), node));
+        } else {
+            node.setParentAttachmentStrategy(new ResultScanParentAttachmentStrategy(node));
         }
 
         if (currentNode != null) {
