@@ -84,6 +84,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     /**
      * @since 3.2
      */
+    @Override
     public Iterator<T> iterator() {
         return new ResultIteratorIterator<T>(this);
     }
@@ -156,6 +157,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public List<T> allRows() {
         List<T> list = new ArrayList<T>();
 
@@ -170,6 +172,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
      * Returns true if there is at least one more record that can be read from
      * the iterator.
      */
+    @Override
     public boolean hasNextRow() {
         return nextRow;
     }
@@ -177,6 +180,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public T nextRow() {
         if (!hasNextRow()) {
             throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
@@ -190,6 +194,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public void skipRow() {
         if (!hasNextRow()) {
             throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
@@ -202,6 +207,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
      * called explicitly when the user is finished processing the records.
      * Otherwise unused database resources will not be released properly.
      */
+    @Override
     public void close() throws NoSuchElementException {
         if (!closed) {
             nextRow = false;
