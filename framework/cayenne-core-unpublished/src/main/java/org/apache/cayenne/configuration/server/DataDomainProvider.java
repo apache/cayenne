@@ -100,6 +100,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected RuntimeProperties runtimeProperties;
 
+    @Override
     public DataDomain get() throws ConfigurationException {
 
         try {

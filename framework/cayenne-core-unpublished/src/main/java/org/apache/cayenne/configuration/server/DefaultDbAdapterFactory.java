@@ -63,6 +63,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
         this.detectors = detectors;
     }
 
+    @Override
     public DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, final DataSource dataSource) throws Exception {
 
         String adapterType = null;

@@ -48,6 +48,7 @@ public class DBCPDataSourceFactory implements DataSourceFactory {
     @Inject
     protected ResourceLocator resourceLocator;
 
+    @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
         String location = nodeDescriptor.getParameters();

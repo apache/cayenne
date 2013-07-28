@@ -42,6 +42,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
+    @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
         String location = nodeDescriptor.getParameters();

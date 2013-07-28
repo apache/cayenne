@@ -45,6 +45,7 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
+    @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
         DataSourceInfo dataSourceDescriptor = nodeDescriptor.getDataSourceDescriptor();

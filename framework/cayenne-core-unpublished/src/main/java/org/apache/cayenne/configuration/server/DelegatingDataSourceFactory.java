@@ -63,6 +63,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         managedDataSources = new ConcurrentHashMap<DataSource, ScopeEventListener>();
     }
 
+    @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
         DataSource dataSource = getDataSourceFactory(nodeDescriptor).getDataSource(
                 nodeDescriptor);

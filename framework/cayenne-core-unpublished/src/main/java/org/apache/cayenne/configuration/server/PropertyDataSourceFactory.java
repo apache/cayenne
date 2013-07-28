@@ -53,6 +53,7 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
+    @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
         String suffix = "."

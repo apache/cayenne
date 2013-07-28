@@ -52,10 +52,12 @@ public class DataContextFactory implements ObjectContextFactory {
     @Inject
     protected QueryCache queryCache;
 
+    @Override
     public ObjectContext createContext() {
         return createdFromDataDomain(dataDomain);
     }
 
+    @Override
     public ObjectContext createContext(DataChannel parent) {
 
         // this switch may go away once we figure out clean property configuration...

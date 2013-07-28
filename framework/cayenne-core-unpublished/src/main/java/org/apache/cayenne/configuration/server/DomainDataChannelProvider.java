@@ -34,6 +34,7 @@ public class DomainDataChannelProvider implements Provider<DataChannel> {
     @Inject
     protected DataDomain dataDomain;
 
+    @Override
     public DataChannel get() {
         return dataDomain;
     }
