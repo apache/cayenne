@@ -54,7 +54,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.NULL).execute();
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         dbHelper.deleteAll("ARTGROUP");
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("EXHIBIT");

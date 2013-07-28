@@ -71,7 +71,7 @@ public class DataContextOuterJoinsTest extends ServerCase {
                 "ARTIST_ID");
 
         artistGroupHelper.deleteAll();
-        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.NULL).execute();
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         artgroupHelper.deleteAll();
         paintingHelper.deleteAll();
         artistHelper.deleteAll();

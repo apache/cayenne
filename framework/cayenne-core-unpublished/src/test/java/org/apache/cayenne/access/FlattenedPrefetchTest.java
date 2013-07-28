@@ -65,7 +65,7 @@ public class FlattenedPrefetchTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
-        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.NULL).execute();
+        dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         dbHelper.deleteAll("ARTGROUP");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
