@@ -48,16 +48,16 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
     private static final int TRIM_VALUES_THRESHOLD = 30;
 
     protected long queryExecutionTimeLoggingThreshold;
-    
+
     public CommonsJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
-    	this.queryExecutionTimeLoggingThreshold = runtimeProperties.getLong(Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY, 0);
+        this.queryExecutionTimeLoggingThreshold = runtimeProperties.getLong(
+                Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY, 0);
     }
 
     void sqlLiteralForObject(StringBuilder buffer, Object object) {
         if (object == null) {
             buffer.append("NULL");
-        }
-        else if (object instanceof String) {
+        } else if (object instanceof String) {
             buffer.append('\'');
             // lets escape quotes
             String literal = (String) object;
@@ -81,33 +81,24 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         // handle byte pretty formatting
         else if (object instanceof Byte) {
             IDUtil.appendFormattedByte(buffer, ((Byte) object).byteValue());
-        }
-        else if (object instanceof Number) {
+        } else if (object instanceof Number) {
             // process numeric value (do something smart in the future)
             buffer.append(object);
-        }
-        else if (object instanceof java.sql.Date) {
+        } else if (object instanceof java.sql.Date) {
             buffer.append('\'').append(object).append('\'');
-        }
-        else if (object instanceof java.sql.Time) {
+        } else if (object instanceof java.sql.Time) {
             buffer.append('\'').append(object).append('\'');
-        }
-        else if (object instanceof java.util.Date) {
+        } else if (object instanceof java.util.Date) {
             long time = ((java.util.Date) object).getTime();
             buffer.append('\'').append(new java.sql.Timestamp(time)).append('\'');
-        }
-        else if (object instanceof java.util.Calendar) {
+        } else if (object instanceof java.util.Calendar) {
             long time = ((java.util.Calendar) object).getTimeInMillis();
-            buffer.append(object.getClass().getName()).append('(').append(
-                    new java.sql.Timestamp(time)).append(')');
-        }
-        else if (object instanceof Character) {
+            buffer.append(object.getClass().getName()).append('(').append(new java.sql.Timestamp(time)).append(')');
+        } else if (object instanceof Character) {
             buffer.append(((Character) object).charValue());
-        }
-        else if (object instanceof Boolean) {
+        } else if (object instanceof Boolean) {
             buffer.append('\'').append(object).append('\'');
-        }
-        else if (object instanceof Enum<?>) {
+        } else if (object instanceof Enum<?>) {
             // buffer.append(object.getClass().getName()).append(".");
             buffer.append(((Enum<?>) object).name()).append("=");
             if (object instanceof ExtendedEnumeration) {
@@ -117,16 +108,13 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
                 buffer.append(value);
                 if (value instanceof String)
                     buffer.append("'");
-            }
-            else {
+            } else {
                 buffer.append(((Enum<?>) object).ordinal());
                 // FIXME -- this isn't quite right
             }
-        }
-        else if (object instanceof ParameterBinding) {
+        } else if (object instanceof ParameterBinding) {
             sqlLiteralForObject(buffer, ((ParameterBinding) object).getValue());
-        }
-        else if (object.getClass().isArray()) {
+        } else if (object.getClass().isArray()) {
             buffer.append("< ");
 
             int len = Array.getLength(object);
@@ -148,10 +136,8 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
             }
 
             buffer.append('>');
-        }
-        else {
-            buffer.append(object.getClass().getName()).append("@").append(
-                    System.identityHashCode(object));
+        } else {
+            buffer.append(object.getClass().getName()).append("@").append(System.identityHashCode(object));
         }
     }
 
@@ -185,26 +171,23 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
             StringBuilder buf = new StringBuilder("Created connection pool: ");
 
             if (dsi != null) {
-                // append URL on the same line to make log somewhat grep-friendly
+                // append URL on the same line to make log somewhat
+                // grep-friendly
                 buf.append(dsi.getDataSourceUrl());
 
                 if (dsi.getAdapterClassName() != null) {
-                    buf.append("\n\tCayenne DbAdapter: ").append(
-                            dsi.getAdapterClassName());
+                    buf.append("\n\tCayenne DbAdapter: ").append(dsi.getAdapterClassName());
                 }
 
                 buf.append("\n\tDriver class: ").append(dsi.getJdbcDriver());
 
                 if (dsi.getMinConnections() >= 0) {
-                    buf.append("\n\tMin. connections in the pool: ").append(
-                            dsi.getMinConnections());
+                    buf.append("\n\tMin. connections in the pool: ").append(dsi.getMinConnections());
                 }
                 if (dsi.getMaxConnections() >= 0) {
-                    buf.append("\n\tMax. connections in the pool: ").append(
-                            dsi.getMaxConnections());
+                    buf.append("\n\tMax. connections in the pool: ").append(dsi.getMaxConnections());
                 }
-            }
-            else {
+            } else {
                 buf.append(" pool information unavailable");
             }
 
@@ -233,13 +216,8 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         logQuery(queryStr, null, params, -1);
     }
 
-    private void buildLog(
-            StringBuilder buffer,
-            String prefix,
-            String postfix,
-            List<DbAttribute> attributes,
-            List<?> parameters,
-            boolean isInserting) {
+    private void buildLog(StringBuilder buffer, String prefix, String postfix, List<DbAttribute> attributes,
+            List<?> parameters, boolean isInserting) {
         if (parameters != null && parameters.size() > 0) {
             DbAttribute attribute = null;
             Iterator<DbAttribute> attributeIterator = null;
@@ -249,7 +227,8 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
                 attributeIterator = attributes.iterator();
 
             for (Object parameter : parameters) {
-                // If at the beginning, output the prefix, otherwise a separator.
+                // If at the beginning, output the prefix, otherwise a
+                // separator.
                 if (position++ == 0)
                     buffer.append(prefix);
                 else
@@ -292,11 +271,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
             return false;
     }
 
-    public void logQuery(
-            String queryStr,
-            List<DbAttribute> attrs,
-            List<?> params,
-            long time) {
+    public void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time) {
         if (isLoggable()) {
             StringBuilder buffer = new StringBuilder(queryStr);
             buildLog(buffer, " [bind: ", "]", attrs, params, isInserting(queryStr));
@@ -310,11 +285,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
-    public void logQueryParameters(
-            String label,
-            List<DbAttribute> attrs,
-            List<Object> parameters,
-            boolean isInserting) {
+    public void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) {
         String prefix = "[" + label + ": ";
         if (isLoggable() && parameters.size() > 0) {
             StringBuilder buffer = new StringBuilder();
@@ -324,17 +295,17 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
     }
 
     public void logSelectCount(int count, long time) {
-    	logSelectCount(count, time, null);
+        logSelectCount(count, time, null);
     }
-    
+
     public void logSelectCount(int count, long time, String sql) {
-        if (isLoggable() || (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold)) {
+        
+        if (isLoggable()) {
             StringBuilder buf = new StringBuilder();
 
             if (count == 1) {
                 buf.append("=== returned 1 row.");
-            }
-            else {
+            } else {
                 buf.append("=== returned ").append(count).append(" rows.");
             }
 
@@ -343,14 +314,14 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
             }
 
             logger.info(buf.toString());
+        }
 
-            buf.setLength(0);
-            if (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold) {
-            	buf.append("Query time exceeded threshold (").append(time).append(" ms): ");
-            	buf.append(sql);
-            	String message = buf.toString();
-            	logger.warn(message, new CayenneRuntimeException(message));
-            }
+        if (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold) {
+            StringBuilder buf = new StringBuilder();
+            buf.append("Query time exceeded threshold (").append(time).append(" ms): ");
+            buf.append(sql);
+            String message = buf.toString();
+            logger.warn(message, new CayenneRuntimeException(message));
         }
     }
 
@@ -358,11 +329,8 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         if (isLoggable()) {
             if (count < 0) {
                 logger.info("=== updated ? rows");
-            }
-            else {
-                String countStr = (count == 1) ? "=== updated 1 row." : "=== updated "
-                        + count
-                        + " rows.";
+            } else {
+                String countStr = (count == 1) ? "=== updated 1 row." : "=== updated " + count + " rows.";
                 logger.info(countStr);
             }
         }
