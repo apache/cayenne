@@ -47,14 +47,16 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.JTableHeader;
-
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.AbstractRemoveCallbackMethodAction;
+import org.apache.cayenne.modeler.action.CopyCallbackMethodAction;
 import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
+import org.apache.cayenne.modeler.action.CutCallbackMethodAction;
+import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.CallbackMethodListener;
@@ -100,18 +102,26 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
      */
     protected TableColumnPreferences tablePreferences;
 
+    /**
+     * list of callback method types
+     */
     protected CallbackType[] callbackTypes = {
-                            new CallbackType(LifecycleEvent.POST_ADD, "PostAdd"),
-                            new CallbackType(LifecycleEvent.PRE_PERSIST, "PrePersist"),
-                            new CallbackType(LifecycleEvent.POST_PERSIST, "PostPersist"),
-                            new CallbackType(LifecycleEvent.PRE_UPDATE, "PreUpdate"),
-                            new CallbackType(LifecycleEvent.POST_UPDATE, "PostUpdate"),
-                            new CallbackType(LifecycleEvent.PRE_REMOVE, "PreRemove"),
-                            new CallbackType(LifecycleEvent.POST_REMOVE, "PostRemove"),
-                            new CallbackType(LifecycleEvent.POST_LOAD, "PostLoad"),
+                            new CallbackType(LifecycleEvent.POST_ADD),
+                            new CallbackType(LifecycleEvent.PRE_PERSIST),
+                            new CallbackType(LifecycleEvent.POST_PERSIST),
+                            new CallbackType(LifecycleEvent.PRE_UPDATE),
+                            new CallbackType(LifecycleEvent.POST_UPDATE),
+                            new CallbackType(LifecycleEvent.PRE_REMOVE),
+                            new CallbackType(LifecycleEvent.POST_REMOVE),
+                            new CallbackType(LifecycleEvent.POST_LOAD),
                     };
-
+    
+    /**
+     * list of tables
+     */
     protected CayenneTable[] tables = new CayenneTable[callbackTypes.length];
+    
+    protected JPopupMenu popupMenu;
     
     /**
      * constructor
@@ -146,6 +156,30 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     }
 
     /**
+     * @return copy callback method action
+     */
+    protected CopyCallbackMethodAction getCopyCallbackMethodAction() {
+        Application app = Application.getInstance();
+        return app.getActionManager().getAction(CopyCallbackMethodAction.class);
+    }
+
+    /**
+     * @return cut callback method action
+     */
+    protected CutCallbackMethodAction getCutCallbackMethodAction() {
+        Application app = Application.getInstance();
+        return app.getActionManager().getAction(CutCallbackMethodAction.class);
+    }
+
+    /**
+     * @return paste callback method action
+     */
+    protected PasteAction getPasteCallbackMethodAction() {
+        Application app = Application.getInstance();
+        return app.getActionManager().getAction(PasteAction.class);
+    }
+
+    /**
      * GUI components initialization
      */
     protected void init() {
@@ -153,12 +187,18 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
         toolBar = new JToolBar();
         toolBar.add(getRemoveCallbackMethodAction().buildButton());
+        toolBar.addSeparator(new Dimension(10, 0));
+	    toolBar.add(getCopyCallbackMethodAction().buildButton());
+	    toolBar.add(getCutCallbackMethodAction().buildButton());
+        toolBar.add(getPasteCallbackMethodAction().buildButton());
 
         add(toolBar, BorderLayout.NORTH);
 
         auxPanel = new JPanel();
         auxPanel.setOpaque(false);
         auxPanel.setLayout(new BorderLayout());
+        
+        popupMenu = createPopup(); 
         
         createTables();
 
@@ -182,22 +222,27 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
             public void callbackMethodAdded(CallbackMethodEvent e) {
                 rebuildTables();
-                selectAdded();
+            	selectAdded();
             }
 
             public void callbackMethodRemoved(CallbackMethodEvent e) {
                 rebuildTables();
             }
         });
+        
+        for(int i = 0; i < tables.length; i++) {
+	        mediator.getApplication().getActionManager().setupCutCopyPaste(
+	                tables[i],
+	                CutCallbackMethodAction.class,
+	                CopyCallbackMethodAction.class);
+        }
     }
 
     /**
      * rebuilds table content
      */
     protected void rebuildTables() {
-        
-
-        
+                
         CallbackMap callbackMap = getCallbackMap();
 
        	for(int i = 0; i < callbackTypes.length; i++) {
@@ -260,12 +305,8 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 	    cayenneTable.getColumnModel().addColumnModelListener(new CallbackTableColumnModelListener(cayenneTable));
 	    cayenneTable.getTableHeader().addMouseListener(new CallbackMouseAdapter(cayenneTable));
 	    cayenneTable.getTableHeader().addMouseMotionListener(new CallbackMouseMotionListener(cayenneTable));
-	    
-	    // Create and install a popup
-	    JPopupMenu popup = new JPopupMenu();
-	    popup.add(getRemoveCallbackMethodAction().buildMenu());
-	
-	    TablePopupHandler.install(cayenneTable, popup);
+	      
+	    TablePopupHandler.install(cayenneTable, popupMenu);
 
         addButtonAtHeader(
         		cayenneTable, 
@@ -276,8 +317,18 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 	    return cayenneTable;
     }
     
+    private JPopupMenu createPopup() {
+	    JPopupMenu popup = new JPopupMenu();
+
+	    popup.add(getCopyCallbackMethodAction().buildMenu());
+	    popup.add(getCutCallbackMethodAction().buildMenu());
+	    popup.add(getPasteCallbackMethodAction().buildMenu());
+	    popup.add(getRemoveCallbackMethodAction().buildMenu());
+	    
+		return popup;
+	}
+    
     private JPanel createTablePanel(final CayenneTable cayenneTable) {
-        
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         
@@ -328,18 +379,30 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     
     private void selectAdded() {
     	for(int i = 0; i < callbackTypes.length; i++) {
-    		if(callbackTypes[i] == mediator.getCurrentCallbackType()) {
+    		if(callbackTypes[i] == getSelectedCallbackType()) {
                 if (tables[i].editCellAt(
                 		tables[i].getRowCount() - 1,
                         CallbackDescriptorTableModel.METHOD_NAME)
                         && tables[i].getEditorComponent() != null) {
-                	tables[i].getEditorComponent().requestFocus();
+                	tables[i].changeSelection(tables[i].getRowCount() - 1, 0, false, false);
+                	tables[i].getCellEditor().stopCellEditing();
+                	return;
                 }
     		}
     	}
     }
     
-    protected class CallbackImportableHandler extends TransferHandler {
+
+	private void unselectAll() {
+		for(int i = 0; i < callbackTypes.length; i++) {
+          	if(tables[i].getCellEditor() != null) {
+    			tables[i].getCellEditor().stopCellEditing();
+    		}
+          	tables[i].clearSelection();
+    	}
+	}
+    
+    private class CallbackImportableHandler extends TransferHandler {
     	
     	private CayenneTable table;
     	
@@ -399,7 +462,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         }
     }
 
-    protected class CallbackListSelectionListener implements ListSelectionListener {    	
+    private class CallbackListSelectionListener implements ListSelectionListener {    	
         
     	private CayenneTable table;
     	
@@ -414,12 +477,14 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                 if(!((ListSelectionModel)e.getSource()).isSelectionEmpty()) {
 	                for(int i = 0; i < tables.length; i++) {
 	                	if(!tables[i].equals(table)) {
-	                		tables[i].getSelectionModel().removeSelectionInterval(0,tables[i].getRowCount()-1);
+	                		tables[i].clearSelection();
 	                		if(tables[i].getCellEditor() != null) {
 	                			tables[i].getCellEditor().stopCellEditing();
 	                		}
 	                	}
 	                }
+
+	                mediator.setCurrentCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
                 }
 
             	
@@ -436,24 +501,24 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                     }
                 }
 
-                LifecycleEvent currentType = ((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackDescriptor().getCallbackType();
-                for(CallbackType callbackType : callbackTypes) {
-                	if(callbackType.getType() == currentType) {
-                		mediator.setCurrentCallbackType(callbackType);
-                		break;
-                	}
-                }
-
                 mediator.setCurrentCallbackMethods(methods);
                 getRemoveCallbackMethodAction().setEnabled(methods.length > 0);
                 getRemoveCallbackMethodAction().setName(
                         getRemoveCallbackMethodAction().getActionName(
                                 methods.length > 1));
+                getCopyCallbackMethodAction().setEnabled(methods.length > 0);
+                getCopyCallbackMethodAction().setName(
+                		getCopyCallbackMethodAction().getActionName(
+                                methods.length > 1));
+                getCutCallbackMethodAction().setEnabled(methods.length > 0);
+                getCutCallbackMethodAction().setName(
+                		getCutCallbackMethodAction().getActionName(
+                                methods.length > 1));            
             }
         }
     }
 
-    protected class CallbackTableColumnModelListener implements TableColumnModelListener {
+    private class CallbackTableColumnModelListener implements TableColumnModelListener {
         
     	private CayenneTable table;
     	
@@ -497,6 +562,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     		this.table = table;
     	}
     	
+    	@Override
 	    public void mouseReleased(MouseEvent e)
 	    {
 	    	if(table.getColumnWidthChanged())
@@ -504,9 +570,22 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 		    	for(int i=0; i<tables.length; i++) {
 	    			tables[i].getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
 		    	}
+		    	
 		    	initTablePreferences();
 	        	table.setColumnWidthChanged(false);
 	        }
+	    }
+	    
+    	@Override
+	    public void mousePressed(MouseEvent e)
+	    {
+    		if (e.isPopupTrigger() && e.getComponent() instanceof JTableHeader ) {
+
+    			unselectAll();
+            	
+    			mediator.setCurrentCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
+            	popupMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
 	    }
 	}
     
@@ -518,10 +597,10 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     		this.table = table;
     	}
     	
-		public void mouseMoved(MouseEvent arg0) {
+		public void mouseMoved(MouseEvent e) {
 		}
 		
-		public void mouseDragged(MouseEvent arg0) {
+		public void mouseDragged(MouseEvent e) {
 	    	if(table.getColumnWidthChanged())
 	        {
 	    		tablePreferences.bind(table, null, null, null);

@@ -173,6 +173,13 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
         return callbackDescriptor;
     }
 
+    /**
+     * @return CallbackType of the model
+     */
+    public CallbackType getCallbackType() {
+        return callbackType;
+    }
+    
     @Override
     public boolean isColumnSortable(int sortCol) {
         return false;

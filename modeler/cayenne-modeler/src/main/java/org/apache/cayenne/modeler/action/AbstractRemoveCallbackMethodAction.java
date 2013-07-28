@@ -57,7 +57,7 @@ public abstract class AbstractRemoveCallbackMethodAction extends RemoveAction {
      */
     @Override
     public String getIconName() {
-        return "icon-remove-method.gif";
+        return "icon-trash.gif";
     }
 
     /**

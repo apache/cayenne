@@ -116,9 +116,11 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new CutAttributeAction(application));
         registerAction(new CutRelationshipAction(application));
         registerAction(new CutProcedureParameterAction(application));
+        registerAction(new CutCallbackMethodAction(application));
         registerAction(new CopyAction(application));
         registerAction(new CopyAttributeAction(application));
         registerAction(new CopyRelationshipAction(application));
+        registerAction(new CopyCallbackMethodAction(application));
         registerAction(new CopyProcedureParameterAction(application));
         registerAction(new PasteAction(application));
 

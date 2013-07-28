@@ -19,6 +19,8 @@
 package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.map.LifecycleEvent;
+import org.apache.cayenne.util.ConversionUtil;
+import org.apache.cayenne.util.NameConverter;
 
 /**
  * Entity for callback type. Contains type and type name
@@ -46,9 +48,9 @@ public class CallbackType {
      * @param type type id
      * @param name name
      */
-    public CallbackType(LifecycleEvent type, String name) {
+    public CallbackType(LifecycleEvent type) {
         this.type = type;
-        this.name = name;
+        this.name = NameConverter.underscoredToJava(type.name(), true);
         this.counter = 0;
     }
 
