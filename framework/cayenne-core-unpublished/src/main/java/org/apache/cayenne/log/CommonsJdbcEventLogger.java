@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
-import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
