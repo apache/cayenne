@@ -32,19 +32,7 @@ import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockResultSet;
 import com.mockrunner.mock.jdbc.MockStatement;
 
-/**
- */
 public class JDBCResultIteratorTest extends TestCase {
-
-    public void testClosingConnection() throws Exception {
-        JDBCResultIterator it = makeIterator();
-
-        it.setClosingConnection(true);
-        assertTrue(it.isClosingConnection());
-
-        it.setClosingConnection(false);
-        assertFalse(it.isClosingConnection());
-    }
 
     public void testNextDataRow() throws Exception {
         JDBCResultIterator it = makeIterator();
@@ -57,28 +45,22 @@ public class JDBCResultIteratorTest extends TestCase {
     }
 
     public void testClose() throws Exception {
-        MockConnection c = new MockConnection();
+        Connection c = new MockConnection();
         MockStatement s = new MockStatement(c);
         MockResultSet rs = new MockResultSet("rs");
-        rs.addColumn("a", new Object[] {
-                "1", "2", "3"
-        });
-        RowDescriptor descriptor = new RowDescriptorBuilder()
-                .setResultSet(rs)
-                .getDescriptor(new ExtendedTypeMap());
+        rs.addColumn("a", new Object[] { "1", "2", "3" });
+        RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
 
-        JDBCResultIterator it = new JDBCResultIterator(c, s, rs, descriptor, new MockQueryMetadata());
+        JDBCResultIterator it = new JDBCResultIterator(s, rs, descriptor, new MockQueryMetadata());
 
         assertFalse(rs.isClosed());
         assertFalse(s.isClosed());
         assertFalse(c.isClosed());
 
-        it.setClosingConnection(false);
         it.close();
 
         assertTrue(rs.isClosed());
         assertTrue(s.isClosed());
-        assertFalse(c.isClosed());
     }
 
     JDBCResultIterator makeIterator() throws Exception {
@@ -86,14 +68,10 @@ public class JDBCResultIteratorTest extends TestCase {
         Connection c = new MockConnection();
         Statement s = new MockStatement(c);
         MockResultSet rs = new MockResultSet("rs");
-        rs.addColumn("a", new Object[] {
-                "1", "2", "3"
-        });
+        rs.addColumn("a", new Object[] { "1", "2", "3" });
 
-        RowDescriptor descriptor = new RowDescriptorBuilder()
-                .setResultSet(rs)
-                .getDescriptor(new ExtendedTypeMap());
-        return new JDBCResultIterator(c, s, rs, descriptor, new MockQueryMetadata());
+        RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
+        return new JDBCResultIterator(s, rs, descriptor, new MockQueryMetadata());
     }
 
 }

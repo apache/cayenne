@@ -43,19 +43,13 @@ import org.apache.cayenne.util.ResultIteratorIterator;
  */
 public class JDBCResultIterator<T> implements ResultIterator<T> {
 
-    // Connection information
-    protected Connection connection;
     protected Statement statement;
     protected ResultSet resultSet;
 
     protected RowDescriptor rowDescriptor;
     protected QueryMetadata queryMetadata;
 
-    // last indexed PK
-
-    protected boolean closingConnection;
     protected boolean closed;
-
     protected boolean nextRow;
 
     private RowReader<T> rowReader;
@@ -64,11 +58,23 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
      * Creates new JDBCResultIterator that reads from provided ResultSet.
      * 
      * @since 3.0
+     * @deprecated since 3.2 use
+     *             {@link #JDBCResultIterator(Statement, ResultSet, RowDescriptor, QueryMetadata)}
      */
+    @Deprecated
     public JDBCResultIterator(Connection connection, Statement statement, ResultSet resultSet,
             RowDescriptor descriptor, QueryMetadata queryMetadata) throws CayenneException {
+        this(statement, resultSet, descriptor, queryMetadata);
+    }
 
-        this.connection = connection;
+    /**
+     * Creates new JDBCResultIterator that reads from provided ResultSet.
+     * 
+     * @since 3.2
+     */
+    public JDBCResultIterator(Statement statement, ResultSet resultSet, RowDescriptor descriptor,
+            QueryMetadata queryMetadata) throws CayenneException {
+
         this.statement = statement;
         this.resultSet = resultSet;
         this.rowDescriptor = descriptor;
@@ -212,7 +218,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
         if (!closed) {
             nextRow = false;
 
-            StringBuffer errors = new StringBuffer();
+            StringBuilder errors = new StringBuilder();
 
             try {
                 resultSet.close();
@@ -225,22 +231,6 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
                     statement.close();
                 } catch (SQLException e2) {
                     errors.append("Error closing PreparedStatement.");
-                }
-            }
-
-            // TODO: andrus, 5/8/2006 - closing connection within
-            // JDBCResultIterator is
-            // obsolete as this is bound to transaction closing in DataContext.
-            // Deprecate
-            // this after 1.2
-
-            // close connection, if this object was explicitly configured to be
-            // responsible for doing it
-            if (connection != null && isClosingConnection()) {
-                try {
-                    connection.close();
-                } catch (SQLException e3) {
-                    errors.append("Error closing Connection.");
                 }
             }
 
@@ -268,19 +258,25 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     }
 
     /**
-     * Returns <code>true</code> if this iterator is responsible for closing its
-     * connection, otherwise a user of the iterator must close the connection
-     * after closing the iterator.
+     * @deprecated since 3.2 always returns false. Connection closing is outside
+     *             the scope of this iterator. See
+     *             {@link ConnectionAwareResultIterator} for a replacement.
      */
+    @Deprecated
     public boolean isClosingConnection() {
-        return closingConnection;
+        return false;
     }
 
     /**
      * Sets the <code>closingConnection</code> property.
+     * 
+     * @deprecated since 3.2 does nothing. Connection closing is outside the
+     *             scope of this iterator. See
+     *             {@link ConnectionAwareResultIterator} for a replacement.
      */
+    @Deprecated
     public void setClosingConnection(boolean flag) {
-        this.closingConnection = flag;
+        // noop
     }
 
     public RowDescriptor getRowDescriptor() {

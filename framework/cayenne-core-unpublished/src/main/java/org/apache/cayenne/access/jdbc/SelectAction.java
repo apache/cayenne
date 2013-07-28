@@ -45,8 +45,7 @@ public class SelectAction extends BaseSQLAction {
 
     protected SelectQuery<?> query;
 
-    public SelectAction(SelectQuery<?> query, JdbcAdapter adapter,
-            EntityResolver entityResolver) {
+    public SelectAction(SelectQuery<?> query, JdbcAdapter adapter, EntityResolver entityResolver) {
         super(adapter, entityResolver);
         this.query = query;
     }
@@ -61,8 +60,7 @@ public class SelectAction extends BaseSQLAction {
         return translator;
     }
 
-    public void performAction(Connection connection, OperationObserver observer)
-            throws SQLException, Exception {
+    public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
         long t1 = System.currentTimeMillis();
 
@@ -70,30 +68,27 @@ public class SelectAction extends BaseSQLAction {
         PreparedStatement prepStmt = translator.createStatement();
         ResultSet rs;
 
-        // need to run in try-catch block to close statement properly if exception happens
+        // need to run in try-catch block to close statement properly if
+        // exception happens
         try {
             rs = prepStmt.executeQuery();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             prepStmt.close();
             throw ex;
         }
         QueryMetadata md = query.getMetaData(getEntityResolver());
-        RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(
-                translator.getResultColumns()).getDescriptor(
+        RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(translator.getResultColumns()).getDescriptor(
                 getAdapter().getExtendedTypes());
 
-        JDBCResultIterator workerIterator = new JDBCResultIterator(
-                connection,
-                prepStmt,
-                rs,
-                descriptor,
-                md);
+        JDBCResultIterator workerIterator = new JDBCResultIterator(prepStmt, rs, descriptor, md);
 
-        workerIterator.setPostProcessor(DataRowPostProcessor
-                .createPostProcessor(translator));
+        workerIterator.setPostProcessor(DataRowPostProcessor.createPostProcessor(translator));
 
         ResultIterator it = workerIterator;
+
+        if (observer.isIteratedResult()) {
+            it = new ConnectionAwareResultIterator(workerIterator, connection);
+        }
 
         // wrap result iterator if distinct has to be suppressed
         if (translator.isSuppressingDistinct()) {
@@ -140,25 +135,26 @@ public class SelectAction extends BaseSQLAction {
                 });
             }
 
-            it = new DistinctResultIterator(
-                    workerIterator,
-                    translator.getRootDbEntity(),
-                    compareFullRows[0]);
+            it = new DistinctResultIterator(workerIterator, translator.getRootDbEntity(), compareFullRows[0]);
         }
 
-        // wrap iterator in a fetch limit checker ... there are a few cases when in-memory
-        // fetch limit is a noop, however in a general case this is needed, as the SQL
-        // result count does not directly correspond to the number of objects returned
+        // wrap iterator in a fetch limit checker ... there are a few cases when
+        // in-memory
+        // fetch limit is a noop, however in a general case this is needed, as
+        // the SQL
+        // result count does not directly correspond to the number of objects
+        // returned
         // from Cayenne.
 
         int fetchLimit = query.getFetchLimit();
-        int offset = translator.isSuppressingDistinct() ? query.getFetchOffset()
-                : getInMemoryOffset(query.getFetchOffset());
+        int offset = translator.isSuppressingDistinct() ? query.getFetchOffset() : getInMemoryOffset(query
+                .getFetchOffset());
         if (fetchLimit > 0 || offset > 0) {
             it = new LimitResultIterator(it, offset, fetchLimit);
         }
 
-        // TODO: Should do something about closing ResultSet and PreparedStatement in this
+        // TODO: Should do something about closing ResultSet and
+        // PreparedStatement in this
         // method, instead of relying on DefaultResultIterator to do that later
 
         if (!observer.isIteratedResult()) {
@@ -168,24 +164,18 @@ public class SelectAction extends BaseSQLAction {
             List<DataRow> resultRows;
             try {
                 resultRows = (List<DataRow>) it.allRows();
-            }
-            finally {
+            } finally {
                 it.close();
             }
 
-            adapter.getJdbcEventLogger().logSelectCount(
-                    resultRows.size(),
-                    System.currentTimeMillis() - t1,
+            adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1,
                     translator.createSqlString());
-            
+
             observer.nextRows(query, resultRows);
-        }
-        else {
+        } else {
             try {
-                workerIterator.setClosingConnection(true);
                 observer.nextRows(translator.getQuery(), it);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 it.close();
                 throw ex;
             }

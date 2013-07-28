@@ -64,7 +64,7 @@ public abstract class BaseSQLAction implements SQLAction {
 
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
 
-        JDBCResultIterator<DataRow> resultReader = new JDBCResultIterator<DataRow>(null, null, resultSet, descriptor,
+        JDBCResultIterator<DataRow> resultReader = new JDBCResultIterator<DataRow>(null, resultSet, descriptor,
                 metadata);
 
         LimitResultIterator<DataRow> it = new LimitResultIterator<DataRow>(resultReader,
@@ -77,7 +77,6 @@ public abstract class BaseSQLAction implements SQLAction {
             delegate.nextRows(query, resultRows);
         } else {
             try {
-                resultReader.setClosingConnection(true);
                 delegate.nextRows(query, it);
             } catch (Exception ex) {
                 it.close();
