@@ -459,13 +459,13 @@ public class DataContextTest extends ServerCase {
     public void testPerformPaginatedQuery() throws Exception {
         createArtistsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
         query.setPageSize(5);
-        List<?> objects = context.performQuery(query);
+        List<Artist> objects = context.select(query);
         assertNotNull(objects);
         assertTrue(objects instanceof IncrementalFaultList<?>);
-        assertTrue(((IncrementalFaultList<?>) objects).elements.get(0) instanceof Long);
-        assertTrue(((IncrementalFaultList<?>) objects).elements.get(6) instanceof Long);
+        assertTrue(((IncrementalFaultList<Artist>) objects).elements.get(0) instanceof Long);
+        assertTrue(((IncrementalFaultList<Artist>) objects).elements.get(6) instanceof Long);
 
         assertTrue(objects.get(0) instanceof Artist);
     }
