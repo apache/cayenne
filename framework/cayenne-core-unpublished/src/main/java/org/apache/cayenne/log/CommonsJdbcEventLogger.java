@@ -141,18 +141,21 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public void log(String message) {
         if (message != null) {
             logger.info(message);
         }
     }
 
+    @Override
     public void logConnect(String dataSource) {
         if (isLoggable()) {
             logger.info("Connecting. JNDI path: " + dataSource);
         }
     }
 
+    @Override
     public void logConnect(String url, String userName, String password) {
         if (isLoggable()) {
             StringBuilder buf = new StringBuilder("Opening connection: ");
@@ -166,6 +169,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public void logPoolCreated(DataSourceInfo dsi) {
         if (isLoggable()) {
             StringBuilder buf = new StringBuilder("Created connection pool: ");
@@ -195,14 +199,17 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public void logConnectSuccess() {
         logger.info("+++ Connecting: SUCCESS.");
     }
 
+    @Override
     public void logConnectFailure(Throwable th) {
         logger.info("*** Connecting: FAILURE.", th);
     }
 
+    @Override
     public void logGeneratedKey(DbAttribute attribute, Object value) {
         if (isLoggable()) {
             String entity = attribute.getEntity().getName();
@@ -212,6 +219,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public void logQuery(String queryStr, List<?> params) {
         logQuery(queryStr, null, params, -1);
     }
@@ -271,6 +279,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
             return false;
     }
 
+    @Override
     public void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time) {
         if (isLoggable()) {
             StringBuilder buffer = new StringBuilder(queryStr);
@@ -285,6 +294,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) {
         String prefix = "[" + label + ": ";
         if (isLoggable() && parameters.size() > 0) {
@@ -294,10 +304,12 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public void logSelectCount(int count, long time) {
         logSelectCount(count, time, null);
     }
 
+    @Override
     public void logSelectCount(int count, long time, String sql) {
         
         if (isLoggable()) {
@@ -325,6 +337,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public void logUpdateCount(int count) {
         if (isLoggable()) {
             if (count < 0) {
@@ -336,18 +349,22 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public void logBeginTransaction(String transactionLabel) {
         logger.info("--- " + transactionLabel);
     }
 
+    @Override
     public void logCommitTransaction(String transactionLabel) {
         logger.info("+++ " + transactionLabel);
     }
 
+    @Override
     public void logRollbackTransaction(String transactionLabel) {
         logger.info("*** " + transactionLabel);
     }
 
+    @Override
     public void logQueryError(Throwable th) {
         if (isLoggable()) {
             if (th != null) {
@@ -366,6 +383,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Override
     public boolean isLoggable() {
         return logger.isInfoEnabled();
     }
