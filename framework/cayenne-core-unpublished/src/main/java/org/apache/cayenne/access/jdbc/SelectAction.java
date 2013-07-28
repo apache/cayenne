@@ -62,10 +62,16 @@ public class SelectAction extends BaseSQLAction {
 
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        long t1 = System.currentTimeMillis();
+        final long t1 = System.currentTimeMillis();
 
-        SelectTranslator translator = createTranslator(connection);
+        final SelectTranslator translator = createTranslator(connection);
         PreparedStatement prepStmt = translator.createStatement();
+
+        // TODO: ugly... 'createSqlString' is already called inside
+        // 'createStatement', but calling it here again to store for logging
+        // purposes
+        final String sqlString = translator.createSqlString();
+
         ResultSet rs;
 
         // need to run in try-catch block to close statement properly if
@@ -87,7 +93,14 @@ public class SelectAction extends BaseSQLAction {
         ResultIterator it = workerIterator;
 
         if (observer.isIteratedResult()) {
-            it = new ConnectionAwareResultIterator(workerIterator, connection);
+            it = new ConnectionAwareResultIterator(it, connection) {
+                @Override
+                protected void doClose() {
+                    // 
+                    adapter.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - t1, sqlString);
+                    super.doClose();
+                }
+            };
         }
 
         // wrap result iterator if distinct has to be suppressed
@@ -157,28 +170,24 @@ public class SelectAction extends BaseSQLAction {
         // PreparedStatement in this
         // method, instead of relying on DefaultResultIterator to do that later
 
-        if (!observer.isIteratedResult()) {
-            // note that we don't need to close ResultIterator
-            // since "dataRows" will do it internally
-
-            List<DataRow> resultRows;
-            try {
-                resultRows = (List<DataRow>) it.allRows();
-            } finally {
-                it.close();
-            }
-
-            adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1,
-                    translator.createSqlString());
-
-            observer.nextRows(query, resultRows);
-        } else {
+        if (observer.isIteratedResult()) {
             try {
                 observer.nextRows(translator.getQuery(), it);
             } catch (Exception ex) {
                 it.close();
                 throw ex;
             }
+        } else {
+            List<DataRow> resultRows;
+            try {
+                resultRows = it.allRows();
+            } finally {
+                it.close();
+            }
+
+            adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1, sqlString);
+
+            observer.nextRows(query, resultRows);
         }
     }
 }

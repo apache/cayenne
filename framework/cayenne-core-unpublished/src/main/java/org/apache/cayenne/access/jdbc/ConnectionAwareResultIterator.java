@@ -27,9 +27,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ResultIterator;
 
 /**
- * A {@link ResultIterator} wrapper that handles closing a connection. Used in
- * iterators that are returned to the end users and are not implicitly managed
- * by Cayenne.
+ * A {@link ResultIterator} wrapper that handles closing a connection. Also
+ * internally counts processed rows, mostly for the benefit of subclasses.
+ * Subclasses are used in iterators that are returned to the end users and are
+ * not implicitly managed by Cayenne.
  * 
  * @since 3.2
  */
@@ -38,6 +39,7 @@ public class ConnectionAwareResultIterator<T> implements ResultIterator<T> {
     private ResultIterator<T> delegate;
     private Connection connection;
     private boolean closed;
+    protected int rowCounter;
 
     public ConnectionAwareResultIterator(ResultIterator<T> delegate, Connection connection) {
         this.delegate = delegate;
@@ -48,33 +50,35 @@ public class ConnectionAwareResultIterator<T> implements ResultIterator<T> {
     public void close() {
 
         if (!closed) {
-
-            StringBuilder errors = null;
-
-            try {
-                delegate.close();
-            } catch (Exception e1) {
-                if (errors == null) {
-                    errors = new StringBuilder();
-                }
-                errors.append("Error closing ResultSet: " + e1);
-            }
-
-            try {
-                connection.close();
-            } catch (SQLException e2) {
-                if (errors == null) {
-                    errors = new StringBuilder();
-                }
-
-                errors.append("Error closing connection: " + e2);
-            }
-
-            if (errors != null) {
-                throw new CayenneRuntimeException("Error closing ResultIterator: " + errors.toString());
-            }
-
+            doClose();
             closed = true;
+        }
+    }
+
+    protected void doClose() {
+        StringBuilder errors = null;
+
+        try {
+            delegate.close();
+        } catch (Exception e1) {
+            if (errors == null) {
+                errors = new StringBuilder();
+            }
+            errors.append("Error closing ResultSet: " + e1);
+        }
+
+        try {
+            connection.close();
+        } catch (SQLException e2) {
+            if (errors == null) {
+                errors = new StringBuilder();
+            }
+
+            errors.append("Error closing connection: " + e2);
+        }
+
+        if (errors != null) {
+            throw new CayenneRuntimeException("Error closing ResultIterator: " + errors.toString());
         }
     }
 
@@ -90,6 +94,7 @@ public class ConnectionAwareResultIterator<T> implements ResultIterator<T> {
 
     @Override
     public T nextRow() {
+        rowCounter++;
         return delegate.nextRow();
     }
 

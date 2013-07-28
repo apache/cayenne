@@ -189,7 +189,7 @@ public class SQLTemplateAction implements SQLAction {
     }
 
     protected void processSelectResult(SQLStatement compiled, Connection connection, Statement statement,
-            ResultSet resultSet, OperationObserver callback, long startTime) throws Exception {
+            ResultSet resultSet, OperationObserver callback, final long startTime) throws Exception {
 
         boolean iteratedResult = callback.isIteratedResult();
 
@@ -202,30 +202,34 @@ public class SQLTemplateAction implements SQLAction {
         ResultIterator it = result;
 
         if (iteratedResult) {
-            it = new ConnectionAwareResultIterator(it, connection);
+
+            it = new ConnectionAwareResultIterator(it, connection) {
+                @Override
+                protected void doClose() {
+                    adapter.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - startTime);
+                    super.doClose();
+                }
+            };
         }
 
         it = new LimitResultIterator(it, getFetchOffset(), query.getFetchLimit());
 
-        if (!iteratedResult) {
-
-            // note that we are not closing the iterator here, relying on caller
-            // to close
-            // the underlying ResultSet on its own... this is a hack, maybe a
-            // cleaner flow
-            // is due here.
-            List<DataRow> resultRows = (List<DataRow>) it.allRows();
-
-            adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
-
-            callback.nextRows(query, resultRows);
-        } else {
+        if (iteratedResult) {
             try {
                 callback.nextRows(query, it);
             } catch (Exception ex) {
                 it.close();
                 throw ex;
             }
+        } else {
+            // note that we are not closing the iterator here, relying on caller
+            // to close the underlying ResultSet on its own... this is a hack,
+            // maybe a cleaner flow is due here.
+            List<DataRow> resultRows = (List<DataRow>) it.allRows();
+
+            adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
+
+            callback.nextRows(query, resultRows);
         }
     }
 
