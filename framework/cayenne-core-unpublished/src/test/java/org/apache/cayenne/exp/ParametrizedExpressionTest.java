@@ -81,10 +81,18 @@ public class ParametrizedExpressionTest extends ServerCase {
         Expression inExp = Expression.fromString("k1 in $test");
         Expression e1 = Expression.fromString("k1 in ('a', 'b')");
 
-        TstTraversalHandler.compareExps(e1, inExp.expWithParameters(Collections
-                .singletonMap("test", new Object[] {
-                        "a", "b"
-                })));
+        TstTraversalHandler.compareExps(e1,
+                inExp.expWithParameters(Collections.singletonMap("test", new Object[] { "a", "b" })));
+    }
+
+    public void testInParameter_AsValues() throws Exception {
+        Expression inExp = Expression.fromString("k1 in ($ap, $bp)");
+        Expression e1 = Expression.fromString("k1 in ('a', 'b')");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ap", "a");
+        params.put("bp", "b");
+        TstTraversalHandler.compareExps(e1, inExp.expWithParameters(params));
     }
 
     /**
@@ -101,8 +109,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         try {
             e1.expWithParameters(new HashMap(), false);
             fail("Parameter was missing, but no exception was thrown.");
-        }
-        catch (ExpressionException ex) {
+        } catch (ExpressionException ex) {
             // exception expected
         }
     }
@@ -208,8 +215,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         try {
             e1.expWithParameters(Collections.EMPTY_MAP, false);
             fail("one parameter missing....must fail..");
-        }
-        catch (ExpressionException ex) {
+        } catch (ExpressionException ex) {
             // expected
         }
 
