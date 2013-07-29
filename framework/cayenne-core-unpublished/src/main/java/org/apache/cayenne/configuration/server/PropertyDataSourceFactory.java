@@ -82,7 +82,8 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
                     maxConnections,
                     username,
                     password,
-                    jdbcEventLogger);
+                    jdbcEventLogger,
+                    properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME, PoolManager.MAX_QUEUE_WAIT_DEFAULT));
         }
         catch (Exception e) {
             jdbcEventLogger.logConnectFailure(e);

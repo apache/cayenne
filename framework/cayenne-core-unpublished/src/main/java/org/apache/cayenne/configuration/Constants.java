@@ -139,7 +139,15 @@ public interface Constants {
      * clause size limitations and memory usage efficiency.
      */
     public static final String SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY = "cayenne.server.max_id_qualifier_size";
-
+    
+    /**
+     * Defines a maximum time in milliseconds that a connection request could wait in the
+     * connection queue. After this period expires, an exception will be thrown in the
+     * calling method. A value of zero will make the thread wait until a connection is
+     * available with no time out. Defaults to 20 seconds.
+     */
+    public static final String SERVER_MAX_QUEUE_WAIT_TIME = "cayenne.jdbc.max_wait";
+    
     /** Defines if database uses case-insensitive collation */
     public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
     

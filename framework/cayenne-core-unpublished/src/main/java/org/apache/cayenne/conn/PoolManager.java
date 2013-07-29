@@ -47,10 +47,20 @@ public class PoolManager implements ScopeEventListener, DataSource,
     /**
      * Defines a maximum time in milliseconds that a connection request could wait in the
      * connection queue. After this period expires, an exception will be thrown in the
-     * calling method. In the future this parameter should be made configurable.
+     * calling method. 
      */
-    public static final int MAX_QUEUE_WAIT = 20000;
+    public static final int MAX_QUEUE_WAIT_DEFAULT = 20000;
 
+    /**
+     * An exception indicating that a connection request waiting in the queue
+     * timed out and was unable to obtain a connection.
+     */
+    public static class ConnectionUnavailableException extends SQLException {
+    	public ConnectionUnavailableException(String message) {
+    		super(message);
+    	}
+    }
+    
     protected ConnectionPoolDataSource poolDataSource;
     protected int minConnections;
     protected int maxConnections;
@@ -65,7 +75,8 @@ public class PoolManager implements ScopeEventListener, DataSource,
     private PoolMaintenanceThread poolMaintenanceThread;
 
     private boolean shuttingDown;
-
+    private long maxQueueWaitTime;
+    
     /**
      * Creates new PoolManager using org.apache.cayenne.conn.PoolDataSource for an
      * underlying ConnectionPoolDataSource.
@@ -73,11 +84,11 @@ public class PoolManager implements ScopeEventListener, DataSource,
     public PoolManager(String jdbcDriver, String dataSourceUrl, int minCons, int maxCons,
             String userName, String password) throws SQLException {
 
-        this(jdbcDriver, dataSourceUrl, minCons, maxCons, userName, password, null);
+        this(jdbcDriver, dataSourceUrl, minCons, maxCons, userName, password, null, MAX_QUEUE_WAIT_DEFAULT);
     }
 
     public PoolManager(String jdbcDriver, String dataSourceUrl, int minCons, int maxCons,
-            String userName, String password, JdbcEventLogger logger) throws SQLException {
+            String userName, String password, JdbcEventLogger logger, long maxQueueWaitTime) throws SQLException {
 
         if (logger != null) {
             DataSourceInfo info = new DataSourceInfo();
@@ -95,7 +106,7 @@ public class PoolManager implements ScopeEventListener, DataSource,
         DriverDataSource driverDS = new DriverDataSource(jdbcDriver, dataSourceUrl);
         driverDS.setLogger(logger);
         PoolDataSource poolDS = new PoolDataSource(driverDS);
-        init(poolDS, minCons, maxCons, userName, password);
+        init(poolDS, minCons, maxCons, userName, password, maxQueueWaitTime);
     }
 
     /**
@@ -111,7 +122,7 @@ public class PoolManager implements ScopeEventListener, DataSource,
      */
     public PoolManager(ConnectionPoolDataSource poolDataSource, int minCons, int maxCons,
             String userName, String password) throws SQLException {
-        init(poolDataSource, minCons, maxCons, userName, password);
+        init(poolDataSource, minCons, maxCons, userName, password, MAX_QUEUE_WAIT_DEFAULT);
     }
 
     /** Initializes pool. Normally called from constructor. */
@@ -120,7 +131,8 @@ public class PoolManager implements ScopeEventListener, DataSource,
             int minCons,
             int maxCons,
             String userName,
-            String password) throws SQLException {
+            String password,
+            long maxQueueWaitTime) throws SQLException {
 
         // do sanity checks...
         if (maxConnections < 0) {
@@ -146,7 +158,8 @@ public class PoolManager implements ScopeEventListener, DataSource,
         this.minConnections = minCons;
         this.maxConnections = maxCons;
         this.poolDataSource = poolDataSource;
-
+        this.maxQueueWaitTime = maxQueueWaitTime;
+        
         // init pool... use linked lists to use the queue in the FIFO manner
         usedPool = new LinkedList<PooledConnection>();
         unusedPool = new LinkedList<PooledConnection>();
@@ -426,20 +439,20 @@ public class PoolManager implements ScopeEventListener, DataSource,
             // before the full wait period expired, and no connections are
             // available yet, go back to sleep. Otherwise we don't give a maintenance
             // thread a chance to increase pool size
-            long waitTill = System.currentTimeMillis() + MAX_QUEUE_WAIT;
-
+            long waitTill = System.currentTimeMillis() + maxQueueWaitTime;
+        	
             do {
                 try {
-                    wait(MAX_QUEUE_WAIT);
+                    wait(maxQueueWaitTime);
                 }
                 catch (InterruptedException iex) {
                     // ignoring
                 }
 
-            } while (unusedPool.size() == 0 && waitTill > System.currentTimeMillis());
+            } while (unusedPool.size() == 0 && (maxQueueWaitTime == 0 || waitTill > System.currentTimeMillis()));
 
             if (unusedPool.size() == 0) {
-                throw new SQLException(
+                throw new ConnectionUnavailableException(
                         "Can't obtain connection. Request timed out. Total used connections: "
                                 + usedPool.size());
             }

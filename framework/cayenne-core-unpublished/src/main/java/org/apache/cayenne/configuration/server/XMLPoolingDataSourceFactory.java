@@ -21,7 +21,9 @@ package org.apache.cayenne.configuration.server;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;
@@ -45,6 +47,9 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
+    @Inject 
+    private RuntimeProperties properties;
+    
     @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
@@ -59,7 +64,8 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
         try {
             return new PoolManager(dataSourceDescriptor.getJdbcDriver(), dataSourceDescriptor.getDataSourceUrl(),
                     dataSourceDescriptor.getMinConnections(), dataSourceDescriptor.getMaxConnections(),
-                    dataSourceDescriptor.getUserName(), dataSourceDescriptor.getPassword(), jdbcEventLogger);
+                    dataSourceDescriptor.getUserName(), dataSourceDescriptor.getPassword(), jdbcEventLogger,
+                    properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME, PoolManager.MAX_QUEUE_WAIT_DEFAULT));
         } catch (Exception e) {
             jdbcEventLogger.logConnectFailure(e);
             throw e;
