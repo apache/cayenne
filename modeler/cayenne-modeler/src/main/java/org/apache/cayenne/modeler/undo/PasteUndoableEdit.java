@@ -36,8 +36,10 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
+import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
+import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.query.Query;
 
 public class PasteUndoableEdit extends CayenneUndoableEdit {
@@ -81,6 +83,9 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
 
         RemoveRelationshipAction rRelationShipAction = actionManager
                 .getAction(RemoveRelationshipAction.class);
+
+        RemoveCallbackMethodAction rCallbackMethodAction = actionManager
+                .getAction(RemoveCallbackMethodAction.class);
 
         RemoveProcedureParameterAction rProcedureParamAction = actionManager
                 .getAction(RemoveProcedureParameterAction.class);
@@ -149,6 +154,15 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
                         new ObjRelationship[] {
                             (ObjRelationship) content
                         });
+            }
+            else if (content instanceof ObjCallbackMethod) {
+            		ObjCallbackMethod[] methods = new ObjCallbackMethod[] {
+                            (ObjCallbackMethod) content };
+            		for(ObjCallbackMethod callbackMethod : methods) {
+	            		rCallbackMethodAction.removeCallbackMethod(
+	                			methods[0].getCallbackType(), 
+	                			callbackMethod.getName());
+            		}
             }
         }
         else if (where instanceof Procedure) {

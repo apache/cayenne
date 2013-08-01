@@ -83,9 +83,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new RemoveRelationshipAction(application));
         // start callback-related actions
         registerAction(new CreateCallbackMethodAction(application)).setAlwaysOn(true);
-        registerAction(new CreateCallbackMethodForListenerAction(application));
         registerAction(new RemoveCallbackMethodAction(application));
-        registerAction(new RemoveCallbackMethodForListenerAction(application));
         registerAction(new CreateObjEntityListenerAction(application)).setAlwaysOn(true);
         registerAction(new CreateDataMapEntityListenerAction(application)).setAlwaysOn(
                 true);

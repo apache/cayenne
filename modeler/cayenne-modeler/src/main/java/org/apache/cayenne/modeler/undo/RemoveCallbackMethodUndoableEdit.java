@@ -24,35 +24,39 @@ import javax.swing.undo.CannotUndoException;
 import org.apache.cayenne.modeler.action.CreateCallbackMethodAction;
 import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.editor.CallbackType;
+import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 
-public class CreateCallbackMethodUndoableEdit extends CayenneUndoableEdit {
+public class RemoveCallbackMethodUndoableEdit extends CayenneUndoableEdit {
 
     private CallbackType callbackType;
-    private String methodName;
+    private ObjCallbackMethod[] methods;
+
+    public RemoveCallbackMethodUndoableEdit(CallbackType callbackType,
+    		ObjCallbackMethod[] methods) {
+        this.callbackType = callbackType;
+        this.methods = methods;
+    }
 
     @Override
     public String getPresentationName() {
-        return "Create Callback Method";
+    	return "Remove Obj Callback Methods";
     }
 
     @Override
     public void redo() throws CannotRedoException {
-        CreateCallbackMethodAction action = actionManager
-                .getAction(CreateCallbackMethodAction.class);
-        action.createCallbackMethod(callbackType, methodName);
+    	RemoveCallbackMethodAction action = actionManager
+                .getAction(RemoveCallbackMethodAction.class);
+        for (ObjCallbackMethod method : methods) {
+            action.removeCallbackMethod(callbackType, method.getName());
+        }
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveCallbackMethodAction action = actionManager
-                .getAction(RemoveCallbackMethodAction.class);
-        action.removeCallbackMethod(callbackType, methodName);
+    	CreateCallbackMethodAction action = actionManager
+                .getAction(CreateCallbackMethodAction.class);
+        for (ObjCallbackMethod method : methods) {
+            action.createCallbackMethod(callbackType, method.getName());
+        }
     }
-
-    public CreateCallbackMethodUndoableEdit(CallbackType callbackType,
-            String methodName) {
-        this.callbackType = callbackType;
-        this.methodName = methodName;
-    }
-
 }

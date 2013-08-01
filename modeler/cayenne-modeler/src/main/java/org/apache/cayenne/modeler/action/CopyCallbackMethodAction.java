@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 
 public class CopyCallbackMethodAction extends CopyAction implements MultipleObjectsAction {
 
@@ -33,7 +34,11 @@ public class CopyCallbackMethodAction extends CopyAction implements MultipleObje
      */
     @Override
     public boolean enableForPath(ConfigurationNode object) {
-        return object != null;
+        if (object == null) {
+            return false;
+        }
+
+        return object instanceof ObjCallbackMethod;
     }
 
     @Override

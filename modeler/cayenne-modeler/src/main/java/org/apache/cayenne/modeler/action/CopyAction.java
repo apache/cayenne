@@ -39,6 +39,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
 import org.apache.cayenne.query.Query;
@@ -131,6 +132,7 @@ public class CopyAction extends CayenneAction {
                 || object instanceof DbRelationship
                 || object instanceof ObjAttribute
                 || object instanceof ObjRelationship
+                || object instanceof ObjCallbackMethod
                 || object instanceof Procedure
                 || object instanceof ProcedureParameter) {
             return true;

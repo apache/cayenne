@@ -41,7 +41,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -53,6 +52,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.dialog.query.QueryType;
+import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
@@ -366,7 +366,6 @@ public class PasteAction extends CayenneAction implements FlavorListener {
         }
         else if (where instanceof ObjEntity) {
             final ObjEntity objEntity = (ObjEntity) where;
-            final LifecycleEvent whereType = mediator.getCurrentCallbackType().getType();
 
             // attrs and rels must be unique in entity namespace
             FreeNameChecker checker = new FreeNameChecker() {
@@ -374,8 +373,10 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 public boolean isNameFree(String name) {
                     return objEntity.getAttribute(name) == null
                             && objEntity.getRelationship(name) == null
-                            && !objEntity.getCallbackMap().getCallbackDescriptor(whereType)
-                            		.getCallbackMethods().contains(name);
+                            // uninitialized mediator.currentCallbackType should not affect a copying of rels or attrs
+                            && (mediator.getCurrentCallbackType() == null ? true : 
+                            	!objEntity.getCallbackMap().getCallbackDescriptor(mediator.getCurrentCallbackType().getType())
+                            		.getCallbackMethods().contains(name));
                 }
             };
 
@@ -398,16 +399,16 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         objEntity,
                         rel);
             }
-            else if(content.getClass().equals(String.class)) {
-                String methodName = (String) content;
-                methodName = getFreeName(checker, methodName);
+            else if(content instanceof ObjCallbackMethod) {
+            	ObjCallbackMethod method = (ObjCallbackMethod) content;
+            	method.setName(getFreeName(checker, method.getName()));
                 
-                objEntity.getCallbackMap().getCallbackDescriptor(whereType).addCallbackMethod(methodName);
+                objEntity.getCallbackMap().getCallbackDescriptor(mediator.getCurrentCallbackType().getType()).addCallbackMethod(method.getName());
 
                 CallbackMethodEvent ce = new CallbackMethodEvent(
                         this,
                         null,
-                        methodName,
+                        method.getName(),
                         MapEvent.ADD);
 
                 getProjectController().fireCallbackMethodEvent(ce);
@@ -544,7 +545,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                     ||
 
                     (currentObject instanceof ObjEntity && (content instanceof ObjAttribute
-                            || content instanceof ObjRelationship || content.getClass().equals(String.class) || isTreeLeaf(content)))
+                            || content instanceof ObjRelationship || content instanceof ObjCallbackMethod || isTreeLeaf(content)))
                     ||
 
                     (currentObject instanceof Embeddable && (content instanceof EmbeddableAttribute || isTreeLeaf(content)))

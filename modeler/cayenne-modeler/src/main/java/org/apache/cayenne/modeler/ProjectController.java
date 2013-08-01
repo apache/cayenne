@@ -80,6 +80,7 @@ import org.apache.cayenne.modeler.action.NavigateForwardAction;
 import org.apache.cayenne.modeler.action.RevertAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.editor.CallbackType;
+import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.CallbackMethodListener;
@@ -170,7 +171,7 @@ public class ProjectController extends CayenneController {
         /**
          * currently selected callback methods
          */
-        private String[] callbackMethods;
+        private ObjCallbackMethod[] callbackMethods;
 
         public ControllerState() {
 
@@ -182,7 +183,7 @@ public class ProjectController extends CayenneController {
             objAttrs = new ObjAttribute[0];
             objRels = new ObjRelationship[0];
 
-            callbackMethods = new String[0];
+            callbackMethods = new ObjCallbackMethod[0];
         }
 
         /*
@@ -1516,7 +1517,7 @@ public class ProjectController extends CayenneController {
     /**
      * @return currently selected callback methods
      */
-    public String[] getCurrentCallbackMethods() {
+    public ObjCallbackMethod[] getCurrentCallbackMethods() {
         return currentState.callbackMethods;
     }
 
@@ -1537,7 +1538,7 @@ public class ProjectController extends CayenneController {
     /**
      * @return currently selected callback methods
      */
-    public void setCurrentCallbackMethods(String[] callbackMethods) {
+    public void setCurrentCallbackMethods(ObjCallbackMethod[] callbackMethods) {
         currentState.callbackMethods = callbackMethods;
     }
 

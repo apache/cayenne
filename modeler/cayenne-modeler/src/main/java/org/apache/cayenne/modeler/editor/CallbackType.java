@@ -18,8 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import java.io.Serializable;
+
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.NameConverter;
 
 /**
@@ -28,7 +29,7 @@ import org.apache.cayenne.util.NameConverter;
  * @version 1.0 Oct 26, 2007
  */
 
-public class CallbackType {
+public class CallbackType implements Serializable {
 
     private LifecycleEvent type;
 
