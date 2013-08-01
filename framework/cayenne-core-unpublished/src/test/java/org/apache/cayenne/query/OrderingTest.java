@@ -137,7 +137,7 @@ public class OrderingTest extends TestCase {
 
     public void testOrderList2() throws Exception {
         // compare on non-persistent property
-        List list = new ArrayList(3);
+        List<TestBean> list = new ArrayList<TestBean>(3);
 
         list.add(new TestBean(5));
         list.add(new TestBean(2));
@@ -151,7 +151,7 @@ public class OrderingTest extends TestCase {
 
     public void testOrderListWithMultipleOrderings2() throws Exception {
         // compare on non-persistent property
-        List list = new ArrayList(6);
+        List<TestBean> list = new ArrayList<TestBean>(6);
 
         list.add(new TestBean("c", 1));
         list.add(new TestBean("c", 30));
@@ -165,7 +165,7 @@ public class OrderingTest extends TestCase {
         orderings.add(new Ordering("integer", SortOrder.DESCENDING));
 
         // clone list and then order
-        List orderedList = new ArrayList(list);
+        List<TestBean> orderedList = new ArrayList<TestBean>(list);
         Ordering.orderList(orderedList, orderings);
 
         assertEquals(list.get(2), orderedList.get(0));
