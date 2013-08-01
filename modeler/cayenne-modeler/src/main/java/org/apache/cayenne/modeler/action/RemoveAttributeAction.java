@@ -85,10 +85,11 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
         ProjectController mediator = getProjectController();
 
-        EmbeddableAttribute[] embAttrs = getProjectController().getCurrentEmbAttrs();
+        EmbeddableAttribute[] embAttrs = getProjectController().getCurrentEmbAttributes();
+        ObjAttribute[] objAttrs = getProjectController().getCurrentObjAttributes();
+        DbAttribute[] dbAttrs = getProjectController().getCurrentDbAttributes();
 
-        ObjAttribute[] attrs = getProjectController().getCurrentObjAttributes();
-
+        
         if (embAttrs != null && embAttrs.length > 0) {
             if ((embAttrs.length == 1 && dialog.shouldDelete(
                     "Embeddable Attribute",
@@ -98,55 +99,46 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
 
                 Embeddable embeddable = mediator.getCurrentEmbeddable();
 
-                EmbeddableAttribute[] eAttrs = getProjectController()
-                        .getCurrentEmbAttrs();
-
                 application.getUndoManager().addEdit(
-                        new RemoveAttributeUndoableEdit(embeddable, eAttrs));
+                        new RemoveAttributeUndoableEdit(embeddable, embAttrs));
 
-                removeEmbeddableAttributes(embeddable, eAttrs);
+                removeEmbeddableAttributes(embeddable, embAttrs);
 
             }
         }
-        else if (attrs != null && attrs.length > 0) {
-            if ((attrs.length == 1 && dialog.shouldDelete("ObjAttribute", attrs[0]
+        else if (objAttrs != null && objAttrs.length > 0) {
+            if ((objAttrs.length == 1 && dialog.shouldDelete("ObjAttribute", objAttrs[0]
                     .getName()))
-                    || (attrs.length > 1 && dialog.shouldDelete("selected ObjAttributes"))) {
+                    || (objAttrs.length > 1 && dialog.shouldDelete("selected ObjAttributes"))) {
 
                 ObjEntity entity = mediator.getCurrentObjEntity();
-                ObjAttribute[] attribs = mediator.getCurrentObjAttributes();
 
                 application.getUndoManager().addEdit(
                         new RemoveAttributeUndoableEdit(
                                 (DataChannelDescriptor)mediator.getProject().getRootNode(),
                                 mediator.getCurrentDataMap(),
                                 entity,
-                                attribs));
+                                objAttrs));
 
-                removeObjAttributes(entity, attribs);
+                removeObjAttributes(entity, objAttrs);
             }
         }
-        else {
-            DbAttribute[] dbAttrs = getProjectController().getCurrentDbAttributes();
-            if (dbAttrs != null && dbAttrs.length > 0) {
-                if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0]
-                        .getName()))
-                        || (dbAttrs.length > 1 && dialog
-                                .shouldDelete("selected DbAttributes"))) {
+        else if (dbAttrs != null && dbAttrs.length > 0) {
+        	if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0]
+        			.getName()))
+                    || (dbAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
-                    DbEntity entity = mediator.getCurrentDbEntity();
-                    DbAttribute[] attribs = mediator.getCurrentDbAttributes();
+        		DbEntity entity = mediator.getCurrentDbEntity();
 
-                    application.getUndoManager().addEdit(
-                            new RemoveAttributeUndoableEdit(
-                                    (DataChannelDescriptor)mediator.getProject().getRootNode(),
-                                    mediator.getCurrentDataMap(),
-                                    entity,
-                                    attribs));
+                application.getUndoManager().addEdit(
+                		new RemoveAttributeUndoableEdit(
+                				(DataChannelDescriptor)mediator.getProject().getRootNode(),
+                                mediator.getCurrentDataMap(),
+                                entity,
+                                dbAttrs));
 
-                    removeDbAttributes(mediator.getCurrentDataMap(), entity, attribs);
-                }
-            }
+                removeDbAttributes(mediator.getCurrentDataMap(), entity, dbAttrs);
+        	}
         }
     }
 

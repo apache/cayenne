@@ -501,7 +501,7 @@ public class ProjectController extends CayenneController {
     /**
      * @return Array of selected EmbeddableAttribute
      */
-    public EmbeddableAttribute[] getCurrentEmbAttrs() {
+    public EmbeddableAttribute[] getCurrentEmbAttributes() {
         return currentState.embAttrs;
     }
 

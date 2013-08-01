@@ -74,7 +74,7 @@ public class CopyAttributeAction extends CopyAction implements MultipleObjectsAc
             attrs = getProjectController().getCurrentDbAttributes();
         }
         if (attrs == null || attrs.length == 0) {
-            attrs = getProjectController().getCurrentEmbAttrs();
+            attrs = getProjectController().getCurrentEmbAttributes();
         }
 
         if (attrs != null && attrs.length > 0) {
