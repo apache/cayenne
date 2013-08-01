@@ -91,7 +91,7 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      * 
      * @since 3.2
      */
-    public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier, List<Ordering> orderings) {
+    public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier, List<? extends Ordering> orderings) {
         return new SelectQuery<T>(rootClass, qualifier, orderings);
     }
 
@@ -173,7 +173,7 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      *            defines how to order the results, may be null.
      * @since 3.1
      */
-    public SelectQuery(ObjEntity root, Expression qualifier, List<Ordering> orderings) {
+    public SelectQuery(ObjEntity root, Expression qualifier, List<? extends Ordering> orderings) {
         this();
         this.init(root, qualifier);
         addOrderings(orderings);
@@ -215,7 +215,7 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      *            defines how to order the results, may be null.
      * @since 3.1
      */
-    public SelectQuery(Class<T> rootClass, Expression qualifier, List<Ordering> orderings) {
+    public SelectQuery(Class<T> rootClass, Expression qualifier, List<? extends Ordering> orderings) {
         init(rootClass, qualifier);
         addOrderings(orderings);
     }
@@ -257,7 +257,7 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      *            defines how to order the results, may be null.
      * @since 3.1
      */
-    public SelectQuery(DbEntity root, Expression qualifier, List<Ordering> orderings) {
+    public SelectQuery(DbEntity root, Expression qualifier, List<? extends Ordering> orderings) {
         this();
         this.init(root, qualifier);
         addOrderings(orderings);
@@ -290,7 +290,7 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
      *            defines how to order the results, may be null.
      * @since 3.1
      */
-    public SelectQuery(String objEntityName, Expression qualifier, List<Ordering> orderings) {
+    public SelectQuery(String objEntityName, Expression qualifier, List<? extends Ordering> orderings) {
         init(objEntityName, qualifier);
         addOrderings(orderings);
     }
@@ -497,7 +497,7 @@ public class SelectQuery<T> extends QualifiedQuery implements ParameterizedQuery
     /**
      * Adds a list of orderings.
      */
-    public void addOrderings(List<Ordering> orderings) {
+    public void addOrderings(List<? extends Ordering> orderings) {
         // If the supplied list of orderings is null, do not attempt to add
         // to the collection (addAll() will NPE otherwise).
         if (orderings != null)
