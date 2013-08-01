@@ -77,7 +77,7 @@ public interface ObjectContext extends Serializable {
      * 
      * @since 3.1
      */
-    <T> T localObject(T objectFromAnotherContext);
+    <T extends Persistent> T localObject(T objectFromAnotherContext);
 
     /**
      * Creates a new persistent object of a given class scheduled to be inserted

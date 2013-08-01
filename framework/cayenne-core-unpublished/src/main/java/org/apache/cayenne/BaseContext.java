@@ -238,13 +238,13 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * @since 3.1
      */
     @Override
-    public <T> T localObject(T objectFromAnotherContext) {
+    public <T extends Persistent> T localObject(T objectFromAnotherContext) {
 
         if (objectFromAnotherContext == null) {
             throw new NullPointerException("Null object argument");
         }
 
-        ObjectId id = ((Persistent) objectFromAnotherContext).getObjectId();
+        ObjectId id = objectFromAnotherContext.getObjectId();
 
         // first look for the ID in the local GraphManager
         T localObject = (T) getGraphManager().getNode(id);
