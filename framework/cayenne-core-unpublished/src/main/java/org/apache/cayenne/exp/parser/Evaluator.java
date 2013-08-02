@@ -111,7 +111,15 @@ abstract class Evaluator {
                 }
 
                 if (rhs instanceof Number) {
-                    return Cayenne.longPKForObject(lhsPersistent) == ((Number) rhs).longValue();
+
+                    // only care about whole numbers
+                    if (rhs instanceof Integer) {
+                        return Cayenne.longPKForObject(lhsPersistent) == ((Number) rhs).longValue();
+                    }
+
+                    if (rhs instanceof Long) {
+                        return Cayenne.longPKForObject(lhsPersistent) == ((Number) rhs).longValue();
+                    }
                 }
 
                 return Cayenne.pkForObject(lhsPersistent).equals(rhs);
@@ -151,11 +159,11 @@ abstract class Evaluator {
     }
 
     static <T> Evaluator evaluator(Object lhs) {
-        
-        if(lhs == null) {
+
+        if (lhs == null) {
             return DEFAULT_EVALUATOR;
         }
-        
+
         Class<?> lhsType = lhs.getClass();
 
         Evaluator e = evaluators.get(lhsType);
