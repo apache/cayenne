@@ -496,9 +496,12 @@ public class EOQuery<T> extends SelectQuery<T> {
             Expression keyExp = Expression.fromString(key);
             try {
                 entity.lastPathComponent(keyExp, Collections.emptyMap());
-            }
-            catch (ExpressionException e) {
-                keyExp = entity.translateToDbPath(keyExp);
+            } catch (ExpressionException e) {
+                try {
+                    keyExp = entity.translateToDbPath(keyExp);
+                } catch (Exception dbpathEx) {
+                    return null;
+                }
             }
 
             try {

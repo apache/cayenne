@@ -29,9 +29,11 @@ import java.util.StringTokenizer;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.query.Query;
 import org.apache.commons.collections.Transformer;
 
@@ -39,7 +41,7 @@ import org.apache.commons.collections.Transformer;
  * An extension of ObjEntity used to accomodate extra EOModel entity properties.
  */
 public class EOObjEntity extends ObjEntity {
-
+    
     protected boolean subclass;
     protected boolean abstractEntity;
 
@@ -200,9 +202,12 @@ public class EOObjEntity extends ObjEntity {
 
                     buffer.append(chunk);
 
-                    entity = (EOObjEntity) entity
-                            .getRelationship(chunk)
-                            .getTargetEntity();
+                    Relationship r = entity.getRelationship(chunk);
+                    if (r == null) {
+                        throw new ExpressionException("Invalid path component: " + chunk);
+                    }
+
+                    entity = (EOObjEntity) r.getTargetEntity();
                 }
                 // this is an attribute...
                 else {

@@ -27,6 +27,7 @@ Bug Fixes:
 CAY-1695 Unexpected null value in bidirectional one-to-one prefetch 
 CAY-1736 IllegalArgumentException when synchronizing entities in the Modeler
 CAY-1857 Problem with hotkeys 
+CAY-1859 NullPointerException when importing EOModel 
 
 ----------------------------------
 Release: 3.2M1
