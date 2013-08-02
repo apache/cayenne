@@ -23,6 +23,7 @@ CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor
 CAY-1804 Serialisation of long[] type was not working correctly. 
 CAY-1806 Error importing eomodel 
 CAY-1809 Remove 'final' modifier from Cayenne, HessianUtil, PropertyComparator, ConversionUtil, and LinkedDeque
+CAY-1818 Fix copyright year in the Modeler "about" panel
 CAY-1827 EhCache region corresponding to a cache group loses its settings after 'removeGroup'
 CAY-1845 Upgrade javadoc plugin to 2.9.1 
 CAY-1854 driver.xsd schema shouldn't be in 3.1 - it is no longer applicable 
