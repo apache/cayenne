@@ -20,7 +20,9 @@
 package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -29,6 +31,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -43,6 +47,38 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
 
     @Inject
     private DataContext context;
+
+    @Inject
+    protected DBHelper dbHelper;
+
+    protected TableHelper tArtist;
+    protected TableHelper tPainting;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
+    }
+
+    protected void createTwoArtistsThreePaintings() throws Exception {
+
+        tArtist.insert(1, "artist1");
+        tArtist.insert(2, "artist2");
+        tPainting.insert(1, 1, "P1", 3000);
+        tPainting.insert(2, 2, "P2", 3000);
+        tPainting.insert(3, null, "P3", 3000);
+    }
 
     public void testEvaluateOBJ_PATH_DataObject() throws Exception {
         ASTObjPath node = new ASTObjPath("artistName");
@@ -159,6 +195,39 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         p2.setToArtist(a2);
 
         Expression e = new ASTEqual(new ASTObjPath("toArtist"), a1);
+
+        assertTrue(e.match(p1));
+        assertFalse(e.match(p2));
+        assertFalse(e.match(p3));
+    }
+
+    public void testEvaluateEQUAL_TO_Temp_ObjectId() throws Exception {
+        Artist a1 = (Artist) context.newObject("Artist");
+        Artist a2 = (Artist) context.newObject("Artist");
+        Painting p1 = (Painting) context.newObject("Painting");
+        Painting p2 = (Painting) context.newObject("Painting");
+        Painting p3 = (Painting) context.newObject("Painting");
+
+        p1.setToArtist(a1);
+        p2.setToArtist(a2);
+
+        Expression e = new ASTEqual(new ASTObjPath("toArtist"), a1.getObjectId());
+
+        assertTrue(e.match(p1));
+        assertFalse(e.match(p2));
+        assertFalse(e.match(p3));
+    }
+
+    public void testEvaluateEQUAL_TO_Id() throws Exception {
+
+        createTwoArtistsThreePaintings();
+
+        Artist a1 = Cayenne.objectForPK(context, Artist.class, 1);
+        Painting p1 = Cayenne.objectForPK(context, Painting.class, 1);
+        Painting p2 = Cayenne.objectForPK(context, Painting.class, 2);
+        Painting p3 = Cayenne.objectForPK(context, Painting.class, 3);
+
+        Expression e = new ASTEqual(new ASTObjPath("toArtist"), Cayenne.intPKForObject(a1));
 
         assertTrue(e.match(p1));
         assertFalse(e.match(p2));
