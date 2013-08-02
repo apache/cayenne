@@ -62,7 +62,7 @@ public class ASTNotIn extends ConditionNode {
 
         int size = objects.length;
         for (int i = 0; i < size; i++) {
-            if (objects[i] != null && ASTEqual.evaluateAtomic(o1, objects[i])) {
+            if (objects[i] != null && Evaluator.evaluator(o1).eq(o1, objects[i])) {
                 return Boolean.FALSE;
             }
         }

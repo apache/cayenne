@@ -253,15 +253,14 @@ public class ExpressionTest extends ServerCase {
         assertTrue(e.match(objects.get(0)));
 
         // we change one object - so the objects are different now
-        // (PersistenceState
-        // different)
+        // (PersistenceState different)
         a1.setArtistName("newName");
 
         SelectQuery q2 = new SelectQuery(Painting.class);
         Expression ex2 = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a1);
         q2.setQualifier(ex2);
 
-        assertFalse(ex2.match(objects.get(0)));
+        assertTrue(ex2.match(objects.get(0)));
 
         Artist a2 = context.newObject(Artist.class);
         a1.setArtistName("Equals");

@@ -19,11 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.cayenne.DataObject;
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ValueInjector;
 import org.apache.commons.logging.Log;
@@ -35,8 +32,9 @@ import org.apache.commons.logging.LogFactory;
  * @since 1.1
  */
 public class ASTEqual extends ConditionNode implements ValueInjector {
-    private static final Log logObj = LogFactory.getLog(ASTEqual.class);
     
+    private static final Log logObj = LogFactory.getLog(ASTEqual.class);
+
     /**
      * Constructor used by expression parser. Do not invoke directly.
      */
@@ -70,26 +68,26 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 
         return evaluateImpl(o1, o2);
     }
-    
+
     /**
-     * Compares two objects, if one of them is array, 'in' operation is performed
+     * Compares two objects, if one of them is array, 'in' operation is
+     * performed
      */
     static boolean evaluateImpl(Object o1, Object o2) {
         // TODO: maybe we need a comparison "strategy" here, instead of
         // a switch of all possible cases? ... there were other requests for
         // more relaxed type-unsafe comparison (e.g. numbers to strings)
-        
+
         if (o1 == null && o2 == null) {
             return true;
-        }
-        else if (o1 != null) {
-            /**
-             * Per CAY-419 we perform 'in' comparison if one object is a list,
-             * and other is not
-             */
+        } else if (o1 != null) {
+
+            // Per CAY-419 we perform 'in' comparison if one object is a list,
+            // and other is not
+
             if (o1 instanceof List && !(o2 instanceof List)) {
                 for (Object element : ((List<?>) o1)) {
-                    if (element != null && evaluateAtomic(element, o2)) {
+                    if (element != null && Evaluator.evaluator(element).eq(element, o2)) {
                         return true;
                     }
                 }
@@ -97,45 +95,16 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
             }
             if (o2 instanceof List && !(o1 instanceof List)) {
                 for (Object element : ((List<?>) o2)) {
-                    if (element != null && evaluateAtomic(element, o1)) {
+                    if (element != null && Evaluator.evaluator(element).eq(element, o1)) {
                         return true;
                     }
                 }
                 return false;
             }
-            
-            return evaluateAtomic(o1, o2);
+
+            return Evaluator.evaluator(o1).eq(o1, o2);
         }
         return false;
-    }
-    
-    /**
-     * Compares two objects. They must not be null
-     */
-    static boolean evaluateAtomic(Object o1, Object o2) {
-        // BigDecimals must be compared using compareTo (
-        // see CAY-280 and BigDecimal.equals JavaDoc)
-        if (o1 instanceof BigDecimal) {
-            if (o2 instanceof BigDecimal) {
-                return ((BigDecimal) o1).compareTo((BigDecimal) o2) == 0;
-            }
-
-            return false;
-        }
-
-        if (o1 instanceof DataObject) {
-            if (o2 instanceof DataObject && ((DataObject)o1).getObjectId().equals(((DataObject)o2).getObjectId())) {
-                if (((DataObject)o1).getObjectContext().equals(((DataObject)o2).getObjectContext())) {
-                    return o1.equals(o2);
-                } else if (((DataObject)o1).getPersistenceState() == ((DataObject)o2).getPersistenceState()) {
-                    DataObject o1_context = (((DataObject)o2).getObjectContext()).localObject(((DataObject)o1));
-                    return ((DataObject)o2).equals(o1_context);
-                }
-            }
-            return false;
-        }
-        
-        return o1.equals(o2);
     }
 
     /**
@@ -150,11 +119,11 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
     protected String getExpressionOperator(int index) {
         return "=";
     }
-    
+
     @Override
     protected String getEJBQLExpressionOperator(int index) {
         if (jjtGetChild(1) instanceof ASTScalar && ((ASTScalar) jjtGetChild(1)).getValue() == null) {
-            //for ejbql, we need "is null" instead of "= null"
+            // for ejbql, we need "is null" instead of "= null"
             return "is";
         }
         return getExpressionOperator(index);
@@ -166,27 +135,25 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
     }
 
     public void injectValue(Object o) {
-        //try to inject value, if one of the operands is scalar, and other is a path 
-        
+        // try to inject value, if one of the operands is scalar, and other is a
+        // path
+
         Node[] args = new Node[] { jjtGetChild(0), jjtGetChild(1) };
-        
+
         int scalarIndex = -1;
         if (args[0] instanceof ASTScalar) {
             scalarIndex = 0;
-        }
-        else if (args[1] instanceof ASTScalar) {
+        } else if (args[1] instanceof ASTScalar) {
             scalarIndex = 1;
         }
-        
+
         if (scalarIndex != -1 && args[1 - scalarIndex] instanceof ASTObjPath) {
-            //inject
+            // inject
             ASTObjPath path = (ASTObjPath) args[1 - scalarIndex];
             try {
                 path.injectValue(o, evaluateChild(scalarIndex, o));
-            }
-            catch (Exception ex) {
-                logObj.warn("Failed to inject value " + 
-                        " on path " + path.getPath() + " to " + o, ex);
+            } catch (Exception ex) {
+                logObj.warn("Failed to inject value " + " on path " + path.getPath() + " to " + o, ex);
             }
         }
     }

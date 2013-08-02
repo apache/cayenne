@@ -64,22 +64,21 @@ public class ASTIn extends ConditionNode {
         if (objects == null) {
             return Boolean.FALSE;
         }
-    
+
         int size = objects.length;
         for (int i = 0; i < size; i++) {
             if (objects[i] != null) {
                 if (o1 instanceof Collection) {
-                	/* handle the case where we have a collection of objects */
-                	for (Object obj : (Collection) o1) {
-                    	if (ASTEqual.evaluateAtomic(obj, objects[i])) {
+                    // handle the case where we have a collection of objects
+                    for (Object obj : (Collection) o1) {
+                        if (Evaluator.evaluator(obj).eq(obj, objects[i])) {
                             return Boolean.TRUE;
-                    	}
-                	}
-                }
-                else {
-                	if (ASTEqual.evaluateAtomic(o1, objects[i])) {
+                        }
+                    }
+                } else {
+                    if (Evaluator.evaluator(o1).eq(o1, objects[i])) {
                         return Boolean.TRUE;
-                	}
+                    }
                 }
             }
         }
@@ -108,7 +107,7 @@ public class ASTIn extends ConditionNode {
     @Override
     protected Object transformExpression(Transformer transformer) {
         Object transformed = super.transformExpression(transformer);
-        
+
         // transform empty ASTIn to ASTFalse
         if (transformed instanceof ASTIn) {
             ASTIn exp = (ASTIn) transformed;
