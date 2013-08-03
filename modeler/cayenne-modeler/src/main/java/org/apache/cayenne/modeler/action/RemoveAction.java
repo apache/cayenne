@@ -46,7 +46,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -62,9 +61,11 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
+import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.RemoveAttributeUndoableEdit;
+import org.apache.cayenne.modeler.undo.RemoveCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
@@ -414,12 +415,12 @@ public class RemoveAction extends CayenneAction {
 	private void removeMethods(ProjectController mediator,
 			ConfirmRemoveDialog dialog, ObjCallbackMethod[] methods) {
     	CallbackMap callbackMap = mediator.getCurrentObjEntity().getCallbackMap();
-    	LifecycleEvent callbackType = mediator.getCurrentCallbackType().getType();
+    	CallbackType callbackType = mediator.getCurrentCallbackType();
 
         if ((methods.length == 1 && dialog.shouldDelete("callback method", methods[0].getName()))
         	|| (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
             for (ObjCallbackMethod callbackMethod : methods) {
-            	callbackMap.getCallbackDescriptor(callbackType).removeCallbackMethod(callbackMethod.getName());
+            	callbackMap.getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethod.getName());
                     
                 CallbackMethodEvent ce = new CallbackMethodEvent(
                         this,
@@ -429,6 +430,9 @@ public class RemoveAction extends CayenneAction {
                     
                 mediator.fireCallbackMethodEvent(ce);
             }
+            
+            Application.getInstance().getUndoManager().addEdit( 
+            		new RemoveCallbackMethodUndoableEdit(callbackType, methods));
         }		
 	}
 
