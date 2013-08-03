@@ -98,7 +98,7 @@ public class ParametrizedExpressionTest extends ServerCase {
 
     public void testInParameter_AsValues() throws Exception {
         Expression inExp = Expression.fromString("k1 in ($ap, $bp)");
-        
+
         String e1String = "k1 in (\"a\", \"b\")";
         Expression e1 = Expression.fromString(e1String);
 
@@ -107,7 +107,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         params.put("bp", "b");
         Expression transformed = inExp.expWithParameters(params);
         TstTraversalHandler.compareExps(e1, transformed);
-        
+
         assertEquals(e1String, transformed.toString());
 
         // just in case manually check params
@@ -250,5 +250,120 @@ public class ParametrizedExpressionTest extends ServerCase {
 
         // null must be preserved
         assertEquals(Expression.fromString("abc = 3 and x = null"), e2);
+    }
+
+    public void testNulls() {
+        Expression e1 = Expression.fromString("x = null");
+        Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
+        assertNotNull(e2);
+        TstTraversalHandler.compareExps(e1, e2);
+    }
+
+    /**
+     * Tests how parameter substitution algorithm works on an expression with no
+     * parameters.
+     * 
+     * @throws Exception
+     */
+    public void testCopy1_FromString() {
+        Expression e1 = Expression.fromString("k1 = 'v1' or k2 = 'v2' or k3 = 'v3'");
+        Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
+        TstTraversalHandler.compareExps(e1, e2);
+    }
+
+    /**
+     * Tests how parameter substitution algorithm works on an expression with no
+     * parameters.
+     */
+    public void testCopy2_FromString() {
+        Expression e1 = Expression.fromString("(k1 = 'v1' and k2 = 'v2' and k3 = 'v3') or (k1 = 'v1')");
+        Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
+        TstTraversalHandler.compareExps(e1, e2);
+    }
+
+    public void testCopy3_FromString() {
+        Expression e1 = Expression.fromString("(k1 / 2) = (k2 * 2)");
+        Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
+        TstTraversalHandler.compareExps(e1, e2);
+    }
+
+    /**
+     * Tests how parameter substitution algorithm works on an expression with no
+     * parameters.
+     */
+    public void testFailOnMissingParams_FromString() {
+        Expression e1 = Expression.fromString("k1 = $test or k2 = 'v2' or k3 = 'v3'");
+
+        try {
+            e1.expWithParameters(Collections.EMPTY_MAP, false);
+            fail("Parameter was missing, but no exception was thrown.");
+        } catch (ExpressionException ex) {
+            // exception expected
+        }
+    }
+
+    public void testParams1_FromString() {
+        Expression e1 = Expression.fromString("k1 = $test");
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("test", "xyz");
+        Expression e2 = e1.expWithParameters(map, false);
+        assertNotNull(e2);
+        assertEquals(2, e2.getOperandCount());
+        assertEquals(Expression.EQUAL_TO, e2.getType());
+        assertEquals("xyz", e2.getOperand(1));
+    }
+
+    public void testParams2_FromString() {
+        Expression e1 = Expression.fromString("k1 like $test");
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("test", "xyz");
+        Expression e2 = e1.expWithParameters(map, false);
+        assertNotNull(e2);
+        assertEquals(2, e2.getOperandCount());
+        assertEquals(Expression.LIKE, e2.getType());
+        assertEquals("xyz", e2.getOperand(1));
+    }
+
+    public void testNoParams1_FromString() {
+        Expression e1 = Expression.fromString("k1 = $test");
+        Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
+
+        // all expression nodes must be pruned
+        assertNull(e2);
+    }
+
+    public void testNoParams2_FromString() {
+        Expression e1 = Expression.fromString("k1 = $test1 or k2 = $test2 or k3 = $test3 or k4 = $test4");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("test2", "abc");
+        params.put("test3", "xyz");
+        Expression e2 = e1.expWithParameters(params, true);
+
+        // some expression nodes must be pruned
+        assertNotNull(e2);
+        assertEquals(2, e2.getOperandCount());
+
+        Expression k2 = (Expression) e2.getOperand(0);
+        assertEquals("abc", k2.getOperand(1));
+
+        Expression k3 = (Expression) e2.getOperand(1);
+        assertEquals("xyz", k3.getOperand(1));
+    }
+
+    public void testNoParams3_FromString() {
+        Expression e1 = Expression.fromString("k1 = $test1 or k2 = $test2 or k3 = $test3 or k4 = $test4");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("test4", "123");
+        Expression e2 = e1.expWithParameters(params, true);
+
+        // some expression nodes must be pruned
+        assertNotNull(e2);
+        assertEquals(2, e2.getOperandCount());
+        assertEquals("123", e2.getOperand(1));
+        assertEquals("k4", ((Expression) e2.getOperand(0)).getOperand(0));
     }
 }
