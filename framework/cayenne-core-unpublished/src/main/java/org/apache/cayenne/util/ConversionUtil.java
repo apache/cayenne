@@ -113,6 +113,9 @@ public class ConversionUtil {
         else if (object instanceof Comparable) {
             return (Comparable) object;
         }
+        else if (object instanceof StringBuilder) {
+            return object.toString();
+        }
         else if (object instanceof StringBuffer) {
             return object.toString();
         }

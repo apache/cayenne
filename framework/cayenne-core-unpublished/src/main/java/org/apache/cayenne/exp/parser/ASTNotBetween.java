@@ -17,11 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * "Not Between" expression.
@@ -51,24 +49,12 @@ public class ASTNotBetween extends ConditionNode {
             return Boolean.FALSE;
         }
 
-        Comparable c1 = ConversionUtil.toComparable(evaluateChild(0, o));
+        Object o1 = evaluateChild(0, o);
+        Object o2 = evaluateChild(1, o);
+        Object o3 = evaluateChild(2, o);
+        Evaluator e = Evaluator.evaluator(o1);
 
-        if (c1 == null) {
-            return Boolean.FALSE;
-        }
-
-        Comparable c2 = ConversionUtil.toComparable(evaluateChild(1, o));
-        if (c2 == null) {
-            return Boolean.FALSE;
-        }
-
-        Comparable c3 = ConversionUtil.toComparable(evaluateChild(2, o));
-        if (c3 == null) {
-            return Boolean.FALSE;
-        }
-
-        return c1.compareTo(c2) >= 0
-            && c1.compareTo(c3) <= 0 ? Boolean.FALSE : Boolean.TRUE;
+        return e.compare(o1, o2) >= 0 && e.compare(o1, o3) <= 0 ? Boolean.FALSE : Boolean.TRUE;
     }
 
     /**
