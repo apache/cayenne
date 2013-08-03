@@ -19,6 +19,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -36,6 +37,7 @@ import org.apache.cayenne.util.ConversionUtil;
 abstract class Evaluator {
 
     private static final ConcurrentMap<Class<?>, Evaluator> evaluators;
+    private static final Evaluator NULL_LHS_EVALUATOR;
     private static final Evaluator DEFAULT_EVALUATOR;
     private static final Evaluator PERSISTENT_EVALUATOR;
     private static final Evaluator BIG_DECIMAL_EVALUATOR;
@@ -73,6 +75,19 @@ abstract class Evaluator {
 
     static {
         evaluators = new ConcurrentHashMap<Class<?>, Evaluator>();
+
+        NULL_LHS_EVALUATOR = new Evaluator() {
+            @Override
+            int compare(Object lhs, Object rhs) {
+                throw new UnsupportedOperationException("Unsupported");
+            }
+
+            @Override
+            boolean eq(Object lhs, Object rhs) {
+                return rhs == null;
+            }
+        };
+
         DEFAULT_EVALUATOR = new NullEvaluator(new Evaluator() {
             @Override
             boolean eq(Object lhs, Object rhs) {
@@ -102,11 +117,15 @@ abstract class Evaluator {
                 }
 
                 if (rhs instanceof ObjectId) {
-                    return lhsPersistent.getObjectId().equals((ObjectId) rhs);
+                    return lhsPersistent.getObjectId().equals(rhs);
                 }
 
-                // comparing ObjectId with a single value ...
+                if (rhs instanceof Map) {
+                    return lhsPersistent.getObjectId().getIdSnapshot().equals(rhs);
+                }
+
                 if (lhsPersistent.getObjectId().getIdSnapshot().size() != 1) {
+                    // the only options left below are for the single key IDs
                     return false;
                 }
 
@@ -161,7 +180,7 @@ abstract class Evaluator {
     static <T> Evaluator evaluator(Object lhs) {
 
         if (lhs == null) {
-            return DEFAULT_EVALUATOR;
+            return NULL_LHS_EVALUATOR;
         }
 
         Class<?> lhsType = lhs.getClass();
