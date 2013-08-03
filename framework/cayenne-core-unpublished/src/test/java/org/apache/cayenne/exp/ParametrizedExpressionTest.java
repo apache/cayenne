@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.DataObject;
 import org.apache.cayenne.exp.parser.ASTList;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -81,18 +83,41 @@ public class ParametrizedExpressionTest extends ServerCase {
         Expression inExp = Expression.fromString("k1 in $test");
         Expression e1 = Expression.fromString("k1 in ('a', 'b')");
 
-        TstTraversalHandler.compareExps(e1,
-                inExp.expWithParameters(Collections.singletonMap("test", new Object[] { "a", "b" })));
+        Expression transformed = inExp.expWithParameters(Collections.singletonMap("test", new Object[] { "a", "b" }));
+        TstTraversalHandler.compareExps(e1, transformed);
+
+        // just in case manually check params
+        DataObject o1 = new CayenneDataObject();
+        o1.writePropertyDirectly("k1", "a");
+        assertTrue(transformed.match(o1));
+
+        DataObject o2 = new CayenneDataObject();
+        o2.writePropertyDirectly("k1", "x");
+        assertFalse(transformed.match(o2));
     }
 
     public void testInParameter_AsValues() throws Exception {
         Expression inExp = Expression.fromString("k1 in ($ap, $bp)");
-        Expression e1 = Expression.fromString("k1 in ('a', 'b')");
+        
+        String e1String = "k1 in (\"a\", \"b\")";
+        Expression e1 = Expression.fromString(e1String);
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("ap", "a");
         params.put("bp", "b");
-        TstTraversalHandler.compareExps(e1, inExp.expWithParameters(params));
+        Expression transformed = inExp.expWithParameters(params);
+        TstTraversalHandler.compareExps(e1, transformed);
+        
+        assertEquals(e1String, transformed.toString());
+
+        // just in case manually check params
+        DataObject o1 = new CayenneDataObject();
+        o1.writePropertyDirectly("k1", "a");
+        assertTrue(transformed.match(o1));
+
+        DataObject o2 = new CayenneDataObject();
+        o2.writePropertyDirectly("k1", "x");
+        assertFalse(transformed.match(o2));
     }
 
     /**
