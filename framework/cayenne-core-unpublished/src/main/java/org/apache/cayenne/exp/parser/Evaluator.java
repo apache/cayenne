@@ -43,20 +43,21 @@ abstract class Evaluator {
     private static final Evaluator BIG_DECIMAL_EVALUATOR;
     private static final Evaluator COMPAREABLE_EVALUATOR;
 
-    static class NullEvaluator extends Evaluator {
-        Evaluator delegate;
+    /**
+     * A decorator of an evaluator that presumes non-null 'lhs' argument and
+     * allows for null 'rhs'.
+     */
+    static class NonNullLhsEvaluator extends Evaluator {
+        final Evaluator delegate;
 
-        NullEvaluator(Evaluator delegate) {
+        NonNullLhsEvaluator(Evaluator delegate) {
             this.delegate = delegate;
         }
 
         @Override
         int compare(Object lhs, Object rhs) {
-            if (lhs == null && rhs == null) {
-                return 0;
-            } else if (lhs == null) {
-                return -1;
-            } else if (rhs == null) {
+
+            if (rhs == null) {
                 return 1;
             } else {
                 return delegate.compare(lhs, rhs);
@@ -65,11 +66,7 @@ abstract class Evaluator {
 
         @Override
         boolean eq(Object lhs, Object rhs) {
-            if (lhs == null) {
-                return rhs == null;
-            }
-
-            return (rhs != null) ? delegate.eq(lhs, rhs) : false;
+            return rhs == null ? false : delegate.eq(lhs, rhs);
         }
     }
 
@@ -88,7 +85,7 @@ abstract class Evaluator {
             }
         };
 
-        DEFAULT_EVALUATOR = new NullEvaluator(new Evaluator() {
+        DEFAULT_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
             @Override
             boolean eq(Object lhs, Object rhs) {
                 return lhs.equals(rhs);
@@ -100,7 +97,7 @@ abstract class Evaluator {
             }
         });
 
-        PERSISTENT_EVALUATOR = new NullEvaluator(new Evaluator() {
+        PERSISTENT_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
 
             @Override
             int compare(Object lhs, Object rhs) {
@@ -145,7 +142,7 @@ abstract class Evaluator {
             }
         });
 
-        BIG_DECIMAL_EVALUATOR = new NullEvaluator(new Evaluator() {
+        BIG_DECIMAL_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
 
             @Override
             int compare(Object lhs, Object rhs) {
@@ -162,7 +159,7 @@ abstract class Evaluator {
             }
         });
 
-        COMPAREABLE_EVALUATOR = new NullEvaluator(new Evaluator() {
+        COMPAREABLE_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override

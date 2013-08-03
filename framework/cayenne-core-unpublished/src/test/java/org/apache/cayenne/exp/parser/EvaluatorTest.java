@@ -47,6 +47,16 @@ public class EvaluatorTest extends TestCase {
         assertFalse(e.eq(o, null));
     }
 
+    public void testEvaluator_Number() {
+
+        Evaluator e = Evaluator.evaluator(1);
+        assertNotNull(e);
+        assertTrue(e.eq(1, 1));
+        assertFalse(e.eq(1, null));
+        assertFalse(e.eq(1, 5));
+        assertFalse(e.eq(1, 1.1));
+    }
+
     public void testEvaluator_BigDecimal() {
         Object lhs = new BigDecimal("1.10");
         Evaluator e = Evaluator.evaluator(lhs);
