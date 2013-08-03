@@ -312,6 +312,21 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
             public Object transform(Object object) {
                 if (!(object instanceof ExpressionParameter)) {
+
+                    // mainly for the ASTList array child...
+                    if (object instanceof Object[]) {
+
+                        Object[] source = (Object[]) object;
+                        int len = source.length;
+                        Object[] target = new Object[len];
+
+                        for (int i = 0; i < len; i++) {
+                            target[i] = transform(source[i]);
+                        }
+                        
+                        return target;
+                    }
+
                     return object;
                 }
 
