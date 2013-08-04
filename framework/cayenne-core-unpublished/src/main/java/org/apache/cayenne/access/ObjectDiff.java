@@ -35,17 +35,17 @@ import org.apache.cayenne.graph.NodeDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.Util;
 
 /**
- * A dynamic GraphDiff that represents a delta between object simple properties at diff
- * creation time and its current state.
+ * A dynamic GraphDiff that represents a delta between object simple properties
+ * at diff creation time and its current state.
  */
 class ObjectDiff extends NodeDiff {
 
@@ -66,7 +66,8 @@ class ObjectDiff extends NodeDiff {
 
         super(object.getObjectId());
 
-        // retain the object, as ObjectStore may have weak references to registered
+        // retain the object, as ObjectStore may have weak references to
+        // registered
         // objects and we can't allow it to deallocate dirty objects.
         this.object = object;
 
@@ -77,10 +78,10 @@ class ObjectDiff extends NodeDiff {
 
         int state = object.getPersistenceState();
 
-        // take snapshot of simple properties and arcs used for optimistic locking..
+        // take snapshot of simple properties and arcs used for optimistic
+        // locking..
 
-        if (state == PersistenceState.COMMITTED
-                || state == PersistenceState.DELETED
+        if (state == PersistenceState.COMMITTED || state == PersistenceState.DELETED
                 || state == PersistenceState.MODIFIED) {
 
             ObjEntity entity = entityResolver.getObjEntity(entityName);
@@ -103,8 +104,7 @@ class ObjectDiff extends NodeDiff {
                 public boolean visitToOne(ToOneProperty property) {
 
                     // eagerly resolve optimistically locked relationships
-                    Object target = lock ? property.readProperty(object) : property
-                            .readPropertyDirectly(object);
+                    Object target = lock ? property.readProperty(object) : property.readPropertyDirectly(object);
 
                     if (target instanceof Persistent) {
                         target = ((Persistent) target).getObjectId();
@@ -123,7 +123,8 @@ class ObjectDiff extends NodeDiff {
     }
 
     ClassDescriptor getClassDescriptor() {
-        // class descriptor is initiated in constructor, but is nullified on serialization
+        // class descriptor is initiated in constructor, but is nullified on
+        // serialization
         if (classDescriptor == null) {
             EntityResolver entityResolver = object.getObjectContext().getEntityResolver();
             this.classDescriptor = entityResolver.getClassDescriptor(entityName);
@@ -140,9 +141,7 @@ class ObjectDiff extends NodeDiff {
         Object value = arcSnapshot != null ? arcSnapshot.get(propertyName) : null;
 
         if (value instanceof Fault) {
-            Persistent target = (Persistent) ((Fault) value).resolveFault(
-                    object,
-                    propertyName);
+            Persistent target = (Persistent) ((Fault) value).resolveFault(object, propertyName);
 
             value = target != null ? target.getObjectId() : null;
             arcSnapshot.put(propertyName, value);
@@ -188,22 +187,18 @@ class ObjectDiff extends NodeDiff {
             Object targetId = arcDiff.getTargetNodeId();
             String arcId = arcDiff.getArcId().toString();
 
-            PropertyDescriptor property = getClassDescriptor().getProperty(arcId);
+            ArcProperty property = (ArcProperty) getClassDescriptor().getProperty(arcId);
 
-            // note that some collection properties implement 'SingleObjectArcProperty',
+            // note that some collection properties implement
+            // 'SingleObjectArcProperty',
             // so we cant't do 'instanceof SingleObjectArcProperty'
             // TODO: andrus, 3.22.2006 - should we consider this a bug?
 
             if (property instanceof ToManyProperty) {
 
                 // record flattened op changes
-                ObjEntity entity = object
-                        .getObjectContext()
-                        .getEntityResolver()
-                        .getObjEntity(entityName);
 
-                ObjRelationship relationship = (ObjRelationship) entity
-                        .getRelationship(property.getName());
+                ObjRelationship relationship = property.getRelationship();
                 if (relationship.isFlattened()) {
 
                     if (flatIds == null) {
@@ -222,18 +217,15 @@ class ObjectDiff extends NodeDiff {
                         }
                     }
                 }
-            }
-            else if (property instanceof ToOneProperty) {
+            } else if (property instanceof ToOneProperty) {
 
                 if (currentArcSnapshot == null) {
                     currentArcSnapshot = new HashMap<String, Object>();
                 }
 
                 currentArcSnapshot.put(arcId, targetId);
-            }
-            else {
-                String message = (property == null)
-                        ? "No property for arcId " + arcId
+            } else {
+                String message = (property == null) ? "No property for arcId " + arcId
                         : "Unrecognized property for arcId " + arcId + ": " + property;
                 throw new CayenneRuntimeException(message);
             }
@@ -302,9 +294,7 @@ class ObjectDiff extends NodeDiff {
                 }
 
                 Object oldValue = arcSnapshot.get(property.getName());
-                if (!Util.nullSafeEquals(oldValue, newValue != null
-                        ? ((Persistent) newValue).getObjectId()
-                        : null)) {
+                if (!Util.nullSafeEquals(oldValue, newValue != null ? ((Persistent) newValue).getObjectId() : null)) {
                     modFound[0] = true;
                 }
 
@@ -344,11 +334,7 @@ class ObjectDiff extends NodeDiff {
                 if (snapshot == null) {
 
                     if (newValue != null) {
-                        handler.nodePropertyChanged(
-                                nodeId,
-                                property.getName(),
-                                null,
-                                newValue);
+                        handler.nodePropertyChanged(nodeId, property.getName(), null, newValue);
                     }
                 }
                 // have baseline to compare
@@ -356,11 +342,7 @@ class ObjectDiff extends NodeDiff {
                     Object oldValue = snapshot.get(property.getName());
 
                     if (!Util.nullSafeEquals(oldValue, newValue)) {
-                        handler.nodePropertyChanged(
-                                nodeId,
-                                property.getName(),
-                                oldValue,
-                                newValue);
+                        handler.nodePropertyChanged(nodeId, property.getName(), oldValue, newValue);
                     }
                 }
 
@@ -394,8 +376,7 @@ class ObjectDiff extends NodeDiff {
         private Object arcId;
         private boolean delete;
 
-        public ArcOperation(Object nodeId, Object targetNodeId, Object arcId,
-                boolean delete) {
+        public ArcOperation(Object nodeId, Object targetNodeId, Object arcId, boolean delete) {
 
             super(nodeId);
             this.targetNodeId = targetNodeId;
@@ -429,8 +410,7 @@ class ObjectDiff extends NodeDiff {
             }
 
             ArcOperation other = (ArcOperation) object;
-            return arcId.equals(other.arcId)
-                    && Util.nullSafeEquals(targetNodeId, other.targetNodeId);
+            return arcId.equals(other.arcId) && Util.nullSafeEquals(targetNodeId, other.targetNodeId);
         }
 
         @Override
@@ -438,8 +418,7 @@ class ObjectDiff extends NodeDiff {
 
             if (delete) {
                 tracker.arcDeleted(nodeId, targetNodeId, arcId);
-            }
-            else {
+            } else {
                 tracker.arcCreated(nodeId, targetNodeId, arcId);
             }
         }
