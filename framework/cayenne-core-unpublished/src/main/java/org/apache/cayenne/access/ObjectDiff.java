@@ -202,7 +202,8 @@ class ObjectDiff extends NodeDiff {
             // TODO: andrus, 3.22.2006 - should we consider this a bug?
 
             if (property == null && arcId.startsWith(ASTDbPath.DB_PREFIX)) {
-                addDiff = addPhantomFkDiff(arcDiff);
+                addPhantomFkDiff(arcDiff);
+                addDiff = false;
             } else if (property instanceof ToManyProperty) {
 
                 // record flattened op changes
@@ -257,7 +258,7 @@ class ObjectDiff extends NodeDiff {
         }
     }
 
-    private boolean addPhantomFkDiff(ArcOperation arcDiff) {
+    private void addPhantomFkDiff(ArcOperation arcDiff) {
         String arcId = arcDiff.getArcId().toString();
 
         DbEntity dbEntity = classDescriptor.getEntity().getDbEntity();
@@ -265,10 +266,8 @@ class ObjectDiff extends NodeDiff {
                 .length()));
 
         if (dbRelationship.isToMany()) {
-            return false;
+            return;
         }
-
-        boolean addDiff = true;
 
         if (currentArcSnapshot == null) {
             currentArcSnapshot = new HashMap<String, Object>();
@@ -284,7 +283,6 @@ class ObjectDiff extends NodeDiff {
 
         // "delete" cancels "create" and vice versa...
         if (oldOp != null && oldOp.isDelete() != arcDiff.isDelete()) {
-            addDiff = false;
             phantomFks.remove(arcDiff);
 
             if (otherDiffs != null) {
@@ -292,7 +290,6 @@ class ObjectDiff extends NodeDiff {
             }
         }
 
-        return addDiff;
     }
 
     /**
@@ -376,6 +373,13 @@ class ObjectDiff extends NodeDiff {
 
         if (otherDiffs != null) {
             for (final GraphDiff diff : otherDiffs) {
+                diff.apply(handler);
+            }
+        }
+
+        // phantomFks are not in 'otherDiffs', while flattened diffs are
+        if (phantomFks != null) {
+            for (GraphDiff diff : phantomFks.keySet()) {
                 diff.apply(handler);
             }
         }

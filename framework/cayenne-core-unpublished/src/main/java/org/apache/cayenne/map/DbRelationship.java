@@ -275,6 +275,19 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         DbRelationship revRel = getReverseRelationship();
         return (revRel != null) ? revRel.isToDependentPK() : false;
     }
+    
+    /**
+     * Returns a boolean indicating whether modifying a target of such
+     * relationship in any way will not change the underlying table row of the
+     * source.
+     * 
+     * @since 3.2
+     */
+    public boolean isSourceIndependentFromTargetChange() {
+        // note - call "isToPK" at the end of the chain, since
+        // if it is to a dependent PK, we still should return true...
+        return isToMany() || isToDependentPK() || !isToPK();
+    }
 
     /**
      * Returns <code>true</code> if relationship from source to target points to

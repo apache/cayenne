@@ -21,9 +21,11 @@ package org.apache.cayenne.access;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomainSyncBucket.PropagatedValueFactory;
+import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DbAttribute;
@@ -109,10 +111,17 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     private void appendForeignKeys(Map<Object, Object> dbDiff) {
         // populate changed FKs
         if (currentArcDiff != null) {
-            for (final Map.Entry<Object, Object> entry : currentArcDiff.entrySet()) {
-                ObjRelationship relation = objEntity.getRelationship(entry.getKey().toString());
+            for (Entry<Object, Object> entry : currentArcDiff.entrySet()) {
 
-                DbRelationship dbRelation = relation.getDbRelationships().get(0);
+                DbRelationship dbRelation;
+
+                String arcIdString = entry.getKey().toString();
+                ObjRelationship relation = objEntity.getRelationship(arcIdString);
+                if (relation == null) {
+                    dbRelation = dbEntity.getRelationship(arcIdString.substring(ASTDbPath.DB_PREFIX.length()));
+                } else {
+                    dbRelation = relation.getDbRelationships().get(0);
+                }
 
                 ObjectId targetId = (ObjectId) entry.getValue();
                 for (DbJoin join : dbRelation.getJoins()) {
@@ -151,32 +160,67 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     }
 
     public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+        String arcIdString = arcId.toString();
+        ObjRelationship relationship = objEntity.getRelationship(arcIdString);
 
-        ObjRelationship relationship = objEntity.getRelationship(arcId.toString());
-        if (!relationship.isSourceIndependentFromTargetChange()) {
-            if (currentArcDiff == null) {
-                currentArcDiff = new HashMap<Object, Object>();
+        if (relationship == null) {
+            // phantom FK
+            if (arcIdString.startsWith(ASTDbPath.DB_PREFIX)) {
+
+                DbRelationship dbRelationship = dbEntity.getRelationship(arcIdString.substring(ASTDbPath.DB_PREFIX
+                        .length()));
+                if (!dbRelationship.isSourceIndependentFromTargetChange()) {
+                    doArcCreated(targetNodeId, arcId);
+                }
+            } else {
+                throw new IllegalArgumentException("Bad arcId: " + arcId);
             }
-            currentArcDiff.put(arcId, targetNodeId);
+
+        } else if (!relationship.isSourceIndependentFromTargetChange()) {
+            doArcCreated(targetNodeId, arcId);
         }
+    }
+
+    private void doArcCreated(Object targetNodeId, Object arcId) {
+        if (currentArcDiff == null) {
+            currentArcDiff = new HashMap<Object, Object>();
+        }
+        currentArcDiff.put(arcId, targetNodeId);
     }
 
     public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
 
-        ObjRelationship relationship = objEntity.getRelationship(arcId.toString());
-        if (!relationship.isSourceIndependentFromTargetChange()) {
+        String arcIdString = arcId.toString();
+        ObjRelationship relationship = objEntity.getRelationship(arcIdString);
 
-            if (currentArcDiff == null) {
-                currentArcDiff = new HashMap<Object, Object>();
-                currentArcDiff.put(arcId, null);
-            } else {
-                // skip deletion record if a substitute arc was created prior to
-                // deleting
-                // the old arc...
-                Object existingTargetId = currentArcDiff.get(arcId);
-                if (existingTargetId == null || targetNodeId.equals(existingTargetId)) {
-                    currentArcDiff.put(arcId, null);
+        if (relationship == null) {
+            // phantom FK
+            if (arcIdString.startsWith(ASTDbPath.DB_PREFIX)) {
+
+                DbRelationship dbRelationship = dbEntity.getRelationship(arcIdString.substring(ASTDbPath.DB_PREFIX
+                        .length()));
+                if (!dbRelationship.isSourceIndependentFromTargetChange()) {
+                    doArcDeleted(targetNodeId, arcId);
                 }
+            } else {
+                throw new IllegalArgumentException("Bad arcId: " + arcId);
+            }
+
+        } else if (!relationship.isSourceIndependentFromTargetChange()) {
+            doArcDeleted(targetNodeId, arcId);
+        }
+    }
+
+    private void doArcDeleted(Object targetNodeId, Object arcId) {
+        if (currentArcDiff == null) {
+            currentArcDiff = new HashMap<Object, Object>();
+            currentArcDiff.put(arcId, null);
+        } else {
+            // skip deletion record if a substitute arc was created prior to
+            // deleting the old arc...
+            Object existingTargetId = currentArcDiff.get(arcId);
+            if (existingTargetId == null || targetNodeId.equals(existingTargetId)) {
+                currentArcDiff.put(arcId, null);
             }
         }
     }
