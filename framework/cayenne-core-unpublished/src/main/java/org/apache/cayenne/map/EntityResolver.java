@@ -121,12 +121,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * Updates missing mapping artifacts that can be guessed from other mapping
-     * information. This implementation creates missing reverse relationships,
-     * marking newly created relationships as "runtime".
-     * 
      * @since 3.0
-     * @deprecated since 3.2 does nothing
+     * @deprecated since 3.2 does nothing. Previously it used to create runtime
+     *             ObjRelationships, that broke a lot of things.
      */
     @Deprecated
     public void applyObjectLayerDefaults() {
