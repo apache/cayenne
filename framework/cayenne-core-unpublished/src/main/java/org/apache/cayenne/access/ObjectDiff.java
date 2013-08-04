@@ -188,7 +188,7 @@ class ObjectDiff extends NodeDiff {
 
         boolean addDiff = true;
 
-        if (diff instanceof ArcOperation && snapshot != null) {
+        if (diff instanceof ArcOperation) {
 
             ArcOperation arcDiff = (ArcOperation) diff;
             Object targetId = arcDiff.getTargetNodeId();
