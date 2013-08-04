@@ -116,6 +116,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
         return noop;
     }
 
+    @Override
     public boolean isNoop() {
         if (getChangesByObjectId().isEmpty()) {
             return true;
@@ -130,11 +131,13 @@ class ObjectStoreGraphDiff implements GraphDiff {
         return true;
     }
 
+    @Override
     public void apply(GraphChangeHandler handler) {
         resolveDiff();
         resolvedDiff.apply(handler);
     }
 
+    @Override
     public void undo(GraphChangeHandler handler) {
         resolveDiff();
         resolvedDiff.undo(handler);
