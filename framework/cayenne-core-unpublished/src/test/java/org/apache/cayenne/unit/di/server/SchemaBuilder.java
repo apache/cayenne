@@ -54,7 +54,8 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
 
 /**
- * Default implementation of the AccessStack that has a single DataNode per DataMap.
+ * Default implementation of the AccessStack that has a single DataNode per
+ * DataMap.
  */
 public class SchemaBuilder {
 
@@ -65,19 +66,14 @@ public class SchemaBuilder {
 
     public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
 
-    private static String[] DATA_MAPS_REQUIREING_SCHEMA_SETUP = {
-            "testmap.map.xml", "people.map.xml", "locking.map.xml",
-            "relationships.map.xml", "multi-tier.map.xml", "generic.map.xml",
-            "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml",
-            "qualified.map.xml", "quoted-identifiers.map.xml",
-            "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml"
-    };
+    private static String[] DATA_MAPS_REQUIREING_SCHEMA_SETUP = { "testmap.map.xml", "people.map.xml",
+            "locking.map.xml", "relationships.map.xml", "multi-tier.map.xml", "generic.map.xml", "map-db1.map.xml",
+            "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml", "quoted-identifiers.map.xml",
+            "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml", "oneway-rels.map.xml" };
 
     // hardcoded dependent entities that should be excluded
     // if LOBs are not supported
-    private static final String[] EXTRA_EXCLUDED_FOR_NO_LOB = new String[] {
-        "CLOB_DETAIL"
-    };
+    private static final String[] EXTRA_EXCLUDED_FOR_NO_LOB = new String[] { "CLOB_DETAIL" };
 
     private ServerCaseDataSourceFactory dataSourceFactory;
     private UnitDbAdapter unitDbAdapter;
@@ -85,9 +81,8 @@ public class SchemaBuilder {
     private DataDomain domain;
     private JdbcEventLogger jdbcEventLogger;
 
-    public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory,
-            @Inject UnitDbAdapter unitDbAdapter, @Inject DbAdapter dbAdapter,
-            @Inject JdbcEventLogger jdbcEventLogger) {
+    public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory, @Inject UnitDbAdapter unitDbAdapter,
+            @Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger) {
         this.dataSourceFactory = dataSourceFactory;
         this.unitDbAdapter = unitDbAdapter;
         this.dbAdapter = dbAdapter;
@@ -106,14 +101,14 @@ public class SchemaBuilder {
         }
 
         // generate schema combining all DataMaps that require schema support.
-        // Schema generation is done like that instead of per DataMap on demand to avoid
+        // Schema generation is done like that instead of per DataMap on demand
+        // to avoid
         // conflicts when dropping and generating PK objects.
 
         DataMap[] maps = new DataMap[DATA_MAPS_REQUIREING_SCHEMA_SETUP.length];
 
         for (int i = 0; i < maps.length; i++) {
-            InputStream stream = getClass().getClassLoader().getResourceAsStream(
-                    DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
+            InputStream stream = getClass().getClassLoader().getResourceAsStream(DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
             InputSource in = new InputSource(stream);
             in.setSystemId(DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
             maps[i] = new MapLoader().loadDataMap(in);
@@ -133,8 +128,7 @@ public class SchemaBuilder {
             dropPKSupport();
             createSchema();
             createPKSupport();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error rebuilding schema", e);
         }
     }
@@ -183,9 +177,9 @@ public class SchemaBuilder {
     }
 
     /**
-     * Creates primary key support for all node DbEntities. Will use its facilities
-     * provided by DbAdapter to generate any necessary database objects and data for
-     * primary key support.
+     * Creates primary key support for all node DbEntities. Will use its
+     * facilities provided by DbAdapter to generate any necessary database
+     * objects and data for primary key support.
      */
     private void createPKSupport() throws Exception {
         for (DataNode node : domain.getDataNodes()) {
@@ -194,8 +188,8 @@ public class SchemaBuilder {
     }
 
     /**
-     * Helper method that orders DbEntities to satisfy referential constraints and returns
-     * an ordered list.
+     * Helper method that orders DbEntities to satisfy referential constraints
+     * and returns an ordered list.
      */
     private List<DbEntity> dbEntitiesInInsertOrder(DataNode node, DataMap map) {
         List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
@@ -235,8 +229,7 @@ public class SchemaBuilder {
                     boolean skip = false;
                     for (final DbAttribute attr : ent.getAttributes()) {
                         // check for BIN PK or FK to BIN Pk
-                        if (attr.getType() == Types.BINARY
-                                || attr.getType() == Types.VARBINARY
+                        if (attr.getType() == Types.BINARY || attr.getType() == Types.VARBINARY
                                 || attr.getType() == Types.LONGVARBINARY) {
 
                             if (attr.isPrimaryKey() || attr.isForeignKey()) {
@@ -272,7 +265,8 @@ public class SchemaBuilder {
 
             while (tables.next()) {
                 // 'toUpperCase' is needed since most databases
-                // are case insensitive, and some will convert names to lower case
+                // are case insensitive, and some will convert names to lower
+                // case
                 // (PostgreSQL)
                 String name = tables.getString("TABLE_NAME");
                 if (name != null)
@@ -296,18 +290,14 @@ public class SchemaBuilder {
                     try {
                         logger.info(dropSql);
                         stmt.execute(dropSql);
-                    }
-                    catch (SQLException sqe) {
-                        logger.warn(
-                                "Can't drop table " + ent.getName() + ", ignoring...",
-                                sqe);
+                    } catch (SQLException sqe) {
+                        logger.warn("Can't drop table " + ent.getName() + ", ignoring...", sqe);
                     }
                 }
             }
 
             unitDbAdapter.droppedTables(conn, map);
-        }
-        finally {
+        } finally {
             conn.close();
         }
 
@@ -335,8 +325,7 @@ public class SchemaBuilder {
                 stmt.execute(query);
             }
             unitDbAdapter.createdTables(conn, map);
-        }
-        finally {
+        } finally {
             conn.close();
         }
     }
@@ -344,8 +333,7 @@ public class SchemaBuilder {
     /**
      * Returns iterator of preprocessed table create queries.
      */
-    private Collection<String> tableCreateQueries(DataNode node, DataMap map)
-            throws Exception {
+    private Collection<String> tableCreateQueries(DataNode node, DataMap map) throws Exception {
         DbAdapter adapter = node.getAdapter();
         DbGenerator gen = new DbGenerator(adapter, map, null, domain, jdbcEventLogger);
 
