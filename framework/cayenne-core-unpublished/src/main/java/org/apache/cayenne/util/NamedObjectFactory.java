@@ -44,8 +44,9 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * Factory class that generates various Cayenne objects with default names that are unique
- * in their corresponding context. Supports creation of the following objects:
+ * Factory class that generates various Cayenne objects with default names that
+ * are unique in their corresponding context. Supports creation of the following
+ * objects:
  * <ul>
  * <li>DataMap</li>
  * <li>ObjEntity</li>
@@ -94,19 +95,16 @@ public abstract class NamedObjectFactory {
     /**
      * @since 1.0.5
      */
-    public static String createName(
-            Class objectClass,
-            Object namingContext,
-            String nameBase) {
+    public static String createName(Class objectClass, Object namingContext, String nameBase) {
         return (factories.get(objectClass)).makeName(namingContext, nameBase);
     }
 
     /**
-     * Creates an object using an appropriate factory class. If no factory is found for
-     * the object, NullPointerException is thrown.
+     * Creates an object using an appropriate factory class. If no factory is
+     * found for the object, NullPointerException is thrown.
      * <p>
-     * <i>Note that newly created object is not added to the parent. This behavior can be
-     * changed later.</i>
+     * <i>Note that newly created object is not added to the parent. This
+     * behavior can be changed later.</i>
      * </p>
      */
     @SuppressWarnings("unchecked")
@@ -116,28 +114,23 @@ public abstract class NamedObjectFactory {
 
     /**
      * @since 1.0.5
+     * @deprecated since 3.2 unused, and generics spec makes no sense.
      */
-    public static Object createObject(
-            Class<? extends DataMap> objectClass,
-            Object namingContext,
-            String nameBase) {
+    @Deprecated
+    public static Object createObject(Class<? extends DataMap> objectClass, Object namingContext, String nameBase) {
         return (factories.get(objectClass)).makeObject(namingContext, nameBase);
     }
 
     /**
-     * Creates a relationship using an appropriate factory class. If no factory is found
-     * for the object, NullPointerException is thrown.
+     * Creates a relationship using an appropriate factory class. If no factory
+     * is found for the object, NullPointerException is thrown.
      * <p>
-     * <i>Note that newly created object is not added to the parent. This behavior can be
-     * changed later.</i>
+     * <i>Note that newly created object is not added to the parent. This
+     * behavior can be changed later.</i>
      * </p>
      */
-    public static Relationship createRelationship(
-            Entity srcEnt,
-            Entity targetEnt,
-            boolean toMany) {
-        NamedObjectFactory factory = (srcEnt instanceof ObjEntity)
-                ? new ObjRelationshipFactory(targetEnt, toMany)
+    public static Relationship createRelationship(Entity srcEnt, Entity targetEnt, boolean toMany) {
+        NamedObjectFactory factory = (srcEnt instanceof ObjEntity) ? new ObjRelationshipFactory(targetEnt, toMany)
                 : new DbRelationshipFactory(targetEnt, toMany);
         return (Relationship) factory.makeObject(srcEnt);
     }
@@ -183,7 +176,8 @@ public abstract class NamedObjectFactory {
     protected abstract Object create(String name, Object namingContext);
 
     /**
-     * Checks if the name is already taken by another sibling in the same context.
+     * Checks if the name is already taken by another sibling in the same
+     * context.
      */
     protected abstract boolean isNameInUse(String name, Object namingContext);
 
@@ -430,10 +424,7 @@ public abstract class NamedObjectFactory {
 
         @Override
         protected Object create(String name, Object namingContext) {
-            return new DbAttribute(
-                    name,
-                    TypesMapping.NOT_DEFINED,
-                    (DbEntity) namingContext);
+            return new DbAttribute(name, TypesMapping.NOT_DEFINED, (DbEntity) namingContext);
         }
     }
 
@@ -484,9 +475,9 @@ public abstract class NamedObjectFactory {
         }
 
         /**
-         * Returns generated name for the ObjRelationships. For to-one case and entity
-         * name "xxxx" it generates name "toXxxx". For to-many case and entity name "Xxxx"
-         * it generates name "xxxxArray".
+         * Returns generated name for the ObjRelationships. For to-one case and
+         * entity name "xxxx" it generates name "toXxxx". For to-many case and
+         * entity name "Xxxx" it generates name "xxxxArray".
          */
         @Override
         protected String nameBase() {
@@ -495,11 +486,8 @@ public abstract class NamedObjectFactory {
             }
 
             String name = target.getName();
-            return (toMany) ? Character.toLowerCase(name.charAt(0))
-                    + name.substring(1)
-                    + "Array" : "to"
-                    + Character.toUpperCase(name.charAt(0))
-                    + name.substring(1);
+            return (toMany) ? Character.toLowerCase(name.charAt(0)) + name.substring(1) + "Array" : "to"
+                    + Character.toUpperCase(name.charAt(0)) + name.substring(1);
         }
     }
 
@@ -515,8 +503,9 @@ public abstract class NamedObjectFactory {
         }
 
         /**
-         * Returns generated name for the DbRelationships. For to-one case it generates
-         * name "TO_XXXX". For to-many case it generates name "XXXX_ARRAY".
+         * Returns generated name for the DbRelationships. For to-one case it
+         * generates name "TO_XXXX". For to-many case it generates name
+         * "XXXX_ARRAY".
          */
         @Override
         protected String nameBase() {
