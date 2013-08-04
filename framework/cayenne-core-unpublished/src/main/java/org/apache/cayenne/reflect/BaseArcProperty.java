@@ -30,6 +30,7 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
     protected String complimentaryReverseArcName;
     protected ClassDescriptor targetDescriptor;
     protected ObjRelationship relationship;
+    protected String reverseDbPath;
 
     public BaseArcProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor, Accessor accessor,
             String reverseName) {
@@ -45,6 +46,15 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
     public abstract boolean visit(PropertyVisitor visitor);
 
     public abstract boolean isFault(Object source);
+    
+    @Override
+    public String getComplimentaryReverseDbRelationshipPath() {
+        if (reverseDbPath == null) {
+            reverseDbPath = relationship.getReverseDbRelationshipPath();
+        }
+
+        return reverseDbPath;
+    }
 
     public ObjRelationship getRelationship() {
         return relationship;

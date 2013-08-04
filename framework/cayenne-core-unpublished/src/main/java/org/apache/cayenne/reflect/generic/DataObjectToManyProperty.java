@@ -36,11 +36,11 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
 
     protected ObjRelationship relationship;
     protected String reverseName;
+    protected String reverseDbPath;
     protected ClassDescriptor targetDescriptor;
     protected Fault fault;
 
-    DataObjectToManyProperty(ObjRelationship relationship,
-            ClassDescriptor targetDescriptor, Fault fault) {
+    DataObjectToManyProperty(ObjRelationship relationship, ClassDescriptor targetDescriptor, Fault fault) {
         this.relationship = relationship;
         this.targetDescriptor = targetDescriptor;
         this.reverseName = relationship.getReverseRelationshipName();
@@ -48,12 +48,20 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
     }
 
     public ArcProperty getComplimentaryReverseArc() {
-        return reverseName != null ? (ArcProperty) targetDescriptor
-                .getProperty(reverseName) : null;
+        return reverseName != null ? (ArcProperty) targetDescriptor.getProperty(reverseName) : null;
     }
 
     public ClassDescriptor getTargetDescriptor() {
         return targetDescriptor;
+    }
+
+    @Override
+    public String getComplimentaryReverseDbRelationshipPath() {
+        if (reverseDbPath == null) {
+            reverseDbPath = relationship.getReverseDbRelationshipPath();
+        }
+
+        return reverseDbPath;
     }
 
     @Override
@@ -65,40 +73,26 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
         return relationship;
     }
 
-    public void addTarget(Object source, Object target, boolean setReverse)
-            throws PropertyException {
+    public void addTarget(Object source, Object target, boolean setReverse) throws PropertyException {
         try {
-            toDataObject(source).addToManyTarget(
-                    getName(),
-                    toDataObject(target),
-                    setReverse);
-        }
-        catch (Throwable th) {
-            throw new PropertyException("Error setting to-many DataObject property: "
-                    + getName(), this, source, th);
+            toDataObject(source).addToManyTarget(getName(), toDataObject(target), setReverse);
+        } catch (Throwable th) {
+            throw new PropertyException("Error setting to-many DataObject property: " + getName(), this, source, th);
         }
     }
 
-    public void removeTarget(Object source, Object target, boolean setReverse)
-            throws PropertyException {
+    public void removeTarget(Object source, Object target, boolean setReverse) throws PropertyException {
         try {
-            toDataObject(source).removeToManyTarget(
-                    getName(),
-                    toDataObject(target),
-                    setReverse);
-        }
-        catch (Throwable th) {
-            throw new PropertyException("Error unsetting to-many DataObject property: "
-                    + getName(), this, source, th);
+            toDataObject(source).removeToManyTarget(getName(), toDataObject(target), setReverse);
+        } catch (Throwable th) {
+            throw new PropertyException("Error unsetting to-many DataObject property: " + getName(), this, source, th);
         }
     }
 
     @Override
     public void injectValueHolder(Object object) throws PropertyException {
         if (readPropertyDirectly(object) == null) {
-            writePropertyDirectly(object, null, fault.resolveFault(
-                    (Persistent) object,
-                    getName()));
+            writePropertyDirectly(object, null, fault.resolveFault((Persistent) object, getName()));
         }
     }
 
@@ -115,22 +109,18 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
         Object value = readPropertyDirectly(object);
         if (value instanceof Fault) {
             // nothing to do
-        }
-        else if (value instanceof ValueHolder) {
+        } else if (value instanceof ValueHolder) {
             ((ValueHolder) value).invalidate();
-        }
-        else {
+        } else {
             writePropertyDirectly(object, null, fault);
         }
     }
 
-    public void addTargetDirectly(Object source, Object target)
-            throws PropertyException {
+    public void addTargetDirectly(Object source, Object target) throws PropertyException {
         addTarget(source, target, false);
     }
 
-    public void removeTargetDirectly(Object source, Object target)
-            throws PropertyException {
+    public void removeTargetDirectly(Object source, Object target) throws PropertyException {
         removeTarget(source, target, false);
     }
 }

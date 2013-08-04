@@ -36,6 +36,7 @@ class DataObjectToOneProperty extends DataObjectBaseProperty implements ToOnePro
 
     protected ObjRelationship relationship;
     protected String reverseName;
+    protected String reverseDbPath;
     protected ClassDescriptor targetDescriptor;
     protected Fault fault;
 
@@ -50,6 +51,15 @@ class DataObjectToOneProperty extends DataObjectBaseProperty implements ToOnePro
     public ArcProperty getComplimentaryReverseArc() {
         return reverseName != null ? (ArcProperty) targetDescriptor
                 .getProperty(reverseName) : null;
+    }
+    
+    @Override
+    public String getComplimentaryReverseDbRelationshipPath() {
+        if (reverseDbPath == null) {
+            reverseDbPath = relationship.getReverseDbRelationshipPath();
+        }
+
+        return reverseDbPath;
     }
 
     public ClassDescriptor getTargetDescriptor() {

@@ -29,9 +29,12 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeDiff;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -59,6 +62,7 @@ class ObjectDiff extends NodeDiff {
     private Map<String, Object> arcSnapshot;
     private Map<String, Object> currentArcSnapshot;
     private Map<ArcOperation, ArcOperation> flatIds;
+    private Map<ArcOperation, ArcOperation> phantomFks;
 
     private Persistent object;
 
@@ -180,7 +184,7 @@ class ObjectDiff extends NodeDiff {
         });
     }
 
-    void addDiff(NodeDiff diff) {
+    void addDiff(NodeDiff diff, ObjectStore parent) {
 
         boolean addDiff = true;
 
@@ -197,7 +201,9 @@ class ObjectDiff extends NodeDiff {
             // so we cant't do 'instanceof SingleObjectArcProperty'
             // TODO: andrus, 3.22.2006 - should we consider this a bug?
 
-            if (property instanceof ToManyProperty) {
+            if (property == null && arcId.startsWith(ASTDbPath.DB_PREFIX)) {
+                addDiff = addPhantomFkDiff(arcDiff);
+            } else if (property instanceof ToManyProperty) {
 
                 // record flattened op changes
 
@@ -219,7 +225,15 @@ class ObjectDiff extends NodeDiff {
                             otherDiffs.remove(oldOp);
                         }
                     }
+                } else if (property.getComplimentaryReverseArc() == null) {
+
+                    // register complimentary arc diff
+                    String arc = ASTDbPath.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath();
+                    ArcOperation complimentartyOp = new ArcOperation(targetId, arcDiff.getNodeId(), arc,
+                            arcDiff.isDelete());
+                    parent.registerDiff(targetId, complimentartyOp);
                 }
+
             } else if (property instanceof ToOneProperty) {
 
                 if (currentArcSnapshot == null) {
@@ -243,6 +257,44 @@ class ObjectDiff extends NodeDiff {
         }
     }
 
+    private boolean addPhantomFkDiff(ArcOperation arcDiff) {
+        String arcId = arcDiff.getArcId().toString();
+
+        DbEntity dbEntity = classDescriptor.getEntity().getDbEntity();
+        DbRelationship dbRelationship = (DbRelationship) dbEntity.getRelationship(arcId.substring(ASTDbPath.DB_PREFIX
+                .length()));
+
+        if (dbRelationship.isToMany()) {
+            return false;
+        }
+
+        boolean addDiff = true;
+
+        if (currentArcSnapshot == null) {
+            currentArcSnapshot = new HashMap<String, Object>();
+        }
+
+        currentArcSnapshot.put(arcId, arcDiff.getTargetNodeId());
+
+        if (phantomFks == null) {
+            phantomFks = new HashMap<ArcOperation, ArcOperation>();
+        }
+
+        ArcOperation oldOp = phantomFks.put(arcDiff, arcDiff);
+
+        // "delete" cancels "create" and vice versa...
+        if (oldOp != null && oldOp.isDelete() != arcDiff.isDelete()) {
+            addDiff = false;
+            phantomFks.remove(arcDiff);
+
+            if (otherDiffs != null) {
+                otherDiffs.remove(oldOp);
+            }
+        }
+
+        return addDiff;
+    }
+
     /**
      * Checks whether at least a single property is modified.
      */
@@ -255,6 +307,10 @@ class ObjectDiff extends NodeDiff {
         }
 
         if (flatIds != null && !flatIds.isEmpty()) {
+            return false;
+        }
+
+        if (phantomFks != null && !phantomFks.isEmpty()) {
             return false;
         }
 

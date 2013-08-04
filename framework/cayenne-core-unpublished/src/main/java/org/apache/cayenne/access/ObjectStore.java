@@ -211,7 +211,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         }
 
         if (diff != null) {
-            objectDiff.addDiff(diff);
+            objectDiff.addDiff(diff, this);
         }
 
         return objectDiff;
