@@ -74,7 +74,7 @@ public class CompoundDiff implements GraphDiff {
         nonNullDiffs().add(diff);
     }
 
-    public void addAll(Collection<GraphDiff> diffs) {
+    public void addAll(Collection<? extends GraphDiff> diffs) {
         nonNullDiffs().addAll(diffs);
     }
 

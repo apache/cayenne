@@ -27,6 +27,7 @@ import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.graph.NodeDiff;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -332,7 +333,7 @@ public class DeleteRulesTest extends ServerCase {
         ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
 
         assertNotNull(changes);
-        Collection<?> diffs = new ArrayList<Object>();
+        Collection<NodeDiff> diffs = new ArrayList<NodeDiff>();
         changes.appendDiffs(diffs);
         Iterator<?> it = diffs.iterator();
         while (it.hasNext()) {
@@ -354,7 +355,7 @@ public class DeleteRulesTest extends ServerCase {
         ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
 
         if (changes != null) {
-            Collection<?> diffs = new ArrayList<Object>();
+            Collection<NodeDiff> diffs = new ArrayList<NodeDiff>();
             changes.appendDiffs(diffs);
             Iterator<?> it = diffs.iterator();
             while (it.hasNext()) {

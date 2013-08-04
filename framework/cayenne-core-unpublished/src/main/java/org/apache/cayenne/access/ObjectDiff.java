@@ -53,7 +53,7 @@ class ObjectDiff extends NodeDiff {
 
     private transient ClassDescriptor classDescriptor;
 
-    private Collection<GraphDiff> otherDiffs;
+    private Collection<NodeDiff> otherDiffs;
 
     private Map<String, Object> snapshot;
     private Map<String, Object> arcSnapshot;
@@ -92,15 +92,18 @@ class ObjectDiff extends NodeDiff {
 
             classDescriptor.visitProperties(new PropertyVisitor() {
 
+                @Override
                 public boolean visitAttribute(AttributeProperty property) {
                     snapshot.put(property.getName(), property.readProperty(object));
                     return true;
                 }
 
+                @Override
                 public boolean visitToMany(ToManyProperty property) {
                     return true;
                 }
 
+                @Override
                 public boolean visitToOne(ToOneProperty property) {
 
                     // eagerly resolve optimistically locked relationships
@@ -157,7 +160,7 @@ class ObjectDiff extends NodeDiff {
     /**
      * Appends individual diffs to collection.
      */
-    void appendDiffs(Collection collection) {
+    void appendDiffs(Collection<NodeDiff> collection) {
 
         if (otherDiffs != null) {
             collection.addAll(otherDiffs);
@@ -177,7 +180,7 @@ class ObjectDiff extends NodeDiff {
         });
     }
 
-    void addDiff(GraphDiff diff) {
+    void addDiff(NodeDiff diff) {
 
         boolean addDiff = true;
 
@@ -233,7 +236,7 @@ class ObjectDiff extends NodeDiff {
 
         if (addDiff) {
             if (otherDiffs == null) {
-                otherDiffs = new ArrayList<GraphDiff>(3);
+                otherDiffs = new ArrayList<NodeDiff>(3);
             }
 
             otherDiffs.add(diff);
@@ -266,6 +269,7 @@ class ObjectDiff extends NodeDiff {
 
         getClassDescriptor().visitProperties(new PropertyVisitor() {
 
+            @Override
             public boolean visitAttribute(AttributeProperty property) {
 
                 Object oldValue = snapshot.get(property.getName());
@@ -278,11 +282,13 @@ class ObjectDiff extends NodeDiff {
                 return !modFound[0];
             }
 
+            @Override
             public boolean visitToMany(ToManyProperty property) {
                 // flattened changes
                 return true;
             }
 
+            @Override
             public boolean visitToOne(ToOneProperty property) {
                 if (arcSnapshot == null) {
                     return true;
@@ -326,6 +332,7 @@ class ObjectDiff extends NodeDiff {
 
         getClassDescriptor().visitProperties(new PropertyVisitor() {
 
+            @Override
             public boolean visitAttribute(AttributeProperty property) {
 
                 Object newValue = property.readProperty(object);
@@ -349,10 +356,12 @@ class ObjectDiff extends NodeDiff {
                 return true;
             }
 
+            @Override
             public boolean visitToMany(ToManyProperty property) {
                 return true;
             }
 
+            @Override
             public boolean visitToOne(ToOneProperty property) {
                 return true;
             }
