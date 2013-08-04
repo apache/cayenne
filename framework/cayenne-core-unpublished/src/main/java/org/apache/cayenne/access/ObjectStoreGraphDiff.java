@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,7 +72,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
         // result in
         // ObjectStore modifications
 
-        Collection objectsToValidate = null;
+        Collection<Validating> objectsToValidate = null;
 
         for (final ObjectDiff diff : getChangesByObjectId().values()) {
 
@@ -83,10 +82,10 @@ class ObjectStoreGraphDiff implements GraphDiff {
 
                 if (diff.getObject() instanceof Validating) {
                     if (objectsToValidate == null) {
-                        objectsToValidate = new ArrayList();
+                        objectsToValidate = new ArrayList<Validating>();
                     }
 
-                    objectsToValidate.add(diff.getObject());
+                    objectsToValidate.add((Validating) diff.getObject());
                 }
 
             }
@@ -95,9 +94,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
         if (objectsToValidate != null) {
             ValidationResult result = new ValidationResult();
 
-            Iterator validationIt = objectsToValidate.iterator();
-            while (validationIt.hasNext()) {
-                Validating object = (Validating) validationIt.next();
+            for (Validating object : objectsToValidate) {
                 switch (((Persistent) object).getPersistenceState()) {
                 case PersistenceState.NEW:
                     object.validateForInsert(result);
