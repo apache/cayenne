@@ -258,8 +258,6 @@ class ObjectDiff extends NodeDiff {
             return false;
         }
 
-        final boolean[] modFound = new boolean[1];
-
         int state = object.getPersistenceState();
         if (state == PersistenceState.NEW || state == PersistenceState.DELETED) {
             return false;
@@ -267,6 +265,7 @@ class ObjectDiff extends NodeDiff {
 
         // check phantom mods
 
+        final boolean[] modFound = new boolean[1];
         getClassDescriptor().visitProperties(new PropertyVisitor() {
 
             @Override
