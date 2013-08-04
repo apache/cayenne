@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -27,10 +30,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * A processor of ObjectStore indirect changes, such as flattened relationships and
@@ -42,7 +41,7 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
     private final DataDomainFlushAction parent;
     private final EntityResolver resolver;
-    private final Collection indirectModifications;
+    private final Collection<ObjectId> indirectModifications;
     private final Collection<FlattenedArcKey> flattenedInserts;
     private final Collection<FlattenedArcKey> flattenedDeletes;
 
@@ -73,15 +72,17 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
         }
     }
 
+    @Override
     public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
         ObjEntity entity = resolver.getObjEntity(((ObjectId) nodeId).getEntityName());
         ObjRelationship relationship = (ObjRelationship) entity.getRelationship(arcId
                 .toString());
 
         if (relationship.isSourceIndependentFromTargetChange()) {
-
-            if (!((ObjectId) nodeId).isTemporary()) {
-                indirectModifications.add(nodeId);
+            
+            ObjectId nodeObjectId = (ObjectId) nodeId;
+            if (!nodeObjectId.isTemporary()) {
+                indirectModifications.add(nodeObjectId);
             }
 
             if (relationship.isFlattened()) {
@@ -105,7 +106,8 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
             }
         }
     }
-
+    
+    @Override
     public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
 
         ObjEntity entity = resolver.getObjEntity(((ObjectId) nodeId).getEntityName());
@@ -114,8 +116,9 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
         if (relationship.isSourceIndependentFromTargetChange()) {
             // do not record temporary id mods...
-            if (!((ObjectId) nodeId).isTemporary()) {
-                indirectModifications.add(nodeId);
+            ObjectId nodeObjectId = (ObjectId) nodeId;
+            if (!nodeObjectId.isTemporary()) {
+                indirectModifications.add(nodeObjectId);
             }
 
             if (relationship.isFlattened()) {
@@ -141,18 +144,22 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
         }
     }
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         // noop
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         // noop
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         // noop
     }
 
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,
