@@ -72,13 +72,12 @@ public class IdentityColumnsTest extends ServerCase {
     }
 
     /**
-     * Tests a bug casued by the ID Java type mismatch vs the default JDBC type of the ID
-     * column.
+     * Tests a bug casued by the ID Java type mismatch vs the default JDBC type
+     * of the ID column.
      */
     public void testCAY823() throws Exception {
 
-        GeneratedColumnTestEntity idObject = context
-                .newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
 
         String name = "n_" + System.currentTimeMillis();
         idObject.setName(name);
@@ -99,35 +98,32 @@ public class IdentityColumnsTest extends ServerCase {
 
     public void testNewObject() throws Exception {
 
-        GeneratedColumnTestEntity idObject = context
-                .newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
 
         String name = "n_" + System.currentTimeMillis();
         idObject.setName(name);
 
         idObject.getObjectContext().commitChanges();
 
-        // this will throw an exception if id wasn't generated one way or another
+        // this will throw an exception if id wasn't generated one way or
+        // another
         int id = Cayenne.intPKForObject(idObject);
         assertTrue(id >= 0);
 
         // make sure that id is the same as id in the DB
         context.invalidateObjects(idObject);
-        GeneratedColumnTestEntity object = Cayenne.objectForPK(
-                context,
-                GeneratedColumnTestEntity.class,
-                id);
+        GeneratedColumnTestEntity object = Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id);
         assertNotNull(object);
         assertEquals(name, object.getName());
     }
 
     public void testGeneratedJoinInFlattenedRelationship() throws Exception {
 
-        // before saving objects, let's manually access PKGenerator to get a base PK value
+        // before saving objects, let's manually access PKGenerator to get a
+        // base PK value
         // for comparison
-        DbEntity joinTableEntity = context.getEntityResolver().getDbEntity(
-                joinTable.getTableName());
-        DbAttribute pkAttribute = (DbAttribute) joinTableEntity.getAttribute("ID");
+        DbEntity joinTableEntity = context.getEntityResolver().getDbEntity(joinTable.getTableName());
+        DbAttribute pkAttribute = joinTableEntity.getAttribute("ID");
         Number pk = (Number) adapter.getPkGenerator().generatePk(node, pkAttribute);
 
         GeneratedF1 f1 = context.newObject(GeneratedF1.class);
@@ -140,13 +136,12 @@ public class IdentityColumnsTest extends ServerCase {
         assertTrue(id > 0);
 
         // this is a leap of faith that autoincrement-based IDs will not match
-        // PkGenertor provided ids... This sorta works though if pk generator has a 200
+        // PkGenertor provided ids... This sorta works though if pk generator
+        // has a 200
         // base value
         if (adapter.supportsGeneratedKeys()) {
-            assertFalse("Looks like auto-increment wasn't used for the join table. ID: "
-                    + id, id == pk.intValue() + 1);
-        }
-        else {
+            assertFalse("Looks like auto-increment wasn't used for the join table. ID: " + id, id == pk.intValue() + 1);
+        } else {
             assertEquals(id, pk.intValue() + 1);
         }
     }
@@ -177,13 +172,12 @@ public class IdentityColumnsTest extends ServerCase {
     }
 
     /**
-     * Tests that insert in two tables with identity pk does not generate a conflict. See
-     * CAY-341 for the original bug.
+     * Tests that insert in two tables with identity pk does not generate a
+     * conflict. See CAY-341 for the original bug.
      */
     public void testMultipleNewObjectsSeparateTables() throws Exception {
 
-        GeneratedColumnTestEntity idObject1 = context
-                .newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity idObject1 = context.newObject(GeneratedColumnTestEntity.class);
         idObject1.setName("o1");
 
         GeneratedColumnTest2 idObject2 = context.newObject(GeneratedColumnTest2.class);
@@ -194,16 +188,12 @@ public class IdentityColumnsTest extends ServerCase {
 
     public void testMultipleNewObjects() throws Exception {
 
-        String[] names = new String[] {
-                "n1_" + System.currentTimeMillis(), "n2_" + System.currentTimeMillis(),
-                "n3_" + System.currentTimeMillis()
-        };
+        String[] names = new String[] { "n1_" + System.currentTimeMillis(), "n2_" + System.currentTimeMillis(),
+                "n3_" + System.currentTimeMillis() };
 
         GeneratedColumnTestEntity[] idObjects = new GeneratedColumnTestEntity[] {
-                context.newObject(GeneratedColumnTestEntity.class),
-                context.newObject(GeneratedColumnTestEntity.class),
-                context.newObject(GeneratedColumnTestEntity.class)
-        };
+                context.newObject(GeneratedColumnTestEntity.class), context.newObject(GeneratedColumnTestEntity.class),
+                context.newObject(GeneratedColumnTestEntity.class) };
 
         for (int i = 0; i < idObjects.length; i++) {
             idObjects[i].setName(names[i]);
@@ -220,10 +210,7 @@ public class IdentityColumnsTest extends ServerCase {
         context.invalidateObjects(idObjects);
 
         for (int i = 0; i < ids.length; i++) {
-            GeneratedColumnTestEntity object = Cayenne.objectForPK(
-                    context,
-                    GeneratedColumnTestEntity.class,
-                    ids[i]);
+            GeneratedColumnTestEntity object = Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, ids[i]);
             assertNotNull(object);
             assertEquals(names[i], object.getName());
         }
@@ -231,15 +218,15 @@ public class IdentityColumnsTest extends ServerCase {
 
     public void testCompoundPKWithGeneratedColumn() throws Exception {
         if (adapter.supportsGeneratedKeys()) {
-            // only works for generated keys, as the entity tested has one Cayenne
+            // only works for generated keys, as the entity tested has one
+            // Cayenne
             // auto-pk and one generated key
 
             String masterName = "m_" + System.currentTimeMillis();
             String depName1 = "dep1_" + System.currentTimeMillis();
             String depName2 = "dep2_" + System.currentTimeMillis();
 
-            GeneratedColumnCompMaster master = context
-                    .newObject(GeneratedColumnCompMaster.class);
+            GeneratedColumnCompMaster master = context.newObject(GeneratedColumnCompMaster.class);
             master.setName(masterName);
 
             GeneratedColumnCompKey dep1 = context.newObject(GeneratedColumnCompKey.class);
@@ -257,19 +244,16 @@ public class IdentityColumnsTest extends ServerCase {
             ObjectId id2 = dep2.getObjectId();
 
             // check propagated id
-            Number propagatedID2 = (Number) id2.getIdSnapshot().get(
-                    GeneratedColumnCompKey.PROPAGATED_PK_PK_COLUMN);
+            Number propagatedID2 = (Number) id2.getIdSnapshot().get(GeneratedColumnCompKey.PROPAGATED_PK_PK_COLUMN);
             assertNotNull(propagatedID2);
             assertEquals(masterId, propagatedID2.intValue());
 
             // check Cayenne-generated ID
-            Number cayenneGeneratedID2 = (Number) id2.getIdSnapshot().get(
-                    GeneratedColumnCompKey.AUTO_PK_PK_COLUMN);
+            Number cayenneGeneratedID2 = (Number) id2.getIdSnapshot().get(GeneratedColumnCompKey.AUTO_PK_PK_COLUMN);
             assertNotNull(cayenneGeneratedID2);
 
             // check DB-generated ID
-            Number dbGeneratedID2 = (Number) id2.getIdSnapshot().get(
-                    GeneratedColumnCompKey.GENERATED_COLUMN_PK_COLUMN);
+            Number dbGeneratedID2 = (Number) id2.getIdSnapshot().get(GeneratedColumnCompKey.GENERATED_COLUMN_PK_COLUMN);
             assertNotNull(dbGeneratedID2);
 
             context.invalidateObjects(master, dep1, dep2);
@@ -281,8 +265,7 @@ public class IdentityColumnsTest extends ServerCase {
 
     public void testUpdateDependentWithNewMaster() throws Exception {
 
-        GeneratedColumnTestEntity master1 = context
-                .newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity master1 = context.newObject(GeneratedColumnTestEntity.class);
         master1.setName("aaa");
 
         GeneratedColumnDep dependent = context.newObject(GeneratedColumnDep.class);
@@ -292,8 +275,7 @@ public class IdentityColumnsTest extends ServerCase {
         context.commitChanges();
 
         // change master
-        GeneratedColumnTestEntity master2 = context
-                .newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity master2 = context.newObject(GeneratedColumnTestEntity.class);
         master2.setName("bbb");
 
         // TESTING THIS
@@ -315,18 +297,17 @@ public class IdentityColumnsTest extends ServerCase {
 
     public void testGeneratedDefaultValue() throws Exception {
 
-        // fail("TODO: test insert with DEFAULT generated column...need custom SQL to
+        // fail("TODO: test insert with DEFAULT generated column...need custom
+        // SQL to
         // build such table");
     }
 
     public void testPropagateToDependent() throws Exception {
 
-        GeneratedColumnTestEntity idObject = context
-                .newObject(GeneratedColumnTestEntity.class);
+        GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
         idObject.setName("aaa");
 
-        GeneratedColumnDep dependent = idObject.getObjectContext().newObject(
-                GeneratedColumnDep.class);
+        GeneratedColumnDep dependent = idObject.getObjectContext().newObject(GeneratedColumnDep.class);
         dependent.setName("aaa");
         dependent.setToMaster(idObject);
 

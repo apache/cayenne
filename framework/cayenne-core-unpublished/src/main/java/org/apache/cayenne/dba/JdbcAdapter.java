@@ -94,7 +94,7 @@ public class JdbcAdapter implements DbAdapter {
         this.setSupportsBatchUpdates(false);
         this.setSupportsUniqueConstraints(true);
         this.caseInsensitiveCollations = runtimeProperties.getBoolean(Constants.CI_PROPERTY, false);
-        
+
         // TODO: andrus 05.02.2010 - ideally this should be injected
         this.resourceLocator = new ClassLoaderResourceLocator();
 
@@ -260,7 +260,7 @@ public class JdbcAdapter implements DbAdapter {
 
         sqlBuffer.append(" (");
         // columns
-        Iterator<?> it = entity.getAttributes().iterator();
+        Iterator<DbAttribute> it = entity.getAttributes().iterator();
         if (it.hasNext()) {
             boolean first = true;
             while (it.hasNext()) {
@@ -270,7 +270,7 @@ public class JdbcAdapter implements DbAdapter {
                     sqlBuffer.append(", ");
                 }
 
-                DbAttribute column = (DbAttribute) it.next();
+                DbAttribute column = it.next();
 
                 // attribute may not be fully valid, do a simple check
                 if (column.getType() == TypesMapping.NOT_DEFINED) {
@@ -578,5 +578,5 @@ public class JdbcAdapter implements DbAdapter {
     public void setBatchQueryBuilderFactory(BatchQueryBuilderFactory batchQueryBuilderFactory) {
         this.batchQueryBuilderFactory = batchQueryBuilderFactory;
     }
-    
+
 }

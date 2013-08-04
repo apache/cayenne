@@ -59,22 +59,20 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
     }
 
     @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
-            throws Exception {
+    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop) throws Exception {
         // avoid dropping constraints...
     }
 
     /**
-     * Oracle 8i does not support more then 1 "LONG xx" column per table PAINTING_INFO
-     * need to be fixed.
+     * Oracle 8i does not support more then 1 "LONG xx" column per table
+     * PAINTING_INFO need to be fixed.
      */
     @Override
     public void willCreateTables(Connection con, DataMap map) {
         DbEntity paintingInfo = map.getDbEntity("PAINTING_INFO");
 
         if (paintingInfo != null) {
-            DbAttribute textReview = (DbAttribute) paintingInfo
-                    .getAttribute("TEXT_REVIEW");
+            DbAttribute textReview = paintingInfo.getAttribute("TEXT_REVIEW");
             textReview.setType(Types.VARCHAR);
             textReview.setMaxLength(255);
         }
@@ -98,7 +96,8 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
 
     @Override
     public boolean supportsLobComparisons() {
-        // we can actually allow LOB comparisons with some Oracle trickery. E.g.:
+        // we can actually allow LOB comparisons with some Oracle trickery.
+        // E.g.:
         // DBMS_LOB.SUBSTR(CLOB_COLUMN, LENGTH('string') + 1, 1) = 'string'
         return false;
     }
@@ -110,8 +109,8 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
             List params = new ArrayList(proc.getCallParameters());
 
             proc.clearCallParameters();
-            proc.addCallParameter(new ProcedureParameter("result", OracleAdapter
-                    .getOracleCursorType(), ProcedureParameter.OUT_PARAMETER));
+            proc.addCallParameter(new ProcedureParameter("result", OracleAdapter.getOracleCursorType(),
+                    ProcedureParameter.OUT_PARAMETER));
             Iterator it = params.iterator();
             while (it.hasNext()) {
                 ProcedureParameter param = (ProcedureParameter) it.next();

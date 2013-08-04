@@ -78,7 +78,7 @@ public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
      * @return whether 'soft' deletion should be used
      */
     protected boolean needSoftDelete(BatchQuery query) {
-        DbAttribute attr = (DbAttribute) query.getDbEntity().getAttribute(deletedFieldName);
+        DbAttribute attr = query.getDbEntity().getAttribute(deletedFieldName);
         return attr != null && attr.getType() == Types.BOOLEAN;
     }
 }

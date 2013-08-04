@@ -133,7 +133,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
     }
 
     private void processIntermediatePathComponent() {
-        DbRelationship relationship = (DbRelationship) currentEntity.getRelationship(lastPathComponent);
+        DbRelationship relationship = currentEntity.getRelationship(lastPathComponent);
         if (relationship == null) {
             throw new EJBQLException("Unknown relationship '" + lastPathComponent + "' for entity '"
                     + currentEntity.getName() + "'");
@@ -144,14 +144,14 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
     private void processLastPathComponent() {
 
-        DbAttribute attribute = (DbAttribute) currentEntity.getAttribute(lastPathComponent);
+        DbAttribute attribute = currentEntity.getAttribute(lastPathComponent);
 
         if (attribute != null) {
             processTerminatingAttribute(attribute);
             return;
         }
 
-        DbRelationship relationship = (DbRelationship) currentEntity.getRelationship(lastPathComponent);
+        DbRelationship relationship = currentEntity.getRelationship(lastPathComponent);
         if (relationship != null) {
             processTerminatingRelationship(relationship);
             return;

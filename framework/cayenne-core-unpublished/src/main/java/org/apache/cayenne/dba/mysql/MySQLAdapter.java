@@ -50,7 +50,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -276,13 +275,12 @@ public class MySQLAdapter extends JdbcAdapter {
         // automatically when
         // constraint is defined, starting at MySQL 4.1.2
         if (supportsFkConstraints) {
-            for (Relationship r : entity.getRelationships()) {
-                DbRelationship relationship = (DbRelationship) r;
-                if (relationship.getJoins().size() > 0 && relationship.isToPK() && !relationship.isToDependentPK()) {
+            for (DbRelationship r : entity.getRelationships()) {
+                if (r.getJoins().size() > 0 && r.isToPK() && !r.isToDependentPK()) {
 
                     sqlBuffer.append(", KEY (");
 
-                    Iterator<DbAttribute> columns = relationship.getSourceAttributes().iterator();
+                    Iterator<DbAttribute> columns = r.getSourceAttributes().iterator();
                     DbAttribute column = columns.next();
                     sqlBuffer.append(quotingStrategy.quotedName(column));
 

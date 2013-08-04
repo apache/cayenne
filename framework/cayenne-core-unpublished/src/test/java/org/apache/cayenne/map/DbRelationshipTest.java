@@ -49,17 +49,14 @@ public class DbRelationshipTest extends ServerCase {
         Integer id = new Integer(44);
         map.put("GALLERY_ID", id);
 
-        DbRelationship dbRel = (DbRelationship) galleryEnt
-                .getRelationship("paintingArray");
-        Map<String, Object> targetMap = dbRel
-                .getReverseRelationship()
-                .srcFkSnapshotWithTargetSnapshot(map);
+        DbRelationship dbRel = galleryEnt.getRelationship("paintingArray");
+        Map<String, Object> targetMap = dbRel.getReverseRelationship().srcFkSnapshotWithTargetSnapshot(map);
         assertEquals(id, targetMap.get("GALLERY_ID"));
     }
 
     public void testGetReverseRelationship1() throws Exception {
         // start with "to many"
-        DbRelationship r1 = (DbRelationship) artistEnt.getRelationship("paintingArray");
+        DbRelationship r1 = artistEnt.getRelationship("paintingArray");
         DbRelationship r2 = r1.getReverseRelationship();
 
         assertNotNull(r2);
@@ -68,7 +65,7 @@ public class DbRelationshipTest extends ServerCase {
 
     public void testGetReverseRelationship2() throws Exception {
         // start with "to one"
-        DbRelationship r1 = (DbRelationship) paintingEnt.getRelationship("toArtist");
+        DbRelationship r1 = paintingEnt.getRelationship("toArtist");
         DbRelationship r2 = r1.getReverseRelationship();
 
         assertNotNull(r2);

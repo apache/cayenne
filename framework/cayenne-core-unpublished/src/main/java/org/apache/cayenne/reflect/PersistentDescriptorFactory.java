@@ -224,7 +224,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 public void startNode(Expression node, Expression parentNode) {
                     if (node.getType() == Expression.DB_PATH) {
                         String path = node.getOperand(0).toString();
-                        final DbAttribute attribute = (DbAttribute) dbEntity.getAttribute(path);
+                        final DbAttribute attribute = dbEntity.getAttribute(path);
                         if (attribute != null) {
 
                             ObjAttribute objectAttribute = descriptor.getEntity().getAttributeForDbAttribute(attribute);

@@ -88,12 +88,12 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
         this();
         this.setName(name);
     }
-    
+
     @Override
     public DbRelationship getRelationship(String relName) {
         return (DbRelationship) super.getRelationship(relName);
     }
-    
+
     @Override
     public DbAttribute getAttribute(String attributeName) {
         return (DbAttribute) super.getAttribute(attributeName);
@@ -452,10 +452,9 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
                     }
 
                     // handle all of the relationships / joins that use the
-                    // changed
-                    // attribute
-                    for (Relationship rel : ent.getRelationships()) {
-                        for (DbJoin join : ((DbRelationship) rel).getJoins()) {
+                    // changed attribute
+                    for (DbRelationship rel : ent.getRelationships()) {
+                        for (DbJoin join : rel.getJoins()) {
                             if (join.getSource() == dbAttribute) {
                                 join.setSourceName(newName);
                             }
@@ -488,10 +487,9 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             default:
                 // generic update
                 this.primaryKey.clear();
-                for (Object next : getAttributes()) {
-                    DbAttribute dba = (DbAttribute) next;
-                    if (dba.isPrimaryKey()) {
-                        this.primaryKey.add(dba);
+                for (DbAttribute next : getAttributes()) {
+                    if (next.isPrimaryKey()) {
+                        this.primaryKey.add(next);
                     }
                 }
             }
@@ -511,10 +509,9 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             default:
                 // generic update
                 this.generatedAttributes.clear();
-                for (Object next : getAttributes()) {
-                    DbAttribute dba = (DbAttribute) next;
-                    if (dba.isGenerated()) {
-                        this.generatedAttributes.add(dba);
+                for (DbAttribute next : getAttributes()) {
+                    if (next.isGenerated()) {
+                        this.generatedAttributes.add(next);
                     }
                 }
             }

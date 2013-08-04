@@ -52,8 +52,7 @@ class EJBQLIdColumnsTranslator extends EJBQLIdentifierColumnsTranslator {
         ObjEntity oe = descriptor.getEntity();
 
         for (ObjAttribute oa : oe.getPrimaryKeys()) {
-            DbAttribute t = (DbAttribute) oe.getDbEntity().getAttribute(
-                    oa.getDbAttributeName());
+            DbAttribute t = oe.getDbEntity().getAttribute(oa.getDbAttributeName());
             appendColumn(idVar, oa, t, fields, oa.getType());
         }
 

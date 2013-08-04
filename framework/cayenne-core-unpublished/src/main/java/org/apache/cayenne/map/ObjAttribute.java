@@ -64,16 +64,21 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
         setUsedForLocking(attribute.isUsedForLocking());
     }
 
+    @Override
+    public ObjEntity getEntity() {
+        return (ObjEntity) super.getEntity();
+    }
+
     /**
      * @since 3.1
      */
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitObjAttribute(this);
     }
-    
+
     /**
-     * Returns Java class of an object property described by this attribute. Wraps any
-     * thrown exceptions into CayenneRuntimeException.
+     * Returns Java class of an object property described by this attribute.
+     * Wraps any thrown exceptions into CayenneRuntimeException.
      */
     public Class<?> getJavaClass() {
         if (this.getType() == null) {
@@ -82,11 +87,8 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
         try {
             return Util.getJavaClass(getType());
-        }
-        catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException("Failed to load class for name '"
-                    + this.getType()
-                    + "': "
+        } catch (ClassNotFoundException e) {
+            throw new CayenneRuntimeException("Failed to load class for name '" + this.getType() + "': "
                     + e.getMessage(), e);
         }
     }
@@ -112,8 +114,7 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
         // If this obj attribute is mapped to db attribute
         if (getDbAttribute() != null
-                || (((ObjEntity) getEntity()).isAbstract() && !Util
-                        .isEmptyString(getDbAttributePath()))) {
+                || (((ObjEntity) getEntity()).isAbstract() && !Util.isEmptyString(getDbAttributePath()))) {
             encoder.print(" db-attribute-path=\"");
             encoder.print(Util.encodeXmlAttribute(getDbAttributePath()));
             encoder.print('\"');
@@ -123,16 +124,16 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
     }
 
     /**
-     * Returns fully qualified Java class name of the object property represented by this
-     * attribute.
+     * Returns fully qualified Java class name of the object property
+     * represented by this attribute.
      */
     public String getType() {
         return type;
     }
 
     /**
-     * Sets the type of the data object property. Type is expected to be a fully qualified
-     * Java class name.
+     * Sets the type of the data object property. Type is expected to be a fully
+     * qualified Java class name.
      */
     public void setType(String type) {
         this.type = type;
@@ -242,7 +243,7 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
         int lastPartStart = dbAttributePath.lastIndexOf('.');
         if (lastPartStart < 0) {
-            DbAttribute attribute = (DbAttribute) dbEnt.getAttribute(dbAttributePath);
+            DbAttribute attribute = dbEnt.getAttribute(dbAttributePath);
             if (attribute == null) {
                 return IteratorUtils.EMPTY_ITERATOR;
             }
@@ -254,8 +255,8 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
     /**
      * Returns the the name of the mapped DbAttribute. This value is the same as
-     * "dbAttributePath" for regular attributes mapped to columns. It is equql to the last
-     * path component for the flattened attributes.
+     * "dbAttributePath" for regular attributes mapped to columns. It is equql
+     * to the last path component for the flattened attributes.
      */
     public String getDbAttributeName() {
         if (dbAttributePath == null) {
@@ -279,17 +280,18 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
     }
 
     /**
-     * Returns a dot-separated path that starts in the root DbEntity that maps to this
-     * attribute's ObjEntity and spans zero or more relationships, always ending in a
-     * DbAttribute name.
+     * Returns a dot-separated path that starts in the root DbEntity that maps
+     * to this attribute's ObjEntity and spans zero or more relationships,
+     * always ending in a DbAttribute name.
      */
     public String getDbAttributePath() {
         return dbAttributePath;
     }
 
     /**
-     * Returns whether this attribute is "flattened", meaning that it points to a column
-     * from an entity other than the DbEntity mapped to the parent ObjEntity.
+     * Returns whether this attribute is "flattened", meaning that it points to
+     * a column from an entity other than the DbEntity mapped to the parent
+     * ObjEntity.
      * 
      * @since 3.0
      */
@@ -330,7 +332,8 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
         DbAttribute dbAttribute = getDbAttribute();
         if (dbAttribute != null) {
 
-            // expose PK attribute names - the client may need those to build ObjectIds
+            // expose PK attribute names - the client may need those to build
+            // ObjectIds
             if (dbAttribute.isPrimaryKey()) {
                 attribute.setDbAttributePath(dbAttribute.getName());
                 attribute.setPrimaryKey(true);
@@ -344,26 +347,26 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
         return attribute;
     }
-    
+
     /**
      * Updates DbAttributePath for this ObjAttribute
      */
     public void updateDbAttributePath() {
-        
+
         if (isFlattened()) {
             StringBuilder newDbAttributePath = new StringBuilder();
-            
+
             Iterator<CayenneMapEntry> dbPathIterator = getDbPathIterator();
-            
+
             while (dbPathIterator.hasNext()) {
                 CayenneMapEntry next = dbPathIterator.next();
-                
+
                 newDbAttributePath.append(next.getName());
                 if (next instanceof DbRelationship) {
                     newDbAttributePath.append('.');
                 }
             }
-            
+
             setDbAttributePath(newDbAttributePath.toString());
         }
     }

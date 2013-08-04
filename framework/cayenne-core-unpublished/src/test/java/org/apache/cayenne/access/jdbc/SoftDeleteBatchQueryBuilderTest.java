@@ -69,7 +69,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
     public void testCreateSqlString() throws Exception {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
 
-        List<DbAttribute> idAttributes = Collections.singletonList((DbAttribute) entity.getAttribute("SOFT_TEST_ID"));
+        List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("SOFT_TEST_ID"));
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
         DeleteBatchQueryBuilder builder = createBuilder();
@@ -81,8 +81,8 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
     public void testCreateSqlStringWithNulls() throws Exception {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
 
-        List<DbAttribute> idAttributes = Arrays.asList((DbAttribute) entity.getAttribute("SOFT_TEST_ID"),
-                (DbAttribute) entity.getAttribute("NAME"));
+        List<DbAttribute> idAttributes = Arrays
+                .asList(entity.getAttribute("SOFT_TEST_ID"), entity.getAttribute("NAME"));
 
         Collection<String> nullAttributes = Collections.singleton("NAME");
 
@@ -100,8 +100,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-            List<DbAttribute> idAttributes = Collections.singletonList((DbAttribute) entity
-                    .getAttribute("SOFT_TEST_ID"));
+            List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("SOFT_TEST_ID"));
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;

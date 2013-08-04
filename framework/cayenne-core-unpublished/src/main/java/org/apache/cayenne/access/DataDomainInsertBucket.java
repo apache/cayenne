@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,16 +57,14 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
         for (DbEntity dbEntity : dbEntities) {
 
-            Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
-                    .get(dbEntity);
+            Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
 
             InsertBatchQuery batch = new InsertBatchQuery(dbEntity, 27);
             for (DbEntityClassDescriptor descriptor : descriptors) {
 
                 diffBuilder.reset(descriptor);
 
-                List<Persistent> objects = objectsByDescriptor.get(descriptor
-                        .getClassDescriptor());
+                List<Persistent> objects = objectsByDescriptor.get(descriptor.getClassDescriptor());
                 if (objects.isEmpty()) {
                     continue;
                 }
@@ -77,10 +74,10 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 sorter.sortObjectsForEntity(descriptor.getEntity(), objects, false);
 
                 for (Persistent o : objects) {
-                    Map<Object, Object> snapshot = diffBuilder.buildDBDiff(parent
-                            .objectDiff(o.getObjectId()));
+                    Map<Object, Object> snapshot = diffBuilder.buildDBDiff(parent.objectDiff(o.getObjectId()));
 
-                    // we need to insert even if there is no changes to default values
+                    // we need to insert even if there is no changes to default
+                    // values
                     // so creating an empty changes map
                     if (snapshot == null) {
                         snapshot = new HashMap<Object, Object>();
@@ -130,18 +127,16 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 ObjAttribute objAttr = objEntity.getAttributeForDbAttribute(dbAttr);
                 if (objAttr != null) {
 
-                    Object value = descriptor.getClassDescriptor().getProperty(
-                            objAttr.getName()).readPropertyDirectly(object);
+                    Object value = descriptor.getClassDescriptor().getProperty(objAttr.getName())
+                            .readPropertyDirectly(object);
 
                     if (value != null) {
                         Class<?> javaClass = objAttr.getJavaClass();
-                        if (javaClass.isPrimitive()
-                                && value instanceof Number
-                                && ((Number) value).intValue() == 0) {
-                            // primitive 0 has to be treated as NULL, or otherwise we
+                        if (javaClass.isPrimitive() && value instanceof Number && ((Number) value).intValue() == 0) {
+                            // primitive 0 has to be treated as NULL, or
+                            // otherwise we
                             // can't generate PK for POJO's
-                        }
-                        else {
+                        } else {
 
                             idMap.put(dbAttrName, value);
                             continue;
@@ -159,11 +154,11 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                     continue;
                 }
 
-                // only a single key can be generated from DB... if this is done already
+                // only a single key can be generated from DB... if this is done
+                // already
                 // in this loop, we must bail out.
                 if (autoPkDone) {
-                    throw new CayenneRuntimeException(
-                            "Primary Key autogeneration only works for a single attribute.");
+                    throw new CayenneRuntimeException("Primary Key autogeneration only works for a single attribute.");
                 }
 
                 // finally, use database generation mechanism
@@ -171,10 +166,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                     Object pkValue = pkGenerator.generatePk(node, dbAttr);
                     idMap.put(dbAttrName, pkValue);
                     autoPkDone = true;
-                }
-                catch (Exception ex) {
-                    throw new CayenneRuntimeException("Error generating PK: "
-                            + ex.getMessage(), ex);
+                } catch (Exception ex) {
+                    throw new CayenneRuntimeException("Error generating PK: " + ex.getMessage(), ex);
                 }
             }
         }
@@ -182,10 +175,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
     // TODO, andrus 4/12/2006 - move to DbAttribute in 2.0+
     boolean isPropagated(DbAttribute attribute) {
-        Iterator<?> it = attribute.getEntity().getRelationships().iterator();
-        while (it.hasNext()) {
 
-            DbRelationship dbRel = (DbRelationship) it.next();
+        for (DbRelationship dbRel : attribute.getEntity().getRelationships()) {
             if (!dbRel.isToMasterPK()) {
                 continue;
             }

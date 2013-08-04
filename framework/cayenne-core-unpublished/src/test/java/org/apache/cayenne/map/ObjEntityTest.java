@@ -350,8 +350,8 @@ public class ObjEntityTest extends ServerCase {
         ObjEntity ae = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         DbEntity dae = ae.getDbEntity();
 
-        assertNull(ae.getAttributeForDbAttribute((DbAttribute) dae.getAttribute("ARTIST_ID")));
-        assertNotNull(ae.getAttributeForDbAttribute((DbAttribute) dae.getAttribute("ARTIST_NAME")));
+        assertNull(ae.getAttributeForDbAttribute(dae.getAttribute("ARTIST_ID")));
+        assertNotNull(ae.getAttributeForDbAttribute(dae.getAttribute("ARTIST_NAME")));
     }
 
     public void testRelationshipForDbRelationship() throws Exception {
@@ -359,7 +359,7 @@ public class ObjEntityTest extends ServerCase {
         DbEntity dae = ae.getDbEntity();
 
         assertNull(ae.getRelationshipForDbRelationship(new DbRelationship()));
-        assertNotNull(ae.getRelationshipForDbRelationship((DbRelationship) dae.getRelationship("paintingArray")));
+        assertNotNull(ae.getRelationshipForDbRelationship(dae.getRelationship("paintingArray")));
     }
 
     public void testReadOnly() throws Exception {

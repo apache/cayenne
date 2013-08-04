@@ -53,34 +53,27 @@ public class BatchActionLockingTest extends ServerCase {
 
     @Inject
     private Injector injector;
-    
+
     @Inject
     private AdhocObjectFactory objectFactory;
-    
+
     public void testRunAsIndividualQueriesSuccess() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         // test with adapter that supports keys...
         JdbcAdapter adapter = buildAdapter(true);
 
-        DbEntity dbEntity = resolver
-                .getObjEntity(SimpleLockingTestEntity.class)
-                .getDbEntity();
+        DbEntity dbEntity = resolver.getObjEntity(SimpleLockingTestEntity.class).getDbEntity();
 
-        List<DbAttribute> qualifierAttributes = Arrays.asList((DbAttribute) dbEntity
-                .getAttribute("LOCKING_TEST_ID"), (DbAttribute) dbEntity
-                .getAttribute("NAME"));
+        List<DbAttribute> qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"),
+                dbEntity.getAttribute("NAME"));
 
         Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
         Map<String, Object> qualifierSnapshot = new HashMap<String, Object>();
         qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
 
-        DeleteBatchQuery batchQuery = new DeleteBatchQuery(
-                dbEntity,
-                qualifierAttributes,
-                nullAttributeNames,
-                5);
+        DeleteBatchQuery batchQuery = new DeleteBatchQuery(dbEntity, qualifierAttributes, nullAttributeNames, 5);
         batchQuery.setUsingOptimisticLocking(true);
         batchQuery.add(qualifierSnapshot);
 
@@ -96,11 +89,7 @@ public class BatchActionLockingTest extends ServerCase {
         boolean generatesKeys = false;
 
         BatchAction action = new BatchAction(batchQuery, adapter, resolver);
-        action.runAsIndividualQueries(
-                mockConnection,
-                batchQueryBuilder,
-                new MockOperationObserver(),
-                generatesKeys);
+        action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
         assertEquals(0, mockConnection.getNumberCommits());
         assertEquals(0, mockConnection.getNumberRollbacks());
     }
@@ -111,24 +100,17 @@ public class BatchActionLockingTest extends ServerCase {
         // test with adapter that supports keys...
         JdbcAdapter adapter = buildAdapter(true);
 
-        DbEntity dbEntity = resolver
-                .getObjEntity(SimpleLockingTestEntity.class)
-                .getDbEntity();
+        DbEntity dbEntity = resolver.getObjEntity(SimpleLockingTestEntity.class).getDbEntity();
 
-        List<DbAttribute> qualifierAttributes = Arrays.asList((DbAttribute) dbEntity
-                .getAttribute("LOCKING_TEST_ID"), (DbAttribute) dbEntity
-                .getAttribute("NAME"));
+        List<DbAttribute> qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"),
+                dbEntity.getAttribute("NAME"));
 
         Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
         Map<String, Object> qualifierSnapshot = new HashMap<String, Object>();
         qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
 
-        DeleteBatchQuery batchQuery = new DeleteBatchQuery(
-                dbEntity,
-                qualifierAttributes,
-                nullAttributeNames,
-                5);
+        DeleteBatchQuery batchQuery = new DeleteBatchQuery(dbEntity, qualifierAttributes, nullAttributeNames, 5);
         batchQuery.setUsingOptimisticLocking(true);
         batchQuery.add(qualifierSnapshot);
 
@@ -144,14 +126,9 @@ public class BatchActionLockingTest extends ServerCase {
         boolean generatesKeys = false;
         BatchAction action = new BatchAction(batchQuery, adapter, resolver);
         try {
-            action.runAsIndividualQueries(
-                    mockConnection,
-                    batchQueryBuilder,
-                    new MockOperationObserver(),
-                    generatesKeys);
+            action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
             fail("No OptimisticLockingFailureException thrown.");
-        }
-        catch (OptimisticLockException e) {
+        } catch (OptimisticLockException e) {
         }
         assertEquals(0, mockConnection.getNumberCommits());
         assertEquals(0, mockConnection.getNumberRollbacks());

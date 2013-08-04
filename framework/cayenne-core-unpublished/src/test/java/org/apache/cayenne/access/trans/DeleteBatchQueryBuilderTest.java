@@ -64,8 +64,7 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List<DbAttribute> idAttributes = Collections
-                .singletonList((DbAttribute) entity.getAttribute("LOCKING_TEST_ID"));
+        List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
 
@@ -80,8 +79,8 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List<DbAttribute> idAttributes = Arrays.asList((DbAttribute) entity.getAttribute("LOCKING_TEST_ID"),
-                (DbAttribute) entity.getAttribute("NAME"));
+        List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"),
+                entity.getAttribute("NAME"));
 
         Collection<String> nullAttributes = Collections.singleton("NAME");
 
@@ -100,8 +99,7 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List<DbAttribute> idAttributes = Collections.singletonList((DbAttribute) entity
-                    .getAttribute("LOCKING_TEST_ID"));
+            List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
@@ -127,8 +125,8 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-            List<DbAttribute> idAttributes = Arrays.asList((DbAttribute) entity.getAttribute("LOCKING_TEST_ID"),
-                    (DbAttribute) entity.getAttribute("NAME"));
+            List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"),
+                    entity.getAttribute("NAME"));
 
             Collection<String> nullAttributes = Collections.singleton("NAME");
 

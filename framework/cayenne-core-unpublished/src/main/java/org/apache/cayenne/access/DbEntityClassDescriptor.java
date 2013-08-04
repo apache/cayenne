@@ -64,7 +64,7 @@ class DbEntityClassDescriptor {
                     pathFromMaster.add((DbRelationship) object);
                 }
                 else if (object instanceof DbAttribute) {
-                    this.dbEntity = (DbEntity) ((DbAttribute) object).getEntity();
+                    this.dbEntity = ((DbAttribute) object).getEntity();
                 }
             }
         }

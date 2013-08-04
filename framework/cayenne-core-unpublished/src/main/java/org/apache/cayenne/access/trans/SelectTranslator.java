@@ -109,9 +109,9 @@ public class SelectTranslator extends QueryAssembler {
      */
     @Override
     public String createSqlString() throws Exception {
-    	if (cachedSqlString != null)
-    		return cachedSqlString;
-    	
+        if (cachedSqlString != null)
+            return cachedSqlString;
+
         DataMap dataMap = queryMetadata.getDataMap();
         JoinStack joins = getJoinStack();
 
@@ -509,7 +509,7 @@ public class SelectTranslator extends QueryAssembler {
 
             // synthetic objattributes can't reliably lookup their DbAttribute,
             // so do it manually..
-            DbAttribute dbAttribute = (DbAttribute) dbEntity.getAttribute(attribute.getDbAttributeName());
+            DbAttribute dbAttribute = dbEntity.getAttribute(attribute.getDbAttributeName());
             appendColumn(columns, attribute, dbAttribute, skipSet, null);
         }
 

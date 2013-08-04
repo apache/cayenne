@@ -29,7 +29,6 @@ import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 
@@ -40,11 +39,11 @@ public class SybaseUnitDbAdapter extends UnitDbAdapter {
     public SybaseUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
-    
+
     public String getIdentifiersStartQuote() {
         return "[";
     }
-    
+
     public String getIdentifiersEndQuote() {
         return "]";
     }
@@ -71,43 +70,42 @@ public class SybaseUnitDbAdapter extends UnitDbAdapter {
         // Sybase does not support NULLable BIT columns...
         DbEntity e = map.getDbEntity("PRIMITIVES_TEST");
         if (e != null) {
-            ((DbAttribute) e.getAttribute("BOOLEAN_COLUMN")).setMandatory(true);
+            e.getAttribute("BOOLEAN_COLUMN").setMandatory(true);
         }
         DbEntity e1 = map.getDbEntity("INHERITANCE_SUB_ENTITY3");
         if (e1 != null) {
-            ((DbAttribute) e1.getAttribute("SUBENTITY_BOOL_ATTR")).setMandatory(true);
+            e1.getAttribute("SUBENTITY_BOOL_ATTR").setMandatory(true);
         }
         DbEntity e2 = map.getDbEntity("MT_TABLE_BOOL");
         if (e2 != null) {
-            ((DbAttribute) e2.getAttribute("BOOLEAN_COLUMN")).setMandatory(true);
+            e2.getAttribute("BOOLEAN_COLUMN").setMandatory(true);
         }
         DbEntity e3 = map.getDbEntity("QUALIFIED1");
         if (e3 != null) {
-            ((DbAttribute) e3.getAttribute("DELETED")).setMandatory(true);
+            e3.getAttribute("DELETED").setMandatory(true);
         }
 
         DbEntity e4 = map.getDbEntity("QUALIFIED2");
         if (e4 != null) {
-            ((DbAttribute) e4.getAttribute("DELETED")).setMandatory(true);
+            e4.getAttribute("DELETED").setMandatory(true);
         }
 
         DbEntity e5 = map.getDbEntity("Painting");
         if (e5 != null) {
             if (e5.getAttribute("NEWCOL2") != null) {
-                ((DbAttribute) e5.getAttribute("DELETED")).setMandatory(true);
+                e5.getAttribute("DELETED").setMandatory(true);
             }
         }
 
         DbEntity e6 = map.getDbEntity("SOFT_TEST");
         if (e6 != null) {
-            ((DbAttribute) e6.getAttribute("DELETED")).setMandatory(true);
+            e6.getAttribute("DELETED").setMandatory(true);
         }
 
     }
 
     @Override
-    public void willDropTables(Connection con, DataMap map, Collection tablesToDrop)
-            throws Exception {
+    public void willDropTables(Connection con, DataMap map, Collection tablesToDrop) throws Exception {
 
         Iterator it = tablesToDrop.iterator();
         while (it.hasNext()) {
@@ -134,20 +132,16 @@ public class SybaseUnitDbAdapter extends UnitDbAdapter {
         try {
             ResultSet rs = select.executeQuery("SELECT t0.name "
                     + "FROM sysobjects t0, sysconstraints t1, sysobjects t2 "
-                    + "WHERE t0.id = t1.constrid and t1.tableid = t2.id and t2.name = '"
-                    + tableName
-                    + "'");
+                    + "WHERE t0.id = t1.constrid and t1.tableid = t2.id and t2.name = '" + tableName + "'");
             try {
 
                 while (rs.next()) {
                     names.add(rs.getString("name"));
                 }
-            }
-            finally {
+            } finally {
                 rs.close();
             }
-        }
-        finally {
+        } finally {
             select.close();
         }
 

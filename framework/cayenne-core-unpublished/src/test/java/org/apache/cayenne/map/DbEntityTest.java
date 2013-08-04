@@ -51,14 +51,14 @@ public class DbEntityTest extends ServerCase {
         assertNotNull(d2.getPrimaryKeys());
         assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
 
-        DbAttribute pk2 = (DbAttribute) d2.getAttribute(pk.getName());
+        DbAttribute pk2 = d2.getAttribute(pk.getName());
         assertNotNull(pk2);
         assertTrue(d2.getPrimaryKeys().contains(pk2));
 
         assertNotNull(d2.getGeneratedAttributes());
         assertEquals(entity.getGeneratedAttributes().size(), d2.getGeneratedAttributes().size());
 
-        DbAttribute generated2 = (DbAttribute) d2.getAttribute(generated.getName());
+        DbAttribute generated2 = d2.getAttribute(generated.getName());
         assertNotNull(generated2);
         assertTrue(d2.getGeneratedAttributes().contains(generated2));
     }
@@ -79,14 +79,14 @@ public class DbEntityTest extends ServerCase {
         assertNotNull(d2.getPrimaryKeys());
         assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
 
-        DbAttribute pk2 = (DbAttribute) d2.getAttribute(pk.getName());
+        DbAttribute pk2 = d2.getAttribute(pk.getName());
         assertNotNull(pk2);
         assertTrue(d2.getPrimaryKeys().contains(pk2));
 
         assertNotNull(d2.getGeneratedAttributes());
         assertEquals(entity.getGeneratedAttributes().size(), d2.getGeneratedAttributes().size());
 
-        DbAttribute generated2 = (DbAttribute) d2.getAttribute(generated.getName());
+        DbAttribute generated2 = d2.getAttribute(generated.getName());
         assertNotNull(generated2);
         assertTrue(d2.getGeneratedAttributes().contains(generated2));
     }

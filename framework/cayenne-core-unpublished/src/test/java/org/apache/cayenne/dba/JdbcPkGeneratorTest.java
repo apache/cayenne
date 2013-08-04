@@ -45,7 +45,7 @@ public class JdbcPkGeneratorTest extends ServerCase {
 
         DbEntity artistEntity = node.getEntityResolver().getObjEntity(Artist.class).getDbEntity();
 
-        DbAttribute pkAttribute = (DbAttribute) artistEntity.getAttribute(Artist.ARTIST_ID_PK_COLUMN);
+        DbAttribute pkAttribute = artistEntity.getAttribute(Artist.ARTIST_ID_PK_COLUMN);
 
         JdbcPkGenerator pkGenerator = (JdbcPkGenerator) adapter.getPkGenerator();
 

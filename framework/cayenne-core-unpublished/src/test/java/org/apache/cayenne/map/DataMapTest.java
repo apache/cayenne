@@ -58,9 +58,7 @@ public class DataMapTest extends TestCase {
 
     public void testSerializabilityWithHessian() throws Exception {
         DataMap m1 = new DataMap("abc");
-        DataMap d1 = (DataMap) HessianUtil.cloneViaClientServerSerialization(
-                m1,
-                new EntityResolver());
+        DataMap d1 = (DataMap) HessianUtil.cloneViaClientServerSerialization(m1, new EntityResolver());
         assertEquals(m1.getName(), d1.getName());
 
         ObjEntity oe1 = new ObjEntity("oe1");
@@ -176,7 +174,8 @@ public class DataMapTest extends TestCase {
     public void testAddEntityWithSameName() {
         DataMap map = new DataMap();
 
-        // Give them different class-names... we are only testing for the same entity name
+        // Give them different class-names... we are only testing for the same
+        // entity name
         // being a problem
         ObjEntity e1 = new ObjEntity("c");
         e1.setClassName("c1");
@@ -186,14 +185,14 @@ public class DataMapTest extends TestCase {
         try {
             map.addObjEntity(e2);
             fail("Should not be able to add more than one entity with the same name");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 
     public void testRemoveThenAddNullClassName() {
         DataMap map = new DataMap();
-        // It should be possible to cleanly remove and then add the same entity again.
+        // It should be possible to cleanly remove and then add the same entity
+        // again.
         // Uncovered the need for this while testing modeller manually.
 
         ObjEntity e = new ObjEntity("f");
@@ -327,27 +326,21 @@ public class DataMapTest extends TestCase {
         DataMap map = new DataMap();
 
         // create a twisty maze of intermingled relationships.
-        DbEntity e1 = (DbEntity) NamedObjectFactory.createObject(DbEntity.class, map);
+        DbEntity e1 = NamedObjectFactory.createObject(DbEntity.class, map);
         e1.setName("e1");
 
-        DbEntity e2 = (DbEntity) NamedObjectFactory.createObject(DbEntity.class, map);
+        DbEntity e2 = NamedObjectFactory.createObject(DbEntity.class, map);
         e2.setName("e2");
 
-        DbRelationship r1 = (DbRelationship) NamedObjectFactory.createObject(
-                DbRelationship.class,
-                e1);
+        DbRelationship r1 = NamedObjectFactory.createObject(DbRelationship.class, e1);
         r1.setName("r1");
         r1.setTargetEntity(e2);
 
-        DbRelationship r2 = (DbRelationship) NamedObjectFactory.createObject(
-                DbRelationship.class,
-                e2);
+        DbRelationship r2 = NamedObjectFactory.createObject(DbRelationship.class, e2);
         r2.setName("r2");
         r2.setTargetEntity(e1);
 
-        DbRelationship r3 = (DbRelationship) NamedObjectFactory.createObject(
-                DbRelationship.class,
-                e1);
+        DbRelationship r3 = NamedObjectFactory.createObject(DbRelationship.class, e1);
         r3.setName("r3");
         r3.setTargetEntity(e2);
 
@@ -374,19 +367,13 @@ public class DataMapTest extends TestCase {
         checkProcedures(map, new String[0]);
 
         map.addProcedure(new Procedure("proc1"));
-        checkProcedures(map, new String[] {
-            "proc1"
-        });
+        checkProcedures(map, new String[] { "proc1" });
 
         map.addProcedure(new Procedure("proc2"));
-        checkProcedures(map, new String[] {
-                "proc1", "proc2"
-        });
+        checkProcedures(map, new String[] { "proc1", "proc2" });
 
         map.removeProcedure("proc2");
-        checkProcedures(map, new String[] {
-            "proc1"
-        });
+        checkProcedures(map, new String[] { "proc1" });
     }
 
     protected void checkProcedures(DataMap map, String[] expectedNames) throws Exception {
@@ -417,13 +404,11 @@ public class DataMapTest extends TestCase {
 
         MapLoader loader = new MapLoader();
         try {
-            InputStream is = new ByteArrayInputStream(w.getBuffer().toString().getBytes(
-                    "UTF-8"));
+            InputStream is = new ByteArrayInputStream(w.getBuffer().toString().getBytes("UTF-8"));
             DataMap newMap = loader.loadDataMap(new InputSource(is));
             assertTrue(newMap.quotingSQLIdentifiers);
 
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
@@ -434,13 +419,11 @@ public class DataMapTest extends TestCase {
 
         assertFalse(map.quotingSQLIdentifiers);
         try {
-            InputStream is = new ByteArrayInputStream(w2.getBuffer().toString().getBytes(
-                    "UTF-8"));
+            InputStream is = new ByteArrayInputStream(w2.getBuffer().toString().getBytes("UTF-8"));
             DataMap newMap = loader.loadDataMap(new InputSource(is));
             assertFalse(newMap.quotingSQLIdentifiers);
 
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 

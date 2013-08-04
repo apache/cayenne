@@ -67,31 +67,22 @@ public class CreateRelationshipAction extends CayenneAction {
         ObjEntity objEnt = getProjectController().getCurrentObjEntity();
         if (objEnt != null) {
 
-            ObjRelationship rel = (ObjRelationship) NamedObjectFactory.createObject(
-                    ObjRelationship.class,
-                    objEnt);
+            ObjRelationship rel = (ObjRelationship) NamedObjectFactory.createObject(ObjRelationship.class, objEnt);
 
             createObjRelationship(objEnt, rel);
 
             application.getUndoManager().addEdit(
-                    new CreateRelationshipUndoableEdit(objEnt, new ObjRelationship[] {
-                        rel
-                    }));
-        }
-        else {
+                    new CreateRelationshipUndoableEdit(objEnt, new ObjRelationship[] { rel }));
+        } else {
             DbEntity dbEnt = getProjectController().getCurrentDbEntity();
             if (dbEnt != null) {
 
-                DbRelationship rel = (DbRelationship) NamedObjectFactory.createObject(
-                        DbRelationship.class,
-                        dbEnt);
+                DbRelationship rel = NamedObjectFactory.createObject(DbRelationship.class, dbEnt);
 
                 createDbRelationship(dbEnt, rel);
 
                 application.getUndoManager().addEdit(
-                        new CreateRelationshipUndoableEdit(dbEnt, new DbRelationship[] {
-                            rel
-                        }));
+                        new CreateRelationshipUndoableEdit(dbEnt, new DbRelationship[] { rel }));
             }
         }
     }
@@ -109,23 +100,12 @@ public class CreateRelationshipAction extends CayenneAction {
     /**
      * Fires events when a obj rel was added
      */
-    static void fireObjRelationshipEvent(
-            Object src,
-            ProjectController mediator,
-            ObjEntity objEntity,
+    static void fireObjRelationshipEvent(Object src, ProjectController mediator, ObjEntity objEntity,
             ObjRelationship rel) {
 
-        mediator.fireObjRelationshipEvent(new RelationshipEvent(
-                src,
-                rel,
-                objEntity,
-                MapEvent.ADD));
+        mediator.fireObjRelationshipEvent(new RelationshipEvent(src, rel, objEntity, MapEvent.ADD));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(
-                src,
-                rel,
-                objEntity,
-                mediator.getCurrentDataMap(),
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getCurrentDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireObjRelationshipDisplayEvent(rde);
@@ -143,23 +123,11 @@ public class CreateRelationshipAction extends CayenneAction {
     /**
      * Fires events when a db rel was added
      */
-    static void fireDbRelationshipEvent(
-            Object src,
-            ProjectController mediator,
-            DbEntity dbEntity,
-            DbRelationship rel) {
+    static void fireDbRelationshipEvent(Object src, ProjectController mediator, DbEntity dbEntity, DbRelationship rel) {
 
-        mediator.fireDbRelationshipEvent(new RelationshipEvent(
-                src,
-                rel,
-                dbEntity,
-                MapEvent.ADD));
+        mediator.fireDbRelationshipEvent(new RelationshipEvent(src, rel, dbEntity, MapEvent.ADD));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(
-                src,
-                rel,
-                dbEntity,
-                mediator.getCurrentDataMap(),
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getCurrentDataMap(),
                 (DataChannelDescriptor) mediator.getProject().getRootNode());
 
         mediator.fireDbRelationshipDisplayEvent(rde);
@@ -175,8 +143,7 @@ public class CreateRelationshipAction extends CayenneAction {
         }
 
         if (object instanceof Relationship) {
-            return ((Relationship) object).getParent() != null
-                    && ((Relationship) object).getParent() instanceof Entity;
+            return ((Relationship) object).getParent() != null && ((Relationship) object).getParent() instanceof Entity;
         }
 
         return false;

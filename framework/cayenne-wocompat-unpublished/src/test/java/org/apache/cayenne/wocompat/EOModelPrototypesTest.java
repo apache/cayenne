@@ -55,15 +55,15 @@ public class EOModelPrototypesTest extends TestCase {
         assertNotNull(dbe);
 
         // test that an attribute that has ObjAttribute has its type configured
-        DbAttribute dba1 = (DbAttribute) dbe.getAttribute("DOCUMENT_TYPE");
+        DbAttribute dba1 = dbe.getAttribute("DOCUMENT_TYPE");
         assertEquals(Types.VARCHAR, dba1.getType());
 
         // test that a numeric attribute has its type configured
-        DbAttribute dba2 = (DbAttribute) dbe.getAttribute("TEST_NUMERIC");
+        DbAttribute dba2 = dbe.getAttribute("TEST_NUMERIC");
         assertEquals(Types.INTEGER, dba2.getType());
 
         // test that an attribute that has no ObjAttribute has its type configured
-        DbAttribute dba3 = (DbAttribute) dbe.getAttribute("DOCUMENT_ID");
+        DbAttribute dba3 = dbe.getAttribute("DOCUMENT_ID");
         assertEquals(Types.INTEGER, dba3.getType());
     }
 
