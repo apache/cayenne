@@ -88,14 +88,14 @@ public abstract class NamedObjectFactory {
         factories.put(EmbeddableAttribute.class, new EmbeddableAttributeFactory());
     }
 
-    public static String createName(Class objectClass, Object namingContext) {
+    public static String createName(Class<?> objectClass, Object namingContext) {
         return (factories.get(objectClass)).makeName(namingContext);
     }
 
     /**
      * @since 1.0.5
      */
-    public static String createName(Class objectClass, Object namingContext, String nameBase) {
+    public static String createName(Class<?> objectClass, Object namingContext, String nameBase) {
         return (factories.get(objectClass)).makeName(namingContext, nameBase);
     }
 
