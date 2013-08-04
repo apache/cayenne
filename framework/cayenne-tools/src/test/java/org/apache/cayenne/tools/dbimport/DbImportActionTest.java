@@ -214,7 +214,7 @@ public class DbImportActionTest extends TestCase {
 
         ObjEntity oe1 = map.getObjEntity("E1");
 
-        ObjAttribute oa1 = (ObjAttribute) oe1.getAttribute("nonPk");
+        ObjAttribute oa1 = oe1.getAttribute("nonPk");
         assertEquals("java.lang.Integer", oa1.getType());
     }
 
@@ -248,7 +248,7 @@ public class DbImportActionTest extends TestCase {
 
         ObjEntity oe1 = map.getObjEntity("E1");
 
-        ObjAttribute oa1 = (ObjAttribute) oe1.getAttribute("nonPk");
+        ObjAttribute oa1 = oe1.getAttribute("nonPk");
         assertEquals("int", oa1.getType());
     }
 

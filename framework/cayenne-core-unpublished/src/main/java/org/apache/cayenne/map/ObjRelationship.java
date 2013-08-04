@@ -87,6 +87,11 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
         super(name);
     }
 
+    @Override
+    public ObjEntity getSourceEntity() {
+        return (ObjEntity) super.getSourceEntity();
+    }
+
     /**
      * @since 3.1
      */
@@ -151,7 +156,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
      * the parent DataMap using "targetEntityName".
      */
     @Override
-    public Entity getTargetEntity() {
+    public ObjEntity getTargetEntity() {
         String targetName = getTargetEntityName();
         if (targetName == null) {
             return null;

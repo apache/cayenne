@@ -109,8 +109,9 @@ public abstract class NamedObjectFactory {
      * changed later.</i>
      * </p>
      */
-    public static Object createObject(Class objectClass, Object namingContext) {
-        return (factories.get(objectClass)).makeObject(namingContext);
+    @SuppressWarnings("unchecked")
+    public static <T> T createObject(Class<T> objectClass, Object namingContext) {
+        return (T) factories.get(objectClass).makeObject(namingContext);
     }
 
     /**

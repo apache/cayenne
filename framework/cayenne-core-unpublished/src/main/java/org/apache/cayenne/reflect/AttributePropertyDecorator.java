@@ -21,8 +21,8 @@ package org.apache.cayenne.reflect;
 import org.apache.cayenne.map.ObjAttribute;
 
 /**
- * A class that presents an AttributeProperty view for an inherited attribute at a given
- * subclass. It applies all needed attribute overrides.
+ * A class that presents an AttributeProperty view for an inherited attribute at
+ * a given subclass. It applies all needed attribute overrides.
  * 
  * @since 3.0
  */
@@ -31,12 +31,10 @@ class AttributePropertyDecorator implements AttributeProperty {
     private AttributeProperty delegate;
     private ObjAttribute attribute;
 
-    AttributePropertyDecorator(ClassDescriptor owningClassDescriptor,
-            AttributeProperty delegate) {
+    AttributePropertyDecorator(ClassDescriptor owningClassDescriptor, AttributeProperty delegate) {
 
         this.delegate = delegate;
-        this.attribute = (ObjAttribute) owningClassDescriptor.getEntity().getAttribute(
-                delegate.getName());
+        this.attribute = owningClassDescriptor.getEntity().getAttribute(delegate.getName());
     }
 
     public ObjAttribute getAttribute() {
@@ -63,13 +61,11 @@ class AttributePropertyDecorator implements AttributeProperty {
         return delegate.readPropertyDirectly(object);
     }
 
-    public void writeProperty(Object object, Object oldValue, Object newValue)
-            throws PropertyException {
+    public void writeProperty(Object object, Object oldValue, Object newValue) throws PropertyException {
         delegate.writeProperty(object, oldValue, newValue);
     }
 
-    public void writePropertyDirectly(Object object, Object oldValue, Object newValue)
-            throws PropertyException {
+    public void writePropertyDirectly(Object object, Object oldValue, Object newValue) throws PropertyException {
         delegate.writePropertyDirectly(object, oldValue, newValue);
     }
 }

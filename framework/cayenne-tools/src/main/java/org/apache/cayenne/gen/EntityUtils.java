@@ -19,12 +19,19 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.*;
-
 import java.util.Collection;
 import java.util.LinkedHashSet;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.map.CallbackDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.MappingNamespace;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 
 /**
  * Attributes and Methods for working with ObjEntities.
@@ -46,8 +53,8 @@ public class EntityUtils {
 
     protected Collection<String> callbackNames;
 
-    public EntityUtils(DataMap dataMap, ObjEntity objEntity, String fqnBaseClass,
-            String fqnSuperClass, String fqnSubClass) {
+    public EntityUtils(DataMap dataMap, ObjEntity objEntity, String fqnBaseClass, String fqnSuperClass,
+            String fqnSubClass) {
 
         StringUtils stringUtils = StringUtils.getInstance();
 
@@ -66,12 +73,11 @@ public class EntityUtils {
         for (CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
             callbackNames.addAll(cb.getCallbackMethods());
         }
-        
+
     }
 
-    EntityUtils(DataMap dataMap, ObjEntity objEntity, String baseClassName,
-            String basePackageName, String superClassName, String superPackageName,
-            String subClassName, String subPackageName) {
+    EntityUtils(DataMap dataMap, ObjEntity objEntity, String baseClassName, String basePackageName,
+            String superClassName, String superPackageName, String subClassName, String subPackageName) {
 
         this.baseClassName = baseClassName;
         this.basePackageName = basePackageName;
@@ -125,7 +131,8 @@ public class EntityUtils {
     }
 
     /**
-     * Returns true if current ObjEntity contains at least one toMany relationship.
+     * Returns true if current ObjEntity contains at least one toMany
+     * relationship.
      */
     public boolean hasToManyRelationships() {
         return hasToManyRelationships(objEntity);
@@ -149,8 +156,8 @@ public class EntityUtils {
     }
 
     /**
-     * Returns true if current ObjEntity contains at least one toMany relationship,
-     * ignoring those declared in superentities.
+     * Returns true if current ObjEntity contains at least one toMany
+     * relationship, ignoring those declared in superentities.
      * 
      * @since 1.2
      */
@@ -159,8 +166,8 @@ public class EntityUtils {
     }
 
     /**
-     * Returns true if an ObjEntity contains at least one toMany relationship, ignoring
-     * those declared in superentities.
+     * Returns true if an ObjEntity contains at least one toMany relationship,
+     * ignoring those declared in superentities.
      * 
      * @since 1.2
      */
@@ -179,7 +186,8 @@ public class EntityUtils {
     }
 
     /**
-     * Returns true if current ObjEntity contains at least one toOne relationship.
+     * Returns true if current ObjEntity contains at least one toOne
+     * relationship.
      */
     public boolean hasToOneRelationships() {
         return hasToOneRelationships(objEntity);
@@ -203,16 +211,16 @@ public class EntityUtils {
     }
 
     /**
-     * Returns true if current ObjEntity contains at least one toOne relationship,
-     * ignoring those declared in superentities.
+     * Returns true if current ObjEntity contains at least one toOne
+     * relationship, ignoring those declared in superentities.
      */
     public boolean hasToOneDeclaredRelationships() {
         return hasToOneDeclaredRelationships(objEntity);
     }
 
     /**
-     * Returns true if an ObjEntity contains at least one toOne relationship, ignoring
-     * those declared in superentities.
+     * Returns true if an ObjEntity contains at least one toOne relationship,
+     * ignoring those declared in superentities.
      */
     public boolean hasToOneDeclaredRelationships(ObjEntity anObjEntity) {
         if (anObjEntity == null) {
@@ -229,37 +237,41 @@ public class EntityUtils {
     }
 
     /**
-     * Returns the map key type for a collection relationship of type java.util.Map.
+     * Returns the map key type for a collection relationship of type
+     * java.util.Map.
      * 
-     * @param relationship The relationship to look up type information for.
+     * @param relationship
+     *            The relationship to look up type information for.
      * @return The type of the attribute keyed on.
      */
     public String getMapKeyType(final ObjRelationship relationship) {
 
         ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
 
-        // If the map key is null, then we're doing look-ups by actual object key.
+        // If the map key is null, then we're doing look-ups by actual object
+        // key.
         if (relationship.getMapKey() == null) {
 
-            // If it's a multi-column key, then the return type is always ObjectId.
+            // If it's a multi-column key, then the return type is always
+            // ObjectId.
             DbEntity dbEntity = targetEntity.getDbEntity();
             if ((dbEntity != null) && (dbEntity.getPrimaryKeys().size() > 1)) {
                 return ObjectId.class.getName();
             }
 
-            // If it's a single column key or no key exists at all, then we really don't
+            // If it's a single column key or no key exists at all, then we
+            // really don't
             // know what the key type is,
             // so default to Object.
             return Object.class.getName();
         }
 
-        // If the map key is a non-default attribute, then fetch the attribute and return
+        // If the map key is a non-default attribute, then fetch the attribute
+        // and return
         // its type.
-        ObjAttribute attribute = (ObjAttribute) targetEntity.getAttribute(relationship
-                .getMapKey());
+        ObjAttribute attribute = targetEntity.getAttribute(relationship.getMapKey());
         if (attribute == null) {
-            throw new CayenneRuntimeException("Invalid map key '"
-                    + relationship.getMapKey()
+            throw new CayenneRuntimeException("Invalid map key '" + relationship.getMapKey()
                     + "', no matching attribute found");
         }
 

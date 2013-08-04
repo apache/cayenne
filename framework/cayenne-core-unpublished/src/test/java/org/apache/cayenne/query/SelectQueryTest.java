@@ -597,17 +597,16 @@ public class SelectQueryTest extends ServerCase {
         ObjEntity galleryEntity = resolver.getObjEntity(Gallery.class);
         ObjEntity artistExhibitEntity = resolver.getObjEntity(ArtistExhibit.class);
         ObjEntity exhibitEntity = resolver.getObjEntity(Exhibit.class);
-        ObjRelationship paintingToArtistRel = (ObjRelationship) paintingEntity.getRelationship("toArtist");
+        ObjRelationship paintingToArtistRel = paintingEntity.getRelationship("toArtist");
         paintingEntity.removeRelationship("toArtist");
 
-        ObjRelationship galleryToPaintingRel = (ObjRelationship) galleryEntity.getRelationship("paintingArray");
+        ObjRelationship galleryToPaintingRel = galleryEntity.getRelationship("paintingArray");
         galleryEntity.removeRelationship("paintingArray");
 
-        ObjRelationship artistExhibitToArtistRel = (ObjRelationship) artistExhibitEntity.getRelationship("toArtist");
+        ObjRelationship artistExhibitToArtistRel = artistExhibitEntity.getRelationship("toArtist");
         artistExhibitEntity.removeRelationship("toArtist");
 
-        ObjRelationship exhibitToArtistExhibitRel = (ObjRelationship) exhibitEntity
-                .getRelationship("artistExhibitArray");
+        ObjRelationship exhibitToArtistExhibitRel = exhibitEntity.getRelationship("artistExhibitArray");
         exhibitEntity.removeRelationship("artistExhibitArray");
 
         Expression e = ExpressionFactory.matchExp("artistName", "artist1");

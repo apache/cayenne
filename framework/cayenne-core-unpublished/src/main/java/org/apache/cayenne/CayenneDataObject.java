@@ -43,8 +43,8 @@ import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
- * A default implementation of DataObject interface. It is normally used as a superclass
- * of Cayenne persistent objects.
+ * A default implementation of DataObject interface. It is normally used as a
+ * superclass of Cayenne persistent objects.
  */
 public class CayenneDataObject extends PersistentObject implements DataObject, Validating {
 
@@ -64,16 +64,16 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * Returns a value of the property identified by a property path. Supports reading
-     * both mapped and unmapped properties. Unmapped properties are accessed in a manner
-     * consistent with JavaBeans specification.
+     * Returns a value of the property identified by a property path. Supports
+     * reading both mapped and unmapped properties. Unmapped properties are
+     * accessed in a manner consistent with JavaBeans specification.
      * <p>
-     * Property path (or nested property) is a dot-separated path used to traverse object
-     * relationships until the final object is found. If a null object found while
-     * traversing path, null is returned. If a list is encountered in the middle of the
-     * path, CayenneRuntimeException is thrown. Unlike
-     * {@link #readPropertyDirectly(String)}, this method will resolve an object if it is
-     * HOLLOW.
+     * Property path (or nested property) is a dot-separated path used to
+     * traverse object relationships until the final object is found. If a null
+     * object found while traversing path, null is returned. If a list is
+     * encountered in the middle of the path, CayenneRuntimeException is thrown.
+     * Unlike {@link #readPropertyDirectly(String)}, this method will resolve an
+     * object if it is HOLLOW.
      * <p>
      * Examples:
      * </p>
@@ -109,20 +109,17 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     public Object readNestedProperty(String path) {
 
         if ((null == path) || (0 == path.length())) {
-            throw new IllegalArgumentException(
-                    "the path must be supplied in order to lookup a nested property");
+            throw new IllegalArgumentException("the path must be supplied in order to lookup a nested property");
         }
 
         int dotIndex = path.indexOf('.');
 
         if (0 == dotIndex) {
-            throw new IllegalArgumentException(
-                    "the path is invalid because it starts with a period character");
+            throw new IllegalArgumentException("the path is invalid because it starts with a period character");
         }
 
         if (dotIndex == path.length() - 1) {
-            throw new IllegalArgumentException(
-                    "the path is invalid because it ends with a period character");
+            throw new IllegalArgumentException("the path is invalid because it ends with a period character");
         }
 
         if (-1 == dotIndex) {
@@ -145,11 +142,9 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 
         if (property == null) {
             return null;
-        }
-        else if (property instanceof DataObject) {
+        } else if (property instanceof DataObject) {
             return ((DataObject) property).readNestedProperty(pathRemainder);
-        }
-        else {
+        } else {
             return Cayenne.readNestedProperty(property, pathRemainder);
         }
     }
@@ -170,8 +165,10 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 
     public Object readProperty(String propertyName) {
         if (objectContext != null) {
-            // will resolve faults ourselves below as checking class descriptors for the
-            // "lazyFaulting" flag is inefficient. Passing "false" here to suppress fault
+            // will resolve faults ourselves below as checking class descriptors
+            // for the
+            // "lazyFaulting" flag is inefficient. Passing "false" here to
+            // suppress fault
             // processing
             objectContext.prepareForAccess(this, propertyName, false);
         }
@@ -195,7 +192,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
             // pass "false" to avoid unneeded fault processing
             objectContext.prepareForAccess(this, propName, false);
 
-            // note how we notify ObjectContext of change BEFORE the object is actually
+            // note how we notify ObjectContext of change BEFORE the object is
+            // actually
             // changed... this is needed to take a valid current snapshot
             Object oldValue = readPropertyDirectly(propName);
             objectContext.propertyChanged(this, propName, oldValue, val);
@@ -214,15 +212,16 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         // flattened or not)
         Object holder = readProperty(relName);
 
-        // call 'propertyChanged' AFTER readProperty as readProperty ensures that this
+        // call 'propertyChanged' AFTER readProperty as readProperty ensures
+        // that this
         // object fault is resolved
         getObjectContext().propertyChanged(this, relName, value, null);
 
-        // TODO: andrus 8/20/2007 - can we optimize this somehow, avoiding type checking??
+        // TODO: andrus 8/20/2007 - can we optimize this somehow, avoiding type
+        // checking??
         if (holder instanceof Collection) {
             ((Collection<Object>) holder).remove(value);
-        }
-        else if (holder instanceof Map) {
+        } else if (holder instanceof Map) {
             ((Map<Object, Object>) holder).remove(getMapKey(relName, value));
         }
 
@@ -242,15 +241,16 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         // flattened or not)
         Object holder = readProperty(relName);
 
-        // call 'propertyChanged' AFTER readProperty as readProperty ensures that this
+        // call 'propertyChanged' AFTER readProperty as readProperty ensures
+        // that this
         // object fault is resolved
         getObjectContext().propertyChanged(this, relName, null, value);
 
-        // TODO: andrus 8/20/2007 - can we optimize this somehow, avoiding type checking??
+        // TODO: andrus 8/20/2007 - can we optimize this somehow, avoiding type
+        // checking??
         if (holder instanceof Collection) {
             ((Collection<Object>) holder).add(value);
-        }
-        else if (holder instanceof Map) {
+        } else if (holder instanceof Map) {
             ((Map<Object, Object>) holder).put(getMapKey(relName, value), value);
         }
 
@@ -259,10 +259,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         }
     }
 
-    public void setToOneTarget(
-            String relationshipName,
-            DataObject value,
-            boolean setReverse) {
+    public void setToOneTarget(String relationshipName, DataObject value, boolean setReverse) {
 
         willConnect(relationshipName, value);
 
@@ -290,10 +287,11 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * Called before establishing a relationship with another object. Applies "persistence
-     * by reachability" logic, pulling one of the two objects to a DataConext of another
-     * object in case one of the objects is transient. If both objects are persistent, and
-     * they don't have the same DataContext, CayenneRuntimeException is thrown.
+     * Called before establishing a relationship with another object. Applies
+     * "persistence by reachability" logic, pulling one of the two objects to a
+     * DataConext of another object in case one of the objects is transient. If
+     * both objects are persistent, and they don't have the same DataContext,
+     * CayenneRuntimeException is thrown.
      * 
      * @since 1.2
      */
@@ -302,30 +300,25 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         // ObjectContext or target is null
         if (object == null || this.getObjectContext() == object.getObjectContext()) {
             return;
-        }
-        else if (this.getObjectContext() == null && object.getObjectContext() != null) {
+        } else if (this.getObjectContext() == null && object.getObjectContext() != null) {
             object.getObjectContext().registerNewObject(this);
-        }
-        else if (this.getObjectContext() != null && object.getObjectContext() == null) {
+        } else if (this.getObjectContext() != null && object.getObjectContext() == null) {
             this.getObjectContext().registerNewObject(object);
-        }
-        else {
-            throw new CayenneRuntimeException(
-                    "Cannot set object as destination of relationship "
-                            + relationshipName
-                            + " because it is in a different ObjectContext");
+        } else {
+            throw new CayenneRuntimeException("Cannot set object as destination of relationship " + relationshipName
+                    + " because it is in a different ObjectContext");
         }
     }
 
     /**
-     * Initializes reverse relationship from object <code>val</code> to this object.
+     * Initializes reverse relationship from object <code>val</code> to this
+     * object.
      * 
-     * @param relName name of relationship from this object to <code>val</code>.
+     * @param relName
+     *            name of relationship from this object to <code>val</code>.
      */
     protected void setReverseRelationship(String relName, DataObject val) {
-        ObjRelationship rel = (ObjRelationship) objectContext
-                .getEntityResolver()
-                .getObjEntity(objectId.getEntityName())
+        ObjRelationship rel = objectContext.getEntityResolver().getObjEntity(objectId.getEntityName())
                 .getRelationship(relName);
         ObjRelationship revRel = rel.getReverseRelationship();
         if (revRel != null) {
@@ -337,8 +330,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * Removes current object from reverse relationship of object <code>val</code> to this
-     * object.
+     * Removes current object from reverse relationship of object
+     * <code>val</code> to this object.
      */
     protected void unsetReverseRelationship(String relName, DataObject val) {
 
@@ -346,11 +339,10 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         ObjEntity entity = resolver.getObjEntity(objectId.getEntityName());
 
         if (entity == null) {
-            throw new IllegalStateException("DataObject's entity is unmapped, objectId: "
-                    + objectId);
+            throw new IllegalStateException("DataObject's entity is unmapped, objectId: " + objectId);
         }
 
-        ObjRelationship rel = (ObjRelationship) entity.getRelationship(relName);
+        ObjRelationship rel = entity.getRelationship(relName);
         ObjRelationship revRel = rel.getReverseRelationship();
         if (revRel != null) {
             if (revRel.isToMany())
@@ -361,8 +353,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * A variation of "toString" method, that may be more efficient in some cases. For
-     * example when printing a list of objects into the same String.
+     * A variation of "toString" method, that may be more efficient in some
+     * cases. For example when printing a list of objects into the same String.
      */
     public StringBuffer toStringBuffer(StringBuffer buffer, boolean fullDesc) {
         String id = (objectId != null) ? objectId.toString() : "<no id>";
@@ -390,14 +382,11 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 
             if (value instanceof Persistent) {
                 buffer.append('{').append(((Persistent) value).getObjectId()).append('}');
-            }
-            else if (value instanceof Collection) {
+            } else if (value instanceof Collection) {
                 buffer.append("(..)");
-            }
-            else if (value instanceof Fault) {
+            } else if (value instanceof Fault) {
                 buffer.append('?');
-            }
-            else {
+            } else {
                 buffer.append(value);
             }
 
@@ -418,36 +407,35 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         out.writeInt(persistenceState);
 
         switch (persistenceState) {
-            // New, modified or transient or deleted - write the whole shebang
-            // The other states (committed, hollow) all need just ObjectId
-            case PersistenceState.TRANSIENT:
-            case PersistenceState.NEW:
-            case PersistenceState.MODIFIED:
-            case PersistenceState.DELETED:
-                out.writeObject(values);
-                break;
+        // New, modified or transient or deleted - write the whole shebang
+        // The other states (committed, hollow) all need just ObjectId
+        case PersistenceState.TRANSIENT:
+        case PersistenceState.NEW:
+        case PersistenceState.MODIFIED:
+        case PersistenceState.DELETED:
+            out.writeObject(values);
+            break;
         }
 
         out.writeObject(objectId);
     }
 
-    private void readObject(ObjectInputStream in) throws IOException,
-            ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         this.persistenceState = in.readInt();
 
         switch (persistenceState) {
-            case PersistenceState.TRANSIENT:
-            case PersistenceState.NEW:
-            case PersistenceState.MODIFIED:
-            case PersistenceState.DELETED:
-                values = (Map<String, Object>) in.readObject();
-                break;
-            case PersistenceState.COMMITTED:
-            case PersistenceState.HOLLOW:
-                this.persistenceState = PersistenceState.HOLLOW;
-                // props will be populated when required (readProperty called)
-                values = new HashMap<String, Object>();
-                break;
+        case PersistenceState.TRANSIENT:
+        case PersistenceState.NEW:
+        case PersistenceState.MODIFIED:
+        case PersistenceState.DELETED:
+            values = (Map<String, Object>) in.readObject();
+            break;
+        case PersistenceState.COMMITTED:
+        case PersistenceState.HOLLOW:
+            this.persistenceState = PersistenceState.HOLLOW;
+            // props will be populated when required (readProperty called)
+            values = new HashMap<String, Object>();
+            break;
         }
 
         this.objectId = (ObjectId) in.readObject();
@@ -458,7 +446,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * Returns a version of a DataRow snapshot that was used to create this object.
+     * Returns a version of a DataRow snapshot that was used to create this
+     * object.
      * 
      * @since 1.1
      */
@@ -474,60 +463,60 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * Convenience method to invoke {@link Cayenne#makePath(String...)} from within a
-     * DataObject subclass to create a dotted path using the generated string constants
-     * for attributes and relationships.
+     * Convenience method to invoke {@link Cayenne#makePath(String...)} from
+     * within a DataObject subclass to create a dotted path using the generated
+     * string constants for attributes and relationships.
      * 
      * @see Cayenne#makePath(String...)
      * @since 3.1
      */
-    // TODO: should we deprecate this one? After all the purpose of "Cayenne" class is to
-    // get rid of utility methods elsewhere..  
+    // TODO: should we deprecate this one? After all the purpose of "Cayenne"
+    // class is to
+    // get rid of utility methods elsewhere..
     public static String makePath(String... pathParts) {
         return Cayenne.makePath(pathParts);
     }
 
     /**
-     * Performs property validation of the object, appending any validation failures to
-     * the provided validationResult object. This method is invoked from "validateFor.."
-     * before committing a NEW or MODIFIED object to the database. Validation includes
-     * checking for null values and value sizes. CayenneDataObject subclasses may override
-     * this method, calling super.
+     * Performs property validation of the object, appending any validation
+     * failures to the provided validationResult object. This method is invoked
+     * from "validateFor.." before committing a NEW or MODIFIED object to the
+     * database. Validation includes checking for null values and value sizes.
+     * CayenneDataObject subclasses may override this method, calling super.
      * 
      * @since 1.1
      */
     protected void validateForSave(ValidationResult validationResult) {
 
-        ObjEntity objEntity = getObjectContext()
-                .getEntityResolver()
-                .lookupObjEntity(this);
+        ObjEntity objEntity = getObjectContext().getEntityResolver().lookupObjEntity(this);
         if (objEntity == null) {
-            throw new CayenneRuntimeException(
-                    "No ObjEntity mapping found for DataObject " + getClass().getName());
+            throw new CayenneRuntimeException("No ObjEntity mapping found for DataObject " + getClass().getName());
         }
 
         // validate mandatory attributes
 
-        // handling a special case - meaningful mandatory FK... defer failures until
-        // relationship validation is done... This is just a temporary solution, as
-        // handling meaningful keys within the object lifecycle requires something more,
-        // namely read/write methods for relationships and direct values should be
+        // handling a special case - meaningful mandatory FK... defer failures
+        // until
+        // relationship validation is done... This is just a temporary solution,
+        // as
+        // handling meaningful keys within the object lifecycle requires
+        // something more,
+        // namely read/write methods for relationships and direct values should
+        // be
         // synchronous with each other..
         Map<String, ValidationFailure> failedDbAttributes = null;
 
-        for (Object next : objEntity.getAttributes()) {
+        for (ObjAttribute next : objEntity.getAttributes()) {
 
             // TODO: andrus, 2/20/2007 - handle embedded attribute
             if (next instanceof EmbeddedAttribute) {
                 continue;
             }
 
-            ObjAttribute objAttribute = (ObjAttribute) next;
-            DbAttribute dbAttribute = objAttribute.getDbAttribute();
+            DbAttribute dbAttribute = next.getDbAttribute();
 
             if (dbAttribute == null) {
-                throw new CayenneRuntimeException("ObjAttribute '"
-                        + objAttribute.getName()
+                throw new CayenneRuntimeException("ObjAttribute '" + next.getName()
                         + "' does not have a corresponding DbAttribute");
             }
 
@@ -536,12 +525,9 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
                 continue;
             }
 
-            Object value = this.readPropertyDirectly(objAttribute.getName());
+            Object value = this.readPropertyDirectly(next.getName());
             if (dbAttribute.isMandatory()) {
-                ValidationFailure failure = BeanValidationFailure.validateNotNull(
-                        this,
-                        objAttribute.getName(),
-                        value);
+                ValidationFailure failure = BeanValidationFailure.validateNotNull(this, next.getName(), value);
 
                 if (failure != null) {
 
@@ -560,31 +546,16 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
                 if (value.getClass().isArray()) {
                     int len = Array.getLength(value);
                     if (len > dbAttribute.getMaxLength()) {
-                        String message = "\""
-                                + objAttribute.getName()
-                                + "\" exceeds maximum allowed length ("
-                                + dbAttribute.getMaxLength()
-                                + " bytes): "
-                                + len;
-                        validationResult.addFailure(new BeanValidationFailure(
-                                this,
-                                objAttribute.getName(),
-                                message));
+                        String message = "\"" + next.getName() + "\" exceeds maximum allowed length ("
+                                + dbAttribute.getMaxLength() + " bytes): " + len;
+                        validationResult.addFailure(new BeanValidationFailure(this, next.getName(), message));
                     }
-                }
-                else if (value instanceof CharSequence) {
+                } else if (value instanceof CharSequence) {
                     int len = ((CharSequence) value).length();
                     if (len > dbAttribute.getMaxLength()) {
-                        String message = "\""
-                                + objAttribute.getName()
-                                + "\" exceeds maximum allowed length ("
-                                + dbAttribute.getMaxLength()
-                                + " chars): "
-                                + len;
-                        validationResult.addFailure(new BeanValidationFailure(
-                                this,
-                                objAttribute.getName(),
-                                message));
+                        String message = "\"" + next.getName() + "\" exceeds maximum allowed length ("
+                                + dbAttribute.getMaxLength() + " chars): " + len;
+                        validationResult.addFailure(new BeanValidationFailure(this, next.getName(), message));
                     }
                 }
             }
@@ -614,15 +585,15 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
                     if (failedDbAttributes != null && !failedDbAttributes.isEmpty()) {
                         failedDbAttributes.remove(source.getName());
 
-                        // loop through all joins if there were previous mandatory
+                        // loop through all joins if there were previous
+                        // mandatory
 
                         // attribute failures....
                         if (!failedDbAttributes.isEmpty()) {
                             continue;
                         }
                     }
-                }
-                else {
+                } else {
                     // do not validate if the relation is based on
                     // multiple keys with some that can be nullable.
                     validate = false;
@@ -631,10 +602,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 
             if (validate) {
                 Object value = this.readPropertyDirectly(relationship.getName());
-                ValidationFailure failure = BeanValidationFailure.validateNotNull(
-                        this,
-                        relationship.getName(),
-                        value);
+                ValidationFailure failure = BeanValidationFailure.validateNotNull(this, relationship.getName(), value);
 
                 if (failure != null) {
                     validationResult.addFailure(failure);
@@ -652,9 +620,9 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * Calls {@link #validateForSave(ValidationResult)}. CayenneDataObject subclasses may
-     * override it providing validation logic that should be executed for the newly
-     * created objects before saving them.
+     * Calls {@link #validateForSave(ValidationResult)}. CayenneDataObject
+     * subclasses may override it providing validation logic that should be
+     * executed for the newly created objects before saving them.
      * 
      * @since 1.1
      */
@@ -663,9 +631,9 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * Calls {@link #validateForSave(ValidationResult)}. CayenneDataObject subclasses may
-     * override it providing validation logic that should be executed for the modified
-     * objects before saving them.
+     * Calls {@link #validateForSave(ValidationResult)}. CayenneDataObject
+     * subclasses may override it providing validation logic that should be
+     * executed for the modified objects before saving them.
      * 
      * @since 1.1
      */
@@ -674,9 +642,9 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
     }
 
     /**
-     * This implementation does nothing. CayenneDataObject subclasses may override it
-     * providing validation logic that should be executed for the deleted objects before
-     * committing them.
+     * This implementation does nothing. CayenneDataObject subclasses may
+     * override it providing validation logic that should be executed for the
+     * deleted objects before committing them.
      * 
      * @since 1.1
      */

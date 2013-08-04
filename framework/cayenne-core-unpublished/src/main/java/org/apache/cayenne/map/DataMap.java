@@ -967,10 +967,10 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
                 if (dbEntityToDelete.getName().equals(objEnt.getDbEntityName())) {
                     objEnt.clearDbMapping();
                 } else {
-                    for (Relationship rel : objEnt.getRelationships()) {
-                        for (DbRelationship dbRel : ((ObjRelationship) rel).getDbRelationships()) {
+                    for (ObjRelationship rel : objEnt.getRelationships()) {
+                        for (DbRelationship dbRel : rel.getDbRelationships()) {
                             if (dbRel.getTargetEntity() == dbEntityToDelete) {
-                                ((ObjRelationship) rel).clearDbRelationships();
+                                rel.clearDbRelationships();
                                 break;
                             }
                         }

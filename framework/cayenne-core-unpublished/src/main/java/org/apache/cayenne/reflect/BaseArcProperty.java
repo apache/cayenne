@@ -31,16 +31,14 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
     protected ClassDescriptor targetDescriptor;
     protected ObjRelationship relationship;
 
-    public BaseArcProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor,
-            Accessor accessor, String reverseName) {
+    public BaseArcProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor, Accessor accessor,
+            String reverseName) {
 
         super(owner, accessor);
 
         this.targetDescriptor = targetDescriptor;
         this.complimentaryReverseArcName = reverseName;
-        this.relationship = (ObjRelationship) owner
-                .getEntity()
-                .getRelationship(getName());
+        this.relationship = owner.getEntity().getRelationship(getName());
     }
 
     @Override
@@ -63,10 +61,7 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
     /**
      * A convenience method to set the reverse arc used by subclasses.
      */
-    protected void setReverse(
-            final Object source,
-            final Object oldTarget,
-            final Object newTarget) {
+    protected void setReverse(final Object source, final Object oldTarget, final Object newTarget) {
 
         ArcProperty reverseArc = getComplimentaryReverseArc();
 

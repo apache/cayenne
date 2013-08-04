@@ -137,11 +137,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 // iterate by copy to avoid concurrency modification errors on
                 // reflexive
                 // relationships
-                Object[] relationships = entity.getRelationships().toArray();
+                ObjRelationship[] relationships = entity.getRelationships().toArray(
+                        new ObjRelationship[entity.getRelationships().size()]);
                 for (int i = 0; i < relationships.length; i++) {
-                    ObjRelationship relationship = (ObjRelationship) relationships[i];
-                    if (relationship.getReverseRelationship() == null) {
-                        ObjRelationship reverse = relationship.createReverseRelationship();
+                    if (relationships[i].getReverseRelationship() == null) {
+                        ObjRelationship reverse = relationships[i].createReverseRelationship();
 
                         Entity targetEntity = reverse.getSourceEntity();
                         reverse.setName(makeUniqueRelationshipName(targetEntity));

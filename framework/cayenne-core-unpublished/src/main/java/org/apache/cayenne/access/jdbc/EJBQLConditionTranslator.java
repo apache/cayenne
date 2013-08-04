@@ -174,8 +174,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         String subqueryTableName = quoter.quotedFullyQualifiedName(targetDescriptor.getEntity().getDbEntity());
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
-        ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor.getEntity().getRelationship(
-                path.getRelativePath());
+        ObjRelationship relationship = correlatedEntityDescriptor.getEntity().getRelationship(path.getRelativePath());
 
         if (relationship.getDbRelationshipPath().contains(".")) {
             // if the DbRelationshipPath contains '.', the relationship is
@@ -256,8 +255,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         String subqueryTableName = quoter.quotedFullyQualifiedName(targetDescriptor.getEntity().getDbEntity());
         String subqueryRootAlias = context.getTableAlias(subqueryId, subqueryTableName);
 
-        ObjRelationship relationship = (ObjRelationship) correlatedEntityDescriptor.getEntity().getRelationship(
-                path.getRelativePath());
+        ObjRelationship relationship = correlatedEntityDescriptor.getEntity().getRelationship(path.getRelativePath());
 
         if (relationship.getDbRelationshipPath().contains(".")) {
             // if the DbRelationshipPath contains '.', the relationship is
@@ -618,8 +616,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         }
 
         DbEntity table = descriptor.getEntity().getDbEntity();
-        String alias = context
-                .getTableAlias(expression.getText(), context.getQuotingStrategy().quotedFullyQualifiedName(table));
+        String alias = context.getTableAlias(expression.getText(), context.getQuotingStrategy()
+                .quotedFullyQualifiedName(table));
 
         Collection<DbAttribute> pks = table.getPrimaryKeys();
 

@@ -88,10 +88,21 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
         this();
         this.setName(name);
     }
+    
+    @Override
+    public DbRelationship getRelationship(String relName) {
+        return (DbRelationship) super.getRelationship(relName);
+    }
+    
+    @Override
+    public DbAttribute getAttribute(String attributeName) {
+        return (DbAttribute) super.getAttribute(attributeName);
+    }
 
     /**
      * @since 3.1
      */
+    @Override
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitDbEntity(this);
     }
@@ -101,6 +112,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      * 
      * @since 1.1
      */
+    @Override
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.print("<db-entity name=\"");
         encoder.print(Util.encodeXmlAttribute(getName()));

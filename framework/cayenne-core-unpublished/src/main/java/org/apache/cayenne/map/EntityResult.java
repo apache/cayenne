@@ -27,10 +27,10 @@ import java.util.Map;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
- * A metadata object that provides mapping of a set of result columns to an ObjEntity.
- * Used by {@link SQLResult}. Note that fields in the EntityResult are not required to
- * follow the order of columns in the actual query, and can be added in the arbitrary
- * order.
+ * A metadata object that provides mapping of a set of result columns to an
+ * ObjEntity. Used by {@link SQLResult}. Note that fields in the EntityResult
+ * are not required to follow the order of columns in the actual query, and can
+ * be added in the arbitrary order.
  * 
  * @since 3.0
  */
@@ -49,7 +49,8 @@ public class EntityResult {
     }
 
     /**
-     * Returns a map of result column names to attribute db paths from the root entity.
+     * Returns a map of result column names to attribute db paths from the root
+     * entity.
      */
     public Map<String, String> getDbFields(EntityResolver resolver) {
 
@@ -62,13 +63,11 @@ public class EntityResult {
         for (FieldResult field : fields) {
             if (field.isDbAttribute() || field.getAttributeName().startsWith("fetch.")) {
                 dbFields.put(field.getAttributeName(), field.getColumn());
-            }
-            else {
-                ObjEntity entity = field.getEntityName() != null ? resolver
-                        .getObjEntity(field.getEntityName()) : getRootEntity(resolver);
+            } else {
+                ObjEntity entity = field.getEntityName() != null ? resolver.getObjEntity(field.getEntityName())
+                        : getRootEntity(resolver);
 
-                ObjAttribute attribute = (ObjAttribute) entity.getAttribute(field
-                        .getAttributeName());
+                ObjAttribute attribute = entity.getAttribute(field.getAttributeName());
                 dbFields.put(attribute.getDbAttributePath(), field.getColumn());
             }
         }
@@ -79,25 +78,25 @@ public class EntityResult {
     private ObjEntity getRootEntity(EntityResolver resolver) {
         if (entityName != null) {
             return resolver.getObjEntity(entityName);
-        }
-        else if (entityClass != null) {
+        } else if (entityClass != null) {
             return resolver.getObjEntity(entityClass);
-        }
-        else {
+        } else {
             throw new IllegalStateException("Both entity name and class are null");
         }
     }
 
     /**
-     * Adds a result set column mapping for a single object property of the root entity.
+     * Adds a result set column mapping for a single object property of the root
+     * entity.
      */
     public void addObjectField(String attributeName, String column) {
         addField(new FieldResult(null, attributeName, column, false));
     }
 
     /**
-     * Adds a result set column mapping for a single object property of a specified entity
-     * that may differ from the root entity if inheritance is involved.
+     * Adds a result set column mapping for a single object property of a
+     * specified entity that may differ from the root entity if inheritance is
+     * involved.
      */
     public void addObjectField(String entityName, String attributeName, String column) {
         addField(new FieldResult(entityName, attributeName, column, false));
@@ -133,8 +132,7 @@ public class EntityResult {
         protected String column;
         protected boolean dbAttribute;
 
-        FieldResult(String entityName, String attributeName, String column,
-                boolean dbAttribute) {
+        FieldResult(String entityName, String attributeName, String column, boolean dbAttribute) {
 
             this.entityName = entityName;
             this.attributeName = attributeName;
@@ -160,11 +158,8 @@ public class EntityResult {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this)
-                    .append("attributeName", attributeName)
-                    .append("column", column)
-                    .append("db", dbAttribute)
-                    .toString();
+            return new ToStringBuilder(this).append("attributeName", attributeName).append("column", column)
+                    .append("db", dbAttribute).toString();
         }
     }
 }

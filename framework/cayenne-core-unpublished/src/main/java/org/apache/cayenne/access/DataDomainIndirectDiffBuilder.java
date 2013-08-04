@@ -32,8 +32,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
- * A processor of ObjectStore indirect changes, such as flattened relationships and
- * to-many relationships.
+ * A processor of ObjectStore indirect changes, such as flattened relationships
+ * and to-many relationships.
  * 
  * @since 1.2
  */
@@ -54,7 +54,8 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
     }
 
     void processIndirectChanges(GraphDiff allChanges) {
-        // extract flattened and indirect changes and remove duplicate changes...
+        // extract flattened and indirect changes and remove duplicate
+        // changes...
         allChanges.apply(this);
 
         if (!flattenedInserts.isEmpty()) {
@@ -75,11 +76,10 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
     @Override
     public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
         ObjEntity entity = resolver.getObjEntity(((ObjectId) nodeId).getEntityName());
-        ObjRelationship relationship = (ObjRelationship) entity.getRelationship(arcId
-                .toString());
+        ObjRelationship relationship = entity.getRelationship(arcId.toString());
 
         if (relationship.isSourceIndependentFromTargetChange()) {
-            
+
             ObjectId nodeObjectId = (ObjectId) nodeId;
             if (!nodeObjectId.isTemporary()) {
                 indirectModifications.add(nodeObjectId);
@@ -87,32 +87,30 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
             if (relationship.isFlattened()) {
                 if (relationship.isReadOnly()) {
-                    throw new CayenneRuntimeException(
-                            "Cannot set the read-only flattened relationship '"
-                                + relationship.getName() + "' in ObjEntity '" + relationship.getSourceEntity().getName() + "'.");
+                    throw new CayenneRuntimeException("Cannot set the read-only flattened relationship '"
+                            + relationship.getName() + "' in ObjEntity '" + relationship.getSourceEntity().getName()
+                            + "'.");
                 }
 
-                // Register this combination (so we can remove it later if an insert
+                // Register this combination (so we can remove it later if an
+                // insert
                 // occurs before commit)
-                FlattenedArcKey key = new FlattenedArcKey(
-                        (ObjectId) nodeId,
-                        (ObjectId) targetNodeId,
-                        relationship);
+                FlattenedArcKey key = new FlattenedArcKey((ObjectId) nodeId, (ObjectId) targetNodeId, relationship);
 
-                // If this combination has already been deleted, simply undelete it.
+                // If this combination has already been deleted, simply undelete
+                // it.
                 if (!flattenedDeletes.remove(key)) {
                     flattenedInserts.add(key);
                 }
             }
         }
     }
-    
+
     @Override
     public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
 
         ObjEntity entity = resolver.getObjEntity(((ObjectId) nodeId).getEntityName());
-        ObjRelationship relationship = (ObjRelationship) entity.getRelationship(arcId
-                .toString());
+        ObjRelationship relationship = entity.getRelationship(arcId.toString());
 
         if (relationship.isSourceIndependentFromTargetChange()) {
             // do not record temporary id mods...
@@ -123,19 +121,17 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
             if (relationship.isFlattened()) {
                 if (relationship.isReadOnly()) {
-                    throw new CayenneRuntimeException(
-                            "Cannot unset the read-only flattened relationship "
-                                    + relationship.getName());
+                    throw new CayenneRuntimeException("Cannot unset the read-only flattened relationship "
+                            + relationship.getName());
                 }
 
-                // Register this combination (so we can remove it later if an insert
+                // Register this combination (so we can remove it later if an
+                // insert
                 // occurs before commit)
-                FlattenedArcKey key = new FlattenedArcKey(
-                        (ObjectId) nodeId,
-                        (ObjectId) targetNodeId,
-                        relationship);
+                FlattenedArcKey key = new FlattenedArcKey((ObjectId) nodeId, (ObjectId) targetNodeId, relationship);
 
-                // If this combination has already been inserted, simply "uninsert" it
+                // If this combination has already been inserted, simply
+                // "uninsert" it
                 // also do not delete it twice
                 if (!flattenedInserts.remove(key)) {
                     flattenedDeletes.add(key);
@@ -160,11 +156,7 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
     }
 
     @Override
-    public void nodePropertyChanged(
-            Object nodeId,
-            String property,
-            Object oldValue,
-            Object newValue) {
+    public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
         // noop
     }
 }

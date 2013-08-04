@@ -28,7 +28,6 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -101,7 +100,7 @@ public class ClassGenerationActionTest extends TestCase {
             }
             
             @Override
-            public Entity getTargetEntity() {
+            public ObjEntity getTargetEntity() {
                 return testEntity2;
             }
         };

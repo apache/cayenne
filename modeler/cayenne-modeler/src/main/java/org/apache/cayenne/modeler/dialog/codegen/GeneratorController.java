@@ -30,9 +30,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
-import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -82,10 +81,8 @@ public abstract class GeneratorController extends CayenneController {
 
         initOutputFolder();
 
-        JTextField outputFolder = ((GeneratorControllerPanel) getView())
-                .getOutputFolder();
-        JButton outputSelect = ((GeneratorControllerPanel) getView())
-                .getSelectOutputFolder();
+        JTextField outputFolder = ((GeneratorControllerPanel) getView()).getOutputFolder();
+        JButton outputSelect = ((GeneratorControllerPanel) getView()).getSelectOutputFolder();
 
         outputFolder.setText(getOutputPath());
         bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
@@ -101,9 +98,9 @@ public abstract class GeneratorController extends CayenneController {
     protected abstract DataMapDefaults createDefaults();
 
     /**
-     * Creates an appropriate subclass of {@link ClassGenerationAction}, returning it in
-     * an unconfigured state. Configuration is performed by {@link #createGenerator()}
-     * method.
+     * Creates an appropriate subclass of {@link ClassGenerationAction},
+     * returning it in an unconfigured state. Configuration is performed by
+     * {@link #createGenerator()} method.
      */
     protected abstract ClassGenerationAction newGenerator();
 
@@ -116,30 +113,25 @@ public abstract class GeneratorController extends CayenneController {
 
         // no destination folder
         if (outputDir == null) {
-            JOptionPane.showMessageDialog(
-                    this.getView(),
-                    "Select directory for source files.");
+            JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
             return null;
         }
 
         // no such folder
         if (!outputDir.exists() && !outputDir.mkdirs()) {
-            JOptionPane.showMessageDialog(this.getView(), "Can't create directory "
-                    + outputDir
+            JOptionPane.showMessageDialog(this.getView(), "Can't create directory " + outputDir
                     + ". Select a different one.");
             return null;
         }
 
         // not a directory
         if (!outputDir.isDirectory()) {
-            JOptionPane.showMessageDialog(this.getView(), outputDir
-                    + " is not a valid directory.");
+            JOptionPane.showMessageDialog(this.getView(), outputDir + " is not a valid directory.");
             return null;
         }
 
         // remove generic entities...
-        Collection<ObjEntity> entities = new ArrayList<ObjEntity>(getParentController()
-                .getSelectedEntities());
+        Collection<ObjEntity> entities = new ArrayList<ObjEntity>(getParentController().getSelectedEntities());
         Iterator<ObjEntity> it = entities.iterator();
         while (it.hasNext()) {
             if (it.next().isGeneric()) {
@@ -154,22 +146,16 @@ public abstract class GeneratorController extends CayenneController {
         generator.addEmbeddables(getParentController().getSelectedEmbeddables());
         generator.addQueries(getParentController().getDataMap().getQueries());
 
-        Preferences preferences = application.getPreferencesNode(
-                GeneralPreferences.class,
-                "");
+        Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
 
         if (preferences != null) {
-            generator.setEncoding(preferences.get(
-                    GeneralPreferences.ENCODING_PREFERENCE,
-                    null));
+            generator.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
         }
 
         generator.setDestDir(outputDir);
         generator.setMakePairs(true);
 
-        String superPackage = ((GeneratorControllerPanel) getView())
-                .getSuperclassPackage()
-                .getText();
+        String superPackage = ((GeneratorControllerPanel) getView()).getSuperclassPackage().getText();
         if (!Util.isEmptyString(superPackage)) {
             generator.setSuperPkg(superPackage);
         }
@@ -177,9 +163,7 @@ public abstract class GeneratorController extends CayenneController {
         return generator;
     }
 
-    public void validateEmbeddable(
-            ValidationResult validationBuffer,
-            Embeddable embeddable) {
+    public void validateEmbeddable(ValidationResult validationBuffer, Embeddable embeddable) {
         ValidationFailure embeddableFailure = validateEmbeddable(embeddable);
         if (embeddableFailure != null) {
             validationBuffer.addFailure(embeddableFailure);
@@ -198,33 +182,25 @@ public abstract class GeneratorController extends CayenneController {
     private ValidationFailure validateEmbeddableAttribute(EmbeddableAttribute attribute) {
         String name = attribute.getEmbeddable().getClassName();
 
-        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(
-                name,
-                "attribute.name",
+        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(name, "attribute.name",
                 attribute.getName());
         if (emptyName != null) {
             return emptyName;
         }
 
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(
-                name,
-                "attribute.name",
+        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(name, "attribute.name",
                 attribute.getName());
         if (badName != null) {
             return badName;
         }
 
-        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(
-                name,
-                "attribute.type",
+        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(name, "attribute.type",
                 attribute.getType());
         if (emptyType != null) {
             return emptyType;
         }
 
-        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(
-                name,
-                "attribute.type",
+        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(name, "attribute.type",
                 attribute.getType());
         if (badType != null) {
             return badType;
@@ -237,17 +213,13 @@ public abstract class GeneratorController extends CayenneController {
 
         String name = embeddable.getClassName();
 
-        ValidationFailure emptyClass = BeanValidationFailure.validateNotEmpty(
-                name,
-                "className",
+        ValidationFailure emptyClass = BeanValidationFailure.validateNotEmpty(name, "className",
                 embeddable.getClassName());
         if (emptyClass != null) {
             return emptyClass;
         }
 
-        ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(
-                name,
-                "className",
+        ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(name, "className",
                 embeddable.getClassName());
         if (badClass != null) {
             return badClass;
@@ -256,19 +228,15 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    public void validateEntity(
-            ValidationResult validationBuffer,
-            ObjEntity entity,
-            boolean clientValidation) {
+    public void validateEntity(ValidationResult validationBuffer, ObjEntity entity, boolean clientValidation) {
 
-        ValidationFailure entityFailure = validateEntity(clientValidation ? entity
-                .getClientEntity() : entity);
+        ValidationFailure entityFailure = validateEntity(clientValidation ? entity.getClientEntity() : entity);
         if (entityFailure != null) {
             validationBuffer.addFailure(entityFailure);
             return;
         }
 
-        for (Attribute attribute : entity.getAttributes()) {
+        for (ObjAttribute attribute : entity.getAttributes()) {
             if (attribute instanceof EmbeddedAttribute) {
                 EmbeddedAttribute embeddedAttribute = (EmbeddedAttribute) attribute;
                 for (ObjAttribute subAttribute : embeddedAttribute.getAttributes()) {
@@ -278,10 +246,9 @@ public abstract class GeneratorController extends CayenneController {
                         return;
                     }
                 }
-            }
-            else {
+            } else {
 
-                ValidationFailure failure = validateAttribute((ObjAttribute) attribute);
+                ValidationFailure failure = validateAttribute(attribute);
                 if (failure != null) {
                     validationBuffer.addFailure(failure);
                     return;
@@ -306,26 +273,20 @@ public abstract class GeneratorController extends CayenneController {
             return new SimpleValidationFailure(name, "Generic class");
         }
 
-        ValidationFailure emptyClass = BeanValidationFailure.validateNotEmpty(
-                name,
-                "className",
-                entity.getClassName());
+        ValidationFailure emptyClass = BeanValidationFailure.validateNotEmpty(name, "className", entity.getClassName());
         if (emptyClass != null) {
             return emptyClass;
         }
 
-        ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(
-                name,
-                "className",
+        ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(name, "className",
                 entity.getClassName());
         if (badClass != null) {
             return badClass;
         }
 
         if (entity.getSuperClassName() != null) {
-            ValidationFailure badSuperClass = BeanValidationFailure
-                    .validateJavaClassName(name, "superClassName", entity
-                            .getSuperClassName());
+            ValidationFailure badSuperClass = BeanValidationFailure.validateJavaClassName(name, "superClassName",
+                    entity.getSuperClassName());
             if (badSuperClass != null) {
                 return badSuperClass;
             }
@@ -338,33 +299,25 @@ public abstract class GeneratorController extends CayenneController {
 
         String name = attribute.getEntity().getName();
 
-        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(
-                name,
-                "attribute.name",
+        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(name, "attribute.name",
                 attribute.getName());
         if (emptyName != null) {
             return emptyName;
         }
 
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(
-                name,
-                "attribute.name",
+        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(name, "attribute.name",
                 attribute.getName());
         if (badName != null) {
             return badName;
         }
 
-        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(
-                name,
-                "attribute.type",
+        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(name, "attribute.type",
                 attribute.getType());
         if (emptyType != null) {
             return emptyType;
         }
 
-        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(
-                name,
-                "attribute.type",
+        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(name, "attribute.type",
                 attribute.getType());
         if (badType != null) {
             return badType;
@@ -385,49 +338,35 @@ public abstract class GeneratorController extends CayenneController {
         int beginIndex = attributes[0].length();
         String attr = attribute.getName().substring(beginIndex + 1);
 
-        ValidationFailure emptyEmbeddedName = BeanValidationFailure.validateNotEmpty(
-                name,
-                "attribute.name",
+        ValidationFailure emptyEmbeddedName = BeanValidationFailure.validateNotEmpty(name, "attribute.name",
                 nameEmbeddedAttribute);
         if (emptyEmbeddedName != null) {
             return emptyEmbeddedName;
         }
 
-        ValidationFailure badEmbeddedName = CodeValidationUtil.validateJavaIdentifier(
-                name,
-                "attribute.name",
+        ValidationFailure badEmbeddedName = CodeValidationUtil.validateJavaIdentifier(name, "attribute.name",
                 nameEmbeddedAttribute);
         if (badEmbeddedName != null) {
             return badEmbeddedName;
         }
 
-        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(
-                name,
-                "attribute.name",
-                attr);
+        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(name, "attribute.name", attr);
         if (emptyName != null) {
             return emptyName;
         }
 
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(
-                name,
-                "attribute.name",
-                attr);
+        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(name, "attribute.name", attr);
         if (badName != null) {
             return badName;
         }
 
-        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(
-                name,
-                "attribute.type",
+        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(name, "attribute.type",
                 attribute.getType());
         if (emptyType != null) {
             return emptyType;
         }
 
-        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(
-                name,
-                "attribute.type",
+        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(name, "attribute.type",
                 attribute.getType());
         if (badType != null) {
             return badType;
@@ -436,23 +375,17 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateRelationship(
-            ObjRelationship relationship,
-            boolean clientValidation) {
+    protected ValidationFailure validateRelationship(ObjRelationship relationship, boolean clientValidation) {
 
         String name = relationship.getSourceEntity().getName();
 
-        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(
-                name,
-                "relationship.name",
+        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(name, "relationship.name",
                 relationship.getName());
         if (emptyName != null) {
             return emptyName;
         }
 
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(
-                name,
-                "relationship.name",
+        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(name, "relationship.name",
                 relationship.getName());
         if (badName != null) {
             return badName;
@@ -468,24 +401,16 @@ public abstract class GeneratorController extends CayenneController {
 
             if (targetEntity == null) {
 
-                return new BeanValidationFailure(
-                        name,
-                        "relationship.targetEntity",
-                        "No target entity");
-            }
-            else if (!targetEntity.isGeneric()) {
-                ValidationFailure emptyClass = BeanValidationFailure.validateNotEmpty(
-                        name,
-                        "relationship.targetEntity.className",
-                        targetEntity.getClassName());
+                return new BeanValidationFailure(name, "relationship.targetEntity", "No target entity");
+            } else if (!targetEntity.isGeneric()) {
+                ValidationFailure emptyClass = BeanValidationFailure.validateNotEmpty(name,
+                        "relationship.targetEntity.className", targetEntity.getClassName());
                 if (emptyClass != null) {
                     return emptyClass;
                 }
 
-                ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(
-                        name,
-                        "relationship.targetEntity.className",
-                        targetEntity.getClassName());
+                ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(name,
+                        "relationship.targetEntity.className", targetEntity.getClassName());
                 if (badClass != null) {
                     return badClass;
                 }
@@ -499,22 +424,15 @@ public abstract class GeneratorController extends CayenneController {
      * Returns a predicate for default entity selection in a given mode.
      */
     public Predicate getDefaultClassFilter() {
-        final ObjEntity selectedEntity = Application
-                .getInstance()
-                .getFrameController()
-                .getProjectController()
+        final ObjEntity selectedEntity = Application.getInstance().getFrameController().getProjectController()
                 .getCurrentObjEntity();
 
-        final Embeddable selectedEmbeddable = Application
-                .getInstance()
-                .getFrameController()
-                .getProjectController()
+        final Embeddable selectedEmbeddable = Application.getInstance().getFrameController().getProjectController()
                 .getCurrentEmbeddable();
 
         // select a single entity
         if (selectedEntity != null) {
-            final boolean hasProblem = getParentController().getProblem(
-                    selectedEntity.getName()) != null;
+            final boolean hasProblem = getParentController().getProblem(selectedEntity.getName()) != null;
 
             return new Predicate() {
 
@@ -525,8 +443,7 @@ public abstract class GeneratorController extends CayenneController {
         }
         // select a single embeddable
         else if (selectedEmbeddable != null) {
-            final boolean hasProblem = getParentController().getProblem(
-                    selectedEmbeddable.getClassName()) != null;
+            final boolean hasProblem = getParentController().getProblem(selectedEmbeddable.getClassName()) != null;
 
             return new Predicate() {
 
@@ -542,13 +459,11 @@ public abstract class GeneratorController extends CayenneController {
 
                 public boolean evaluate(Object object) {
                     if (object instanceof ObjEntity) {
-                        return getParentController().getProblem(
-                                ((ObjEntity) object).getName()) == null;
+                        return getParentController().getProblem(((ObjEntity) object).getName()) == null;
                     }
 
                     if (object instanceof Embeddable) {
-                        return getParentController().getProblem(
-                                ((Embeddable) object).getClassName()) == null;
+                        return getParentController().getProblem(((Embeddable) object).getClassName()) == null;
                     }
 
                     return false;
@@ -567,13 +482,12 @@ public abstract class GeneratorController extends CayenneController {
     }
 
     /**
-     * An action method that pops up a file chooser dialog to pick the generation
-     * directory.
+     * An action method that pops up a file chooser dialog to pick the
+     * generation directory.
      */
     public void selectOutputFolderAction() {
 
-        JTextField outputFolder = ((GeneratorControllerPanel) getView())
-                .getOutputFolder();
+        JTextField outputFolder = ((GeneratorControllerPanel) getView()).getOutputFolder();
 
         String currentDir = outputFolder.getText();
 
@@ -584,12 +498,8 @@ public abstract class GeneratorController extends CayenneController {
         // guess start directory
         if (!Util.isEmptyString(currentDir)) {
             chooser.setCurrentDirectory(new File(currentDir));
-        }
-        else {
-            FSPath lastDir = Application
-                    .getInstance()
-                    .getFrameController()
-                    .getLastDirectory();
+        } else {
+            FSPath lastDir = Application.getInstance().getFrameController().getLastDirectory();
             lastDir.updateChooser(chooser);
         }
 
@@ -610,23 +520,16 @@ public abstract class GeneratorController extends CayenneController {
         if (preferences.getOutputPath() == null) {
             if (System.getProperty("cayenne.cgen.destdir") != null) {
                 setOutputPath(System.getProperty("cayenne.cgen.destdir"));
-            }
-            else {
+            } else {
                 // init default directory..
-                FSPath lastPath = Application
-                        .getInstance()
-                        .getFrameController()
-                        .getLastDirectory();
+                FSPath lastPath = Application.getInstance().getFrameController().getLastDirectory();
 
                 path = checkDefaultMavenResourceDir(lastPath, "test");
 
-                if (path != null
-                        || (path = checkDefaultMavenResourceDir(lastPath, "main")) != null) {
+                if (path != null || (path = checkDefaultMavenResourceDir(lastPath, "main")) != null) {
                     setOutputPath(path);
-                }
-                else {
-                    File lastDir = (lastPath != null) ? lastPath
-                            .getExistingDirectory(false) : null;
+                } else {
+                    File lastDir = (lastPath != null) ? lastPath.getExistingDirectory(false) : null;
                     setOutputPath(lastDir != null ? lastDir.getAbsolutePath() : null);
                 }
             }
@@ -640,8 +543,7 @@ public abstract class GeneratorController extends CayenneController {
         if (idx < 0) {
             return null;
         }
-        return path.substring(0, idx)
-                + buildFilePath("src", dirType, "java")
+        return path.substring(0, idx) + buildFilePath("src", dirType, "java")
                 + path.substring(idx + resourcePath.length());
     }
 

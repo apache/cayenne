@@ -25,7 +25,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHelper;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -33,7 +32,6 @@ import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
 
 /**
  * A convenience superclass for {@link ClassDescriptorFactory} implementors.
@@ -72,39 +70,37 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         descriptor.setPersistenceStateAccessor(new BeanAccessor(entityClass, "persistenceState", Integer.TYPE));
 
         // only include this entity attributes and skip superclasses...
-        for (Attribute attribute : descriptor.getEntity().getDeclaredAttributes()) {
+        for (ObjAttribute attribute : descriptor.getEntity().getDeclaredAttributes()) {
 
             if (attribute instanceof EmbeddedAttribute) {
                 EmbeddedAttribute embedded = (EmbeddedAttribute) attribute;
                 for (ObjAttribute objAttribute : embedded.getAttributes()) {
                     createEmbeddedAttributeProperty(descriptor, embedded, objAttribute);
                 }
-            } else if (attribute instanceof ObjAttribute) {
-                createAttributeProperty(descriptor, (ObjAttribute) attribute);
+            } else {
+                createAttributeProperty(descriptor, attribute);
             }
         }
 
         // only include this entity relationships and skip superclasses...
-        for (Relationship relationship : descriptor.getEntity().getDeclaredRelationships()) {
-
-            ObjRelationship objRelationship = (ObjRelationship) relationship;
+        for (ObjRelationship relationship : descriptor.getEntity().getDeclaredRelationships()) {
 
             if (relationship.isToMany()) {
 
-                String collectionType = objRelationship.getCollectionType();
+                String collectionType = relationship.getCollectionType();
                 if (collectionType == null || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
-                    createToManyListProperty(descriptor, objRelationship);
+                    createToManyListProperty(descriptor, relationship);
                 } else if (collectionType.equals("java.util.Map")) {
-                    createToManyMapProperty(descriptor, objRelationship);
+                    createToManyMapProperty(descriptor, relationship);
                 } else if (collectionType.equals("java.util.Set")) {
-                    createToManySetProperty(descriptor, objRelationship);
+                    createToManySetProperty(descriptor, relationship);
                 } else if (collectionType.equals("java.util.Collection")) {
-                    createToManyCollectionProperty(descriptor, objRelationship);
+                    createToManyCollectionProperty(descriptor, relationship);
                 } else {
                     throw new IllegalArgumentException("Unsupported to-many collection type: " + collectionType);
                 }
             } else {
-                createToOneProperty(descriptor, objRelationship);
+                createToOneProperty(descriptor, relationship);
             }
         }
 
@@ -255,7 +251,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                         }
                     } else if (node.getType() == Expression.OBJ_PATH) {
                         String path = node.getOperand(0).toString();
-                        ObjAttribute attribute = (ObjAttribute) descriptor.getEntity().getAttribute(path);
+                        ObjAttribute attribute = descriptor.getEntity().getAttribute(path);
                         attributes.put(path, attribute);
                     }
                 }

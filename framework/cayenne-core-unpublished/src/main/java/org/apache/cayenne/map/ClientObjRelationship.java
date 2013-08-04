@@ -64,11 +64,11 @@ class ClientObjRelationship extends ObjRelationship {
             return null;
         }
 
-        Entity target = getTargetEntity();
+        ObjEntity target = getTargetEntity();
         if (target == null) {
             return null;
         }
 
-        return (ObjRelationship) target.getRelationship(reverseRelationshipName);
+        return target.getRelationship(reverseRelationshipName);
     }
 }

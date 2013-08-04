@@ -27,7 +27,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.merge.MergeCase;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -84,17 +83,13 @@ public class EntityMergeSupportTest extends MergeCase {
         objEntity2.setDbEntity(dbEntity2);
         map.addObjEntity(objEntity2);
 
-        assertTrue(new EntityMergeSupport(map).synchronizeWithDbEntities(Arrays.asList(
-                objEntity1,
-                objEntity2)));
+        assertTrue(new EntityMergeSupport(map).synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
         assertNotNull(objEntity1.getAttribute("name"));
         assertNotNull(objEntity1.getRelationship("rel1To2"));
         assertNotNull(objEntity2.getRelationship("rel2To1"));
 
-        assertEquals(((ObjRelationship) objEntity1.getRelationship("rel1To2"))
-                .getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
-        assertEquals(((ObjRelationship) objEntity2.getRelationship("rel2To1"))
-                .getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+        assertEquals(objEntity1.getRelationship("rel1To2").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
+        assertEquals(objEntity2.getRelationship("rel2To1").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
 
         map.removeObjEntity(objEntity2.getName());
         map.removeObjEntity(objEntity1.getName());

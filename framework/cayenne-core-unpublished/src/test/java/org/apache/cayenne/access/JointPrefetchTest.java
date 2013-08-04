@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.sql.Date;
-import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -337,7 +336,7 @@ public class JointPrefetchTest extends ServerCase {
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         ObjEntity artistE = context.getEntityResolver().getObjEntity("Artist");
-        ObjAttribute dateOfBirth = (ObjAttribute) artistE.getAttribute("dateOfBirth");
+        ObjAttribute dateOfBirth = artistE.getAttribute("dateOfBirth");
         assertEquals("java.util.Date", dateOfBirth.getType());
         dateOfBirth.setType("java.sql.Date");
         try {

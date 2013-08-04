@@ -298,7 +298,7 @@ public class DeleteRulesTest extends ServerCase {
     private int changeDeleteRule(int deleteRule) {
         ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = (ObjRelationship) entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
         int oldRule = relationship.getDeleteRule();
         relationship.setDeleteRule(deleteRule);
         return oldRule;
@@ -307,7 +307,7 @@ public class DeleteRulesTest extends ServerCase {
     private ObjRelationship unsetReverse() {
         ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = (ObjRelationship) entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
         ObjRelationship reverse = relationship.getReverseRelationship();
 
         if (reverse != null) {
@@ -322,7 +322,7 @@ public class DeleteRulesTest extends ServerCase {
     private void restoreReverse(ObjRelationship reverse) {
         ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = (ObjRelationship) entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
         relationship.getTargetEntity().addRelationship(reverse);
         context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
         context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");

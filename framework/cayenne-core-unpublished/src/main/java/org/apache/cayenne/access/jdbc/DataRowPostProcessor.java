@@ -23,8 +23,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.trans.SelectTranslator;
@@ -49,21 +49,18 @@ class DataRowPostProcessor {
 
     // factory method
     static DataRowPostProcessor createPostProcessor(SelectTranslator translator) {
-        Map attributeOverrides = translator.getAttributeOverrides();
+        Map<ObjAttribute, ColumnDescriptor> attributeOverrides = translator.getAttributeOverrides();
         if (attributeOverrides.isEmpty()) {
             return null;
         }
 
         ColumnDescriptor[] columns = translator.getResultColumns();
 
-        Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(
-                2);
+        Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(2);
 
-        Iterator it = attributeOverrides.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+        for (Entry<ObjAttribute, ColumnDescriptor> entry : attributeOverrides.entrySet()) {
 
-            ObjAttribute attribute = (ObjAttribute) entry.getKey();
+            ObjAttribute attribute = entry.getKey();
             Entity entity = attribute.getEntity();
 
             String key = null;
@@ -72,7 +69,8 @@ class DataRowPostProcessor {
             for (int i = 0; i < columns.length; i++) {
                 if (columns[i] == entry.getValue()) {
 
-                    // if attribute type is the same as column, there is no conflict
+                    // if attribute type is the same as column, there is no
+                    // conflict
                     if (!attribute.getType().equals(columns[i].getJavaClass())) {
                         // note that JDBC index is "1" based
                         index = i + 1;
@@ -88,10 +86,7 @@ class DataRowPostProcessor {
                 continue;
             }
 
-            ExtendedType converter = translator
-                    .getAdapter()
-                    .getExtendedTypes()
-                    .getRegisteredType(attribute.getType());
+            ExtendedType converter = translator.getAdapter().getExtendedTypes().getRegisteredType(attribute.getType());
 
             Collection<ColumnOverride> overrides = columnOverrides.get(entity.getName());
 
@@ -108,9 +103,7 @@ class DataRowPostProcessor {
             return null;
         }
 
-        ClassDescriptor rootDescriptor = translator
-                .getQueryMetadata()
-                .getClassDescriptor();
+        ClassDescriptor rootDescriptor = translator.getQueryMetadata().getClassDescriptor();
 
         return new DataRowPostProcessor(rootDescriptor, columnOverrides);
     }
@@ -121,11 +114,9 @@ class DataRowPostProcessor {
         if (classDescriptor != null && classDescriptor.hasSubclasses()) {
             this.inheritanceTree = classDescriptor.getEntityInheritanceTree();
             this.columnOverrides = columnOverrides;
-        }
-        else {
+        } else {
             if (columnOverrides.size() != 1) {
-                throw new IllegalArgumentException(
-                        "No inheritance - there must be only one override set");
+                throw new IllegalArgumentException("No inheritance - there must be only one override set");
             }
 
             defaultOverrides = columnOverrides.values().iterator().next();
@@ -139,10 +130,7 @@ class DataRowPostProcessor {
         if (overrides != null) {
             for (final ColumnOverride override : overrides) {
 
-                Object newValue = override.converter.materializeObject(
-                        resultSet,
-                        override.index,
-                        override.jdbcType);
+                Object newValue = override.converter.materializeObject(resultSet, override.index, override.jdbcType);
                 row.put(override.key, newValue);
             }
         }
@@ -151,8 +139,7 @@ class DataRowPostProcessor {
     private final Collection<ColumnOverride> getOverrides(DataRow row) {
         if (defaultOverrides != null) {
             return defaultOverrides;
-        }
-        else {
+        } else {
             ObjEntity entity = inheritanceTree.entityMatchingRow(row);
             return entity != null ? columnOverrides.get(entity.getName()) : null;
         }

@@ -368,7 +368,7 @@ public class DataContextPrefetchTest extends ServerCase {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
-        ObjRelationship relationship = (ObjRelationship) paintingEntity.getRelationship("toArtist");
+        ObjRelationship relationship = paintingEntity.getRelationship("toArtist");
         paintingEntity.removeRelationship("toArtist");
 
         try {
@@ -395,7 +395,7 @@ public class DataContextPrefetchTest extends ServerCase {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
-        ObjRelationship relationship = (ObjRelationship) paintingEntity.getRelationship("toArtist");
+        ObjRelationship relationship = paintingEntity.getRelationship("toArtist");
         paintingEntity.removeRelationship("toArtist");
 
         try {
@@ -731,7 +731,7 @@ public class DataContextPrefetchTest extends ServerCase {
             }
         });
     }
-    
+
     public void testPrefetchToOneWithBackRelationship_Joint() throws Exception {
         createArtistWithTwoPaintingsAndTwoInfosDataSet();
 

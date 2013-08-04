@@ -175,8 +175,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
         for (ObjAttribute attribute : attributes) {
             DuplicatedAttributeInfo attributeInfo = new DuplicatedAttributeInfo(attribute.getName(),
-                    attribute.getType(), ((ObjAttribute) superEntity.getAttribute(attribute.getName())).getType(),
-                    DELETE_ACTION);
+                    attribute.getType(), superEntity.getAttribute(attribute.getName()).getType(), DELETE_ACTION);
             duplicatedAttributes.add(attributeInfo);
         }
 

@@ -75,18 +75,18 @@ public class ObjEntityTest extends ServerCase {
 
         map.addObjEntity(subEntity);
 
-        ObjAttribute a1 = (ObjAttribute) subEntity.getAttribute("a1");
+        ObjAttribute a1 = subEntity.getAttribute("a1");
         assertNotNull(a1);
         assertSame(subEntity, a1.getEntity());
         assertEquals("overridden.path", a1.getDbAttributePath());
         assertEquals("int", a1.getType());
 
-        ObjAttribute a2 = (ObjAttribute) subEntity.getAttribute("a2");
+        ObjAttribute a2 = subEntity.getAttribute("a2");
         assertNotNull(a2);
         assertSame(subEntity, a2.getEntity());
         assertNull(a2.getDbAttributePath());
 
-        ObjAttribute a3 = (ObjAttribute) subEntity.getAttribute("a3");
+        ObjAttribute a3 = subEntity.getAttribute("a3");
         assertNotNull(a3);
         assertSame(subEntity, a3.getEntity());
     }
@@ -130,9 +130,8 @@ public class ObjEntityTest extends ServerCase {
     }
 
     public void testAttributes() {
-        // ObjEntity artistE = getObjEntity("Artist");
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
-        ObjAttribute attr = (ObjAttribute) artistE.getAttribute("artistName");
+        ObjAttribute attr = artistE.getAttribute("artistName");
 
         assertEquals(attr.getMaxLength(), attr.getDbAttribute().getMaxLength());
         assertEquals(attr.isMandatory(), attr.getDbAttribute().isMandatory());
@@ -267,7 +266,7 @@ public class ObjEntityTest extends ServerCase {
         ObjRelationship r1 = new ObjRelationship("r1") {
 
             @Override
-            public Entity getTargetEntity() {
+            public ObjEntity getTargetEntity() {
                 return target;
             }
         };

@@ -56,6 +56,11 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         super(name);
     }
     
+    @Override
+    public DbEntity getSourceEntity() {
+        return (DbEntity) super.getSourceEntity();
+    }
+    
     /**
      * @since 3.1
      */
@@ -99,7 +104,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * DbEntity, and DbEntity doesn't have a namespace, and exception is thrown.
      */
     @Override
-    public Entity getTargetEntity() {
+    public DbEntity getTargetEntity() {
         String targetName = getTargetEntityName();
         if (targetName == null) {
             return null;

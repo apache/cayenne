@@ -50,8 +50,9 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.commons.collections.comparators.ReverseComparator;
 
 /**
- * Implements dependency sorting algorithms for ObjEntities, DbEntities and DataObjects.
- * Presently it works for acyclic database schemas with possible multi-reflexive tables.
+ * Implements dependency sorting algorithms for ObjEntities, DbEntities and
+ * DataObjects. Presently it works for acyclic database schemas with possible
+ * multi-reflexive tables.
  * 
  * @since 3.1
  */
@@ -79,7 +80,8 @@ public class AshwoodEntitySorter implements EntitySorter {
 
         // correct double check locking per Joshua Bloch
         // http://java.sun.com/developer/technicalArticles/Interviews/bloch_effective_08_qa.html
-        // (maybe we should use something like CountDownLatch or a Cyclic barrier
+        // (maybe we should use something like CountDownLatch or a Cyclic
+        // barrier
         // instead?)
 
         boolean localDirty = dirty;
@@ -99,8 +101,7 @@ public class AshwoodEntitySorter implements EntitySorter {
      */
     protected void doIndexSorter() {
 
-        Map<DbEntity, List<DbRelationship>> reflexiveDbEntities = new HashMap<DbEntity, List<DbRelationship>>(
-                32);
+        Map<DbEntity, List<DbRelationship>> reflexiveDbEntities = new HashMap<DbEntity, List<DbRelationship>>(32);
 
         Digraph<DbEntity, List<DbAttribute>> referentialDigraph = new MapDigraph<DbEntity, List<DbAttribute>>();
 
@@ -115,8 +116,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
         for (DbEntity destination : tableMap.values()) {
             for (DbRelationship candidate : destination.getRelationships()) {
-                if ((!candidate.isToMany() && !candidate.isToDependentPK())
-                        || candidate.isToMasterPK()) {
+                if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
                     DbEntity origin = (DbEntity) candidate.getTargetEntity();
                     boolean newReflexive = destination.equals(origin);
 
@@ -125,8 +125,7 @@ public class AshwoodEntitySorter implements EntitySorter {
                         if (targetAttribute.isPrimaryKey()) {
 
                             if (newReflexive) {
-                                List<DbRelationship> reflexiveRels = reflexiveDbEntities
-                                        .get(destination);
+                                List<DbRelationship> reflexiveRels = reflexiveDbEntities.get(destination);
                                 if (reflexiveRels == null) {
                                     reflexiveRels = new ArrayList<DbRelationship>(1);
                                     reflexiveDbEntities.put(destination, reflexiveRels);
@@ -135,9 +134,7 @@ public class AshwoodEntitySorter implements EntitySorter {
                                 newReflexive = false;
                             }
 
-                            List<DbAttribute> fks = referentialDigraph.getArc(
-                                    origin,
-                                    destination);
+                            List<DbAttribute> fks = referentialDigraph.getArc(origin, destination);
                             if (fks == null) {
                                 fks = new ArrayList<DbAttribute>();
                                 referentialDigraph.putArc(origin, destination, fks);
@@ -194,10 +191,7 @@ public class AshwoodEntitySorter implements EntitySorter {
         Collections.sort(objEntities, getObjEntityComparator(deleteOrder));
     }
 
-    public void sortObjectsForEntity(
-            ObjEntity objEntity,
-            List<?> objects,
-            boolean deleteOrder) {
+    public void sortObjectsForEntity(ObjEntity objEntity, List<?> objects, boolean deleteOrder) {
 
         indexSorter();
 
@@ -215,18 +209,14 @@ public class AshwoodEntitySorter implements EntitySorter {
             return;
         }
 
-        EntityResolver resolver = persistent
-                .get(0)
-                .getObjectContext()
-                .getEntityResolver();
+        EntityResolver resolver = persistent.get(0).getObjectContext().getEntityResolver();
         ClassDescriptor descriptor = resolver.getClassDescriptor(objEntity.getName());
 
         List<DbRelationship> reflexiveRels = reflexiveDbEntities.get(dbEntity);
         String[] reflexiveRelNames = new String[reflexiveRels.size()];
         for (int i = 0; i < reflexiveRelNames.length; i++) {
             DbRelationship dbRel = reflexiveRels.get(i);
-            ObjRelationship objRel = (dbRel != null ? objEntity
-                    .getRelationshipForDbRelationship(dbRel) : null);
+            ObjRelationship objRel = (dbRel != null ? objEntity.getRelationshipForDbRelationship(dbRel) : null);
             reflexiveRelNames[i] = (objRel != null ? objRel.getName() : null);
         }
 
@@ -245,14 +235,11 @@ public class AshwoodEntitySorter implements EntitySorter {
                     continue;
                 }
 
-                masters[k] = descriptor.getProperty(reflexiveRelName).readProperty(
-                        current);
+                masters[k] = descriptor.getProperty(reflexiveRelName).readProperty(current);
 
                 if (masters[k] == null) {
-                    masters[k] = findReflexiveMaster(
-                            current,
-                            (ObjRelationship) objEntity.getRelationship(reflexiveRelName),
-                            current.getObjectId().getEntityName());
+                    masters[k] = findReflexiveMaster(current, objEntity.getRelationship(reflexiveRelName), current
+                            .getObjectId().getEntityName());
                 }
 
                 if (masters[k] != null) {
@@ -271,24 +258,19 @@ public class AshwoodEntitySorter implements EntitySorter {
                 for (Object master : masters) {
                     // if (masterCandidate.equals(master)) {
                     if (masterCandidate == master) {
-                        objectDependencyGraph.putArc(
-                                masterCandidate,
-                                current,
-                                Boolean.TRUE);
+                        objectDependencyGraph.putArc(masterCandidate, current, Boolean.TRUE);
                         mastersFound++;
                     }
                 }
             }
         }
 
-        IndegreeTopologicalSort<Persistent> sorter = new IndegreeTopologicalSort<Persistent>(
-                objectDependencyGraph);
+        IndegreeTopologicalSort<Persistent> sorter = new IndegreeTopologicalSort<Persistent>(objectDependencyGraph);
 
         while (sorter.hasNext()) {
             Persistent o = sorter.next();
             if (o == null)
-                throw new CayenneRuntimeException("Sorting objects for "
-                        + objEntity.getClassName()
+                throw new CayenneRuntimeException("Sorting objects for " + objEntity.getClassName()
                         + " failed. Cycles found.");
             sorted.add(o);
         }
@@ -304,26 +286,22 @@ public class AshwoodEntitySorter implements EntitySorter {
         }
     }
 
-    protected Object findReflexiveMaster(
-            Persistent object,
-            ObjRelationship toOneRel,
-            String targetEntityName) {
+    protected Object findReflexiveMaster(Persistent object, ObjRelationship toOneRel, String targetEntityName) {
 
         DbRelationship finalRel = toOneRel.getDbRelationships().get(0);
         ObjectContext context = object.getObjectContext();
 
-        // find committed snapshot - so we can't fetch from the context as it will return
+        // find committed snapshot - so we can't fetch from the context as it
+        // will return
         // dirty snapshot; must go down the stack instead
 
-        // how do we handle this for NEW objects correctly? For now bail from the method
+        // how do we handle this for NEW objects correctly? For now bail from
+        // the method
         if (object.getObjectId().isTemporary()) {
             return null;
         }
 
-        ObjectIdQuery query = new ObjectIdQuery(
-                object.getObjectId(),
-                true,
-                ObjectIdQuery.CACHE);
+        ObjectIdQuery query = new ObjectIdQuery(object.getObjectId(), true, ObjectIdQuery.CACHE);
         QueryResponse response = context.getChannel().onQuery(null, query);
         List<?> result = response.firstList();
         if (result == null || result.size() == 0) {
@@ -334,8 +312,10 @@ public class AshwoodEntitySorter implements EntitySorter {
 
         ObjectId id = snapshot.createTargetObjectId(targetEntityName, finalRel);
 
-        // not using 'localObject', looking up in context instead, as within the sorter
-        // we only care about objects participating in transaction, so no need to create
+        // not using 'localObject', looking up in context instead, as within the
+        // sorter
+        // we only care about objects participating in transaction, so no need
+        // to create
         // hollow objects
         return (id != null) ? context.getGraphManager().getNode(id) : null;
     }

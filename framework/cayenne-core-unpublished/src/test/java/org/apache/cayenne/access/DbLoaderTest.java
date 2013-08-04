@@ -127,7 +127,7 @@ public class DbLoaderTest extends ServerCase {
         loader.loadObjEntities(map);
         ObjEntity artist = map.getObjEntity("Artist");
         assertNotNull(artist);
-        ObjAttribute id = (ObjAttribute) artist.getAttribute("artistId");
+        ObjAttribute id = artist.getAttribute("artistId");
         assertNotNull(id);
     }
 
@@ -293,13 +293,13 @@ public class DbLoaderTest extends ServerCase {
         ObjEntity blobEnt = map.getObjEntity("BlobTest");
         assertNotNull(blobEnt);
         // BLOBs should be mapped as byte[]
-        ObjAttribute blobAttr = (ObjAttribute) blobEnt.getAttribute("blobCol");
+        ObjAttribute blobAttr = blobEnt.getAttribute("blobCol");
         assertNotNull("BlobTest.blobCol failed to load", blobAttr);
         assertEquals("byte[]", blobAttr.getType());
         ObjEntity clobEnt = map.getObjEntity("ClobTest");
         assertNotNull(clobEnt);
         // CLOBs should be mapped as Strings by default
-        ObjAttribute clobAttr = (ObjAttribute) clobEnt.getAttribute("clobCol");
+        ObjAttribute clobAttr = clobEnt.getAttribute("clobCol");
         assertNotNull(clobAttr);
         assertEquals(String.class.getName(), clobAttr.getType());
     }

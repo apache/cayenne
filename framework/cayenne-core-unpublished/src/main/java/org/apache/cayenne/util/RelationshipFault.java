@@ -74,12 +74,12 @@ public abstract class RelationshipFault {
         int state = relationshipOwner.getPersistenceState();
         return state == PersistenceState.MODIFIED || state == PersistenceState.DELETED;
     }
-    
+
     protected abstract void mergeLocalChanges(List resolved);
 
     /**
-     * Executes a query that returns related objects. Subclasses would invoke this method
-     * whenever they need to resolve a fault.
+     * Executes a query that returns related objects. Subclasses would invoke
+     * this method whenever they need to resolve a fault.
      */
     protected List resolveFromDB() {
         // non-persistent objects shouldn't trigger a fetch
@@ -97,7 +97,7 @@ public abstract class RelationshipFault {
         if (resolved instanceof RelationshipFault) {
             resolved = new ArrayList(resolved);
         }
-        
+
         // merge local before updating reverse to ensure we update reverse rels
         // of the right objects (see CAY-1757)
         mergeLocalChanges(resolved);
@@ -110,25 +110,21 @@ public abstract class RelationshipFault {
 
         return resolved;
     }
-    
-    // see if reverse relationship is to-one and we can connect source to results....
-    protected void updateReverse(List resolved) {
-        EntityResolver resolver = relationshipOwner
-                .getObjectContext()
-                .getEntityResolver();
-        ObjEntity sourceEntity = resolver.getObjEntity(relationshipOwner
-                .getObjectId()
-                .getEntityName());
 
-        ObjRelationship relationship = (ObjRelationship) sourceEntity
-                .getRelationship(relationshipName);
+    // see if reverse relationship is to-one and we can connect source to
+    // results....
+    protected void updateReverse(List resolved) {
+        EntityResolver resolver = relationshipOwner.getObjectContext().getEntityResolver();
+        ObjEntity sourceEntity = resolver.getObjEntity(relationshipOwner.getObjectId().getEntityName());
+
+        ObjRelationship relationship = sourceEntity.getRelationship(relationshipName);
         ObjRelationship reverse = relationship.getReverseRelationship();
 
         if (reverse != null && !reverse.isToMany()) {
-            PropertyDescriptor property = resolver.getClassDescriptor(
-                    reverse.getSourceEntity().getName()).getProperty(reverse.getName());
+            PropertyDescriptor property = resolver.getClassDescriptor(reverse.getSourceEntity().getName()).getProperty(
+                    reverse.getName());
 
-            for(Object o : resolved) {
+            for (Object o : resolved) {
                 property.writePropertyDirectly(o, null, relationshipOwner);
             }
         }

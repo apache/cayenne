@@ -57,7 +57,7 @@ public class ObjAttributeTest extends TestCase {
     public void testSerializability() throws Exception {
         ObjAttribute a1 = new ObjAttribute("a1");
 
-        ObjAttribute a2 = (ObjAttribute) Util.cloneViaSerialization(a1);
+        ObjAttribute a2 = Util.cloneViaSerialization(a1);
         assertEquals(a1.getName(), a2.getName());
     }
 

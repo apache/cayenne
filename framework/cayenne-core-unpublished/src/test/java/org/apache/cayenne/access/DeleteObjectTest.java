@@ -158,8 +158,7 @@ public class DeleteObjectTest extends ServerCase {
         // as Painting -> Artist has Nullify rule, relationship list has to be
         // cleaned up,
         // and no exceptions thrown on concurrent modification...
-        ObjRelationship r = (ObjRelationship) context.getEntityResolver().getObjEntity(Painting.class)
-                .getRelationship("toArtist");
+        ObjRelationship r = context.getEntityResolver().getObjEntity(Painting.class).getRelationship("toArtist");
         assertEquals(DeleteRule.NULLIFY, r.getDeleteRule());
         assertEquals(0, paintings.size());
 

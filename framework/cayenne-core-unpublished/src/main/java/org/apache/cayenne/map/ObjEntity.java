@@ -106,6 +106,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     /**
      * @since 3.1
      */
+    @Override
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitObjEntity(this);
     }
@@ -115,6 +116,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * 
      * @since 1.1
      */
+    @Override
     public void encodeAsXML(XMLEncoder encoder) {
         encoder.print("<obj-entity name=\"");
         encoder.print(getName());
@@ -683,8 +685,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * this entity. Returns null if no matching attribute is found.
      */
     @Override
-    public Attribute getAttribute(String name) {
-        Attribute attribute = super.getAttribute(name);
+    public ObjAttribute getAttribute(String name) {
+        ObjAttribute attribute = (ObjAttribute) super.getAttribute(name);
         if (attribute != null) {
             return attribute;
         }
@@ -692,7 +694,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         // check embedded attribute
         int dot = name.indexOf('.');
         if (dot > 0 && dot < name.length() - 1) {
-            Attribute embedded = getAttribute(name.substring(0, dot));
+            ObjAttribute embedded = getAttribute(name.substring(0, dot));
             if (embedded instanceof EmbeddedAttribute) {
                 return ((EmbeddedAttribute) embedded).getAttribute(name.substring(dot + 1));
             }
@@ -702,7 +704,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         ObjEntity superEntity = getSuperEntity();
         if (superEntity != null) {
 
-            ObjAttribute superAttribute = (ObjAttribute) superEntity.getAttribute(name);
+            ObjAttribute superAttribute = superEntity.getAttribute(name);
             if (superAttribute == null) {
                 return null;
             }
@@ -806,7 +808,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * inherited. Returns null if no matching attribute is found.
      */
     @Override
-    public Relationship getRelationship(String name) {
+    public ObjRelationship getRelationship(String name) {
         ObjRelationship relationship = (ObjRelationship) super.getRelationship(name);
         if (relationship != null) {
             return relationship;
@@ -869,7 +871,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      */
     public ObjAttribute getAttributeForDbAttribute(DbAttribute dbAttribute) {
 
-        for (Attribute next : getAttributeMap().values()) {
+        for (ObjAttribute next : getAttributeMap().values()) {
 
             if (next instanceof EmbeddedAttribute) {
                 ObjAttribute embeddedAttribute = ((EmbeddedAttribute) next)
@@ -878,9 +880,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                     return embeddedAttribute;
                 }
             } else {
-                ObjAttribute objAttr = (ObjAttribute) next;
-                if (objAttr.getDbAttribute() == dbAttribute) {
-                    return objAttr;
+                if (next.getDbAttribute() == dbAttribute) {
+                    return next;
                 }
             }
         }
@@ -940,16 +941,15 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         if (dbEntityName == null)
             return;
 
-        for (Attribute attribute : getAttributeMap().values()) {
-            ObjAttribute objAttr = (ObjAttribute) attribute;
-            DbAttribute dbAttr = objAttr.getDbAttribute();
+        for (ObjAttribute attribute : getAttributeMap().values()) {
+            DbAttribute dbAttr = attribute.getDbAttribute();
             if (null != dbAttr) {
-                objAttr.setDbAttributePath(null);
+                attribute.setDbAttributePath(null);
             }
         }
 
-        for (Relationship relationship : this.getRelationships()) {
-            ((ObjRelationship) relationship).clearDbRelationships();
+        for (ObjRelationship relationship : getRelationships()) {
+            relationship.clearDbRelationships();
         }
 
         dbEntityName = null;
@@ -1206,8 +1206,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
             DataMap map = getDataMap();
             if (map != null) {
                 ObjEntity oe = (ObjEntity) e.getEntity();
-                for (Relationship relationship : oe.getRelationships()) {
-                    relationship = ((ObjRelationship) relationship).getReverseRelationship();
+                for (ObjRelationship relationship : oe.getRelationships()) {
+                    relationship = relationship.getReverseRelationship();
                     if (null != relationship && relationship.targetEntityName.equals(oldName)) {
                         relationship.targetEntityName = newName;
                     }

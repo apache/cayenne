@@ -69,13 +69,13 @@ public class DbJoin implements XMLSerializable, Serializable {
             return null;
         }
 
-        Relationship r = getNonNullRelationship();
-        Entity entity = r.getSourceEntity();
+        DbRelationship r = getNonNullRelationship();
+        DbEntity entity = r.getSourceEntity();
         if (entity == null) {
             return null;
         }
 
-        return (DbAttribute) entity.getAttribute(sourceName);
+        return entity.getAttribute(sourceName);
     }
 
     public DbAttribute getTarget() {
@@ -83,13 +83,13 @@ public class DbJoin implements XMLSerializable, Serializable {
             return null;
         }
 
-        Relationship r = getNonNullRelationship();
-        Entity entity = r.getTargetEntity();
+        DbRelationship r = getNonNullRelationship();
+        DbEntity entity = r.getTargetEntity();
         if (entity == null) {
             return null;
         }
 
-        return (DbAttribute) entity.getAttribute(targetName);
+        return entity.getAttribute(targetName);
     }
 
     /**

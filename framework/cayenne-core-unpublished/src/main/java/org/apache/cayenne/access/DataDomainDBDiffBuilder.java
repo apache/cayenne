@@ -35,7 +35,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
- * Processes object diffs, generating DB diffs. Can be used for both UPDATE and INSERT.
+ * Processes object diffs, generating DB diffs. Can be used for both UPDATE and
+ * INSERT.
  * 
  * @since 1.2
  */
@@ -58,8 +59,8 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     }
 
     /**
-     * Resets the builder to process a new object for the previously set combination of
-     * objEntity/dbEntity.
+     * Resets the builder to process a new object for the previously set
+     * combination of objEntity/dbEntity.
      */
     private void reset() {
         currentPropertyDiff = null;
@@ -92,11 +93,10 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         // populate changed columns
         if (currentPropertyDiff != null) {
             for (final Map.Entry<Object, Object> entry : currentPropertyDiff.entrySet()) {
-                ObjAttribute attribute = (ObjAttribute) objEntity.getAttribute(entry
-                        .getKey()
-                        .toString());
+                ObjAttribute attribute = objEntity.getAttribute(entry.getKey().toString());
 
-                // in case of a flattened attribute, ensure that it belongs to this
+                // in case of a flattened attribute, ensure that it belongs to
+                // this
                 // bucket...
                 DbAttribute dbAttribute = attribute.getDbAttribute();
                 if (dbAttribute.getEntity() == dbEntity) {
@@ -110,16 +110,14 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         // populate changed FKs
         if (currentArcDiff != null) {
             for (final Map.Entry<Object, Object> entry : currentArcDiff.entrySet()) {
-                ObjRelationship relation = (ObjRelationship) objEntity
-                        .getRelationship(entry.getKey().toString());
+                ObjRelationship relation = objEntity.getRelationship(entry.getKey().toString());
 
                 DbRelationship dbRelation = relation.getDbRelationships().get(0);
 
                 ObjectId targetId = (ObjectId) entry.getValue();
                 for (DbJoin join : dbRelation.getJoins()) {
-                    Object value = (targetId != null) ? new PropagatedValueFactory(
-                            targetId,
-                            join.getTargetName()) : null;
+                    Object value = (targetId != null) ? new PropagatedValueFactory(targetId, join.getTargetName())
+                            : null;
 
                     dbDiff.put(join.getSourceName(), value);
                 }
@@ -129,7 +127,8 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
 
     private void appendPrimaryKeys(Map<Object, Object> dbDiff) {
 
-        // populate changed PKs; note that we might end up overriding some values taken
+        // populate changed PKs; note that we might end up overriding some
+        // values taken
         // from the object (e.g. zero PK's).
         if (currentId != null) {
             dbDiff.putAll(((ObjectId) currentId).getIdSnapshot());
@@ -140,12 +139,9 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     // GraphChangeHandler methods.
     // ==================================================
 
-    public void nodePropertyChanged(
-            Object nodeId,
-            String property,
-            Object oldValue,
-            Object newValue) {
-        // note - no checking for phantom mod... assuming there is no phantom diffs
+    public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
+        // note - no checking for phantom mod... assuming there is no phantom
+        // diffs
 
         if (currentPropertyDiff == null) {
             currentPropertyDiff = new HashMap<Object, Object>();
@@ -156,8 +152,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
 
     public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
 
-        ObjRelationship relationship = (ObjRelationship) objEntity.getRelationship(arcId
-                .toString());
+        ObjRelationship relationship = objEntity.getRelationship(arcId.toString());
         if (!relationship.isSourceIndependentFromTargetChange()) {
             if (currentArcDiff == null) {
                 currentArcDiff = new HashMap<Object, Object>();
@@ -168,16 +163,15 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
 
     public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
 
-        ObjRelationship relationship = (ObjRelationship) objEntity.getRelationship(arcId
-                .toString());
+        ObjRelationship relationship = objEntity.getRelationship(arcId.toString());
         if (!relationship.isSourceIndependentFromTargetChange()) {
 
             if (currentArcDiff == null) {
                 currentArcDiff = new HashMap<Object, Object>();
                 currentArcDiff.put(arcId, null);
-            }
-            else {
-                // skip deletion record if a substitute arc was created prior to deleting
+            } else {
+                // skip deletion record if a substitute arc was created prior to
+                // deleting
                 // the old arc...
                 Object existingTargetId = currentArcDiff.get(arcId);
                 if (existingTargetId == null || targetNodeId.equals(existingTargetId)) {

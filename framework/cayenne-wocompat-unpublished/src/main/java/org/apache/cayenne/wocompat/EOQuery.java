@@ -40,9 +40,9 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 
 /**
- * A descriptor of SelectQuery loaded from EOModel. It is an informal "decorator" of
- * Cayenne SelectQuery to provide access to the extra information of WebObjects
- * EOFetchSpecification.
+ * A descriptor of SelectQuery loaded from EOModel. It is an informal
+ * "decorator" of Cayenne SelectQuery to provide access to the extra information
+ * of WebObjects EOFetchSpecification.
  * 
  * @since 1.1
  */
@@ -66,19 +66,16 @@ public class EOQuery<T> extends SelectQuery<T> {
             try {
                 if (fetchLimit instanceof Number) {
                     setFetchLimit(((Number) fetchLimit).intValue());
-                }
-                else {
+                } else {
                     setFetchLimit(Integer.parseInt(fetchLimit.toString()));
                 }
-            }
-            catch (NumberFormatException nfex) {
+            } catch (NumberFormatException nfex) {
                 // ignoring...
             }
         }
 
         // sort orderings
-        List<Map<String, String>> orderings = (List<Map<String, String>>) plistMap
-                .get("sortOrderings");
+        List<Map<String, String>> orderings = (List<Map<String, String>>) plistMap.get("sortOrderings");
         if (orderings != null && !orderings.isEmpty()) {
             for (Map<String, String> ordering : orderings) {
                 boolean asc = !"compareDescending:".equals(ordering.get("selectorName"));
@@ -104,7 +101,8 @@ public class EOQuery<T> extends SelectQuery<T> {
             }
         }
 
-        // data rows - note that we do not support fetching individual columns in the
+        // data rows - note that we do not support fetching individual columns
+        // in the
         // modeler...
         if (plistMap.containsKey("rawRowKeyPaths")) {
             setFetchingDataRows(true);
@@ -114,8 +112,7 @@ public class EOQuery<T> extends SelectQuery<T> {
     public String getEOName() {
         if (root instanceof EOObjEntity) {
             return ((EOObjEntity) root).localQueryName(getName());
-        }
-        else {
+        } else {
             return getName();
         }
     }
@@ -168,16 +165,17 @@ public class EOQuery<T> extends SelectQuery<T> {
             }
 
             Map valueMap = (Map) value;
-            if (!"EOQualifierVariable".equals(valueMap.get("class"))
-                    || !valueMap.containsKey("_key")) {
+            if (!"EOQualifierVariable".equals(valueMap.get("class")) || !valueMap.containsKey("_key")) {
                 return;
             }
 
             String name = (String) valueMap.get("_key");
             String className = null;
 
-            // we don't know whether its obj path or db path, so the expression can blow
-            // ... in fact we can't support DB Path as the key is different from external
+            // we don't know whether its obj path or db path, so the expression
+            // can blow
+            // ... in fact we can't support DB Path as the key is different from
+            // external
             // name,
             // so we will use Object type for all DB path...
             try {
@@ -185,16 +183,13 @@ public class EOQuery<T> extends SelectQuery<T> {
 
                 if (lastObject instanceof ObjAttribute) {
                     className = ((ObjAttribute) lastObject).getType();
-                }
-                else if (lastObject instanceof ObjRelationship) {
-                    ObjEntity target = (ObjEntity) ((ObjRelationship) lastObject)
-                            .getTargetEntity();
+                } else if (lastObject instanceof ObjRelationship) {
+                    ObjEntity target = ((ObjRelationship) lastObject).getTargetEntity();
                     if (target != null) {
                         className = target.getClassName();
                     }
                 }
-            }
-            catch (ExpressionException ex) {
+            } catch (ExpressionException ex) {
                 className = "java.lang.Object";
             }
 
@@ -217,10 +212,11 @@ public class EOQuery<T> extends SelectQuery<T> {
     }
 
     /**
-     * Creates the Expression equivalent of the EOFetchSpecification represented by the
-     * Map.
+     * Creates the Expression equivalent of the EOFetchSpecification represented
+     * by the Map.
      * 
-     * @param qualifierMap - FetchSpecification to translate
+     * @param qualifierMap
+     *            - FetchSpecification to translate
      * @return Expression equivalent to FetchSpecification
      */
     public synchronized Expression makeQualifier(Map<String, ?> qualifierMap) {
@@ -228,19 +224,18 @@ public class EOQuery<T> extends SelectQuery<T> {
             return null;
         }
 
-        return EOFetchSpecificationParser.makeQualifier(
-                (EOObjEntity) getRoot(),
-                qualifierMap);
+        return EOFetchSpecificationParser.makeQualifier((EOObjEntity) getRoot(), qualifierMap);
     }
 
     /**
-     * EOFetchSpecificationParser parses EOFetchSpecifications from a WebObjects-style
-     * EOModel. It recursively builds Cayenne Expression objects and assembles them into
-     * the final aggregate Expression.
+     * EOFetchSpecificationParser parses EOFetchSpecifications from a
+     * WebObjects-style EOModel. It recursively builds Cayenne Expression
+     * objects and assembles them into the final aggregate Expression.
      */
     static class EOFetchSpecificationParser {
 
-        // Xcode/EOModeler expressions have a colon at the end of the selector name
+        // Xcode/EOModeler expressions have a colon at the end of the selector
+        // name
         // (just like standard Objective-C syntax). WOLips does not. Add both
         // sets to the hash map to handle both types of models.
 
@@ -259,10 +254,11 @@ public class EOQuery<T> extends SelectQuery<T> {
         private static HashMap<String, Integer> selectorToExpressionBridge;
 
         /**
-         * selectorToExpressionBridge is just a mapping of EOModeler's selector types to
-         * Cayenne Expression types.
+         * selectorToExpressionBridge is just a mapping of EOModeler's selector
+         * types to Cayenne Expression types.
          * 
-         * @return HashMap of Expression types, keyed by the corresponding selector name
+         * @return HashMap of Expression types, keyed by the corresponding
+         *         selector name
          */
         static synchronized HashMap<String, Integer> selectorToExpressionBridge() {
             // Initialize selectorToExpressionBridge if needed.
@@ -273,53 +269,38 @@ public class EOQuery<T> extends SelectQuery<T> {
                 selectorToExpressionBridge.put(IS_EQUAL_TO + OBJ_C, Expression.EQUAL_TO);
 
                 selectorToExpressionBridge.put(IS_NOT_EQUAL_TO, Expression.NOT_EQUAL_TO);
-                selectorToExpressionBridge.put(
-                        IS_NOT_EQUAL_TO + OBJ_C,
-                        Expression.NOT_EQUAL_TO);
+                selectorToExpressionBridge.put(IS_NOT_EQUAL_TO + OBJ_C, Expression.NOT_EQUAL_TO);
 
                 selectorToExpressionBridge.put(IS_LIKE, Expression.LIKE);
                 selectorToExpressionBridge.put(IS_LIKE + OBJ_C, Expression.LIKE);
 
-                selectorToExpressionBridge.put(
-                        CASE_INSENSITIVE_LIKE,
-                        Expression.LIKE_IGNORE_CASE);
-                selectorToExpressionBridge.put(
-                        CASE_INSENSITIVE_LIKE + OBJ_C,
-                        Expression.LIKE_IGNORE_CASE);
+                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE, Expression.LIKE_IGNORE_CASE);
+                selectorToExpressionBridge.put(CASE_INSENSITIVE_LIKE + OBJ_C, Expression.LIKE_IGNORE_CASE);
 
                 selectorToExpressionBridge.put(IS_LESS_THAN, Expression.LESS_THAN);
-                selectorToExpressionBridge
-                        .put(IS_LESS_THAN + OBJ_C, Expression.LESS_THAN);
+                selectorToExpressionBridge.put(IS_LESS_THAN + OBJ_C, Expression.LESS_THAN);
 
-                selectorToExpressionBridge.put(
-                        IS_LESS_THAN_OR_EQUAL_TO,
-                        Expression.LESS_THAN_EQUAL_TO);
-                selectorToExpressionBridge.put(
-                        IS_LESS_THAN_OR_EQUAL_TO + OBJ_C,
-                        Expression.LESS_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO, Expression.LESS_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(IS_LESS_THAN_OR_EQUAL_TO + OBJ_C, Expression.LESS_THAN_EQUAL_TO);
 
                 selectorToExpressionBridge.put(IS_GREATER_THAN, Expression.GREATER_THAN);
-                selectorToExpressionBridge.put(
-                        IS_GREATER_THAN + OBJ_C,
-                        Expression.GREATER_THAN);
+                selectorToExpressionBridge.put(IS_GREATER_THAN + OBJ_C, Expression.GREATER_THAN);
 
-                selectorToExpressionBridge.put(
-                        IS_GREATER_THAN_OR_EQUAL_TO,
-                        Expression.GREATER_THAN_EQUAL_TO);
-                selectorToExpressionBridge.put(
-                        IS_GREATER_THAN_OR_EQUAL_TO + OBJ_C,
-                        Expression.GREATER_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO, Expression.GREATER_THAN_EQUAL_TO);
+                selectorToExpressionBridge.put(IS_GREATER_THAN_OR_EQUAL_TO + OBJ_C, Expression.GREATER_THAN_EQUAL_TO);
             }
 
             return selectorToExpressionBridge;
         }
 
         /**
-         * isAggregate determines whether a qualifier is "aggregate" -- has children -- or
-         * "simple".
+         * isAggregate determines whether a qualifier is "aggregate" -- has
+         * children -- or "simple".
          * 
-         * @param qualifier - a Map containing the qualifier settings
-         * @return boolean indicating whether the qualifier is "aggregate" qualifier
+         * @param qualifier
+         *            - a Map containing the qualifier settings
+         * @return boolean indicating whether the qualifier is "aggregate"
+         *         qualifier
          */
         static boolean isAggregate(Map qualifier) {
             boolean result = true;
@@ -337,11 +318,12 @@ public class EOQuery<T> extends SelectQuery<T> {
         }
 
         /**
-         * expressionTypeForQualifier looks at a qualifier containing the EOModeler
-         * FetchSpecification and returns the equivalent Cayenne Expression type for its
-         * selector.
+         * expressionTypeForQualifier looks at a qualifier containing the
+         * EOModeler FetchSpecification and returns the equivalent Cayenne
+         * Expression type for its selector.
          * 
-         * @param qualifierMap - a Map containing the qualifier settings to examine.
+         * @param qualifierMap
+         *            - a Map containing the qualifier settings to examine.
          * @return int Expression type
          */
         static int expressionTypeForQualifier(Map qualifierMap) {
@@ -352,9 +334,11 @@ public class EOQuery<T> extends SelectQuery<T> {
 
         /**
          * expressionTypeForSelector looks at a selector from an EOModeler
-         * FetchSpecification and returns the equivalent Cayenne Expression type.
+         * FetchSpecification and returns the equivalent Cayenne Expression
+         * type.
          * 
-         * @param selector - a String containing the selector name.
+         * @param selector
+         *            - a String containing the selector name.
          * @return int Expression type
          */
         static int expressionTypeForSelector(String selector) {
@@ -363,10 +347,12 @@ public class EOQuery<T> extends SelectQuery<T> {
         }
 
         /**
-         * aggregateExpressionClassForQualifier looks at a qualifer and returns the
-         * aggregate type: one of Expression.AND, Expression.OR, or Expression.NOT
+         * aggregateExpressionClassForQualifier looks at a qualifer and returns
+         * the aggregate type: one of Expression.AND, Expression.OR, or
+         * Expression.NOT
          * 
-         * @param qualifierMap - containing the qualifier to examine
+         * @param qualifierMap
+         *            - containing the qualifier to examine
          * @return int aggregate Expression type
          */
         static int aggregateExpressionClassForQualifier(Map qualifierMap) {
@@ -374,11 +360,9 @@ public class EOQuery<T> extends SelectQuery<T> {
             if (qualifierClass != null) {
                 if (qualifierClass.equalsIgnoreCase("EOAndQualifier")) {
                     return Expression.AND;
-                }
-                else if (qualifierClass.equalsIgnoreCase("EOOrQualifier")) {
+                } else if (qualifierClass.equalsIgnoreCase("EOOrQualifier")) {
                     return Expression.OR;
-                }
-                else if (qualifierClass.equalsIgnoreCase("EONotQualifier")) {
+                } else if (qualifierClass.equalsIgnoreCase("EONotQualifier")) {
                     return Expression.NOT;
                 }
             }
@@ -387,11 +371,12 @@ public class EOQuery<T> extends SelectQuery<T> {
         }
 
         /**
-         * makeQualifier recursively builds an Expression for each condition in the
-         * qualifierMap and assembles from them the complex Expression to represent the
-         * entire EOFetchSpecification.
+         * makeQualifier recursively builds an Expression for each condition in
+         * the qualifierMap and assembles from them the complex Expression to
+         * represent the entire EOFetchSpecification.
          * 
-         * @param qualifierMap - Map representation of EOFetchSpecification
+         * @param qualifierMap
+         *            - Map representation of EOFetchSpecification
          * @return Expression translation of the EOFetchSpecification
          */
         static Expression makeQualifier(EOObjEntity entity, Map qualifierMap) {
@@ -402,15 +387,16 @@ public class EOQuery<T> extends SelectQuery<T> {
                 // NOT
 
                 if (aggregateClass == Expression.NOT) {
-                    // NOT qualifiers only have one child, keyed with "qualifier"
+                    // NOT qualifiers only have one child, keyed with
+                    // "qualifier"
                     Map child = (Map) qualifierMap.get("qualifier");
                     // build the child expression
                     Expression childExp = makeQualifier(entity, child);
 
-                    return childExp.notExp(); // add the "not" clause and return the
+                    return childExp.notExp(); // add the "not" clause and return
+                                              // the
                     // result
-                }
-                else {
+                } else {
                     // AND, OR qualifiers can have multiple children, keyed with
                     // "qualifiers"
                     // get the list of children
@@ -424,8 +410,7 @@ public class EOQuery<T> extends SelectQuery<T> {
                             childExpressions.add(childExp);
                         }
                         // join the child expressions and return the result
-                        return ExpressionFactory
-                                .joinExp(aggregateClass, childExpressions);
+                        return ExpressionFactory.joinExp(aggregateClass, childExpressions);
                     }
                 }
 
@@ -437,7 +422,8 @@ public class EOQuery<T> extends SelectQuery<T> {
 
             // the key or key path we're comparing
             String key = null;
-            // the key, keyPath, value, or parameterized value against which we're
+            // the key, keyPath, value, or parameterized value against which
+            // we're
             // comparing the key
             Object comparisonValue = null;
 
@@ -446,11 +432,11 @@ public class EOQuery<T> extends SelectQuery<T> {
                 key = (String) qualifierMap.get("leftValue");
                 comparisonValue = qualifierMap.get("rightValue");
 
-                // FIXME: I think EOKeyComparisonQualifier sytle Expressions are not
+                // FIXME: I think EOKeyComparisonQualifier sytle Expressions are
+                // not
                 // supported...
                 return null;
-            }
-            else if ("EOKeyValueQualifier".equals(qualifierClass)) {
+            } else if ("EOKeyValueQualifier".equals(qualifierClass)) {
                 // Comparing key with a value or parameterized value
                 key = (String) qualifierMap.get("key");
                 Object value = qualifierMap.get("value");
@@ -461,36 +447,33 @@ public class EOQuery<T> extends SelectQuery<T> {
                     // qualifier class
                     // or java type
 
-                    if ("EOQualifierVariable".equals(objClass)
-                            && valueMap.containsKey("_key")) {
+                    if ("EOQualifierVariable".equals(objClass) && valueMap.containsKey("_key")) {
                         // make a parameterized expression
                         String paramName = valueMap.get("_key");
                         comparisonValue = new ExpressionParameter(paramName);
-                    }
-                    else {
+                    } else {
                         Object queryVal = valueMap.get("value");
                         if ("NSNumber".equals(objClass)) {
                             // comparison to NSNumber -- cast
                             comparisonValue = queryVal;
-                        }
-                        else if ("EONull".equals(objClass)) {
+                        } else if ("EONull".equals(objClass)) {
                             // comparison to null
                             comparisonValue = null;
-                        }
-                        else { // Could there be other types? boolean, date, etc.???
-                            // no cast
+                        } else { // Could there be other types? boolean, date,
+                                 // etc.???
+                                 // no cast
                             comparisonValue = queryVal;
                         }
                     }
 
-                }
-                else if (value instanceof String) {
+                } else if (value instanceof String) {
                     // value expression
                     comparisonValue = value;
                 } // end if (value instanceof Map) else...
             }
 
-            // check whether the key is an object path; if at least one component is not,
+            // check whether the key is an object path; if at least one
+            // component is not,
             // switch to db path..
 
             Expression keyExp = Expression.fromString(key);
@@ -505,14 +488,12 @@ public class EOQuery<T> extends SelectQuery<T> {
             }
 
             try {
-                Expression exp = ExpressionFactory
-                        .expressionOfType(expressionTypeForQualifier(qualifierMap));
+                Expression exp = ExpressionFactory.expressionOfType(expressionTypeForQualifier(qualifierMap));
 
                 exp.setOperand(0, keyExp);
                 exp.setOperand(1, comparisonValue);
                 return exp;
-            }
-            catch (ExpressionException e) {
+            } catch (ExpressionException e) {
                 return null;
             }
         }
