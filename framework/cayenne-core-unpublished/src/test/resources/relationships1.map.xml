@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+	 project-version="6">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.r1"/>
+	<db-entity name="ACTIVITY">
+		<db-attribute name="ACTIVITY_ID" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="50"/>
+		<db-attribute name="APPOINT_DATE" type="DATE" isMandatory="true"/>
+		<db-attribute name="APPOINT_NO" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="RESULT">
+		<db-attribute name="APPOINT_DATE" type="DATE" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="APPOINT_NO" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="RESULTNAME" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="50"/>
+	</db-entity>
+	<obj-entity name="Activity" className="org.apache.cayenne.testdo.r1.Activity" dbEntityName="ACTIVITY">
+		<obj-attribute name="appointmentDate" type="java.sql.Date" db-attribute-path="APPOINT_DATE"/>
+		<obj-attribute name="appointmentNo" type="int" db-attribute-path="APPOINT_NO"/>
+	</obj-entity>
+	<obj-entity name="ActivityResult" className="org.apache.cayenne.testdo.r1.ActivityResult" dbEntityName="RESULT">
+		<obj-attribute name="appointDate" type="java.sql.Date" db-attribute-path="APPOINT_DATE"/>
+		<obj-attribute name="appointNo" type="int" db-attribute-path="APPOINT_NO"/>
+		<obj-attribute name="field" type="java.lang.String" db-attribute-path="RESULTNAME"/>
+	</obj-entity>
+	<db-relationship name="ActivityResultsRel" source="ACTIVITY" target="RESULT" toMany="true">
+		<db-attribute-pair source="APPOINT_DATE" target="APPOINT_DATE"/>
+		<db-attribute-pair source="APPOINT_NO" target="APPOINT_NO"/>
+	</db-relationship>
+	<db-relationship name="ActivitiesRel" source="RESULT" target="ACTIVITY" toMany="true">
+		<db-attribute-pair source="APPOINT_DATE" target="APPOINT_DATE"/>
+		<db-attribute-pair source="APPOINT_NO" target="APPOINT_NO"/>
+	</db-relationship>
+	<obj-relationship name="results" source="Activity" target="ActivityResult" collection-type="java.util.Map" map-key="field" deleteRule="Deny" db-relationship-path="ActivityResultsRel"/>
+</data-map>
