@@ -72,6 +72,7 @@ public class DropTableToModelTest extends MergeCase {
         }
         assertTrue(token instanceof DropTableToModel);
         execute(token);
+        resolver.refreshMappingCache();
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertNull(map.getObjEntity(objEntity.getName()));
 

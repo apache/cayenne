@@ -45,7 +45,7 @@ public class CAY_191Test extends ServerCase {
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("FK_OF_DIFFERENT_TYPE");
-        dbHelper.update("REFLEXIVE_AND_TO_ONE").set("PARENT_ID", null, Types.NULL).execute();
+        dbHelper.update("REFLEXIVE_AND_TO_ONE").set("PARENT_ID", null, Types.INTEGER).execute();
         dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
         dbHelper.deleteAll("RELATIONSHIP_HELPER");
         
