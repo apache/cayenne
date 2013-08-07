@@ -86,6 +86,7 @@ CAY-1836 Firebird Adapter
 CAY-1838 Deprecate EntityResolver.indexedByClassProperty
 CAY-1840 Conditionally log slow / long-running queries
 CAY-1844 Configuration for maximum time to wait for an available DB connection
+CAY-1862 MySQL - allow specifying a length for TIMESTAMP and TIME columns
 
 Bug Fixes:
 

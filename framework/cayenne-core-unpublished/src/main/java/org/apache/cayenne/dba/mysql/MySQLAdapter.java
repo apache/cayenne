@@ -315,7 +315,7 @@ public class MySQLAdapter extends JdbcAdapter {
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s
-        if (TypesMapping.supportsLength(column.getType())) {
+        if (typeSupportsLength(column.getType())) {
             int len = column.getMaxLength();
 
             int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
@@ -343,6 +343,18 @@ public class MySQLAdapter extends JdbcAdapter {
         }
     }
 
+    private boolean typeSupportsLength(int type) {
+    	// As of MySQL 5.6.4 the "TIMESTAMP" and "TIME" types support length, which is the number of decimal places for fractional seconds
+    	// http://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html
+    	switch (type) {
+	    	case Types.TIMESTAMP:
+	    	case Types.TIME:
+	    		return true;
+	    	default:
+	    		return TypesMapping.supportsLength(type);
+    	}
+    }
+    
     @Override
     public MergerFactory mergerFactory() {
         return new MySQLMergerFactory();
