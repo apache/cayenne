@@ -29,8 +29,6 @@ import javax.swing.JTextField;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
- */
 public class JGroupsConfigPanel extends JPanel {
 
     protected JTextField multicastAddress;
