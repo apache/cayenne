@@ -204,7 +204,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     /**
      * Returns tree model cast to ProjectTreeModel.
      */
-    ProjectTreeModel getProjectModel() {
+    public ProjectTreeModel getProjectModel() {
         return (ProjectTreeModel) getModel();
     }
 

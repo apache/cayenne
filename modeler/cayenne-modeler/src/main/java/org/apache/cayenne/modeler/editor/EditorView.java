@@ -25,14 +25,22 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 
+import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
+import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.action.CollapseTreeAction;
+import org.apache.cayenne.modeler.action.ExpandTreeAction;
+import org.apache.cayenne.modeler.action.FilterAction;
+import org.apache.cayenne.modeler.dialog.datadomain.FilterController;
 import org.apache.cayenne.modeler.editor.datanode.DataNodeEditor;
 import org.apache.cayenne.modeler.editor.dbentity.DbEntityTabbedView;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
@@ -98,8 +106,16 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private SQLTemplateTabbedView sqlTemplateView;
     private EjbqlTabbedView ejbqlQueryView;
     private JTabbedPane dataNodeView;
+    
 
-    public SelectQueryTabbedView getSelectQueryView() {
+    protected ActionManager actionManager;
+	private FilterController filterController;
+    
+	public FilterController getFilterController() {
+		return filterController;
+	}
+
+	public SelectQueryTabbedView getSelectQueryView() {
         return selectQueryView;
     }
 
@@ -142,19 +158,50 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     public JTabbedPane getDataNodeView() {
         return dataNodeView;
     }
+    
+    public ProjectTreeView getTreePanel() {
+		return treePanel;
+	}
 
     public EditorView(ProjectController eventController) {
         this.eventController = eventController;
+        this.actionManager= eventController.getApplication().getActionManager();
         initView();
         initController();
+       
     }
 
-    private void initView() {
+    public ProjectController getEventController() {
+		return eventController;
+	}
+
+	private void initView() {
 
         // init widgets
-        treePanel = new ProjectTreeView(eventController);
-        treePanel.setMinimumSize(new Dimension(50, 200));
+        treePanel = new ProjectTreeView(eventController);            
+        JToolBar bar = new JToolBar();
+        
+        bar.setFloatable(false);
+        bar.setPreferredSize(new Dimension(100,30));
+        
+        bar.add(Box.createHorizontalGlue());
+        bar.add(getAction(ExpandTreeAction.class).buildButton());
+        bar.add(getAction(CollapseTreeAction.class).buildButton());
+        bar.add(getAction(FilterAction.class).buildButton());
+        actionManager.getAction(ExpandTreeAction.class).setAlwaysOn(true);
+        actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);
+        actionManager.getAction(FilterAction.class).setAlwaysOn(true);
+        
+        JPanel treeNavigatePanel = new JPanel();      
+        treeNavigatePanel.setMinimumSize(new Dimension(50,200));
+        treeNavigatePanel.setLayout(new BorderLayout());
+        treeNavigatePanel.add(bar, BorderLayout.NORTH);       
+        treeNavigatePanel.add(treePanel, BorderLayout.CENTER);
 
+        
+        
+        treePanel.setMinimumSize(new Dimension(50, 180));
+                 
         this.detailPanel = new JPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
 
@@ -204,14 +251,23 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         dbDetailView = new DbEntityTabbedView(eventController);
         detailPanel.add(dbDetailView, DB_VIEW);
 
-        splitPane.setLeftComponent(new JScrollPane(treePanel));
+        splitPane.setLeftComponent(new JScrollPane(treeNavigatePanel));
         splitPane.setRightComponent(detailPanel);
 
         setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
+        
+       
+    }
+    
+    private <T extends Action> T getAction(Class<T> type) {
+        return actionManager.getAction(type);
     }
 
-    private void initController() {
+
+	private void initController() {
+		this.filterController = new FilterController(eventController,treePanel);
+		 
         eventController.addDomainDisplayListener(this);
         eventController.addDataNodeDisplayListener(this);
         eventController.addDataMapDisplayListener(this);
@@ -221,7 +277,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         eventController.addQueryDisplayListener(this);
         eventController.addMultipleObjectsDisplayListener(this);
         eventController.addEmbeddableDisplayListener(this);
-
+          
         /**
          * Moving this to try-catch block per CAY-940. Exception will be stack-traced
          */

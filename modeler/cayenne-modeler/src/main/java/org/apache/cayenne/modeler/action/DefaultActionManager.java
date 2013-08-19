@@ -132,6 +132,10 @@ public class DefaultActionManager implements ActionManager {
 
         registerAction(new CreateEmbeddableAction(application));
         registerAction(new ShowGraphEntityAction(application));
+        
+        registerAction(new CollapseTreeAction(application));
+        registerAction(new ExpandTreeAction(application));
+        registerAction(new FilterAction(application));
     }
 
     private void initActions() {

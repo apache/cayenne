@@ -21,20 +21,30 @@ package org.apache.cayenne.modeler;
 
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.project.Project;
+import org.apache.cayenne.query.Query;
+
 
 /**
  * ProjectTreeModel is a model of Cayenne project tree.
  */
 public class ProjectTreeModel extends DefaultTreeModel {
 
-   
-    /**
+	private Filter filter=new Filter();
+
+	/**
      * Constructor for ProjectTreeModel.
      */
     public ProjectTreeModel(Project project) {
@@ -104,9 +114,13 @@ public class ProjectTreeModel extends DefaultTreeModel {
                     ins--;
                 }
             }
-
+           try{
             // insert
             insertNodeInto(treeNode, parent, ins);
+           }
+           catch(NullPointerException e){
+        	   
+           }
         }
     }
 
@@ -152,4 +166,75 @@ public class ProjectTreeModel extends DefaultTreeModel {
 
         return currentNode;
     }
+    
+    
+    public void setFiltered(HashMap<String,Boolean> filterMap) {
+    	
+    	filter.setFilterMap(filterMap);
+        Object[] path = {root};
+        int[] childIndices  = new int[root.getChildCount()];      
+        Object[] children  = new Object[root.getChildCount()];
+       
+        for (int i = 0; i < root.getChildCount(); i++) {
+        	childIndices[i] = i;
+        	children[i] = root.getChildAt(i);
+        }
+        
+        fireTreeStructureChanged(this,path,childIndices, children);	
+    }
+    
+    
+      public int getChildCount(Object parent) {
+    	  int realCount = super.getChildCount(parent), filterCount =0;
+        
+    	  for (int i=0; i<realCount; i++) {
+    		  DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode)super.getChild(parent,i);
+    		  if (filter.pass(dmtn)) { 
+    			  filterCount++;
+    		  }
+    	  }
+    	  return filterCount;
+      }
+      
+      public Object getChild(Object parent, int index) {
+    	  int cnt=-1;
+    	  for (int i=0; i<super.getChildCount(parent); i++) {
+    		  Object child = super.getChild(parent,i);
+    		  if (filter.pass(child)) { 
+    			  cnt++;
+    		  }
+    		  if (cnt==index) { 
+    			  return child;
+    		  }
+    	  }
+    	  return null;
+      }
+      
+      class Filter {
+    	  private HashMap<String, Boolean> filterMap;
+    	  boolean pass=true;
+		
+    	  public void setFilterMap(HashMap<String, Boolean> filterMap) {
+    		  this.filterMap=filterMap;
+    		  pass=false;
+    	  }
+    	  
+    	  public boolean pass(Object obj) { 
+    		 Object root = ((DefaultMutableTreeNode) obj).getUserObject();
+    		 Object firstLeaf = ((DefaultMutableTreeNode) obj).getFirstLeaf().getUserObject();
+    		 
+    		 return ((pass) ||
+    				 (root instanceof DataMap) ||
+    				 (root instanceof DataNodeDescriptor) ||
+    				 (firstLeaf instanceof DbEntity   && filterMap.get("dbEntity"))   ||
+    				 (firstLeaf instanceof ObjEntity  && filterMap.get("objEntity"))  ||
+    				 (firstLeaf instanceof Embeddable && filterMap.get("embeddable")) ||
+    				 (firstLeaf instanceof Query      && filterMap.get("query"))      ||
+    				 (firstLeaf instanceof Procedure  && filterMap.get("procedure")));
+    	  }
+    	  
+    	  public boolean isFiltered() { 
+    		  return pass; 
+    	  }
+    	}   
 }

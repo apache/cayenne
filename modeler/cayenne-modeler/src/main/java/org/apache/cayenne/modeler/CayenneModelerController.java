@@ -60,6 +60,7 @@ public class CayenneModelerController extends CayenneController {
     protected ProjectController projectController;
 
     protected CayenneModelerFrame frame;
+	private EditorView editorView;
     
     public CayenneModelerController(){}
 
@@ -211,7 +212,8 @@ public class CayenneModelerController extends CayenneController {
 
         projectController.setProject(project);
 
-        frame.setView(new EditorView(projectController));
+        editorView = new EditorView(projectController);
+        frame.setView(editorView);
 
         projectController.projectOpened();
         application.getActionManager().projectOpened();
@@ -260,7 +262,11 @@ public class CayenneModelerController extends CayenneController {
         }
     }
 
-    /** Adds path to the list of last opened projects in preferences. */
+    public EditorView getEditorView() {
+    	return editorView;
+    }
+
+	/** Adds path to the list of last opened projects in preferences. */
     public void addToLastProjListAction(String path) {
 
         Preferences frefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
@@ -359,4 +365,6 @@ public class CayenneModelerController extends CayenneController {
         getLastDirectory().setDirectory(new File(newPath));
         frame.fireRecentFileListChanged();
     }
+
+	
 }
