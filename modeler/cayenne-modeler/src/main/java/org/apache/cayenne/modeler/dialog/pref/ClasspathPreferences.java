@@ -79,9 +79,7 @@ public class ClasspathPreferences extends CayenneController {
             			cpEntryKeys.add(cpKey);
             		}
         		} catch (NumberFormatException e) {
-        			
-        			//remove wrong entry (key must be number)
-        			addRemovedPreferences(cpKey);
+        		    // non-integer keys are ignored
         		}
         		
         	}
