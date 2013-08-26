@@ -50,12 +50,17 @@ public class ClasspathPreferences extends CayenneController {
     protected ClasspathTableModel tableModel;
     protected CayennePreferenceEditor editor;
     protected List<String> classPathKeys;
+    private Preferences preferences;
     private int counter;
 
     public ClasspathPreferences(PreferenceDialog parentController) {
         super(parentController);
 
         this.view = new ClasspathPreferencesView();
+
+        // this prefs node is shared with other dialog panels... be aware of
+        // that when accessing the keys
+        this.preferences = getApplication().getPreferencesNode(this.getClass(), "");
 
         PreferenceEditor editor = parentController.getEditor();
         if (editor instanceof CayennePreferenceEditor) {
@@ -76,9 +81,10 @@ public class ClasspathPreferences extends CayenneController {
     }
 
     private int loadPreferences(List<String> classPathEntries, List<String> classPathKeys) {
+
         String[] cpKeys;
         try {
-            cpKeys = getClassLoader().keys();
+            cpKeys = preferences.keys();
         } catch (BackingStoreException e) {
             logger.info("Error loading preferences", e);
             return 0;
@@ -93,9 +99,12 @@ public class ClasspathPreferences extends CayenneController {
             try {
                 c = Integer.parseInt(cpKey);
             } catch (NumberFormatException e) {
+                // we are sharing the 'preferences' node with other dialogs, and
+                // this is a rather poor way of telling our preference keys from
+                // other dialog keys ... ours are numeric, the rest are
+                // string..
 
-                // remove wrong entry (key must be number)
-                addRemovedPreferences(cpKey);
+                // TODO: better key namespacing...
                 continue;
             }
 
@@ -103,7 +112,7 @@ public class ClasspathPreferences extends CayenneController {
                 max = c;
             }
 
-            String tempValue = getClassLoader().get(cpKey, "");
+            String tempValue = preferences.get(cpKey, "");
             if (!"".equals(tempValue)) {
                 classPathEntries.add(tempValue);
                 classPathKeys.add(cpKey);
@@ -115,10 +124,6 @@ public class ClasspathPreferences extends CayenneController {
 
     public Component getView() {
         return view;
-    }
-
-    protected Preferences getClassLoader() {
-        return getApplication().getPreferencesNode(this.getClass(), "");
     }
 
     protected void initBindings() {
@@ -206,21 +211,21 @@ public class ClasspathPreferences extends CayenneController {
     }
 
     public void addChangedPreferences(String key, String value) {
-        Map<String, String> map = editor.getChangedPreferences().get(getClassLoader());
+        Map<String, String> map = editor.getChangedPreferences().get(preferences);
         if (map == null) {
             map = new HashMap<String, String>();
         }
         map.put(key, value);
-        editor.getChangedPreferences().put(getClassLoader(), map);
+        editor.getChangedPreferences().put(preferences, map);
     }
 
     public void addRemovedPreferences(String key) {
-        Map<String, String> map = editor.getRemovedPreferences().get(getClassLoader());
+        Map<String, String> map = editor.getRemovedPreferences().get(preferences);
         if (map == null) {
             map = new HashMap<String, String>();
         }
         map.put(key, "");
-        editor.getRemovedPreferences().put(getClassLoader(), map);
+        editor.getRemovedPreferences().put(preferences, map);
     }
 
     class ClasspathTableModel extends AbstractTableModel {
