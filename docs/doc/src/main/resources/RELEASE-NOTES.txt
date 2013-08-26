@@ -28,6 +28,7 @@ CAY-1827 EhCache region corresponding to a cache group loses its settings after 
 CAY-1845 Upgrade javadoc plugin to 2.9.1 
 CAY-1854 driver.xsd schema shouldn't be in 3.1 - it is no longer applicable 
 CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection 
+CAY-1866 Change in General Modeler Preferences reverts old settings to default value
 
 ----------------------------------
 Release: 3.1B2
