@@ -23,7 +23,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,10 +38,12 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-/**
- */
 public class ClasspathPreferences extends CayenneController {
+
+    private static final Log logger = LogFactory.getLog(ClasspathPreferences.class);
 
     protected ClasspathPreferencesView view;
     protected List<String> classPathEntries;
@@ -61,39 +62,55 @@ public class ClasspathPreferences extends CayenneController {
             this.editor = (CayennePreferenceEditor) editor;
         }
 
-        ArrayList<String> cpEntries = new ArrayList<String>();
-        ArrayList<String> cpEntryKeys = new ArrayList<String>();
-        this.counter = 0;
-        try {
-        	String[] cpKeys = getClassLoader().keys();
-        	for (String cpKey : cpKeys) {
-        		
-        		try {
-        			int c = Integer.parseInt(cpKey);
-        			if (c > this.counter) {
-        				this.counter = c;
-        			}
-        			String tempValue = getClassLoader().get(cpKey, "");
-            		if (!"".equals(tempValue)) {
-            			cpEntries.add(tempValue);
-            			cpEntryKeys.add(cpKey);
-            		}
-        		} catch (NumberFormatException e) {
-        			
-        			//remove wrong entry (key must be number)
-        			addRemovedPreferences(cpKey);
-        		}
-        		
-        	}
-        }
-        catch (BackingStoreException e) {
-        }
-        this.classPathEntries = cpEntries;
-        this.classPathKeys = cpEntryKeys;
+        List<String> classPathEntries = new ArrayList<String>();
+        List<String> classPathKeys = new ArrayList<String>();
+
+        this.counter = loadPreferences(classPathEntries, classPathKeys);
+
+        this.classPathEntries = classPathEntries;
+        this.classPathKeys = classPathKeys;
 
         this.tableModel = new ClasspathTableModel();
 
         initBindings();
+    }
+
+    private int loadPreferences(List<String> classPathEntries, List<String> classPathKeys) {
+        String[] cpKeys;
+        try {
+            cpKeys = getClassLoader().keys();
+        } catch (BackingStoreException e) {
+            logger.info("Error loading preferences", e);
+            return 0;
+        }
+
+        int max = 0;
+
+        for (String cpKey : cpKeys) {
+
+            int c;
+
+            try {
+                c = Integer.parseInt(cpKey);
+            } catch (NumberFormatException e) {
+
+                // remove wrong entry (key must be number)
+                addRemovedPreferences(cpKey);
+                continue;
+            }
+
+            if (c > max) {
+                max = c;
+            }
+
+            String tempValue = getClassLoader().get(cpKey, "");
+            if (!"".equals(tempValue)) {
+                classPathEntries.add(tempValue);
+                classPathKeys.add(cpKey);
+            }
+        }
+
+        return max;
     }
 
     public Component getView() {
@@ -130,17 +147,11 @@ public class ClasspathPreferences extends CayenneController {
     }
 
     protected void addJarOrZipAction() {
-        chooseClassEntry(
-                FileFilters.getClassArchiveFilter(),
-                "Select JAR or ZIP File.",
-                JFileChooser.FILES_ONLY);
+        chooseClassEntry(FileFilters.getClassArchiveFilter(), "Select JAR or ZIP File.", JFileChooser.FILES_ONLY);
     }
 
     protected void addClassDirectoryAction() {
-        chooseClassEntry(
-                null,
-                "Select Java Class Directory.",
-                JFileChooser.DIRECTORIES_ONLY);
+        chooseClassEntry(null, "Select Java Class Directory.", JFileChooser.DIRECTORIES_ONLY);
     }
 
     protected void removeEntryAction() {
@@ -148,11 +159,11 @@ public class ClasspathPreferences extends CayenneController {
         if (selected < 0) {
             return;
         }
-  
+
         addRemovedPreferences(classPathKeys.get(selected));
         classPathEntries.remove(selected);
         classPathKeys.remove(selected);
-        
+
         tableModel.fireTableRowsDeleted(selected, selected);
     }
 
@@ -177,20 +188,20 @@ public class ClasspathPreferences extends CayenneController {
         }
 
         if (selected != null) {
-        	if (!classPathEntries.contains(selected.getAbsolutePath())) {
-        		// store last dir in preferences
-        		getLastDirectory().updateFromChooser(chooser);
+            if (!classPathEntries.contains(selected.getAbsolutePath())) {
+                // store last dir in preferences
+                getLastDirectory().updateFromChooser(chooser);
 
-        		int len = classPathEntries.size();
-        		int key = ++counter;
-        		
-        		String value = selected.getAbsolutePath();
-        		addChangedPreferences(Integer.toString(key), value);
-        		classPathEntries.add(value);
-        		classPathKeys.add(Integer.toString(key));
-        		
-        		tableModel.fireTableRowsInserted(len, len);
-        	}
+                int len = classPathEntries.size();
+                int key = ++counter;
+
+                String value = selected.getAbsolutePath();
+                addChangedPreferences(Integer.toString(key), value);
+                classPathEntries.add(value);
+                classPathKeys.add(Integer.toString(key));
+
+                tableModel.fireTableRowsInserted(len, len);
+            }
         }
     }
 
@@ -202,7 +213,7 @@ public class ClasspathPreferences extends CayenneController {
         map.put(key, value);
         editor.getChangedPreferences().put(getClassLoader(), map);
     }
-    
+
     public void addRemovedPreferences(String key) {
         Map<String, String> map = editor.getRemovedPreferences().get(getClassLoader());
         if (map == null) {
