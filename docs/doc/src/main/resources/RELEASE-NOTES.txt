@@ -33,6 +33,7 @@ CAY-1818 Fix copyright year in the Modeler "about" panel
 CAY-1834 Exception: ToManyList cannot be cast to DataObject 
 CAY-1857 Problem with hotkeys 
 CAY-1859 NullPointerException when importing EOModel 
+CAY-1866 Change in General Modeler Preferences reverts old settings to default value
 
 ----------------------------------
 Release: 3.2M1
