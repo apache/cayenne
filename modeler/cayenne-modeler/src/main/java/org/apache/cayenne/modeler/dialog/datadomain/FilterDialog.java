@@ -35,8 +35,7 @@ import org.apache.cayenne.swing.BindingBuilder;
 
 public class FilterDialog extends JPopupMenu {
 	
-	private String SELECT_ALL = "Select all";
-	private String UNSELECT_ALL = "Unselect all";
+	private String SHOW_ALL = "Show all";
 	
 	private JCheckBoxMenuItem dbEntity;
 	private JCheckBoxMenuItem objEntity;
@@ -110,7 +109,7 @@ public class FilterDialog extends JPopupMenu {
 	
 	public void initView(){
 		
-		all = new JCheckBoxMenuItem(UNSELECT_ALL);
+		all = new JCheckBoxMenuItem(SHOW_ALL);
 		dbEntity = new JCheckBoxMenuItem("DbEntity");	
 		objEntity = new JCheckBoxMenuItem("ObjEntity");
 		embeddable = new JCheckBoxMenuItem("Embeddable");
@@ -154,39 +153,39 @@ public class FilterDialog extends JPopupMenu {
 		all.addActionListener(new ActionListener() {
 		
 			public void actionPerformed(ActionEvent e) {
-				dbEntity.setState(all.getState());
-				objEntity.setState(all.getState());
-				embeddable.setState(all.getState());
-				procedure.setState(all.getState());
-				query.setState(all.getState());
-				all.setText(all.getState() ? UNSELECT_ALL : SELECT_ALL);
+				dbEntity.setState(true);
+				objEntity.setState(true);
+				embeddable.setState(true);
+				procedure.setState(true);
+				query.setState(true);
+				all.setEnabled(false);
 
-				filterController.getTreeModel().setFiltered(filterController.getFilterMap());			
+				filterController.getTreeModel().setFiltered(filterController.getFilterMap());	
 				filterController.treeExpOrCollPath("expand");
 			}
 		});
 	}	
 
 	void checkAllStates() {
-		if(isAll(true)) {
+		if(!isAll()) {
 			all.setState(false);
-			all.setText(SELECT_ALL);
+			all.setEnabled(true);
 		}
-		else if(isAll(false)) {
+		else {
 			all.setState(true);
-			all.setText(UNSELECT_ALL);
+			all.setEnabled(false);		
 		}
 	}
 	
-	private boolean isAll(boolean state) {
+	private boolean isAll() {
 		Set<String> keys=filterController.getFilterMap().keySet();
 		
 		for(String key : keys) {
-			if(filterController.getFilterMap().get(key) == state) {
+			if(filterController.getFilterMap().get(key) == false) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 	

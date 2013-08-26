@@ -85,7 +85,7 @@ public class FilterController {
 			tree.expandPath(parent);
 		}
 		else if(action == "collapse") {
-			tree.collapsePath(parent);
+			treeModel.reload(treeModel.getRootNode());
 		}
 	}
 	

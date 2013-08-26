@@ -38,7 +38,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CollapseTreeAction;
-import org.apache.cayenne.modeler.action.ExpandTreeAction;
 import org.apache.cayenne.modeler.action.FilterAction;
 import org.apache.cayenne.modeler.dialog.datadomain.FilterController;
 import org.apache.cayenne.modeler.editor.datanode.DataNodeEditor;
@@ -181,14 +180,11 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         treePanel = new ProjectTreeView(eventController);            
         JToolBar bar = new JToolBar();
         
-        bar.setFloatable(false);
         bar.setPreferredSize(new Dimension(100,30));
         
         bar.add(Box.createHorizontalGlue());
-        bar.add(getAction(ExpandTreeAction.class).buildButton());
         bar.add(getAction(CollapseTreeAction.class).buildButton());
         bar.add(getAction(FilterAction.class).buildButton());
-        actionManager.getAction(ExpandTreeAction.class).setAlwaysOn(true);
         actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);
         actionManager.getAction(FilterAction.class).setAlwaysOn(true);
         

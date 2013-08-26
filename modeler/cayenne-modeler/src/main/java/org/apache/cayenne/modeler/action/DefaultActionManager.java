@@ -134,7 +134,6 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new ShowGraphEntityAction(application));
         
         registerAction(new CollapseTreeAction(application));
-        registerAction(new ExpandTreeAction(application));
         registerAction(new FilterAction(application));
     }
 
