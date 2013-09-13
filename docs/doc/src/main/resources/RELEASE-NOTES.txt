@@ -34,6 +34,7 @@ CAY-1834 Exception: ToManyList cannot be cast to DataObject
 CAY-1857 Problem with hotkeys 
 CAY-1859 NullPointerException when importing EOModel 
 CAY-1866 Change in General Modeler Preferences reverts old settings to default value
+CAY-1869 ResultIterator from cayenne-client dependency is subclassed from org.apache.cayenne.access.ResultIterator which is present only in cayenne-server dependency 
 
 ----------------------------------
 Release: 3.2M1

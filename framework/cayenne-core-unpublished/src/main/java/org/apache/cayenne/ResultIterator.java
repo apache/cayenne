@@ -31,7 +31,7 @@ import java.util.List;
  * Result "rows", depending on the query, may be represented as scalar values,
  * DataRows, or Object[] arrays containing a mix of scalars and DataRows.
  */
-public interface ResultIterator<T> extends org.apache.cayenne.access.ResultIterator<T>, Iterable<T> {
+public interface ResultIterator<T> extends Iterable<T> {
 
     /**
      * Returns all yet unread rows from ResultSet without closing it.
