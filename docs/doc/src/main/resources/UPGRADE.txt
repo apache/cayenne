@@ -23,6 +23,10 @@ UPGRADING TO 3.2M2
   ObjectContexts will match even if they have differing local changes. Only their ObjectIds are compared. 
   See CAY-1860 for details.
 
+* ResultIterator was moved to org.apache.cayenne to make it available on both server and client. When you upgrade
+  related iterator code, make sure to check ResultIterator improvements (e.g. it implements Iterable, it is no 
+  longer limited to DataRows and can fetch objects just as easy). Also check ObjectContext.iterate(..) method.
+
 UPGRADING TO 3.1B1
 
 * In an attempt to better organize DI configuration and ultimately make it easier to understand, 

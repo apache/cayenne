@@ -196,7 +196,7 @@ public interface ObjectContext extends Serializable {
     /**
      * Creates a ResultIterator based on the provided query. It is usually
      * backed by an open result set and is useful for processing of large data
-     * sets, preservign a constant memory footpront. The caller must wrap
+     * sets, preserving a constant memory footprint. The caller must wrap
      * iteration in try/finally and close the ResultIterator explicitly. Or use
      * {@link #iterate(Select, ResultIteratorCallback)} as an alternative.
      * 
