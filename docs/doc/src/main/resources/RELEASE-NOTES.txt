@@ -24,6 +24,7 @@ CAY-1855 Iterated and paginated queries must print result counts
 CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection 
 CAY-1860 In-memory matching of DataObjects against ObjectId or int
 CAY-1861 Remove runtime relationships
+CAY-1847 Make ConverterFactory extensible
 
 Bug Fixes:
 

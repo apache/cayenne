@@ -230,10 +230,10 @@ public class PropertyUtils {
             }
 
             // do basic conversions
-
-            value = ConverterFactory.factory
-                    .getConverter(descriptor.getPropertyType())
-                    .convert(value, descriptor.getPropertyType());
+            Converter<?> converter = ConverterFactory.factory.getConverter(descriptor.getPropertyType());
+            value = (converter != null)
+            			? converter.convert(value, (Class)descriptor.getPropertyType()) 
+            			: value;
 
             // set
             writer.invoke(object, value);

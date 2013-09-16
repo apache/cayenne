@@ -26,11 +26,11 @@ import org.apache.cayenne.util.Util;
 /**
  * @since 1.2
  */
-class EnumConverter extends Converter {
+class EnumConverter<T extends Enum & ExtendedEnumeration> extends Converter<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    Object convert(Object object, Class type) {
+    protected T convert(Object object, Class<T> type) {
 
         if (ExtendedEnumeration.class.isAssignableFrom(type)) {
             ExtendedEnumeration[] values;
@@ -45,7 +45,7 @@ class EnumConverter extends Converter {
 
             for (ExtendedEnumeration en : values) {
                 if (Util.nullSafeEquals(en.getDatabaseValue(), object)) {
-                    return en;
+                    return (T) en;
                 }
             }
 
@@ -56,6 +56,6 @@ class EnumConverter extends Converter {
             return null;
         }
 
-        return Enum.valueOf(type, object.toString());
+        return (T) Enum.valueOf(type, object.toString());
     }
 }

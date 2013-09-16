@@ -20,14 +20,20 @@
 package org.apache.cayenne.reflect;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.reflect.PropertyUtils;
+import junit.framework.TestCase;
+
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.MockEnum;
 import org.apache.cayenne.access.types.MockEnumHolder;
-
-import junit.framework.TestCase;
 
 public class PropertyUtilsTest extends TestCase {
 
@@ -144,11 +150,90 @@ public class PropertyUtilsTest extends TestCase {
         PropertyUtils.setProperty(o1, "integerField", "25");
         assertEquals(new Integer(25), o1.getIntegerField());
 
-        // string to primitive
+        // string to byte primitive
+        PropertyUtils.setProperty(o1, "byteField", "2");
+        assertEquals(2, o1.getByteField());
+        
+        // string to short primitive
+        PropertyUtils.setProperty(o1, "shortField", "3");
+        assertEquals(3, o1.getShortField());
+        
+        // string to int primitive
         PropertyUtils.setProperty(o1, "intField", "28");
         assertEquals(28, o1.getIntField());
+        
+        // string to long primitive
+        PropertyUtils.setProperty(o1, "longField", "29");
+        assertEquals(29, o1.getLongField());
+        
+        // string to float primitive
+        PropertyUtils.setProperty(o1, "floatField", "4.5");
+        assertEquals(4.5f, o1.getFloatField());
+        
+        // string to double primitive
+        PropertyUtils.setProperty(o1, "doubleField", "5.5");
+        assertEquals(5.5, o1.getDoubleField());
+        
+        // string to boolean
+        PropertyUtils.setProperty(o1, "booleanField", "true");
+        assertTrue(o1.isBooleanField());
+        PropertyUtils.setProperty(o1, "booleanField", "false");
+        assertFalse(o1.isBooleanField());
+        
+        // int to boolean
+        PropertyUtils.setProperty(o1, "booleanField", 1);
+        assertTrue(o1.isBooleanField());
+        PropertyUtils.setProperty(o1, "booleanField", 0);
+        assertFalse(o1.isBooleanField());
+        
+        // long to boolean
+        PropertyUtils.setProperty(o1, "booleanField", 1L);
+        assertTrue(o1.isBooleanField());
+        PropertyUtils.setProperty(o1, "booleanField", 0L);
+        assertFalse(o1.isBooleanField());
+        
+        // long to date
+        PropertyUtils.setProperty(o1, "dateField", 0L);
+        assertEquals(new Date(0L), o1.getDateField());
+        
+        // long to timestamp
+        PropertyUtils.setProperty(o1, "timestampField", 0L);
+        assertEquals(new Timestamp(0L), o1.getTimestampField());
+        
+        // arbitrary string/object to field
+        PropertyUtils.setProperty(o1, "stringBuilderField", "abc");
+        assertEquals(new StringBuilder("abc").toString(), o1.getStringBuilderField().toString());
     }
 
+    public void testSetConvertedWithCustomConverter() {
+    	ConverterFactory.addConverter(Date.class, new Converter<Date>() {
+			@Override
+			protected Date convert(Object value, Class<Date> type) {
+				if (value == null) return null;
+				if (value instanceof Date) {
+					return (Date)value;
+				}
+				if (value instanceof String) {
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+					try {
+						return format.parse((String) value);
+					} catch (ParseException e) {
+						throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date", e);
+					}
+				}
+				throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date");
+			}
+    	});
+    	
+        TestJavaBean o1 = new TestJavaBean();
+
+        // String to date
+        PropertyUtils.setProperty(o1, "dateField", "2013-08-01");
+        
+        Calendar cal = new GregorianCalendar(2013, 7, 1, 0, 0, 0);
+        assertEquals(cal.getTime(), o1.getDateField());
+    }
+    
     public void testSetNull() {
         TestJavaBean o1 = new TestJavaBean();
 
@@ -156,9 +241,33 @@ public class PropertyUtilsTest extends TestCase {
         PropertyUtils.setProperty(o1, "stringField", null);
         assertNull(o1.getStringField());
 
+        o1.setBooleanField(true);
+        PropertyUtils.setProperty(o1, "booleanField", null);
+        assertEquals(false, o1.isBooleanField());
+        
+        o1.setByteField((byte) 2);
+        PropertyUtils.setProperty(o1, "byteField", null);
+        assertEquals((byte)0, o1.getByteField());
+        
+        o1.setShortField((short) 3);
+        PropertyUtils.setProperty(o1, "shortField", null);
+        assertEquals((short)0, o1.getShortField());
+        
         o1.setIntField(99);
         PropertyUtils.setProperty(o1, "intField", null);
         assertEquals(0, o1.getIntField());
+        
+        o1.setLongField(98);
+        PropertyUtils.setProperty(o1, "longField", null);
+        assertEquals(0L, o1.getLongField());
+        
+        o1.setFloatField(4.5f);
+        PropertyUtils.setProperty(o1, "floatField", null);
+        assertEquals(0.0f, o1.getFloatField());
+        
+        o1.setDoubleField(5.5f);
+        PropertyUtils.setProperty(o1, "doubleField", null);
+        assertEquals(0.0, o1.getDoubleField());
     }
 
     public void testSetConvertedEnum() {

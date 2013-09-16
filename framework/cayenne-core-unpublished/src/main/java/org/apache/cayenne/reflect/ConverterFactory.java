@@ -21,50 +21,46 @@ package org.apache.cayenne.reflect;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * A factory of property type converters.
  * 
  * @since 1.2
  */
-class ConverterFactory {
+public class ConverterFactory {
 
     static final ConverterFactory factory = new ConverterFactory();
 
-    private Map<String, Converter> converters;
+    private Map<Class<?>, Converter<?>> converters;
     private EnumConverter enumConveter = new EnumConverter();
-
-    static final Converter noopConverter = new Converter() {
-
-        @Override
-        Object convert(Object object, Class<?> type) {
-            return object;
-        }
-    };
-
+    private Converter<Object> toAnyConverter = new ToAnyConverter<Object>();
+    
     private ConverterFactory() {
 
-        Converter stringConverter = new Converter() {
+        Converter<String> toStringConverter = new Converter<String>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+			protected String convert(Object object, Class<String> type) {
                 return object != null ? object.toString() : null;
             }
         };
 
-        Converter booleanConverter = new Converter() {
+        Converter<Boolean> toBooleanConverter = new Converter<Boolean>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected Boolean convert(Object object, Class<Boolean> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Boolean.FALSE : null;
                 }
 
                 if (object instanceof Boolean) {
-                    return object;
-                } else if (object instanceof Integer || object instanceof Long || object instanceof Short) {
+                    return (Boolean)object;
+                } else if (object instanceof Integer || object instanceof Long || object instanceof Short || object instanceof Byte) {
                 	if (((Number)object).longValue() == 0)
                 		return Boolean.FALSE;
                 	else if (((Number)object).longValue() == 1)
@@ -77,64 +73,80 @@ class ConverterFactory {
             }
         };
 
-        Converter intConverter = new Converter() {
+        Converter<Long> toLongConverter = new Converter<Long>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected Long convert(Object object, Class<Long> type) {
+                if (object == null) {
+                    return type.isPrimitive() ? Long.valueOf(0) : null;
+                }
+
+                if (object instanceof Long) {
+                    return (Long)object;
+                }
+
+                return new Long(object.toString());
+            }
+        };
+        
+        Converter<Integer> toIntConverter = new Converter<Integer>() {
+
+            @Override
+            protected Integer convert(Object object, Class<Integer> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Integer.valueOf(0) : null;
                 }
 
                 if (object instanceof Integer) {
-                    return object;
+                    return (Integer)object;
                 }
 
                 return new Integer(object.toString());
             }
         };
 
-        Converter byteConverter = new Converter() {
+        Converter<Byte> toByteConverter = new Converter<Byte>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected Byte convert(Object object, Class<Byte> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Byte.valueOf((byte) 0) : null;
                 }
 
                 if (object instanceof Byte) {
-                    return object;
+                    return (Byte)object;
                 }
 
                 return new Byte(object.toString());
             }
         };
 
-        Converter shortConverter = new Converter() {
+        Converter<Short> toShortConverter = new Converter<Short>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected Short convert(Object object, Class<Short> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Short.valueOf((short) 0) : null;
                 }
 
                 if (object instanceof Short) {
-                    return object;
+                    return (Short)object;
                 }
 
                 return new Short(object.toString());
             }
         };
 
-        Converter charConverter = new Converter() {
+        Converter<Character> toCharConverter = new Converter<Character>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected Character convert(Object object, Class<Character> type) {
                 if (object == null) {
                     return type.isPrimitive() ? Character.valueOf((char) 0) : null;
                 }
 
                 if (object instanceof Character) {
-                    return object;
+                    return (Character)object;
                 }
 
                 String string = object.toString();
@@ -142,102 +154,145 @@ class ConverterFactory {
             }
         };
 
-        Converter doubleConverter = new Converter() {
+        Converter<Double> toDoubleConverter = new Converter<Double>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected Double convert(Object object, Class<Double> type) {
                 if (object == null) {
                     return type.isPrimitive() ? new Double(0.0d) : null;
                 }
 
                 if (object instanceof Double) {
-                    return object;
+                    return (Double)object;
                 }
 
                 return new Double(object.toString());
             }
         };
 
-        Converter floatConverter = new Converter() {
+        Converter<Float> toFloatConverter = new Converter<Float>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected Float convert(Object object, Class<Float> type) {
                 if (object == null) {
                     return type.isPrimitive() ? new Float(0.0f) : null;
                 }
 
                 if (object instanceof Float) {
-                    return object;
+                    return (Float)object;
                 }
 
                 return new Float(object.toString());
             }
         };
 
-        Converter bigDecimalConverter = new Converter() {
+        Converter<BigDecimal> toBigDecimalConverter = new Converter<BigDecimal>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected BigDecimal convert(Object object, Class<BigDecimal> type) {
                 if (object == null) {
                     return null;
                 }
 
                 if (object instanceof BigDecimal) {
-                    return object;
+                    return (BigDecimal)object;
                 }
 
                 return new BigDecimal(object.toString());
             }
         };
 
-        Converter bigIntegerConverter = new Converter() {
+        Converter<BigInteger> toBigIntegerConverter = new Converter<BigInteger>() {
 
             @Override
-            Object convert(Object object, Class<?> type) {
+            protected BigInteger convert(Object object, Class<BigInteger> type) {
                 if (object == null) {
                     return null;
                 }
 
                 if (object instanceof BigInteger) {
-                    return object;
+                    return (BigInteger)object;
                 }
 
                 return new BigInteger(object.toString());
             }
         };
 
-        // TODO: byte[] converter...
+		Converter<Date> toDateConverter = new Converter<Date>() {
+			@Override
+			protected Date convert(Object value, Class<Date> type) {
+				if (value == null) return null;
+				if (value instanceof Date) return (Date) value;
+				if (value instanceof Number) return new Date(((Number)value).longValue());
+				return new Date(value.toString());
+			}
+		};
+		
+		Converter<Timestamp> toTimestampConverter = new Converter<Timestamp>() {
+			@Override
+			protected Timestamp convert(Object value, Class<Timestamp> type) {
+				if (value == null) return null;
+				if (value instanceof Timestamp) return (Timestamp) value;
+				if (value instanceof Number) return new Timestamp(((Number)value).longValue());
+				return new Timestamp(Date.parse(value.toString()));
+			}
+		};
+		
+		// TODO: byte[] converter...
 
-        converters = new HashMap<String, Converter>();
+        converters = new HashMap<Class<?>, Converter<?>>();
 
-        converters.put(Boolean.class.getName(), booleanConverter);
-        converters.put("boolean", booleanConverter);
+        _addConverter(Boolean.class, toBooleanConverter);
+        _addConverter(boolean.class, toBooleanConverter);
 
-        converters.put(Short.class.getName(), shortConverter);
-        converters.put("short", shortConverter);
+        _addConverter(Short.class, toShortConverter);
+        _addConverter(short.class, toShortConverter);
 
-        converters.put(Byte.class.getName(), byteConverter);
-        converters.put("byte", byteConverter);
+        _addConverter(Byte.class, toByteConverter);
+        _addConverter(byte.class, toByteConverter);
 
-        converters.put(Integer.class.getName(), intConverter);
-        converters.put("int", intConverter);
+        _addConverter(Integer.class, toIntConverter);
+        _addConverter(int.class, toIntConverter);
 
-        converters.put(Double.class.getName(), doubleConverter);
-        converters.put("double", doubleConverter);
+        _addConverter(Long.class, toLongConverter);
+        _addConverter(long.class, toLongConverter);
+        
+        _addConverter(Double.class, toDoubleConverter);
+        _addConverter(double.class, toDoubleConverter);
 
-        converters.put(Float.class.getName(), floatConverter);
-        converters.put("float", floatConverter);
+        _addConverter(Float.class, toFloatConverter);
+        _addConverter(float.class, toFloatConverter);
 
-        converters.put(Character.class.getName(), charConverter);
-        converters.put("char", charConverter);
+        _addConverter(Character.class, toCharConverter);
+        _addConverter(char.class, toCharConverter);
 
-        converters.put(BigDecimal.class.getName(), bigDecimalConverter);
-        converters.put(BigInteger.class.getName(), bigIntegerConverter);
-        converters.put(Number.class.getName(), bigDecimalConverter);
-        converters.put(String.class.getName(), stringConverter);
+        _addConverter(BigDecimal.class, toBigDecimalConverter);
+        _addConverter(BigInteger.class, toBigIntegerConverter);
+        _addConverter(Number.class, toBigDecimalConverter);
+        _addConverter(String.class, toStringConverter);
+		_addConverter(Date.class, toDateConverter);
+		_addConverter(Timestamp.class, toTimestampConverter);
     }
 
-    Converter getConverter(Class<?> type) {
+    /**
+     * Converters are used by {@link PropertyUtils#setProperty(Object, String, Object)} to coerce
+     * generic Object values into the specific type expected by the named setter.
+     * 
+     * @param type
+     * 		the Class to convert a value to; the destination type
+     * @param converter
+     * 		a converter used to convert the value from Object to T
+     * @since 3.2
+     */
+    public static <T> void addConverter(Class<? super T> type, Converter<T> converter) {
+    	factory._addConverter(type, converter);
+    }
+    
+    private <T> void _addConverter(Class<? super T> type, Converter<T> converter) {
+    	converters.put(type, converter);
+    }
+    
+    <T> Converter<T> getConverter(Class<T> type) {
         if (type == null) {
             throw new IllegalArgumentException("Null type");
         }
@@ -247,7 +302,7 @@ class ConverterFactory {
             return enumConveter;
         }
 
-        Converter c = converters.get(type.getName());
-        return c != null ? c : noopConverter;
+        Converter<T> c = (Converter<T>) converters.get(type);
+        return c != null ? c : (Converter<T>)toAnyConverter;
     }
 }

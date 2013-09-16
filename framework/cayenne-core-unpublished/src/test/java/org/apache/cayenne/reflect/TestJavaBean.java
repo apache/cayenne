@@ -19,17 +19,28 @@
 
 package org.apache.cayenne.reflect;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class TestJavaBean extends Object {
 
     protected String stringField;
+    protected byte byteField;
+    protected short shortField;
     protected int intField;
+    protected long longField;
+    protected float floatField;
+    protected double doubleField;
     protected boolean booleanField;
     protected Integer integerField;
     protected Number numberField;
     protected byte[] byteArrayField;
     protected Object objectField;
     protected TestJavaBean related;
-
+    protected Date dateField;
+    protected Timestamp timestampField;
+    protected StringBuilder stringBuilderField;
+    
     public byte[] getByteArrayField() {
         return byteArrayField;
     }
@@ -97,4 +108,68 @@ public class TestJavaBean extends Object {
     public void setRelated(TestJavaBean related) {
         this.related = related;
     }
+
+	public Date getDateField() {
+		return dateField;
+	}
+
+	public void setDateField(Date dateField) {
+		this.dateField = dateField;
+	}
+
+	public StringBuilder getStringBuilderField() {
+		return stringBuilderField;
+	}
+
+	public void setStringBuilderField(StringBuilder stringBuilderField) {
+		this.stringBuilderField = stringBuilderField;
+	}
+
+	public Timestamp getTimestampField() {
+		return timestampField;
+	}
+
+	public void setTimestampField(Timestamp timestampField) {
+		this.timestampField = timestampField;
+	}
+
+	public long getLongField() {
+		return longField;
+	}
+
+	public void setLongField(long longField) {
+		this.longField = longField;
+	}
+
+	public byte getByteField() {
+		return byteField;
+	}
+
+	public void setByteField(byte byteField) {
+		this.byteField = byteField;
+	}
+
+	public short getShortField() {
+		return shortField;
+	}
+
+	public void setShortField(short shortField) {
+		this.shortField = shortField;
+	}
+
+	public float getFloatField() {
+		return floatField;
+	}
+
+	public void setFloatField(float floatField) {
+		this.floatField = floatField;
+	}
+
+	public double getDoubleField() {
+		return doubleField;
+	}
+
+	public void setDoubleField(double doubleField) {
+		this.doubleField = doubleField;
+	}
 }

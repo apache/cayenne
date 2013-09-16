@@ -24,11 +24,16 @@ package org.apache.cayenne.reflect;
  * 
  * @since 1.2
  */
-// keeping non-public for now, but this can also be used in expressions and such...
-abstract class Converter {
+public abstract class Converter<T> {
 
-    /**
-     * Converts object to supported class without doing any type checking.
-     */
-    abstract Object convert(Object value, Class<?> type);
+	/**
+	 * Converts object to supported class without doing any type checking.
+	 * @param value 
+	 * 		the object to convert; the source
+	 * @param type
+	 * 		the Class to convert the value to; the destination type
+	 * @return
+	 * 		an object of type @code{type}. If the conversion fails an exception will be thrown. If value is null then the result will be null.
+	 */
+    protected abstract T convert(Object value, Class<T> type);
 }
