@@ -36,6 +36,7 @@ CAY-1857 Problem with hotkeys
 CAY-1859 NullPointerException when importing EOModel 
 CAY-1866 Change in General Modeler Preferences reverts old settings to default value
 CAY-1869 ResultIterator from cayenne-client dependency is subclassed from org.apache.cayenne.access.ResultIterator which is present only in cayenne-server dependency 
+CAY-1874 DB2 Procedure action ignores the first result set
 
 ----------------------------------
 Release: 3.2M1
