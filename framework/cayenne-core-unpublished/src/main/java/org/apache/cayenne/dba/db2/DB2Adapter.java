@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.BooleanType;
@@ -44,6 +45,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLAction;
 
 /**
  * DbAdapter implementation for the <a href="http://www.ibm.com/db2/"> DB2 RDBMS </a>.
@@ -246,5 +249,14 @@ public class DB2Adapter extends JdbcAdapter {
             super.bindParameter(statement, object, pos, sqlType, precision);
         }
     }
-
+    
+    /**
+     * Uses special action builder to create the right action.
+     * 
+     * @since 3.1
+     */
+    @Override
+    public SQLAction getAction(Query query, DataNode node) {
+        return query.createSQLAction(new DB2ActionBuilder(this, node.getEntityResolver()));
+    }
 }

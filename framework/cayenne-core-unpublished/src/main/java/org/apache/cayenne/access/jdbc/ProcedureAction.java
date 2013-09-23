@@ -79,6 +79,12 @@ public class ProcedureAction extends BaseSQLAction {
             // return value of this method and avoid calling 'getMoreResults' if it is
             // true.
             // some db's handle this well, some don't (MySQL).
+            
+            // 09/23/2013: almost all adapters except Oracle (and maybe a few
+            // more?) are actually using the correct strategy, so making it a
+            // default in the superclass, and isolating hack to subclasses is
+            // probably a good idea
+
             statement.execute();
 
             // read out parameters
@@ -236,7 +242,7 @@ public class ProcedureAction extends BaseSQLAction {
      * 
      * @throws Exception
      */
-    void initStatement(CallableStatement statement) throws Exception {
+    protected void initStatement(CallableStatement statement) throws Exception {
         int statementFetchSize = query
                 .getMetaData(getEntityResolver())
                 .getStatementFetchSize();
