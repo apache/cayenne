@@ -55,7 +55,7 @@ import org.apache.cayenne.util.ObjectContextGraphAction;
  * 
  * @since 3.0
  */
-public abstract class BaseContext implements ObjectContext, DataChannel {
+public abstract class BaseContext implements ObjectContext {
 
     /**
      * A holder of a ObjectContext bound to the current thread.

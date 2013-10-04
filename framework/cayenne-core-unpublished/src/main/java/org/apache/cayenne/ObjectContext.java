@@ -34,7 +34,7 @@ import org.apache.cayenne.query.Select;
  * 
  * @since 1.2
  */
-public interface ObjectContext extends Serializable {
+public interface ObjectContext extends DataChannel, Serializable {
 
     /**
      * Returns EntityResolver that stores all mapping information accessible by
