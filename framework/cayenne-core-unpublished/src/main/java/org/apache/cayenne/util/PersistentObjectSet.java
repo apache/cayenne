@@ -202,8 +202,18 @@ public class PersistentObjectSet extends RelationshipFault
     }
 
     public boolean retainAll(Collection c) {
-        // TODO: handle object graoh change notifications on object removals...
-        return resolvedObjectSet().retainAll(c);
+    	Collection toRemove = new HashSet(resolvedObjectSet().size());
+    	for (Object object : resolvedObjectSet()) {
+			if (!c.contains(object)) {
+				toRemove.add(object);
+			}
+		}
+    	
+        boolean result = resolvedObjectSet().retainAll(c);
+        if (result) {
+        	postprocessRemove(toRemove);
+        }
+        return result;
     }
 
     public int size() {
