@@ -487,7 +487,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
     /**
      * Returns a list of objects that match the expression.
      */
-    public <T> List<T> filterObjects(List<T> objects) {
+    public <T> List<T> filterObjects(Collection<T> objects) {
         if (objects == null || objects.size() == 0) {
             return Collections.EMPTY_LIST;
         }
