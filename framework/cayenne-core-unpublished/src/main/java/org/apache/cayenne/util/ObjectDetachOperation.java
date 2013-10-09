@@ -30,6 +30,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
@@ -98,6 +99,20 @@ public class ObjectDetachOperation {
 
         descriptor.visitProperties(new PropertyVisitor() {
 
+        	private void fillReverseRelationship(Object destinationTarget, ArcProperty property) {
+				ArcProperty reverseProperty = property.getComplimentaryReverseArc();
+
+				if (reverseProperty != null && reverseProperty instanceof ToOneProperty) {
+
+					ClassDescriptor desc = targetResolver.getClassDescriptor(
+							reverseProperty.getRelationship().getSourceEntity().getName());
+
+					ToOneProperty targetReverseProperty =
+							(ToOneProperty) desc.getProperty(reverseProperty.getName());
+					targetReverseProperty.writeProperty(destinationTarget, null, target);
+				}
+        	}
+
             public boolean visitToOne(ToOneProperty property) {
                 if (prefetchTree != null) {
 
@@ -110,6 +125,10 @@ public class ObjectDetachOperation {
                                 destinationSource,
                                 property.getTargetDescriptor(),
                                 child) : null;
+                                
+                        if (destinationTarget != null) {
+                            fillReverseRelationship(destinationTarget, property);
+                        }
 
                         ToOneProperty targetProperty = (ToOneProperty) targetDescriptor
                                 .getProperty(property.getName());
@@ -142,6 +161,10 @@ public class ObjectDetachOperation {
                                     ? detach(destinationSource, property
                                         .getTargetDescriptor(), child)
                                         : null;
+                                
+                                if (destinationTarget != null) {
+                                    fillReverseRelationship(destinationTarget, property);
+                                }
 
                                 targetMap.put(entry.getKey(), destinationTarget);
                             }
@@ -156,7 +179,11 @@ public class ObjectDetachOperation {
                                         ? detach(destinationSource, property
                                                 .getTargetDescriptor(), child)
                                         : null;
-    
+                                        
+                                if (destinationTarget != null) {
+                                  	fillReverseRelationship(destinationTarget, property);
+                                }
+                                
                                 targetCollection.add(destinationTarget);
                             }
                             targetValue = targetCollection;
