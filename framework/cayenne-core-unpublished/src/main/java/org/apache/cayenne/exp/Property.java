@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SortOrder;
@@ -115,6 +116,13 @@ public class Property<E> {
     public Expression eq(E value) {
         return ExpressionFactory.matchExp(getName(), value);
     }
+    
+    /**
+     * @return An expression representing equality between two attributes (columns).
+     */
+    public Expression eq(Property<?> value) {
+    	return ExpressionFactory.matchExp(getName(), new ASTObjPath(value.getName()));
+    }
 
     /**
      * @return An expression representing inequality to a value.
@@ -123,6 +131,13 @@ public class Property<E> {
         return ExpressionFactory.noMatchExp(getName(), value);
     }
 
+    /**
+     * @return An expression representing inequality between two attributes (columns).
+     */
+    public Expression ne(Property<?> value) {
+        return ExpressionFactory.noMatchExp(getName(), new ASTObjPath(value.getName()));
+    }
+    
     /**
      * @return An expression for a Database "Like" query.
      */
@@ -222,10 +237,24 @@ public class Property<E> {
     }
 
     /**
+     * @return Represents a greater than relationship between two attributes (columns).
+     */
+    public Expression gt(Property<?> value) {
+    	return ExpressionFactory.greaterExp(getName(), new ASTObjPath(value.getName()));
+    }
+    
+    /**
      * @return A greater than or equal to Expression.
      */
     public Expression gte(E value) {
         return ExpressionFactory.greaterOrEqualExp(getName(), value);
+    }
+    
+    /**
+     * @return Represents a greater than or equal relationship between two attributes (columns).
+     */
+    public Expression gte(Property<?> value) {
+    	return ExpressionFactory.greaterOrEqualExp(getName(), new ASTObjPath(value.getName()));
     }
 
     /**
@@ -234,12 +263,26 @@ public class Property<E> {
     public Expression lt(E value) {
         return ExpressionFactory.lessExp(getName(), value);
     }
+    
+    /**
+     * @return Represents a less than relationship between two attributes (columns).
+     */
+    public Expression lt(Property<?> value) {
+    	return ExpressionFactory.lessExp(getName(), new ASTObjPath(value.getName()));
+    }
 
     /**
      * @return A less than or equal to Expression.
      */
     public Expression lte(E value) {
         return ExpressionFactory.lessOrEqualExp(getName(), value);
+    }
+    
+    /**
+     * @return Represents a less than or equal relationship between two attributes (columns).
+     */
+    public Expression lte(Property<?> value) {
+    	return ExpressionFactory.lessOrEqualExp(getName(), new ASTObjPath(value.getName()));
     }
 
     /**
