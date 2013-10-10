@@ -99,19 +99,16 @@ public class ObjectDetachOperation {
 
         descriptor.visitProperties(new PropertyVisitor() {
 
-        	private void fillReverseRelationship(Object destinationTarget, ArcProperty property) {
-				ArcProperty reverseProperty = property.getComplimentaryReverseArc();
+            private void fillReverseRelationship(Object destinationTarget, ArcProperty property) {
+                ArcProperty clientProperty = (ArcProperty) targetDescriptor.getProperty(property.getName());
+                if (clientProperty != null) {
+                    ArcProperty clientReverse = clientProperty.getComplimentaryReverseArc();
 
-				if (reverseProperty != null && reverseProperty instanceof ToOneProperty) {
-
-					ClassDescriptor desc = targetResolver.getClassDescriptor(
-							reverseProperty.getRelationship().getSourceEntity().getName());
-
-					ToOneProperty targetReverseProperty =
-							(ToOneProperty) desc.getProperty(reverseProperty.getName());
-					targetReverseProperty.writeProperty(destinationTarget, null, target);
-				}
-        	}
+                    if (clientReverse instanceof ToOneProperty) {
+                        clientReverse.writeProperty(destinationTarget, null, target);
+                    }
+                }
+            }
 
             public boolean visitToOne(ToOneProperty property) {
                 if (prefetchTree != null) {
