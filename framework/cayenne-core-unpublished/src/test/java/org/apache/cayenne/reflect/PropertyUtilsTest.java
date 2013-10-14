@@ -206,32 +206,42 @@ public class PropertyUtilsTest extends TestCase {
     }
 
     public void testSetConvertedWithCustomConverter() {
-    	ConverterFactory.addConverter(Date.class, new Converter<Date>() {
-			@Override
-			protected Date convert(Object value, Class<Date> type) {
-				if (value == null) return null;
-				if (value instanceof Date) {
-					return (Date)value;
-				}
-				if (value instanceof String) {
-					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-					try {
-						return format.parse((String) value);
-					} catch (ParseException e) {
-						throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date", e);
-					}
-				}
-				throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date");
-			}
-    	});
-    	
-        TestJavaBean o1 = new TestJavaBean();
+        // save old converter for restore
+        Converter<Date> oldConverter = ConverterFactory.factory.getConverter(Date.class);
 
-        // String to date
-        PropertyUtils.setProperty(o1, "dateField", "2013-08-01");
-        
-        Calendar cal = new GregorianCalendar(2013, 7, 1, 0, 0, 0);
-        assertEquals(cal.getTime(), o1.getDateField());
+        try {
+            ConverterFactory.addConverter(Date.class, new Converter<Date>() {
+                @Override
+                protected Date convert(Object value, Class<Date> type) {
+                    if (value == null)
+                        return null;
+                    if (value instanceof Date) {
+                        return (Date) value;
+                    }
+                    if (value instanceof String) {
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            return format.parse((String) value);
+                        } catch (ParseException e) {
+                            throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date", e);
+                        }
+                    }
+                    throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date");
+                }
+            });
+
+            TestJavaBean o1 = new TestJavaBean();
+
+            // String to date
+            PropertyUtils.setProperty(o1, "dateField", "2013-08-01");
+
+            Calendar cal = new GregorianCalendar(2013, 7, 1, 0, 0, 0);
+            assertEquals(cal.getTime(), o1.getDateField());
+        } finally {
+
+            // restore global date converter
+            ConverterFactory.addConverter(Date.class, oldConverter);
+        }
     }
     
     public void testSetNull() {
