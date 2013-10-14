@@ -151,11 +151,16 @@ public class PropertyUtils {
         if (dot > 0) {
             lastSegment = nestedPropertyName.substring(dot + 1);
             String pathSegment = nestedPropertyName.substring(0, dot);
-            object = getProperty(object, pathSegment);
+            Object intermediateObject = getProperty(object, pathSegment);
 
-            if (object == null) {
-                throw new IllegalArgumentException(
-                        "Null object at the end of the segment '" + pathSegment + "'");
+            if (intermediateObject == null) {
+                throw new UnresolvablePathException(
+                        "Null value in the middle of the path, failed on "
+                                + pathSegment
+                                + " from "
+                                + object);
+            } else {
+            	object = intermediateObject;
             }
         }
         else {

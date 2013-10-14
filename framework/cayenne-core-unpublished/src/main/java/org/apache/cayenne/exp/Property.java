@@ -26,6 +26,7 @@ import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.reflect.PropertyUtils;
 
 /**
  * <p>
@@ -65,6 +66,16 @@ public class Property<E> {
     public String getName() {
         return name;
     }
+    
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Property && ((Property<?>)obj).getName().equals(getName());
+	}
 
     /**
      * @return Constructs a property path by appending the argument to the
@@ -375,6 +386,45 @@ public class Property<E> {
         PrefetchTreeNode node = root.addPath(name);
         node.setPhantom(false);
         return node;
+    }
+
+    /**
+     * Extracts property value from an object using JavaBean-compatible introspection with one addition -
+     * a property can be a dot-separated property name path.
+     */
+    @SuppressWarnings("unchecked")
+    public E getFrom(Object bean) {
+    	return (E)PropertyUtils.getProperty(bean, getName());
+    }
+
+    /**
+     * Extracts property value from a collection of objects using JavaBean-compatible introspection with one addition -
+     * a property can be a dot-separated property name path.
+     */
+    public List<E> getFromAll(Collection<?> beans) {
+    	List<E> result = new ArrayList<E>(beans.size());
+    	for (Object bean : beans) {
+    		result.add(getFrom(bean));
+    	}
+    	return result;
+    }
+    
+    /**
+     * Sets a property value in 'obj' using JavaBean-compatible introspection with one addition -
+     * a property can be a dot-separated property name path.
+     */
+	public void setIn(Object bean, E value) {
+    	PropertyUtils.setProperty(bean, getName(), value);
+    }
+
+    /**
+     * Sets a property value in a collection of objects using JavaBean-compatible introspection with one addition -
+     * a property can be a dot-separated property name path.
+     */
+	public void setInAll(Collection<?> beans, E value) {
+    	for (Object bean : beans) {
+    		setIn(bean, value);
+    	}
     }
 
 }

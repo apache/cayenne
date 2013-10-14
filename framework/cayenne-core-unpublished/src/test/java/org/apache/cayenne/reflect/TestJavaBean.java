@@ -22,6 +22,8 @@ package org.apache.cayenne.reflect;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.cayenne.util.ToStringBuilder;
+
 public class TestJavaBean extends Object {
 
     protected String stringField;
@@ -171,5 +173,13 @@ public class TestJavaBean extends Object {
 
 	public void setDoubleField(double doubleField) {
 		this.doubleField = doubleField;
+	}
+	
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+			.append("intField", getIntField())
+			.append("objectField", getObjectField())
+			.toString();
 	}
 }

@@ -19,8 +19,13 @@
 package org.apache.cayenne.exp;
 
 import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.TestCase;
+
+import org.apache.cayenne.reflect.TestJavaBean;
+import org.apache.cayenne.reflect.UnresolvablePathException;
+import org.apache.cayenne.util.Util;
 
 public class PropertyTest extends TestCase {
 
@@ -36,4 +41,109 @@ public class PropertyTest extends TestCase {
         Expression e3 = p.in(Arrays.asList("a", "b"));
         assertEquals("x.y in (\"a\", \"b\")", e3.toString());
     }
+    
+    public void testGetFrom() {
+    	TestJavaBean bean = new TestJavaBean();
+    	bean.setIntField(7);
+    	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
+    	assertEquals(Integer.valueOf(7), INT_FIELD.getFrom(bean));
+    }
+    
+    public void testGetFromNestedProperty() {
+    	TestJavaBean bean = new TestJavaBean();
+    	TestJavaBean nestedBean = new TestJavaBean();
+    	nestedBean.setIntField(7);
+    	bean.setObjectField(nestedBean);
+    	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
+    	assertEquals(Integer.valueOf(7), OBJECT_FIELD_INT_FIELD.getFrom(bean));
+    }
+    
+    public void testGetFromNestedNull() {
+    	TestJavaBean bean = new TestJavaBean();
+    	bean.setObjectField(null);
+    	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
+    	try {
+    		OBJECT_FIELD_INT_FIELD.getFrom(bean);
+    		fail();
+    	} catch (Exception e) {
+    		Throwable rootException = Util.unwindException(e);
+    		if (!(rootException instanceof UnresolvablePathException)) {
+    			fail();
+    		}
+    	}
+    }
+    
+    public void testGetFromAll() {
+    	TestJavaBean bean = new TestJavaBean();
+    	bean.setIntField(7);
+    	
+    	TestJavaBean bean2 = new TestJavaBean();
+    	bean2.setIntField(8);
+    	
+    	List<TestJavaBean> beans = Arrays.asList(bean, bean2);
+
+    	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
+    	assertEquals(Arrays.asList(7, 8), INT_FIELD.getFromAll(beans));
+    }
+    
+    public void testSetIn() {
+    	TestJavaBean bean = new TestJavaBean();
+    	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
+    	INT_FIELD.setIn(bean, 7);
+    	assertEquals(7, bean.getIntField());
+    }
+    
+    public void testSetInNestedProperty() {
+    	TestJavaBean bean = new TestJavaBean();
+    	bean.setObjectField(new TestJavaBean());
+    	
+    	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
+
+    	OBJECT_FIELD_INT_FIELD.setIn(bean, 7);
+    	assertEquals(7, ((TestJavaBean)bean.getObjectField()).getIntField());
+    }
+    
+    public void testSetInNestedNull() {
+    	TestJavaBean bean = new TestJavaBean();
+    	bean.setObjectField(null);
+    	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
+    	try {
+    		OBJECT_FIELD_INT_FIELD.setIn(bean, 7);
+    		fail();
+    	} catch (Exception e) {
+    		Throwable rootException = Util.unwindException(e);
+    		if (!(rootException instanceof UnresolvablePathException)) {
+    			fail();
+    		}
+    	}
+    }
+    
+    public void testSetInAll() {
+    	TestJavaBean bean = new TestJavaBean();
+    	TestJavaBean bean2 = new TestJavaBean();
+    	List<TestJavaBean> beans = Arrays.asList(bean, bean2);
+
+    	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
+    	INT_FIELD.setInAll(beans, 7);
+    	assertEquals(7, bean.getIntField());
+    	assertEquals(7, bean2.getIntField());
+    }
+    
+    public void testEquals() {
+    	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
+    	final Property<Integer> INT_FIELD2 = new Property<Integer>("intField");
+
+    	assertTrue(INT_FIELD != INT_FIELD2);
+    	assertTrue(INT_FIELD.equals(INT_FIELD2));
+    }
+    
+    public void testHashCode() {
+    	final Property<Integer> INT_FIELD  = new Property<Integer>("intField");
+    	final Property<Integer> INT_FIELD2 = new Property<Integer>("intField");
+    	final Property<Long> LONG_FIELD = new Property<Long>("longField");
+
+    	assertTrue(INT_FIELD.hashCode() == INT_FIELD2.hashCode());
+    	assertTrue(INT_FIELD.hashCode() != LONG_FIELD.hashCode());
+    }
+    
 }
