@@ -370,6 +370,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private QueryCacheEntryFactory getCacheObjectFactory() {
         return new QueryCacheEntryFactory() {
 
+            @Override
             public Object createObject() {
                 runQueryInTransaction();
 
@@ -398,6 +399,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         domain.runInTransaction(new Transformer() {
 
+            @Override
             public Object transform(Object input) {
                 runQuery();
                 return null;
@@ -461,6 +463,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
+    @Override
     public void route(QueryEngine engine, Query query, Query substitutedQuery) {
 
         Collection<Query> queries = null;
@@ -490,6 +493,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
+    @Override
     public QueryEngine engineForDataMap(DataMap map) {
         if (map == null) {
             throw new NullPointerException("Null DataMap, can't determine DataNode.");
@@ -504,14 +508,17 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return node;
     }
 
+    @Override
     public void nextCount(Query query, int resultCount) {
         fullResponse.addUpdateCount(resultCount);
     }
 
+    @Override
     public void nextBatchCount(Query query, int[] resultCount) {
         fullResponse.addBatchUpdateCount(resultCount);
     }
 
+    @Override
     public void nextRows(Query query, List<?> dataRows) {
 
         // exclude prefetched rows in the main result
@@ -537,14 +544,17 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
+    @Override
     public void nextQueryException(Query query, Exception ex) {
         throw new CayenneRuntimeException("Query exception.", Util.unwindException(ex));
     }
 
+    @Override
     public void nextGlobalException(Exception e) {
         throw new CayenneRuntimeException("Global exception.", Util.unwindException(e));
     }
 
+    @Override
     public boolean isIteratedResult() {
         return false;
     }
