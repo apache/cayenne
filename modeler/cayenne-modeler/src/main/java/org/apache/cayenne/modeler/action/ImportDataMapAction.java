@@ -106,7 +106,7 @@ public class ImportDataMapAction extends CayenneAction {
             
             Resource baseResource = domain.getConfigurationSource();
 
-            if(baseResource != null) {
+            if (baseResource != null) {
                 Resource dataMapResource = baseResource.getRelativeResource(newMap.getName());
                 newMap.setConfigurationSource(dataMapResource);
             }
