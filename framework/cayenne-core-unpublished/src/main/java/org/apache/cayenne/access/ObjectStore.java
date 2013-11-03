@@ -52,8 +52,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.commons.collections.map.AbstractReferenceMap;
-import org.apache.commons.collections.map.ReferenceMap;
 
 /**
  * ObjectStore stores objects using their ObjectId as a key. It works as a dedicated
@@ -64,16 +62,6 @@ import org.apache.commons.collections.map.ReferenceMap;
  * @since 1.0
  */
 public class ObjectStore implements Serializable, SnapshotEventListener, GraphManager {
-
-    /**
-     * Factory method to create default Map for storing registered objects.
-     * 
-     * @since 3.0
-     * @return a map with hard referenced keys and weak referenced values.
-     */
-    static Map<Object, Persistent> createObjectMap() {
-        return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.WEAK);
-    }
 
     protected Map<Object, Persistent> objectMap;
     protected Map<Object, ObjectDiff> changes;
