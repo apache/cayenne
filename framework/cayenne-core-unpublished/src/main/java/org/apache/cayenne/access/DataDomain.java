@@ -591,6 +591,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public QueryResponse onQuery(final ObjectContext originatingContext, final Query query) {
         checkStopped();
 
@@ -609,6 +610,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Returns an EntityResolver that stores mapping information for this
      * domain.
      */
+    @Override
     public EntityResolver getEntityResolver() {
         if (entityResolver == null) {
             createEntityResolver();
@@ -622,6 +624,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * 
      * @since 1.2
      */
+    @Override
     public GraphDiff onSync(final ObjectContext originatingContext, final GraphDiff changes, int syncType) {
 
         checkStopped();
@@ -647,6 +650,7 @@ public class DataDomain implements QueryEngine, DataChannel {
         case DataChannel.FLUSH_CASCADE_SYNC:
             result = (GraphDiff) runInTransaction(new Transformer() {
 
+                @Override
                 public Object transform(Object input) {
                     return onSyncFlush(originatingContext, changes);
                 }
@@ -832,6 +836,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     final class DataDomainQueryFilterChain extends DataDomainFilterChain {
 
+        @Override
         public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
 
             DataChannelFilter filter = nextFilter();
@@ -839,6 +844,7 @@ public class DataDomain implements QueryEngine, DataChannel {
                     originatingContext, query);
         }
 
+        @Override
         public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
             throw new UnsupportedOperationException("It is illegal to call 'onSync' inside 'onQuery' chain");
         }
@@ -846,6 +852,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     final class DataDomainSyncFilterChain extends DataDomainFilterChain {
 
+        @Override
         public GraphDiff onSync(final ObjectContext originatingContext, final GraphDiff changes, int syncType) {
 
             DataChannelFilter filter = nextFilter();
@@ -853,6 +860,7 @@ public class DataDomain implements QueryEngine, DataChannel {
                     originatingContext, changes, syncType);
         }
 
+        @Override
         public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
             throw new UnsupportedOperationException("It is illegal to call 'onQuery' inside 'onSync' chain");
         }
