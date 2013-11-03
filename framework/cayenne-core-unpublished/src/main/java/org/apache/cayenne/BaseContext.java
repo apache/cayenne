@@ -247,16 +247,8 @@ public abstract class BaseContext implements ObjectContext {
         ObjectId id = objectFromAnotherContext.getObjectId();
 
         // first look for the ID in the local GraphManager
-        T localObject = (T) getGraphManager().getNode(id);
-        if (localObject != null) {
-            return localObject;
-        }
-
         synchronized (getGraphManager()) {
-
-            // check for race condition - the object may have appeared in the
-            // GraphManager just recently...
-            localObject = (T) getGraphManager().getNode(id);
+            T localObject = (T) getGraphManager().getNode(id);
             if (localObject != null) {
                 return localObject;
             }
