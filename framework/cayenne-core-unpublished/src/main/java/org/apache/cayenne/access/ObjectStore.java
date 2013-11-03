@@ -421,19 +421,24 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         if (!parentChanges.isNoop()) {
             parentChanges.apply(new GraphChangeHandler() {
 
+                @Override
                 public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
                 }
 
+                @Override
                 public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
                 }
 
+                @Override
                 public void nodeCreated(Object nodeId) {
                 }
 
+                @Override
                 public void nodeIdChanged(Object nodeId, Object newId) {
                     processIdChange(nodeId, newId);
                 }
 
+                @Override
                 public void nodePropertyChanged(
                         Object nodeId,
                         String property,
@@ -441,6 +446,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                         Object newValue) {
                 }
 
+                @Override
                 public void nodeRemoved(Object nodeId) {
                 }
             });
@@ -534,6 +540,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.1
      */
+    @Override
     public void snapshotsChanged(SnapshotEvent event) {
         // filter events that we should not process
         if (event.getPostedBy() != this && event.getSource() == this.getDataRowCache()) {
@@ -733,11 +740,13 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                         .getClassDescriptor(oid.getEntityName());
                 descriptor.visitProperties(new PropertyVisitor() {
 
+                    @Override
                     public boolean visitToMany(ToManyProperty property) {
                         property.invalidate(object);
                         return true;
                     }
 
+                    @Override
                     public boolean visitToOne(ToOneProperty property) {
                         if (property
                                 .getRelationship()
@@ -747,6 +756,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                         return true;
                     }
 
+                    @Override
                     public boolean visitAttribute(AttributeProperty property) {
                         return true;
                     }
@@ -846,6 +856,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.2
      */
+    @Override
     public synchronized Object getNode(Object nodeId) {
         return objectMap.get(nodeId);
     }
@@ -861,6 +872,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.2
      */
+    @Override
     public synchronized Collection<Object> registeredNodes() {
         return new ArrayList<Object>(objectMap.values());
     }
@@ -868,6 +880,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 1.2
      */
+    @Override
     public synchronized void registerNode(Object nodeId, Object nodeObject) {
         objectMap.put(nodeId, (Persistent) nodeObject);
     }
@@ -875,6 +888,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 1.2
      */
+    @Override
     public synchronized Object unregisterNode(Object nodeId) {
         Object object = getNode(nodeId);
         if (object != null) {
@@ -889,6 +903,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.2
      */
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         throw new UnsupportedOperationException("nodeIdChanged");
     }
@@ -896,6 +911,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 1.2
      */
+    @Override
     public void nodeCreated(Object nodeId) {
         NodeDiff diff = new NodeCreateOperation(nodeId);
 
@@ -909,6 +925,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 1.2
      */
+    @Override
     public void nodeRemoved(Object nodeId) {
 
         NodeDiff diff = new NodeDeleteOperation(nodeId);
@@ -925,6 +942,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.2
      */
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,
@@ -945,6 +963,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 1.2
      */
+    @Override
     public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
         NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId.toString(), false);
 
@@ -958,6 +977,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 1.2
      */
+    @Override
     public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
         NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId.toString(), true);
 
@@ -994,14 +1014,17 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             return event;
         }
 
+        @Override
         public void apply(GraphChangeHandler handler) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean isNoop() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void undo(GraphChangeHandler handler) {
             throw new UnsupportedOperationException();
         }
