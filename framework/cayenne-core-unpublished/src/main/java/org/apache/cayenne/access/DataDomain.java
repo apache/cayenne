@@ -128,7 +128,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      *            Configuration object.
      * @param properties
      *            A Map containing domain configuration properties.
+     * @deprecated since 3.2 unused
      */
+    @Deprecated
     public DataDomain(String name, Map properties) {
         init(name);
         initWithProperties(properties);
@@ -190,7 +192,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Reinitializes domain state with a new set of properties.
      * 
      * @since 1.1
+     * @deprecated since 3.2 properties are processed by the DI provider.
      */
+    @Deprecated
     public void initWithProperties(Map<String, String> properties) {
 
         // clone properties to ensure that it is read-only internally
