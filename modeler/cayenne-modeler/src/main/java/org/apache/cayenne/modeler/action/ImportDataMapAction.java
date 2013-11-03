@@ -36,6 +36,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,6 +102,13 @@ public class ImportDataMapAction extends CayenneAction {
             }
             else {
                 newMap.setName(NamedObjectFactory.createName(DataMap.class, domain));
+            }
+            
+            Resource baseResource = domain.getConfigurationSource();
+
+            if(baseResource != null) {
+                Resource dataMapResource = baseResource.getRelativeResource(newMap.getName());
+                newMap.setConfigurationSource(dataMapResource);
             }
 
             getProjectController().addDataMap(this, newMap);
