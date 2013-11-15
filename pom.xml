@@ -704,7 +704,6 @@
 						<exclude>**/*.graffle</exclude>
 						<exclude>**/.*</exclude>
 						<exclude>**/.*/**</exclude>
-						<exclude>**/CLOVER.txt</exclude>
 						<exclude>**/*.map.xml</exclude>
 						<exclude>**/*.css</exclude>
 						<exclude>**/*.properties</exclude>

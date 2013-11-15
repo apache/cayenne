@@ -33,7 +33,6 @@
 **/cayenne-*.xml
 **/cayenne.xml
 **/*.driver.xml
-**/CLOVER.txt
 **/*.html
 **/*.css
 **/derby.log
