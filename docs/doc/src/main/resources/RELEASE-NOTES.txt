@@ -39,6 +39,7 @@ CAY-1869 ResultIterator from cayenne-client dependency is subclassed from org.ap
 CAY-1874 DB2 Procedure action ignores the first result set
 CAY-1798 ROP: Reverse relationships of prefetched entity objects are not filled during server to client objects conversion
 CAY-1797 NPE importing DataMap
+CAY-1880 objectStore snapshots never cleared from RefreshQuery when "use shared cache" unchecked
 
 ----------------------------------
 Release: 3.2M1
