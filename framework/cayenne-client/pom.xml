@@ -43,8 +43,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-legal-unpublished</artifactId>
+			<groupId>org.apache.cayenne.buildtools</groupId>
+			<artifactId>cayenne-legal</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -89,8 +89,8 @@
 									<version>${project.version}</version>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.apache.cayenne.unpublished</groupId>
-									<artifactId>cayenne-legal-unpublished</artifactId>
+									<groupId>org.apache.cayenne.buildtools</groupId>
+									<artifactId>cayenne-legal</artifactId>
 									<version>${project.version}</version>
 								</artifactItem>
 							</artifactItems>

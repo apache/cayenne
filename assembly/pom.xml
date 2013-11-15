@@ -87,7 +87,7 @@
 						<configuration>
 							<outputDirectory>${project.build.directory}/legal</outputDirectory>
 							<resourceBundles>
-								<resourceBundle>org.apache.cayenne.unpublished:cayenne-legal-unpublished:${project.version}</resourceBundle>
+								<resourceBundle>org.apache.cayenne.buildtools:cayenne-legal:${project.version}</resourceBundle>
 							</resourceBundles>
 						</configuration>
 					</execution>

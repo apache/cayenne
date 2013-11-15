@@ -22,14 +22,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne</groupId>
-		<artifactId>cayenne-parent</artifactId>
+		<groupId>org.apache.cayenne.buildtools</groupId>
+		<artifactId>build-tools-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.apache.cayenne.unpublished</groupId>
-	<artifactId>cayenne-legal-unpublished</artifactId>
+	<artifactId>cayenne-legal</artifactId>
 	<name>Cayenne License and Notice Bundle</name>
 	<description>Cayenne License and Notice Bundle</description>
 	<packaging>jar</packaging>
@@ -79,13 +77,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
