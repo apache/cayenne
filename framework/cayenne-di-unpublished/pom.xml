@@ -59,7 +59,7 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.cayenne.buildtools</groupId>
-				<artifactId>maven-cayenne-build-plugin</artifactId>
+				<artifactId>cayenne-build-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<id>date</id>

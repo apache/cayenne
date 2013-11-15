@@ -523,7 +523,7 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.cayenne.buildtools</groupId>
-										<artifactId>maven-cayenne-build-plugin</artifactId>
+										<artifactId>cayenne-build-maven-plugin</artifactId>
 										<versionRange>[1.0,)</versionRange>
 										<goals>
 											<goal>date</goal>
@@ -578,7 +578,7 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.cayenne.build-tools</groupId>
-					<artifactId>maven-cayenne-build-plugin</artifactId>
+					<artifactId>cayenne-build-maven-plugin</artifactId>
 					<version>${project.version}</version>
 				</plugin>
 				<plugin>
