@@ -32,7 +32,6 @@
 	<modules>
 		<module>cayenne-di-unpublished</module>
 		<module>cayenne-core-unpublished</module>
-		<module>cayenne-wocompat-unpublished</module>
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
 		<module>cayenne-project</module>

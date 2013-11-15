@@ -33,6 +33,7 @@
 	<packaging>pom</packaging>
 	
 	<modules>
+		<module>cayenne-wocompat</module>
 		<module>cayenne-modeler</module>
 		<module>maven-cayenne-modeler-plugin</module>
 	</modules>

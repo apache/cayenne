@@ -96,8 +96,8 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-wocompat-unpublished</artifactId>
+			<groupId>org.apache.cayenne.modeler</groupId>
+			<artifactId>cayenne-wocompat</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
