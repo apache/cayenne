@@ -32,7 +32,7 @@
 	</description>
 	<url>http://cayenne.apache.org/</url>
 	<modules>
-		<module>build-tools</module>
+		<module>buildtools</module>
 		<module>framework</module>
 		<module>itests</module>
 		<module>modeler</module>
@@ -522,7 +522,7 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>org.apache.cayenne.build-tools</groupId>
+										<groupId>org.apache.cayenne.buildtools</groupId>
 										<artifactId>maven-cayenne-build-plugin</artifactId>
 										<versionRange>[1.0,)</versionRange>
 										<goals>

@@ -34,7 +34,7 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cayenne.build-tools</groupId>
+			<groupId>org.apache.cayenne.buildtools</groupId>
 			<artifactId>cayenne-test-utilities</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
@@ -44,7 +44,7 @@
 			<artifactId>mockito-all</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cayenne.build-tools</groupId>
+			<groupId>org.apache.cayenne.buildtools</groupId>
 			<artifactId>cayenne-test-utilities</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>

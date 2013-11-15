@@ -58,7 +58,7 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.cayenne.build-tools</groupId>
+				<groupId>org.apache.cayenne.buildtools</groupId>
 				<artifactId>maven-cayenne-build-plugin</artifactId>
 				<executions>
 					<execution>

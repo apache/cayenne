@@ -27,8 +27,8 @@
 		<version>3.2M2-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.apache.cayenne.parents</groupId>
-	<artifactId>cayenne-build-tools</artifactId>
+	<groupId>org.apache.cayenne.buildtools</groupId>
+	<artifactId>build-tools-parent</artifactId>
 	<name>Cayenne Build Tools Parent</name>
 	<packaging>pom</packaging>
 
