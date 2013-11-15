@@ -35,6 +35,7 @@ CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
 CAY-1804 Serialisation of long[] type was not working correctly. 
 CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection 
+CAY-1880 objectStore snapshots never cleared from RefreshQuery when "use shared cache" unchecked
 
 ----------------------------------
 Release: 3.0.2

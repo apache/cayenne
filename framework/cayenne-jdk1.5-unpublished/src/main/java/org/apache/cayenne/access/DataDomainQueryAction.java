@@ -252,6 +252,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 // not sending any events - peer contexts will not get refreshed
                 if (domain.getSharedSnapshotCache() != null) {
                     domain.getSharedSnapshotCache().clear();
+                } else {
+                    // remove snapshots from local ObjectStore only
+                    context.getObjectStore().getDataRowCache().clear();
                 }
                 context.getQueryCache().clear();
 
@@ -273,6 +276,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 if (domain.getSharedSnapshotCache() != null) {
                     // send an event for removed snapshots
                     domain.getSharedSnapshotCache().processSnapshotChanges(
+                            context.getObjectStore(),
+                            Collections.EMPTY_MAP,
+                            Collections.EMPTY_LIST,
+                            ids,
+                            Collections.EMPTY_LIST);
+                } else {
+                    // remove snapshots from local ObjectStore only
+                    context.getObjectStore().getDataRowCache().processSnapshotChanges(
                             context.getObjectStore(),
                             Collections.EMPTY_MAP,
                             Collections.EMPTY_LIST,
