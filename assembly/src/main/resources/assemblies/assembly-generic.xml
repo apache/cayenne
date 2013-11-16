@@ -73,6 +73,8 @@
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
+				<include>org.apache.cayenne:cayenne-di</include>
+				<include>org.apache.cayenne:cayenne-core</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-client</include>
 				<include>org.apache.cayenne:cayenne-tools</include>
@@ -104,7 +106,7 @@
 		<dependencySet>
 			<outputDirectory>bin</outputDirectory>
 			<includes>
-				<include>org.apache.cayenne:cayenne-modeler-generic</include>
+				<include>org.apache.cayenne.modeler:cayenne-modeler-generic</include>
 			</includes>
 			<unpack>true</unpack>
 			<unpackOptions>
