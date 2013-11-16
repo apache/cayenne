@@ -27,9 +27,11 @@
 	<description>Cayenne Core Unpublished</description>
 	<packaging>jar</packaging>
 	<dependencies>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -54,11 +56,14 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
+			<scope>test</scope>
         </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-mock</artifactId>
+			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.caucho</groupId>
 			<artifactId>resin-hessian</artifactId>
