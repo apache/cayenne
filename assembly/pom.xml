@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-	Licensed to the Apache Software Foundation (ASF) under one
-	or more contributor license agreements.  See the NOTICE file
-	distributed with this work for additional information
-	regarding copyright ownership.  The ASF licenses this file
-	to you under the Apache License, Version 2.0 (the
-	"License"); you may not use this file except in compliance
-	with the License.  You may obtain a copy of the License at
-
-		http://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing,
-	software distributed under the License is distributed on an
-	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-	KIND, either express or implied.  See the License for the
-	specific language governing permissions and limitations
-	under the License.   
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	you under the Apache License, Version 2.0 (the "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -48,18 +41,18 @@
 			<version>${project.version}</version>
 		</dependency>
 
-    	<dependency>
+		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-lifecycle</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler</artifactId>
@@ -78,20 +71,9 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-remote-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<phase>process-resources</phase>
-						<configuration>
-							<outputDirectory>${project.build.directory}/legal</outputDirectory>
-							<resourceBundles>
-								<resourceBundle>org.apache.cayenne.buildtools:cayenne-legal:${project.version}</resourceBundle>
-							</resourceBundles>
-						</configuration>
-					</execution>
-				</executions>
+				<configuration>
+					<outputDirectory>${project.build.directory}/legal</outputDirectory>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -172,9 +154,9 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
-			<!-- MAC assembly (can only be run on Mac)-->
+			<!-- MAC assembly (can only be run on Mac) -->
 			<id>mac</id>
 			<dependencies>
 				<dependency>
@@ -196,7 +178,7 @@
 								</goals>
 								<configuration>
 									<rules>
-					                	<requireOS>
+										<requireOS>
 											<family>mac</family>
 										</requireOS>
 									</rules>
@@ -223,15 +205,14 @@
 							</execution>
 						</executions>
 					</plugin>
-				
+
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<executions>
-							<!-- chmod executable ... while japplication plugin produces the correct permissions,
-							     jar/unjar operation resets 'x' flag, so the app becomes non-executable. Must
-							     fix that manually
-							-->
+							<!-- chmod executable ... while japplication plugin produces the correct 
+								permissions, jar/unjar operation resets 'x' flag, so the app becomes non-executable. 
+								Must fix that manually -->
 							<execution>
 								<id>chmod-modeler</id>
 								<phase>package</phase>
@@ -246,7 +227,7 @@
 									</arguments>
 								</configuration>
 							</execution>
-							
+
 							<!-- Package into .dmg -->
 							<execution>
 								<id>dmg-distro</id>
@@ -273,9 +254,9 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
-			<!-- WINDOWS assembly (can only be run on Windows)-->
+			<!-- WINDOWS assembly (can only be run on Windows) -->
 			<id>windows</id>
 			<dependencies>
 				<dependency>
@@ -297,7 +278,7 @@
 								</goals>
 								<configuration>
 									<rules>
-					                	<requireOS>
+										<requireOS>
 											<family>windows</family>
 										</requireOS>
 									</rules>

@@ -66,29 +66,4 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-remote-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<phase>process-resources</phase>
-						<configuration>
-							<outputDirectory>
-								${project.build.directory}/classes
-							</outputDirectory>
-							<resourceBundles>
-								<resourceBundle>
-									org.apache.cayenne.buildtools:cayenne-legal:${project.version}
-								</resourceBundle>
-							</resourceBundles>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

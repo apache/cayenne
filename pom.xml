@@ -570,6 +570,7 @@
 										<versionRange>[1.0,)</versionRange>
 										<goals>
 											<goal>bundle</goal>
+											<goal>process</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -774,23 +775,31 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>bundle-source-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>process-resources</phase>
+						<configuration>
+							<outputDirectory>
+								${project.build.directory}/classes
+							</outputDirectory>
+							<resourceBundles>
+								<resourceBundle>
+									org.apache.cayenne.buildtools:cayenne-legal:${project.version}
+								</resourceBundle>
+							</resourceBundles>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.rat</groupId>
