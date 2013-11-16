@@ -24,27 +24,12 @@
 		<artifactId>cayenne-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
 	</parent>
-	<groupId>org.apache.cayenne.parents</groupId>
-	<artifactId>cayenne-framework-parent</artifactId>
-	<name>Cayenne Framework Aggregator Project</name>
+	<groupId>org.apache.cayenne.plugins</groupId>
+	<artifactId>cayenne-plugins-parent</artifactId>
+	<name>Cayenne Maven Plugins</name>
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>cayenne-di-unpublished</module>
-		<module>cayenne-core-unpublished</module>
-		<module>cayenne-server</module>
-		<module>cayenne-client</module>
+		<module>maven-cayenne-plugin</module>
 	</modules>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
