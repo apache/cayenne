@@ -24,15 +24,13 @@ import java.util.Collections;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
-public class ClientEntityResolverTest extends ClientCase {
+@UseServerRuntime(ServerCase.MULTI_TIER_PROJECT)
+public class ClientEntityResolverTest extends ServerCase {
 
     @Inject
     private EntityResolver serverResolver;
@@ -46,47 +44,12 @@ public class ClientEntityResolverTest extends ClientCase {
 
         try {
             assertNotNull(clientResolver.getObjEntity("MtTable1"));
-        }
-        catch (CayenneRuntimeException e) {
-            fail("'MtTable1' entity is not mapped. All entities: "
-                    + clientResolver.getObjEntities());
+        } catch (CayenneRuntimeException e) {
+            fail("'MtTable1' entity is not mapped. All entities: " + clientResolver.getObjEntities());
         }
 
         assertNotNull(clientResolver.getObjEntity(ClientMtTable1.class));
         assertNull(clientResolver.getObjEntity(MtTable1.class));
-    }
-
-    public void testSerializabilityWithHessian() throws Exception {
-        ObjEntity entity = new ObjEntity("test_entity");
-        entity.setClassName(Artist.class.getName());
-
-        DataMap dataMap = new DataMap("test");
-        dataMap.addObjEntity(entity);
-        Collection<DataMap> maps = Collections.singleton(dataMap);
-        EntityResolver resolver = new EntityResolver(maps);
-
-        // 1. simple case
-        Object c1 = HessianUtil.cloneViaClientServerSerialization(
-                resolver,
-                new EntityResolver());
-
-        assertNotNull(c1);
-        assertTrue(c1 instanceof EntityResolver);
-        EntityResolver cr1 = (EntityResolver) c1;
-
-        assertNotSame(resolver, cr1);
-        assertEquals(1, cr1.getObjEntities().size());
-        assertNotNull(cr1.getObjEntity(entity.getName()));
-
-        // 2. with descriptors resolved...
-        assertNotNull(resolver.getClassDescriptor(entity.getName()));
-
-        EntityResolver cr2 = (EntityResolver) HessianUtil
-                .cloneViaClientServerSerialization(resolver, new EntityResolver());
-        assertNotNull(cr2);
-        assertEquals(1, cr2.getObjEntities().size());
-        assertNotNull(cr2.getObjEntity(entity.getName()));
-        assertNotNull(cr2.getClassDescriptor(entity.getName()));
     }
 
     public void testConstructor() {
@@ -113,8 +76,7 @@ public class ClientEntityResolverTest extends ClientCase {
         try {
             subEntity.getSuperEntity();
             fail("hmm... superentity can't possibly be resolved at this point.");
-        }
-        catch (CayenneRuntimeException e) {
+        } catch (CayenneRuntimeException e) {
             // expected
         }
 
@@ -124,7 +86,8 @@ public class ClientEntityResolverTest extends ClientCase {
         Collection<DataMap> maps = Collections.singleton(dataMap);
         new EntityResolver(maps);
 
-        // after registration with resolver super entity should resolve just fine
+        // after registration with resolver super entity should resolve just
+        // fine
         assertSame(superEntity, subEntity.getSuperEntity());
     }
 }

@@ -25,8 +25,6 @@ import junit.framework.TestCase;
 
 import org.apache.cayenne.MockPersistentObject;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 
 public class RefreshQueryTest extends TestCase {
 
@@ -75,9 +73,7 @@ public class RefreshQueryTest extends TestCase {
     }
 
     public void testGroupKeysConstructor() {
-        String[] groupKeys = new String[] {
-                "a", "b"
-        };
+        String[] groupKeys = new String[] { "a", "b" };
 
         RefreshQuery q = new RefreshQuery(groupKeys);
         assertNull(q.getObjects());
@@ -85,15 +81,4 @@ public class RefreshQueryTest extends TestCase {
         assertSame(groupKeys, q.getGroupKeys());
     }
 
-    public void testSerializabilityWithHessian() throws Exception {
-        RefreshQuery o = new RefreshQuery();
-        Object clone = HessianUtil.cloneViaClientServerSerialization(
-                o,
-                new EntityResolver());
-
-        assertTrue(clone instanceof RefreshQuery);
-        RefreshQuery c1 = (RefreshQuery) clone;
-
-        assertNotSame(o, c1);
-    }
 }

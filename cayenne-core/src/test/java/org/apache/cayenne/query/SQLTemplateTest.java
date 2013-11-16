@@ -30,8 +30,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -58,22 +56,15 @@ public class SQLTemplateTest extends ServerCase {
     public void testBindCHARInWHERE() {
         // add 2 Artists
         DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-        SQLTemplate q1 = new SQLTemplate(
-                testDataMap,
-                "INSERT INTO ARTIST VALUES (1, 'Surikov', null)",
-                true);
-        SQLTemplate q2 = new SQLTemplate(
-                testDataMap,
-                "INSERT INTO ARTIST VALUES (2, 'Shishkin', null)",
-                true);
+        SQLTemplate q1 = new SQLTemplate(testDataMap, "INSERT INTO ARTIST VALUES (1, 'Surikov', null)", true);
+        SQLTemplate q2 = new SQLTemplate(testDataMap, "INSERT INTO ARTIST VALUES (2, 'Shishkin', null)", true);
         QueryChain chain = new QueryChain();
         chain.addQuery(q1);
         chain.addQuery(q2);
         context.performNonSelectingQuery(chain);
-        // now select one Artist by Name, It's matter that ARTIST_NAME is CHAR not VARCHAR
-        SQLTemplate s1 = new SQLTemplate(
-                testDataMap,
-                "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($ARTIST_NAME)",
+        // now select one Artist by Name, It's matter that ARTIST_NAME is CHAR
+        // not VARCHAR
+        SQLTemplate s1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($ARTIST_NAME)",
                 true);
         // whitespace after name is for reason
         s1.setParameters(Collections.singletonMap("ARTIST_NAME", "Surikov "));
@@ -109,12 +100,10 @@ public class SQLTemplateTest extends ServerCase {
         boolean gotRuntimeException = false;
         try {
             context.performQuery(q2);
-        }
-        catch (CayenneRuntimeException e) {
+        } catch (CayenneRuntimeException e) {
             gotRuntimeException = true;
         }
-        assertTrue(
-                "If fetchingDataRows is false and ObjectEntity not set, shoulb be thrown exception",
+        assertTrue("If fetchingDataRows is false and ObjectEntity not set, shoulb be thrown exception",
                 gotRuntimeException);
     }
 
@@ -158,28 +147,6 @@ public class SQLTemplateTest extends ServerCase {
         assertNotSame(o, c1);
         assertEquals(o.getRoot(), c1.getRoot());
         assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
-    }
-
-    public void testSerializabilityWithHessian() throws Exception {
-        SQLTemplate o = new SQLTemplate("Test", "DO SQL");
-        Object clone = HessianUtil.cloneViaClientServerSerialization(
-                o,
-                new EntityResolver());
-
-        assertTrue(clone instanceof SQLTemplate);
-        SQLTemplate c1 = (SQLTemplate) clone;
-
-        assertNotSame(o, c1);
-        assertEquals(o.getRoot(), c1.getRoot());
-        assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
-
-        // set immutable parameters ... query must recast them to mutable version
-        Map<String, Object>[] parameters = new Map[] {
-            Collections.EMPTY_MAP
-        };
-        o.setParameters(parameters);
-
-        HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
     }
 
     public void testGetDefaultTemplate() {
@@ -243,9 +210,7 @@ public class SQLTemplateTest extends ServerCase {
         Map<String, Object> params2 = new HashMap<String, Object>();
         params2.put("1", "2");
 
-        query.setParameters(new Map[] {
-                params1, params2, null
-        });
+        query.setParameters(new Map[] { params1, params2, null });
         assertEquals(params1, query.getParameters());
         Iterator<?> it = query.parametersIterator();
         assertTrue(it.hasNext());

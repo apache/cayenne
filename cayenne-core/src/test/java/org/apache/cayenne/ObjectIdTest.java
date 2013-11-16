@@ -20,16 +20,13 @@
 package org.apache.cayenne;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.collections.map.LinkedMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.collections.map.LinkedMap;
 
 public class ObjectIdTest extends TestCase {
 
@@ -39,9 +36,7 @@ public class ObjectIdTest extends TestCase {
         assertTrue(temp1.isTemporary());
         assertNotNull(temp1.getKey());
 
-        byte[] key = new byte[] {
-                1, 2, 3
-        };
+        byte[] key = new byte[] { 1, 2, 3 };
         ObjectId temp2 = new ObjectId("e1", key);
         assertEquals("e1", temp2.getEntityName());
         assertTrue(temp2.isTemporary());
@@ -69,60 +64,6 @@ public class ObjectIdTest extends TestCase {
 
         // make sure hashCode is reset to 0
         assertTrue(perm2.hashCode == 0);
-
-        assertFalse(perm2.isTemporary());
-        assertNotSame(perm1, perm2);
-        assertEquals(perm1, perm2);
-    }
-
-    public void testHessianSerializabilityTemp() throws Exception {
-        ObjectId temp1 = new ObjectId("e");
-
-        // make sure hashcode is resolved
-        int h = temp1.hashCode();
-        assertEquals(h, temp1.hashCode);
-        assertTrue(temp1.hashCode != 0);
-
-        ObjectId temp2 = (ObjectId) HessianUtil.cloneViaClientServerSerialization(
-                temp1,
-                new EntityResolver());
-
-        // make sure hashCode is reset to 0
-        assertTrue(temp2.hashCode == 0);
-
-        assertTrue(temp1.isTemporary());
-        assertNotSame(temp1, temp2);
-        assertEquals(temp1, temp2);
-    }
-
-    public void testHessianSerializabilityPerm() throws Exception {
-        ObjectId perm1 = new ObjectId("e", "a", "b");
-
-        // make sure hashcode is resolved
-        int h = perm1.hashCode();
-        assertEquals(h, perm1.hashCode);
-        assertTrue(perm1.hashCode != 0);
-
-        ObjectId perm2 = (ObjectId) HessianUtil.cloneViaClientServerSerialization(
-                perm1,
-                new EntityResolver());
-
-        // make sure hashCode is reset to 0
-        assertTrue(perm2.hashCode == 0);
-
-        assertFalse(perm2.isTemporary());
-        assertNotSame(perm1, perm2);
-        assertEquals(perm1, perm2);
-    }
-
-    public void testHessianSerializabilityPerm1() throws Exception {
-        // test serializing an id created with unmodifiable map
-
-        Map id = Collections.unmodifiableMap(Collections.singletonMap("a", "b"));
-        ObjectId perm1 = new ObjectId("e", id);
-        ObjectId perm2 = (ObjectId) HessianUtil.cloneViaClientServerSerialization(
-                perm1,
-                new EntityResolver());
 
         assertFalse(perm2.isTemporary());
         assertNotSame(perm1, perm2);
@@ -203,8 +144,8 @@ public class ObjectIdTest extends TestCase {
     }
 
     /**
-     * Checks that hashCode works even if keys are inserted in the map in a different
-     * order...
+     * Checks that hashCode works even if keys are inserted in the map in a
+     * different order...
      */
     public void testEquals7() {
 
@@ -228,14 +169,10 @@ public class ObjectIdTest extends TestCase {
     public void testEqualsBinaryKey() {
 
         Map hm1 = new HashMap();
-        hm1.put("key1", new byte[] {
-                3, 4, 10, -1
-        });
+        hm1.put("key1", new byte[] { 3, 4, 10, -1 });
 
         Map hm2 = new HashMap();
-        hm2.put("key1", new byte[] {
-                3, 4, 10, -1
-        });
+        hm2.put("key1", new byte[] { 3, 4, 10, -1 });
 
         ObjectId ref = new ObjectId("T", hm1);
         ObjectId oid = new ObjectId("T", hm2);

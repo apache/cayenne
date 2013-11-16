@@ -22,8 +22,6 @@ package org.apache.cayenne.query;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 
 public class ObjectIdQueryTest extends TestCase {
@@ -46,19 +44,9 @@ public class ObjectIdQueryTest extends TestCase {
         assertEquals(oid, ((ObjectIdQuery) o).getObjectId());
     }
 
-    public void testSerializabilityWithHessian() throws Exception {
-        ObjectId oid = new ObjectId("test", "a", "b");
-        ObjectIdQuery query = new ObjectIdQuery(oid);
-
-        Object o = HessianUtil.cloneViaClientServerSerialization(query, new EntityResolver());
-        assertNotNull(o);
-        assertTrue(o instanceof ObjectIdQuery);
-        assertEquals(oid, ((ObjectIdQuery) o).getObjectId());
-    }
-
     /**
-     * Proper 'equals' and 'hashCode' implementations are important when mapping results
-     * obtained in a QueryChain back to the query.
+     * Proper 'equals' and 'hashCode' implementations are important when mapping
+     * results obtained in a QueryChain back to the query.
      */
     public void testEquals() throws Exception {
         ObjectIdQuery q1 = new ObjectIdQuery(new ObjectId("abc", "a", 1));
@@ -77,10 +65,7 @@ public class ObjectIdQueryTest extends TestCase {
     }
 
     public void testMetadata() {
-        ObjectIdQuery q1 = new ObjectIdQuery(
-                new ObjectId("abc", "a", 1),
-                true,
-                ObjectIdQuery.CACHE_REFRESH);
+        ObjectIdQuery q1 = new ObjectIdQuery(new ObjectId("abc", "a", 1), true, ObjectIdQuery.CACHE_REFRESH);
 
         assertTrue(q1.isFetchAllowed());
         assertTrue(q1.isFetchMandatory());
@@ -88,10 +73,7 @@ public class ObjectIdQueryTest extends TestCase {
         QueryMetadata md1 = q1.getMetaData(null);
         assertTrue(md1.isFetchingDataRows());
 
-        ObjectIdQuery q2 = new ObjectIdQuery(
-                new ObjectId("abc", "a", 1),
-                false,
-                ObjectIdQuery.CACHE);
+        ObjectIdQuery q2 = new ObjectIdQuery(new ObjectId("abc", "a", 1), false, ObjectIdQuery.CACHE);
 
         assertTrue(q2.isFetchAllowed());
         assertFalse(q2.isFetchMandatory());
@@ -99,10 +81,7 @@ public class ObjectIdQueryTest extends TestCase {
         QueryMetadata md2 = q2.getMetaData(null);
         assertFalse(md2.isFetchingDataRows());
 
-        ObjectIdQuery q3 = new ObjectIdQuery(
-                new ObjectId("abc", "a", 1),
-                false,
-                ObjectIdQuery.CACHE_NOREFRESH);
+        ObjectIdQuery q3 = new ObjectIdQuery(new ObjectId("abc", "a", 1), false, ObjectIdQuery.CACHE_NOREFRESH);
 
         assertFalse(q3.isFetchAllowed());
         assertFalse(q3.isFetchMandatory());

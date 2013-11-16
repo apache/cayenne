@@ -23,11 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
-import org.apache.cayenne.util.GenericResponse;
-import org.apache.cayenne.util.Util;
-
 import junit.framework.TestCase;
 
 public class GenericResponseTest extends TestCase {
@@ -37,9 +32,7 @@ public class GenericResponseTest extends TestCase {
         list.add(new HashMap());
 
         GenericResponse r = new GenericResponse();
-        r.addBatchUpdateCount(new int[] {
-                1, 2, 3
-        });
+        r.addBatchUpdateCount(new int[] { 1, 2, 3 });
         r.addResultList(list);
 
         assertEquals(2, r.size());
@@ -64,9 +57,7 @@ public class GenericResponseTest extends TestCase {
         list.add(new HashMap());
 
         GenericResponse r = new GenericResponse();
-        r.addBatchUpdateCount(new int[] {
-                1, 2, 3
-        });
+        r.addBatchUpdateCount(new int[] { 1, 2, 3 });
         r.addResultList(list);
 
         GenericResponse sr = (GenericResponse) Util.cloneViaSerialization(r);
@@ -87,33 +78,5 @@ public class GenericResponseTest extends TestCase {
 
         assertFalse(sr.next());
     }
-    
-    public void testSerializationWithHessian() throws Exception {
-        List list = new ArrayList();
-        list.add(new HashMap());
 
-        GenericResponse r = new GenericResponse();
-        r.addBatchUpdateCount(new int[] {
-                1, 2, 3
-        });
-        r.addResultList(list);
-
-        GenericResponse sr = (GenericResponse) HessianUtil.cloneViaClientServerSerialization(r, new EntityResolver());
-        assertNotNull(sr);
-        assertEquals(2, sr.size());
-
-        assertTrue(sr.next());
-        assertFalse(sr.isList());
-
-        int[] srInt = sr.currentUpdateCount();
-        assertEquals(3, srInt.length);
-        assertEquals(2, srInt[1]);
-
-        assertTrue(sr.next());
-        assertTrue(sr.isList());
-
-        assertEquals(list, sr.currentList());
-
-        assertFalse(sr.next());
-    }
 }

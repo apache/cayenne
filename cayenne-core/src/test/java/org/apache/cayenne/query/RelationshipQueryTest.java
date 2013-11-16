@@ -22,12 +22,8 @@ package org.apache.cayenne.query;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 
-/**
- */
 public class RelationshipQueryTest extends TestCase {
 
     public void testConstructorObjectId() {
@@ -48,14 +44,4 @@ public class RelationshipQueryTest extends TestCase {
         assertEquals("relX", q1.getRelationshipName());
     }
 
-    public void testSerializabilityWithHessian() throws Exception {
-        ObjectId oid = new ObjectId("test", "a", "b");
-        RelationshipQuery query = new RelationshipQuery(oid, "relX");
-
-        RelationshipQuery q1 = (RelationshipQuery) HessianUtil
-                .cloneViaClientServerSerialization(query,new EntityResolver());
-        assertNotNull(q1);
-        assertEquals(oid, q1.getObjectId());
-        assertEquals("relX", q1.getRelationshipName());
-    }
 }

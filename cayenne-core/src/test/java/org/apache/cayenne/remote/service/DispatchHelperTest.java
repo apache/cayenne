@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.remote.service;
 
+import static org.mockito.Mockito.mock;
+import junit.framework.TestCase;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.MockDataChannel;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.BootstrapMessage;
-import org.apache.cayenne.remote.MockMessage;
-import org.apache.cayenne.remote.service.DispatchHelper;
-
-import junit.framework.TestCase;
+import org.apache.cayenne.remote.ClientMessage;
 
 public class DispatchHelperTest extends TestCase {
 
@@ -40,7 +40,7 @@ public class DispatchHelperTest extends TestCase {
 
     public void testUnknownMessage() {
         try {
-            DispatchHelper.dispatch(new MockDataChannel(), new MockMessage());
+            DispatchHelper.dispatch(new MockDataChannel(), mock(ClientMessage.class));
             fail("Unknown message must have failed");
         }
         catch (CayenneRuntimeException e) {

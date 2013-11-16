@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.graph;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
-
 import junit.framework.TestCase;
 
 public class NodeDiffTest extends TestCase {
@@ -30,18 +27,6 @@ public class NodeDiffTest extends TestCase {
         Object id = new Object();
         NodeDiff diff = new MockNodeDiff(id);
         assertSame(id, diff.getNodeId());
-    }
-
-    public void testHessianSerialization() throws Exception {
-
-        // id must be a serializable object...
-        String id = "abcd";
-        NodeDiff diff = new MockNodeDiff(id);
-
-        Object d = HessianUtil.cloneViaClientServerSerialization(diff, new EntityResolver());
-        assertNotNull(d);
-        assertNotNull(((NodeDiff) d).getNodeId());
-        assertEquals(id, ((NodeDiff) d).getNodeId());
     }
 
     public void testCompareTo() {

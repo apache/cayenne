@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.tx.TransactionalOperation;

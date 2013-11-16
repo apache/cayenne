@@ -17,14 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.event;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 
 public class EventSubjectTest extends TestCase {
@@ -33,24 +30,21 @@ public class EventSubjectTest extends TestCase {
         try {
             EventSubject.getSubject(null, "Subject");
             Assert.fail();
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             // OK
         }
 
         try {
             EventSubject.getSubject(Object.class, null);
             Assert.fail();
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             // OK
         }
 
         try {
             EventSubject.getSubject(Object.class, "");
             Assert.fail();
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             // OK
         }
     }
@@ -58,16 +52,6 @@ public class EventSubjectTest extends TestCase {
     public void testEqualityOfClonedSubjects() throws Exception {
         EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         EventSubject s2 = (EventSubject) Util.cloneViaSerialization(s1);
-
-        assertNotSame(s1, s2);
-        assertEquals(s1, s2);
-        assertEquals(s1.hashCode(), s2.hashCode());
-    }
-
-    public void testEqualityOfClonedSubjectsHessian() throws Exception {
-        EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
-        EventSubject s2 = (EventSubject) HessianUtil
-                .cloneViaClientServerSerialization(s1, new EntityResolver());
 
         assertNotSame(s1, s2);
         assertEquals(s1, s2);
@@ -110,8 +94,9 @@ public class EventSubjectTest extends TestCase {
      * public void testSubjectGC() { EventSubject s =
      * EventSubject.getSubject(EventSubjectTst.class, "GCSubject"); long hash1 =
      * s.hashCode(); // try to make the subject go away s = null; System.gc();
-     * System.gc(); s = EventSubject.getSubject(EventSubjectTst.class, "GCSubject"); long
-     * hash2 = s.hashCode(); Assert.assertTrue(hash1 != hash2); }
+     * System.gc(); s = EventSubject.getSubject(EventSubjectTst.class,
+     * "GCSubject"); long hash2 = s.hashCode(); Assert.assertTrue(hash1 !=
+     * hash2); }
      */
 
 }

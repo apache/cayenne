@@ -33,7 +33,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.MockAbstractQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -47,18 +46,6 @@ public class DataMapTest extends TestCase {
     public void testSerializability() throws Exception {
         DataMap m1 = new DataMap("abc");
         DataMap d1 = (DataMap) Util.cloneViaSerialization(m1);
-        assertEquals(m1.getName(), d1.getName());
-
-        ObjEntity oe1 = new ObjEntity("oe1");
-        m1.addObjEntity(oe1);
-
-        DataMap d2 = (DataMap) Util.cloneViaSerialization(m1);
-        assertNotNull(d2.getObjEntity(oe1.getName()));
-    }
-
-    public void testSerializabilityWithHessian() throws Exception {
-        DataMap m1 = new DataMap("abc");
-        DataMap d1 = (DataMap) HessianUtil.cloneViaClientServerSerialization(m1, new EntityResolver());
         assertEquals(m1.getName(), d1.getName());
 
         ObjEntity oe1 = new ObjEntity("oe1");

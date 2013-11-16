@@ -31,11 +31,11 @@ import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
-public class EntityResolverClassDescriptorTest extends ClientCase {
+@UseServerRuntime(ServerCase.MULTI_TIER_PROJECT)
+public class EntityResolverClassDescriptorTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;

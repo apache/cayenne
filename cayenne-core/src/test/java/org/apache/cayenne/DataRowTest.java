@@ -21,32 +21,7 @@ package org.apache.cayenne;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
-
 public class DataRowTest extends TestCase {
-
-    public void testHessianSerializability() throws Exception {
-        DataRow s1 = new DataRow(10);
-        s1.put("a", "b");
-
-        DataRow s2 = (DataRow) HessianUtil.cloneViaServerClientSerialization(
-                s1,
-                new EntityResolver());
-
-        assertNotSame(s1, s2);
-        assertEquals(s1, s2);
-        assertEquals(s1.getVersion(), s2.getVersion());
-        assertEquals(s1.getReplacesVersion(), s2.getReplacesVersion());
-
-        // at the moment there are no serializers that can go from client to server.
-        // DataRow s3 = (DataRow) HessianUtil.cloneViaClientServerSerialization(
-        // s1,
-        // new EntityResolver());
-        //
-        // assertNotSame(s1, s3);
-        // assertEquals(s1, s3);
-    }
 
     public void testVersion() throws Exception {
         DataRow s1 = new DataRow(10);

@@ -21,7 +21,6 @@ package org.apache.cayenne.map;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 
 public class ClientObjectRelationshipTest extends TestCase {
@@ -43,22 +42,4 @@ public class ClientObjectRelationshipTest extends TestCase {
         assertEquals(r3.isReadOnly(), r4.isReadOnly());
     }
 
-    public void testSerializabilityViaHessian() throws Exception {
-
-        ClientObjRelationship r1 = new ClientObjRelationship("r1", "rr1", true, true);
-        ClientObjRelationship r2 = (ClientObjRelationship) HessianUtil
-                .cloneViaClientServerSerialization(r1, new EntityResolver());
-        assertEquals(r1.getName(), r2.getName());
-        assertEquals(r1.getReverseRelationship(), r2.getReverseRelationship());
-        assertEquals(r1.isToMany(), r2.isToMany());
-        assertEquals(r1.isReadOnly(), r2.isReadOnly());
-
-        ClientObjRelationship r3 = new ClientObjRelationship("r3", null, false, false);
-        ClientObjRelationship r4 = (ClientObjRelationship) HessianUtil
-                .cloneViaClientServerSerialization(r3, new EntityResolver());
-        assertEquals(r3.getName(), r4.getName());
-        assertNull(r4.getReverseRelationship());
-        assertEquals(r3.isToMany(), r4.isToMany());
-        assertEquals(r3.isReadOnly(), r4.isReadOnly());
-    }
 }

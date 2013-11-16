@@ -23,9 +23,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
-
 public class ListResponseTest extends TestCase {
 
     public void testCreation() throws Exception {
@@ -61,14 +58,4 @@ public class ListResponseTest extends TestCase {
         assertTrue(sr.firstList().contains(new Integer(67)));
     }
 
-    public void testSerializationWithHessian() throws Exception {
-
-        ListResponse r = new ListResponse(new Integer(67));
-
-        ListResponse sr = (ListResponse) HessianUtil.cloneViaClientServerSerialization(r, new EntityResolver());
-        assertNotNull(sr);
-        assertEquals(1, sr.size());
-
-        assertTrue(sr.firstList().contains(new Integer(67)));
-    }
 }

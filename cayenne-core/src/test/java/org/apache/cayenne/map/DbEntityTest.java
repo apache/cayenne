@@ -24,7 +24,6 @@ import java.util.Collection;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
@@ -47,34 +46,6 @@ public class DbEntityTest extends ServerCase {
         entity.addAttribute(generated);
 
         DbEntity d2 = Util.cloneViaSerialization(entity);
-
-        assertNotNull(d2.getPrimaryKeys());
-        assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
-
-        DbAttribute pk2 = d2.getAttribute(pk.getName());
-        assertNotNull(pk2);
-        assertTrue(d2.getPrimaryKeys().contains(pk2));
-
-        assertNotNull(d2.getGeneratedAttributes());
-        assertEquals(entity.getGeneratedAttributes().size(), d2.getGeneratedAttributes().size());
-
-        DbAttribute generated2 = d2.getAttribute(generated.getName());
-        assertNotNull(generated2);
-        assertTrue(d2.getGeneratedAttributes().contains(generated2));
-    }
-
-    public void testSerializabilityWithHessian() throws Exception {
-        DbEntity entity = new DbEntity("entity");
-
-        DbAttribute pk = new DbAttribute("pk");
-        pk.setPrimaryKey(true);
-        entity.addAttribute(pk);
-
-        DbAttribute generated = new DbAttribute("generated");
-        generated.setGenerated(true);
-        entity.addAttribute(generated);
-
-        DbEntity d2 = (DbEntity) HessianUtil.cloneViaClientServerSerialization(entity, new EntityResolver());
 
         assertNotNull(d2.getPrimaryKeys());
         assertEquals(entity.getPrimaryKeys().size(), d2.getPrimaryKeys().size());
@@ -130,7 +101,7 @@ public class DbEntityTest extends ServerCase {
         e3.setCatalog("c3");
         assertEquals("e3", e3.getName());
         assertEquals("c3.s3.e3", e3.getFullyQualifiedName());
-        
+
         DbEntity e4 = new DbEntity("e4");
         e4.setCatalog("c4");
         assertEquals("e4", e4.getName());

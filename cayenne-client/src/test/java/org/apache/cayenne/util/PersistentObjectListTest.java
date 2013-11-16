@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.util;
 
 import java.util.ArrayList;
@@ -40,9 +39,7 @@ public class PersistentObjectListTest extends TestCase {
 
         assertTrue(list.isFault());
 
-        Object deserialized = HessianUtil.cloneViaServerClientSerialization(
-                list,
-                new EntityResolver());
+        Object deserialized = HessianUtil.cloneViaServerClientSerialization(list, new EntityResolver());
 
         // faults are writtens as nulls
         assertNull(deserialized);
@@ -61,13 +58,10 @@ public class PersistentObjectListTest extends TestCase {
         list.setObjectList(objects);
         assertFalse(list.isFault());
 
-        Object deserialized = HessianUtil.cloneViaServerClientSerialization(
-                list,
-                new EntityResolver());
+        Object deserialized = HessianUtil.cloneViaServerClientSerialization(list, new EntityResolver());
 
         assertNotNull(deserialized);
-        assertTrue(
-                "Invalid deserialized: " + deserialized.getClass().getName(),
+        assertTrue("Invalid deserialized: " + deserialized.getClass().getName(),
                 deserialized instanceof PersistentObjectList);
         PersistentObjectList dlist = (PersistentObjectList) deserialized;
         assertFalse(dlist.isFault());

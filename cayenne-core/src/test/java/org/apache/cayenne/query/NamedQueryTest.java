@@ -17,13 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.query;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 
 public class NamedQueryTest extends TestCase {
@@ -52,45 +49,18 @@ public class NamedQueryTest extends TestCase {
         assertEquals(o.getName(), c1.getName());
     }
 
-    public void testSerializabilityWithHessian() throws Exception {
-        NamedQuery o = new NamedQuery("abc");
-        Object clone = HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
-
-        assertTrue(clone instanceof NamedQuery);
-        NamedQuery c1 = (NamedQuery) clone;
-
-        assertNotSame(o, c1);
-        assertEquals(o.getName(), c1.getName());
-    }
-
     /**
-     * Proper 'equals' and 'hashCode' implementations are important when mapping results
-     * obtained in a QueryChain back to the query.
+     * Proper 'equals' and 'hashCode' implementations are important when mapping
+     * results obtained in a QueryChain back to the query.
      */
     public void testEquals() throws Exception {
-        NamedQuery q1 = new NamedQuery("abc", new String[] {
-                "a", "b"
-        }, new Object[] {
-                "1", "2"
-        });
+        NamedQuery q1 = new NamedQuery("abc", new String[] { "a", "b" }, new Object[] { "1", "2" });
 
-        NamedQuery q2 = new NamedQuery("abc", new String[] {
-                "a", "b"
-        }, new Object[] {
-                "1", "2"
-        });
+        NamedQuery q2 = new NamedQuery("abc", new String[] { "a", "b" }, new Object[] { "1", "2" });
 
-        NamedQuery q3 = new NamedQuery("abc", new String[] {
-                "a", "b"
-        }, new Object[] {
-                "1", "3"
-        });
+        NamedQuery q3 = new NamedQuery("abc", new String[] { "a", "b" }, new Object[] { "1", "3" });
 
-        NamedQuery q4 = new NamedQuery("123", new String[] {
-                "a", "b"
-        }, new Object[] {
-                "1", "2"
-        });
+        NamedQuery q4 = new NamedQuery("123", new String[] { "a", "b" }, new Object[] { "1", "2" });
 
         assertTrue(q1.equals(q2));
         assertEquals(q1.hashCode(), q2.hashCode());

@@ -24,8 +24,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeCreateOperation;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
 
 public class ObjectContextChangeLogTest extends TestCase {
@@ -53,7 +51,8 @@ public class ObjectContextChangeLogTest extends TestCase {
     }
 
     public void testGetDiffs() {
-        // assert that after returning, the diffs array won't get modified by operation
+        // assert that after returning, the diffs array won't get modified by
+        // operation
         // recorder
         ObjectContextChangeLog recorder = new ObjectContextChangeLog();
         recorder.addOperation(new NodeCreateOperation(new Object()));
@@ -80,18 +79,4 @@ public class ObjectContextChangeLogTest extends TestCase {
         assertEquals(1, d1.getDiffs().size());
     }
 
-    public void testGetDiffsSerializableWithHessian() throws Exception {
-        ObjectContextChangeLog recorder = new ObjectContextChangeLog();
-        
-        // id must be a serializable object
-        recorder.addOperation(new NodeCreateOperation("id-string"));
-        CompoundDiff diff = (CompoundDiff) recorder.getDiffs();
-
-        Object clone = HessianUtil.cloneViaClientServerSerialization(diff, new EntityResolver());
-        assertNotNull(clone);
-        assertTrue(clone instanceof CompoundDiff);
-
-        CompoundDiff d1 = (CompoundDiff) clone;
-        assertEquals(1, d1.getDiffs().size());
-    }
 }
