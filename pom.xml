@@ -36,6 +36,7 @@
 		<module>framework</module>
 		<module>cayenne-tools</module>
 		<module>cayenne-project</module>
+		<module>cayenne-lifecycle</module>
 		<module>itests</module>
 		<module>modeler</module>
 		<module>tutorials</module>
