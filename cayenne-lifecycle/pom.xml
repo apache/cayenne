@@ -60,8 +60,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-core-unpublished</artifactId>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-core</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
