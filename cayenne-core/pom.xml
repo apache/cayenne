@@ -22,63 +22,82 @@
 	<description>Cayenne Core</description>
 	<packaging>jar</packaging>
 	<dependencies>
+
+		<!-- Compile dependencies -->
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-di</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.caucho</groupId>
-			<artifactId>resin-hessian</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>jgroups</groupId>
-			<artifactId>jgroups-all</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-pool</groupId>
-			<artifactId>commons-pool</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Optional dependencies... things that might have been placed in submodules... -->
+		<dependency>
+			<groupId>com.caucho</groupId>
+			<artifactId>resin-hessian</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jms_1.1_spec</artifactId>
+			<groupId>jgroups</groupId>
+			<artifactId>jgroups-all</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>jivesoftware</groupId>
 			<artifactId>smack</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>jivesoftware</groupId>
 			<artifactId>smackx</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>opensymphony</groupId>
 			<artifactId>oscache</artifactId>
+			<optional>true</optional>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- Provided Dependencies (those coming from environment) -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jms_1.1_spec</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Test dependencies -->
