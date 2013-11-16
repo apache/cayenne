@@ -35,7 +35,6 @@
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
 		<module>cayenne-project</module>
-		<module>cayenne-tools</module>
 		<module>cayenne-lifecycle</module>
 		<module>maven-cayenne-plugin</module>
 	</modules>
