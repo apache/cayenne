@@ -61,7 +61,7 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.apache.cayenne</groupId>
+			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -144,7 +144,7 @@
 			<id>generic</id>
 			<dependencies>
 				<dependency>
-					<groupId>org.apache.cayenne</groupId>
+					<groupId>org.apache.cayenne.modeler</groupId>
 					<artifactId>cayenne-modeler-generic</artifactId>
 					<version>${project.version}</version>
 				</dependency>
@@ -178,7 +178,7 @@
 			<id>mac</id>
 			<dependencies>
 				<dependency>
-					<groupId>org.apache.cayenne</groupId>
+					<groupId>org.apache.cayenne.modeler</groupId>
 					<artifactId>cayenne-modeler-mac</artifactId>
 					<version>${project.version}</version>
 				</dependency>
@@ -279,7 +279,7 @@
 			<id>windows</id>
 			<dependencies>
 				<dependency>
-					<groupId>org.apache.cayenne</groupId>
+					<groupId>org.apache.cayenne.modeler</groupId>
 					<artifactId>cayenne-modeler-win</artifactId>
 					<version>${project.version}</version>
 				</dependency>

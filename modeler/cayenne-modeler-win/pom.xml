@@ -22,10 +22,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne</groupId>
-		<artifactId>cayenne-parent</artifactId>
+		<groupId>org.apache.cayenne.modeler</groupId>
+		<artifactId>cayenne-modeler-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>cayenne-modeler-win</artifactId>
@@ -35,7 +34,7 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>org.apache.cayenne</groupId>
+			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -61,7 +60,7 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cayenne</groupId>
+			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler-generic-ext</artifactId>
 			<version>${project.version}</version>
 		</dependency>
