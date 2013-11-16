@@ -310,17 +310,6 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>hsqldb</groupId>
-				<artifactId>hsqldb</artifactId>
-				<version>1.8.0.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.derby</groupId>
-				<artifactId>derby</artifactId>
-				<version>10.7.1.1</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
 				<groupId>com.caucho</groupId>
 				<artifactId>resin-hessian</artifactId>
 				<version>3.1.6</version>
@@ -870,6 +859,14 @@
 					<value>internal_embedded_datasource</value>
 				</property>
 			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>hsqldb</groupId>
+					<artifactId>hsqldb</artifactId>
+					<version>1.8.0.4</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
 		</profile>
 		<profile>
 			<id>firebird</id>
