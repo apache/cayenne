@@ -26,8 +26,7 @@
 	</parent>
 	<artifactId>cayenne-server</artifactId>
 	<packaging>jar</packaging>
-	<name>Cayenne Aggregated Server Jar</name>
-	<description>An aggregation of all Cayenne "server" modules.</description>
+	<name>Cayenne Server</name>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
