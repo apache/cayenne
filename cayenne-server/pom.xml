@@ -32,13 +32,11 @@
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-di</artifactId>
 			<version>${project.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-core</artifactId>
 			<version>${project.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne.buildtools</groupId>
@@ -62,34 +60,35 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.cayenne.buildtools</groupId>
-				<artifactId>cayenne-build-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>aggregate-all</id>
+						<id>bundle-source-jar</id>
 						<phase>package</phase>
 						<goals>
-							<goal>aggregate-bin</goal>
-							<goal>aggregate-sources</goal>
+							<goal>jar</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>process-resources</phase>
 						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.apache.cayenne</groupId>
-									<artifactId>cayenne-di</artifactId>
-									<version>${project.version}</version>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.cayenne</groupId>
-									<artifactId>cayenne-core</artifactId>
-									<version>${project.version}</version>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.cayenne.buildtools</groupId>
-									<artifactId>cayenne-legal</artifactId>
-									<version>${project.version}</version>
-								</artifactItem>
-							</artifactItems>
+							<outputDirectory>
+								${project.build.directory}/classes
+							</outputDirectory>
+							<resourceBundles>
+								<resourceBundle>
+									org.apache.cayenne.buildtools:cayenne-legal:${project.version}
+								</resourceBundle>
+							</resourceBundles>
 						</configuration>
 					</execution>
 				</executions>
