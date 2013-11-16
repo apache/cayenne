@@ -87,19 +87,4 @@
 
 	</dependencies>
 
-	<repositories>
-		<repository>
-			<id>objectstyle</id>
-			<name>ObjectStyle Repository</name>
-			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
-
 </project>
