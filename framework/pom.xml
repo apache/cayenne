@@ -34,7 +34,6 @@
 		<module>cayenne-core-unpublished</module>
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
-		<module>cayenne-project</module>
 		<module>cayenne-lifecycle</module>
 		<module>maven-cayenne-plugin</module>
 	</modules>

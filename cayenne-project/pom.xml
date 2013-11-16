@@ -22,7 +22,6 @@
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>cayenne-project</artifactId>
