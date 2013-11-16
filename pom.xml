@@ -327,18 +327,6 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>javacc</groupId>
-				<artifactId>javacc</artifactId>
-				<version>3.2</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.objectstyle</groupId>
-				<artifactId>jdbc4-compat</artifactId>
-				<version>1.0</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
 				<groupId>jgoodies</groupId>
 				<artifactId>forms</artifactId>
 				<version>1.0.5</version>
