@@ -34,6 +34,7 @@
 	<modules>
 		<module>buildtools</module>
 		<module>framework</module>
+		<module>cayenne-di</module>
 		<module>cayenne-tools</module>
 		<module>cayenne-project</module>
 		<module>cayenne-lifecycle</module>

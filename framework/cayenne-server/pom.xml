@@ -31,8 +31,8 @@
 	<description>An aggregation of all Cayenne "server" modules.</description>
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-di-unpublished</artifactId>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-di</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -77,8 +77,8 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>org.apache.cayenne.unpublished</groupId>
-									<artifactId>cayenne-di-unpublished</artifactId>
+									<groupId>org.apache.cayenne</groupId>
+									<artifactId>cayenne-di</artifactId>
 									<version>${project.version}</version>
 								</artifactItem>
 								<artifactItem>

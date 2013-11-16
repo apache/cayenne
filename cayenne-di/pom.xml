@@ -23,10 +23,9 @@
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<groupId>org.apache.cayenne.unpublished</groupId>
-	<artifactId>cayenne-di-unpublished</artifactId>
+	<groupId>org.apache.cayenne</groupId>
+	<artifactId>cayenne-di</artifactId>
 	<packaging>jar</packaging>
 	<name>Cayenne Dependency Injection Container</name>
 	<description>Cayenne Dependency Injection Container</description>

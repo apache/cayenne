@@ -49,8 +49,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.cayenne.unpublished</groupId>
-			<artifactId>cayenne-di-unpublished</artifactId>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-di</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
