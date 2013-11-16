@@ -555,6 +555,19 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
+										<groupId>org.objectstyle.woproject.maven2</groupId>
+										<artifactId>maven-japplication-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>japplication</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
 										<groupId>org.codehaus.mojo</groupId>
 										<artifactId>javacc-maven-plugin</artifactId>
 										<versionRange>[1.0,)</versionRange>
@@ -642,6 +655,11 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>dependency-maven-plugin</artifactId>
 					<version>1.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.objectstyle.woproject.maven2</groupId>
+					<artifactId>maven-japplication-plugin</artifactId>
+					<version>2.0.17</version>
 				</plugin>
 
 			</plugins>
