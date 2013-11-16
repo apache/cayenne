@@ -98,7 +98,6 @@
 			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-wocompat</artifactId>
 			<version>${project.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
