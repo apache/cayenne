@@ -23,12 +23,11 @@
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>cayenne-client</artifactId>
+	<artifactId>cayenne-server</artifactId>
 	<packaging>jar</packaging>
-	<name>Cayenne Aggregated Client Jar</name>
-	<description>An aggregation of all Cayenne "client" modules.</description>
+	<name>Cayenne Aggregated Server Jar</name>
+	<description>An aggregation of all Cayenne "server" modules.</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
@@ -57,9 +56,8 @@
 			<artifactId>commons-logging</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.caucho</groupId>
-			<artifactId>resin-hessian</artifactId>
-			<scope>compile</scope>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -76,7 +74,6 @@
 							<goal>aggregate-sources</goal>
 						</goals>
 						<configuration>
-							<excludesFile>src/main/aggregator/excludes.txt</excludesFile>
 							<artifactItems>
 								<artifactItem>
 									<groupId>org.apache.cayenne</groupId>
