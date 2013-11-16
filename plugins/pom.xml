@@ -31,5 +31,6 @@
 
 	<modules>
 		<module>maven-cayenne-plugin</module>
+		<module>maven-cayenne-modeler-plugin</module>
 	</modules>
 </project>
