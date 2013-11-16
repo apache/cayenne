@@ -24,10 +24,9 @@
 	</prerequisites>
 
 	<parent>
-		<groupId>org.apache.cayenne.parents</groupId>
+		<groupId>org.apache.cayenne.docs</groupId>
 		<artifactId>cayenne-docs-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
 	</parent>
 	
 	<modules>
@@ -42,7 +41,6 @@
         <project.stylesheetdir>${project.parent.basedir}/docbook-stylesheets/target/classes</project.stylesheetdir>
     </properties>
 
-	<groupId>org.apache.cayenne.docs</groupId>
 	<artifactId>cayenne-docbook</artifactId>
 	<packaging>pom</packaging>
 	<name>Cayenne Docbook Documentation</name>

@@ -25,7 +25,6 @@
 		<version>3.2M2-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.cayenne.docs</groupId>
 	<artifactId>upgrade-guide</artifactId>
 	<name>Docbook: Cayenne New Features and Upgrade Guide</name>
 
