@@ -26,29 +26,24 @@ import org.apache.commons.logging.LogFactory;
 
 public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo> {
 
-    private static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
+    static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
     private static final String DEFAULT_CONNECTION_KEY = "internal_embedded_datasource";
 
     private static Log logger = LogFactory.getLog(ServerCaseDataSourceInfoProvider.class);
 
+    @Override
     public DataSourceInfo get() throws ConfigurationException {
 
         String connectionKey = System.getProperty(CONNECTION_NAME_KEY);
 
-        DataSourceInfo connectionInfo = ConnectionProperties
-                .getInstance()
-                .getConnectionInfo(connectionKey);
+        DataSourceInfo connectionInfo = ConnectionProperties.getInstance().getConnectionInfo(connectionKey);
 
         // attempt default if invalid key is specified
         if (connectionInfo == null) {
 
-            logger.info("Invalid connection key '"
-                    + connectionKey
-                    + "', trying default: "
-                    + DEFAULT_CONNECTION_KEY);
+            logger.info("Invalid connection key '" + connectionKey + "', trying default: " + DEFAULT_CONNECTION_KEY);
 
-            connectionInfo = ConnectionProperties.getInstance().getConnectionInfo(
-                    DEFAULT_CONNECTION_KEY);
+            connectionInfo = ConnectionProperties.getInstance().getConnectionInfo(DEFAULT_CONNECTION_KEY);
         }
 
         if (connectionInfo == null) {

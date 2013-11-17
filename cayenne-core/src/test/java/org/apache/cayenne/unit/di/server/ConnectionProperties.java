@@ -32,13 +32,17 @@ import java.util.Map;
 
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.commons.collections.ExtendedProperties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * ConnectionProperties handles a set of DataSourceInfo objects using information stored
- * in $HOME/.cayenne/connection.properties. As of now this is purely a utility class. Its
- * features are not used in deployment.
+ * ConnectionProperties handles a set of DataSourceInfo objects using
+ * information stored in $HOME/.cayenne/connection.properties. As of now this is
+ * purely a utility class. Its features are not used in deployment.
  */
 class ConnectionProperties {
+    
+    private static final Log logger = LogFactory.getLog(ConnectionProperties.class);
 
     public static final String EMBEDDED_DATASOURCE = "internal_embedded_datasource";
     public static final String EMBEDDED_DATASOURCE_DBADAPTER = "org.apache.cayenne.dba.hsqldb.HSQLDBAdapter";
@@ -76,7 +80,8 @@ class ConnectionProperties {
         return sharedInstance;
     }
 
-    // CayenneUserDir is defined in the Modeler, not accessible here, so hardcoding it for
+    // CayenneUserDir is defined in the Modeler, not accessible here, so
+    // hardcoding it for
     // the tests
     private static File cayenneUserDir() {
         File homeDir = new File(System.getProperty("user.home"));
@@ -98,76 +103,59 @@ class ConnectionProperties {
         String url = System.getProperty(URL_KEY_MAVEN);
         String driver = System.getProperty(DRIVER_KEY_MAVEN);
 
+        String connectionKey = System.getProperty(ServerCaseDataSourceInfoProvider.CONNECTION_NAME_KEY);
         File f = new File(cayenneUserDir(), PROPERTIES_FILE);
 
         try {
             if (f.exists()) {
+                
+                logger.info("Found connection properties at " + f.getAbsolutePath());
 
-                ConnectionProperties cp = new ConnectionProperties(
-                        new ExtendedProperties(f.getAbsolutePath()));
+                ConnectionProperties cp = new ConnectionProperties(new ExtendedProperties(f.getAbsolutePath()));
 
-                if (((adapter != null && !adapter.startsWith("$"))
-                        || (usr != null && !usr.startsWith("$"))
-                        || (pass != null && !pass.startsWith("$"))
-                        || (url != null && !url.startsWith("$")) || (driver != null && !driver
-                        .startsWith("$")))
-                        && (System.getProperty("cayenneTestConnection") != null && !System
-                                .getProperty("cayenneTestConnection")
-                                .equals("null"))) {
+                if (((adapter != null && !adapter.startsWith("$")) || (usr != null && !usr.startsWith("$"))
+                        || (pass != null && !pass.startsWith("$")) || (url != null && !url.startsWith("$")) || (driver != null && !driver
+                        .startsWith("$"))) && (connectionKey != null && !connectionKey.equals("null"))) {
 
                     DataSourceInfo dsiOld = null;
-                    if (connectionInfos.get(System.getProperty("cayenneTestConnection")) != null) {
-                        dsiOld = connectionInfos.get(System
-                                .getProperty("cayenneTestConnection"));
-                        connectionInfos.remove(System
-                                .getProperty("cayenneTestConnection"));
+                    if (connectionInfos.get(connectionKey) != null) {
+                        dsiOld = connectionInfos.get(connectionKey);
+                        connectionInfos.remove(connectionKey);
                     }
 
                     if (adapter != null && !adapter.startsWith("$")) {
                         dsi.setAdapterClassName(adapter);
-                    }
-                    else if (dsiOld != null) {
+                    } else if (dsiOld != null) {
                         dsi.setAdapterClassName(dsiOld.getAdapterClassName());
                     }
                     if (usr != null && !usr.startsWith("$")) {
                         dsi.setUserName(usr);
-                    }
-                    else if (dsiOld != null) {
+                    } else if (dsiOld != null) {
                         dsi.setUserName(dsiOld.getUserName());
                     }
                     if (pass != null && !pass.startsWith("$")) {
                         dsi.setPassword(pass);
-                    }
-                    else if (dsiOld != null) {
+                    } else if (dsiOld != null) {
                         dsi.setPassword(dsiOld.getPassword());
                     }
                     if (url != null && !url.startsWith("$")) {
                         dsi.setDataSourceUrl(url);
-                    }
-                    else if (dsiOld != null) {
+                    } else if (dsiOld != null) {
                         dsi.setDataSourceUrl(dsiOld.getDataSourceUrl());
                     }
                     if (driver != null && !driver.startsWith("$")) {
                         dsi.setJdbcDriver(driver);
-                    }
-                    else if (dsiOld != null) {
+                    } else if (dsiOld != null) {
                         dsi.setJdbcDriver(dsiOld.getJdbcDriver());
                     }
-                    connectionInfos.put(System.getProperty("cayenneTestConnection"), dsi);
-                }
-                else {
+                    connectionInfos.put(connectionKey, dsi);
+                } else {
                     return cp;
                 }
-            }
-            else {
-                if (((adapter != null && !adapter.startsWith("$"))
-                        || (usr != null && !usr.startsWith("$"))
-                        || (pass != null && !pass.startsWith("$"))
-                        || (url != null && !url.startsWith("$")) || (driver != null && !driver
-                        .startsWith("$")))
-                        && (System.getProperty("cayenneTestConnection") != null && !System
-                                .getProperty("cayenneTestConnection")
-                                .equals("null"))) {
+            } else {
+                if (((adapter != null && !adapter.startsWith("$")) || (usr != null && !usr.startsWith("$"))
+                        || (pass != null && !pass.startsWith("$")) || (url != null && !url.startsWith("$")) || (driver != null && !driver
+                        .startsWith("$"))) && (connectionKey != null && !connectionKey.equals("null"))) {
 
                     if (adapter != null && !adapter.startsWith("$")) {
                         dsi.setAdapterClassName(adapter);
@@ -184,15 +172,15 @@ class ConnectionProperties {
                     if (driver != null && !driver.startsWith("$")) {
                         dsi.setJdbcDriver(driver);
                     }
-                    connectionInfos.put(System.getProperty("cayenneTestConnection"), dsi);
+                    connectionInfos.put(connectionKey, dsi);
                 }
 
-                // lets touch this file so that users would get a clue of what it is
+                // lets touch this file so that users would get a clue of what
+                // it is
                 createSamplePropertiesFile(f);
 
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             // ignoring
         }
 
@@ -213,9 +201,7 @@ class ConnectionProperties {
 
             out.write("#");
             out.newLine();
-            out.write("# example1."
-                    + ADAPTER_KEY
-                    + " = org.apache.cayenne.dba.mysql.MySQLAdapter");
+            out.write("# example1." + ADAPTER_KEY + " = org.apache.cayenne.dba.mysql.MySQLAdapter");
             out.newLine();
             out.write("# example1." + USER_NAME_KEY + " = some_user");
             out.newLine();
@@ -229,9 +215,7 @@ class ConnectionProperties {
             // example 2
             out.write("#");
             out.newLine();
-            out.write("# example2."
-                    + ADAPTER_KEY
-                    + " = org.apache.cayenne.dba.mysql.MySQLAdapter");
+            out.write("# example2." + ADAPTER_KEY + " = org.apache.cayenne.dba.mysql.MySQLAdapter");
             out.newLine();
             out.write("# example2." + USER_NAME_KEY + " = some_user");
             out.newLine();
@@ -241,8 +225,7 @@ class ConnectionProperties {
             out.newLine();
             out.write("# example2." + DRIVER_KEY + " = com.mysql.jdbc.Driver");
             out.newLine();
-        }
-        finally {
+        } finally {
             out.close();
         }
     }
@@ -258,8 +241,8 @@ class ConnectionProperties {
     }
 
     /**
-     * Returns DataSourceInfo object for a symbolic name. If name does not match an
-     * existing object, returns null.
+     * Returns DataSourceInfo object for a symbolic name. If name does not match
+     * an existing object, returns null.
      */
     public DataSourceInfo getConnectionInfo(String name) {
 

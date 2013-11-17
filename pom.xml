@@ -735,9 +735,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>
-						-DcayenneTestConnection=${cayenneTestConnection}
-						-Djava.net.preferIPv4Stack=true
-						-Dcayenne.runtime.db.collation.assume.ci=${collationCi}
+						-DcayenneTestConnection=${cayenneTestConnection} -Djava.net.preferIPv4Stack=true -Dcayenne.runtime.db.collation.assume.ci=${collationCi}
 					</argLine>
 					<systemPropertyVariables>
 						<property>
