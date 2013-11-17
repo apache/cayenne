@@ -21,6 +21,7 @@
 	<name>Cayenne Core</name>
 	<description>Cayenne Core</description>
 	<packaging>jar</packaging>
+	
 	<dependencies>
 
 		<!-- Compile dependencies -->
