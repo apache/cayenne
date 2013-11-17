@@ -31,7 +31,6 @@
 		<module>buildtools</module>
 		<module>cayenne-di</module>
 		<module>cayenne-core</module>
-		<module>cayenne-server</module>
 		<module>cayenne-client</module>
 		<module>cayenne-tools</module>
 		<module>cayenne-project</module>
