@@ -838,7 +838,7 @@
 				<activeByDefault>true</activeByDefault>
 				<property>
 					<name>cayenneTestConnection</name>
-					<value>internal_embedded_datasource</value>
+					<value>hsql</value>
 				</property>
 			</activation>
 			<dependencies>
