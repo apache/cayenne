@@ -16,21 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.ResultIterator;
-
 /**
  * A ResultIterator over a collection of objects.
  * 
  * @since 3.2
  */
-public class CollectionResultIterator<T> implements ResultIterator<T> {
+class CollectionResultIterator<T> implements ResultIterator<T> {
 
     protected Iterator<T> iterator;
 

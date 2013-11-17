@@ -22,7 +22,6 @@ import java.util.Collection;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.web.CayenneFilter;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -51,11 +50,6 @@ public abstract class CayenneRuntime {
     /**
      * Binds a DI {@link Injector} bound to the current thread. It is primarily
      * intended for deserialization of ObjectContexts.
-     * <p>
-     * {@link CayenneFilter} will automatically bind the right injector to each
-     * request thread. If you are not using CayenneFilter, your application is
-     * responsible for calling this method at appropriate points of the
-     * lifecycle.
      * 
      * @since 3.1
      */
