@@ -28,9 +28,19 @@
 	<name>Cayenne Lifecycle Utilities</name>
 	<packaging>jar</packaging>
 	<dependencies>
+		
+		<!-- Compile dependencies -->
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-server</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne.build-tools</groupId>
@@ -41,11 +51,12 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
-			<version>${project.version}</version>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 		<build>

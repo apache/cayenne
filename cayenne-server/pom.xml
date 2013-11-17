@@ -129,6 +129,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
 			<scope>test</scope>

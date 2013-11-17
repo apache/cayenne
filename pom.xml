@@ -461,6 +461,12 @@
 				<version>2.4.3</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+				<groupId>hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>1.8.0.4</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -829,26 +835,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-
-		<!-- Test DB Profiles (default is embedded HSQLDB) -->
-		<profile>
-			<id>default-db</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-				<property>
-					<name>cayenneTestConnection</name>
-					<value>hsql</value>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>hsqldb</groupId>
-					<artifactId>hsqldb</artifactId>
-					<version>1.8.0.4</version>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
 		</profile>
 		<profile>
 			<id>firebird</id>
