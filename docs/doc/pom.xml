@@ -204,18 +204,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.cayenne.build-tools</groupId>
-				<artifactId>cayenne-build-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>date</id>
-						<goals>
-							<goal>date</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 </project>

@@ -34,7 +34,6 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>cayenne-build-maven-plugin</module>
 		<module>cayenne-legal</module>
 		<module>cayenne-test-utilities</module>
 	</modules>
