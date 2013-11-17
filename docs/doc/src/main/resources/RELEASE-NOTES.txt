@@ -17,6 +17,7 @@ CAY-1842 Remove Listeners support from the Modeler
 CAY-1843 DataMap v7: Stop saving listeners in DataMap, add upgrade handler
 CAY-1845 Upgrade javadoc plugin to 2.9.1 
 CAY-1846 Reworking of callback mapping
+CAY-1847 Make ConverterFactory extensible
 CAY-1848 New method: ObjectContext.selectOne(Select query) 
 CAY-1851 Generate default serialVersionUID for generated java classes to avoid eclipse warnings
 CAY-1852 Straighten thread model and synchronization in the Modeler 
@@ -24,7 +25,7 @@ CAY-1855 Iterated and paginated queries must print result counts
 CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection 
 CAY-1860 In-memory matching of DataObjects against ObjectId or int
 CAY-1861 Remove runtime relationships
-CAY-1847 Make ConverterFactory extensible
+CAY-1883 Clean up Cayenne maven structure
 
 Bug Fixes:
 
