@@ -136,6 +136,17 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
 			<!-- share tests with downstream modules -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -688,7 +688,17 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-remote-resources-plugin</artifactId>
-					<version>1.2</version>
+					<version>1.5</version>
+					<configuration>
+						<outputDirectory>
+								${project.build.directory}/classes
+						</outputDirectory>
+						<resourceBundles>
+							<resourceBundle>
+								org.apache.cayenne.build-tools:cayenne-legal:${project.version}
+							</resourceBundle>
+						</resourceBundles>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
@@ -761,27 +771,6 @@
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-remote-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<phase>process-resources</phase>
-						<configuration>
-							<outputDirectory>
-								${project.build.directory}/classes
-							</outputDirectory>
-							<resourceBundles>
-								<resourceBundle>
-									org.apache.cayenne.build-tools:cayenne-legal:${project.version}
-								</resourceBundle>
-							</resourceBundles>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.rat</groupId>
