@@ -15,27 +15,39 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.cayenne.buildtools</groupId>
-		<artifactId>build-tools-parent</artifactId>
+		<groupId>org.apache.cayenne</groupId>
+		<artifactId>cayenne-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cayenne-build-maven-plugin</artifactId>
-	<packaging>maven-plugin</packaging>
-	<name>Cayenne Internal Build Plugin</name>
+	<groupId>org.apache.cayenne.build-tools</groupId>
+	<artifactId>build-tools-parent</artifactId>
+	<name>Cayenne Build Tools Parent</name>
+	<packaging>pom</packaging>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-archiver</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0.4</version>
-		</dependency>
+	<modules>
+		<module>cayenne-build-maven-plugin</module>
+		<module>cayenne-legal</module>
+		<module>cayenne-test-utilities</module>
+	</modules>
 
-	</dependencies>
-
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<!-- Disable adding NOTICE/LICENSE into internal projects, one of which 
+				is the license and notice holder -->
+			<plugin>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

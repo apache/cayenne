@@ -205,7 +205,7 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.cayenne.buildtools</groupId>
+				<groupId>org.apache.cayenne.build-tools</groupId>
 				<artifactId>cayenne-build-maven-plugin</artifactId>
 				<executions>
 					<execution>

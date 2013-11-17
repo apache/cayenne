@@ -113,7 +113,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cayenne.buildtools</groupId>
+			<groupId>org.apache.cayenne.build-tools</groupId>
 			<artifactId>cayenne-test-utilities</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
@@ -195,7 +195,7 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.cayenne.buildtools</groupId>
+				<groupId>org.apache.cayenne.build-tools</groupId>
 				<artifactId>cayenne-build-maven-plugin</artifactId>
 				<executions>
 					<execution>

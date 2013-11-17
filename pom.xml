@@ -28,7 +28,7 @@
 	</description>
 	<url>http://cayenne.apache.org/</url>
 	<modules>
-		<module>buildtools</module>
+		<module>build-tools</module>
 		<module>cayenne-di</module>
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
@@ -501,7 +501,7 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>org.apache.cayenne.buildtools</groupId>
+										<groupId>org.apache.cayenne.build-tools</groupId>
 										<artifactId>cayenne-build-maven-plugin</artifactId>
 										<versionRange>[1.0,)</versionRange>
 										<goals>
@@ -780,7 +780,7 @@
 							</outputDirectory>
 							<resourceBundles>
 								<resourceBundle>
-									org.apache.cayenne.buildtools:cayenne-legal:${project.version}
+									org.apache.cayenne.build-tools:cayenne-legal:${project.version}
 								</resourceBundle>
 							</resourceBundles>
 						</configuration>
