@@ -46,7 +46,7 @@
 		-->
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-core</artifactId>
+			<artifactId>cayenne-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

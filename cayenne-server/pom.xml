@@ -17,9 +17,9 @@
 		<artifactId>cayenne-parent</artifactId>
 		<version>3.2M2-SNAPSHOT</version>
 	</parent>
-	<artifactId>cayenne-core</artifactId>
-	<name>Cayenne Core</name>
-	<description>Cayenne Core</description>
+	<artifactId>cayenne-server</artifactId>
+	<name>Cayenne Server</name>
+	<description>Cayenne Server</description>
 	<packaging>jar</packaging>
 	
 	<dependencies>

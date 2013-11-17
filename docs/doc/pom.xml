@@ -169,12 +169,6 @@
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.cayenne</groupId>
-									<artifactId>cayenne-core</artifactId>
-									<version>${project.version}</version>
-									<classifier>sources</classifier>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.apache.cayenne</groupId>
 									<artifactId>cayenne-server</artifactId>
 									<version>${project.version}</version>
 									<classifier>sources</classifier>
