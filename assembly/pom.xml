@@ -17,7 +17,7 @@
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
-		<version>3.2M2-SNAPSHOT</version>
+		<version>3.2.M2-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.apache.cayenne.assembly</groupId>

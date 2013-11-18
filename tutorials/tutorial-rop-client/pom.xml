@@ -18,13 +18,13 @@
 	<groupId>org.apache.cayenne</groupId>
 	<artifactId>tutorial-rop-client</artifactId>
 	<name>Cayenne ROP Client Tutorial</name>
-	<version>3.2M2-SNAPSHOT</version>
+	<version>3.2.M2-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-client</artifactId>
-			<version>3.2M2-SNAPSHOT</version>
+			<version>3.2.M2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.caucho</groupId>

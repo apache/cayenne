@@ -22,7 +22,7 @@
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>3.2M2-SNAPSHOT</version>
+		<version>3.2.M2-SNAPSHOT</version>
 	</parent>
 	<artifactId>cayenne-lifecycle</artifactId>
 	<name>Cayenne Lifecycle Utilities</name>
