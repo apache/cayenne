@@ -854,6 +854,44 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<!-- DB profiles .. 
+				HSQL is used if no DB profile property is set explicitly.
+				Also there's a separate 'hsql' profile.
+		-->
+		<profile>
+			<id>default-db</id>
+			<activation>
+				<property>
+					<name>!cayenneTestConnection</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>hsqldb</groupId>
+					<artifactId>hsqldb</artifactId>
+					<version>1.8.0.4</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>hsql</id>
+			<activation>
+				<property>
+					<name>cayenneTestConnection</name>
+					<value>hsql</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>hsqldb</groupId>
+					<artifactId>hsqldb</artifactId>
+					<version>1.8.0.4</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 		<profile>
 			<id>firebird</id>
 			<activation>
