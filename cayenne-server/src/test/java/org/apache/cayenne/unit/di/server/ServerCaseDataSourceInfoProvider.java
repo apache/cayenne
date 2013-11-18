@@ -84,7 +84,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         derby.setPassword("");
         derby.setDataSourceUrl("jdbc:derby:target/testdb;create=true");
         derby.setJdbcDriver("org.apache.derby.jdbc.EmbeddedDriver");
-        inMemoryDataSources.put("derby", h2);
+        inMemoryDataSources.put("derby", derby);
     }
 
     @Override
