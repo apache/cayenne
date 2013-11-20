@@ -20,7 +20,7 @@ package org.apache.cayenne.di;
 
 import java.util.Collection;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 
 /**
  * A binding builder for list configurations.
@@ -30,11 +30,11 @@ import org.apache.cayenne.ConfigurationException;
  */
 public interface ListBuilder<T> {
 
-    ListBuilder<T> add(Class<? extends T> interfaceType) throws ConfigurationException;
+    ListBuilder<T> add(Class<? extends T> interfaceType) throws DIRuntimeException;
 
-    ListBuilder<T> add(T value) throws ConfigurationException;
+    ListBuilder<T> add(T value) throws DIRuntimeException;
     
-    ListBuilder<T> addAll(Collection<T> values) throws ConfigurationException;
+    ListBuilder<T> addAll(Collection<T> values) throws DIRuntimeException;
 
     void in(Scope scope);
 }

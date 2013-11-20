@@ -21,7 +21,7 @@ package org.apache.cayenne.di.spi;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Provider;
@@ -45,14 +45,14 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     }
 
     public MapBuilder<T> put(String key, Class<? extends T> interfaceType)
-            throws ConfigurationException {
+            throws DIRuntimeException {
 
         // TODO: andrus 11/15/2009 - report overriding the key??
         getMapProvider().put(key, injector.getProvider(interfaceType));
         return this;
     }
 
-    public MapBuilder<T> put(String key, T value) throws ConfigurationException {
+    public MapBuilder<T> put(String key, T value) throws DIRuntimeException {
 
         Provider<T> provider0 = new InstanceProvider<T>(value);
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
@@ -62,7 +62,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         return this;
     }
 
-    public MapBuilder<T> putAll(Map<String, T> map) throws ConfigurationException {
+    public MapBuilder<T> putAll(Map<String, T> map) throws DIRuntimeException {
 
         MapProvider provider = getMapProvider();
 

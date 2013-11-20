@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.BindingBuilder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
@@ -38,7 +38,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
     }
 
     public BindingBuilder<T> to(Class<? extends T> implementation)
-            throws ConfigurationException {
+            throws DIRuntimeException {
 
         Provider<T> provider0 = new ConstructorInjectingProvider<T>(
                 implementation,
@@ -49,7 +49,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         return this;
     }
 
-    public BindingBuilder<T> toInstance(T instance) throws ConfigurationException {
+    public BindingBuilder<T> toInstance(T instance) throws DIRuntimeException {
         Provider<T> provider0 = new InstanceProvider<T>(instance);
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
         injector.putBinding(bindingKey, provider1);

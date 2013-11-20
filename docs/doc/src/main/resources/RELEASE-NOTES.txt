@@ -26,6 +26,7 @@ CAY-1856 Expression.expWithParameters does not work when parameters are placed i
 CAY-1860 In-memory matching of DataObjects against ObjectId or int
 CAY-1861 Remove runtime relationships
 CAY-1883 Clean up Cayenne maven structure
+CAY-1886 cayenne-di module reorg, new exceptions
 
 Bug Fixes:
 

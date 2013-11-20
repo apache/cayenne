@@ -20,7 +20,7 @@ package org.apache.cayenne.di.spi;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1_DepOn2;
@@ -52,7 +52,7 @@ public class DefaultInjectorCircularInjectionTest extends TestCase {
             injector.getInstance(MockInterface1.class);
             fail("Circular dependency is not detected.");
         }
-        catch (ConfigurationException e) {
+        catch (DIRuntimeException e) {
             // expected
         }
         catch (StackOverflowError e) {
@@ -95,7 +95,7 @@ public class DefaultInjectorCircularInjectionTest extends TestCase {
             injector.getInstance(MockInterface1.class);
             fail("Circular dependency is not detected.");
         }
-        catch (ConfigurationException e) {
+        catch (DIRuntimeException e) {
             // expected
         }
         catch (StackOverflowError e) {
@@ -121,7 +121,7 @@ public class DefaultInjectorCircularInjectionTest extends TestCase {
         try {
             injector.getInstance(MockInterface1.class);
         }
-        catch (ConfigurationException e) {
+        catch (DIRuntimeException e) {
             fail("Circular dependency is detected incorrectly: " + e.getMessage());
         }
     }

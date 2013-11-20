@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -49,7 +49,7 @@ public class DefaultScopeProvider<T> implements Provider<T> {
                     instance = delegate.get();
 
                     if (instance == null) {
-                        throw new ConfigurationException(
+                        throw new DIRuntimeException(
                                 "Underlying provider (%s) returned NULL instance",
                                 delegate.getClass().getName());
                     }

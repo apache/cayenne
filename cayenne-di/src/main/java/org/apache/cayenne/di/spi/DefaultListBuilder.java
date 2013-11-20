@@ -21,7 +21,7 @@ package org.apache.cayenne.di.spi;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Provider;
@@ -45,12 +45,12 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
     }
 
     public ListBuilder<T> add(Class<? extends T> interfaceType)
-            throws ConfigurationException {
+            throws DIRuntimeException {
         getListProvider().add(injector.getProvider(interfaceType));
         return this;
     }
 
-    public ListBuilder<T> add(T value) throws ConfigurationException {
+    public ListBuilder<T> add(T value) throws DIRuntimeException {
 
         Provider<T> provider0 = new InstanceProvider<T>(value);
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
@@ -59,7 +59,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         return this;
     }
 
-    public ListBuilder<T> addAll(Collection<T> values) throws ConfigurationException {
+    public ListBuilder<T> addAll(Collection<T> values) throws DIRuntimeException {
 
         ListProvider listProvider = getListProvider();
 

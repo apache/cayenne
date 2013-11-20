@@ -20,7 +20,7 @@ package org.apache.cayenne.di.spi;
 
 import java.lang.reflect.Field;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
@@ -38,7 +38,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
         this.injector = injector;
     }
 
-    public T get() throws ConfigurationException {
+    public T get() throws DIRuntimeException {
         T object = delegate.get();
         injectMembers(object, object.getClass());
         return object;
@@ -74,7 +74,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
             Class<?> objectClass = DIUtil.parameterClass(field.getGenericType());
 
             if (objectClass == null) {
-                throw new ConfigurationException(
+                throw new DIRuntimeException(
                         "Provider field %s.%s of type %s must be "
                                 + "parameterized to be usable for injection",
                         field.getDeclaringClass().getName(),
@@ -107,7 +107,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
                     field.getDeclaringClass().getName(),
                     field.getName(),
                     fieldType.getName());
-            throw new ConfigurationException(message, e);
+            throw new DIRuntimeException(message, e);
         }
     }
 }

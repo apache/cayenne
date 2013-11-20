@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
@@ -51,7 +51,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             type = (Class<T>)getJavaClass(className);
         }
         catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException(
+            throw new DIRuntimeException(
                     "Invalid class %s of type %s",
                     e,
                     className,
@@ -59,7 +59,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
         }
 
         if (!superType.isAssignableFrom(type)) {
-            throw new CayenneRuntimeException(
+            throw new DIRuntimeException(
                     "Class %s is not assignable to %s",
                     className,
                     superType.getName());
@@ -72,7 +72,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             instance = provider1.get();
         }
         catch (Exception e) {
-            throw new CayenneRuntimeException(
+            throw new DIRuntimeException(
                     "Error creating instance of class %s of type %s",
                     e,
                     className,

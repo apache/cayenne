@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
@@ -42,7 +42,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         initConstructor(implementation);
 
         if (constructor == null) {
-            throw new ConfigurationException(
+            throw new DIRuntimeException(
                     "Can't find approprate constructor for implementation class '%s'",
                     implementation.getName());
         }
@@ -97,7 +97,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         }
 
         if (lastMatch == null) {
-            throw new ConfigurationException(
+            throw new DIRuntimeException(
                     "No applicable constructor is found for constructor injection in class '%s'",
                     implementation.getName());
         }
@@ -138,7 +138,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
                 Class<?> objectClass = DIUtil.parameterClass(genericTypes[i]);
 
                 if (objectClass == null) {
-                    throw new ConfigurationException(
+                    throw new DIRuntimeException(
                             "Constructor provider parameter %s must be "
                                     + "parameterized to be usable for injection",
                             parameter.getName());
@@ -164,7 +164,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
             return constructor.newInstance(args);
         }
         catch (Exception e) {
-            throw new ConfigurationException(
+            throw new DIRuntimeException(
                     "Error instantiating class '%s'",
                     e,
                     constructor.getDeclaringClass().getName());

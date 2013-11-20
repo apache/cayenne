@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
+
 
 /**
  * A DI object factory interface.
@@ -28,5 +29,5 @@ import org.apache.cayenne.ConfigurationException;
  */
 public interface Provider<T> {
 
-    T get() throws ConfigurationException;
+    T get() throws DIRuntimeException;
 }

@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
+
 
 /**
  * A binding builder that helps with fluent binding creation.
@@ -28,15 +29,15 @@ import org.apache.cayenne.ConfigurationException;
  */
 public interface BindingBuilder<T> {
 
-    BindingBuilder<T> to(Class<? extends T> implementation) throws ConfigurationException;
+    BindingBuilder<T> to(Class<? extends T> implementation) throws DIRuntimeException;
 
-    BindingBuilder<T> toInstance(T instance) throws ConfigurationException;
+    BindingBuilder<T> toInstance(T instance) throws DIRuntimeException;
 
     BindingBuilder<T> toProvider(Class<? extends Provider<? extends T>> providerType)
-            throws ConfigurationException;
+            throws DIRuntimeException;
 
     BindingBuilder<T> toProviderInstance(Provider<? extends T> provider)
-            throws ConfigurationException;
+            throws DIRuntimeException;
 
     /**
      * Sets the scope of a bound instance. This method is used to change the default scope

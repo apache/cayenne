@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -32,7 +32,7 @@ class InstanceProvider<T> implements Provider<T> {
         this.value = value;
     }
 
-    public T get() throws ConfigurationException {
+    public T get() throws DIRuntimeException {
         return value;
     }
 }

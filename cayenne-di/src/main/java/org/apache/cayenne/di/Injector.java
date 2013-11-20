@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
+
 
 /**
  * A facade to the Cayenne DI container. To create an injector use {@link DIBootstrap}
@@ -30,21 +31,21 @@ public interface Injector {
 
     /**
      * Returns a service instance bound in the container for a specific type. Throws
-     *{@link ConfigurationException} if the type is not bound, or an instance can not be
+     *{@link DIRuntimeException} if the type is not bound, or an instance can not be
      * created.
      */
-    <T> T getInstance(Class<T> type) throws ConfigurationException;
+    <T> T getInstance(Class<T> type) throws DIRuntimeException;
 
     /**
      * Returns a service instance bound in the container for a specific binding key.
-     * Throws {@link ConfigurationException} if the key is not bound, or an instance can
+     * Throws {@link DIRuntimeException} if the key is not bound, or an instance can
      * not be created.
      */
-    <T> T getInstance(Key<T> key) throws ConfigurationException;
+    <T> T getInstance(Key<T> key) throws DIRuntimeException;
 
-    <T> Provider<T> getProvider(Class<T> type) throws ConfigurationException;
+    <T> Provider<T> getProvider(Class<T> type) throws DIRuntimeException;
 
-    <T> Provider<T> getProvider(Key<T> key) throws ConfigurationException;
+    <T> Provider<T> getProvider(Key<T> key) throws DIRuntimeException;
 
     /**
      * Performs field injection on a given object, ignoring constructor injection. Since

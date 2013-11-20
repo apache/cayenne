@@ -16,25 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di.spi;
-
-import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Provider;
+package org.apache.cayenne.di;
 
 /**
- * A wrapper around a provider that itself generates providers.
+ * A runtime exception thrown on DI misconfiguration.
  * 
- * @since 3.1
+ * @since 3.2
  */
-class CustomProvidersProvider<T> implements Provider<T> {
-
-    private Provider<Provider<? extends T>> providerOfProviders;
-
-    CustomProvidersProvider(Provider<Provider<? extends T>> providerOfProviders) {
-        this.providerOfProviders = providerOfProviders;
+public class DIRuntimeException extends RuntimeException {
+    /**
+     * Creates new <code>ConfigurationException</code> without detail message.
+     */
+    public DIRuntimeException() {
     }
 
-    public T get() throws DIRuntimeException {
-        return providerOfProviders.get().get();
+    /**
+     * Constructs an exception with the specified message with an optional list
+     * of message formatting arguments. Message formatting rules follow
+     * "String.format(..)" conventions.
+     */
+    public DIRuntimeException(String messageFormat, Object... messageArgs) {
+        super(String.format(messageFormat, messageArgs));
+    }
+
+    /**
+     * Constructs an exception wrapping another exception thrown elsewhere.
+     */
+    public DIRuntimeException(Throwable cause) {
+        super(cause);
+    }
+
+    public DIRuntimeException(String messageFormat, Throwable cause, Object... messageArgs) {
+        super(String.format(messageFormat, messageArgs), cause);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.cayenne.di;
 
 import java.util.Map;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 
 /**
  * A binding builder for map configurations. Creates a parameterized map of type <String,
@@ -32,11 +32,11 @@ import org.apache.cayenne.ConfigurationException;
 public interface MapBuilder<T> {
 
     MapBuilder<T> put(String key, Class<? extends T> interfaceType)
-            throws ConfigurationException;
+            throws DIRuntimeException;
 
-    MapBuilder<T> put(String key, T value) throws ConfigurationException;
+    MapBuilder<T> put(String key, T value) throws DIRuntimeException;
 
-    MapBuilder<T> putAll(Map<String, T> map) throws ConfigurationException;
+    MapBuilder<T> putAll(Map<String, T> map) throws DIRuntimeException;
 
     void in(Scope scope);
 }

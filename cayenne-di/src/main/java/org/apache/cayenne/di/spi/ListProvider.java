@@ -21,7 +21,7 @@ package org.apache.cayenne.di.spi;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
 
 /**
@@ -35,7 +35,7 @@ class ListProvider implements Provider<List<?>> {
         this.providers = new ArrayList<Provider<?>>();
     }
 
-    public List<?> get() throws ConfigurationException {
+    public List<?> get() throws DIRuntimeException {
         List<Object> list = new ArrayList<Object>(providers.size());
 
         for (Provider<?> provider : providers) {

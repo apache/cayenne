@@ -21,7 +21,7 @@ package org.apache.cayenne.di.spi;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
@@ -42,7 +42,7 @@ public class DefaultInjector implements Injector {
     private InjectionStack injectionStack;
     private Scope defaultScope;
 
-    public DefaultInjector(Module... modules) throws ConfigurationException {
+    public DefaultInjector(Module... modules) throws DIRuntimeException {
 
         this.singletonScope = new DefaultScope();
         this.noScope = NoScope.INSTANCE;
@@ -71,7 +71,7 @@ public class DefaultInjector implements Injector {
         return injectionStack;
     }
 
-    <T> Binding<T> getBinding(Key<T> key) throws ConfigurationException {
+    <T> Binding<T> getBinding(Key<T> key) throws DIRuntimeException {
 
         if (key == null) {
             throw new NullPointerException("Null key");
@@ -93,25 +93,25 @@ public class DefaultInjector implements Injector {
 
         Binding<?> binding = bindings.get(bindingKey);
         if (binding == null) {
-            throw new ConfigurationException("No existing binding for key " + bindingKey);
+            throw new DIRuntimeException("No existing binding for key " + bindingKey);
         }
 
         binding.changeScope(scope);
     }
 
-    public <T> T getInstance(Class<T> type) throws ConfigurationException {
+    public <T> T getInstance(Class<T> type) throws DIRuntimeException {
         return getProvider(type).get();
     }
 
-    public <T> T getInstance(Key<T> key) throws ConfigurationException {
+    public <T> T getInstance(Key<T> key) throws DIRuntimeException {
         return getProvider(key).get();
     }
 
-    public <T> Provider<T> getProvider(Class<T> type) throws ConfigurationException {
+    public <T> Provider<T> getProvider(Class<T> type) throws DIRuntimeException {
         return getProvider(Key.get(type));
     }
 
-    public <T> Provider<T> getProvider(Key<T> key) throws ConfigurationException {
+    public <T> Provider<T> getProvider(Key<T> key) throws DIRuntimeException {
 
         if (key == null) {
             throw new NullPointerException("Null key");
@@ -120,7 +120,7 @@ public class DefaultInjector implements Injector {
         Binding<T> binding = (Binding<T>) bindings.get(key);
 
         if (binding == null) {
-            throw new ConfigurationException(
+            throw new DIRuntimeException(
                     "DI container has no binding for key %s",
                     key);
         }

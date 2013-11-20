@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.di.mock;
 
-import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
 
 public class MockImplementation1_Provider implements Provider<MockInterface1> {
 
-    public MockInterface1 get() throws ConfigurationException {
+    public MockInterface1 get() throws DIRuntimeException {
         return new MockImplementation1();
     }
 }

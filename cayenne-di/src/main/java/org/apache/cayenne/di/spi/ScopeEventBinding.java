@@ -21,7 +21,7 @@ package org.apache.cayenne.di.spi;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 
-import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.DIRuntimeException;
 
 /**
  * A class that wraps an annotated method call of an object, passing it DI scope events.
@@ -61,7 +61,7 @@ public class ScopeEventBinding {
             eventHandlerMethod.invoke(object, invocationArguments(eventArgs));
         }
         catch (Exception e) {
-            throw new CayenneRuntimeException(
+            throw new DIRuntimeException(
                     "Error invoking event method %s",
                     e,
                     eventHandlerMethod.getName());
@@ -75,7 +75,7 @@ public class ScopeEventBinding {
         int eventArgWidth = (eventArgs == null) ? 0 : eventArgs.length;
 
         if (argWidth != eventArgWidth) {
-            throw new CayenneRuntimeException(
+            throw new DIRuntimeException(
                     "Event argument list size (%d) is different "
                             + "from the handler method argument list size (%d)",
                     eventArgWidth,

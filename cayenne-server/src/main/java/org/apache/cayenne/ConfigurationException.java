@@ -31,9 +31,9 @@ public class ConfigurationException extends CayenneRuntimeException {
     }
 
     /**
-     * Constructs an exception with the specified message with an optional list of message
-     * formatting arguments. Message formatting rules follow "String.format(..)"
-     * conventions.
+     * Constructs an exception with the specified message with an optional list
+     * of message formatting arguments. Message formatting rules follow
+     * "String.format(..)" conventions.
      */
     public ConfigurationException(String messageFormat, Object... messageArgs) {
         super(messageFormat, messageArgs);
@@ -46,8 +46,7 @@ public class ConfigurationException extends CayenneRuntimeException {
         super(cause);
     }
 
-    public ConfigurationException(String messageFormat, Throwable cause,
-            Object... messageArgs) {
+    public ConfigurationException(String messageFormat, Throwable cause, Object... messageArgs) {
         super(messageFormat, cause, messageArgs);
     }
 }
