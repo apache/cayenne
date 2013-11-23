@@ -21,8 +21,6 @@ package org.apache.cayenne.unit.di.server;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
@@ -80,6 +78,8 @@ import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.resource.ClassLoaderResourceLocator;
+import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.DB2UnitDbAdapter;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
@@ -203,6 +203,7 @@ public class ServerCaseModule implements Module {
         binder.bind(ServerCaseDataSourceFactory.class).to(
                 ServerCaseDataSourceFactory.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+        binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
 
         // test-scoped objects

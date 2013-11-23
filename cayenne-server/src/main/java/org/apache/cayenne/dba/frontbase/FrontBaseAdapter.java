@@ -41,6 +41,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.resource.ResourceLocator;
 
 /**
  * DbAdapter implementation for <a href="http://www.frontbase.com/">FrontBase RDBMS</a>.
@@ -67,12 +68,14 @@ public class FrontBaseAdapter extends JdbcAdapter {
             @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+            @Inject ResourceLocator resourceLocator) {
         super(
                 runtimeProperties,
                 defaultExtendedTypes,
                 userExtendedTypes,
-                extendedTypeFactories);
+                extendedTypeFactories, 
+                resourceLocator);
         setSupportsBatchUpdates(true);
     }
 

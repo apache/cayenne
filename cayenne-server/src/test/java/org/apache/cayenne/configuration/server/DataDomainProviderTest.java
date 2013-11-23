@@ -74,6 +74,7 @@ import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResource;
@@ -98,9 +99,7 @@ public class DataDomainProviderTest extends TestCase {
         nodeDescriptor1.setAdapterType(OracleAdapter.class.getName());
         nodeDescriptor1.setDataSourceFactoryType(MockDataSourceFactory.class.getName());
         nodeDescriptor1.setParameters("jdbc/testDataNode1");
-        nodeDescriptor1
-                .setSchemaUpdateStrategyType(ThrowOnPartialOrCreateSchemaStrategy.class
-                        .getName());
+        nodeDescriptor1.setSchemaUpdateStrategyType(ThrowOnPartialOrCreateSchemaStrategy.class.getName());
         testDescriptor.getNodeDescriptors().add(nodeDescriptor1);
 
         DataNodeDescriptor nodeDescriptor2 = new DataNodeDescriptor();
@@ -109,9 +108,16 @@ public class DataDomainProviderTest extends TestCase {
         nodeDescriptor2.setParameters("testDataNode2.driver.xml");
         testDescriptor.getNodeDescriptors().add(nodeDescriptor2);
 
-        final ResourceLocator locator = new ResourceLocator() {
+        final ResourceLocator locator = new ClassLoaderResourceLocator() {
 
             public Collection<Resource> findResources(String name) {
+                // ResourceLocator also used by JdbcAdapter to locate
+                // types.xml... if this is the request we are getting, just let
+                // it go through..
+                if (name.endsWith("types.xml")) {
+                   return super.findResources(name);
+                }
+                
                 assertEquals(testConfigName, name);
                 return Collections.<Resource> singleton(new MockResource());
             }
@@ -119,8 +125,8 @@ public class DataDomainProviderTest extends TestCase {
 
         final DataChannelDescriptorLoader testLoader = new DataChannelDescriptorLoader() {
 
-            public ConfigurationTree<DataChannelDescriptor> load(
-                    Resource configurationResource) throws ConfigurationException {
+            public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
+                    throws ConfigurationException {
                 return new ConfigurationTree<DataChannelDescriptor>(testDescriptor, null);
             }
         };
@@ -132,49 +138,36 @@ public class DataDomainProviderTest extends TestCase {
             public void configure(Binder binder) {
                 final AdhocObjectFactory objectFactory = new DefaultAdhocObjectFactory();
                 binder.bind(AdhocObjectFactory.class).toInstance(objectFactory);
-                
+
                 binder.bindMap(Constants.PROPERTIES_MAP);
-                
-                binder
-                        .bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST)
-                        .add(new OpenBaseSniffer(objectFactory))
-                        .add(new FrontBaseSniffer(objectFactory))
-                        .add(new IngresSniffer(objectFactory))
-                        .add(new SQLiteSniffer(objectFactory))
-                        .add(new DB2Sniffer(objectFactory))
-                        .add(new H2Sniffer(objectFactory))
-                        .add(new HSQLDBSniffer(objectFactory))
-                        .add(new SybaseSniffer(objectFactory))
-                        .add(new DerbySniffer(objectFactory))
-                        .add(new SQLServerSniffer(objectFactory))
-                        .add(new OracleSniffer(objectFactory))
-                        .add(new PostgresSniffer(objectFactory))
-                        .add(new MySQLSniffer(objectFactory));
+
+                binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(new OpenBaseSniffer(objectFactory))
+                        .add(new FrontBaseSniffer(objectFactory)).add(new IngresSniffer(objectFactory))
+                        .add(new SQLiteSniffer(objectFactory)).add(new DB2Sniffer(objectFactory))
+                        .add(new H2Sniffer(objectFactory)).add(new HSQLDBSniffer(objectFactory))
+                        .add(new SybaseSniffer(objectFactory)).add(new DerbySniffer(objectFactory))
+                        .add(new SQLServerSniffer(objectFactory)).add(new OracleSniffer(objectFactory))
+                        .add(new PostgresSniffer(objectFactory)).add(new MySQLSniffer(objectFactory));
                 binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
                 binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST).add(testConfigName);
-                
+
                 // configure extended types
                 binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
-                binder.bindList(Constants.SERVER_USER_TYPES_LIST);        
+                binder.bindList(Constants.SERVER_USER_TYPES_LIST);
                 binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
-                
+
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
                 binder.bind(ResourceLocator.class).toInstance(locator);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
-                binder.bind(DataChannelDescriptorMerger.class).to(
-                        DefaultDataChannelDescriptorMerger.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
                 binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
-                binder.bind(SchemaUpdateStrategy.class).toInstance(
-                        new SkipSchemaUpdateStrategy());
+                binder.bind(SchemaUpdateStrategy.class).toInstance(new SkipSchemaUpdateStrategy());
                 binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(BatchQueryBuilderFactory.class).to(
-                        DefaultBatchQueryBuilderFactory.class);
+                binder.bind(BatchQueryBuilderFactory.class).to(DefaultBatchQueryBuilderFactory.class);
 
-                binder.bind(DataSourceFactory.class).toInstance(
-                        new MockDataSourceFactory());
+                binder.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
@@ -204,17 +197,13 @@ public class DataDomainProviderTest extends TestCase {
         assertEquals(1, node1.getDataMaps().size());
         assertSame(map1, node1.getDataMaps().iterator().next());
         assertSame(node1, domain.lookupDataNode(map1));
-        assertEquals(nodeDescriptor1.getDataSourceFactoryType(), node1
-                .getDataSourceFactory());
+        assertEquals(nodeDescriptor1.getDataSourceFactoryType(), node1.getDataSourceFactory());
         assertNotNull(node1.getDataSource());
         assertEquals(nodeDescriptor1.getParameters(), node1.getDataSourceLocation());
 
-        assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1
-                .getSchemaUpdateStrategyName());
+        assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1.getSchemaUpdateStrategyName());
         assertNotNull(node1.getSchemaUpdateStrategy());
-        assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1
-                .getSchemaUpdateStrategy()
-                .getClass()
+        assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1.getSchemaUpdateStrategy().getClass()
                 .getName());
 
         assertNotNull(node1.getAdapter());
@@ -228,13 +217,9 @@ public class DataDomainProviderTest extends TestCase {
         assertNull(node2.getDataSourceFactory());
         assertNotNull(node2.getDataSource());
         assertEquals(nodeDescriptor2.getParameters(), node2.getDataSourceLocation());
-        assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2
-                .getSchemaUpdateStrategyName());
+        assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategyName());
         assertNotNull(node2.getSchemaUpdateStrategy());
-        assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2
-                .getSchemaUpdateStrategy()
-                .getClass()
-                .getName());
+        assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategy().getClass().getName());
 
         assertNotNull(node2.getAdapter());
     }

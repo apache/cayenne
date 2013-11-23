@@ -46,6 +46,8 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.resource.ClassLoaderResourceLocator;
+import org.apache.cayenne.resource.ResourceLocator;
 
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockDataSource;
@@ -105,6 +107,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(BatchQueryBuilderFactory.class).toInstance(mock(BatchQueryBuilderFactory.class));
             }
@@ -138,6 +141,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(BatchQueryBuilderFactory.class).toInstance(mock(BatchQueryBuilderFactory.class));
             }

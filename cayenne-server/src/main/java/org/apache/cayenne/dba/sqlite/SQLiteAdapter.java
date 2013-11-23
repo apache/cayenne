@@ -36,6 +36,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.resource.ResourceLocator;
 
 /**
  * A SQLite database adapter that works with Zentus JDBC driver. See
@@ -56,12 +57,14 @@ public class SQLiteAdapter extends JdbcAdapter {
             @Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories) {
+            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+            @Inject ResourceLocator resourceLocator) {
         super(
                 runtimeProperties,
                 defaultExtendedTypes,
                 userExtendedTypes,
-                extendedTypeFactories);
+                extendedTypeFactories,
+                resourceLocator);
         this.setSupportsUniqueConstraints(false);
         this.setSupportsGeneratedKeys(true);
     }

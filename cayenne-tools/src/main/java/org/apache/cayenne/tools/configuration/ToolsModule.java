@@ -45,6 +45,8 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.resource.ClassLoaderResourceLocator;
+import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.commons.logging.Log;
 
 /**
@@ -79,6 +81,7 @@ public class ToolsModule implements Module {
 
         AdhocObjectFactory objectFactory = new DefaultAdhocObjectFactory();
         binder.bind(AdhocObjectFactory.class).toInstance(objectFactory);
+        binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
 
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(BatchQueryBuilderFactory.class).to(DefaultBatchQueryBuilderFactory.class);
