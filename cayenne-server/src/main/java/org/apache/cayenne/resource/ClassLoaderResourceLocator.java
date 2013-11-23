@@ -69,8 +69,7 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
         }
 
         if (loader == null) {
-            throw new IllegalStateException(
-                    "Can't detect ClassLoader to use for resouyrce location");
+            throw new IllegalStateException("Can't detect ClassLoader to use for resource location");
         }
 
         return loader;
