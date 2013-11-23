@@ -27,13 +27,14 @@ import java.util.Enumeration;
 import org.apache.cayenne.ConfigurationException;
 
 /**
- * A {@link ResourceLocator} that looks up resources is the application classpath based on
- * the current thread ClassLoader.
+ * A {@link ResourceLocator} that looks up resources is the application
+ * classpath based on the current thread ClassLoader.
  * 
  * @since 3.1
  */
 public class ClassLoaderResourceLocator implements ResourceLocator {
 
+    @Override
     public Collection<Resource> findResources(String name) {
 
         Collection<Resource> resources = new ArrayList<Resource>(3);
@@ -41,16 +42,16 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
         Enumeration<URL> urls;
         try {
             urls = getClassLoader().getResources(name);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ConfigurationException("Error getting resources for ");
         }
 
         while (urls.hasMoreElements()) {
 
-            // TODO: andrus 11/30/2009 - replace URLResource that resolves relative URL's
-            // as truly relative with some kind of ClasspathResource that creates a
-            // relative *path* and then resolves it against the entire classpath space.
+            // TODO: andrus 11/30/2009 - replace URLResource that resolves
+            // relative URL's as truly relative with some kind of
+            // ClasspathResource that creates a relative *path* and then
+            // resolves it against the entire classpath space.
             resources.add(new URLResource(urls.nextElement()));
         }
 

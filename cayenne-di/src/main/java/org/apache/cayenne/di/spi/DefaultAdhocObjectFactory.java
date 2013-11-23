@@ -25,9 +25,9 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
 
 /**
- * A default implementation of {@link AdhocObjectFactory} that creates objects using
- * default no-arg constructor and injects dependencies into annotated fields. Note that
- * constructor injection is not supported by this factory.
+ * A default implementation of {@link AdhocObjectFactory} that creates objects
+ * using default no-arg constructor and injects dependencies into annotated
+ * fields. Note that constructor injection is not supported by this factory.
  * 
  * @since 3.1
  */
@@ -36,6 +36,8 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
     @Inject
     protected Injector injector;
 
+    @SuppressWarnings("unchecked")
+    @Override
     public <T> T newInstance(Class<? super T> superType, String className) {
 
         if (superType == null) {
@@ -48,34 +50,22 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
 
         Class<T> type;
         try {
-            type = (Class<T>)getJavaClass(className);
-        }
-        catch (ClassNotFoundException e) {
-            throw new DIRuntimeException(
-                    "Invalid class %s of type %s",
-                    e,
-                    className,
-                    superType.getName());
+            type = (Class<T>) getJavaClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new DIRuntimeException("Invalid class %s of type %s", e, className, superType.getName());
         }
 
         if (!superType.isAssignableFrom(type)) {
-            throw new DIRuntimeException(
-                    "Class %s is not assignable to %s",
-                    className,
-                    superType.getName());
+            throw new DIRuntimeException("Class %s is not assignable to %s", className, superType.getName());
         }
 
         T instance;
         try {
-            Provider<T> provider0 = new ConstructorInjectingProvider<T>(type, (DefaultInjector)injector);
-            Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, (DefaultInjector)injector);
+            Provider<T> provider0 = new ConstructorInjectingProvider<T>(type, (DefaultInjector) injector);
+            Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, (DefaultInjector) injector);
             instance = provider1.get();
-        }
-        catch (Exception e) {
-            throw new DIRuntimeException(
-                    "Error creating instance of class %s of type %s",
-                    e,
-                    className,
+        } catch (Exception e) {
+            throw new DIRuntimeException("Error creating instance of class %s of type %s", e, className,
                     superType.getName());
         }
 
@@ -96,48 +86,38 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             classLoader = DefaultAdhocObjectFactory.class.getClassLoader();
         }
 
-        // use custom logic on failure only, assuming primitives and arrays are not that
+        // use custom logic on failure only, assuming primitives and arrays are
+        // not that
         // common
         try {
             return Class.forName(className, true, classLoader);
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             if (!className.endsWith("[]")) {
                 if ("byte".equals(className)) {
                     return Byte.TYPE;
-                }
-                else if ("int".equals(className)) {
+                } else if ("int".equals(className)) {
                     return Integer.TYPE;
-                }
-                else if ("short".equals(className)) {
+                } else if ("short".equals(className)) {
                     return Short.TYPE;
-                }
-                else if ("char".equals(className)) {
+                } else if ("char".equals(className)) {
                     return Character.TYPE;
-                }
-                else if ("double".equals(className)) {
+                } else if ("double".equals(className)) {
                     return Double.TYPE;
-                }
-                else if ("long".equals(className)) {
+                } else if ("long".equals(className)) {
                     return Long.TYPE;
-                }
-                else if ("float".equals(className)) {
+                } else if ("float".equals(className)) {
                     return Float.TYPE;
-                }
-                else if ("boolean".equals(className)) {
+                } else if ("boolean".equals(className)) {
                     return Boolean.TYPE;
                 }
                 // try inner class often specified with "." instead of $
                 else {
                     int dot = className.lastIndexOf('.');
                     if (dot > 0 && dot + 1 < className.length()) {
-                        className = className.substring(0, dot)
-                                + "$"
-                                + className.substring(dot + 1);
+                        className = className.substring(0, dot) + "$" + className.substring(dot + 1);
                         try {
                             return Class.forName(className, true, classLoader);
-                        }
-                        catch (ClassNotFoundException nestedE) {
+                        } catch (ClassNotFoundException nestedE) {
                             // ignore, throw the original exception...
                         }
                     }
@@ -155,26 +135,19 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
 
             if ("byte".equals(className)) {
                 return byte[].class;
-            }
-            else if ("int".equals(className)) {
+            } else if ("int".equals(className)) {
                 return int[].class;
-            }
-           else if ("long".equals(className)) {
-               return long[].class;
-           }
-            else if ("short".equals(className)) {
+            } else if ("long".equals(className)) {
+                return long[].class;
+            } else if ("short".equals(className)) {
                 return short[].class;
-            }
-            else if ("char".equals(className)) {
+            } else if ("char".equals(className)) {
                 return char[].class;
-            }
-            else if ("double".equals(className)) {
+            } else if ("double".equals(className)) {
                 return double[].class;
-            }
-            else if ("float".equals(className)) {
+            } else if ("float".equals(className)) {
                 return float[].class;
-            }
-            else if ("boolean".equals(className)) {
+            } else if ("boolean".equals(className)) {
                 return boolean[].class;
             }
 
