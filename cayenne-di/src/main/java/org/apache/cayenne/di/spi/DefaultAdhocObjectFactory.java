@@ -72,6 +72,27 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
         return instance;
     }
 
+    @Override
+    public ClassLoader getClassLoader(String resourceName) {
+
+        // here we are ignoring 'className' when looking for ClassLoader...
+        // other implementations (such as OSGi) may actually use it
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        if (classLoader == null) {
+            classLoader = DefaultAdhocObjectFactory.class.getClassLoader();
+        }
+
+        // this is too paranoid I guess... "this" class will always have a
+        // ClassLoader
+        if (classLoader == null) {
+            throw new IllegalStateException("Can't find a ClassLoader");
+        }
+
+        return classLoader;
+    }
+
     public Class<?> getJavaClass(String className) throws ClassNotFoundException {
 
         // is there a better way to get array class from string name?
@@ -80,15 +101,10 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             throw new ClassNotFoundException("Null class name");
         }
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-        if (classLoader == null) {
-            classLoader = DefaultAdhocObjectFactory.class.getClassLoader();
-        }
+        ClassLoader classLoader = getClassLoader(className.replace('.', '/'));
 
         // use custom logic on failure only, assuming primitives and arrays are
-        // not that
-        // common
+        // not that common
         try {
             return Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {

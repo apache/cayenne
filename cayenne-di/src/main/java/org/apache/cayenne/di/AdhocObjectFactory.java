@@ -19,7 +19,8 @@
 package org.apache.cayenne.di;
 
 /**
- * Creates objects for user-provided String class names, injecting dependencies into them.
+ * Creates objects for user-provided String class names, injecting dependencies
+ * into them.
  * 
  * @since 3.1
  */
@@ -30,4 +31,13 @@ public interface AdhocObjectFactory {
      * dependencies from the registry into it.
      */
     <T> T newInstance(Class<? super T> superType, String className);
+
+    /**
+     * Returns a ClassLoader appropriate for loading a given resource. Resource
+     * path should be compatible with Class.getResource(..) and such, i.e. the
+     * path component separator should be slash, not dot.
+     * 
+     * @since 3.2
+     */
+    ClassLoader getClassLoader(String resourceName);
 }

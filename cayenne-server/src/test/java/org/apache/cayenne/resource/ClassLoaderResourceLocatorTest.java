@@ -20,15 +20,14 @@ package org.apache.cayenne.resource;
 
 import java.util.Collection;
 
-import org.apache.cayenne.resource.ClassLoaderResourceLocator;
-import org.apache.cayenne.resource.Resource;
-
 import junit.framework.TestCase;
+
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 
 public class ClassLoaderResourceLocatorTest extends TestCase {
 
     public void testFindResources() {
-        ClassLoaderResourceLocator locator = new ClassLoaderResourceLocator();
+        ClassLoaderResourceLocator locator = new ClassLoaderResourceLocator(new DefaultAdhocObjectFactory());
 
         Collection<Resource> resources = locator
                 .findResources("org/apache/cayenne/resource/ClassLoaderResourceLocatorTest.class");
@@ -40,7 +39,7 @@ public class ClassLoaderResourceLocatorTest extends TestCase {
         assertNotNull(resource);
 
         assertNotNull(resource.getURL());
-        assertTrue(resource.getURL().toExternalForm().endsWith(
-                "org/apache/cayenne/resource/ClassLoaderResourceLocatorTest.class"));
+        assertTrue(resource.getURL().toExternalForm()
+                .endsWith("org/apache/cayenne/resource/ClassLoaderResourceLocatorTest.class"));
     }
 }

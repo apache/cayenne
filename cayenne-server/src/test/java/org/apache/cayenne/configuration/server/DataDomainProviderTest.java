@@ -108,20 +108,7 @@ public class DataDomainProviderTest extends TestCase {
         nodeDescriptor2.setParameters("testDataNode2.driver.xml");
         testDescriptor.getNodeDescriptors().add(nodeDescriptor2);
 
-        final ResourceLocator locator = new ClassLoaderResourceLocator() {
-
-            public Collection<Resource> findResources(String name) {
-                // ResourceLocator also used by JdbcAdapter to locate
-                // types.xml... if this is the request we are getting, just let
-                // it go through..
-                if (name.endsWith("types.xml")) {
-                   return super.findResources(name);
-                }
-                
-                assertEquals(testConfigName, name);
-                return Collections.<Resource> singleton(new MockResource());
-            }
-        };
+       
 
         final DataChannelDescriptorLoader testLoader = new DataChannelDescriptorLoader() {
 
@@ -158,6 +145,22 @@ public class DataDomainProviderTest extends TestCase {
 
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
+                
+                final ResourceLocator locator = new ClassLoaderResourceLocator(objectFactory) {
+
+                    public Collection<Resource> findResources(String name) {
+                        // ResourceLocator also used by JdbcAdapter to locate
+                        // types.xml... if this is the request we are getting, just let
+                        // it go through..
+                        if (name.endsWith("types.xml")) {
+                           return super.findResources(name);
+                        }
+                        
+                        assertEquals(testConfigName, name);
+                        return Collections.<Resource> singleton(new MockResource());
+                    }
+                };
+                
                 binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
                 binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
@@ -168,7 +171,6 @@ public class DataDomainProviderTest extends TestCase {
                 binder.bind(BatchQueryBuilderFactory.class).to(DefaultBatchQueryBuilderFactory.class);
 
                 binder.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
-                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
             }

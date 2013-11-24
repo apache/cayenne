@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 
 /**
  * A {@link ResourceLocator} that looks up resources is the application
@@ -33,6 +35,12 @@ import org.apache.cayenne.ConfigurationException;
  * @since 3.1
  */
 public class ClassLoaderResourceLocator implements ResourceLocator {
+    
+    private AdhocObjectFactory objectFactory;
+    
+    public ClassLoaderResourceLocator(@Inject AdhocObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
 
     @Override
     public Collection<Resource> findResources(String name) {
@@ -41,7 +49,7 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
 
         Enumeration<URL> urls;
         try {
-            urls = getClassLoader().getResources(name);
+            urls = objectFactory.getClassLoader(name).getResources(name);
         } catch (IOException e) {
             throw new ConfigurationException("Error getting resources for ");
         }
@@ -58,6 +66,10 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
         return resources;
     }
 
+    /**
+     * @deprecated since 3.2 unused, as AdhocObjectFactory.getClassLoader() is used instead.
+     */
+    @Deprecated
     protected ClassLoader getClassLoader() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
