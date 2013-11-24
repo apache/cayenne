@@ -27,15 +27,17 @@ import java.util.TreeMap;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
- * A mapping descriptor of an embeddable class. Embeddable is a persistent class that
- * doesn't have its own identity and is embedded in other persistent classes. It can be
- * viewed as a custom type mapped to one or more database columns. Embeddable mapping can
- * include optional default column names that can be overriden by the owning entity.
+ * A mapping descriptor of an embeddable class. Embeddable is a persistent class
+ * that doesn't have its own identity and is embedded in other persistent
+ * classes. It can be viewed as a custom type mapped to one or more database
+ * columns. Embeddable mapping can include optional default column names that
+ * can be overriden by the owning entity.
  * 
  * @since 3.0
  */
@@ -71,24 +73,27 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 
     /**
      * Returns Java class of the embeddable.
+     * 
+     * @deprecated since 3.2 this method based on statically defined class
+     *             loading algorithm is not going to work in environments like
+     *             OSGi. {@link AdhocObjectFactory} should be used as it can
+     *             provide the environment-specific class loading policy.
      */
+    @Deprecated
     public Class<?> getJavaClass() {
         String name = getClassName();
 
         try {
             return Util.getJavaClass(name);
-        }
-        catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException("Failed to load class "
-                    + name
-                    + ": "
-                    + e.getMessage(), e);
+        } catch (ClassNotFoundException e) {
+            throw new CayenneRuntimeException("Failed to load class " + name + ": " + e.getMessage(), e);
         }
     }
 
     /**
      * Returns EmbeddableAttribute of this Embeddable that maps to
-     * <code>dbAttribute</code> parameter. Returns null if no such attribute is found.
+     * <code>dbAttribute</code> parameter. Returns null if no such attribute is
+     * found.
      */
     public EmbeddableAttribute getAttributeForDbPath(String dbPath) {
         for (EmbeddableAttribute attribute : attributes.values()) {
@@ -119,8 +124,9 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
     }
 
     /**
-     * Adds new embeddable attribute to the entity, setting its parent embeddable to be
-     * this object. If attribute has no name, IllegalArgumentException is thrown.
+     * Adds new embeddable attribute to the entity, setting its parent
+     * embeddable to be this object. If attribute has no name,
+     * IllegalArgumentException is thrown.
      */
     public void addAttribute(EmbeddableAttribute attribute) {
         if (attribute.getName() == null) {
@@ -131,12 +137,9 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
         if (existingAttribute != null) {
             if (existingAttribute == attribute) {
                 return;
-            }
-            else {
-                throw new IllegalArgumentException(
-                        "An attempt to override embeddable attribute '"
-                                + attribute.getName()
-                                + "'");
+            } else {
+                throw new IllegalArgumentException("An attempt to override embeddable attribute '"
+                        + attribute.getName() + "'");
             }
         }
 
