@@ -25,29 +25,34 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.URLResource;
 
 public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
-    public void testLoadEmpty() {
+    private Injector injector;
 
-        // create dependencies
-
+    @Override
+    protected void setUp() throws Exception {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
-        Injector injector = DIBootstrap.createInjector(testModule);
+        this.injector = DIBootstrap.createInjector(testModule);
+    }
+
+    public void testLoadEmpty() {
 
         // create and initialize loader instance to test
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
@@ -65,19 +70,6 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
     public void testLoad_MissingConfig() throws Exception {
 
-        // create dependencies
-
-        Module testModule = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
-            }
-        };
-
-        Injector injector = DIBootstrap.createInjector(testModule);
-
         // create and initialize loader instance to test
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
@@ -85,26 +77,12 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         try {
             loader.load(new URLResource(new URL("file:///no_such_resource")));
             fail("No exception was thrown on bad absent config name");
-        }
-        catch (ConfigurationException e) {
+        } catch (ConfigurationException e) {
             // expected
         }
     }
 
     public void testLoadDataMap() {
-
-        // create dependencies
-
-        Module testModule = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
-            }
-        };
-
-        Injector injector = DIBootstrap.createInjector(testModule);
 
         // create and initialize loader instance to test
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
@@ -126,19 +104,6 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
     }
 
     public void testLoadDataEverything() {
-
-        // create dependencies
-
-        Module testModule = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
-            }
-        };
-
-        Injector injector = DIBootstrap.createInjector(testModule);
 
         // create and initialize loader instance to test
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
@@ -177,10 +142,8 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         assertEquals(1, node1.getDataSourceDescriptor().getMaxConnections());
 
         assertEquals("org.example.test.Adapter", node1.getAdapterType());
-        assertEquals("org.example.test.DataSourceFactory", node1
-                .getDataSourceFactoryType());
-        assertEquals("org.example.test.SchemaUpdateStartegy", node1
-                .getSchemaUpdateStrategyType());
+        assertEquals("org.example.test.DataSourceFactory", node1.getDataSourceFactoryType());
+        assertEquals("org.example.test.SchemaUpdateStartegy", node1.getSchemaUpdateStrategyType());
         assertNotNull(node1.getDataMapNames());
 
         assertEquals(1, node1.getDataMapNames().size());

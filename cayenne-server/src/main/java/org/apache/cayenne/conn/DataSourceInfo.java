@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import org.apache.cayenne.configuration.PasswordEncoding;
 import org.apache.cayenne.configuration.PlainTextPasswordEncoder;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -225,6 +226,10 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
         return dataSourceUrl;
     }
 
+    /**
+     * @deprecated since 3.2 as class loading should not happen here.
+     */
+    @Deprecated
     public PasswordEncoding getPasswordEncoder() {
         try {
             return (PasswordEncoding) Util
@@ -240,11 +245,11 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
         catch (ClassNotFoundException e) {
             ; // Swallow it -- no need to throw/etc.
         }
+        catch (DIRuntimeException e) {
+            ; // Swallow it -- no need to throw/etc.
+        }
 
-        logger.error("Failed to obtain specified Password Encoder '"
-                + getPasswordEncoderClass()
-                + "' -- please check CLASSPATH");
-
+        logger.error("Failed to obtain specified Password Encoder '" + getPasswordEncoderClass() + "'");
         return null;
     }
 

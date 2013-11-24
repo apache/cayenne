@@ -27,6 +27,7 @@ import java.net.URL;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
@@ -116,6 +117,9 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
     @Inject
     protected ConfigurationNameMapper nameMapper;
+    
+    @Inject
+    protected AdhocObjectFactory objectFactory;
 
     public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
             throws ConfigurationException {
@@ -359,8 +363,11 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                     passwordSource = passwordSource.replaceAll("\\{\\}", encoderKey);
                 }
 
-                PasswordEncoding passwordEncoder = dataSourceDescriptor
-                        .getPasswordEncoder();
+                String encoderType = dataSourceDescriptor.getPasswordEncoderClass();
+                PasswordEncoding passwordEncoder = null;
+                if (encoderType != null) {
+                    passwordEncoder = objectFactory.newInstance(PasswordEncoding.class, encoderType);
+                }
 
                 if (passwordLocation != null) {
                     if (passwordLocation
