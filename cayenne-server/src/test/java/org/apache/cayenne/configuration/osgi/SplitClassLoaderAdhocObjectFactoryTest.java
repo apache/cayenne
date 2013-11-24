@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.osgi;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
 
 public class SplitClassLoaderAdhocObjectFactoryTest extends TestCase {
@@ -29,18 +31,12 @@ public class SplitClassLoaderAdhocObjectFactoryTest extends TestCase {
         final ClassLoader diCl = mock(ClassLoader.class);
         final ClassLoader serverCl = mock(ClassLoader.class);
 
-        SplitClassLoaderAdhocObjectFactory factory = new SplitClassLoaderAdhocObjectFactory(appCl) {
-
-            @Override
-            protected ClassLoader cayenneDiClassLoader() {
-                return diCl;
-            }
-
-            @Override
-            protected ClassLoader cayenneServerClassLoader() {
-                return serverCl;
-            }
-        };
+        OsgiEnvironment osgiEnvironment = mock(OsgiEnvironment.class);
+        when(osgiEnvironment.applicationClassLoader(anyString())).thenReturn(appCl);
+        when(osgiEnvironment.cayenneDiClassLoader()).thenReturn(diCl);
+        when(osgiEnvironment.cayenneServerClassLoader()).thenReturn(serverCl);
+        
+        SplitClassLoaderAdhocObjectFactory factory = new SplitClassLoaderAdhocObjectFactory(osgiEnvironment);
 
         assertSame(appCl, factory.getClassLoader(null));
         assertSame(appCl, factory.getClassLoader(""));

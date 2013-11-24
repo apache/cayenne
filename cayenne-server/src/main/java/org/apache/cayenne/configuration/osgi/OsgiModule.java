@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.osgi;
 
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
@@ -52,10 +53,10 @@ public class OsgiModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(AdhocObjectFactory.class).toInstance(configureObjectFactory());
-    }
+        binder.bind(OsgiEnvironment.class).toInstance(
+                new DefaultOsgiEnvironment(typeFromProjectBundle.getClassLoader()));
 
-    private AdhocObjectFactory configureObjectFactory() {
-        return new SplitClassLoaderAdhocObjectFactory(typeFromProjectBundle.getClassLoader());
+        binder.bind(AdhocObjectFactory.class).to(SplitClassLoaderAdhocObjectFactory.class);
+        binder.bind(DataDomain.class).toProvider(OsgiDataDomainProvider.class);
     }
 }

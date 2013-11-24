@@ -19,6 +19,7 @@
 package org.apache.cayenne.configuration.osgi;
 
 import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 
 /**
@@ -27,19 +28,15 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
  * 
  * @since 3.2
  */
-public class SplitClassLoaderAdhocObjectFactory extends DefaultAdhocObjectFactory {
+class SplitClassLoaderAdhocObjectFactory extends DefaultAdhocObjectFactory {
 
     private static final String CAYENNE_PACKAGE = "org/apache/cayenne";
     private static final String CAYENNE_DI_PACKAGE_SUFFIX = "/di";
 
-    private ClassLoader applicationClassLoader;
-    private ClassLoader cayenneServerClassLoader;
-    private ClassLoader cayenneDiClassLoader;
+    private OsgiEnvironment osgiEnvironment;
 
-    public SplitClassLoaderAdhocObjectFactory(ClassLoader applicationClassLoader) {
-        this.applicationClassLoader = applicationClassLoader;
-        this.cayenneDiClassLoader = AdhocObjectFactory.class.getClassLoader();
-        this.cayenneServerClassLoader = SplitClassLoaderAdhocObjectFactory.class.getClassLoader();
+    SplitClassLoaderAdhocObjectFactory(@Inject OsgiEnvironment osgiEnvironment) {
+        this.osgiEnvironment = osgiEnvironment;
     }
 
     @Override
@@ -60,15 +57,15 @@ public class SplitClassLoaderAdhocObjectFactory extends DefaultAdhocObjectFactor
     }
 
     protected ClassLoader applicationClassLoader(String resourceName) {
-        return applicationClassLoader;
+        return osgiEnvironment.applicationClassLoader(resourceName);
     }
 
     protected ClassLoader cayenneDiClassLoader() {
-        return cayenneDiClassLoader;
+        return osgiEnvironment.cayenneDiClassLoader();
     }
 
     protected ClassLoader cayenneServerClassLoader() {
-        return cayenneServerClassLoader;
+        return osgiEnvironment.cayenneServerClassLoader();
     }
 
 }
