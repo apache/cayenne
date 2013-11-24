@@ -29,11 +29,7 @@ public class SplitClassLoaderAdhocObjectFactoryTest extends TestCase {
         final ClassLoader diCl = mock(ClassLoader.class);
         final ClassLoader serverCl = mock(ClassLoader.class);
 
-        SplitClassLoaderAdhocObjectFactory factory = new SplitClassLoaderAdhocObjectFactory() {
-            @Override
-            protected ClassLoader applicationClassLoader(String resourceName) {
-                return appCl;
-            }
+        SplitClassLoaderAdhocObjectFactory factory = new SplitClassLoaderAdhocObjectFactory(appCl) {
 
             @Override
             protected ClassLoader cayenneDiClassLoader() {

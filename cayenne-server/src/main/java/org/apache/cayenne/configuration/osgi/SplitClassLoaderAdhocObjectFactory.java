@@ -32,10 +32,12 @@ public class SplitClassLoaderAdhocObjectFactory extends DefaultAdhocObjectFactor
     private static final String CAYENNE_PACKAGE = "org/apache/cayenne";
     private static final String CAYENNE_DI_PACKAGE_SUFFIX = "/di";
 
+    private ClassLoader applicationClassLoader;
     private ClassLoader cayenneServerClassLoader;
     private ClassLoader cayenneDiClassLoader;
 
-    public SplitClassLoaderAdhocObjectFactory() {
+    public SplitClassLoaderAdhocObjectFactory(ClassLoader applicationClassLoader) {
+        this.applicationClassLoader = applicationClassLoader;
         this.cayenneDiClassLoader = AdhocObjectFactory.class.getClassLoader();
         this.cayenneServerClassLoader = SplitClassLoaderAdhocObjectFactory.class.getClassLoader();
     }
@@ -58,7 +60,7 @@ public class SplitClassLoaderAdhocObjectFactory extends DefaultAdhocObjectFactor
     }
 
     protected ClassLoader applicationClassLoader(String resourceName) {
-        return super.getClassLoader(resourceName);
+        return applicationClassLoader;
     }
 
     protected ClassLoader cayenneDiClassLoader() {

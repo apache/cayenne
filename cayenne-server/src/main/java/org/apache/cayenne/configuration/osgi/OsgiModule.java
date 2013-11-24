@@ -29,8 +29,33 @@ import org.apache.cayenne.di.Module;
  */
 public class OsgiModule implements Module {
 
+    /**
+     * A factory method that creates a new OsgiModule, initialized with any
+     * class from the OSGi bundle that contains Cayenne mapping and persistent
+     * classes. This is likely the the bundle that is calling this method.
+     */
+    public static OsgiModule forProject(Class<?> typeFromProjectBundle) {
+
+        if (typeFromProjectBundle == null) {
+            throw new NullPointerException("Null 'typeFromProjectBundle'");
+        }
+
+        OsgiModule module = new OsgiModule();
+        module.typeFromProjectBundle = typeFromProjectBundle;
+        return module;
+    }
+
+    private Class<?> typeFromProjectBundle;
+
+    private OsgiModule() {
+    }
+
     @Override
     public void configure(Binder binder) {
-        binder.bind(AdhocObjectFactory.class).to(SplitClassLoaderAdhocObjectFactory.class);
+        binder.bind(AdhocObjectFactory.class).toInstance(configureObjectFactory());
+    }
+
+    private AdhocObjectFactory configureObjectFactory() {
+        return new SplitClassLoaderAdhocObjectFactory(typeFromProjectBundle.getClassLoader());
     }
 }
