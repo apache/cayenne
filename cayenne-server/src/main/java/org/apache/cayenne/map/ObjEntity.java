@@ -34,6 +34,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -281,8 +282,10 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Returns a non-null class name. For generic entities with no class
      * specified explicitly, default DataMap superclass is used, and if it is
      * not set - CayenneDataObject is used.
+     * 
+     * @since 3.2
      */
-    String getJavaClassName() {
+   public  String getJavaClassName() {
         String name = getClassName();
 
         if (name == null && getDataMap() != null) {
@@ -303,7 +306,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Casts any thrown exceptions into CayenneRuntimeException.
      * 
      * @since 1.2
+     * @deprecated since 3.2 this method based on statically defined class
+     *             loading algorithm is not going to work in environments like
+     *             OSGi. {@link AdhocObjectFactory} should be used as it can
+     *             provide the environment-specific class loading policy. 
      */
+    @Deprecated
     public Class<?> getJavaClass() {
         String name = getJavaClassName();
 

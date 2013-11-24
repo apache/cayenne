@@ -48,12 +48,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             throw new NullPointerException("Null className");
         }
 
-        Class<T> type;
-        try {
-            type = (Class<T>) getJavaClass(className);
-        } catch (ClassNotFoundException e) {
-            throw new DIRuntimeException("Invalid class %s of type %s", e, className, superType.getName());
-        }
+        Class<T> type = (Class<T>) getJavaClass(className);
 
         if (!superType.isAssignableFrom(type)) {
             throw new DIRuntimeException("Class %s is not assignable to %s", className, superType.getName());
@@ -93,12 +88,13 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
         return classLoader;
     }
 
-    public Class<?> getJavaClass(String className) throws ClassNotFoundException {
+    @Override
+    public Class<?> getJavaClass(String className) {
 
         // is there a better way to get array class from string name?
 
         if (className == null) {
-            throw new ClassNotFoundException("Null class name");
+            throw new NullPointerException("Null class name");
         }
 
         ClassLoader classLoader = getClassLoader(className.replace('.', '/'));
@@ -125,6 +121,8 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
                     return Float.TYPE;
                 } else if ("boolean".equals(className)) {
                     return Boolean.TYPE;
+                } else if ("void".equals(className)) {
+                    return Void.TYPE;
                 }
                 // try inner class often specified with "." instead of $
                 else {
@@ -139,7 +137,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
                     }
                 }
 
-                throw e;
+                throw new DIRuntimeException("Invalid class: %s", e, className);
             }
 
             if (className.length() < 3) {
@@ -167,7 +165,11 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
                 return boolean[].class;
             }
 
-            return Class.forName("[L" + className + ";", true, classLoader);
+            try {
+                return Class.forName("[L" + className + ";", true, classLoader);
+            } catch (ClassNotFoundException e1) {
+                throw new DIRuntimeException("Invalid class: %s", e1, className);
+            }
         }
     }
 }

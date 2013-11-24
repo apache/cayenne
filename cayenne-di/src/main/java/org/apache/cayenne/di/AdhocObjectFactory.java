@@ -33,6 +33,14 @@ public interface AdhocObjectFactory {
     <T> T newInstance(Class<? super T> superType, String className);
 
     /**
+     * Returns a Java class loaded using ClassLoader returned from
+     * {@link #getClassLoader(String)} for a given class name.
+     * 
+     * @since 3.2
+     */
+    Class<?> getJavaClass(String className);
+
+    /**
      * Returns a ClassLoader appropriate for loading a given resource. Resource
      * path should be compatible with Class.getResource(..) and such, i.e. the
      * path component separator should be slash, not dot.
