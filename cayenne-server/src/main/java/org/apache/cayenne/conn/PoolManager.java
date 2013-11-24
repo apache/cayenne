@@ -56,7 +56,9 @@ public class PoolManager implements ScopeEventListener, DataSource,
      * timed out and was unable to obtain a connection.
      */
     public static class ConnectionUnavailableException extends SQLException {
-    	public ConnectionUnavailableException(String message) {
+        private static final long serialVersionUID = 1063973806941023165L;
+
+        public ConnectionUnavailableException(String message) {
     		super(message);
     	}
     }
@@ -80,13 +82,20 @@ public class PoolManager implements ScopeEventListener, DataSource,
     /**
      * Creates new PoolManager using org.apache.cayenne.conn.PoolDataSource for an
      * underlying ConnectionPoolDataSource.
+     * 
+     * @deprecated since 3.2 This constructor causes implicit class loading that should avoided.
      */
+    @Deprecated
     public PoolManager(String jdbcDriver, String dataSourceUrl, int minCons, int maxCons,
             String userName, String password) throws SQLException {
 
         this(jdbcDriver, dataSourceUrl, minCons, maxCons, userName, password, null, MAX_QUEUE_WAIT_DEFAULT);
     }
 
+    /**
+     * @deprecated since 3.2 This constructor causes implicit class loading that should avoided.
+     */
+    @Deprecated
     public PoolManager(String jdbcDriver, String dataSourceUrl, int minCons, int maxCons,
             String userName, String password, JdbcEventLogger logger, long maxQueueWaitTime) throws SQLException {
 
@@ -108,6 +117,23 @@ public class PoolManager implements ScopeEventListener, DataSource,
         PoolDataSource poolDS = new PoolDataSource(driverDS);
         init(poolDS, minCons, maxCons, userName, password, maxQueueWaitTime);
     }
+    
+    /**
+     * Creates new PoolManager with the specified policy for connection pooling and a
+     * ConnectionPoolDataSource object.
+     * 
+     * @param poolDataSource data source for pooled connections
+     * @param minCons Non-negative integer that specifies a minimum number of open
+     *            connections to keep in the pool at all times
+     * @param maxCons Non-negative integer that specifies maximum number of simultaneuosly
+     *            open connections
+     * @throws SQLException if pool manager can not be created.
+     * @deprecated since 3.2 use {@link #PoolManager(ConnectionPoolDataSource, int, int, String, String, long)}
+     */
+    public PoolManager(ConnectionPoolDataSource poolDataSource, int minCons, int maxCons,
+            String userName, String password) throws SQLException {
+        this(poolDataSource, minCons, maxCons, userName, password, PoolManager.MAX_QUEUE_WAIT_DEFAULT);
+    }
 
     /**
      * Creates new PoolManager with the specified policy for connection pooling and a
@@ -119,10 +145,11 @@ public class PoolManager implements ScopeEventListener, DataSource,
      * @param maxCons Non-negative integer that specifies maximum number of simultaneuosly
      *            open connections
      * @throws SQLException if pool manager can not be created.
+     * @since 3.2
      */
     public PoolManager(ConnectionPoolDataSource poolDataSource, int minCons, int maxCons,
-            String userName, String password) throws SQLException {
-        init(poolDataSource, minCons, maxCons, userName, password, MAX_QUEUE_WAIT_DEFAULT);
+            String userName, String password, long maxQueueWaitTime) throws SQLException {
+        init(poolDataSource, minCons, maxCons, userName, password, maxQueueWaitTime);
     }
 
     /** Initializes pool. Normally called from constructor. */

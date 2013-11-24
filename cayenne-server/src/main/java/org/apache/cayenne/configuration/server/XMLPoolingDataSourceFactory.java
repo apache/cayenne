@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.sql.Driver;
+
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
@@ -25,7 +27,10 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.commons.logging.Log;
@@ -47,9 +52,12 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
-    @Inject 
+    @Inject
     private RuntimeProperties properties;
-    
+
+    @Inject
+    private AdhocObjectFactory objectFactory;
+
     @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
@@ -61,14 +69,21 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
             throw new ConfigurationException(message);
         }
 
+        Driver driver = objectFactory.newInstance(Driver.class, dataSourceDescriptor.getJdbcDriver());
+        DriverDataSource driverDS = new DriverDataSource(driver, dataSourceDescriptor.getDataSourceUrl(),
+                dataSourceDescriptor.getUserName(), dataSourceDescriptor.getPassword());
+        driverDS.setLogger(jdbcEventLogger);
+        PoolDataSource poolDS = new PoolDataSource(driverDS);
+
         try {
-            return new PoolManager(dataSourceDescriptor.getJdbcDriver(), dataSourceDescriptor.getDataSourceUrl(),
-                    dataSourceDescriptor.getMinConnections(), dataSourceDescriptor.getMaxConnections(),
-                    dataSourceDescriptor.getUserName(), dataSourceDescriptor.getPassword(), jdbcEventLogger,
-                    properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME, PoolManager.MAX_QUEUE_WAIT_DEFAULT));
+            return new PoolManager(poolDS, dataSourceDescriptor.getMinConnections(),
+                    dataSourceDescriptor.getMaxConnections(), dataSourceDescriptor.getUserName(),
+                    dataSourceDescriptor.getPassword(), properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME,
+                            PoolManager.MAX_QUEUE_WAIT_DEFAULT));
         } catch (Exception e) {
             jdbcEventLogger.logConnectFailure(e);
             throw e;
         }
     }
+
 }

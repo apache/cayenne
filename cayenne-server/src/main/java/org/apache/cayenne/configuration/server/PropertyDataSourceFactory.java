@@ -18,20 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.sql.Driver;
+
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
- * A DataSourceFactrory that creates a DataSource based on system properties. Properties
- * can be set per domain/node name or globally, applying to all nodes without explicit
- * property set. The following properties are supported:
+ * A DataSourceFactrory that creates a DataSource based on system properties.
+ * Properties can be set per domain/node name or globally, applying to all nodes
+ * without explicit property set. The following properties are supported:
  * <ul>
  * <li>cayenne.jdbc.driver[.domain_name.node_name]
  * <li>cayenne.jdbc.url[.domain_name.node_name]
@@ -40,8 +45,8 @@ import org.apache.cayenne.log.JdbcEventLogger;
  * <li>cayenne.jdbc.min.connections[.domain_name.node_name]
  * <li>cayenne.jdbc.max.conections[.domain_name.node_name]
  * </ul>
- * At least url and driver properties must be specified for this factory to return a valid
- * DataSource.
+ * At least url and driver properties must be specified for this factory to
+ * return a valid DataSource.
  * 
  * @since 3.1
  */
@@ -53,39 +58,30 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
+    @Inject
+    private AdhocObjectFactory objectFactory;
+
     @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
-        String suffix = "."
-                + nodeDescriptor.getDataChannelDescriptor().getName()
-                + "."
-                + nodeDescriptor.getName();
+        String suffix = "." + nodeDescriptor.getDataChannelDescriptor().getName() + "." + nodeDescriptor.getName();
 
-        String driver = getProperty(Constants.JDBC_DRIVER_PROPERTY, suffix);
+        String driverClass = getProperty(Constants.JDBC_DRIVER_PROPERTY, suffix);
         String url = getProperty(Constants.JDBC_URL_PROPERTY, suffix);
         String username = getProperty(Constants.JDBC_USERNAME_PROPERTY, suffix);
         String password = getProperty(Constants.JDBC_PASSWORD_PROPERTY, suffix);
-        int minConnections = getIntProperty(
-                Constants.JDBC_MIN_CONNECTIONS_PROPERTY,
-                suffix,
-                1);
-        int maxConnections = getIntProperty(
-                Constants.JDBC_MAX_CONNECTIONS_PROPERTY,
-                suffix,
-                1);
+        int minConnections = getIntProperty(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, suffix, 1);
+        int maxConnections = getIntProperty(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, suffix, 1);
+
+        Driver driver = objectFactory.newInstance(Driver.class, driverClass);
+        DriverDataSource driverDS = new DriverDataSource(driver, url, username, password);
+        driverDS.setLogger(jdbcEventLogger);
+        PoolDataSource poolDS = new PoolDataSource(driverDS);
 
         try {
-            return new PoolManager(
-                    driver,
-                    url,
-                    minConnections,
-                    maxConnections,
-                    username,
-                    password,
-                    jdbcEventLogger,
-                    properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME, PoolManager.MAX_QUEUE_WAIT_DEFAULT));
-        }
-        catch (Exception e) {
+            return new PoolManager(poolDS, minConnections, maxConnections, username, password, properties.getLong(
+                    Constants.SERVER_MAX_QUEUE_WAIT_TIME, PoolManager.MAX_QUEUE_WAIT_DEFAULT));
+        } catch (Exception e) {
             jdbcEventLogger.logConnectFailure(e);
             throw e;
         }
@@ -100,12 +96,8 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
 
         try {
             return Integer.parseInt(string);
-        }
-        catch (NumberFormatException e) {
-            throw new ConfigurationException(
-                    "Invalid int property '%s': '%s'",
-                    propertyName,
-                    string);
+        } catch (NumberFormatException e) {
+            throw new ConfigurationException("Invalid int property '%s': '%s'", propertyName, string);
         }
     }
 
