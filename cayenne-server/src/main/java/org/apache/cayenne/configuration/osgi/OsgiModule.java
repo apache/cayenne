@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Module;
 
 /**
@@ -50,13 +50,11 @@ public class OsgiModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(OsgiEnvironment.class).toInstance(createOsgiEnvironment());
-
-        binder.bind(AdhocObjectFactory.class).to(SplitClassLoaderAdhocObjectFactory.class);
+        binder.bind(ClassLoaderManager.class).toInstance(createClassLoaderManager());
         binder.bind(DataDomain.class).toProvider(OsgiDataDomainProvider.class);
     }
 
-    private OsgiEnvironment createOsgiEnvironment() {
-        return new DefaultOsgiEnvironment(typeFromProjectBundle.getClassLoader(), perTypeClassLoaders);
+    private ClassLoaderManager createClassLoaderManager() {
+        return new OsgiClassLoaderManager(typeFromProjectBundle.getClassLoader(), perTypeClassLoaders);
     }
 }

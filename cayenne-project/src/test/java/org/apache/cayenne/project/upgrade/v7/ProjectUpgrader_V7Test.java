@@ -34,18 +34,20 @@ import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DBCPDataSourceFactory;
 import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.project.FileProjectSaver;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.project.upgrade.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project.upgrade.UpgradeType;
-import org.apache.cayenne.project.upgrade.v6.ProjectUpgrader_V6;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.test.resource.ResourceUtil;
@@ -53,21 +55,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class ProjectUpgrader_V7Test extends Project2Case{
-    
+public class ProjectUpgrader_V7Test extends Project2Case {
+
     public void testMetadata_3_0_0_1() {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/3_0_0_1a/cayenne.xml");
+        URL url = getClass().getClassLoader().getResource(baseUrl + "/3_0_0_1a/cayenne.xml");
         assertNotNull(url);
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
                 binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -85,7 +85,7 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         assertNotNull(md);
 
         assertSame(UpgradeType.UPGRADE_NEEDED, md.getUpgradeType());
-        //assertEquals("6", md.getIntermediateUpgradeVersion());
+        // assertEquals("6", md.getIntermediateUpgradeVersion());
         assertNull(md.getIntermediateUpgradeVersion());
         assertEquals("3.0.0.1", md.getProjectVersion());
         assertEquals("7", md.getSupportedVersion());
@@ -100,8 +100,7 @@ public class ProjectUpgrader_V7Test extends Project2Case{
 
             public void configure(Binder binder) {
                 binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -125,16 +124,14 @@ public class ProjectUpgrader_V7Test extends Project2Case{
 
     public void testMetadata_Type6() {
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/6a/cayenne-PROJECT1.xml");
+        URL url = getClass().getClassLoader().getResource(baseUrl + "/6a/cayenne-PROJECT1.xml");
         assertNotNull(url);
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
                 binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -155,19 +152,17 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         assertEquals("6", md.getProjectVersion());
         assertEquals("7", md.getSupportedVersion());
     }
-    
+
     public void testMetadata_Type7() {
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(
-                baseUrl + "/7a/cayenne-PROJECT1.xml");
+        URL url = getClass().getClassLoader().getResource(baseUrl + "/7a/cayenne-PROJECT1.xml");
         assertNotNull(url);
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
                 binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             }
         };
 
@@ -188,13 +183,12 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         assertEquals("7", md.getProjectVersion());
         assertEquals("7", md.getSupportedVersion());
     }
-    
+
     public void testPerformUpgradeFrom3() throws Exception {
 
         System.out.println("TEST3");
         File testFolder = setupTestDirectory("testPerformUpgrade_3_0_0_1");
-        String sourceUrl = getClass().getPackage().getName().replace('.', '/')
-                + "/3_0_0_1a/";
+        String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/3_0_0_1a/";
 
         List<String> sources = new ArrayList<String>();
 
@@ -217,9 +211,10 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
             }
         };
@@ -236,28 +231,21 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         assertNotSame(source, upgrader);
 
         // check that all the new files are created...
-        String[] targetsAfterNames = new String[] {
-                "cayenne-d1.xml", "cayenne-d2.xml", "d1Map1.map.xml", "d1Map2.map.xml"
-        };
+        String[] targetsAfterNames = new String[] { "cayenne-d1.xml", "cayenne-d2.xml", "d1Map1.map.xml",
+                "d1Map2.map.xml" };
 
         File[] targetsAfter = new File[targetsAfterNames.length];
         for (int i = 0; i < targetsAfter.length; i++) {
             targetsAfter[i] = new File(testFolder, targetsAfterNames[i]);
-            assertTrue(
-                    "File was not created: " + targetsAfter[i].getAbsolutePath(),
-                    targetsAfter[i].exists());
+            assertTrue("File was not created: " + targetsAfter[i].getAbsolutePath(), targetsAfter[i].exists());
         }
 
         // DataMap files should remain the same; all others need to be deleted
         for (File file : targetsBefore) {
             if (file.getName().endsWith(".map.xml")) {
-                assertTrue("DataMap file disappeared: " + file.getAbsolutePath(), file
-                        .exists());
-            }
-            else {
-                assertFalse(
-                        "File expected to be deleted: " + file.getAbsolutePath(),
-                        file.exists());
+                assertTrue("DataMap file disappeared: " + file.getAbsolutePath(), file.exists());
+            } else {
+                assertFalse("File expected to be deleted: " + file.getAbsolutePath(), file.exists());
             }
         }
 
@@ -267,7 +255,7 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         assertPerformUpgrade_3_0_0_1_d1Map1(targetsAfter[2]);
         assertPerformUpgrade_3_0_0_1_d1Map2(targetsAfter[3]);
     }
-    
+
     private void assertPerformUpgrade_3_0_0_1_cayenne_d1(File file) throws Exception {
         Document document = toDOMTree(file);
 
@@ -275,10 +263,7 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         assertEquals("", xpath.evaluate("/domain/@name", document));
         assertEquals("7", xpath.evaluate("/domain/@project-version", document));
 
-        NodeList maps = (NodeList) xpath.evaluate(
-                "/domain/map",
-                document,
-                XPathConstants.NODESET);
+        NodeList maps = (NodeList) xpath.evaluate("/domain/map", document, XPathConstants.NODESET);
         assertNotNull(maps);
         assertEquals(2, maps.getLength());
 
@@ -288,34 +273,23 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         assertEquals("d1Map1", xpath.evaluate("@name", map1));
         assertEquals("d1Map2", xpath.evaluate("@name", map2));
 
-        NodeList nodes = (NodeList) xpath.evaluate(
-                "/domain/node",
-                document,
-                XPathConstants.NODESET);
+        NodeList nodes = (NodeList) xpath.evaluate("/domain/node", document, XPathConstants.NODESET);
         assertNotNull(nodes);
         assertEquals(1, nodes.getLength());
 
         Node node1 = nodes.item(0);
 
         assertEquals("d1NodeDriver", xpath.evaluate("@name", node1));
-        assertEquals(XMLPoolingDataSourceFactory.class.getName(), xpath.evaluate(
-                "@factory",
-                node1));
+        assertEquals(XMLPoolingDataSourceFactory.class.getName(), xpath.evaluate("@factory", node1));
 
-        NodeList mapRefs = (NodeList) xpath.evaluate(
-                "map-ref",
-                node1,
-                XPathConstants.NODESET);
+        NodeList mapRefs = (NodeList) xpath.evaluate("map-ref", node1, XPathConstants.NODESET);
         assertNotNull(mapRefs);
         assertEquals(2, mapRefs.getLength());
 
         assertEquals("d1Map1", xpath.evaluate("@name", mapRefs.item(0)));
         assertEquals("d1Map2", xpath.evaluate("@name", mapRefs.item(1)));
 
-        NodeList dataSources = (NodeList) xpath.evaluate(
-                "data-source",
-                node1,
-                XPathConstants.NODESET);
+        NodeList dataSources = (NodeList) xpath.evaluate("data-source", node1, XPathConstants.NODESET);
         assertNotNull(dataSources);
         assertEquals(1, dataSources.getLength());
 
@@ -331,17 +305,11 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         assertEquals("", xpath.evaluate("/domain/@name", document));
         assertEquals("7", xpath.evaluate("/domain/@project-version", document));
 
-        NodeList maps = (NodeList) xpath.evaluate(
-                "/domain/map",
-                document,
-                XPathConstants.NODESET);
+        NodeList maps = (NodeList) xpath.evaluate("/domain/map", document, XPathConstants.NODESET);
         assertNotNull(maps);
         assertEquals(0, maps.getLength());
 
-        NodeList nodes = (NodeList) xpath.evaluate(
-                "/domain/node",
-                document,
-                XPathConstants.NODESET);
+        NodeList nodes = (NodeList) xpath.evaluate("/domain/node", document, XPathConstants.NODESET);
         assertNotNull(nodes);
         assertEquals(2, nodes.getLength());
 
@@ -350,27 +318,17 @@ public class ProjectUpgrader_V7Test extends Project2Case{
 
         assertEquals("d2NodeDBCP", xpath.evaluate("@name", node1));
         assertEquals("dbcpx", xpath.evaluate("@parameters", node1));
-        assertEquals(DBCPDataSourceFactory.class.getName(), xpath.evaluate(
-                "@factory",
-                node1));
+        assertEquals(DBCPDataSourceFactory.class.getName(), xpath.evaluate("@factory", node1));
 
-        NodeList dataSources1 = (NodeList) xpath.evaluate(
-                "data-source",
-                node1,
-                XPathConstants.NODESET);
+        NodeList dataSources1 = (NodeList) xpath.evaluate("data-source", node1, XPathConstants.NODESET);
         assertNotNull(dataSources1);
         assertEquals(0, dataSources1.getLength());
 
         assertEquals("d2NodeJNDI", xpath.evaluate("@name", node2));
         assertEquals("jndi/x", xpath.evaluate("@parameters", node2));
-        assertEquals(JNDIDataSourceFactory.class.getName(), xpath.evaluate(
-                "@factory",
-                node2));
+        assertEquals(JNDIDataSourceFactory.class.getName(), xpath.evaluate("@factory", node2));
 
-        NodeList dataSources2 = (NodeList) xpath.evaluate(
-                "data-source",
-                node2,
-                XPathConstants.NODESET);
+        NodeList dataSources2 = (NodeList) xpath.evaluate("data-source", node2, XPathConstants.NODESET);
         assertNotNull(dataSources2);
         assertEquals(0, dataSources2.getLength());
     }
@@ -381,7 +339,7 @@ public class ProjectUpgrader_V7Test extends Project2Case{
         XPath xpath = XPathFactory.newInstance().newXPath();
         assertEquals("7", xpath.evaluate("/data-map/@project-version", document));
     }
-    
+
     private void assertPerformUpgrade_3_0_0_1_d1Map2(File file) throws Exception {
         Document document = toDOMTree(file);
 
@@ -391,74 +349,72 @@ public class ProjectUpgrader_V7Test extends Project2Case{
 
     public void testPerformUpgradeFrom6() throws Exception {
         File testForlder = setupTestDirectory("testUpgrade6a");
-        String sourceUrl = getClass().getPackage().getName().replace('.', '/')
-                + "/6a/";
+        String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/6a/";
         System.out.println(sourceUrl);
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+
                 binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
             }
         };
-        
-        String[] resources = {"cayenne-PROJECT1.xml","testProjectMap1_1.map.xml", "testProjectMap1_2.map.xml"};
+
+        String[] resources = { "cayenne-PROJECT1.xml", "testProjectMap1_1.map.xml", "testProjectMap1_2.map.xml" };
         List<File> files = new ArrayList<File>();
-        
+
         for (String name : resources) {
-            URL xmlUrl = getClass().getClassLoader().getResource(sourceUrl+name);
+            URL xmlUrl = getClass().getClassLoader().getResource(sourceUrl + name);
             File target = new File(testForlder, name);
             ResourceUtil.copyResourceToFile(xmlUrl, target);
             files.add(target);
         }
-        
-        
+
         Injector injector = DIBootstrap.createInjector(testModule);
         ProjectUpgrader_V7 upgrader = new ProjectUpgrader_V7();
         injector.injectMembers(upgrader);
-        
+
         Resource source = new URLResource(files.get(0).toURL());
         assertNotNull(source);
         UpgradeHandler handler = upgrader.getUpgradeHandler(source);
         assertNotNull(handler);
-        
+
         Resource upgraded = handler.performUpgrade();
         assertNotNull(upgraded);
         assertNotSame(source, upgraded);
-        
+
         assertPerformUpgrade6Cayenne(files.get(0));
         assertPerformUpgrade6Map1(files.get(1));
         assertPerformUpgradeMap2(files.get(2));
     }
-    
+
     private void assertPerformUpgrade6Map1(File file) throws Exception {
         Document document = toDOMTree(file);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         assertEquals("7", xpath.evaluate("/data-map/@project-version", document));
-        
-        NodeList maps = (NodeList) xpath.evaluate(
-                "/data-map/obj-entity/entity-listener",
-                document,
+
+        NodeList maps = (NodeList) xpath.evaluate("/data-map/obj-entity/entity-listener", document,
                 XPathConstants.NODESET);
         assertNotNull(maps);
         assertEquals(0, maps.getLength());
     }
-    
+
     private void assertPerformUpgrade6Cayenne(File file) throws Exception {
         Document document = toDOMTree(file);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         assertEquals("7", xpath.evaluate("/domain/@project-version", document));
     }
-    
+
     private void assertPerformUpgradeMap2(File file) throws Exception {
         Document document = toDOMTree(file);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         assertEquals("7", xpath.evaluate("/data-map/@project-version", document));
     }
-    
+
 }

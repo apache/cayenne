@@ -16,30 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.resource;
+package org.apache.cayenne.di;
 
-import java.util.Collection;
+/**
+ * Maps ClassLoaders to resources. This is a useful abstraction when switching
+ * between environments. E.g. between JEE with thread/hierarchical classloaders
+ * and OSGi with per-bundle classloaders.
+ * 
+ * @since 3.2
+ */
+public interface ClassLoaderManager {
 
-import junit.framework.TestCase;
-
-import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-
-public class ClassLoaderResourceLocatorTest extends TestCase {
-
-    public void testFindResources() {
-        ClassLoaderResourceLocator locator = new ClassLoaderResourceLocator(new DefaultClassLoaderManager());
-
-        Collection<Resource> resources = locator
-                .findResources("org/apache/cayenne/resource/ClassLoaderResourceLocatorTest.class");
-
-        assertNotNull(resources);
-        assertEquals(1, resources.size());
-
-        Resource resource = resources.iterator().next();
-        assertNotNull(resource);
-
-        assertNotNull(resource.getURL());
-        assertTrue(resource.getURL().toExternalForm()
-                .endsWith("org/apache/cayenne/resource/ClassLoaderResourceLocatorTest.class"));
-    }
+    /**
+     * Returns a ClassLoader appropriate for loading a given resource. Resource
+     * path should be compatible with Class.getResource(..) and such, i.e. the
+     * path component separator should be slash, not dot.
+     */
+    ClassLoader getClassLoader(String resourceName);
 }

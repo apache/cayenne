@@ -50,6 +50,7 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
+import org.apache.cayenne.dba.firebird.FirebirdSniffer;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
 import org.apache.cayenne.dba.h2.H2Sniffer;
 import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
@@ -64,10 +65,12 @@ import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
@@ -108,10 +111,9 @@ public class DataDomainProviderTest extends TestCase {
         nodeDescriptor2.setParameters("testDataNode2.driver.xml");
         testDescriptor.getNodeDescriptors().add(nodeDescriptor2);
 
-       
-
         final DataChannelDescriptorLoader testLoader = new DataChannelDescriptorLoader() {
 
+            @Override
             public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
                     throws ConfigurationException {
                 return new ConfigurationTree<DataChannelDescriptor>(testDescriptor, null);
@@ -122,19 +124,34 @@ public class DataDomainProviderTest extends TestCase {
 
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
-                final AdhocObjectFactory objectFactory = new DefaultAdhocObjectFactory();
-                binder.bind(AdhocObjectFactory.class).toInstance(objectFactory);
+                final ClassLoaderManager classLoaderManager = new DefaultClassLoaderManager();
+                binder.bind(ClassLoaderManager.class).toInstance(classLoaderManager);
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 
                 binder.bindMap(Constants.PROPERTIES_MAP);
 
-                binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(new OpenBaseSniffer(objectFactory))
-                        .add(new FrontBaseSniffer(objectFactory)).add(new IngresSniffer(objectFactory))
-                        .add(new SQLiteSniffer(objectFactory)).add(new DB2Sniffer(objectFactory))
-                        .add(new H2Sniffer(objectFactory)).add(new HSQLDBSniffer(objectFactory))
-                        .add(new SybaseSniffer(objectFactory)).add(new DerbySniffer(objectFactory))
-                        .add(new SQLServerSniffer(objectFactory)).add(new OracleSniffer(objectFactory))
-                        .add(new PostgresSniffer(objectFactory)).add(new MySQLSniffer(objectFactory));
+                binder.bind(FirebirdSniffer.class).to(FirebirdSniffer.class);
+                binder.bind(OpenBaseSniffer.class).to(OpenBaseSniffer.class);
+                binder.bind(FrontBaseSniffer.class).to(FrontBaseSniffer.class);
+                binder.bind(IngresSniffer.class).to(IngresSniffer.class);
+                binder.bind(SQLiteSniffer.class).to(SQLiteSniffer.class);
+                binder.bind(DB2Sniffer.class).to(DB2Sniffer.class);
+                binder.bind(H2Sniffer.class).to(H2Sniffer.class);
+                binder.bind(HSQLDBSniffer.class).to(HSQLDBSniffer.class);
+                binder.bind(SybaseSniffer.class).to(SybaseSniffer.class);
+                binder.bind(DerbySniffer.class).to(DerbySniffer.class);
+                binder.bind(SQLServerSniffer.class).to(SQLServerSniffer.class);
+                binder.bind(OracleSniffer.class).to(OracleSniffer.class);
+                binder.bind(PostgresSniffer.class).to(PostgresSniffer.class);
+                binder.bind(MySQLSniffer.class).to(MySQLSniffer.class);
+
+                binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(FirebirdSniffer.class)
+                        .add(OpenBaseSniffer.class).add(FrontBaseSniffer.class).add(IngresSniffer.class)
+                        .add(SQLiteSniffer.class).add(DB2Sniffer.class).add(H2Sniffer.class).add(HSQLDBSniffer.class)
+                        .add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
+                        .add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class);
                 binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
                 binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST).add(testConfigName);
 
@@ -145,22 +162,23 @@ public class DataDomainProviderTest extends TestCase {
 
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
-                
-                final ResourceLocator locator = new ClassLoaderResourceLocator(objectFactory) {
+
+                final ResourceLocator locator = new ClassLoaderResourceLocator(classLoaderManager) {
 
                     public Collection<Resource> findResources(String name) {
                         // ResourceLocator also used by JdbcAdapter to locate
-                        // types.xml... if this is the request we are getting, just let
+                        // types.xml... if this is the request we are getting,
+                        // just let
                         // it go through..
                         if (name.endsWith("types.xml")) {
-                           return super.findResources(name);
+                            return super.findResources(name);
                         }
-                        
+
                         assertEquals(testConfigName, name);
                         return Collections.<Resource> singleton(new MockResource());
                     }
                 };
-                
+
                 binder.bind(ResourceLocator.class).toInstance(locator);
                 binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
                 binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);

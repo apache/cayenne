@@ -72,8 +72,10 @@ import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -202,6 +204,7 @@ public class ServerCaseModule implements Module {
                 SQLTemplateCustomizerProvider.class);
         binder.bind(ServerCaseDataSourceFactory.class).to(
                 ServerCaseDataSourceFactory.class);
+        binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);

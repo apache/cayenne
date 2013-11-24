@@ -21,6 +21,7 @@ package org.apache.cayenne.configuration.osgi;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.server.DataDomainProvider;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -32,10 +33,10 @@ import org.apache.cayenne.map.ObjEntity;
 // at the EntityResolver level per CAY-1887
 public class OsgiDataDomainProvider extends DataDomainProvider {
 
-    private OsgiEnvironment osgiEnvironment;
+    private ClassLoaderManager classLoaderManager;
 
-    public OsgiDataDomainProvider(@Inject OsgiEnvironment osgiEnvironment) {
-        this.osgiEnvironment = osgiEnvironment;
+    public OsgiDataDomainProvider(@Inject ClassLoaderManager classLoaderManager) {
+        this.classLoaderManager = classLoaderManager;
     }
 
     @Override
@@ -48,9 +49,9 @@ public class OsgiDataDomainProvider extends DataDomainProvider {
         ClassLoader activeCl = thread.getContextClassLoader();
         try {
 
-            // using fake package name... may not work with all implementations
-            // of osgiEnvironment?
-            thread.setContextClassLoader(osgiEnvironment.resourceClassLoader("com/"));
+            // using fake package name... as long as it is not
+            // org.apache.cayenne, this do the right trick
+            thread.setContextClassLoader(classLoaderManager.getClassLoader("com/"));
 
             DataDomain domain = super.get();
             EntityResolver entityResolver = domain.getEntityResolver();

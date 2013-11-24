@@ -16,20 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.osgi;
+package org.apache.cayenne.di.spi;
+
+import org.apache.cayenne.di.ClassLoaderManager;
 
 /**
- * Encapsulates OSGi-specific environment settings that can be used to configure
- * the rest of Cayenne.
+ * A {@link ClassLoaderManager} that
  * 
  * @since 3.2
  */
-public interface OsgiEnvironment {
+public class DefaultClassLoaderManager implements ClassLoaderManager {
 
-    ClassLoader resourceClassLoader(String resourceName);
+    @Override
+    public ClassLoader getClassLoader(String resourceName) {
+        // here we are ignoring 'className' when looking for ClassLoader...
+        // other implementations (such as OSGi) may actually use it
 
-    ClassLoader cayenneDiClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-    ClassLoader cayenneServerClassLoader();
+        if (classLoader == null) {
+            classLoader = DefaultClassLoaderManager.class.getClassLoader();
+        }
+
+        // this is too paranoid I guess... "this" class will always have a
+        // ClassLoader
+        if (classLoader == null) {
+            throw new IllegalStateException("Can't find a ClassLoader");
+        }
+
+        return classLoader;
+    }
 
 }

@@ -19,6 +19,7 @@
 package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -33,8 +34,16 @@ import org.apache.cayenne.di.Provider;
  */
 public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
 
-    @Inject
     protected Injector injector;
+    protected ClassLoaderManager classLoaderManager;
+
+    /**
+     * @since 3.2
+     */
+    public DefaultAdhocObjectFactory(@Inject Injector injector, @Inject ClassLoaderManager classLoaderManager) {
+        this.injector = injector;
+        this.classLoaderManager = classLoaderManager;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -68,27 +77,6 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
     }
 
     @Override
-    public ClassLoader getClassLoader(String resourceName) {
-
-        // here we are ignoring 'className' when looking for ClassLoader...
-        // other implementations (such as OSGi) may actually use it
-
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-        if (classLoader == null) {
-            classLoader = DefaultAdhocObjectFactory.class.getClassLoader();
-        }
-
-        // this is too paranoid I guess... "this" class will always have a
-        // ClassLoader
-        if (classLoader == null) {
-            throw new IllegalStateException("Can't find a ClassLoader");
-        }
-
-        return classLoader;
-    }
-
-    @Override
     public Class<?> getJavaClass(String className) {
 
         // is there a better way to get array class from string name?
@@ -97,7 +85,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             throw new NullPointerException("Null class name");
         }
 
-        ClassLoader classLoader = getClassLoader(className.replace('.', '/'));
+        ClassLoader classLoader = classLoaderManager.getClassLoader(className.replace('.', '/'));
 
         // use custom logic on failure only, assuming primitives and arrays are
         // not that common

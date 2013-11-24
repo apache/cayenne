@@ -20,39 +20,55 @@ package org.apache.cayenne.configuration.osgi;
 
 import java.util.Map;
 
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Injector;
 
 /**
  * @since 3.2
  */
-public class DefaultOsgiEnvironment implements OsgiEnvironment {
+public class OsgiClassLoaderManager implements ClassLoaderManager {
+
+    private static final String CAYENNE_PACKAGE = "org/apache/cayenne";
+    private static final String CAYENNE_DI_PACKAGE_SUFFIX = "/di";
 
     private ClassLoader applicationClassLoader;
     private ClassLoader cayenneServerClassLoader;
     private ClassLoader cayenneDiClassLoader;
     private Map<String, ClassLoader> perResourceClassLoaders;
 
-    public DefaultOsgiEnvironment(ClassLoader applicationClassLoader, Map<String, ClassLoader> perResourceClassLoaders) {
+    public OsgiClassLoaderManager(ClassLoader applicationClassLoader, Map<String, ClassLoader> perResourceClassLoaders) {
         this.applicationClassLoader = applicationClassLoader;
         this.cayenneDiClassLoader = Injector.class.getClassLoader();
-        this.cayenneServerClassLoader = DefaultOsgiEnvironment.class.getClassLoader();
+        this.cayenneServerClassLoader = OsgiClassLoaderManager.class.getClassLoader();
         this.perResourceClassLoaders = perResourceClassLoaders;
     }
 
     @Override
-    public ClassLoader resourceClassLoader(String resourceName) {
+    public ClassLoader getClassLoader(String resourceName) {
+        if (resourceName == null || resourceName.length() < 2) {
+            return resourceClassLoader(resourceName);
+        }
+
+        String normalizedName = resourceName.charAt(0) == '/' ? resourceName.substring(1) : resourceName;
+        if (normalizedName.startsWith(CAYENNE_PACKAGE)) {
+
+            return (normalizedName.substring(CAYENNE_PACKAGE.length()).startsWith(CAYENNE_DI_PACKAGE_SUFFIX)) ? cayenneDiClassLoader()
+                    : cayenneServerClassLoader();
+        }
+
+        return resourceClassLoader(resourceName);
+    }
+
+    protected ClassLoader resourceClassLoader(String resourceName) {
         ClassLoader cl = perResourceClassLoaders.get(resourceName);
         return cl != null ? cl : applicationClassLoader;
     }
 
-    @Override
-    public ClassLoader cayenneDiClassLoader() {
+    protected ClassLoader cayenneDiClassLoader() {
         return cayenneDiClassLoader;
     }
 
-    @Override
-    public ClassLoader cayenneServerClassLoader() {
+    protected ClassLoader cayenneServerClassLoader() {
         return cayenneServerClassLoader;
     }
-
 }

@@ -29,10 +29,12 @@ import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
@@ -50,6 +52,7 @@ public class ManyToManyCandidateEntityTest extends TestCase {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
                 binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);

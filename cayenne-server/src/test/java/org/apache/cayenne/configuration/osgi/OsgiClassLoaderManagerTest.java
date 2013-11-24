@@ -18,12 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.osgi;
 
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+
 import junit.framework.TestCase;
 
-public class SplitClassLoaderAdhocObjectFactoryTest extends TestCase {
+public class OsgiClassLoaderManagerTest extends TestCase {
 
     public void testGetClassLoader() {
 
@@ -31,20 +32,25 @@ public class SplitClassLoaderAdhocObjectFactoryTest extends TestCase {
         final ClassLoader diCl = mock(ClassLoader.class);
         final ClassLoader serverCl = mock(ClassLoader.class);
 
-        OsgiEnvironment osgiEnvironment = mock(OsgiEnvironment.class);
-        when(osgiEnvironment.resourceClassLoader(anyString())).thenReturn(appCl);
-        when(osgiEnvironment.cayenneDiClassLoader()).thenReturn(diCl);
-        when(osgiEnvironment.cayenneServerClassLoader()).thenReturn(serverCl);
-        
-        SplitClassLoaderAdhocObjectFactory factory = new SplitClassLoaderAdhocObjectFactory(osgiEnvironment);
+        OsgiClassLoaderManager manager = new OsgiClassLoaderManager(appCl, Collections.<String, ClassLoader> emptyMap()) {
+            @Override
+            protected ClassLoader cayenneDiClassLoader() {
+                return diCl;
+            }
 
-        assertSame(appCl, factory.getClassLoader(null));
-        assertSame(appCl, factory.getClassLoader(""));
-        assertSame(appCl, factory.getClassLoader("org/example/test"));
-        assertSame(appCl, factory.getClassLoader("/org/example/test"));
-        assertSame(serverCl, factory.getClassLoader("/org/apache/cayenne/access/DataContext.class"));
-        assertSame(diCl, factory.getClassLoader("/org/apache/cayenne/di/Injector.class"));
-        assertSame(diCl, factory.getClassLoader("org/apache/cayenne/di/Injector.class"));
+            @Override
+            protected ClassLoader cayenneServerClassLoader() {
+                return serverCl;
+            }
+        };
+
+        assertSame(appCl, manager.getClassLoader(null));
+        assertSame(appCl, manager.getClassLoader(""));
+        assertSame(appCl, manager.getClassLoader("org/example/test"));
+        assertSame(appCl, manager.getClassLoader("/org/example/test"));
+        assertSame(serverCl, manager.getClassLoader("/org/apache/cayenne/access/DataContext.class"));
+        assertSame(diCl, manager.getClassLoader("/org/apache/cayenne/di/Injector.class"));
+        assertSame(diCl, manager.getClassLoader("org/apache/cayenne/di/Injector.class"));
 
     }
 

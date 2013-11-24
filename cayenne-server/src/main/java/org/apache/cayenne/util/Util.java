@@ -51,7 +51,9 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -65,15 +67,16 @@ import org.xml.sax.XMLReader;
  */
 public class Util {
 
+    @Deprecated
     private static DefaultAdhocObjectFactory objectFactory;
 
     static {
-        objectFactory = new DefaultAdhocObjectFactory();
+        objectFactory = new DefaultAdhocObjectFactory(null, new DefaultClassLoaderManager());
     }
 
     /**
-     * Converts URL to file. Throws {@link IllegalArgumentException} if the URL is not a
-     * "file://" URL.
+     * Converts URL to file. Throws {@link IllegalArgumentException} if the URL
+     * is not a "file://" URL.
      */
     public static File toFile(URL url) throws IllegalArgumentException {
         // must convert spaces to %20, or URL->URI conversion may fail
@@ -82,25 +85,23 @@ public class Util {
         URI uri;
         try {
             uri = new URI(urlString.replace(" ", "%20"));
-        }
-        catch (URISyntaxException e) {
-            throw new IllegalArgumentException("URL "
-                    + urlString
-                    + " can't be converted to URI", e);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("URL " + urlString + " can't be converted to URI", e);
         }
         return new File(uri);
     }
 
     /**
-     * Reads file contents, returning it as a String, using System default line separator.
+     * Reads file contents, returning it as a String, using System default line
+     * separator.
      */
     public static String stringFromFile(File file) throws IOException {
         return stringFromFile(file, System.getProperty("line.separator"));
     }
 
     /**
-     * Reads file contents, returning it as a String, joining lines with provided
-     * separator.
+     * Reads file contents, returning it as a String, joining lines with
+     * provided separator.
      */
     public static String stringFromFile(File file, String joinWith) throws IOException {
         StringBuilder buf = new StringBuilder();
@@ -111,17 +112,19 @@ public class Util {
             while ((line = in.readLine()) != null) {
                 buf.append(line).append(joinWith);
             }
-        }
-        finally {
+        } finally {
             in.close();
         }
         return buf.toString();
     }
 
     /**
-     * @param strings The list of strings to join.
-     * @param separator The separator between the strings.
-     * @return A single string of all the input strings separated by the separator.
+     * @param strings
+     *            The list of strings to join.
+     * @param separator
+     *            The separator between the strings.
+     * @return A single string of all the input strings separated by the
+     *         separator.
      */
     public static String join(List<String> strings, String separator) {
         if (strings == null || strings.size() == 0)
@@ -142,17 +145,17 @@ public class Util {
     }
 
     /**
-     * Replaces all backslashes "\" with forward slashes "/". Convenience method to
-     * convert path Strings to URI format.
+     * Replaces all backslashes "\" with forward slashes "/". Convenience method
+     * to convert path Strings to URI format.
      */
     public static String substBackslashes(String string) {
         return RegexUtil.substBackslashes(string);
     }
 
     /**
-     * Looks up and returns the root cause of an exception. If none is found, returns
-     * supplied Throwable object unchanged. If root is found, recursively "unwraps" it,
-     * and returns the result to the user.
+     * Looks up and returns the root cause of an exception. If none is found,
+     * returns supplied Throwable object unchanged. If root is found,
+     * recursively "unwraps" it, and returns the result to the user.
      */
     public static Throwable unwindException(Throwable th) {
         if (th instanceof SAXException) {
@@ -160,14 +163,12 @@ public class Util {
             if (sax.getException() != null) {
                 return unwindException(sax.getException());
             }
-        }
-        else if (th instanceof SQLException) {
+        } else if (th instanceof SQLException) {
             SQLException sql = (SQLException) th;
             if (sql.getNextException() != null) {
                 return unwindException(sql.getNextException());
             }
-        }
-        else if (th.getCause() != null) {
+        } else if (th.getCause() != null) {
             return unwindException(th.getCause());
         }
 
@@ -175,8 +176,9 @@ public class Util {
     }
 
     /**
-     * Compares two objects similar to "Object.equals(Object)". Unlike Object.equals(..),
-     * this method doesn't throw an exception if any of the two objects is null.
+     * Compares two objects similar to "Object.equals(Object)". Unlike
+     * Object.equals(..), this method doesn't throw an exception if any of the
+     * two objects is null.
      */
     public static boolean nullSafeEquals(Object o1, Object o2) {
 
@@ -192,30 +194,26 @@ public class Util {
             EqualsBuilder builder = new EqualsBuilder();
             builder.append(o1, o2);
             return builder.isEquals();
-        }
-        else { // It is NOT an array, so use regular equals()
+        } else { // It is NOT an array, so use regular equals()
             return o1.equals(o2);
         }
     }
 
     /**
      * Compares two objects similar to "Comparable.compareTo(Object)". Unlike
-     * Comparable.compareTo(..), this method doesn't throw an exception if any of the two
-     * objects is null.
-     *
+     * Comparable.compareTo(..), this method doesn't throw an exception if any
+     * of the two objects is null.
+     * 
      * @since 1.1
      */
     public static <T> int nullSafeCompare(boolean nullsFirst, Comparable<T> o1, T o2) {
         if (o1 == null && o2 == null) {
             return 0;
-        }
-        else if (o1 == null) {
+        } else if (o1 == null) {
             return nullsFirst ? -1 : 1;
-        }
-        else if (o2 == null) {
+        } else if (o2 == null) {
             return nullsFirst ? 1 : -1;
-        }
-        else {
+        } else {
             return o1.compareTo(o2);
         }
     }
@@ -230,8 +228,7 @@ public class Util {
     /**
      * Creates Serializable object copy using serialization/deserialization.
      */
-    public static <T extends Serializable> T cloneViaSerialization(T object)
-            throws Exception {
+    public static <T extends Serializable> T cloneViaSerialization(T object) throws Exception {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
             @Override
@@ -244,23 +241,22 @@ public class Util {
         out.writeObject(object);
         out.close();
 
-        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes
-                .toByteArray()));
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
         T copy = (T) in.readObject();
 
-        // no need to close the stream - we created it and now will be throwing away...
+        // no need to close the stream - we created it and now will be throwing
+        // away...
         // in.close();
 
         return copy;
     }
 
     /**
-     * Creates an XMLReader with default feature set. Note that all Cayenne internal XML
-     * parsers should probably use XMLReader obtained via this method for consistency
-     * sake, and can customize feature sets as needed.
+     * Creates an XMLReader with default feature set. Note that all Cayenne
+     * internal XML parsers should probably use XMLReader obtained via this
+     * method for consistency sake, and can customize feature sets as needed.
      */
-    public static XMLReader createXmlReader() throws SAXException,
-            ParserConfigurationException {
+    public static XMLReader createXmlReader() throws SAXException, ParserConfigurationException {
         SAXParserFactory spf = SAXParserFactory.newInstance();
 
         // Create a JAXP SAXParser
@@ -276,10 +272,10 @@ public class Util {
     }
 
     /**
-     * Returns package name for the Java class as a path separated with forward slash
-     * ("/"). Method is used to lookup resources that are located in package
-     * subdirectories. For example, a String "a/b/c" will be returned for class name
-     * "a.b.c.ClassName".
+     * Returns package name for the Java class as a path separated with forward
+     * slash ("/"). Method is used to lookup resources that are located in
+     * package subdirectories. For example, a String "a/b/c" will be returned
+     * for class name "a.b.c.ClassName".
      */
     public static String getPackagePath(String className) {
         return RegexUtil.getPackagePath(className);
@@ -287,7 +283,7 @@ public class Util {
 
     /**
      * Returns an unqualified class name for the fully qualified name.
-     *
+     * 
      * @since 3.0
      */
     public static String stripPackageName(String className) {
@@ -304,7 +300,7 @@ public class Util {
 
     /**
      * Creates a mutable map out of two arrays with keys and values.
-     *
+     * 
      * @since 1.2
      */
     public static <K, V> Map<K, V> toMap(K[] keys, V[] values) {
@@ -317,8 +313,7 @@ public class Util {
         }
 
         if (keysSize != valuesSize) {
-            throw new IllegalArgumentException(
-                    "The number of keys doesn't match the number of values.");
+            throw new IllegalArgumentException("The number of keys doesn't match the number of values.");
         }
 
         Map<K, V> map = new HashMap<K, V>();
@@ -330,15 +325,15 @@ public class Util {
     }
 
     /**
-     * Extracts extension from the file name. Dot is not included in the returned string.
+     * Extracts extension from the file name. Dot is not included in the
+     * returned string.
      */
     public static String extractFileExtension(String fileName) {
         int dotInd = fileName.lastIndexOf('.');
 
         // if dot is in the first position,
         // we are dealing with a hidden file rather than an extension
-        return (dotInd > 0 && dotInd < fileName.length()) ? fileName
-                .substring(dotInd + 1) : null;
+        return (dotInd > 0 && dotInd < fileName.length()) ? fileName.substring(dotInd + 1) : null;
     }
 
     /**
@@ -353,9 +348,9 @@ public class Util {
     }
 
     /**
-     * Strips "\n", "\r\n", "\r" from the argument string, replacing them with a provided
-     * character.
-     *
+     * Strips "\n", "\r\n", "\r" from the argument string, replacing them with a
+     * provided character.
+     * 
      * @since 3.1
      */
     public static String stripLineBreaks(String string, char replaceWith) {
@@ -383,8 +378,7 @@ public class Util {
                 }
 
                 buffer[j] = replaceWith;
-            }
-            else {
+            } else {
                 buffer[j] = c;
             }
         }
@@ -393,8 +387,9 @@ public class Util {
     }
 
     /**
-     * Encodes a string so that it can be used as an attribute value in an XML document.
-     * Will do conversion of the greater/less signs, quotes and ampersands.
+     * Encodes a string so that it can be used as an attribute value in an XML
+     * document. Will do conversion of the greater/less signs, quotes and
+     * ampersands.
      */
     public static String encodeXmlAttribute(String string) {
         if (string == null) {
@@ -428,18 +423,18 @@ public class Util {
 
     /**
      * Trims long strings substituting middle part with "...".
-     *
-     * @param str String to trim.
-     * @param maxLength maximum allowable length. Must be at least 5, or an
+     * 
+     * @param str
+     *            String to trim.
+     * @param maxLength
+     *            maximum allowable length. Must be at least 5, or an
      *            IllegalArgumentException is thrown.
      * @return String
      */
     public static String prettyTrim(String str, int maxLength) {
         if (maxLength < 5) {
-            throw new IllegalArgumentException(
-                    "Algorithm for 'prettyTrim' works only with length >= 5. "
-                            + "Supplied length is "
-                            + maxLength);
+            throw new IllegalArgumentException("Algorithm for 'prettyTrim' works only with length >= 5. "
+                    + "Supplied length is " + maxLength);
         }
 
         if (str == null || str.length() <= maxLength) {
@@ -455,9 +450,9 @@ public class Util {
     }
 
     /**
-     * Returns a sorted iterator from an unsorted one. Use this method as a last resort,
-     * since it is much less efficient then just sorting a collection that backs the
-     * original iterator.
+     * Returns a sorted iterator from an unsorted one. Use this method as a last
+     * resort, since it is much less efficient then just sorting a collection
+     * that backs the original iterator.
      */
     public static <T> Iterator<T> sortedIterator(Iterator<T> it, Comparator<T> comparator) {
         List<T> list = new ArrayList<T>();
@@ -491,14 +486,13 @@ public class Util {
     }
 
     /**
-     * Returns true if a Member is accessible via reflection under normal Java access
-     * controls.
-     *
+     * Returns true if a Member is accessible via reflection under normal Java
+     * access controls.
+     * 
      * @since 1.2
      */
     public static boolean isAccessible(Member member) {
-        return Modifier.isPublic(member.getModifiers())
-                && Modifier.isPublic(member.getDeclaringClass().getModifiers());
+        return Modifier.isPublic(member.getModifiers()) && Modifier.isPublic(member.getDeclaringClass().getModifiers());
     }
 
     /**
@@ -516,14 +510,9 @@ public class Util {
         return objectFactory.getJavaClass(className);
     }
 
-    static void setReverse(
-            final Persistent sourceObject,
-            String propertyName,
-            final Persistent targetObject) {
+    static void setReverse(final Persistent sourceObject, String propertyName, final Persistent targetObject) {
 
-        ArcProperty property = (ArcProperty) Cayenne
-                .getClassDescriptor(sourceObject)
-                .getProperty(propertyName);
+        ArcProperty property = (ArcProperty) Cayenne.getClassDescriptor(sourceObject).getProperty(propertyName);
         ArcProperty reverseArc = property.getComplimentaryReverseArc();
         if (reverseArc != null) {
             reverseArc.visit(new PropertyVisitor() {
@@ -544,23 +533,16 @@ public class Util {
 
             });
 
-            sourceObject.getObjectContext().getGraphManager().arcCreated(
-                    targetObject.getObjectId(),
-                    sourceObject.getObjectId(),
-                    reverseArc.getName());
+            sourceObject.getObjectContext().getGraphManager()
+                    .arcCreated(targetObject.getObjectId(), sourceObject.getObjectId(), reverseArc.getName());
 
             markAsDirty(targetObject);
         }
     }
 
-    static void unsetReverse(
-            final Persistent sourceObject,
-            String propertyName,
-            final Persistent targetObject) {
+    static void unsetReverse(final Persistent sourceObject, String propertyName, final Persistent targetObject) {
 
-        ArcProperty property = (ArcProperty) Cayenne
-                .getClassDescriptor(sourceObject)
-                .getProperty(propertyName);
+        ArcProperty property = (ArcProperty) Cayenne.getClassDescriptor(sourceObject).getProperty(propertyName);
         ArcProperty reverseArc = property.getComplimentaryReverseArc();
         if (reverseArc != null) {
             reverseArc.visit(new PropertyVisitor() {
@@ -581,18 +563,16 @@ public class Util {
 
             });
 
-            sourceObject.getObjectContext().getGraphManager().arcDeleted(
-                    targetObject.getObjectId(),
-                    sourceObject.getObjectId(),
-                    reverseArc.getName());
+            sourceObject.getObjectContext().getGraphManager()
+                    .arcDeleted(targetObject.getObjectId(), sourceObject.getObjectId(), reverseArc.getName());
 
             markAsDirty(targetObject);
         }
     }
 
     /**
-     * Changes object state to MODIFIED if needed, returning true if the change has
-     * occurred, false if not.
+     * Changes object state to MODIFIED if needed, returning true if the change
+     * has occurred, false if not.
      */
     static boolean markAsDirty(Persistent object) {
         if (object.getPersistenceState() == PersistenceState.COMMITTED) {

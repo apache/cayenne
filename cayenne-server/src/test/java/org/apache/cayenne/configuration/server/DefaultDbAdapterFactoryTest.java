@@ -39,10 +39,12 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
@@ -78,6 +80,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
                 binder.bindMap(Constants.PROPERTIES_MAP);
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             }
@@ -106,6 +109,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
                 binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
@@ -140,6 +144,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
                 binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
@@ -180,6 +185,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
             public void configure(Binder binder) {
                 binder.bindMap(Constants.PROPERTIES_MAP);
 
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);

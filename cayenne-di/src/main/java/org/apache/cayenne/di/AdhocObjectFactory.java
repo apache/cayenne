@@ -39,13 +39,4 @@ public interface AdhocObjectFactory {
      * @since 3.2
      */
     Class<?> getJavaClass(String className);
-
-    /**
-     * Returns a ClassLoader appropriate for loading a given resource. Resource
-     * path should be compatible with Class.getResource(..) and such, i.e. the
-     * path component separator should be slash, not dot.
-     * 
-     * @since 3.2
-     */
-    ClassLoader getClassLoader(String resourceName);
 }

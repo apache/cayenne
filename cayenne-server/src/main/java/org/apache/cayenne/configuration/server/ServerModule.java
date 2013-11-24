@@ -80,10 +80,11 @@ import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
@@ -128,7 +129,8 @@ public class ServerModule implements Module {
         binder.bindMap(Constants.PROPERTIES_MAP)
             .put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
 
-        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);        
+        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);  
+        binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
