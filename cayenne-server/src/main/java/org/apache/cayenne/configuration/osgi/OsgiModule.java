@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.osgi;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -30,33 +33,30 @@ import org.apache.cayenne.di.Module;
  */
 public class OsgiModule implements Module {
 
-    /**
-     * A factory method that creates a new OsgiModule, initialized with any
-     * class from the OSGi bundle that contains Cayenne mapping and persistent
-     * classes. This is likely the the bundle that is calling this method.
-     */
-    public static OsgiModule forProject(Class<?> typeFromProjectBundle) {
+    private Class<?> typeFromProjectBundle;
+    private Map<String, ClassLoader> perTypeClassLoaders;
 
-        if (typeFromProjectBundle == null) {
-            throw new NullPointerException("Null 'typeFromProjectBundle'");
-        }
-
-        OsgiModule module = new OsgiModule();
-        module.typeFromProjectBundle = typeFromProjectBundle;
-        return module;
+    OsgiModule() {
+        this.perTypeClassLoaders = new HashMap<String, ClassLoader>();
     }
 
-    private Class<?> typeFromProjectBundle;
+    void setTypeFromProjectBundle(Class<?> typeFromProjectBundle) {
+        this.typeFromProjectBundle = typeFromProjectBundle;
+    }
 
-    private OsgiModule() {
+    void putClassLoader(String type, ClassLoader classLoader) {
+        perTypeClassLoaders.put(type, classLoader);
     }
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(OsgiEnvironment.class).toInstance(
-                new DefaultOsgiEnvironment(typeFromProjectBundle.getClassLoader()));
+        binder.bind(OsgiEnvironment.class).toInstance(createOsgiEnvironment());
 
         binder.bind(AdhocObjectFactory.class).to(SplitClassLoaderAdhocObjectFactory.class);
         binder.bind(DataDomain.class).toProvider(OsgiDataDomainProvider.class);
+    }
+
+    private OsgiEnvironment createOsgiEnvironment() {
+        return new DefaultOsgiEnvironment(typeFromProjectBundle.getClassLoader(), perTypeClassLoaders);
     }
 }

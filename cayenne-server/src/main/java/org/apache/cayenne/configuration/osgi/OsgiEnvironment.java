@@ -26,7 +26,7 @@ package org.apache.cayenne.configuration.osgi;
  */
 public interface OsgiEnvironment {
 
-    ClassLoader applicationClassLoader(String resourceName);
+    ClassLoader resourceClassLoader(String resourceName);
 
     ClassLoader cayenneDiClassLoader();
 

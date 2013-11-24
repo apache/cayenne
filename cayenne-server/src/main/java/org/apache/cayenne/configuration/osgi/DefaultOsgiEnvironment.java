@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.osgi;
 
+import java.util.Map;
+
 import org.apache.cayenne.di.Injector;
 
 /**
@@ -28,17 +30,19 @@ public class DefaultOsgiEnvironment implements OsgiEnvironment {
     private ClassLoader applicationClassLoader;
     private ClassLoader cayenneServerClassLoader;
     private ClassLoader cayenneDiClassLoader;
+    private Map<String, ClassLoader> perResourceClassLoaders;
 
-    public DefaultOsgiEnvironment(ClassLoader applicationClassLoader) {
+    public DefaultOsgiEnvironment(ClassLoader applicationClassLoader, Map<String, ClassLoader> perResourceClassLoaders) {
         this.applicationClassLoader = applicationClassLoader;
         this.cayenneDiClassLoader = Injector.class.getClassLoader();
         this.cayenneServerClassLoader = DefaultOsgiEnvironment.class.getClassLoader();
+        this.perResourceClassLoaders = perResourceClassLoaders;
     }
 
     @Override
-    public ClassLoader applicationClassLoader(String resourceName) {
-        // return preset classloader regardless of the resource name...
-        return applicationClassLoader;
+    public ClassLoader resourceClassLoader(String resourceName) {
+        ClassLoader cl = perResourceClassLoaders.get(resourceName);
+        return cl != null ? cl : applicationClassLoader;
     }
 
     @Override

@@ -43,7 +43,7 @@ class SplitClassLoaderAdhocObjectFactory extends DefaultAdhocObjectFactory {
     public ClassLoader getClassLoader(String resourceName) {
 
         if (resourceName == null || resourceName.length() < 2) {
-            return applicationClassLoader(resourceName);
+            return resourceClassLoader(resourceName);
         }
 
         String normalizedName = resourceName.charAt(0) == '/' ? resourceName.substring(1) : resourceName;
@@ -53,11 +53,11 @@ class SplitClassLoaderAdhocObjectFactory extends DefaultAdhocObjectFactory {
                     : cayenneServerClassLoader();
         }
 
-        return applicationClassLoader(resourceName);
+        return resourceClassLoader(resourceName);
     }
 
-    protected ClassLoader applicationClassLoader(String resourceName) {
-        return osgiEnvironment.applicationClassLoader(resourceName);
+    protected ClassLoader resourceClassLoader(String resourceName) {
+        return osgiEnvironment.resourceClassLoader(resourceName);
     }
 
     protected ClassLoader cayenneDiClassLoader() {

@@ -32,7 +32,7 @@ public class SplitClassLoaderAdhocObjectFactoryTest extends TestCase {
         final ClassLoader serverCl = mock(ClassLoader.class);
 
         OsgiEnvironment osgiEnvironment = mock(OsgiEnvironment.class);
-        when(osgiEnvironment.applicationClassLoader(anyString())).thenReturn(appCl);
+        when(osgiEnvironment.resourceClassLoader(anyString())).thenReturn(appCl);
         when(osgiEnvironment.cayenneDiClassLoader()).thenReturn(diCl);
         when(osgiEnvironment.cayenneServerClassLoader()).thenReturn(serverCl);
         

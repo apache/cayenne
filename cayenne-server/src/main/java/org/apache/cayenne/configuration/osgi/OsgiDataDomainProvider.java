@@ -50,7 +50,7 @@ public class OsgiDataDomainProvider extends DataDomainProvider {
 
             // using fake package name... may not work with all implementations
             // of osgiEnvironment?
-            thread.setContextClassLoader(osgiEnvironment.applicationClassLoader("com/"));
+            thread.setContextClassLoader(osgiEnvironment.resourceClassLoader("com/"));
 
             DataDomain domain = super.get();
             EntityResolver entityResolver = domain.getEntityResolver();
