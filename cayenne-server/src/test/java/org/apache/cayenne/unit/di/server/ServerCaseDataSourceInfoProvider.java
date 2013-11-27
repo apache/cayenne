@@ -76,6 +76,8 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         h2.setPassword("");
         h2.setDataSourceUrl("jdbc:h2:mem:aname;MVCC=TRUE");
         h2.setJdbcDriver("org.h2.Driver");
+        h2.setMinConnections(2);
+        h2.setMaxConnections(2);
         inMemoryDataSources.put("h2", h2);
 
         DataSourceInfo derby = new DataSourceInfo();

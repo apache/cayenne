@@ -77,10 +77,10 @@ public class ServerCaseDataSourceFactory  {
                     dataSourceInfo.getDataSourceUrl());
             return new PoolManager(
                     poolDS,
-                    1,
-                    1,
+                    dataSourceInfo.getMinConnections(),
+                    dataSourceInfo.getMaxConnections(),
                     dataSourceInfo.getUserName(),
-                    dataSourceInfo.getPassword()) {
+                    dataSourceInfo.getPassword(), PoolManager.MAX_QUEUE_WAIT_DEFAULT) {
 
                 @Override
                 public void shutdown() throws SQLException {
