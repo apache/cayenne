@@ -75,8 +75,9 @@
 		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.objectstyle.woproject.maven2</groupId>
-				<artifactId>maven-japplication-plugin</artifactId>
+				<groupId>org.objectstyle.japp</groupId>
+				<artifactId>japp-maven-plugin</artifactId>
+				<version>3.0</version>
 				<configuration>
 					<name>CayenneModeler</name>
 					<longName>${project.version}</longName>
@@ -91,7 +92,7 @@
 					<execution>
 						<phase>generate-resources</phase>
 						<goals>
-							<goal>japplication</goal>
+							<goal>japp</goal>
 						</goals>
 					</execution>
 				</executions>

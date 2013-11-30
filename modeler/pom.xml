@@ -61,6 +61,7 @@
 			<modules>
 				<module>cayenne-modeler-mac-ext</module>
 				<module>cayenne-modeler-mac</module>
+				<module>cayenne-modeler-mac-legacy</module>
 			</modules>
 		</profile>
 		<profile>

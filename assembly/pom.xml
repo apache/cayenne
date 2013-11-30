@@ -182,6 +182,11 @@
 					<artifactId>cayenne-modeler-mac</artifactId>
 					<version>${project.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>org.apache.cayenne</groupId>
+					<artifactId>cayenne-modeler-mac-legacy</artifactId>
+					<version>${project.version}</version>
+				</dependency>
 			</dependencies>
 			<build>
 				<plugins>
@@ -228,7 +233,7 @@
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<executions>
-							<!-- chmod executable ... while japplication plugin produces the correct permissions,
+							<!-- chmod executable ... while japp plugin produces the correct permissions,
 							     jar/unjar operation resets 'x' flag, so the app becomes non-executable. Must
 							     fix that manually
 							-->
@@ -242,7 +247,21 @@
 									<executable>/bin/chmod</executable>
 									<arguments>
 										<argument>755</argument>
-										<argument>target/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/JavaApplicationStub</argument>
+										<argument>target/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/JavaAppLauncher</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>chmod-modeler-legacy</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>/bin/chmod</executable>
+									<arguments>
+										<argument>755</argument>
+										<argument>target/cayenne-${project.version}-macosx/CayenneModeler-Java6-legacy.app/Contents/MacOS/JavaApplicationStub</argument>
 									</arguments>
 								</configuration>
 							</execution>

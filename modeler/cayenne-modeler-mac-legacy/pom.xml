@@ -28,8 +28,8 @@
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>cayenne-modeler-mac</artifactId>
-	<name>Cayenne Modeler Mac OS X</name>
+	<artifactId>cayenne-modeler-mac-legacy</artifactId>
+	<name>Cayenne Modeler Mac OS X - Old Apple Java</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -68,27 +68,20 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<directory>target/modeler</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.objectstyle.japp</groupId>
 				<artifactId>japp-maven-plugin</artifactId>
 				<version>3.0</version>
 				<configuration>
-					<name>CayenneModeler</name>
+					<name>CayenneModeler-Java6-Legacy</name>
 					<longName>${project.version}</longName>
-					<destDir>target/modeler</destDir>
+					<destDir>${project.build.outputDirectory}</destDir>
 					<mainClass>org.apache.cayenne.modeler.osx.OSXMain</mainClass>
 					<icon>src/japplication/resources/CayenneModeler.icns</icon>
 					<os>mac</os>
-					<jvm>1.7+</jvm>
+					<jvm>1.5+</jvm>
+					<flavor>osx_legacy</flavor>
 					<jvmOptions>-Xmx500m -Dapple.laf.useScreenMenuBar=true</jvmOptions>
 				</configuration>
 				<executions>
