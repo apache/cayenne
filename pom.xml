@@ -601,11 +601,11 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>org.objectstyle.woproject.maven2</groupId>
-										<artifactId>maven-japplication-plugin</artifactId>
+										<groupId>org.objectstyle.japp</groupId>
+										<artifactId>japp-maven-plugin</artifactId>
 										<versionRange>[1.0,)</versionRange>
 										<goals>
-											<goal>japplication</goal>
+											<goal>japp</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -739,9 +739,9 @@
 					<version>0.8</version>
 				</plugin>
 				<plugin>
-					<groupId>org.objectstyle.woproject.maven2</groupId>
-					<artifactId>maven-japplication-plugin</artifactId>
-					<version>2.0.17</version>
+					<groupId>org.objectstyle.japp</groupId>
+					<artifactId>japp-maven-plugin</artifactId>
+					<version>3.0</version>
 				</plugin>
 
 			</plugins>

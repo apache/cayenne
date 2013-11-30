@@ -27,15 +27,20 @@
 		<version>3.2.M2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cayenne-modeler-win</artifactId>
-	<name>Cayenne Modeler Windows</name>
+	<artifactId>cayenne-modeler-mac-legacy</artifactId>
+	<name>Cayenne Modeler Mac OS X - Old Apple Java</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cayenne.modeler</groupId>
+			<artifactId>cayenne-modeler-mac-ext</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -59,32 +64,23 @@
 			<artifactId>cayenne-wocompat</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.cayenne.modeler</groupId>
-			<artifactId>cayenne-modeler-generic-ext</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 	</dependencies>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>target/modeler</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.objectstyle.japp</groupId>
 				<artifactId>japp-maven-plugin</artifactId>
 				<configuration>
-					<name>CayenneModeler</name>
+					<name>CayenneModeler-Java6-legacy</name>
 					<longName>${project.version}</longName>
 					<destDir>${project.build.outputDirectory}</destDir>
-					<mainClass>org.apache.cayenne.modeler.generic.GenericMain</mainClass>
-					<icon>src/japplication/resources/CayenneModeler.ico</icon>
-					<os>windows</os>
+					<mainClass>org.apache.cayenne.modeler.osx.OSXMain</mainClass>
+					<icon>src/japplication/resources/CayenneModeler.icns</icon>
+					<os>mac</os>
 					<jvm>1.5+</jvm>
-					<jvmOptions>-Xmx500m</jvmOptions>
+					<flavor>osx_legacy</flavor>
+					<jvmOptions>-Xmx500m -Dapple.laf.useScreenMenuBar=true</jvmOptions>
 				</configuration>
 				<executions>
 					<execution>

@@ -67,33 +67,25 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<directory>target/modeler</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.objectstyle.woproject.maven2</groupId>
-				<artifactId>maven-japplication-plugin</artifactId>
+				<groupId>org.objectstyle.japp</groupId>
+				<artifactId>japp-maven-plugin</artifactId>
 				<configuration>
 					<name>CayenneModeler</name>
 					<longName>${project.version}</longName>
-					<destDir>target/modeler</destDir>
+					<destDir>${project.build.outputDirectory}</destDir>
 					<mainClass>org.apache.cayenne.modeler.osx.OSXMain</mainClass>
 					<icon>src/japplication/resources/CayenneModeler.icns</icon>
 					<os>mac</os>
-					<jvm>1.5+</jvm>
-					<jvmOptions>-Xmx500m</jvmOptions>
+					<jvm>1.7+</jvm>
+					<jvmOptions>-Xmx500m -Dapple.laf.useScreenMenuBar=true</jvmOptions>
 				</configuration>
 				<executions>
 					<execution>
 						<phase>generate-resources</phase>
 						<goals>
-							<goal>japplication</goal>
+							<goal>japp</goal>
 						</goals>
 					</execution>
 				</executions>

@@ -107,6 +107,7 @@
 			<outputDirectory>../../</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.modeler:cayenne-modeler-mac</include>
+				<include>org.apache.cayenne.modeler:cayenne-modeler-mac-legacy</include>
 			</includes>
 			<unpack>true</unpack>
 			<unpackOptions>
