@@ -96,7 +96,7 @@ public class DerbyAdapter extends JdbcAdapter {
         super.configureExtendedTypes(map);
 
         // create specially configured CharType handler
-        map.registerType(new CharType(true, false));
+        map.registerType(new CharType(true, true));
 
         // address Derby driver inability to handle java.lang.Short and java.lang.Byte
         map.registerType(new ShortType(true));
