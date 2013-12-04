@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.types;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -153,13 +152,7 @@ public class CharType implements ExtendedType {
             return "";
         }
 
-        int bufSize = (size < BUF_SIZE) ? size : BUF_SIZE;
-
-        Reader in = clob.getCharacterStream();
-        return (in != null) ? readValueStream(
-                new BufferedReader(in, bufSize),
-                size,
-                bufSize) : null;
+        return clob.getSubString(1, size);
     }
 
     protected String readCharStream(ResultSet rs, int index) throws IOException,
