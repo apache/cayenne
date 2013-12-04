@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.types;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -167,13 +166,8 @@ public class ByteArrayType implements ExtendedType {
         if (size == 0) {
             return new byte[0];
         }
-
-        int bufSize = (size < BUF_SIZE) ? size : BUF_SIZE;
-        InputStream in = blob.getBinaryStream();
-        return (in != null) ? readValueStream(
-                new BufferedInputStream(in, bufSize),
-                size,
-                bufSize) : null;
+        
+        return blob.getBytes(1, size);
     }
 
     protected byte[] readBinaryStream(ResultSet rs, int index) throws IOException,
