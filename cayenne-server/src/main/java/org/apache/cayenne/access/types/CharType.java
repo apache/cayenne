@@ -50,11 +50,13 @@ public class CharType implements ExtendedType {
     /**
      * Returns "java.lang.String".
      */
+    @Override
     public String getClassName() {
         return String.class.getName();
     }
 
     /** Return trimmed string. */
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         String val = null;
@@ -79,6 +81,7 @@ public class CharType implements ExtendedType {
     }
 
     /** Return trimmed string. */
+    @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
 
@@ -116,6 +119,7 @@ public class CharType implements ExtendedType {
         return (end == count) ? value : value.substring(0, end + 1);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object value,

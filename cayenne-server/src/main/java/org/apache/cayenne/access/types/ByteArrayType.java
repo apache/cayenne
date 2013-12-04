@@ -70,10 +70,12 @@ public class ByteArrayType implements ExtendedType {
         this.trimmingBytes = trimmingBytes;
     }
 
+    @Override
     public String getClassName() {
         return "byte[]";
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         byte[] bytes = null;
@@ -95,6 +97,7 @@ public class ByteArrayType implements ExtendedType {
         return bytes;
     }
 
+    @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
 
@@ -120,6 +123,7 @@ public class ByteArrayType implements ExtendedType {
         return bytes;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,
