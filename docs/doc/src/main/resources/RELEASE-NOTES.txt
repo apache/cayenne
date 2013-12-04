@@ -28,6 +28,7 @@ CAY-1861 Remove runtime relationships
 CAY-1882 Porting to OSGi environment
 CAY-1883 Clean up Cayenne maven structure
 CAY-1886 cayenne-di module reorg, new exceptions
+CAY-1890 Remove Cayenne-level buffering when retrieving LOBs
 
 Bug Fixes:
 
