@@ -26,12 +26,24 @@ import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
+ * DbAdapter implementation for <a href="http://www.h2database.com/">H2
+ * RDBMS </a>. Sample connection settings to use with H2 are shown
+ * below:
+ * 
+ * <pre>
+ *      postgres.jdbc.username = sa
+ *      postgres.jdbc.password = 
+ *      postgres.jdbc.url = jdbc:h2:cayenne
+ *      postgres.jdbc.driver = org.h2.Driver
+ * </pre>
+ * 
  * @since 3.0
  */
 public class H2Adapter extends JdbcAdapter {
@@ -56,5 +68,10 @@ public class H2Adapter extends JdbcAdapter {
         if (column.isGenerated()) {
             sqlBuffer.append(" AUTO_INCREMENT");
         }
+    }
+
+    @Override
+    protected PkGenerator createPkGenerator() {
+        return new H2PkGenerator(this);
     }
 }
