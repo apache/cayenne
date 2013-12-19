@@ -50,6 +50,9 @@ public class JdbcPkGeneratorTest extends ServerCase {
         JdbcPkGenerator pkGenerator = (JdbcPkGenerator) adapter.getPkGenerator();
 
         pkGenerator.setPkStartValue(Integer.MAX_VALUE * 2l);
+        if (!JdbcPkGenerator.class.equals(adapter.getPkGenerator().getClass())) { // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
+            pkGenerator.dropAutoPk(node, Collections.singletonList(artistEntity));
+        }
         pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity));
         pkGenerator.reset();
 

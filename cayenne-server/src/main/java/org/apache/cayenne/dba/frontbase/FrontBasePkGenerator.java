@@ -40,6 +40,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 
     public FrontBasePkGenerator(JdbcAdapter adapter) {
         super(adapter);
+        pkStartValue = 1000000;
     }
 
     /**
@@ -84,7 +85,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     @Override
     protected String pkCreateString(String entName) {
         StringBuilder buf = new StringBuilder();
-        buf.append("SET UNIQUE = 1000000 FOR \"").append(entName).append("\"");
+        buf.append("SET UNIQUE = ").append(pkStartValue).append(" FOR \"").append(entName).append("\"");
         return buf.toString();
     }
 

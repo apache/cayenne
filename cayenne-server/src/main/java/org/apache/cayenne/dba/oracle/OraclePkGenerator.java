@@ -125,7 +125,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     protected String createSequenceString(DbEntity ent) {
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE SEQUENCE ").append(sequenceName(ent)).append(" START WITH 200").append(" INCREMENT BY ")
+        buf.append("CREATE SEQUENCE ").append(sequenceName(ent)).append(" START WITH ").append(pkStartValue).append(" INCREMENT BY ")
                 .append(pkCacheSize(ent));
         return buf.toString();
     }

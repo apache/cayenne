@@ -52,7 +52,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
         // that works with all tested versions.
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE SEQUENCE ").append(sequenceName(ent)).append(" INCREMENT ").append(pkCacheSize(ent))
-                .append(" START 200");
+                .append(" START ").append(pkStartValue);
         return buf.toString();
     }
 

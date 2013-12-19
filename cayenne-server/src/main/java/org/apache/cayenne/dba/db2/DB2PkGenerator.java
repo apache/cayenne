@@ -194,7 +194,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      */
     protected String createSequenceString(DbEntity entity) {
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE SEQUENCE ").append(sequenceName(entity)).append(" START WITH 200").append(" INCREMENT BY ")
+        buf.append("CREATE SEQUENCE ").append(sequenceName(entity)).append(" START WITH ").append(pkStartValue).append(" INCREMENT BY ")
                 .append(getPkCacheSize()).append(" NO MAXVALUE ").append(" NO CYCLE ").append(" CACHE ")
                 .append(getPkCacheSize());
         return buf.toString();
