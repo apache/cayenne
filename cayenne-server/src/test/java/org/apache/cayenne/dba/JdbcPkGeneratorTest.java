@@ -21,6 +21,7 @@ package org.apache.cayenne.dba;
 import java.util.Collections;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.derby.DerbyPkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -50,7 +51,8 @@ public class JdbcPkGeneratorTest extends ServerCase {
         JdbcPkGenerator pkGenerator = (JdbcPkGenerator) adapter.getPkGenerator();
 
         pkGenerator.setPkStartValue(Integer.MAX_VALUE * 2l);
-        if (!JdbcPkGenerator.class.equals(adapter.getPkGenerator().getClass())) { // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
+        if (!JdbcPkGenerator.class.equals(adapter.getPkGenerator().getClass()) &&
+        		!DerbyPkGenerator.class.equals(adapter.getPkGenerator().getClass())) { // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
             pkGenerator.dropAutoPk(node, Collections.singletonList(artistEntity));
         }
         pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity));
