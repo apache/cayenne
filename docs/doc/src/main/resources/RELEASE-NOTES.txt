@@ -35,16 +35,16 @@ Bug Fixes:
 
 CAY-1695 Unexpected null value in bidirectional one-to-one prefetch 
 CAY-1736 IllegalArgumentException when synchronizing entities in the Modeler
+CAY-1797 NPE importing DataMap
+CAY-1798 ROP: Reverse relationships of prefetched entity objects are not filled during server to client objects conversion
 CAY-1818 Fix copyright year in the Modeler "about" panel
 CAY-1834 Exception: ToManyList cannot be cast to DataObject 
 CAY-1857 Problem with hotkeys 
 CAY-1859 NullPointerException when importing EOModel 
 CAY-1866 Change in General Modeler Preferences reverts old settings to default value
+CAY-1868 Select contention with multiple contexts 
 CAY-1869 ResultIterator from cayenne-client dependency is subclassed from org.apache.cayenne.access.ResultIterator which is present only in cayenne-server dependency 
 CAY-1874 DB2 Procedure action ignores the first result set
-CAY-1798 ROP: Reverse relationships of prefetched entity objects are not filled during server to client objects conversion
-CAY-1797 NPE importing DataMap
-CAY-1868 Select contention with multiple contexts 
 CAY-1880 objectStore snapshots never cleared from RefreshQuery when "use shared cache" unchecked
 CAY-1881 CayenneModeler (Mac version) doesn't work with Java 7
 CAY-1885 Null value in subclass's field.
