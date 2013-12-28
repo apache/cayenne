@@ -575,8 +575,16 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
      */
     synchronized void refreshFromDeferredPath() {
         if (deferredPath != null) {
-            refreshFromPath(deferredPath, true);
-            deferredPath = null;
+            
+            synchronized(this) {
+                
+                // check if another thread just 
+                // loaded path from deferredPath
+                if (deferredPath != null){
+                    refreshFromPath(deferredPath, true);
+                    deferredPath = null;
+                }
+            }
         }
     }
 
@@ -622,8 +630,6 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
      * Rebuild a list of relationships if String relationshipPath has changed.
      */
     final void refreshFromPath(String dbRelationshipPath, boolean stripInvalid) {
-        synchronized (this) {
-
             // remove existing relationships
             dbRelationships.clear();
 
@@ -652,7 +658,6 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
 
             recalculateToManyValue();
             recalculateReadOnlyValue();
-        }
     }
 
     /**
