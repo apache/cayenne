@@ -20,6 +20,7 @@ Bug Fixes Since 3.1B2:
 
 CAY-1736 IllegalArgumentException when synchronizing entities in the Modeler
 CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor
+CAY-1797 NPE importing DataMap
 CAY-1804 Serialisation of long[] type was not working correctly. 
 CAY-1806 Error importing eomodel 
 CAY-1809 Remove 'final' modifier from Cayenne, HessianUtil, PropertyComparator, ConversionUtil, and LinkedDeque
@@ -29,9 +30,8 @@ CAY-1845 Upgrade javadoc plugin to 2.9.1
 CAY-1854 driver.xsd schema shouldn't be in 3.1 - it is no longer applicable 
 CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection 
 CAY-1866 Change in General Modeler Preferences reverts old settings to default value
-CAY-1874 DB2 Procedure action ignores the first result set
-CAY-1797 NPE importing DataMap
 CAY-1868 Select contention with multiple contexts 
+CAY-1874 DB2 Procedure action ignores the first result set
 CAY-1880 objectStore snapshots never cleared from RefreshQuery when "use shared cache" unchecked
 CAY-1881 CayenneModeler (Mac version) doesn't work with Java 7
 CAY-1885 Null value in subclass's field.
