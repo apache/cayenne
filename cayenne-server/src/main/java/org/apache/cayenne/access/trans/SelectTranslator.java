@@ -540,19 +540,21 @@ public class SelectTranslator extends QueryAssembler {
             // record ObjAttribute override
             for (ColumnDescriptor column : columns) {
                 if (attribute.getName().equals(column.getName())) {
+                    
+                    if (attributeOverrides == null) {
+                        attributeOverrides = new HashMap<ObjAttribute, ColumnDescriptor>();
+                    }
 
                     // kick out the original attribute
                     ObjAttribute original = defaultAttributesByColumn.remove(column);
 
                     if (original != null) {
-                        if (attributeOverrides == null) {
-                            attributeOverrides = new HashMap<ObjAttribute, ColumnDescriptor>();
-                        }
-
                         attributeOverrides.put(original, column);
-                        column.setJavaClass(Void.TYPE.getName());
                     }
 
+                    attributeOverrides.put(objAttribute, column);
+                    column.setJavaClass(Void.TYPE.getName());
+                    
                     break;
                 }
             }
