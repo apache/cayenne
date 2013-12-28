@@ -23,8 +23,8 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass;
-import org.apache.cayenne.testdo.mt.MtTable1Subclass;
+import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
+import org.apache.cayenne.testdo.mt.MtTable1Subclass1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -35,16 +35,16 @@ public class ValueInjectorTest extends RemoteCayenneCase {
     protected DataContext serverContext;
 
     public void testServer() {
-        ObjEntity entity = serverContext.getEntityResolver().getObjEntity(MtTable1Subclass.class);
+        ObjEntity entity = serverContext.getEntityResolver().getObjEntity(MtTable1Subclass1.class);
         Expression qualifier = entity.getDeclaredQualifier();
 
         try {
-            MtTable1Subclass ee = serverContext.newObject(MtTable1Subclass.class);
+            MtTable1Subclass1 ee = serverContext.newObject(MtTable1Subclass1.class);
             assertEquals(ee.getGlobalAttribute1(), "sub1");
 
             // check AND
             entity.setDeclaredQualifier(qualifier.andExp(Expression.fromString("serverAttribute1 = 'sa'")));
-            ee = serverContext.newObject(MtTable1Subclass.class);
+            ee = serverContext.newObject(MtTable1Subclass1.class);
             assertEquals(ee.getGlobalAttribute1(), "sub1");
             assertEquals(ee.getServerAttribute1(), "sa");
         } finally {
@@ -54,16 +54,16 @@ public class ValueInjectorTest extends RemoteCayenneCase {
 
     public void testClient() {
         ObjectContext context = createROPContext();
-        ObjEntity entity = context.getEntityResolver().getObjEntity(ClientMtTable1Subclass.class);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(ClientMtTable1Subclass1.class);
         Expression qualifier = entity.getDeclaredQualifier();
 
         try {
-            ClientMtTable1Subclass ee = context.newObject(ClientMtTable1Subclass.class);
+            ClientMtTable1Subclass1 ee = context.newObject(ClientMtTable1Subclass1.class);
             assertEquals(ee.getGlobalAttribute1(), "sub1");
 
             // check AND
             entity.setDeclaredQualifier(qualifier.andExp(Expression.fromString("serverAttribute1 = 'sa'")));
-            ee = context.newObject(ClientMtTable1Subclass.class);
+            ee = context.newObject(ClientMtTable1Subclass1.class);
             assertEquals(ee.getGlobalAttribute1(), "sub1");
             assertEquals(ee.getServerAttribute1(), "sa");
         } finally {

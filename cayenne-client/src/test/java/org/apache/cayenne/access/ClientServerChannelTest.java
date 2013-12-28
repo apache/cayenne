@@ -41,7 +41,7 @@ import org.apache.cayenne.remote.QueryMessage;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass;
+import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTable3;
 import org.apache.cayenne.testdo.mt.MtTable1;
@@ -185,8 +185,8 @@ public class ClientServerChannelTest extends ClientCase {
         assertEquals(1, results.size());
 
         Object result = results.get(0);
-        assertTrue("Result is of wrong type: " + result, result instanceof ClientMtTable1Subclass);
-        ClientMtTable1Subclass clientObject = (ClientMtTable1Subclass) result;
+        assertTrue("Result is of wrong type: " + result, result instanceof ClientMtTable1Subclass1);
+        ClientMtTable1Subclass1 clientObject = (ClientMtTable1Subclass1) result;
 
         assertEquals("sub1", clientObject.getGlobalAttribute1());
     }

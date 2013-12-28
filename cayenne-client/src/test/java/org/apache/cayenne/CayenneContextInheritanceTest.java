@@ -27,7 +27,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass;
+import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -61,10 +61,10 @@ public class CayenneContextInheritanceTest extends ClientCase {
 
     public void testInsertSubclass() throws Exception {
 
-        ClientMtTable1Subclass object = context.newObject(ClientMtTable1Subclass.class);
+        ClientMtTable1Subclass1 object = context.newObject(ClientMtTable1Subclass1.class);
         object.setGlobalAttribute1("sub1");
         object.setServerAttribute1("sa1");
-        object.setSubclassAttribute1("suba1");
+        object.setSubclass1Attribute1("suba1");
 
         context.commitChanges();
 
@@ -80,11 +80,11 @@ public class CayenneContextInheritanceTest extends ClientCase {
         tMtTable1.insert(2, "sub1", "zzz", "sa1");
         tMtTable1.insert(3, "1111", "aaa", null);
 
-        SelectQuery query = new SelectQuery(ClientMtTable1Subclass.class);
-        List<ClientMtTable1Subclass> objects = context.performQuery(query);
+        SelectQuery query = new SelectQuery(ClientMtTable1Subclass1.class);
+        List<ClientMtTable1Subclass1> objects = context.performQuery(query);
 
         assertEquals(1, objects.size());
-        assertEquals("sa1", objects.get(0).getSubclassAttribute1());
+        assertEquals("sa1", objects.get(0).getSubclass1Attribute1());
     }
 
     public void testPerformQueryInheritanceSuper() throws Exception {
@@ -107,8 +107,8 @@ public class CayenneContextInheritanceTest extends ClientCase {
                 checkedFields++;
             }
             else if (id == 2) {
-                assertEquals("sa1", ((ClientMtTable1Subclass) objects.get(i))
-                        .getSubclassAttribute1());
+                assertEquals("sa1", ((ClientMtTable1Subclass1) objects.get(i))
+                        .getSubclass1Attribute1());
                 checkedFields++;
             }
 
@@ -139,8 +139,8 @@ public class CayenneContextInheritanceTest extends ClientCase {
                 checkedFields++;
             }
             else if (id == 2) {
-                assertEquals("sa1", ((ClientMtTable1Subclass) objects.get(i))
-                        .getSubclassAttribute1());
+                assertEquals("sa1", ((ClientMtTable1Subclass1) objects.get(i))
+                        .getSubclass1Attribute1());
                 checkedFields++;
             }
 

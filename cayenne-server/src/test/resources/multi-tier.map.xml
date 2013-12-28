@@ -127,9 +127,13 @@
 		<obj-attribute name="globalAttribute1" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE1"/>
 		<obj-attribute name="serverAttribute1" type="java.lang.String" db-attribute-path="SERVER_ATTRIBUTE1"/>
 	</obj-entity>
-	<obj-entity name="MtTable1Subclass" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1Subclass">
+	<obj-entity name="MtTable1Subclass1" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass1" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1">
 		<qualifier><![CDATA[globalAttribute1 = "sub1"]]></qualifier>
-		<obj-attribute name="subclassAttribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
+		<obj-attribute name="subclass1Attribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
+	</obj-entity>
+	<obj-entity name="MtTable1Subclass2" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass2" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1Subclass2">
+		<qualifier><![CDATA[globalAttribute1 = "sub2"]]></qualifier>
+		<obj-attribute name="subclass2Attribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
 	</obj-entity>
 	<obj-entity name="MtTable2" className="org.apache.cayenne.testdo.mt.MtTable2" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable2" dbEntityName="MT_TABLE2">
 		<obj-attribute name="globalAttribute" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE"/>
