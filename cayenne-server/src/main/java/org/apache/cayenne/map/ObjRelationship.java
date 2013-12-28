@@ -573,7 +573,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
     /**
      * Loads path from "deferredPath" variable (if specified)
      */
-    synchronized void refreshFromDeferredPath() {
+    void refreshFromDeferredPath() {
         if (deferredPath != null) {
             
             synchronized(this) {
