@@ -31,40 +31,40 @@ import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
-public class ClientSelectQueryExpressionTest extends ClientCase{
+public class ClientSelectQueryExpressionTest extends ClientCase {
 
-	@Inject
-	private CayenneContext context;
+    @Inject
+    private CayenneContext context;
 
-	@Inject
-	private DBHelper dbHelper;
+    @Inject
+    private DBHelper dbHelper;
 
-	private TableHelper tMtTable1;
+    private TableHelper tMtTable1;
 
-	@Override
-	protected void setUpAfterInjection() throws Exception{
-		dbHelper.deleteAll("MT_TABLE1");
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE1");
 
-		tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
-		tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
-	}
+        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
+    }
 
-	protected void createMtTable1DataSet() throws Exception {
-		for (int i = 1; i <= 20; i++) {
-			tMtTable1.insert(i, "globalAttr" + i, "serverAttr" + i);
-		}
-	}
+    protected void createMtTable1DataSet() throws Exception {
+        for (int i = 1; i <= 20; i++) {
+            tMtTable1.insert(i, "globalAttr" + i, "serverAttr" + i);
+        }
+    }
 
-	public void testDoubleSelectLikeExpression() throws Exception{
-		createMtTable1DataSet();
+    public void testDoubleSelectLikeExpression() throws Exception {
+        createMtTable1DataSet();
 
-		List<ClientMtTable1> mtTable1List = context.select(SelectQuery.query(ClientMtTable1.class));
+        List<ClientMtTable1> mtTable1List = context.select(SelectQuery.query(ClientMtTable1.class));
 
-		Expression exp = ExpressionFactory.likeExp(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, "globalAttr1%");
-		exp.filterObjects(mtTable1List);
+        Expression exp = ExpressionFactory.likeExp(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, "globalAttr1%");
+        exp.filterObjects(mtTable1List);
 
-		List<ClientMtTable1> matchingMtTableList = context.select(SelectQuery.query(ClientMtTable1.class, exp));
+        List<ClientMtTable1> matchingMtTableList = context.select(SelectQuery.query(ClientMtTable1.class, exp));
 
-		assertEquals(11, matchingMtTableList.size());
-	}
+        assertEquals(11, matchingMtTableList.size());
+    }
 }
