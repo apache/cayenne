@@ -32,8 +32,8 @@ import org.apache.cayenne.util.Util;
  */
 public abstract class PatternMatchNode extends ConditionNode {
 
-    protected Pattern pattern;
-    protected boolean patternCompiled;
+    protected transient Pattern pattern;
+    protected transient boolean patternCompiled;
     protected boolean ignoringCase;
     protected char escapeChar;
 
