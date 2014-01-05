@@ -17,7 +17,7 @@
 <part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
     xml:id="cayenne-guide-part3" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Cayenne Framework - Remote Object Persistence </title>
-    <xi:include href="introduction-to-rop.xml"/>
+    <xi:include href="rop-introduction.xml"/>
     <xi:include href="rop-setup.xml"/>
     <xi:include href="implementing-rop-server.xml"/>
     <xi:include href="implementing-rop-client.xml"/>
