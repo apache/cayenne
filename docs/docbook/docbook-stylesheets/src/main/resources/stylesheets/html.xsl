@@ -73,8 +73,8 @@
             <link rev="made" href="{$link.mailto.url}"/>
         </xsl:if>
 
-        <meta name="keywords" content="Cayenne ${pom.version} documentation"/>
-        <meta name="description" content="User documentation for Apache Cayenne version ${pom.version}"/>
+        <meta name="keywords" content="Cayenne ${cayenne.version.major} documentation"/>
+        <meta name="description" content="User documentation for Apache Cayenne version ${cayenne.version.major}"/>
 
         <xsl:if test="$generate.meta.abstract != 0">
             <xsl:variable name="info" select="(d:articleinfo
@@ -166,7 +166,7 @@ body { background-image: url('</xsl:text>
                         <!-- Add Apache Cayenne version info -->
                         <xsl:if test="$row1">
                             <tr>
-                                <th class="versioninfo">v.${pom.version}</th>
+                                <th class="versioninfo">v.${cayenne.version.major} (${pom.version})</th>
                                 <th align="center">
                                     <xsl:apply-templates select="." mode="object.title.markup"/>
                                 </th>
