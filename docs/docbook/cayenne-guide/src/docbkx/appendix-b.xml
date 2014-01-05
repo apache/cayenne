@@ -21,52 +21,62 @@
                 defined as constants in <code>org.apache.cayenne.configuration.Constants</code>
                 interface.</para>
     <para>
-        <table frame="none">
+        <table frame="void">
             <caption>Service Collection Keys Present in ServerRuntime and/or ClientRuntime</caption>
-            <col width="100%"/>
+            <col width="45%"/>
+            <col width="55%"/>
+            <thead>
+                <tr>
+                    <th>Collection Property / Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
             <tbody>
                 <tr>
-                    <td><code>cayenne.properties</code> - Map&lt;String,String> of properties used by built-in
+                    <td><code>cayenne.properties / Map&lt;String,String></code></td> 
+                    <td>Properties used by built-in
                         Cayenne services. The keys in this map are the property names from the table
                         in Appendix A. Separate copies of this map exist on the server and ROP
                         client.</td>
                 </tr>
                 <tr>
-                    <td><code>cayenne.server.adapter_detectors</code> - List&lt;DbAdapterDetector> that contains
+                    <td><code>cayenne.server.adapter_detectors / List&lt;DbAdapterDetector></code></td>
+                    <td>Contains
                         objects that can discover the type of current database and install the
                         correct DbAdapter in runtime.</td>
                 </tr>
                 <tr>
-                    <td><code>cayenne.server.domain_filters</code> - List&lt;DataChannelFilter> storing DataDomain
-                        filters.</td>
+                    <td><code>cayenne.server.domain_filters / List&lt;DataChannelFilter></code></td>
+                    <td>Stores DataDomain filters.</td>
                 </tr>
                 <tr>
-                    <td><code>cayenne.server.project_locations</code> - List&lt;String> storing
-                        locations of the one of more project configuration files.</td>
+                    <td><code>cayenne.server.project_locations / List&lt;String></code></td>
+                    <td>Stores locations of the one of more project configuration files.</td>
                 </tr>
                 <tr>
-                    <td><code>cayenne.server.default_types</code> - List&lt;ExtendedType> storing
-                        default adapter-agnostic ExtendedTypes. Default ExtendedTypes can be
+                    <td><code>cayenne.server.default_types / List&lt;ExtendedType></code></td>
+                    <td>Stores default adapter-agnostic ExtendedTypes. Default ExtendedTypes can be
                         overridden / extended by DB-specific DbAdapters as well as by user-provided
                         types configured in another colltecion (see
                         "cayenne.server.user_types").</td>
                 </tr>
                 <tr>
-                    <td><code>cayenne.server.user_types</code> - List&lt;ExtendedType> storing a
+                    <td><code>cayenne.server.user_types / List&lt;ExtendedType></code></td>
+                    <td>Stores a
                         user-provided ExtendedTypes. This collection will be merged into a full list
                         of ExtendedTypes and would override any ExtendedTypes defined in a default
                         list, or by a DbAdapter.</td>
                 </tr>
                 <tr>
-                    <td><code>cayenne.server.type_factories</code> - List&lt;ExtendedTypeFactory>
-                        storing default and user-provided ExtendedTypeFactories. ExtendedTypeFactory
+                    <td><code>cayenne.server.type_factories / List&lt;ExtendedTypeFactory></code></td>
+                    <td>Stores default and user-provided ExtendedTypeFactories. ExtendedTypeFactory
                         allows to define ExtendedTypes dynamically for the whole group of Java
                         classes. E.g. Cayenne supplies a factory to map all Enums regardless of
                         their type.</td>
                 </tr>
                 <tr>
-                    <td><code>cayenne.server.rop_event_bridge_properties</code> -  Map&lt;String,
-                        String> storing event bridge properties passed to the ROP client on
+                    <td><code>cayenne.server.rop_event_bridge_properties / Map&lt;String, String></code></td>
+                    <td>Stores event bridge properties passed to the ROP client on
                         bootstrap. This means that the map is configured by server DI, and passed to
                         the client via the wire. The properties in this map are specific to
                         EventBridgeFactory implementation (e.g JMS or XMPP connection prameters).
