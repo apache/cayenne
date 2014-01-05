@@ -65,7 +65,7 @@
                     <td>Stores default adapter-agnostic ExtendedTypes. Default ExtendedTypes can be
                         overridden / extended by DB-specific DbAdapters as well as by user-provided
                         types configured in another colltecion (see
-                        "cayenne.server.user_types").</td>
+                        <code>"cayenne.server.user_types"</code>).</td>
                 </tr>
                 <tr>
                     <td><code>cayenne.server.user_types</code></td>
