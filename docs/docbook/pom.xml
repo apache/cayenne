@@ -39,6 +39,9 @@
 
     <properties>
         <project.stylesheetdir>${project.parent.basedir}/docbook-stylesheets/target/classes</project.stylesheetdir>
+
+        <!-- This property allows to only expose major version in the docs metadata to avoid confusing SEO -->
+        <cayenne.version.major>3.2</cayenne.version.major>
     </properties>
 
 	<artifactId>cayenne-docbook</artifactId>

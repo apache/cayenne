@@ -155,7 +155,7 @@
         <xsl:param name="position" select="''"/>
         <xsl:param name="gentext-key" select="''"/>
         <xsl:variable name="Version">
-            <fo:inline min-width="150mm">v.${pom.version}</fo:inline>
+            <fo:inline min-width="150mm">v.${cayenne.version.major}</fo:inline>
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="$sequence='blank'">
