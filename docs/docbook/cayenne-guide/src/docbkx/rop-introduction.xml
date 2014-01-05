@@ -19,8 +19,80 @@
     <title>Introduction to ROP</title>
     <section xml:id="what-is-rop">
         <title>What is ROP</title>
+		<para>"Remote Object Persistence" is a low-overhead web services-based technology that
+			provides lightweight object persistence and query functionality to 'remote'
+			applications. In other words it provides familiar Cayenne API to applications that do
+			not have direct access to the database. Instead such applications would access Cayenne
+			Web Service (CWS). A single abstract data model (expressed as Cayenne XML DataMap) is
+			used on the server and on the client, while execution logic can be partitioned between
+			the tiers.The following picture compares a regular Cayenne web application and a rich
+			client application that uses remote object persistence technology:</para>
+    	<para><inlinemediaobject>
+    		<imageobject>
+    			<imagedata fileref="images/remote-object-persistence.jpg" scalefit="1" width="100%"/>
+    		</imageobject>
+    	</inlinemediaobject></para>
+		<para>Persistence stack above consists of the following parts:<itemizedlist>
+				<listitem>
+					<para>ORM Tier: a server-side Cayenne Java application that directly connects to
+						the database via JDBC.</para>
+				</listitem>
+				<listitem>
+					<para>CWS (Cayenne Web Service): A wrapper around an ORM tier that makes it
+						accessible to remote CWS clients.</para>
+				</listitem>
+				<listitem>
+					<para>Remote Tier (aka Client Tier): A Java application that has no direct DB
+						connection and persists its objects by connecting to remote Cayenne Web
+						Service (CWS). Note that CWS Client doesn't have to be a desktop
+						application. It can be another server-side application. The word "client"
+						means a client of Cayenne Web Service.</para>
+				</listitem>
+			</itemizedlist></para>
     </section>
     <section xml:id="main-features">
         <title>Main Features</title>
+		<itemizedlist>
+			
+					<listitem>
+						<para>Unified approach to lightweight object persistence across multiple
+							tiers of a distributed system.</para>
+					</listitem>
+					<listitem>
+						<para>Same abstract object model on the server and on the client.</para>
+					</listitem>
+					<listitem>
+						<para>Client can "bootstrap" from the server by dynamically loading
+							persistence metadata.</para>
+					</listitem>
+					<listitem>
+						<para>An ability to define client objects differently than the server ones,
+							and still have seamless persistence.</para>
+					</listitem>
+					<listitem>
+						<para>Generic web service interface that doesn't change when object model
+							changes.</para>
+					</listitem>
+					<listitem>
+						<para>An ability to work in two modes: dedicated session mode or shared
+							("chat") mode when multiple remote clients collaboratively work on the
+							same data.</para>
+					</listitem>
+					<listitem>
+						<para>Lazy object and collection faulting.</para>
+					</listitem>
+					<listitem>
+						<para>Full context lifecycle</para>
+					</listitem>
+					<listitem>
+						<para>Queries, expressions, local query caching, paginated queries.</para>
+					</listitem>
+					<listitem>
+						<para>Validation</para>
+					</listitem>
+					<listitem>
+						<para>Delete Rules</para>
+					</listitem>
+		</itemizedlist>
     </section>
 </chapter>
