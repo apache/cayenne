@@ -46,27 +46,11 @@
     </section>
     <section xml:id="cayenne-configuration">
         <title>Cayenne Configuration</title>
-        <informaltable class="noteMacro" border="1">
-            <col width="4%"/>
-            <col width="96%"/>
-            <tbody>
-                <tr>
-                    <td rowspan="1" colspan="1" valign="top">
-                        <mediaobject>
-                            <imageobject>
-                                <imagedata
-                                    fileref="images/warning.gif"
-                                    depth="16" width="16"/>
-                            </imageobject>
-                        </mediaobject>
-                    </td>
-                    <td rowspan="1" colspan="1">The new DI-based bootstrap and configuration
-                        approach is not API-compatible with earlier versions of Cayenne. Make sure
-                        you read the UPGRADE.txt file for instructions how to upgrade the existing
-                        projects.</td>
-                </tr>
-            </tbody>
-        </informaltable>
+        
+        <note><para>The new DI-based bootstrap and configuration
+            approach is not API-compatible with earlier versions of Cayenne. Make sure
+            you read the UPGRADE.txt file for instructions how to upgrade the existing
+            projects.</para></note>
         <section>
             <title>Dependency Injection Container</title>
             <para>Cayenne 3.1 runtime stack is built around the ideas of Dependency Injection (DI),

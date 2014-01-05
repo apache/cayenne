@@ -48,24 +48,14 @@
     </section>
     <section xml:id="configuring-jetty">
         <title>Configuring Jetty for BASIC Authentication</title>
-        <informaltable class="noteMacro" border="1">
-            <col width="4%"/>
-            <col width="96%"/>
-            <tbody>
-                <tr>
-                    <td rowspan="1" colspan="1" valign="top">
-                        <mediaobject>
-                            <imageobject>
-                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
-                            </imageobject>
-                        </mediaobject>
-                    </td>
-                    <td rowspan="1" colspan="1">These instructions are specific to Jetty 6. Other
-                        containers (and versions of Jetty) will have different mechansims to achieve
-                        the same thing.</td>
-                </tr>
-            </tbody>
-        </informaltable>
+        
+        <para>
+            <note>
+                <para>These instructions are specific to Jetty 6. Other
+                    containers (and versions of Jetty) will have different mechansims to achieve
+                    the same thing.</para>
+            </note>
+        </para>
         <para>Open pom.xml in the server project and configure a "userRealm" for the Jetty
             plugin:</para>
         <programlisting>&lt;plugin&gt;
