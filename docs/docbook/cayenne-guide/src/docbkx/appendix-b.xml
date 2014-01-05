@@ -15,7 +15,7 @@
     License.
 -->
 <appendix xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
-    version="5.0" xml:id="client-configuration-properties">
+    version="5.0" xml:id="service-collections">
     <title>Service Collections</title>
     <para>Note that the collection keys below are
                 defined as constants in <code>org.apache.cayenne.configuration.Constants</code>
