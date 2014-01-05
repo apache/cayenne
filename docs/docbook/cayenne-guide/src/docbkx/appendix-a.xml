@@ -15,7 +15,7 @@
     License.
 -->
 <appendix xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
-    version="5.0" xml:id="server-configuration-properties">
+    version="5.0" xml:id="configuration-properties">
     <title>Configuration Properties</title>
     <para>Note that the property names below are defined as constants in
             <code>org.apache.cayenne.configuration.Constants</code> interface. </para>
