@@ -83,24 +83,10 @@ INFO: loading user name and password.
 INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
     Driver class: org.apache.derby.jdbc.EmbeddedDriver
     Min. connections in the pool: 1
-    Max. connections in the pool: 1</programlisting><informaltable
-                border="1">
-                <col width="4%"/>
-                <col width="96%"/>
-                <tr>
-                    <td rowspan="1" colspan="1" valign="top">
-                        <mediaobject>
-                            <imageobject>
-                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
-                            </imageobject>
-                        </mediaobject>
-                    </td>
-                    <td rowspan="1" colspan="1"><emphasis role="bold">How to Configure Cayenne
-                            Logging</emphasis> You can tweak more or less detailed output by
-                        following the instructions in the logging chapter.</td>
-                </tr>
-            </informaltable>Nothing much happened here, but we've been able to create a working
-            Cayenne stack. In the following chapters we'll use the ObjectContext for more
-            interesting things.</para>
+    Max. connections in the pool: 1</programlisting>
+            
+            <note><para><emphasis role="bold">How to Configure Cayenne Logging.</emphasis>  Follow the instructions in
+                    the logging chapter to tweak verbosity of the logging output.</para></note>
+           </para>
     </section>
 </chapter>

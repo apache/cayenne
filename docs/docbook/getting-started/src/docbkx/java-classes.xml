@@ -84,26 +84,15 @@
             in "org.example.cayenne.persistent" package - those will never be overwritten by the
             class generator.</para>
         <para>
-            <informaltable border="1">
-                <col width="4%"/>
-                <col width="96%"/>
-                <tr>
-                    <td rowspan="1" colspan="1" valign="top">
-                        <mediaobject>
-                            <imageobject>
-                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
-                            </imageobject>
-                        </mediaobject>
-                    </td>
-                    <td rowspan="1" colspan="1"><emphasis role="bold">Class Generation
-                            Hint</emphasis> Often you'd start by generating classes from the
-                        Modeler, but at the later stages of the project the generation is usually
-                        automated either via Ant cgen task or Maven cgen mojo. All three methods are
-                        interchangeable, however Ant and Maven methods would ensure that you never
-                        forget to regenerate classes on mapping changes, as they are integrated into
-                        the build cycle.</td>
-                </tr>
-            </informaltable>
+            <note>
+                <para><emphasis role="bold">Class Generation
+                    Hint</emphasis> Often you'd start by generating classes from the
+                    Modeler, but at the later stages of the project the generation is usually
+                    automated either via Ant cgen task or Maven cgen mojo. All three methods are
+                    interchangeable, however Ant and Maven methods would ensure that you never
+                    forget to regenerate classes on mapping changes, as they are integrated into
+                    the build cycle.</para>
+            </note>
         </para>
         
     </section>

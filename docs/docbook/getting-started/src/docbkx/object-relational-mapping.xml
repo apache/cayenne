@@ -28,24 +28,11 @@
     </inlinemediaobject>
     </para>
     <para>
-        <informaltable border="1">
-            <col width="4%"/>
-            <col width="96%"/>
-            <tr>
-                <td rowspan="1" colspan="1" valign="top">
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="images/warning.gif" depth="16" width="16"/>
-                        </imageobject>
-                    </mediaobject>
-                </td>
-                <td rowspan="1" colspan="1">Very often you'd have an existing database already, and
-                    it can be quickly imported in Cayenne via "Tools &gt; Reengineer Database
-                    Schema". This will save you lots of time compared to manual mapping. However
-                    understanding how to create the mapping by hand is important, so we are showing
-                    the "manual" approach below.</td>
-            </tr>
-        </informaltable>
+        <note><para>Very often you'd have an existing database already, and
+            it can be quickly imported in Cayenne via "Tools &gt; Reengineer Database
+            Schema". This will save you lots of time compared to manual mapping. However
+            understanding how to create the mapping by hand is important, so we are showing
+            the "manual" approach below.</para></note>
     </para>
     <section xml:id="mapping-db-tables-and-columns">
         <title>Mapping Database Tables and Columns</title>
@@ -67,23 +54,12 @@
         <para>Similarly add NAME VARCHAR(200) and DATE_OF_BIRTH DATE attributes. After that repeat
             this procedure for PAINTING and GALLERY entities to match DB schema shown above.</para>
         <para>
-            <informaltable border="1">
-                <col width="4%"/>
-                <col width="96%"/>
-                <tr>
-                    <td rowspan="1" colspan="1" valign="top">
-                        <mediaobject>
-                            <imageobject>
-                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
-                            </imageobject>
-                        </mediaobject>
-                    </td>
-                    <td rowspan="1" colspan="1">Don't forget to save your project periodically to
-                        avoid losing your work. You will also have to refresh the project in Eclipse
-                        after every CayenneModeler save, as Eclipse is by default unaware of any
-                        changes made in the Modeler.</td>
-                </tr>
-            </informaltable>
+            <note>
+                <para>Don't forget to save your project periodically to
+                    avoid losing your work. You will also have to refresh the project in Eclipse
+                    after every CayenneModeler save, as Eclipse is by default unaware of any
+                    changes made in the Modeler.</para>
+            </note>
         </para>
     </section>
     <section xml:id="mapping-db-relationships">

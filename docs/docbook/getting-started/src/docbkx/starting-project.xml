@@ -56,22 +56,9 @@
             get access to the CayenneModeler tool. 
         </para>
         <para>
-            <informaltable border="1">
-                <col width="4%"/>
-                <col width="96%"/>
-                <tr>
-                    <td rowspan="1" colspan="1" valign="top">
-                        <mediaobject>
-                            <imageobject>
-                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
-                            </imageobject>
-                        </mediaobject>
-                    </td>
-                    <td rowspan="1" colspan="1">If you are really into Maven, you can start
-                        CayenneModeler from Maven if you wish. We'll do it in a more traditional way
-                        here.</td>
-                </tr>
-            </informaltable>
+            <note><para>If you are really into Maven, you can start
+                CayenneModeler from Maven too. We'll do it in a more traditional way
+                here.</para></note>
         </para>
         <para> Download the latest release. Unpack the distribution somewhere in the file system and
             start CayenneModeler, following platform-specific instructions. On most platforms it is
@@ -108,23 +95,11 @@
                 </listitem>
             </itemizedlist></para>
         <para>
-            <informaltable border="1">
-                <col width="4%"/>
-                <col width="96%"/>
-                <tr>
-                    <td rowspan="1" colspan="1" valign="top">
-                        <mediaobject>
-                            <imageobject>
-                                <imagedata fileref="images/warning.gif" depth="16" width="16"/>
-                            </imageobject>
-                        </mediaobject>
-                    </td>
-                    <td rowspan="1" colspan="1">We are creating an in-memory database here. So when
-                        you stop your application, all the data will be lost. In most real-life
-                        cases you'll be connecting to a database that actually persists its data on
-                        disk, but an in-memory DB will do for the simple tutorial.</td>
-                </tr>
-            </informaltable>
+            <note><para>We are creating an in-memory database here. So when
+                you stop your application, all the data will be lost. In most real-life
+                cases you'll be connecting to a database that actually persists its data on
+                disk, but an in-memory DB will do for the simple tutorial.</para>
+            </note>
         </para>
         <para>Also you will need to change "Schema Update Strategy". Select
             "org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy" from the dropdown, so that
