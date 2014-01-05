@@ -360,10 +360,18 @@
                      Programlistings
    ################################################### -->
 
+    <!-- Verbatim text formatting (<code>) -->
+    <xsl:attribute-set name="monospace.properties">
+        <xsl:attribute name="font-size">
+            <xsl:value-of select="$body.font.small"/>
+            <xsl:text>pt</xsl:text>
+        </xsl:attribute>
+    </xsl:attribute-set>
+
     <!-- Verbatim text formatting (programlistings) -->
     <xsl:attribute-set name="monospace.verbatim.properties">
         <xsl:attribute name="font-size">
-            <xsl:value-of select="$body.font.small * 0.9"/>
+            <xsl:value-of select="$body.font.small"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
     </xsl:attribute-set>
