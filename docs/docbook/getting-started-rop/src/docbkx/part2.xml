@@ -20,5 +20,5 @@
     <xi:include href="client-project.xml"/>
     <xi:include href="web-service.xml"/>
     <xi:include href="client-code.xml"/>
-    <xi:include href="authentification.xml"/>
+    <xi:include href="authentication.xml"/>
 </part>
