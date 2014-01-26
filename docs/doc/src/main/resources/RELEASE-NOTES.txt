@@ -35,6 +35,7 @@ Bug Fixes:
 
 CAY-1695 Unexpected null value in bidirectional one-to-one prefetch 
 CAY-1736 IllegalArgumentException when synchronizing entities in the Modeler
+CAY-1796 ROP: All entity's to-many relationships getting faulted from database when using it as a parameter in qualifier expression
 CAY-1797 NPE importing DataMap
 CAY-1798 ROP: Reverse relationships of prefetched entity objects are not filled during server to client objects conversion
 CAY-1799 ROP: Server can't deserialize LIKE expression with pattern already compiled
