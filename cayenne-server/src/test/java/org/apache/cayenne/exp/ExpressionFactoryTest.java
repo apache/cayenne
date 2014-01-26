@@ -252,6 +252,7 @@ public class ExpressionFactoryTest extends ServerCase {
     // CAY-416
     public void testCollectionMatch() {
         Artist artist = context.newObject(Artist.class);
+        artist.setArtistName("artist");
         Painting p1 = context.newObject(Painting.class), p2 = context
                 .newObject(Painting.class), p3 = context.newObject(Painting.class);
         p1.setPaintingTitle("p1");
@@ -259,6 +260,8 @@ public class ExpressionFactoryTest extends ServerCase {
         p3.setPaintingTitle("p3");
         artist.addToPaintingArray(p1);
         artist.addToPaintingArray(p2);
+        
+        context.commitChanges();
 
         assertTrue(ExpressionFactory.matchExp("paintingArray", p1).match(artist));
         assertFalse(ExpressionFactory.matchExp("paintingArray", p3).match(artist));

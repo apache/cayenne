@@ -82,13 +82,14 @@ public class ASTScalar extends SimpleNode {
         // Persistent processing is a hack for a rather special case of a single
         // column PK
         // object.. full implementation pending...
+        //
+        // cay1796 : change check for Persistent object by check for ObjectId
         Object scalar = value;
-        if (scalar instanceof Persistent) {
 
-            Persistent persistent = (Persistent) scalar;
-            ObjectId id = persistent.getObjectId();
-            if (!id.isTemporary() && id.getIdSnapshot().size() == 1) {
-                scalar = id.getIdSnapshot().values().iterator().next();
+        if(scalar instanceof ObjectId) {
+            ObjectId temp = (ObjectId)value;
+            if (!temp.isTemporary() && temp.getIdSnapshot().size() == 1) {
+                scalar = temp.getIdSnapshot().values().iterator().next();
             }
         }
 
@@ -96,7 +97,11 @@ public class ASTScalar extends SimpleNode {
     }
 
     public void setValue(Object value) {
-        this.value = value;
+    	if (value instanceof Persistent){
+    		this.value = ((Persistent)value).getObjectId();
+    	} else {
+    		this.value = value; 
+    	}
     }
 
     public Object getValue() {

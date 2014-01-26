@@ -190,7 +190,15 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         Painting p1 = (Painting) context.newObject("Painting");
         Painting p2 = (Painting) context.newObject("Painting");
         Painting p3 = (Painting) context.newObject("Painting");
-
+        
+        a1.setArtistName("a1");
+        a2.setArtistName("a2");
+        p1.setPaintingTitle("p1");
+        p2.setPaintingTitle("p2");
+        p3.setPaintingTitle("p3");
+        
+        context.commitChanges();
+        
         p1.setToArtist(a1);
         p2.setToArtist(a2);
 

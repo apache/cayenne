@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -174,7 +175,9 @@ public class ASTList extends SimpleNode {
         if (value == null) {
             this.values = null;
         } else if (value instanceof Object[]) {
-            this.values = (Object[]) value;
+            int size = ((Object[]) value).length;
+            this.values = new Object[size];
+            System.arraycopy((Object[]) value, 0, this.values, 0, size);
         } else if (value instanceof Collection) {
             this.values = ((Collection) value).toArray();
         } else if (value instanceof Iterator) {
@@ -189,8 +192,17 @@ public class ASTList extends SimpleNode {
             throw new IllegalArgumentException("Invalid value class '" + value.getClass().getName()
                     + "', expected null, Object[], Collection, Iterator");
         }
+        convertValues();
     }
-
+    
+    private void convertValues() {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] instanceof Persistent) {
+                values[i] = ((Persistent)values[i]).getObjectId();
+            }
+        }
+    }
+    
     @Override
     public void jjtClose() {
         super.jjtClose();

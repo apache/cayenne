@@ -271,6 +271,10 @@ public abstract class QueryAssemblerHelper {
         if (val == null) {
             out.append("NULL");
         } else if (val instanceof Persistent) {
+            // TODO: see cay1796
+            // This check is unlikely to happen,
+            // since Expression got ObjectId from Persistent object.
+            // Left for future research.
             ObjectId id = ((Persistent) val).getObjectId();
 
             // check if this id is acceptable to be a parameter
@@ -278,6 +282,25 @@ public abstract class QueryAssemblerHelper {
                 throw new CayenneRuntimeException("Can't use TRANSIENT object as a query parameter.");
             }
 
+            if (id.isTemporary()) {
+                throw new CayenneRuntimeException("Can't use NEW object as a query parameter.");
+            }
+
+            Map<String, Object> snap = id.getIdSnapshot();
+            if (snap.size() != 1) {
+                StringBuilder msg = new StringBuilder();
+                msg.append("Object must have a single primary key column ").append("to serve as a query parameter. ")
+                        .append("This object has ").append(snap.size()).append(": ").append(snap);
+
+                throw new CayenneRuntimeException(msg.toString());
+            }
+
+            // checks have been passed, use id value
+            appendLiteralDirect(snap.get(snap.keySet().iterator().next()), attr, parentExpression);
+        } else if(val instanceof ObjectId){
+            
+            ObjectId id = (ObjectId)val;
+            
             if (id.isTemporary()) {
                 throw new CayenneRuntimeException("Can't use NEW object as a query parameter.");
             }

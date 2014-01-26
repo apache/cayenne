@@ -237,12 +237,12 @@ public class ExpressionTest extends ServerCase {
         Painting p1 = context.newObject(Painting.class);
         p1.setToArtist(a1);
         p1.setPaintingTitle("painting1");
+        
+        context.commitChanges();
 
         SelectQuery query = new SelectQuery(Painting.class);
         Expression e = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a1);
         query.setQualifier(e);
-
-        context.commitChanges();
 
         assertNotSame(context2, context);
 
@@ -263,8 +263,10 @@ public class ExpressionTest extends ServerCase {
         assertTrue(ex2.match(objects.get(0)));
 
         Artist a2 = context.newObject(Artist.class);
-        a1.setArtistName("Equals");
+        a2.setArtistName("Equals");
 
+        context.commitChanges();
+        
         SelectQuery q = new SelectQuery(Painting.class);
         Expression ex = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a2);
         q.setQualifier(ex);
