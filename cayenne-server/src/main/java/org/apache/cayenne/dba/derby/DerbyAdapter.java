@@ -25,6 +25,8 @@ import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.types.ByteType;
@@ -195,6 +197,16 @@ public class DerbyAdapter extends JdbcAdapter {
                 "RTRIM");
         translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
+    }
+    
+    /**
+     * @since 3.1
+     */
+    @Override
+    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+        JdbcEJBQLTranslatorFactory translatorFactory = new DerbyEJBQLTranslatorFactory();
+        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
+        return translatorFactory;
     }
 
     @Override

@@ -41,7 +41,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 // TODO: renamed as it fails on DB's like Derby. See CAY-1480. 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class DataContextEJBQLFunctionalExpressionsTemp extends ServerCase {
+public class DataContextEJBQLFunctionalExpressions extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
@@ -217,15 +217,15 @@ public class DataContextEJBQLFunctionalExpressionsTemp extends ServerCase {
 
     public void testCONCAT() {
 
-        Artist a1 = context.newObject(Artist.class);
-        a1.setArtistName("a1");
+        Painting a1 = context.newObject(Painting.class);
+        a1.setPaintingTitle("a1");
 
-        Artist a2 = context.newObject(Artist.class);
-        a2.setArtistName("a2");
+        Painting a2 = context.newObject(Painting.class);
+        a2.setPaintingTitle("a2");
         context.commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT a FROM Artist a WHERE CONCAT(a.artistName, a.artistName) = 'a1a1'");
+                "SELECT a FROM Painting a WHERE CONCAT(a.paintingTitle, a.paintingTitle) = 'a1a1'");
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(a1));
