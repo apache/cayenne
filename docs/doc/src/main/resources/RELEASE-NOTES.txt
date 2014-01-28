@@ -151,6 +151,7 @@ Date: 26 September 2011
 Changes/New Features Since 3.1M2:
 
 CAY-943 Support multiple cayenne.xml files in the project
+CAY-1210 mysql does not use index for case insensitive searches
 CAY-1266 Joint prefetches with fetch limit and offset do not work on Oracle
 CAY-1461 CayenneModeler: remove ScopeMVC dependency - ObjRelationshipInfoDialog
 CAY-1556 Add path construction feature to make constructing paths from constants easier for queries and orderings
