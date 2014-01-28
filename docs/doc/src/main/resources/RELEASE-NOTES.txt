@@ -33,6 +33,7 @@ CAY-1894 Support native PK generation using sequences for H2 databases
 
 Bug Fixes:
 
+CAY-1480 Implement cross-db functional expressions
 CAY-1695 Unexpected null value in bidirectional one-to-one prefetch 
 CAY-1736 IllegalArgumentException when synchronizing entities in the Modeler
 CAY-1796 ROP: All entity's to-many relationships getting faulted from database when using it as a parameter in qualifier expression
