@@ -51,6 +51,9 @@
             skip entities that are mapped to CayenneDataObject explicitly or have no class
             mapping.</para>
     </section>
+    <section xml:id="mapping-objattributes-to-custom-classes">
+        <title>Mapping ObjAttributes to Custom Classes</title>
+    </section>
     <section xml:id="modeling-pk-generation-strategy">
         <title>Modeling Primary Key Generation Strategy</title>
     </section>

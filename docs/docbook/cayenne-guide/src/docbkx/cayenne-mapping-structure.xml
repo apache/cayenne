@@ -19,32 +19,77 @@
     <title>Cayenne Mapping Structure</title>
     <section xml:id="cayenne-project">
         <title>Cayenne Project</title>
+        <para>A Cayenne project is an XML representation of a model connecting database schema with
+            Java classes. A project is normally created and manipulated via CayenneModeler GUI and
+            then used to initialize Cayenne runtime. A project is made of one or more files. There's
+            always a root project descriptor file in any valid project. It is normally called
+                <code>cayenne-xyz.xml</code>, where "xyz" is the name of the project.</para>
+        <para>Project descriptor can reference DataMap files, one per DataMap. DataMap files are
+            normally called <code>xyz.map.xml</code>, where "xyz" is the name of the DataMap. For
+            legacy reasons this naming convention is different from the convention for the root
+            project descriptor above, and we may align it in the future versions. Here is how a
+            typical project might look on the file
+            system:<programlisting>~: ls -l
+total 24
+-rw-r--r--  1 cayenne  staff  491 Jan 28 18:25 cayenne-project.xml
+-rw-r--r--  1 cayenne  staff  313 Jan 28 18:25 datamap.map.xml</programlisting></para>
+        <para>DataMap are referenced by name in the root
+            descriptor:<programlisting>&lt;map name="datamap"/></programlisting></para>
+        <para>Map files are resolved by Cayenne by appending <code>.map.xml</code>" extension to the
+            map name, and resolving the resulting string relative to the root descriptor URI. The
+            following sections discuss varios ORM model objects, without regards to their XML
+            representation. XML format details are really unimportant to the Cayenne users.</para>
     </section>
     <section xml:id="datamap">
         <title>DataMap</title>
+        <para>DataMap is a container of persistent entities and other object-relational metadata.
+            DataMap provides developers with a scope to organize their entities, but it does not
+            provide a namespace for entities. In fact all DataMaps present in runtime are combined
+            in a single namespace. Each DataMap must be associated with a DataNode. This is how
+            Cayenne knows which database to use when running a query.</para>
     </section>
     <section xml:id="datanode">
         <title>DataNode</title>
+        <para>DataNode is model of a database. It is actually pretty simple. It has an arbitrary
+            user-provided name and information needed to create or locate a JDBC DataSource. Most
+            projects only have one DataNode, though there may be any number of nodes if
+            needed.</para>
     </section>
     <section xml:id="dbentity">
         <title>DbEntity</title>
+        <para>DbEntity is a model of a single DB table or view. DbEntity is made of DbAttributes
+            that correspond to columns, and DbRelationships that map PK/FK pairs. DbRelationships
+            are not strictly tied to FK constraints in DB, and should be mapped for all logical
+            "relationships" between the tables.</para>
     </section>
     <section xml:id="objentity">
         <title>ObjEntity</title>
-        <section xml:id="mapping-objattributes-to-custom-classes">
-            <title>Mapping ObjAttributes to Custom Classes</title>
-        </section>
+        <para>ObjEntity is a model of a single persistent Java class. ObjEntity is made of
+            ObjAttributes and ObjRelationships. Both correspond to entity class properties. However
+            ObjAttributes represent "simple" properties (normally things like String, numbers,
+            dates, etc.), while ObjRelationships correspond to properties that have a type of
+            another entity. </para>
+        <para>ObjEntity maps to one or more DbEntities. There's always one "root" DbEntity for each
+            ObjEntity. ObjAttribiute maps to a DbAttribute or an Embeddable. Most often mapped
+            DbAttribute is from the root DbEntity. Sometimes mapping is done to a DbAttribute from
+            another DbEntity somehow related to the root DbEntity. Such ObjAttribute is called
+            "flattened". Similarly ObjRelationship maps either to a single DbRelationship, or to a
+            chain of DbRelationships ("flattened" ObjRelationship).</para>
+        <para>ObjEntities may also contain mapping of their lifecycle callback methods.</para>
     </section>
     <section xml:id="embeddable">
         <title>Embeddable</title>
+        <para>Embeddable is a model of a Java class that acts as a single attribute of an ObjEntity,
+            but maps to multiple columns in the database.</para>
     </section>
     <section xml:id="procedure">
         <title>Procedure</title>
+        <para>A model of a stored procedure in the database.</para>
     </section>
     <section xml:id="query">
         <title>Query</title>
-    </section>
-    <section xml:id="listeners-and-callbacks">
-        <title>Listeners and Callbacks</title>
+        <para>A model of a query. Cayenne allows queries to be mapped in Cayenne project, or created
+            in the code. Depending on the circumstances the users may take one or the other
+            approach.</para>
     </section>
 </chapter>
