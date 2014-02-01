@@ -43,6 +43,7 @@ public class ClientSelectQueryExpressionTest extends ClientCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("MT_TABLE2");
         dbHelper.deleteAll("MT_TABLE1");
 
         tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");

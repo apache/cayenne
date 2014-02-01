@@ -33,8 +33,8 @@ public class ClientExpressionTest extends ClientCase {
     
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE1");
         dbHelper.deleteAll("MT_TABLE2");
+        dbHelper.deleteAll("MT_TABLE1");
         
         tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
@@ -127,6 +127,7 @@ public class ClientExpressionTest extends ClientCase {
         createDataSet();
         
         SelectQuery<ClientMtTable1> table1Query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
+        table1Query.addOrdering(new Ordering("db:TABLE1_ID", SortOrder.ASCENDING));
         List<ClientMtTable1> table1List = context.select(table1Query);
         
         assertNotNull(table1List);
@@ -153,6 +154,7 @@ public class ClientExpressionTest extends ClientCase {
         createDataSet();
         
         SelectQuery<ClientMtTable2> table2Query = new SelectQuery<ClientMtTable2>(ClientMtTable2.class);
+        table2Query.addOrdering(new Ordering("db:TABLE2_ID", SortOrder.ASCENDING));
         List<ClientMtTable2> table2List = context.select(table2Query);
         
         ClientMtTable2 element_1 = table2List.get(0);
@@ -171,6 +173,7 @@ public class ClientExpressionTest extends ClientCase {
         createDataSet();
         
         SelectQuery<ClientMtTable2> table2Query = new SelectQuery<ClientMtTable2>(ClientMtTable2.class);
+        table2Query.addOrdering(new Ordering("db:TABLE2_ID", SortOrder.ASCENDING));
         List<ClientMtTable2> table2List = context.select(table2Query);
         
         ClientMtTable2 element_1 = table2List.get(0);
@@ -187,6 +190,7 @@ public class ClientExpressionTest extends ClientCase {
         createDataSet();
         
         SelectQuery<ClientMtTable1> table1Query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
+        table1Query.addOrdering(new Ordering("db:TABLE1_ID", SortOrder.ASCENDING));
         List<ClientMtTable1> table1List = context.select(table1Query);
         
         ClientMtTable1 element_3 = table1List.get(2);
@@ -211,6 +215,7 @@ public class ClientExpressionTest extends ClientCase {
         createDataSet();
         
         SelectQuery<ClientMtTable1> table1Query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
+        table1Query.addOrdering(new Ordering("db:TABLE1_ID", SortOrder.ASCENDING));
         List<ClientMtTable1> table1List = context.select(table1Query);
         
         ClientMtTable1 element_1 = table1List.get(0);
@@ -228,10 +233,6 @@ public class ClientExpressionTest extends ClientCase {
         table2Query = new SelectQuery<ClientMtTable2>(ClientMtTable2.class, exp);
         table2List = context.select(table2Query);
         
-        Object op2 = exp.getOperand(1);
-        Object op3 = exp.getOperand(2);
-        assertEquals(element_1.getObjectId(), op2);
-        assertEquals(element_7.getObjectId(), op3);
         assertEquals(6, table2List.size());
     }
     
@@ -239,6 +240,7 @@ public class ClientExpressionTest extends ClientCase {
         createDataSet();
         
         SelectQuery<ClientMtTable1> table1Query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
+        table1Query.addOrdering(new Ordering("db:TABLE1_ID", SortOrder.ASCENDING));
         List<ClientMtTable1> table1List = context.select(table1Query);
         
         ClientMtTable1 element_7 = table1List.get(6);
@@ -276,6 +278,7 @@ public class ClientExpressionTest extends ClientCase {
         createDataSet();
         
         SelectQuery<ClientMtTable1> table1Query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
+        table1Query.addOrdering(new Ordering("db:TABLE1_ID", SortOrder.ASCENDING));
         List<ClientMtTable1> table1List = context.select(table1Query);
         
         ClientMtTable1 element_1 = table1List.get(0);
