@@ -4,31 +4,31 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
 	 project-version="6">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.qualified"/>
-	<db-entity name="QUALIFIED1">
+	<db-entity name="TEST_QUALIFIED1">
 		<db-attribute name="DELETED" type="BOOLEAN"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 	</db-entity>
-	<db-entity name="QUALIFIED2">
+	<db-entity name="TEST_QUALIFIED2">
 		<db-attribute name="DELETED" type="BOOLEAN"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 		<db-attribute name="QUALIFIED1_ID" type="INTEGER"/>
 	</db-entity>
-	<obj-entity name="Qualified1" className="org.apache.cayenne.testdo.qualified.Qualified1" dbEntityName="QUALIFIED1">
+	<obj-entity name="Qualified1" className="org.apache.cayenne.testdo.qualified.Qualified1" dbEntityName="TEST_QUALIFIED1">
 		<qualifier><![CDATA[deleted = null]]></qualifier>
 		<obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="Qualified2" className="org.apache.cayenne.testdo.qualified.Qualified2" dbEntityName="QUALIFIED2">
+	<obj-entity name="Qualified2" className="org.apache.cayenne.testdo.qualified.Qualified2" dbEntityName="TEST_QUALIFIED2">
 		<qualifier><![CDATA[deleted = null]]></qualifier>
 		<obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<db-relationship name="qualified2s" source="QUALIFIED1" target="QUALIFIED2" toMany="true">
+	<db-relationship name="qualified2s" source="TEST_QUALIFIED1" target="TEST_QUALIFIED2" toMany="true">
 		<db-attribute-pair source="ID" target="QUALIFIED1_ID"/>
 	</db-relationship>
-	<db-relationship name="qualified1" source="QUALIFIED2" target="QUALIFIED1" toMany="false">
+	<db-relationship name="qualified1" source="TEST_QUALIFIED2" target="TEST_QUALIFIED1" toMany="false">
 		<db-attribute-pair source="QUALIFIED1_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="qualified2s" source="Qualified1" target="Qualified2" db-relationship-path="qualified2s"/>
