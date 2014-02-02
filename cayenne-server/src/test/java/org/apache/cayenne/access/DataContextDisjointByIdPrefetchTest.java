@@ -428,16 +428,20 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
                 assertFalse(((ValueHolder) boxes).isFault());
                 assertEquals(2, boxes.size());
 
+                Box big = null;
                 List<String> names = new ArrayList<String>();
                 for (Box box : boxes) {
                     assertEquals(PersistenceState.COMMITTED, box.getPersistenceState());
                     names.add(box.getName());
+                    if (box.getName().equals("big")) {
+                        big = box;
+                    }
                 }
                 assertTrue(names.contains("big"));
                 assertTrue(names.contains("small"));
 
-                Box box = boxes.get(0);
-                List<Ball> balls = (List<Ball>) box
+                
+                List<Ball> balls = (List<Ball>) big
                         .readPropertyDirectly(Box.BALLS_PROPERTY);
                 assertNotNull(balls);
                 assertFalse(((ValueHolder) balls).isFault());
