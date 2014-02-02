@@ -48,18 +48,18 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("QUALIFIED2");
-        dbHelper.deleteAll("QUALIFIED1");
+        dbHelper.deleteAll("TEST_QUALIFIED2");
+        dbHelper.deleteAll("TEST_QUALIFIED1");
 
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
-        tQualified1 = new TableHelper(dbHelper, "QUALIFIED1");
+        tQualified1 = new TableHelper(dbHelper, "TEST_QUALIFIED1");
         tQualified1.setColumns("ID", "NAME", "DELETED").setColumnTypes(
                 Types.INTEGER,
                 Types.VARCHAR,
                 bool);
 
-        tQualified2 = new TableHelper(dbHelper, "QUALIFIED2");
+        tQualified2 = new TableHelper(dbHelper, "TEST_QUALIFIED2");
         tQualified2.setColumns("ID", "NAME", "DELETED", "QUALIFIED1_ID").setColumnTypes(
                 Types.INTEGER,
                 Types.VARCHAR,
