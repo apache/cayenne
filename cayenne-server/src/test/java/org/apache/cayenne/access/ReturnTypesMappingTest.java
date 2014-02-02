@@ -600,8 +600,16 @@ public class ReturnTypesMappingTest extends ServerCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Float.class, columnValue.getClass());
-        assertEquals(realValue, columnValue);
+
+        // MySQL can treat REAL as either DOUBLE or FLOAT depending on the
+        // engine settings
+        if (unitDbAdapter.realAsDouble()) {
+            assertEquals(Double.class, columnValue.getClass());
+            assertEquals(Double.valueOf(realValue), (Double) columnValue, 0.0001);
+        } else {
+            assertEquals(Float.class, columnValue.getClass());
+            assertEquals(realValue, columnValue);
+        }
     }
 
     public void testREAL2() throws Exception {
