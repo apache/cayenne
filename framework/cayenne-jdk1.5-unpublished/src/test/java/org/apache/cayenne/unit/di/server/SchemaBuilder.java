@@ -176,7 +176,7 @@ public class SchemaBuilder {
         }
     }
 
-    private void dropPKSupport() throws Exception {
+    public void dropPKSupport() throws Exception {
         for (DataNode node : domain.getDataNodes()) {
             dropPKSupport(node, node.getDataMaps().iterator().next());
         }
@@ -187,7 +187,7 @@ public class SchemaBuilder {
      * provided by DbAdapter to generate any necessary database objects and data for
      * primary key support.
      */
-    private void createPKSupport() throws Exception {
+    public void createPKSupport() throws Exception {
         for (DataNode node : domain.getDataNodes()) {
             createPKSupport(node, node.getDataMaps().iterator().next());
         }

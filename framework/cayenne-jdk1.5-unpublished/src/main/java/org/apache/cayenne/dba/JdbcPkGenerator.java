@@ -50,7 +50,7 @@ import org.apache.cayenne.util.IDUtil;
 public class JdbcPkGenerator implements PkGenerator {
 
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
-    private static final long DEFAULT_PK_START_VALUE = 200;
+    static final long DEFAULT_PK_START_VALUE = 200;
 
     protected JdbcAdapter adapter;
     protected Map<String, LongPkRange> pkCache = new HashMap<String, LongPkRange>();
