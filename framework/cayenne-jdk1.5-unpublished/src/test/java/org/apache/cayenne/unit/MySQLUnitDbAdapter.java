@@ -40,6 +40,13 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
     public MySQLUnitDbAdapter(DbAdapter adapter) {
         super(adapter);
     }
+    
+    @Override
+    public boolean realAsDouble() {
+        // this actually depends on the "sql_mode" var in MYSQL. However the
+        // default is REAL == DOUBLE
+        return true;
+    }
 
     @Override
     public boolean supportsLobs() {

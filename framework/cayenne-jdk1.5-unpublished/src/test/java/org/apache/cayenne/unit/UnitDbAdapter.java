@@ -66,6 +66,16 @@ public class UnitDbAdapter {
         }
         this.adapter = adapter;
     }
+    
+    /**
+     * Returns whether the target DB treats REAL values as DOUBLEs. Default is
+     * false, i.e. REALs are treated as FLOATs.
+     * 
+     * @return
+     */
+    public boolean realAsDouble() {
+        return false;
+    }
 
     /**
      * Drops all table constraints.
