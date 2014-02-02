@@ -55,7 +55,8 @@ public class PostgresPkGenerator extends OraclePkGenerator {
                 .append(sequenceName(ent))
                 .append(" INCREMENT ")
                 .append(pkCacheSize(ent))
-                .append(" START 200");
+                .append(" START ")
+                .append(pkStartValue);
         return buf.toString();
     }
 
