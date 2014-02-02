@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.di.server.SchemaBuilder;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -37,6 +38,28 @@ public class JdbcPkGeneratorTest extends ServerCase {
 
     @Inject
     private DataNode node;
+    
+    @Inject
+    private SchemaBuilder schemaBuilder;
+    
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        schemaBuilder.dropPKSupport();
+    }
+    
+    @Override
+    protected void tearDownBeforeInjection() throws Exception {
+
+        if (JdbcPkGenerator.class.isAssignableFrom(adapter.getPkGenerator().getClass())) {
+            // reset PK gen properly before updating PKs in DB
+            JdbcPkGenerator pkGenerator = (JdbcPkGenerator) adapter.getPkGenerator();
+
+            pkGenerator.setPkStartValue(JdbcPkGenerator.DEFAULT_PK_START_VALUE);
+
+            schemaBuilder.dropPKSupport();
+            schemaBuilder.createPKSupport();
+        }
+    }
 
     public void testLongPk() throws Exception {
 
@@ -57,7 +80,7 @@ public class JdbcPkGeneratorTest extends ServerCase {
         }
         pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity));
         pkGenerator.reset();
-
+        
         Object pk = pkGenerator.generatePk(node, pkAttribute);
         assertTrue(pk instanceof Long);
         assertTrue("PK is too small: " + pk, ((Long) pk).longValue() > Integer.MAX_VALUE);
