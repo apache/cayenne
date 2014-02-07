@@ -26,21 +26,25 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.unit.UnitDbAdapter;
 
 public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
     private ServerCaseProperties properties;
     private ServerCaseDataSourceFactory dataSourceFactory;
+    private UnitDbAdapter unitDbAdapter;
 
     private Provider<DbAdapter> dbAdapterProvider;
 
     public ServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
             @Inject ServerCaseProperties properties,
-            @Inject Provider<DbAdapter> dbAdapterProvider) {
+            @Inject Provider<DbAdapter> dbAdapterProvider,
+            @Inject UnitDbAdapter unitDbAdapter) {
 
         this.dataSourceFactory = dataSourceFactory;
         this.properties = properties;
         this.dbAdapterProvider = dbAdapterProvider;
+        this.unitDbAdapter = unitDbAdapter;
     }
 
     public ServerRuntime get() throws ConfigurationException {
@@ -63,6 +67,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
             binder.bind(DbAdapter.class).toProviderInstance(dbAdapterProvider);
             binder.bind(DataDomain.class).toProvider(ServerCaseDataDomainProvider.class);
+            binder.bind(UnitDbAdapter.class).toInstance(unitDbAdapter);
 
             // map DataSources for all test DataNode names
             binder.bind(ServerCaseDataSourceFactory.class).toInstance(dataSourceFactory);
