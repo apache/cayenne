@@ -27,6 +27,8 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.unit.UnitDbAdapter;
 
 class ServerCaseDataDomainProvider extends DataDomainProvider {
 
@@ -35,9 +37,12 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
 
     @Inject
     private DbAdapter adapter;
-    
+
     @Inject
     private JdbcEventLogger jdbcEventLogger;
+    
+    @Inject
+    private UnitDbAdapter unitDbAdapter;
 
     @Override
     protected DataDomain createDataDomain(String name) {
@@ -49,9 +54,10 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
 
         DataDomain domain = super.createAndInitDataDomain();
 
-        // add nodes and DataSources dynamically...
+       
         for (DataMap dataMap : domain.getDataMaps()) {
 
+            // add nodes and DataSources dynamically...
             DataNode node = new DataNode(dataMap.getName());
             node.setJdbcEventLogger(jdbcEventLogger);
 
@@ -61,7 +67,13 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
             node.addDataMap(dataMap);
             node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
 
-            // customizations from SimpleAccessStackAdapter that are not yet ported...
+            // tweak procedures for testing...
+            for (Procedure proc : dataMap.getProcedures()) {
+                unitDbAdapter.tweakProcedure(proc);
+            }
+            
+            // customizations from SimpleAccessStackAdapter that are not yet
+            // ported...
             // those can be done better now
 
             // node
@@ -69,10 +81,6 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
             // .getExtendedTypes()
             // .registerType(new StringET1ExtendedType());
             //
-            // // tweak mapping with a delegate
-            // for (Procedure proc : map.getProcedures()) {
-            // getAdapter(node).tweakProcedure(proc);
-            // }
 
             domain.addNode(node);
         }
