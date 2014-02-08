@@ -33,6 +33,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.CapsStrategy;
@@ -141,6 +142,10 @@ public class BindDirectiveTest extends ServerCase {
         artistNames.add("Artist3");
         String sql = "SELECT * FROM ARTIST WHERE ARTIST_NAME in (#bind($ARTISTNAMES))";
         SQLTemplate query = new SQLTemplate(Artist.class, sql);
+        
+        // customize for DB's that require trimming CHAR spaces 
+        query.setTemplate(OracleAdapter.class.getName(), "SELECT * FROM ARTIST WHERE RTRIM(ARTIST_NAME) in (#bind($ARTISTNAMES))");
+        
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("ARTISTNAMES", artistNames));
         List<DataRow> result = context.performQuery(query);
