@@ -730,7 +730,11 @@ public class ReturnTypesMappingTest extends ServerCase {
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
-        assertEquals(timestampValue.toString(), columnValue.toString());
+        
+        // some DB's, noteably MySQL, strip the milliseconds from timestamps,
+        // so comparing within 1 second precision
+        long delta = timestampValue.getTime() - ((Date) columnValue).getTime();
+        assertTrue(delta < 1000);
     }
 
     public void testTIMESTAMP2() throws Exception {
@@ -745,8 +749,11 @@ public class ReturnTypesMappingTest extends ServerCase {
         Date columnValue = testRead.getTimestampColumn();
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
-        assertEquals(timestampValue.toString(), columnValue.toString());
-    }
+        
+        // some DB's, noteably MySQL, strip the milliseconds from timestamps,
+        // so comparing within 1 second precision
+        long delta = timestampValue.getTime() - ((Date) columnValue).getTime();
+        assertTrue(delta < 1000);    }
 
     public void testTINYINT() throws Exception {
         String columnName = "TINYINT_COLUMN";
