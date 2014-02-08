@@ -18,14 +18,14 @@
 	<groupId>org.apache.cayenne</groupId>
 	<artifactId>tutorial-rop-server</artifactId>
 	<name>Cayenne ROP Server Tutorial</name>
-	<version>3.1RC1-SNAPSHOT</version>
+	<version>3.1RC1</version>
     <packaging>war</packaging>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-server</artifactId>
-			<version>3.1RC1-SNAPSHOT</version>
+			<version>3.1RC1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
