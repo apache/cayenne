@@ -18,13 +18,13 @@
 	<groupId>org.apache.cayenne</groupId>
 	<artifactId>tutorial</artifactId>
 	<name>Cayenne Tutorial</name>
-	<version>3.1B3-SNAPSHOT</version>
+	<version>3.1RC1-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-server</artifactId>
-			<version>3.1B3-SNAPSHOT</version>
+			<version>3.1RC1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>

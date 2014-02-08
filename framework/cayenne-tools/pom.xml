@@ -23,7 +23,7 @@
     <parent>
         <artifactId>cayenne-parent</artifactId>
         <groupId>org.apache.cayenne</groupId>
-        <version>3.1B3-SNAPSHOT</version>
+        <version>3.1RC1-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
     </parent>
 

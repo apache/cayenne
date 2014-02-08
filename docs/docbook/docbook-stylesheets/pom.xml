@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.apache.cayenne.docs</groupId>
         <artifactId>cayenne-docbook</artifactId>
-        <version>3.1B3-SNAPSHOT</version>
+        <version>3.1RC1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.cayenne.docs</groupId>
     <artifactId>docbook-stylesheets</artifactId>
-    <version>3.1B3-SNAPSHOT</version>
+    <version>3.1RC1-SNAPSHOT</version>
     <name>Docbook: Cayenne Stylesheets</name>
 
     <properties>
