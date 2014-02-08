@@ -55,32 +55,6 @@ public class SQLTemplateTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
-    public void testBindCHARInWHERE() {
-        // add 2 Artists
-        DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-        SQLTemplate q1 = new SQLTemplate(
-                testDataMap,
-                "INSERT INTO ARTIST VALUES (1, 'Surikov', null)",
-                true);
-        SQLTemplate q2 = new SQLTemplate(
-                testDataMap,
-                "INSERT INTO ARTIST VALUES (2, 'Shishkin', null)",
-                true);
-        QueryChain chain = new QueryChain();
-        chain.addQuery(q1);
-        chain.addQuery(q2);
-        context.performNonSelectingQuery(chain);
-        // now select one Artist by Name, It's matter that ARTIST_NAME is CHAR not VARCHAR
-        SQLTemplate s1 = new SQLTemplate(
-                testDataMap,
-                "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($ARTIST_NAME)",
-                true);
-        // whitespace after name is for reason
-        s1.setParameters(Collections.singletonMap("ARTIST_NAME", "Surikov "));
-        List<DataRow> result = context.performQuery(s1);
-        assertEquals(1, result.size());
-    }
-
     public void testSQLTemplateForDataMap() {
         DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
         SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
