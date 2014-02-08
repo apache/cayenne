@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.itests</groupId>
 		<artifactId>cayenne-itests-parent</artifactId>
-		<version>3.1RC1</version>
+		<version>3.1RC2-SNAPSHOT</version>
 	</parent>
 
 	<description>Integration Tests - Cayenne Tools</description>
