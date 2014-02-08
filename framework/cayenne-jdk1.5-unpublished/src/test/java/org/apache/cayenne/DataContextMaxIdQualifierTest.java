@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +30,8 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.Bag;
-import org.apache.cayenne.testdo.testmap.Box;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -49,39 +51,48 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
 
     @Inject
     protected ServerRuntime runtime;
-
-    protected TableHelper tBag;
-    protected TableHelper tBox;
+    
+    private TableHelper tArtist;
+    private TableHelper tPainting;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
 
-        dbHelper.deleteAll("BALL");
-        dbHelper.deleteAll("BOX_THING");
-        dbHelper.deleteAll("THING");
-        dbHelper.deleteAll("BOX_INFO");
-        dbHelper.deleteAll("BOX");
-        dbHelper.deleteAll("BAG");
+        tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tBag = new TableHelper(dbHelper, "BAG");
-        tBag.setColumns("ID", "NAME");
+        tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE").setColumnTypes(Types.INTEGER, Types.BIGINT,
+                Types.VARCHAR);
+    }
 
-        tBox = new TableHelper(dbHelper, "BOX");
-        tBox.setColumns("ID", "BAG_ID", "NAME");
+    private void insertData() throws SQLException {
+        
+        for (int i = 1; i <= 1000; i++) {
+            tArtist.insert(i, "AA" + i);
+            tPainting.insert(i, i, "P" + i);
+        }
+    }
+
+    private void insertData_OneBag_1000Boxes() throws SQLException {
+        tArtist.insert(1, "AA1");
+
+        for (int i = 1; i <= 1000; i++) {
+            tPainting.insert(i, 1, "P" + i);
+        }
     }
 
     public void testDisjointByIdPrefetch() throws Exception {
-
-        for (int i = 0; i < 1000; i++) {
-            tBag.insert(i + 1, "bag" + (i + 1));
-            tBox.insert(i + 1, i + 1, "box" + (i + 1));
-        }
-
+        insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(100);
-
-        final SelectQuery query = new SelectQuery(Bag.class);
-        query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        
+        final SelectQuery query = new SelectQuery(Artist.class);
+        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
@@ -94,16 +105,11 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     }
 
     public void testDisjointByIdPrefetch_Zero() throws Exception {
-        for (int i = 0; i < 1000; i++) {
-            tBag.insert(i + 1, "bag" + (i + 1));
-            tBox.insert(i + 1, i + 1, "box" + (i + 1));
-        }
-
+        insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(0);
-        
-        final SelectQuery query = new SelectQuery(Bag.class);
-        query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+
+        final SelectQuery query = new SelectQuery(Artist.class);
+        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
@@ -114,18 +120,13 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
 
         assertEquals(2, queriesCount);
     }
-    
+
     public void testDisjointByIdPrefetch_Negative() throws Exception {
-        for (int i = 0; i < 1000; i++) {
-            tBag.insert(i + 1, "bag" + (i + 1));
-            tBox.insert(i + 1, i + 1, "box" + (i + 1));
-        }
-
+        insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
-        
-        final SelectQuery query = new SelectQuery(Bag.class);
-        query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+
+        final SelectQuery query = new SelectQuery(Artist.class);
+        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
@@ -136,35 +137,31 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
 
         assertEquals(2, queriesCount);
     }
-
 
     public void testIncrementalFaultList_Lower() throws Exception {
-        tBag.insert(1, "bag1");
-        for (int i = 0; i < 1000; i++) {
-            tBox.insert(i + 1, 1, "box" + (i + 1));
-        }
+        insertData_OneBag_1000Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(50);
 
-        final SelectQuery query = new SelectQuery(Box.class);
+        final SelectQuery query = new SelectQuery(Painting.class);
         query.setPageSize(100);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
-                final List<Box> boxes = context.performQuery(query);
-                for(Box box : boxes) {
-                    box.getBag();
+                final List<Painting> boxes = context.performQuery(query);
+                for (Painting box : boxes) {
+                    box.getToArtist();
                 }
             }
         });
 
         assertEquals(21, queriesCount);
-        
+
         queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
-                final List<Box> boxes = context.performQuery(query);
-                List<Box> tempList = new ArrayList<Box>();
+                final List<Painting> boxes = context.performQuery(query);
+                List<Painting> tempList = new ArrayList<Painting>();
                 tempList.addAll(boxes);
             }
         });
@@ -173,76 +170,67 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     }
     
     public void testIncrementalFaultList_Higher() throws Exception {
-        tBag.insert(1, "bag1");
-        for (int i = 0; i < 1000; i++) {
-            tBox.insert(i + 1, 1, "box" + (i + 1));
-        }
+        insertData_OneBag_1000Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(1001);
 
-        final SelectQuery query = new SelectQuery(Box.class);
+        final SelectQuery query = new SelectQuery(Painting.class);
         query.setPageSize(100);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
-                final List<Box> boxes = context.performQuery(query);
-                for(Box box : boxes) {
-                    box.getBag();
+                final List<Painting> boxes = context.performQuery(query);
+                for (Painting box : boxes) {
+                    box.getToArtist();
                 }
             }
         });
 
         assertEquals(11, queriesCount);
-        
+
         queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
-                final List<Box> boxes = context.performQuery(query);
-                List<Box> tempList = new ArrayList<Box>();
+                final List<Painting> boxes = context.performQuery(query);
+                List<Painting> tempList = new ArrayList<Painting>();
                 tempList.addAll(boxes);
             }
         });
 
         assertEquals(2, queriesCount);
     }
-    
+
     public void testIncrementalFaultList_Zero() throws Exception {
-        tBag.insert(1, "bag1");
-        for (int i = 0; i < 1000; i++) {
-            tBox.insert(i + 1, 1, "box" + (i + 1));
-        }
+        insertData_OneBag_1000Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(0);
 
-        final SelectQuery query = new SelectQuery(Box.class);
+        final SelectQuery query = new SelectQuery(Painting.class);
         query.setPageSize(100);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
-                final List<Box> boxes = context.performQuery(query);
-                List<Box> tempList = new ArrayList<Box>();
+                final List<Painting> boxes = context.performQuery(query);
+                List<Painting> tempList = new ArrayList<Painting>();
                 tempList.addAll(boxes);
             }
         });
 
         assertEquals(2, queriesCount);
     }
-    
+
     public void testIncrementalFaultList_Negative() throws Exception {
-        tBag.insert(1, "bag1");
-        for (int i = 0; i < 1000; i++) {
-            tBox.insert(i + 1, 1, "box" + (i + 1));
-        }
+        insertData_OneBag_1000Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
 
-        final SelectQuery query = new SelectQuery(Box.class);
+        final SelectQuery query = new SelectQuery(Painting.class);
         query.setPageSize(100);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
-                final List<Box> boxes = context.performQuery(query);
-                List<Box> tempList = new ArrayList<Box>();
+                final List<Painting> boxes = context.performQuery(query);
+                List<Painting> tempList = new ArrayList<Painting>();
                 tempList.addAll(boxes);
             }
         });
