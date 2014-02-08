@@ -73,23 +73,23 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
 
     private void insertData() throws SQLException {
         
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 100; i++) {
             tArtist.insert(i, "AA" + i);
             tPainting.insert(i, i, "P" + i);
         }
     }
 
-    private void insertData_OneBag_1000Boxes() throws SQLException {
+    private void insertData_OneBag_100Boxes() throws SQLException {
         tArtist.insert(1, "AA1");
 
-        for (int i = 1; i <= 1000; i++) {
+        for (int i = 1; i <= 100; i++) {
             tPainting.insert(i, 1, "P" + i);
         }
     }
 
     public void testDisjointByIdPrefetch() throws Exception {
         insertData();
-        runtime.getDataDomain().setMaxIdQualifierSize(100);
+        runtime.getDataDomain().setMaxIdQualifierSize(10);
         
         final SelectQuery query = new SelectQuery(Artist.class);
         query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
@@ -139,12 +139,12 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     }
 
     public void testIncrementalFaultList_Lower() throws Exception {
-        insertData_OneBag_1000Boxes();
+        insertData_OneBag_100Boxes();
 
-        runtime.getDataDomain().setMaxIdQualifierSize(50);
+        runtime.getDataDomain().setMaxIdQualifierSize(5);
 
         final SelectQuery query = new SelectQuery(Painting.class);
-        query.setPageSize(100);
+        query.setPageSize(10);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
@@ -170,12 +170,12 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     }
     
     public void testIncrementalFaultList_Higher() throws Exception {
-        insertData_OneBag_1000Boxes();
+        insertData_OneBag_100Boxes();
 
-        runtime.getDataDomain().setMaxIdQualifierSize(1001);
+        runtime.getDataDomain().setMaxIdQualifierSize(101);
 
         final SelectQuery query = new SelectQuery(Painting.class);
-        query.setPageSize(100);
+        query.setPageSize(10);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
@@ -201,12 +201,12 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     }
 
     public void testIncrementalFaultList_Zero() throws Exception {
-        insertData_OneBag_1000Boxes();
+        insertData_OneBag_100Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(0);
 
         final SelectQuery query = new SelectQuery(Painting.class);
-        query.setPageSize(100);
+        query.setPageSize(10);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
@@ -220,12 +220,12 @@ public class DataContextMaxIdQualifierTest extends ServerCase {
     }
 
     public void testIncrementalFaultList_Negative() throws Exception {
-        insertData_OneBag_1000Boxes();
+        insertData_OneBag_100Boxes();
 
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
 
         final SelectQuery query = new SelectQuery(Painting.class);
-        query.setPageSize(100);
+        query.setPageSize(10);
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
             public void execute() {
