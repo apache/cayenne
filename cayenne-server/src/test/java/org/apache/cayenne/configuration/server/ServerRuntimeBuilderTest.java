@@ -31,6 +31,22 @@ import org.apache.cayenne.di.Module;
 
 public class ServerRuntimeBuilderTest extends TestCase {
 
+    public void test_NoLocation() {
+
+        // this is meaningless (no DataSource), but should work...
+        ServerRuntime runtime = new ServerRuntimeBuilder().build();
+
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+
+        assertEquals(Arrays.asList(), locations);
+
+        assertEquals(1, runtime.getModules().length);
+
+        Module m0 = runtime.getModules()[0];
+        assertTrue(m0 instanceof ServerModule);
+    }
+
     public void test_SingleLocation() {
 
         ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").build();

@@ -113,11 +113,7 @@ public class ServerModule implements Module {
     public ServerModule(String... configurationLocations) {
 
         if (configurationLocations == null) {
-            throw new NullPointerException("Null configurationLocations");
-        }
-
-        if (configurationLocations.length < 1) {
-            throw new IllegalArgumentException("Empty configurationLocations");
+            configurationLocations = new String[0];
         }
 
         this.configurationLocations = configurationLocations;
