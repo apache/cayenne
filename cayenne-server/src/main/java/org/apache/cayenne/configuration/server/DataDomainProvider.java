@@ -52,12 +52,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A {@link DataChannel} provider that provides a single instance of DataDomain configured
- * per configuration supplied via injected {@link DataChannelDescriptorLoader}.
+ * A {@link DataChannel} provider that provides a single instance of DataDomain
+ * configured per configuration supplied via injected
+ * {@link DataChannelDescriptorLoader}.
  * 
  * @since 3.1
  */
 public class DataDomainProvider implements Provider<DataDomain> {
+    
+    private static final String DEFAULT_NAME = "cayenne";
 
     private static Log logger = LogFactory.getLog(DataDomainProvider.class);
 
@@ -105,15 +108,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         try {
             return createAndInitDataDomain();
-        }
-        catch (ConfigurationException e) {
+        } catch (ConfigurationException e) {
             throw e;
-        }
-        catch (Exception e) {
-            throw new DataDomainLoadException(
-                    "Error loading DataChannel: '%s'",
-                    e,
-                    e.getMessage());
+        } catch (Exception e) {
+            throw new DataDomainLoadException("Error loading DataChannel: '%s'", e, e.getMessage());
         }
     }
 
@@ -123,65 +121,18 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     protected DataDomain createAndInitDataDomain() throws Exception {
 
-        if (locations == null || locations.isEmpty()) {
-            throw new DataDomainLoadException("No configuration location(s) available");
+        DataChannelDescriptor descriptor;
+
+        if (locations.isEmpty()) {
+            descriptor = new DataChannelDescriptor();
+            descriptor.setName(DEFAULT_NAME);
+        } else {
+            descriptor = descriptorFromConfigs();
         }
 
-        long t0 = System.currentTimeMillis();
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting configuration loading: " + locations);
-        }
-
-        DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
-
-        for (int i = 0; i < locations.size(); i++) {
-
-            String location = locations.get(i);
-
-            Collection<Resource> configurations = resourceLocator.findResources(location);
-
-            if (configurations.isEmpty()) {
-                throw new DataDomainLoadException(
-                        "Configuration resource \"%s\" is not found.",
-                        location);
-            }
-
-            Resource configurationResource = configurations.iterator().next();
-
-            // no support for multiple configs yet, but this is not a hard error
-            if (configurations.size() > 1) {
-                logger.info("found "
-                        + configurations.size()
-                        + " configurations for "
-                        + location
-                        + ", will use the first one: "
-                        + configurationResource.getURL());
-            }
-
-            ConfigurationTree<DataChannelDescriptor> tree = loader
-                    .load(configurationResource);
-            if (!tree.getLoadFailures().isEmpty()) {
-                // TODO: andrus 03/10/2010 - log the errors before throwing?
-                throw new DataDomainLoadException(
-                        tree,
-                        "Error loading DataChannelDescriptor");
-            }
-
-            descriptors[i] = tree.getRootNode();
-        }
-
-        long t1 = System.currentTimeMillis();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("finished configuration loading in " + (t1 - t0) + " ms.");
-        }
-
-        DataChannelDescriptor descriptor = descriptorMerger.merge(descriptors);
         DataDomain dataDomain = createDataDomain(descriptor.getName());
 
-        dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(
-                Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY,
-                -1));
+        dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
 
         dataDomain.setQueryCache(new NestedQueryCache(queryCache));
         dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
@@ -208,18 +159,13 @@ public class DataDomainProvider implements Provider<DataDomain> {
             dataNode.setDataSource(dataSource);
 
             // schema update strategy
-            String schemaUpdateStrategyType = nodeDescriptor
-                    .getSchemaUpdateStrategyType();
+            String schemaUpdateStrategyType = nodeDescriptor.getSchemaUpdateStrategyType();
 
             if (schemaUpdateStrategyType == null) {
                 dataNode.setSchemaUpdateStrategy(defaultSchemaUpdateStrategy);
-                dataNode.setSchemaUpdateStrategyName(defaultSchemaUpdateStrategy
-                        .getClass()
-                        .getName());
-            }
-            else {
-                SchemaUpdateStrategy strategy = objectFactory.newInstance(
-                        SchemaUpdateStrategy.class,
+                dataNode.setSchemaUpdateStrategyName(defaultSchemaUpdateStrategy.getClass().getName());
+            } else {
+                SchemaUpdateStrategy strategy = objectFactory.newInstance(SchemaUpdateStrategy.class,
                         schemaUpdateStrategyType);
                 dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyType);
                 dataNode.setSchemaUpdateStrategy(strategy);
@@ -251,9 +197,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         if (defaultNode != null) {
-            logger.info("setting DataNode '"
-                    + defaultNode.getName()
-                    + "' as default, used by all unlinked DataMaps");
+            logger.info("setting DataNode '" + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
 
             dataDomain.setDefaultNode(defaultNode);
         }
@@ -263,5 +207,51 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         return dataDomain;
+    }
+
+    private DataChannelDescriptor descriptorFromConfigs() {
+
+        long t0 = System.currentTimeMillis();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("starting configuration loading: " + locations);
+        }
+
+        DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
+
+        for (int i = 0; i < locations.size(); i++) {
+
+            String location = locations.get(i);
+
+            Collection<Resource> configurations = resourceLocator.findResources(location);
+
+            if (configurations.isEmpty()) {
+                throw new DataDomainLoadException("Configuration resource \"%s\" is not found.", location);
+            }
+
+            Resource configurationResource = configurations.iterator().next();
+
+            // no support for multiple configs yet, but this is not a hard error
+            if (configurations.size() > 1) {
+                logger.info("found " + configurations.size() + " configurations for " + location
+                        + ", will use the first one: " + configurationResource.getURL());
+            }
+
+            ConfigurationTree<DataChannelDescriptor> tree = loader.load(configurationResource);
+            if (!tree.getLoadFailures().isEmpty()) {
+                // TODO: andrus 03/10/2010 - log the errors before throwing?
+                throw new DataDomainLoadException(tree, "Error loading DataChannelDescriptor");
+            }
+
+            descriptors[i] = tree.getRootNode();
+        }
+
+        long t1 = System.currentTimeMillis();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("finished configuration loading in " + (t1 - t0) + " ms.");
+        }
+
+        return descriptorMerger.merge(descriptors);
     }
 }
