@@ -32,6 +32,7 @@ CAY-1890 Remove Cayenne-level buffering when retrieving LOBs
 CAY-1894 Support native PK generation using sequences for H2 databases
 CAY-1899 ServerRuntimeBuilder
 CAY-1900 Allow DataNode name to be used as a root of SQLTemplate
+CAY-1901 Config-free ServerRuntime
 
 Bug Fixes:
 
