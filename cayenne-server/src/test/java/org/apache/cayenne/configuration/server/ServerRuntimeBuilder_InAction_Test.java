@@ -20,7 +20,10 @@ package org.apache.cayenne.configuration.server;
 
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -29,10 +32,18 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class ServerRuntime_ConfigFree_Test extends ServerCase {
+public class ServerRuntimeBuilder_InAction_Test extends ServerCase {
 
     @Inject
-    protected DBHelper dbHelper;
+    private DBHelper dbHelper;
+
+    @Inject
+    private ServerRuntime runtime;
+
+    @Inject
+    private DataSourceInfo dsi;
+
+    private DataSource dataSource;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -48,13 +59,33 @@ public class ServerRuntime_ConfigFree_Test extends ServerCase {
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(33001, "AA1");
         tArtist.insert(33002, "AA2");
+
+        this.dataSource = runtime.getDataSource("testmap");
     }
 
-    public void testRunSQL() {
+    public void testConfigFree_WithDataSource() {
 
-        ServerRuntime runtime = new ServerRuntimeBuilder().build();
+        ServerRuntime localRuntime = new ServerRuntimeBuilder().dataSource(dataSource).build();
 
-        List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(runtime.newContext());
-        assertEquals(2, result.size());
+        try {
+            List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+            assertEquals(2, result.size());
+        } finally {
+            localRuntime.shutdown();
+        }
+    }
+
+    public void testConfigFree_WithDBParams() {
+
+        ServerRuntime localRuntime = new ServerRuntimeBuilder().jdbcDriver(dsi.getJdbcDriver())
+                .url(dsi.getDataSourceUrl()).password(dsi.getPassword()).user(dsi.getUserName()).minConnections(1)
+                .maxConnections(2).build();
+
+        try {
+            List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+            assertEquals(2, result.size());
+        } finally {
+            localRuntime.shutdown();
+        }
     }
 }

@@ -45,12 +45,7 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
     @Override
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
-        String location = nodeDescriptor.getParameters();
-        if (location == null) {
-            throw new CayenneRuntimeException(
-                    "Null 'location' for nodeDescriptor '%s'",
-                    nodeDescriptor.getName());
-        }
+        String location = getLocation(nodeDescriptor);
 
         try {
             return lookupViaJNDI(location);
@@ -60,6 +55,15 @@ public class JNDIDataSourceFactory implements DataSourceFactory {
             jdbcEventLogger.logConnectFailure(ex);
             throw ex;
         }
+    }
+    
+    protected String getLocation(DataNodeDescriptor nodeDescriptor) {
+        String location = nodeDescriptor.getParameters();
+        if (location == null) {
+            throw new CayenneRuntimeException("Null 'location' for nodeDescriptor '%s'", nodeDescriptor.getName());
+        }
+
+        return location;
     }
 
     DataSource lookupViaJNDI(String location) throws NamingException {

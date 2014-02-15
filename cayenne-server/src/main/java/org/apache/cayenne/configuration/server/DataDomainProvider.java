@@ -60,7 +60,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DataDomainProvider implements Provider<DataDomain> {
     
-    private static final String DEFAULT_NAME = "cayenne";
+    /**
+     * @since 3.2
+     */
+    static final String DEFAULT_NAME = "cayenne";
 
     private static Log logger = LogFactory.getLog(DataDomainProvider.class);
 
@@ -148,38 +151,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         dataDomain.getEntityResolver().applyObjectLayerDefaults();
 
         for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
-            DataNode dataNode = new DataNode(nodeDescriptor.getName());
-
-            dataNode.setJdbcEventLogger(jdbcEventLogger);
-            dataNode.setDataSourceLocation(nodeDescriptor.getParameters());
-
-            DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
-
-            dataNode.setDataSourceFactory(nodeDescriptor.getDataSourceFactoryType());
-            dataNode.setDataSource(dataSource);
-
-            // schema update strategy
-            String schemaUpdateStrategyType = nodeDescriptor.getSchemaUpdateStrategyType();
-
-            if (schemaUpdateStrategyType == null) {
-                dataNode.setSchemaUpdateStrategy(defaultSchemaUpdateStrategy);
-                dataNode.setSchemaUpdateStrategyName(defaultSchemaUpdateStrategy.getClass().getName());
-            } else {
-                SchemaUpdateStrategy strategy = objectFactory.newInstance(SchemaUpdateStrategy.class,
-                        schemaUpdateStrategyType);
-                dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyType);
-                dataNode.setSchemaUpdateStrategy(strategy);
-            }
-
-            // DbAdapter
-            dataNode.setAdapter(adapterFactory.createAdapter(nodeDescriptor, dataSource));
-
-            // DataMaps
-            for (String dataMapName : nodeDescriptor.getDataMapNames()) {
-                dataNode.addDataMap(dataDomain.getDataMap(dataMapName));
-            }
-
-            dataDomain.addNode(dataNode);
+            addDataNode(dataDomain, nodeDescriptor);
         }
 
         // init default node
@@ -207,6 +179,46 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         return dataDomain;
+    }
+    
+    /**
+     * @throws Exception 
+     * @since 3.2
+     */
+    protected DataNode addDataNode(DataDomain dataDomain, DataNodeDescriptor nodeDescriptor) throws Exception {
+        DataNode dataNode = new DataNode(nodeDescriptor.getName());
+
+        dataNode.setJdbcEventLogger(jdbcEventLogger);
+        dataNode.setDataSourceLocation(nodeDescriptor.getParameters());
+
+        DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
+
+        dataNode.setDataSourceFactory(nodeDescriptor.getDataSourceFactoryType());
+        dataNode.setDataSource(dataSource);
+
+        // schema update strategy
+        String schemaUpdateStrategyType = nodeDescriptor.getSchemaUpdateStrategyType();
+
+        if (schemaUpdateStrategyType == null) {
+            dataNode.setSchemaUpdateStrategy(defaultSchemaUpdateStrategy);
+            dataNode.setSchemaUpdateStrategyName(defaultSchemaUpdateStrategy.getClass().getName());
+        } else {
+            SchemaUpdateStrategy strategy = objectFactory.newInstance(SchemaUpdateStrategy.class,
+                    schemaUpdateStrategyType);
+            dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyType);
+            dataNode.setSchemaUpdateStrategy(strategy);
+        }
+
+        // DbAdapter
+        dataNode.setAdapter(adapterFactory.createAdapter(nodeDescriptor, dataSource));
+
+        // DataMaps
+        for (String dataMapName : nodeDescriptor.getDataMapNames()) {
+            dataNode.addDataMap(dataDomain.getDataMap(dataMapName));
+        }
+
+        dataDomain.addNode(dataNode);
+        return dataNode;
     }
 
     private DataChannelDescriptor descriptorFromConfigs() {
