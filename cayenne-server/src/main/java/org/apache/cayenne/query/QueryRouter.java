@@ -41,6 +41,15 @@ public interface QueryRouter {
      *            mapped back to substituted query.
      */
     void route(QueryEngine engine, Query query, Query substitutedQuery);
+    
+    /**
+     * Returns a QueryEngine for a given name. If the name is null, a default
+     * QueryEngine is returned. If there's no default engine, an exception is
+     * thrown.
+     * 
+     * @since 3.2
+     */
+    QueryEngine engineForName(String name);
 
     /**
      * Returns a QueryEngine that is configured to handle a given DataMap.

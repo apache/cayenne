@@ -177,17 +177,8 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
             root = map;
         } else {
-
-            // somewhat undeterministic routing, as we don't have access to
-            // stack at this point and can't even assert whether we have a
-            // single DataNode or not.
-
-            Collection<DataMap> maps = resolver.getDataMaps();
-            if (maps.isEmpty()) {
-                throw new CayenneRuntimeException("No DataMaps available in runtime");
-            }
-
-            root = maps.iterator().next();
+            // will route via default node. TODO: allow explicit node name?
+            root = null;
         }
 
         SQLTemplate template = new SQLTemplate();
@@ -202,8 +193,8 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
         template.setFetchOffset(offset);
         template.setPageSize(pageSize);
         template.setStatementFetchSize(statementFetchSize);
-        
-        if(isFetchingScalars()) {
+
+        if (isFetchingScalars()) {
             SQLResult resultMap = new SQLResult();
             resultMap.addColumnResult("x");
             template.setResult(resultMap);

@@ -53,12 +53,12 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
     protected DataDomain createAndInitDataDomain() throws Exception {
 
         DataDomain domain = super.createAndInitDataDomain();
-
+        DataNode node = null;
        
         for (DataMap dataMap : domain.getDataMaps()) {
 
             // add nodes and DataSources dynamically...
-            DataNode node = new DataNode(dataMap.getName());
+            node = new DataNode(dataMap.getName());
             node.setJdbcEventLogger(jdbcEventLogger);
 
             // shared or dedicated DataSources can be mapped per DataMap
@@ -83,6 +83,10 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
             //
 
             domain.addNode(node);
+        }
+        
+        if(domain.getDataMaps().size() == 1) {
+            domain.setDefaultNode(node);
         }
 
         return domain;

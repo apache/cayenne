@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.apache.cayenne.access.QueryEngine;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -87,6 +88,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     protected Map<String, ?>[] parameters;
     protected CapsStrategy columnNamesCapitalization;
     protected SQLResult result;
+    private String dataNodeName;
 
     SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
@@ -98,6 +100,41 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * @since 1.2
      */
     public SQLTemplate() {
+    }
+    
+    /**
+     * Creates a SQLTemplate without an explicit root.
+     * 
+     * @since 3.2
+     */
+    public SQLTemplate(String defaultTemplate, boolean isFetchingDataRows) {
+        setDefaultTemplate(defaultTemplate);
+        setRoot(null);
+        setFetchingDataRows(isFetchingDataRows);
+    }
+    
+    @Override
+    public void setRoot(Object value) {
+        // allow null root...
+        if (value == null) {
+            this.root = value;
+        } else {
+            super.setRoot(value);
+        }
+    }
+    
+    @Override
+    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
+        DataMap map = getMetaData(resolver).getDataMap();
+
+        QueryEngine engine;
+        if (map != null) {
+            engine = router.engineForDataMap(map);
+        } else {
+            engine = router.engineForName(getDataNodeName());
+        }
+
+        router.route(engine, this, substitutedQuery);
     }
 
     /**
@@ -626,5 +663,27 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      */
     public int getStatementFetchSize() {
         return metaData.getStatementFetchSize();
+    }
+
+    /**
+     * Returns a name of the DataNode to use with this SQLTemplate. This
+     * information will be used during query execution if no other routing
+     * information is provided such as entity name or class, etc.
+     * 
+     * @since 3.2
+     */
+    public String getDataNodeName() {
+        return dataNodeName;
+    }
+
+    /**
+     * Sets a name of the DataNode to use with this SQLTemplate. This
+     * information will be used during query execution if no other routing
+     * information is provided such as entity name or class, etc.
+     * 
+     * @since 3.2
+     */
+    public void setDataNodeName(String dataNodeName) {
+        this.dataNodeName = dataNodeName;
     }
 }

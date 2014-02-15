@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.di.Inject;
@@ -49,6 +50,9 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextSQLTemplateTest extends ServerCase {
 
+    @Inject
+    private ServerRuntime runtime;
+    
     @Inject
     protected DataContext context;
 
@@ -158,6 +162,20 @@ public class DataContextSQLTemplateTest extends ServerCase {
         assertEquals(new Integer(0), array3[1]);
         assertEquals(new Integer(0), array4[1]);
         assertTrue("Unexpected DataObject: " + array1[0], array1[0] instanceof Artist);
+    }
+    
+    public void testRootless_DataNodeName() throws Exception {
+        createFourArtists();
+        
+        SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
+        query.setDataNodeName("testmap");
+        assertEquals(4, context.performQuery(query).size());
+    }
+    
+    public void testRootless_DefaultDataNode() throws Exception {
+        createFourArtists();
+        SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
+        assertEquals(4, context.performQuery(query).size());
     }
 
     public void testSQLResultSetMappingScalar() throws Exception {

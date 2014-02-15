@@ -50,4 +50,9 @@ public class MockQueryRouter implements QueryRouter {
     public QueryEngine engineForDataMap(DataMap map) {
         return new MockQueryEngine();
     }
+    
+    @Override
+    public QueryEngine engineForName(String name) {
+        return new MockQueryEngine();
+    }
 }

@@ -122,6 +122,29 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
 
         return node;
     }
+    
+    /**
+     * @since 3.2
+     */
+    @Override
+    public QueryEngine engineForName(String name) {
+
+        QueryEngine node;
+
+        if (name != null) {
+            node = domain.getDataNode(name);
+            if (node == null) {
+                throw new CayenneRuntimeException("No DataNode exists for name " + name);
+            }
+        } else {
+            node = domain.getDefaultNode();
+            if (node == null) {
+                throw new CayenneRuntimeException("No default DataNode exists.");
+            }
+        }
+
+        return node;
+    }
 
     public void nextCount(Query query, int resultCount) {
         callback.nextCount(queryForExecutedQuery(query), resultCount);
