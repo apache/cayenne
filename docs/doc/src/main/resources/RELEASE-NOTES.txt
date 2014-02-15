@@ -30,6 +30,7 @@ CAY-1883 Clean up Cayenne maven structure
 CAY-1886 cayenne-di module reorg, new exceptions
 CAY-1890 Remove Cayenne-level buffering when retrieving LOBs
 CAY-1894 Support native PK generation using sequences for H2 databases
+CAY-1899 ServerRuntimeBuilder
 
 Bug Fixes:
 
