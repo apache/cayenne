@@ -8,10 +8,17 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
-Release: 3.1B3
+Release: 3.1-final
 Date: not yet released
 ----------------------------------
-Changes/New Features Since 3.1B1:
+Changes/New Features Since 3.1RC1:
+Bug Fixes Since 3.1RC1:
+
+----------------------------------
+Release: 3.1RC1
+Date: 16 February 2014
+----------------------------------
+Changes/New Features Since 3.1B2:
 
 CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
 CAY-1822 Make DataMap editor fields wider 
