@@ -51,6 +51,7 @@ CAY-1866 Change in General Modeler Preferences reverts old settings to default v
 CAY-1868 Select contention with multiple contexts 
 CAY-1869 ResultIterator from cayenne-client dependency is subclassed from org.apache.cayenne.access.ResultIterator which is present only in cayenne-server dependency 
 CAY-1874 DB2 Procedure action ignores the first result set
+CAY-1877 In-memory evaluation of expression may fail with UnsupportedOpeartionException depending on order of nodes
 CAY-1880 objectStore snapshots never cleared from RefreshQuery when "use shared cache" unchecked
 CAY-1881 CayenneModeler (Mac version) doesn't work with Java 7
 CAY-1885 Null value in subclass's field.
