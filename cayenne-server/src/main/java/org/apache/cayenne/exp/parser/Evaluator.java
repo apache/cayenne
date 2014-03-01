@@ -55,7 +55,7 @@ abstract class Evaluator {
         }
 
         @Override
-        int compare(Object lhs, Object rhs) {
+        Integer compare(Object lhs, Object rhs) {
 
             if (rhs == null) {
                 return 1;
@@ -75,8 +75,8 @@ abstract class Evaluator {
 
         NULL_LHS_EVALUATOR = new Evaluator() {
             @Override
-            int compare(Object lhs, Object rhs) {
-                throw new UnsupportedOperationException("Unsupported");
+            Integer compare(Object lhs, Object rhs) {
+                return null;
             }
 
             @Override
@@ -92,16 +92,16 @@ abstract class Evaluator {
             }
 
             @Override
-            int compare(Object lhs, Object rhs) {
-                throw new UnsupportedOperationException("Unsupported");
+            Integer compare(Object lhs, Object rhs) {
+                return null;
             }
         });
 
         PERSISTENT_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
 
             @Override
-            int compare(Object lhs, Object rhs) {
-                throw new UnsupportedOperationException("Unsupported");
+            Integer compare(Object lhs, Object rhs) {
+                return null;
             }
 
             @Override
@@ -145,7 +145,7 @@ abstract class Evaluator {
         BIG_DECIMAL_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
 
             @Override
-            int compare(Object lhs, Object rhs) {
+            Integer compare(Object lhs, Object rhs) {
                 return ((BigDecimal) lhs).compareTo(ConversionUtil.toBigDecimal(rhs));
             }
 
@@ -155,7 +155,8 @@ abstract class Evaluator {
                 // BigDecimals must be compared using compareTo (
                 // see CAY-280 and BigDecimal.equals JavaDoc)
 
-                return compare(lhs, rhs) == 0;
+                Integer c = compare(lhs, rhs);
+                return c != null && c == 0;
             }
         });
 
@@ -163,7 +164,7 @@ abstract class Evaluator {
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
-            int compare(Object lhs, Object rhs) {
+            Integer compare(Object lhs, Object rhs) {
                 return ((Comparable) lhs).compareTo(ConversionUtil.toComparable(rhs));
             }
 
@@ -229,5 +230,10 @@ abstract class Evaluator {
 
     abstract boolean eq(Object lhs, Object rhs);
 
-    abstract int compare(Object lhs, Object rhs);
+    /**
+     * Returns NULL if comparison is invalid, otherwise returns positive,
+     * negative or zero, with the same meaning as
+     * {@link Comparable#compareTo(Object)}.
+     */
+    abstract Integer compare(Object lhs, Object rhs);
 }

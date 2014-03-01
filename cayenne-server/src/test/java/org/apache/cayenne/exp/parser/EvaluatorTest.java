@@ -64,7 +64,8 @@ public class EvaluatorTest extends TestCase {
         assertTrue(e.eq(lhs, new BigDecimal("1.1")));
         assertFalse(e.eq(lhs, new BigDecimal("1.10001")));
 
-        assertEquals(-1, e.compare(lhs, new BigDecimal("1.10001")));
+        Integer c = e.compare(lhs, new BigDecimal("1.10001"));
+        assertEquals(-1, c.intValue());
     }
 
     public void testEvaluator_Persistent() {

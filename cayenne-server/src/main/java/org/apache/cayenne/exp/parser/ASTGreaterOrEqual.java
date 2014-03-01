@@ -55,9 +55,9 @@ public class ASTGreaterOrEqual extends ConditionNode {
 
         Object o1 = evaluateChild(0, o);
         Object o2 = evaluateChild(1, o);
-        int diff = Evaluator.evaluator(o1).compare(o1, o2);
+        Integer c = Evaluator.evaluator(o1).compare(o1, o2);
 
-        return diff >= 0 ? Boolean.TRUE : Boolean.FALSE;
+        return c != null && c >= 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
     /**

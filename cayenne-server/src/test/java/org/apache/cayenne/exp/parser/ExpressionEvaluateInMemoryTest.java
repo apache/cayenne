@@ -162,26 +162,30 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         assertTrue("Failed: " + notEqualTo, notEqualTo.match(noMatch));
     }
 
-    public void testEvaluateEQUAL_TONull() throws Exception {
-        Expression equalTo = new ASTEqual(new ASTObjPath("artistName"), null);
+    public void testEvaluateEQUAL_TO_Null() throws Exception {
+        Expression equalToNull = new ASTEqual(new ASTObjPath("artistName"), null);
+        Expression equalToNotNull = new ASTEqual(new ASTObjPath("artistName"), "abc");
 
         Artist match = new Artist();
-        assertTrue(equalTo.match(match));
+        assertTrue(equalToNull.match(match));
+        assertFalse(equalToNotNull.match(match));
 
         Artist noMatch = new Artist();
-        noMatch.setArtistName("123");
-        assertFalse("Failed: " + equalTo, equalTo.match(noMatch));
+        noMatch.setArtistName("abc");
+        assertFalse(equalToNull.match(noMatch));
     }
 
     public void testEvaluateNOT_EQUAL_TONull() throws Exception {
-        Expression equalTo = new ASTNotEqual(new ASTObjPath("artistName"), null);
+        Expression notEqualToNull = new ASTNotEqual(new ASTObjPath("artistName"), null);
+        Expression notEqualToNotNull = new ASTNotEqual(new ASTObjPath("artistName"), "abc");
 
         Artist match = new Artist();
-        assertFalse(equalTo.match(match));
+        assertFalse(notEqualToNull.match(match));
+        assertTrue(notEqualToNotNull.match(match));
 
         Artist noMatch = new Artist();
         noMatch.setArtistName("123");
-        assertTrue("Failed: " + equalTo, equalTo.match(noMatch));
+        assertTrue("Failed: " + notEqualToNull, notEqualToNull.match(noMatch));
     }
 
     public void testEvaluateEQUAL_TODataObject() throws Exception {
@@ -303,6 +307,15 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(9999));
         assertTrue("Failed: " + e, e.match(match));
     }
+    
+    public void testEvaluateLESS_THAN_Null() throws Exception {
+        Expression ltNull = new ASTLess(new ASTObjPath("estimatedPrice"), null);
+        Expression ltNotNull = new ASTLess(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
+
+        Painting noMatch = new Painting();
+        assertFalse(ltNull.match(noMatch));
+        assertFalse(ltNotNull.match(noMatch));
+    }
 
     public void testEvaluateLESS_THAN_EQUAL_TO() throws Exception {
         Expression e = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
@@ -318,6 +331,15 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         Painting match = new Painting();
         match.setEstimatedPrice(new BigDecimal(9999));
         assertTrue("Failed: " + e, e.match(match));
+    }
+    
+    public void testEvaluateLESS_THAN_EQUAL_TO_Null() throws Exception {
+        Expression ltNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), null);
+        Expression ltNotNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
+
+        Painting noMatch = new Painting();
+        assertFalse(ltNull.match(noMatch));
+        assertFalse(ltNotNull.match(noMatch));
     }
 
     public void testEvaluateGREATER_THAN() throws Exception {
@@ -335,6 +357,15 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(10001));
         assertTrue("Failed: " + e, e.match(match));
     }
+    
+    public void testEvaluateGREATER_THAN_Null() throws Exception {
+        Expression gtNull = new ASTGreater(new ASTObjPath("estimatedPrice"), null);
+        Expression gtNotNull = new ASTGreater(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
+
+        Painting noMatch = new Painting();
+        assertFalse(gtNull.match(noMatch));
+        assertFalse(gtNotNull.match(noMatch));
+    }
 
     public void testEvaluateGREATER_THAN_EQUAL_TO() throws Exception {
         Expression e = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
@@ -350,6 +381,15 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         Painting match = new Painting();
         match.setEstimatedPrice(new BigDecimal(10001));
         assertTrue("Failed: " + e, e.match(match));
+    }
+    
+    public void testEvaluateGREATER_THAN_EQUAL_TO_Null() throws Exception {
+        Expression gtNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), null);
+        Expression gtNotNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
+
+        Painting noMatch = new Painting();
+        assertFalse(gtNull.match(noMatch));
+        assertFalse(gtNotNull.match(noMatch));
     }
 
     public void testEvaluateBETWEEN() throws Exception {
@@ -378,6 +418,16 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         assertTrue("Failed: " + between, between.match(match3));
         assertFalse("Failed: " + notBetween, notBetween.match(match3));
     }
+    
+    public void testEvaluateBETWEEN_Null() throws Exception {
+        Expression btNull = new ASTBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(20d));
+        Expression btNotNull = new ASTNotBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d),
+                new BigDecimal(20d));
+
+        Painting noMatch = new Painting();
+        assertFalse(btNull.match(noMatch));
+        assertFalse(btNotNull.match(noMatch));
+    }
 
     public void testEvaluateIN() throws Exception {
         Expression in = new ASTIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] { new BigDecimal("10"),
@@ -405,6 +455,17 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
         match2.setEstimatedPrice(new BigDecimal("10"));
         assertTrue("Failed: " + in, in.match(match2));
         assertFalse("Failed: " + notIn, notIn.match(match2));
+    }
+    
+    public void testEvaluateIN_Null() throws Exception {
+        Expression in = new ASTIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] {
+                new BigDecimal("10"), new BigDecimal("20") }));
+        Expression notIn = new ASTNotIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] {
+                new BigDecimal("10"), new BigDecimal("20") }));
+
+        Painting noMatch = new Painting();
+        assertFalse(in.match(noMatch));
+        assertFalse(notIn.match(noMatch));
     }
 
     public void testEvaluateLIKE1() throws Exception {

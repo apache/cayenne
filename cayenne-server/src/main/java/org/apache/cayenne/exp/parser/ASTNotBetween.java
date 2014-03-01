@@ -53,8 +53,18 @@ public class ASTNotBetween extends ConditionNode {
         Object o2 = evaluateChild(1, o);
         Object o3 = evaluateChild(2, o);
         Evaluator e = Evaluator.evaluator(o1);
+        
+        Integer c1 = e.compare(o1, o2);
+        if (c1 == null) {
+            return Boolean.FALSE;
+        }
 
-        return e.compare(o1, o2) >= 0 && e.compare(o1, o3) <= 0 ? Boolean.FALSE : Boolean.TRUE;
+        Integer c2 = e.compare(o1, o3);
+        if (c2 == null) {
+            return Boolean.FALSE;
+        }
+
+        return c1 >= 0 && c2 <= 0 ? Boolean.FALSE : Boolean.TRUE;
     }
 
     /**

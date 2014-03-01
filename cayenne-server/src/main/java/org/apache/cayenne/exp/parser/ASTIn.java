@@ -56,6 +56,8 @@ public class ASTIn extends ConditionNode {
         }
 
         Object o1 = evaluateChild(0, o);
+        // TODO: what if there's a NULL inside IN list? 
+        // e.g. ASTEqual evals as "NULL == NULL"
         if (o1 == null) {
             return Boolean.FALSE;
         }
