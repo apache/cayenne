@@ -33,6 +33,7 @@ CAY-1894 Support native PK generation using sequences for H2 databases
 CAY-1899 ServerRuntimeBuilder
 CAY-1900 Allow DataNode name to be used as a root of SQLTemplate
 CAY-1901 Config-free ServerRuntime
+CAY-1904 Simple injection-friendly constructor for AuditableFilter
 
 Bug Fixes:
 

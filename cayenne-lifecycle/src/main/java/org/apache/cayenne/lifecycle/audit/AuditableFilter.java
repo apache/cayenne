@@ -52,15 +52,26 @@ public class AuditableFilter implements DataChannelFilter {
     protected AuditableProcessor processor;
     protected EntityResolver entityResolver;
 
-    public AuditableFilter(EntityResolver entityResolver, AuditableProcessor processor) {
+    /**
+     * @since 3.2
+     */
+    public AuditableFilter(AuditableProcessor processor) {
         this.processor = processor;
-        this.entityResolver = entityResolver;
         this.entityDescriptors = new ConcurrentHashMap<String, AuditableEntityDescriptor>();
         this.threadAggregator = new ThreadLocal<AuditableAggregator>();
     }
 
+    /**
+     * @deprecated since 3.1 use {@link #AuditableFilter(AuditableProcessor)}
+     *             constructor - EntityResolver will be initialized in 'init'.
+     */
+    @Deprecated
+    public AuditableFilter(EntityResolver entityResolver, AuditableProcessor processor) {
+        this(processor);
+    }
+
     public void init(DataChannel channel) {
-        // noop
+        this.entityResolver = channel.getEntityResolver();
     }
 
     public QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelFilterChain filterChain) {

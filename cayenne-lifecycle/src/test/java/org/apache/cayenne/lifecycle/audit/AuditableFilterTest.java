@@ -45,18 +45,24 @@ import org.mockito.stubbing.Answer;
 public class AuditableFilterTest extends TestCase {
 
     private AuditableProcessor processor;
-    private EntityResolver resolver;
     private ServerRuntime runtime;
+    private AuditableFilter filter;
 
     @Override
     protected void setUp() throws Exception {
-        processor = mock(AuditableProcessor.class);
-        resolver = mock(EntityResolver.class);
+
+        EntityResolver resolver = mock(EntityResolver.class);
 
         ObjEntity objectEntity = new ObjEntity("CayenneDataObject");
         when(resolver.lookupObjEntity(any(Object.class))).thenReturn(objectEntity);
 
-        runtime = new ServerRuntime("cayenne-lifecycle.xml");
+        DataChannel channel = mock(DataChannel.class);
+        when(channel.getEntityResolver()).thenReturn(resolver);
+
+        this.processor = mock(AuditableProcessor.class);
+        this.runtime = new ServerRuntime("cayenne-lifecycle.xml");
+        this.filter = new AuditableFilter(processor);
+        this.filter.init(channel);
     }
 
     @Override
@@ -66,7 +72,6 @@ public class AuditableFilterTest extends TestCase {
 
     public void testInsertAudit() {
 
-        AuditableFilter filter = new AuditableFilter(resolver, processor);
         Persistent audited = mock(Persistent.class);
         filter.insertAudit(audited);
         filter.postSync();
@@ -76,7 +81,6 @@ public class AuditableFilterTest extends TestCase {
 
     public void testDeleteAudit() {
 
-        AuditableFilter filter = new AuditableFilter(resolver, processor);
         Persistent audited = mock(Persistent.class);
         filter.deleteAudit(audited);
         filter.postSync();
@@ -86,7 +90,6 @@ public class AuditableFilterTest extends TestCase {
 
     public void testUpdateAudit() {
 
-        AuditableFilter filter = new AuditableFilter(resolver, processor);
         Persistent audited = mock(Persistent.class);
         filter.updateAudit(audited);
         filter.postSync();
@@ -95,8 +98,6 @@ public class AuditableFilterTest extends TestCase {
     }
 
     public void testUpdateAuditChild() {
-
-        AuditableFilter filter = new AuditableFilter(resolver, processor);
 
         Persistent auditedParent = mock(Persistent.class);
         DataObject audited = new MockAuditableChild();
@@ -119,7 +120,6 @@ public class AuditableFilterTest extends TestCase {
         handler.relate(audited, auditedParent);
         context.commitChanges();
 
-        AuditableFilter filter = new AuditableFilter(resolver, processor);
         filter.updateAuditChild(audited);
         filter.postSync();
         verify(processor).audit(auditedParent, AuditableOperation.UPDATE);
@@ -127,7 +127,6 @@ public class AuditableFilterTest extends TestCase {
 
     public void testOnSyncPassThrough() {
 
-        AuditableFilter filter = new AuditableFilter(resolver, processor);
         ObjectContext context = mock(ObjectContext.class);
         GraphDiff changes = mock(GraphDiff.class);
 
@@ -142,7 +141,6 @@ public class AuditableFilterTest extends TestCase {
 
     public void testOnSyncAuditEventsCollapse() {
 
-        final AuditableFilter filter = new AuditableFilter(resolver, processor);
         ObjectContext context = mock(ObjectContext.class);
         GraphDiff changes = mock(GraphDiff.class);
 
