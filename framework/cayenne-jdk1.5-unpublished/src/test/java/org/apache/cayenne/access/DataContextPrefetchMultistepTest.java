@@ -39,6 +39,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -78,7 +79,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         tGallery = new TableHelper(dbHelper, "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
     }
-
+    
     protected void createTwoArtistsWithExhibitsDataSet() throws Exception {
         tArtist.insert(11, "artist2");
         tArtist.insert(101, "artist3");
@@ -99,6 +100,15 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         tArtistExhibit.insert(101, 1);
         tArtistExhibit.insert(101, 2);
         tArtistExhibit.insert(101, 4);
+    }
+    
+    protected void createGalleriesAndArtists() throws Exception {
+        tArtist.insert(11, "artist2");
+        tArtist.insert(101, "artist3");
+
+        tGallery.insert(25, "gallery1");
+        tGallery.insert(31, "gallery2");
+        tGallery.insert(45, "gallery3");
     }
 
     public void testToManyToManyFirstStepUnresolved() throws Exception {
@@ -257,5 +267,25 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
 
         ArtistExhibit ae1 = aexhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
+    }
+    
+    public void testToManyToOne_EmptyToMany_NoRootQualifier() throws Exception {
+
+        createGalleriesAndArtists();
+
+        SelectQuery q = new SelectQuery(Gallery.class);
+        q.addPrefetch(Gallery.PAINTING_ARRAY_PROPERTY);
+        q.addPrefetch(Gallery.PAINTING_ARRAY_PROPERTY + "." + Painting.TO_ARTIST_PROPERTY);
+
+        List<Gallery> galleries = context.performQuery(q);
+        assertEquals(3, galleries.size());
+
+        Gallery g = galleries.get(0);
+
+        // this relationship should be resolved
+        assertTrue(g.readPropertyDirectly(Gallery.PAINTING_ARRAY_PROPERTY) instanceof ValueHolder);
+        List<Painting> exhibits = (List<Painting>) g.readPropertyDirectly(Gallery.PAINTING_ARRAY_PROPERTY);
+        assertFalse(((ValueHolder) exhibits).isFault());
+        assertEquals(0, exhibits.size());
     }
 }
