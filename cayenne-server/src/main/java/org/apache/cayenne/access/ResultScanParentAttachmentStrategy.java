@@ -100,6 +100,12 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         partitionByChild = new HashMap<Object, List<Persistent>>();
 
         List<Persistent> objects = parentNode.getObjects();
+        
+        // this can be null if parent node returned no rows
+        if(objects == null) {
+            return;
+        }
+        
         List<DataRow> rows = parentNode.getDataRows();
         int size = objects.size();
         for (int i = 0; i < size; i++) {

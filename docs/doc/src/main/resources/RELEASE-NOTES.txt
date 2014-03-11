@@ -56,6 +56,7 @@ CAY-1877 In-memory evaluation of expression may fail with UnsupportedOpeartionEx
 CAY-1880 objectStore snapshots never cleared from RefreshQuery when "use shared cache" unchecked
 CAY-1881 CayenneModeler (Mac version) doesn't work with Java 7
 CAY-1885 Null value in subclass's field.
+CAY-1905 Multi-step prefetching NPE : 1..N..1 with absent N and root with no qualifier
 
 ----------------------------------
 Release: 3.2M1
