@@ -127,11 +127,11 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         assertNull(context.getGraphManager().getNode(oid2));
 
         Expression e = Expression.fromString("galleryName = $name");
-        SelectQuery q = new SelectQuery(Gallery.class, e.expWithParameters(Collections
+        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray.artistExhibitArray");
 
-        List<Gallery> galleries = context.performQuery(q);
+        List<Gallery> galleries = context.select(q);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
@@ -155,12 +155,12 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         createTwoArtistsWithExhibitsDataSet();
 
         Expression e = Expression.fromString("galleryName = $name");
-        SelectQuery q = new SelectQuery(Gallery.class, e.expWithParameters(Collections
+        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray");
         q.addPrefetch("exhibitArray.artistExhibitArray");
 
-        List<Gallery> galleries = context.performQuery(q);
+        List<Gallery> galleries = context.select(q);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
@@ -190,13 +190,13 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         createTwoArtistsWithExhibitsDataSet();
 
         Expression e = Expression.fromString("galleryName = $name");
-        SelectQuery q = new SelectQuery(Gallery.class, e.expWithParameters(Collections
+        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray").setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         q.addPrefetch("exhibitArray.artistExhibitArray");
 
-        List<Gallery> galleries = context.performQuery(q);
+        List<Gallery> galleries = context.select(q);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
@@ -226,7 +226,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         createTwoArtistsWithExhibitsDataSet();
 
         Expression e = Expression.fromString("galleryName = $name");
-        SelectQuery q = new SelectQuery(Gallery.class, e.expWithParameters(Collections
+        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
                 .singletonMap("name", "gallery2")));
 
         // reverse the order of prefetches compared to the previous test
@@ -234,7 +234,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         q.addPrefetch("exhibitArray.artistExhibitArray").setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-        List<Gallery> galleries = context.performQuery(q);
+        List<Gallery> galleries = context.select(q);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
