@@ -50,6 +50,7 @@ class CompoundRowReader implements RowReader<Object[]> {
         return row;
     }
 
+    @Override
     public void setPostProcessor(DataRowPostProcessor postProcessor) {
         for (RowReader<?> reader : readers) {
             reader.setPostProcessor(postProcessor);
