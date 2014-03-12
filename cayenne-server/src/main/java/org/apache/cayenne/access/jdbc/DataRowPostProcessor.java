@@ -20,19 +20,12 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -46,67 +39,6 @@ class DataRowPostProcessor {
     private EntityInheritanceTree inheritanceTree;
     private Map<String, Collection<ColumnOverride>> columnOverrides;
     private Collection<ColumnOverride> defaultOverrides;
-
-    // factory method
-    static DataRowPostProcessor createPostProcessor(SelectTranslator translator) {
-        Map<ObjAttribute, ColumnDescriptor> attributeOverrides = translator.getAttributeOverrides();
-        if (attributeOverrides.isEmpty()) {
-            return null;
-        }
-
-        ColumnDescriptor[] columns = translator.getResultColumns();
-
-        Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(2);
-
-        for (Entry<ObjAttribute, ColumnDescriptor> entry : attributeOverrides.entrySet()) {
-
-            ObjAttribute attribute = entry.getKey();
-            Entity entity = attribute.getEntity();
-
-            String key = null;
-            int jdbcType = TypesMapping.NOT_DEFINED;
-            int index = -1;
-            for (int i = 0; i < columns.length; i++) {
-                if (columns[i] == entry.getValue()) {
-
-                    // if attribute type is the same as column, there is no
-                    // conflict
-                    if (!attribute.getType().equals(columns[i].getJavaClass())) {
-                        // note that JDBC index is "1" based
-                        index = i + 1;
-                        jdbcType = columns[i].getJdbcType();
-                        key = columns[i].getDataRowKey();
-                    }
-
-                    break;
-                }
-            }
-
-            if (index < 1) {
-                continue;
-            }
-
-            ExtendedType converter = translator.getAdapter().getExtendedTypes().getRegisteredType(attribute.getType());
-
-            Collection<ColumnOverride> overrides = columnOverrides.get(entity.getName());
-
-            if (overrides == null) {
-                overrides = new ArrayList<ColumnOverride>(3);
-                columnOverrides.put(entity.getName(), overrides);
-            }
-
-            overrides.add(new ColumnOverride(index, key, converter, jdbcType));
-        }
-
-        // inject null post-processor
-        if (columnOverrides.isEmpty()) {
-            return null;
-        }
-
-        ClassDescriptor rootDescriptor = translator.getQueryMetadata().getClassDescriptor();
-
-        return new DataRowPostProcessor(rootDescriptor, columnOverrides);
-    }
 
     DataRowPostProcessor(ClassDescriptor classDescriptor, Map<String, Collection<ColumnOverride>> columnOverrides) {
 
