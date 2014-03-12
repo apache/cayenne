@@ -19,9 +19,7 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
@@ -34,18 +32,18 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class Oracle8ActionBuilder extends OracleActionBuilder {
 
-    Oracle8ActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
+    Oracle8ActionBuilder(DataNode dataNode) {
+        super(dataNode);
     }
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new Oracle8SQLTemplateAction(query, adapter, getEntityResolver(), rowReaderFactory);
+        return new Oracle8SQLTemplateAction(query, dataNode);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new Oracle8SelectAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
+        return new Oracle8SelectAction(query, dataNode);
     }
 
     @Override
@@ -53,18 +51,14 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
         // special handling for LOB updates
         if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
             // Special action for Oracle8. See CAY-1307.
-            return new Oracle8LOBBatchAction(query, getAdapter());
-        }
-        else {
+            return new Oracle8LOBBatchAction(query, dataNode.getAdapter(), dataNode.getJdbcEventLogger());
+        } else {
             // optimistic locking is not supported in batches due to JDBC driver
             // limitations
             boolean useOptimisticLock = query.isUsingOptimisticLocking();
-            boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
+            boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
 
-            OracleBatchAction action = new OracleBatchAction(
-                    query,
-                    adapter,
-                    getEntityResolver(), rowReaderFactory);
+            OracleBatchAction action = new OracleBatchAction(query, dataNode);
             action.setBatch(runningAsBatch);
             return action;
         }

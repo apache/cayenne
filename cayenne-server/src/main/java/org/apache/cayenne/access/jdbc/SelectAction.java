@@ -27,10 +27,9 @@ import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
@@ -48,19 +47,18 @@ public class SelectAction extends BaseSQLAction {
     /**
      * @since 3.2
      */
-    public SelectAction(SelectQuery<?> query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(adapter, entityResolver, rowReaderFactory);
+    public SelectAction(SelectQuery<?> query, DataNode dataNode) {
+        super(dataNode);
         this.query = query;
     }
 
     protected SelectTranslator createTranslator(Connection connection) {
         SelectTranslator translator = new SelectTranslator();
         translator.setQuery(query);
-        translator.setAdapter(adapter);
-        translator.setEntityResolver(getEntityResolver());
+        translator.setAdapter(dataNode.getAdapter());
+        translator.setEntityResolver(dataNode.getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
+        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
         return translator;
     }
 
@@ -88,11 +86,11 @@ public class SelectAction extends BaseSQLAction {
             prepStmt.close();
             throw ex;
         }
-        QueryMetadata md = query.getMetaData(getEntityResolver());
+        QueryMetadata md = query.getMetaData(dataNode.getEntityResolver());
         RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(translator.getResultColumns()).getDescriptor(
-                getAdapter().getExtendedTypes());
+                dataNode.getAdapter().getExtendedTypes());
         
-        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, md, adapter, translator.getAttributeOverrides());
+        RowReader<?> rowReader = dataNode.createRowReader(descriptor, md, translator.getAttributeOverrides());
 
         JDBCResultIterator workerIterator = new JDBCResultIterator(prepStmt, rs, rowReader);
 
@@ -102,8 +100,7 @@ public class SelectAction extends BaseSQLAction {
             it = new ConnectionAwareResultIterator(it, connection) {
                 @Override
                 protected void doClose() {
-                    // 
-                    adapter.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - t1, sqlString);
+                    dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - t1, sqlString);
                     super.doClose();
                 }
             };
@@ -191,7 +188,7 @@ public class SelectAction extends BaseSQLAction {
                 it.close();
             }
 
-            adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1, sqlString);
+            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1, sqlString);
 
             observer.nextRows(query, resultRows);
         }

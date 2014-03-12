@@ -21,39 +21,37 @@ package org.apache.cayenne.dba.hsqldb;
 
 import java.sql.Connection;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
 class HSQLActionBuilder extends JdbcActionBuilder {
 
-    HSQLActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
+    HSQLActionBuilder(DataNode dataNode) {
+        super(dataNode);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new HSQLSelectAction(query, adapter, entityResolver, rowReaderFactory);
+        return new HSQLSelectAction(query, dataNode);
     }
 
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new ProcedureAction(query, adapter, entityResolver, rowReaderFactory) {
+        return new ProcedureAction(query, dataNode) {
 
             @Override
             protected ProcedureTranslator createTranslator(Connection connection) {
                 ProcedureTranslator transl = new HSQLDBProcedureTranslator();
-                transl.setAdapter(getAdapter());
+                transl.setAdapter(dataNode.getAdapter());
                 transl.setQuery(query);
-                transl.setEntityResolver(getEntityResolver());
+                transl.setEntityResolver(dataNode.getEntityResolver());
                 transl.setConnection(connection);
-                transl.setJdbcEventLogger(logger);
+                transl.setJdbcEventLogger(dataNode.getJdbcEventLogger());
                 return transl;
             }
         };

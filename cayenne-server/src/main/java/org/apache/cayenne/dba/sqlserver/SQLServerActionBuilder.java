@@ -19,15 +19,13 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SelectQuery;
 
 
 /**
@@ -38,8 +36,8 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
     /**
      * @since 3.2
      */
-    public SQLServerActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
+    public SQLServerActionBuilder(DataNode dataNode) {
+        super(dataNode);
     }
     
     @Override
@@ -49,19 +47,19 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
         // optimistic locking is not supported in batches due to JDBC driver limitations
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-        boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
-        BatchAction action = new SQLServerBatchAction(query, adapter, entityResolver, rowReaderFactory);
+        boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
+        BatchAction action = new SQLServerBatchAction(query, dataNode);
         action.setBatch(runningAsBatch);
         return action;
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SQLServerSelectAction(query, adapter, entityResolver, rowReaderFactory);
+        return new SQLServerSelectAction(query, dataNode);
     }    
     
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new SQLServerProcedureAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
+        return new SQLServerProcedureAction(query, dataNode);
     }
 }

@@ -26,7 +26,7 @@ import java.sql.ResultSet;
  * 
  * @since 3.0
  */
-interface RowReader<T> {
+public interface RowReader<T> {
 
     /**
      * Extracts a DataRow from the ResultSet at its current position.

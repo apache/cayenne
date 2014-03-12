@@ -19,10 +19,8 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
@@ -34,13 +32,13 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OracleActionBuilder extends JdbcActionBuilder {
 
-    OracleActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
+    OracleActionBuilder(DataNode dataNode) {
+        super(dataNode);
     }
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new OracleSQLTemplateAction(query, adapter, getEntityResolver(), rowReaderFactory);
+        return new OracleSQLTemplateAction(query, dataNode);
     }
 
     @Override
@@ -48,15 +46,15 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
         // special handling for LOB updates
         if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
-            return new OracleLOBBatchAction(query, getAdapter());
+            return new OracleLOBBatchAction(query, dataNode.getAdapter(), dataNode.getJdbcEventLogger());
         } else {
 
             // optimistic locking is not supported in batches due to JDBC driver
             // limitations
             boolean useOptimisticLock = query.isUsingOptimisticLocking();
-            boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
+            boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
 
-            OracleBatchAction action = new OracleBatchAction(query, adapter, getEntityResolver(), rowReaderFactory);
+            OracleBatchAction action = new OracleBatchAction(query, dataNode);
             action.setBatch(runningAsBatch);
             return action;
         }
@@ -65,11 +63,11 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new OracleProcedureAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
+        return new OracleProcedureAction(query, dataNode);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new OracleSelectAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
+        return new OracleSelectAction(query, dataNode);
     }
 }

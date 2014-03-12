@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 
@@ -30,12 +28,12 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class SQLiteActionBuilder extends JdbcActionBuilder {
 
-    SQLiteActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
+    SQLiteActionBuilder(DataNode dataNode) {
+        super(dataNode);
     }
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new SQLiteSQLTemplateAction(query, adapter, getEntityResolver(), rowReaderFactory);
+        return new SQLiteSQLTemplateAction(query, dataNode);
     }
 }

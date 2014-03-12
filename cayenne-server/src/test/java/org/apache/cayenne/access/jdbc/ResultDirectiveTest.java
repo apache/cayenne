@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -144,11 +145,12 @@ public class ResultDirectiveTest extends ServerCase {
 
         template.setParameters(parameters);
 
-        SQLTemplateAction action = new SQLTemplateAction(template, dbAdapter, runtime
-                .getDataDomain()
-                .getEntityResolver(), mock(RowReaderFactory.class));
-
-        assertSame(dbAdapter, action.getAdapter());
+        DataNode node = new DataNode();
+        node.setEntityResolver(runtime.getDataDomain().getEntityResolver());
+        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        node.setAdapter(dbAdapter);
+        
+        SQLTemplateAction action = new SQLTemplateAction(template, node);
 
         Connection c = runtime
                 .getDataDomain()

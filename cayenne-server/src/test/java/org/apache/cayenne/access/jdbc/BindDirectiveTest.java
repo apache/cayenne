@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
@@ -235,10 +236,11 @@ public class BindDirectiveTest extends ServerCase {
 
         template.setParameters(parameters);
 
-        SQLTemplateAction action = new SQLTemplateAction(
-                template,
-                adapter,
-                context.getEntityResolver(), mock(RowReaderFactory.class));
+        DataNode node = new DataNode();
+        node.setEntityResolver(context.getEntityResolver());
+        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        node.setAdapter(adapter);
+        SQLTemplateAction action = new SQLTemplateAction(template, node);
 
         Connection c = dataSourceFactory.getSharedDataSource().getConnection();
         try {

@@ -42,14 +42,12 @@ import java.sql.Types;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.RowDescriptorBuilder;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
@@ -59,10 +57,9 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 
     protected DbEntity dbEntity;
 
-    OracleSQLTemplateAction(SQLTemplate query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, entityResolver, rowReaderFactory);
-        this.dbEntity = query.getMetaData(entityResolver).getDbEntity();
+    OracleSQLTemplateAction(SQLTemplate query, DataNode dataNode) {
+        super(query, dataNode);
+        this.dbEntity = query.getMetaData(dataNode.getEntityResolver()).getDbEntity();
     }
 
     @Override

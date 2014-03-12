@@ -42,9 +42,7 @@ public class AutoAdapterTest extends ServerCase {
         Provider<DbAdapter> adapterProvider = mock(Provider.class);
         when(adapterProvider.get()).thenReturn(dataNode.getAdapter());
 
-        AutoAdapter adapter = new AutoAdapter(
-                adapterProvider,
-                NoopJdbcEventLogger.getInstance());
+        AutoAdapter adapter = new AutoAdapter(adapterProvider, NoopJdbcEventLogger.getInstance());
         DbAdapter detected = adapter.getAdapter();
         assertSame(dataNode.getAdapter(), detected);
     }
@@ -54,14 +52,13 @@ public class AutoAdapterTest extends ServerCase {
         Provider<DbAdapter> adapterProvider = mock(Provider.class);
         when(adapterProvider.get()).thenReturn(dataNode.getAdapter());
 
-        AutoAdapter adapter = new AutoAdapter(
-                adapterProvider,
-                NoopJdbcEventLogger.getInstance());
-        SQLTemplateAction action = (SQLTemplateAction) adapter.getAction(new SQLTemplate(
-                Artist.class,
+        AutoAdapter autoAdapter = new AutoAdapter(adapterProvider, NoopJdbcEventLogger.getInstance());
+
+        SQLTemplateAction action = (SQLTemplateAction) autoAdapter.getAction(new SQLTemplate(Artist.class,
                 "select * from artist"), dataNode);
 
-        // it is important for SQLTemplateAction to be used with unwrapped adapter, as the
+        // it is important for SQLTemplateAction to be used with unwrapped
+        // adapter, as the
         // adapter class name is used as a key to the correct SQL template.
         assertNotNull(action.getAdapter());
         assertFalse(action.getAdapter() instanceof AutoAdapter);

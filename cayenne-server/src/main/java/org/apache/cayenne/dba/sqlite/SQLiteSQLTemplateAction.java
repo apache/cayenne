@@ -24,12 +24,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
@@ -37,9 +35,8 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class SQLiteSQLTemplateAction extends SQLTemplateAction {
 
-    public SQLiteSQLTemplateAction(SQLTemplate query, JdbcAdapter adapter, EntityResolver resolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, resolver, rowReaderFactory);
+    public SQLiteSQLTemplateAction(SQLTemplate query, DataNode dataNode) {
+        super(query, dataNode);
     }
 
     /**
@@ -86,7 +83,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
             else {
                 int updateCount = statement.executeUpdate();
                 updateCounts.add(Integer.valueOf(updateCount));
-                adapter.getJdbcEventLogger().logUpdateCount(updateCount);
+                dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
             }
 
             // end - code different from super

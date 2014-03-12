@@ -35,14 +35,13 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
@@ -58,30 +57,31 @@ import org.apache.commons.collections.IteratorUtils;
  */
 public class SQLTemplateAction implements SQLAction {
 
-    protected JdbcAdapter adapter;
     protected SQLTemplate query;
     protected QueryMetadata queryMetadata;
 
     protected DbEntity dbEntity;
-    private RowReaderFactory rowReaderFactory;
+    protected DataNode dataNode;
+    protected DbAdapter dbAdapter;
 
     /**
      * @since 3.2
      */
-    public SQLTemplateAction(SQLTemplate query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
+    public SQLTemplateAction(SQLTemplate query, DataNode dataNode) {
         this.query = query;
-        this.adapter = adapter;
-        this.rowReaderFactory = rowReaderFactory;
-        this.queryMetadata = query.getMetaData(entityResolver);
-        this.dbEntity = query.getMetaData(entityResolver).getDbEntity();
+        this.dataNode = dataNode;
+        this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
+        this.dbEntity = queryMetadata.getDbEntity();
+        
+        // using unwrapped adapter to check for the right SQL flavor...
+        this.dbAdapter = dataNode.getAdapter().unwrap();
     }
-
+    
     /**
-     * Returns DbAdapter associated with this execution plan object.
+     * Returns unwrapped DbAdapter used to find correct SQL for a  given DB.
      */
     public DbAdapter getAdapter() {
-        return adapter;
+        return dbAdapter;
     }
 
     /**
@@ -89,16 +89,17 @@ public class SQLTemplateAction implements SQLAction {
      * an iterated result, result processing is stopped after the first
      * ResultSet is encountered.
      */
+    @Override
     public void performAction(Connection connection, OperationObserver callback) throws SQLException, Exception {
 
         String template = extractTemplateString();
 
         // sanity check - misconfigured templates
         if (template == null) {
-            throw new CayenneException("No template string configured for adapter " + getAdapter().getClass().getName());
+            throw new CayenneException("No template string configured for adapter " + dbAdapter.getClass().getName());
         }
 
-        boolean loggable = adapter.getJdbcEventLogger().isLoggable();
+        boolean loggable = dataNode.getJdbcEventLogger().isLoggable();
         int size = query.parametersSize();
 
         SQLTemplateProcessor templateProcessor = new SQLTemplateProcessor();
@@ -116,7 +117,7 @@ public class SQLTemplateAction implements SQLAction {
             SQLStatement compiled = templateProcessor.processTemplate(template, nextParameters);
 
             if (loggable) {
-                adapter.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
+                dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
             }
 
             execute(connection, callback, compiled, counts);
@@ -181,7 +182,7 @@ public class SQLTemplateAction implements SQLAction {
                     }
 
                     updateCounts.add(Integer.valueOf(updateCount));
-                    adapter.getJdbcEventLogger().logUpdateCount(updateCount);
+                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
                 }
             }
         } finally {
@@ -197,10 +198,9 @@ public class SQLTemplateAction implements SQLAction {
 
         boolean iteratedResult = callback.isIteratedResult();
 
-        ExtendedTypeMap types = getAdapter().getExtendedTypes();
+        ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
         RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
-        RowReader<?> rowReader = rowReaderFactory.createRowReader(builder.getDescriptor(types), queryMetadata, adapter,
-                Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+        RowReader<?> rowReader = dataNode.createRowReader(builder.getDescriptor(types), queryMetadata);
 
         JDBCResultIterator result = new JDBCResultIterator(statement, resultSet, rowReader);
 
@@ -211,7 +211,7 @@ public class SQLTemplateAction implements SQLAction {
             it = new ConnectionAwareResultIterator(it, connection) {
                 @Override
                 protected void doClose() {
-                    adapter.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - startTime);
+                    dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - startTime);
                     super.doClose();
                 }
             };
@@ -232,7 +232,7 @@ public class SQLTemplateAction implements SQLAction {
             // maybe a cleaner flow is due here.
             List<DataRow> resultRows = (List<DataRow>) it.allRows();
 
-            adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
+            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
 
             callback.nextRows(query, resultRows);
         }
@@ -300,7 +300,7 @@ public class SQLTemplateAction implements SQLAction {
      * @since 1.2
      */
     protected String extractTemplateString() {
-        String sql = query.getTemplate(getAdapter().getClass().getName());
+        String sql = query.getTemplate(dbAdapter.getClass().getName());
 
         // note that we MUST convert line breaks to spaces. On some databases
         // (DB2)
@@ -318,7 +318,7 @@ public class SQLTemplateAction implements SQLAction {
         if (bindings.length > 0) {
             int len = bindings.length;
             for (int i = 0; i < len; i++) {
-                adapter.bindParameter(preparedStatement, bindings[i].getValue(), i + 1, bindings[i].getJdbcType(),
+                dataNode.getAdapter().bindParameter(preparedStatement, bindings[i].getValue(), i + 1, bindings[i].getJdbcType(),
                         bindings[i].getScale());
             }
         }

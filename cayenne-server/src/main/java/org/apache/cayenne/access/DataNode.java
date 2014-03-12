@@ -34,13 +34,19 @@ import javax.sql.DataSource;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.RowReader;
 import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
@@ -61,6 +67,7 @@ public class DataNode implements QueryEngine {
 
     private JdbcEventLogger jdbcEventLogger;
     private RowReaderFactory rowReaderFactory;
+    private BatchQueryBuilderFactory batchQueryBuilderFactory;
 
     TransactionDataSource readThroughDataSource;
 
@@ -430,6 +437,25 @@ public class DataNode implements QueryEngine {
             throw new UnsupportedOperationException();
         }
     }
+    
+    /**
+     * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
+     * 
+     * @since 3.2
+     */
+    public RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
+        return createRowReader(descriptor, queryMetadata, Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+    }
+    
+    /**
+     * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
+     * 
+     * @since 3.2
+     */
+    public RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
+            Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
+        return rowReaderFactory.createRowReader(descriptor, queryMetadata, getAdapter(), attributeOverrides);
+    }
 
     /**
      * @since 3.2
@@ -443,5 +469,19 @@ public class DataNode implements QueryEngine {
      */
     public void setRowReaderFactory(RowReaderFactory rowReaderFactory) {
         this.rowReaderFactory = rowReaderFactory;
+    }
+    
+    /**
+     * @since 3.2
+     */
+    public BatchQueryBuilderFactory getBatchQueryBuilderFactory() {
+        return batchQueryBuilderFactory;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public void setBatchQueryBuilderFactory(BatchQueryBuilderFactory batchQueryBuilderFactory) {
+        this.batchQueryBuilderFactory = batchQueryBuilderFactory;
     }
 }

@@ -20,11 +20,9 @@ package org.apache.cayenne.dba.hsqldb;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -32,9 +30,8 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class HSQLSelectAction extends SelectAction {
 
-    <T> HSQLSelectAction(SelectQuery<T> query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, entityResolver, rowReaderFactory);
+    <T> HSQLSelectAction(SelectQuery<T> query, DataNode dataNode) {
+        super(query, dataNode);
     }
 
     @Override
@@ -46,10 +43,10 @@ class HSQLSelectAction extends SelectAction {
     protected SelectTranslator createTranslator(Connection connection) {
         SelectTranslator translator = new HSQLSelectTranslator();
         translator.setQuery(query);
-        translator.setAdapter(adapter);
-        translator.setEntityResolver(getEntityResolver());
+        translator.setAdapter(dataNode.getAdapter());
+        translator.setEntityResolver(dataNode.getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
+        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
         return translator;
     }
 }

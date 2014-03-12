@@ -23,13 +23,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 
 /**
@@ -37,9 +35,8 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class MySQLProcedureAction extends ProcedureAction {
 
-    public MySQLProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, entityResolver, rowReaderFactory);
+    public MySQLProcedureAction(ProcedureQuery query, DataNode dataNode) {
+        super(query, dataNode);
     }
 
     @Override
@@ -112,7 +109,7 @@ class MySQLProcedureAction extends ProcedureAction {
         if (updateCount == -1) {
             return false;
         }
-        adapter.getJdbcEventLogger().logUpdateCount(updateCount);
+        dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
         observer.nextCount(query, updateCount);
 
         return true;
@@ -125,11 +122,11 @@ class MySQLProcedureAction extends ProcedureAction {
     @Override
     protected ProcedureTranslator createTranslator(Connection connection) {
         ProcedureTranslator translator = new MySQLProcedureTranslator();
-        translator.setAdapter(getAdapter());
+        translator.setAdapter(dataNode.getAdapter());
         translator.setQuery(query);
-        translator.setEntityResolver(getEntityResolver());
+        translator.setEntityResolver(dataNode.getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
+        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
         return translator;
     }
 

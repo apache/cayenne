@@ -89,8 +89,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new OpenBaseActionBuilder(this, node
-                .getEntityResolver(), node.getRowReaderFactory()));
+        return query.createSQLAction(new OpenBaseActionBuilder(node));
     }
 
     @Override

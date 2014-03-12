@@ -27,13 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 
@@ -52,9 +50,8 @@ public class SQLServerProcedureAction extends ProcedureAction {
     /**
      * @since 3.2
      */
-    public SQLServerProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, entityResolver, rowReaderFactory);
+    public SQLServerProcedureAction(ProcedureQuery query, DataNode dataNode) {
+        super(query, dataNode);
     }
 
     @Override
@@ -99,7 +96,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
                     if (updateCount == -1) {
                         break;
                     }
-                    adapter.getJdbcEventLogger().logUpdateCount(updateCount);
+                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
                     localObserver.nextCount(query, updateCount);
                 }
 

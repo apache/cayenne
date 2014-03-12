@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -50,6 +51,9 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
     @Inject
     protected DbAdapter adapter;
+    
+    @Inject
+    private DataNode dataNode;
 
     @Inject
     private UnitDbAdapter unitAdapter;
@@ -124,9 +128,9 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
         final DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
 
         JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-        BatchQueryBuilderFactory oldFactory = adapter.getBatchQueryBuilderFactory();
+        BatchQueryBuilderFactory oldFactory = dataNode.getBatchQueryBuilderFactory();
         try {
-            adapter.setBatchQueryBuilderFactory(new SoftDeleteQueryBuilderFactory());
+            dataNode.setBatchQueryBuilderFactory(new SoftDeleteQueryBuilderFactory());
 
             final SoftTest test = context.newObject(SoftTest.class);
             test.setName("SoftDeleteBatchQueryBuilderTest");
@@ -164,7 +168,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
             }.runTest(200);
         } finally {
             context.performQuery(new SQLTemplate(entity, "DELETE FROM SOFT_TEST"));
-            adapter.setBatchQueryBuilderFactory(oldFactory);
+            dataNode.setBatchQueryBuilderFactory(oldFactory);
         }
     }
 

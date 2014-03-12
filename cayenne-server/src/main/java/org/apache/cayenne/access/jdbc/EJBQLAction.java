@@ -21,13 +21,13 @@ package org.apache.cayenne.access.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLActionVisitor;
@@ -43,9 +43,8 @@ public class EJBQLAction extends BaseSQLAction {
     protected SQLActionVisitor actionFactory;
     protected EJBQLQuery query;
 
-    public EJBQLAction(EJBQLQuery query, SQLActionVisitor actionFactory,
-            JdbcAdapter adapter, EntityResolver entityResolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, entityResolver, rowReaderFactory);
+    public EJBQLAction(EJBQLQuery query, SQLActionVisitor actionFactory, DataNode dataNode) {
+        super(dataNode);
 
         this.query = query;
         this.actionFactory = actionFactory;
@@ -53,36 +52,32 @@ public class EJBQLAction extends BaseSQLAction {
 
     @Override
     public void performAction(Connection connection, OperationObserver observer)
-            throws SQLException, Exception {
-        EJBQLCompiledExpression compiledExpression = query
-                .getExpression(getEntityResolver());
-        final EJBQLTranslatorFactory translatorFactory = ((JdbcAdapter) getAdapter())
+ throws SQLException, Exception {
+        EJBQLCompiledExpression compiledExpression = query.getExpression(dataNode.getEntityResolver());
+        final EJBQLTranslatorFactory translatorFactory = ((JdbcAdapter) dataNode.getAdapter())
                 .getEjbqlTranslatorFactory();
-        final EJBQLTranslationContext context = new EJBQLTranslationContext(entityResolver, query, compiledExpression,
-                translatorFactory, adapter.getQuotingStrategy());
+        final EJBQLTranslationContext context = new EJBQLTranslationContext(dataNode.getEntityResolver(), query,
+                compiledExpression, translatorFactory, dataNode.getAdapter().getQuotingStrategy());
 
         compiledExpression.getExpression().visit(new EJBQLBaseVisitor(false) {
 
             @Override
             public boolean visitSelect(EJBQLExpression expression) {
-                EJBQLExpressionVisitor visitor = translatorFactory
-                        .getSelectTranslator(context);
+                EJBQLExpressionVisitor visitor = translatorFactory.getSelectTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
 
             @Override
             public boolean visitDelete(EJBQLExpression expression) {
-                EJBQLExpressionVisitor visitor = translatorFactory
-                        .getDeleteTranslator(context);
+                EJBQLExpressionVisitor visitor = translatorFactory.getDeleteTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
 
             @Override
             public boolean visitUpdate(EJBQLExpression expression) {
-                EJBQLExpressionVisitor visitor = translatorFactory
-                        .getUpdateTranslator(context);
+                EJBQLExpressionVisitor visitor = translatorFactory.getUpdateTranslator(context);
                 expression.visit(visitor);
                 return false;
             }
@@ -91,12 +86,12 @@ public class EJBQLAction extends BaseSQLAction {
         SQLTemplate sqlQuery = context.getQuery();
 
         // update with metadata
-        QueryMetadata md = query.getMetaData(getEntityResolver());
+        QueryMetadata md = query.getMetaData(dataNode.getEntityResolver());
         sqlQuery.setFetchLimit(md.getFetchLimit());
         sqlQuery.setFetchOffset(md.getFetchOffset());
         sqlQuery.setResult(compiledExpression.getResult());
         sqlQuery.setPageSize(md.getPageSize());
-        
+
         if (md.getStatementFetchSize() != 0) {
             sqlQuery.setStatementFetchSize(md.getStatementFetchSize());
         }

@@ -24,12 +24,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 
@@ -38,9 +36,8 @@ import org.apache.cayenne.query.InsertBatchQuery;
  */
 public class SQLServerBatchAction extends BatchAction {
 
-    public SQLServerBatchAction(BatchQuery batchQuery, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(batchQuery, adapter, entityResolver, rowReaderFactory);
+    public SQLServerBatchAction(BatchQuery batchQuery, DataNode dataNode) {
+        super(batchQuery, dataNode);
     }
 
     @Override
@@ -77,7 +74,7 @@ public class SQLServerBatchAction extends BatchAction {
                 + query.getDbEntity().getFullyQualifiedName()
                 + flag;
 
-        adapter.getJdbcEventLogger().logQuery(configSQL, Collections.EMPTY_LIST);
+        dataNode.getJdbcEventLogger().logQuery(configSQL, Collections.EMPTY_LIST);
 
         Statement statement = connection.createStatement();
         try {
@@ -97,7 +94,7 @@ public class SQLServerBatchAction extends BatchAction {
      */
     protected boolean expectsToOverrideIdentityColumns() {
         // jTDS driver supports identity columns, no need for tricks...
-        if (getAdapter().supportsGeneratedKeys()) {
+        if (dataNode.getAdapter().supportsGeneratedKeys()) {
             return false;
         }
 

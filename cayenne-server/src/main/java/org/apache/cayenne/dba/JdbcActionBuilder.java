@@ -19,14 +19,12 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.access.jdbc.EJBQLAction;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -43,19 +41,13 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class JdbcActionBuilder implements SQLActionVisitor {
 
-    protected JdbcAdapter adapter;
-    protected EntityResolver entityResolver;
-    protected JdbcEventLogger logger;
-    protected RowReaderFactory rowReaderFactory;
+    protected DataNode dataNode;
 
     /**
      * @since 3.2
      */
-    public JdbcActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        this.adapter = adapter;
-        this.entityResolver = resolver;
-        this.rowReaderFactory = rowReaderFactory;
-        this.logger = adapter.getJdbcEventLogger();
+    public JdbcActionBuilder(DataNode dataNode) {
+        this.dataNode = dataNode;
     }
 
     @Override
@@ -65,42 +57,32 @@ public class JdbcActionBuilder implements SQLActionVisitor {
         // optimistic locking is not supported in batches due to JDBC driver limitations
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-        boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
-        BatchAction action = new BatchAction(query, adapter, entityResolver, rowReaderFactory);
+        boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
+        BatchAction action = new BatchAction(query, dataNode);
         action.setBatch(runningAsBatch);
         return action;
     }
 
+    @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new ProcedureAction(query, adapter, entityResolver, rowReaderFactory);
+        return new ProcedureAction(query, dataNode);
     }
 
+    @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SelectAction(query, adapter, entityResolver, rowReaderFactory);
+        return new SelectAction(query, dataNode);
     }
 
+    @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new SQLTemplateAction(query, adapter, entityResolver, rowReaderFactory);
+        return new SQLTemplateAction(query, dataNode);
     }
 
     /**
      * @since 3.0
      */
+    @Override
     public SQLAction ejbqlAction(EJBQLQuery query) {
-        return new EJBQLAction(query, this, adapter, entityResolver, rowReaderFactory);
-    }
-
-    /**
-     * Returns DbAdapter used associated with this action builder.
-     */
-    public JdbcAdapter getAdapter() {
-        return adapter;
-    }
-
-    /**
-     * Returns EntityResolver that can be used to gain access to the mapping objects.
-     */
-    public EntityResolver getEntityResolver() {
-        return entityResolver;
+        return new EJBQLAction(query, this, dataNode);
     }
 }

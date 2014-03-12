@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.ingres;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -30,12 +28,12 @@ public class IngresActionBuilder extends JdbcActionBuilder {
     /**
      * @since 3.2
      */
-    public IngresActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
+    public IngresActionBuilder(DataNode dataNode) {
+        super(dataNode);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new IngresSelectAction(query, adapter, entityResolver, rowReaderFactory);
+        return new IngresSelectAction(query, dataNode);
     }
 }

@@ -39,7 +39,6 @@ import org.apache.cayenne.access.trans.LOBBatchQueryWrapper;
 import org.apache.cayenne.access.trans.LOBInsertBatchQueryBuilder;
 import org.apache.cayenne.access.trans.LOBUpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
@@ -58,10 +57,10 @@ class OracleLOBBatchAction implements SQLAction {
 
     protected JdbcEventLogger logger;
 
-    OracleLOBBatchAction(BatchQuery query, JdbcAdapter adapter) {
+    OracleLOBBatchAction(BatchQuery query, DbAdapter adapter, JdbcEventLogger logger) {
         this.adapter = adapter;
         this.query = query;
-        this.logger = adapter.getJdbcEventLogger();
+        this.logger = logger;
     }
 
     DbAdapter getAdapter() {

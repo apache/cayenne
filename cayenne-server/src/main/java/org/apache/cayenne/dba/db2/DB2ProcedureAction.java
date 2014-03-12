@@ -23,13 +23,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 
 /**
@@ -37,9 +35,8 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class DB2ProcedureAction extends ProcedureAction {
 
-    DB2ProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, entityResolver, rowReaderFactory);
+    DB2ProcedureAction(ProcedureQuery query, DataNode dataNode) {
+        super(query, dataNode);
     }
 
     @Override
@@ -80,7 +77,7 @@ class DB2ProcedureAction extends ProcedureAction {
                     if (updateCount == -1) {
                         break;
                     }
-                    adapter.getJdbcEventLogger().logUpdateCount(updateCount);
+                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
                     observer.nextCount(query, updateCount);
                 }
                 hasResultSet = statement.getMoreResults();

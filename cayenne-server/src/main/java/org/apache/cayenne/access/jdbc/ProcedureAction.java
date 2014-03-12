@@ -28,11 +28,10 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -56,9 +55,8 @@ public class ProcedureAction extends BaseSQLAction {
     /**
      * @since 3.2
      */
-    public ProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(adapter, entityResolver, rowReaderFactory);
+    public ProcedureAction(ProcedureQuery query, DataNode dataNode) {
+        super(dataNode);
         this.query = query;
     }
 
@@ -118,7 +116,7 @@ public class ProcedureAction extends BaseSQLAction {
                     if (updateCount == -1) {
                         break;
                     }
-                    adapter.getJdbcEventLogger().logUpdateCount(updateCount);
+                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
                     observer.nextCount(query, updateCount);
                 }
             }
@@ -140,11 +138,11 @@ public class ProcedureAction extends BaseSQLAction {
      */
     protected ProcedureTranslator createTranslator(Connection connection) {
         ProcedureTranslator translator = new ProcedureTranslator();
-        translator.setAdapter(getAdapter());
+        translator.setAdapter(dataNode.getAdapter());
         translator.setQuery(query);
-        translator.setEntityResolver(getEntityResolver());
+        translator.setEntityResolver(dataNode.getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
+        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
         return translator;
     }
 
@@ -192,14 +190,14 @@ public class ProcedureAction extends BaseSQLAction {
                 break;
         }
 
-        return builder.getDescriptor(getAdapter().getExtendedTypes());
+        return builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
     }
 
     /**
      * Returns stored procedure for an internal query.
      */
     protected Procedure getProcedure() {
-        return query.getMetaData(getEntityResolver()).getProcedure();
+        return query.getMetaData(dataNode.getEntityResolver()).getProcedure();
     }
 
     /**
@@ -226,7 +224,7 @@ public class ProcedureAction extends BaseSQLAction {
             }
 
             ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
-            ExtendedType type = getAdapter().getExtendedTypes().getRegisteredType(
+            ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(
                     descriptor.getJavaClass());
             Object val = type.materializeObject(statement, i + 1, descriptor
                     .getJdbcType());
@@ -236,7 +234,7 @@ public class ProcedureAction extends BaseSQLAction {
 
         if (result != null && !result.isEmpty()) {
             // treat out parameters as a separate data row set
-            adapter.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
+            dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
             delegate.nextRows(query, Collections.singletonList(result));
         }
     }
@@ -248,7 +246,7 @@ public class ProcedureAction extends BaseSQLAction {
      */
     protected void initStatement(CallableStatement statement) throws Exception {
         int statementFetchSize = query
-                .getMetaData(getEntityResolver())
+                .getMetaData(dataNode.getEntityResolver())
                 .getStatementFetchSize();
         if (statementFetchSize != 0) {
             statement.setFetchSize(statementFetchSize);

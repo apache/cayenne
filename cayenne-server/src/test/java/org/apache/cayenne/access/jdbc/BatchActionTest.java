@@ -21,6 +21,7 @@ package org.apache.cayenne.access.jdbc;
 
 import static org.mockito.Mockito.mock;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -49,10 +50,15 @@ public class BatchActionTest extends ServerCase {
 
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
                 .getDbEntity(), 5);
-        assertTrue(new BatchAction(batch1, adapter, resolver, mock(RowReaderFactory.class)).hasGeneratedKeys());
+        DataNode node = new DataNode();
+        node.setAdapter(adapter);
+        node.setEntityResolver(resolver);
+        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        
+        assertTrue(new BatchAction(batch1, node).hasGeneratedKeys());
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
-        assertFalse(new BatchAction(batch2, adapter, resolver, mock(RowReaderFactory.class)).hasGeneratedKeys());
+        assertFalse(new BatchAction(batch2, node).hasGeneratedKeys());
     }
 
     public void testHasGeneratedKeys2() throws Exception {
@@ -63,10 +69,16 @@ public class BatchActionTest extends ServerCase {
 
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
                 .getDbEntity(), 5);
-        assertFalse(new BatchAction(batch1, adapter, resolver, mock(RowReaderFactory.class)).hasGeneratedKeys());
+        
+        DataNode node = new DataNode();
+        node.setAdapter(adapter);
+        node.setEntityResolver(resolver);
+        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        
+        assertFalse(new BatchAction(batch1, node).hasGeneratedKeys());
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
-        assertFalse(new BatchAction(batch2, adapter, resolver, mock(RowReaderFactory.class)).hasGeneratedKeys());
+        assertFalse(new BatchAction(batch2, node).hasGeneratedKeys());
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {

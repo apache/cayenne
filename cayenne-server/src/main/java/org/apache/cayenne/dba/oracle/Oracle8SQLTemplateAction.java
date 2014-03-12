@@ -25,12 +25,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLTemplate;
 
 /**
@@ -40,22 +38,18 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class Oracle8SQLTemplateAction extends SQLTemplateAction {
 
-    Oracle8SQLTemplateAction(SQLTemplate query, JdbcAdapter adapter, EntityResolver resolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, resolver, rowReaderFactory);
+    Oracle8SQLTemplateAction(SQLTemplate query, DataNode dataNode) {
+        super(query, dataNode);
     }
 
     /**
-     * Overrides super implementation to guess whether the query is selecting or not and
-     * execute it appropriately. Super implementation relied on generic JDBC mechanism,
-     * common for selecting and updating statements that does not work in Oracle 8.*
-     * drivers.
+     * Overrides super implementation to guess whether the query is selecting or
+     * not and execute it appropriately. Super implementation relied on generic
+     * JDBC mechanism, common for selecting and updating statements that does
+     * not work in Oracle 8.* drivers.
      */
     @Override
-    protected void execute(
-            Connection connection,
-            OperationObserver callback,
-            SQLStatement compiled,
+    protected void execute(Connection connection, OperationObserver callback, SQLStatement compiled,
             Collection updateCounts) throws SQLException, Exception {
 
         String sql = compiled.getSql().trim();
@@ -73,29 +67,20 @@ class Oracle8SQLTemplateAction extends SQLTemplateAction {
 
                 ResultSet resultSet = statement.executeQuery();
                 try {
-                    processSelectResult(
-                            compiled,
-                            connection,
-                            statement,
-                            resultSet,
-                            callback,
-                            t1);
-                }
-                finally {
+                    processSelectResult(compiled, connection, statement, resultSet, callback, t1);
+                } finally {
                     if (!iteratedResult) {
                         resultSet.close();
                     }
                 }
-            }
-            else {
+            } else {
                 int updateCount = statement.executeUpdate();
                 updateCounts.add(Integer.valueOf(updateCount));
-                adapter.getJdbcEventLogger().logUpdateCount(updateCount);
+                dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
             }
 
             // end - code different from super
-        }
-        finally {
+        } finally {
             if (!iteratedResult) {
                 statement.close();
             }

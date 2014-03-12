@@ -21,13 +21,10 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
@@ -39,25 +36,13 @@ import org.apache.cayenne.query.SQLAction;
  */
 public abstract class BaseSQLAction implements SQLAction {
 
-    protected RowReaderFactory rowReaderFactory;
-    protected JdbcAdapter adapter;
-    protected EntityResolver entityResolver;
+    protected DataNode dataNode;
 
     /**
      * @since 3.2
      */
-    public BaseSQLAction(JdbcAdapter adapter, EntityResolver entityResolver, RowReaderFactory rowReaderFactory) {
-        this.adapter = adapter;
-        this.entityResolver = entityResolver;
-        this.rowReaderFactory = rowReaderFactory;
-    }
-
-    public JdbcAdapter getAdapter() {
-        return adapter;
-    }
-
-    public EntityResolver getEntityResolver() {
-        return entityResolver;
+    public BaseSQLAction(DataNode dataNode) {
+        this.dataNode = dataNode;
     }
 
     /**
@@ -69,10 +54,9 @@ public abstract class BaseSQLAction implements SQLAction {
 
         long t1 = System.currentTimeMillis();
 
-        QueryMetadata metadata = query.getMetaData(getEntityResolver());
+        QueryMetadata metadata = query.getMetaData(dataNode.getEntityResolver());
 
-        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, metadata, adapter,
-                Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+        RowReader<?> rowReader = dataNode.createRowReader(descriptor, metadata);
 
         JDBCResultIterator resultReader = new JDBCResultIterator(null, resultSet, rowReader);
 
@@ -81,7 +65,7 @@ public abstract class BaseSQLAction implements SQLAction {
 
         if (!delegate.isIteratedResult()) {
             List resultRows = it.allRows();
-            adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
+            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
             delegate.nextRows(query, resultRows);
         } else {

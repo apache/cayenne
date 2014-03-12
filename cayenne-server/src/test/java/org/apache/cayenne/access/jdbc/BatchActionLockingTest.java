@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
@@ -90,7 +91,11 @@ public class BatchActionLockingTest extends ServerCase {
 
         boolean generatesKeys = false;
 
-        BatchAction action = new BatchAction(batchQuery, adapter, resolver, mock(RowReaderFactory.class));
+        DataNode node = new DataNode();
+        node.setAdapter(adapter);
+        node.setEntityResolver(resolver);
+        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        BatchAction action = new BatchAction(batchQuery, node);
         action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
         assertEquals(0, mockConnection.getNumberCommits());
         assertEquals(0, mockConnection.getNumberRollbacks());
@@ -126,7 +131,11 @@ public class BatchActionLockingTest extends ServerCase {
         preparedStatementResultSetHandler.prepareUpdateCount("DELETE", 0);
 
         boolean generatesKeys = false;
-        BatchAction action = new BatchAction(batchQuery, adapter, resolver, mock(RowReaderFactory.class));
+        DataNode node = new DataNode();
+        node.setAdapter(adapter);
+        node.setEntityResolver(resolver);
+        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        BatchAction action = new BatchAction(batchQuery, node);
         try {
             action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
             fail("No OptimisticLockingFailureException thrown.");

@@ -21,12 +21,10 @@ package org.apache.cayenne.dba.openbase;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -35,22 +33,22 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OpenBaseActionBuilder extends JdbcActionBuilder {
 
-    OpenBaseActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
+    OpenBaseActionBuilder(DataNode dataNode) {
+        super(dataNode);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SelectAction(query, adapter, entityResolver, rowReaderFactory) {
+        return new SelectAction(query, dataNode) {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {
                 SelectTranslator translator = new OpenBaseSelectTranslator();
                 translator.setQuery(query);
-                translator.setAdapter(adapter);
-                translator.setEntityResolver(getEntityResolver());
+                translator.setAdapter(dataNode.getAdapter());
+                translator.setEntityResolver(dataNode.getEntityResolver());
                 translator.setConnection(connection);
-                translator.setJdbcEventLogger(logger);
+                translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
                 return translator;
             }
         };

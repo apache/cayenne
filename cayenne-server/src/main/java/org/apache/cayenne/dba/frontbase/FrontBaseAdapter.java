@@ -84,8 +84,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new FrontBaseActionBuilder(this, node.getEntityResolver(), node
-                .getRowReaderFactory()));
+        return query.createSQLAction(new FrontBaseActionBuilder(node));
     }
 
     @Override

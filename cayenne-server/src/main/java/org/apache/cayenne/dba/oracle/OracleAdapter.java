@@ -313,8 +313,7 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query
-                .createSQLAction(new OracleActionBuilder(this, node.getEntityResolver(), node.getRowReaderFactory()));
+        return query.createSQLAction(new OracleActionBuilder(node));
     }
 
     /**

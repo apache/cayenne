@@ -26,14 +26,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
 
@@ -44,9 +42,8 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class OracleProcedureAction extends ProcedureAction {
 
-    OracleProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, entityResolver, rowReaderFactory);
+    OracleProcedureAction(ProcedureQuery query, DataNode dataNode) {
+        super(query, dataNode);
     }
 
     /**
@@ -94,7 +91,7 @@ class OracleProcedureAction extends ProcedureAction {
                 }
 
                 ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
-                ExtendedType type = getAdapter().getExtendedTypes().getRegisteredType(
+                ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(
                         descriptor.getJavaClass());
                 Object val = type.materializeObject(statement, i + 1, descriptor
                         .getJdbcType());
@@ -105,7 +102,7 @@ class OracleProcedureAction extends ProcedureAction {
 
         if (result != null && !result.isEmpty()) {
             // treat out parameters as a separate data row set
-            adapter.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
+            dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
             delegate.nextRows(query, Collections.singletonList(result));
         }
     }

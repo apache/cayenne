@@ -212,4 +212,12 @@ public class AutoAdapter implements DbAdapter {
     public QuotingStrategy getQuotingStrategy() {
         return getAdapter().getQuotingStrategy();
     }
+
+    /**
+     * @since 3.2
+     */
+    @Override
+    public DbAdapter unwrap() {
+        return getAdapter();
+    }
 }

@@ -21,11 +21,9 @@ package org.apache.cayenne.dba.postgres;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerProcedureAction;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 
 /**
@@ -38,9 +36,8 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class PostgresProcedureAction extends SQLServerProcedureAction {
 
-    PostgresProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(query, adapter, entityResolver, rowReaderFactory);
+    PostgresProcedureAction(ProcedureQuery query, DataNode dataNode) {
+        super(query, dataNode);
     }
 
     /**
@@ -50,11 +47,11 @@ class PostgresProcedureAction extends SQLServerProcedureAction {
     @Override
     protected ProcedureTranslator createTranslator(Connection connection) {
         ProcedureTranslator translator = new PostgresProcedureTranslator();
-        translator.setAdapter(getAdapter());
+        translator.setAdapter(dataNode.getAdapter());
         translator.setQuery(query);
-        translator.setEntityResolver(getEntityResolver());
+        translator.setEntityResolver(dataNode.getEntityResolver());
         translator.setConnection(connection);
-        translator.setJdbcEventLogger(adapter.getJdbcEventLogger());
+        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
         return translator;
     }
 

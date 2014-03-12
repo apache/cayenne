@@ -30,14 +30,13 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.DeleteBatchQuery;
@@ -56,9 +55,8 @@ public class BatchAction extends BaseSQLAction {
     /**
      * @since 3.2
      */
-    public BatchAction(BatchQuery batchQuery, JdbcAdapter adapter, EntityResolver entityResolver,
-            RowReaderFactory rowReaderFactory) {
-        super(adapter, entityResolver, rowReaderFactory);
+    public BatchAction(BatchQuery batchQuery, DataNode dataNode) {
+        super(dataNode);
         this.query = batchQuery;
     }
 
@@ -77,6 +75,7 @@ public class BatchAction extends BaseSQLAction {
         this.batch = runningAsBatch;
     }
 
+    @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
         BatchQueryBuilder queryBuilder = createBuilder();
@@ -90,18 +89,18 @@ public class BatchAction extends BaseSQLAction {
     }
 
     protected BatchQueryBuilder createBuilder() throws CayenneException {
-        BatchQueryBuilderFactory factory = adapter.getBatchQueryBuilderFactory();
+        BatchQueryBuilderFactory factory = dataNode.getBatchQueryBuilderFactory();
 
         if (factory == null) {
             throw new IllegalStateException("Adapter BatchQueryBuilderFactory is null");
         }
 
         if (query instanceof InsertBatchQuery) {
-            return factory.createInsertQueryBuilder(adapter);
+            return factory.createInsertQueryBuilder(dataNode.getAdapter());
         } else if (query instanceof UpdateBatchQuery) {
-            return factory.createUpdateQueryBuilder(adapter);
+            return factory.createUpdateQueryBuilder(dataNode.getAdapter());
         } else if (query instanceof DeleteBatchQuery) {
-            return factory.createDeleteQueryBuilder(adapter);
+            return factory.createDeleteQueryBuilder(dataNode.getAdapter());
         } else {
             throw new CayenneException("Unsupported batch query: " + query);
         }
@@ -111,7 +110,7 @@ public class BatchAction extends BaseSQLAction {
             throws SQLException, Exception {
 
         String queryStr = queryBuilder.createSqlString(query);
-        JdbcEventLogger logger = adapter.getJdbcEventLogger();
+        JdbcEventLogger logger = dataNode.getJdbcEventLogger();
         boolean isLoggable = logger.isLoggable();
 
         // log batch SQL execution
@@ -167,7 +166,7 @@ public class BatchAction extends BaseSQLAction {
     protected void runAsIndividualQueries(Connection connection, BatchQueryBuilder queryBuilder,
             OperationObserver delegate, boolean generatesKeys) throws SQLException, Exception {
 
-        JdbcEventLogger logger = adapter.getJdbcEventLogger();
+        JdbcEventLogger logger = dataNode.getJdbcEventLogger();
         boolean isLoggable = logger.isLoggable();
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
@@ -226,7 +225,7 @@ public class BatchAction extends BaseSQLAction {
      */
     protected boolean hasGeneratedKeys() {
         // see if we are configured to support generated keys
-        if (!adapter.supportsGeneratedKeys()) {
+        if (!dataNode.getAdapter().supportsGeneratedKeys()) {
             return false;
         }
 
@@ -283,11 +282,11 @@ public class BatchAction extends BaseSQLAction {
                 builder.setResultSet(keysRS);
             }
 
-            this.keyRowDescriptor = builder.getDescriptor(getAdapter().getExtendedTypes());
+            this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
         }
 
-        RowReader<?> rowReader = rowReaderFactory.createRowReader(keyRowDescriptor,
-                query.getMetaData(getEntityResolver()), adapter,
+        RowReader<?> rowReader = dataNode.createRowReader(keyRowDescriptor,
+                query.getMetaData(dataNode.getEntityResolver()),
                 Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
         ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 

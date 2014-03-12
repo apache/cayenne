@@ -192,4 +192,12 @@ public interface DbAdapter {
      * @since 3.2
      */
     QuotingStrategy getQuotingStrategy();
+    
+    /**
+     * Allows the users to get access to the adapter decorated by a given
+     * adapter.
+     * 
+     * @since 3.2
+     */
+    DbAdapter unwrap();
 }

@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.db2;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
 
@@ -30,12 +28,12 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class DB2ActionBuilder extends JdbcActionBuilder {
 
-    DB2ActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
+    DB2ActionBuilder(DataNode dataNode) {
+        super(dataNode);
     }
 
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new DB2ProcedureAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
+        return new DB2ProcedureAction(query, dataNode);
     }
 }

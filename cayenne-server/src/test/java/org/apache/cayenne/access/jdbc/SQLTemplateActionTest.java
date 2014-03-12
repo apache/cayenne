@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import static org.mockito.Mockito.mock;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.util.Collections;
@@ -93,11 +91,11 @@ public class SQLTemplateActionTest extends ServerCase {
     }
 
     public void testProperties() throws Exception {
-        SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");
-        SQLTemplateAction action = new SQLTemplateAction(template, adapter, objectContext.getEntityResolver(),
-                mock(RowReaderFactory.class));
-        assertSame(adapter, action.getAdapter());
+        SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");      
+  
+        SQLTemplateAction action = new SQLTemplateAction(template, node);
         assertSame(template, action.getQuery());
+        assertSame(node, action.dataNode);
     }
 
     public void testExecuteSelect() throws Exception {
@@ -319,7 +317,7 @@ public class SQLTemplateActionTest extends ServerCase {
         assertTrue(genericAction instanceof SQLTemplateAction);
         SQLTemplateAction action = (SQLTemplateAction) genericAction;
 
-        assertSame(adapter, action.getAdapter());
+        assertSame(node, action.dataNode);
         assertSame(template, action.getQuery());
 
         Connection c = dataSourceFactory.getSharedDataSource().getConnection();
@@ -359,8 +357,7 @@ public class SQLTemplateActionTest extends ServerCase {
 
     public void testExtractTemplateString() throws Exception {
         SQLTemplate template = new SQLTemplate(Artist.class, "A\nBC");
-        SQLTemplateAction action = new SQLTemplateAction(template, adapter, objectContext.getEntityResolver(),
-                mock(RowReaderFactory.class));
+        SQLTemplateAction action = new SQLTemplateAction(template, node);
 
         assertEquals("A BC", action.extractTemplateString());
     }

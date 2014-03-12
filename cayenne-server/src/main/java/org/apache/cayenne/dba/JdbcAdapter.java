@@ -74,6 +74,7 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
+     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
      */
     @Inject
     protected BatchQueryBuilderFactory batchQueryBuilderFactory;
@@ -487,7 +488,7 @@ public class JdbcAdapter implements DbAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new JdbcActionBuilder(this, node.getEntityResolver(), node.getRowReaderFactory()));
+        return query.createSQLAction(new JdbcActionBuilder(node));
     }
 
     @Override
@@ -583,16 +584,30 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
+     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
      */
+    @Deprecated
     public BatchQueryBuilderFactory getBatchQueryBuilderFactory() {
         return batchQueryBuilderFactory;
     }
 
     /**
      * @since 3.1
+     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
      */
+    @Deprecated
     public void setBatchQueryBuilderFactory(BatchQueryBuilderFactory batchQueryBuilderFactory) {
         this.batchQueryBuilderFactory = batchQueryBuilderFactory;
+    }
+    
+    /**
+     * Simply returns this, as JdbcAdapter is not a wrapper.
+     * 
+     * @since 3.2
+     */
+    @Override
+    public DbAdapter unwrap() {
+        return this;
     }
 
 }
