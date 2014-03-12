@@ -46,7 +46,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     public RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
             SelectTranslator translator) {
 
-        PostprocessorFactory postProcessorFactory = new PostprocessorFactory(translator, queryMetadata);
+        PostprocessorFactory postProcessorFactory = new PostprocessorFactory(translator, descriptor, queryMetadata);
 
         List<Object> rsMapping = queryMetadata.getResultSetMapping();
         if (rsMapping == null) {
@@ -114,10 +114,13 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
         private QueryMetadata queryMetadata;
         private SelectTranslator translator;
+        private RowDescriptor rowDescriptor;
+
         private boolean created;
         private DataRowPostProcessor postProcessor;
 
-        PostprocessorFactory(SelectTranslator translator, QueryMetadata queryMetadata) {
+        PostprocessorFactory(SelectTranslator translator, RowDescriptor rowDescriptor, QueryMetadata queryMetadata) {
+            this.rowDescriptor = rowDescriptor;
             this.translator = translator;
             this.queryMetadata = queryMetadata;
         }
@@ -145,7 +148,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                 return null;
             }
 
-            ColumnDescriptor[] columns = translator.getResultColumns();
+            ColumnDescriptor[] columns = rowDescriptor.getColumns();
 
             Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(2);
 
