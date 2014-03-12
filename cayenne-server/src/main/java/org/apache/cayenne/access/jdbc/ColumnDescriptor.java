@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.io.Serializable;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
@@ -36,7 +35,7 @@ import org.apache.cayenne.util.ToStringBuilder;
  * 
  * @since 1.1
  */
-public class ColumnDescriptor implements Serializable {
+public class ColumnDescriptor {
 
     protected String tableName;
     protected String procedureName;
@@ -198,7 +197,7 @@ public class ColumnDescriptor implements Serializable {
     public String getName() {
         return name;
     }
-    
+
     /**
      * @since 3.2
      */
