@@ -42,6 +42,7 @@ class ScalarRowReader<T> implements RowReader<T> {
         this.index = scalarIndex + 1;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T readRow(ResultSet resultSet) {
         try {
@@ -54,6 +55,7 @@ class ScalarRowReader<T> implements RowReader<T> {
         }
     }
 
+    @Override
     public void setPostProcessor(DataRowPostProcessor postProcessor) {
         // noop
     }

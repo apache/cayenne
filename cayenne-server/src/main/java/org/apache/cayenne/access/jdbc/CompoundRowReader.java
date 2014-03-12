@@ -37,6 +37,7 @@ class CompoundRowReader implements RowReader<Object[]> {
         this.readers[pos] = reader;
     }
 
+    @Override
     public Object[] readRow(ResultSet resultSet) {
 
         int width = readers.length;
