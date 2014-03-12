@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.access.trans.SelectTranslator;
+import java.util.Map;
+
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
@@ -28,5 +31,6 @@ import org.apache.cayenne.query.QueryMetadata;
  */
 public interface RowReaderFactory {
 
-    RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, SelectTranslator translator);
+    RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
+            Map<ObjAttribute, ColumnDescriptor> attributeOverrides);
 }

@@ -21,11 +21,13 @@ package org.apache.cayenne.access.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
@@ -69,7 +71,8 @@ public abstract class BaseSQLAction implements SQLAction {
 
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
 
-        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, metadata, null);
+        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, metadata, adapter,
+                Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
 
         JDBCResultIterator resultReader = new JDBCResultIterator(null, resultSet, rowReader);
 

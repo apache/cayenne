@@ -27,8 +27,8 @@ import java.util.Map.Entry;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.DataRowPostProcessor.ColumnOverride;
-import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
@@ -43,10 +43,11 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public class DefaultRowReaderFactory implements RowReaderFactory {
 
     @Override
-    public RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-            SelectTranslator translator) {
+    public RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
+            Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
 
-        PostprocessorFactory postProcessorFactory = new PostprocessorFactory(translator, descriptor, queryMetadata);
+        PostprocessorFactory postProcessorFactory = new PostprocessorFactory(descriptor, queryMetadata, adapter,
+                attributeOverrides);
 
         List<Object> rsMapping = queryMetadata.getResultSetMapping();
         if (rsMapping == null) {
@@ -113,15 +114,18 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     private class PostprocessorFactory {
 
         private QueryMetadata queryMetadata;
-        private SelectTranslator translator;
+        private DbAdapter adapter;
+        private Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
         private RowDescriptor rowDescriptor;
 
         private boolean created;
         private DataRowPostProcessor postProcessor;
 
-        PostprocessorFactory(SelectTranslator translator, RowDescriptor rowDescriptor, QueryMetadata queryMetadata) {
+        PostprocessorFactory(RowDescriptor rowDescriptor, QueryMetadata queryMetadata, DbAdapter adapter,
+                Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
             this.rowDescriptor = rowDescriptor;
-            this.translator = translator;
+            this.adapter = adapter;
+            this.attributeOverrides = attributeOverrides;
             this.queryMetadata = queryMetadata;
         }
 
@@ -137,13 +141,6 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
         private DataRowPostProcessor create() {
 
-            // TODO: ugly... ideally we should care not about the translator...
-
-            if (translator == null) {
-                return null;
-            }
-
-            Map<ObjAttribute, ColumnDescriptor> attributeOverrides = translator.getAttributeOverrides();
             if (attributeOverrides.isEmpty()) {
                 return null;
             }
@@ -180,8 +177,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                     continue;
                 }
 
-                ExtendedType converter = translator.getAdapter().getExtendedTypes()
-                        .getRegisteredType(attribute.getType());
+                ExtendedType converter = adapter.getExtendedTypes().getRegisteredType(attribute.getType());
 
                 Collection<ColumnOverride> overrides = columnOverrides.get(entity.getName());
 

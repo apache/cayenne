@@ -23,11 +23,14 @@ import static org.mockito.Mockito.mock;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.Collections;
 
 import junit.framework.TestCase;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.MockQueryMetadata;
 
 import com.mockrunner.mock.jdbc.MockConnection;
@@ -41,9 +44,10 @@ public class JDBCResultIteratorTest extends TestCase {
         Statement s = new MockStatement(c);
         MockResultSet rs = new MockResultSet("rs");
         rs.addColumn("a", new Object[] { "1", "2", "3" });
-        
+
         RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
-        RowReader<?> rowReader = new DefaultRowReaderFactory().createRowReader(descriptor, new MockQueryMetadata(), null);
+        RowReader<?> rowReader = new DefaultRowReaderFactory().createRowReader(descriptor, new MockQueryMetadata(),
+                mock(DbAdapter.class), Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
 
         JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
 

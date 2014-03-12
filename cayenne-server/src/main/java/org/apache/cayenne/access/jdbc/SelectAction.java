@@ -92,7 +92,7 @@ public class SelectAction extends BaseSQLAction {
         RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(translator.getResultColumns()).getDescriptor(
                 getAdapter().getExtendedTypes());
         
-        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, md, translator);
+        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, md, adapter, translator.getAttributeOverrides());
 
         JDBCResultIterator workerIterator = new JDBCResultIterator(prepStmt, rs, rowReader);
 

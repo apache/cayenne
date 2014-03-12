@@ -38,6 +38,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -286,7 +287,8 @@ public class BatchAction extends BaseSQLAction {
         }
 
         RowReader<?> rowReader = rowReaderFactory.createRowReader(keyRowDescriptor,
-                query.getMetaData(getEntityResolver()), null);
+                query.getMetaData(getEntityResolver()), adapter,
+                Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
         ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
         observer.nextGeneratedRows(query, iterator);
