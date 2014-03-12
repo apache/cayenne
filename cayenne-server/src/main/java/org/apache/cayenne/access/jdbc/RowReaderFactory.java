@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
@@ -27,5 +28,5 @@ import org.apache.cayenne.query.QueryMetadata;
  */
 public interface RowReaderFactory {
 
-    RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata);
+    RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, SelectTranslator translator);
 }

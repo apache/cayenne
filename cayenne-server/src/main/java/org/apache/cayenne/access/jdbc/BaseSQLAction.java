@@ -69,7 +69,7 @@ public abstract class BaseSQLAction implements SQLAction {
 
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
 
-        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, metadata);
+        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, metadata, null);
 
         JDBCResultIterator resultReader = new JDBCResultIterator(null, resultSet, rowReader);
 

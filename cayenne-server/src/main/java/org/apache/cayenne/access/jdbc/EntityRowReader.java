@@ -42,7 +42,9 @@ class EntityRowReader implements RowReader<DataRow> {
 
     DataRowPostProcessor postProcessor;
 
-    EntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata) {
+    EntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata, DataRowPostProcessor postProcessor) {
+
+        this.postProcessor = postProcessor;
 
         ClassDescriptor classDescriptor = segmentMetadata.getClassDescriptor();
 
@@ -75,11 +77,6 @@ class EntityRowReader implements RowReader<DataRow> {
                 labels[i] = segmentMetadata.getColumnPath(columns[startIndex + i].getDataRowKey());
             }
         }
-    }
-
-    @Override
-    public void setPostProcessor(DataRowPostProcessor postProcessor) {
-        this.postProcessor = postProcessor;
     }
 
     @Override

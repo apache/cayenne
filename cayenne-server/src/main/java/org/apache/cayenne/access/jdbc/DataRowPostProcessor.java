@@ -108,8 +108,7 @@ class DataRowPostProcessor {
         return new DataRowPostProcessor(rootDescriptor, columnOverrides);
     }
 
-    private DataRowPostProcessor(ClassDescriptor classDescriptor,
-            Map<String, Collection<ColumnOverride>> columnOverrides) {
+    DataRowPostProcessor(ClassDescriptor classDescriptor, Map<String, Collection<ColumnOverride>> columnOverrides) {
 
         if (classDescriptor != null && classDescriptor.hasSubclasses()) {
             this.inheritanceTree = classDescriptor.getEntityInheritanceTree();

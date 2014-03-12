@@ -186,13 +186,4 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     public void setClosingConnection(boolean flag) {
         // noop
     }
-    
-    // TODO: andrus 11/27/2008 refactor the postprocessor hack into a special
-    // row reader.
-    void setPostProcessor(DataRowPostProcessor postProcessor) {
-
-        if (rowReader != null) {
-            rowReader.setPostProcessor(postProcessor);
-        }
-    }
 }

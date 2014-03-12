@@ -54,9 +54,4 @@ class ScalarRowReader<T> implements RowReader<T> {
             throw new CayenneRuntimeException("Exception materializing column.", Util.unwindException(otherex));
         }
     }
-
-    @Override
-    public void setPostProcessor(DataRowPostProcessor postProcessor) {
-        // noop
-    }
 }

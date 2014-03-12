@@ -21,8 +21,8 @@ package org.apache.cayenne.access.jdbc;
 import java.sql.ResultSet;
 
 /**
- * A strategy class that encapsulates an algorithm for converting a single ResultSet row
- * into a DataRow.
+ * A strategy class that encapsulates an algorithm for converting a single
+ * ResultSet row into a DataRow.
  * 
  * @since 3.0
  */
@@ -32,7 +32,4 @@ interface RowReader<T> {
      * Extracts a DataRow from the ResultSet at its current position.
      */
     T readRow(ResultSet resultSet);
-
-    // TODO: andrus 11/27/2008 refactor the postprocessor hack into a special row reader.
-    void setPostProcessor(DataRowPostProcessor postProcessor);
 }

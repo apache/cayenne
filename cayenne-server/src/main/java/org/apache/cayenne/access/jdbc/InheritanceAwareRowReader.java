@@ -32,11 +32,9 @@ class InheritanceAwareRowReader extends FullRowReader {
 
     private EntityInheritanceTree entityInheritanceTree;
 
-    InheritanceAwareRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-        super(descriptor, queryMetadata);
-        this.entityInheritanceTree = queryMetadata
-                .getClassDescriptor()
-                .getEntityInheritanceTree();
+    InheritanceAwareRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
+        super(descriptor, queryMetadata, postProcessor);
+        this.entityInheritanceTree = queryMetadata.getClassDescriptor().getEntityInheritanceTree();
     }
 
     @Override

@@ -34,8 +34,8 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
     protected int[] pkIndices;
 
-    public IdRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-        super(descriptor, queryMetadata);
+    public IdRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
+        super(descriptor, queryMetadata, postProcessor);
 
         DbEntity dbEntity = queryMetadata.getDbEntity();
         if (dbEntity == null) {

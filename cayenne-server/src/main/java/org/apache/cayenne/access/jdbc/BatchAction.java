@@ -286,7 +286,7 @@ public class BatchAction extends BaseSQLAction {
         }
 
         RowReader<?> rowReader = rowReaderFactory.createRowReader(keyRowDescriptor,
-                query.getMetaData(getEntityResolver()));
+                query.getMetaData(getEntityResolver()), null);
         ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
         observer.nextGeneratedRows(query, iterator);

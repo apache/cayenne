@@ -32,13 +32,11 @@ class InheritanceAwareEntityRowReader extends EntityRowReader {
 
     private EntityInheritanceTree entityInheritanceTree;
 
-    public InheritanceAwareEntityRowReader(RowDescriptor descriptor,
-            EntityResultSegment segmentMetadata) {
-        super(descriptor, segmentMetadata);
-
-        entityInheritanceTree = segmentMetadata
-                .getClassDescriptor()
-                .getEntityInheritanceTree();
+    public InheritanceAwareEntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata,
+            DataRowPostProcessor postProcessor) {
+        
+        super(descriptor, segmentMetadata, postProcessor);
+        this.entityInheritanceTree = segmentMetadata.getClassDescriptor().getEntityInheritanceTree();
     }
 
     @Override
