@@ -77,10 +77,12 @@ class EntityRowReader implements RowReader<DataRow> {
         }
     }
 
+    @Override
     public void setPostProcessor(DataRowPostProcessor postProcessor) {
         this.postProcessor = postProcessor;
     }
 
+    @Override
     public DataRow readRow(ResultSet resultSet) {
 
         try {

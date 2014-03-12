@@ -60,6 +60,7 @@ public class SelectAction extends BaseSQLAction {
         return translator;
     }
 
+    @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
         final long t1 = System.currentTimeMillis();

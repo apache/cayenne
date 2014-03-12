@@ -39,17 +39,21 @@ abstract class ExtendedTypeDecorator implements ExtendedType {
 
     abstract Object fromJavaObject(Object object);
 
+    @Override
     public abstract String getClassName();
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return toJavaObject(decorated.materializeObject(rs, index, type));
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return toJavaObject(decorated.materializeObject(rs, index, type));
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,
