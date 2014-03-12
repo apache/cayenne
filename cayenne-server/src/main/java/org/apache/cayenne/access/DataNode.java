@@ -34,6 +34,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -59,6 +60,7 @@ public class DataNode implements QueryEngine {
     protected Map<String, DataMap> dataMaps;
 
     private JdbcEventLogger jdbcEventLogger;
+    private RowReaderFactory rowReaderFactory;
 
     TransactionDataSource readThroughDataSource;
 
@@ -427,5 +429,19 @@ public class DataNode implements QueryEngine {
             // don't throw SQLFeatureNotSupported - this will break JDK 1.5 runtime
             throw new UnsupportedOperationException();
         }
+    }
+
+    /**
+     * @since 3.2
+     */
+    public RowReaderFactory getRowReaderFactory() {
+        return rowReaderFactory;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public void setRowReaderFactory(RowReaderFactory rowReaderFactory) {
+        this.rowReaderFactory = rowReaderFactory;
     }
 }

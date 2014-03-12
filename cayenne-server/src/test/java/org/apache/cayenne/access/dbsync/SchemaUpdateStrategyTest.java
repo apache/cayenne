@@ -269,6 +269,7 @@ public class SchemaUpdateStrategyTest extends ServerCase {
         dataNode.setDataSource(dataSourceFactory.getSharedDataSource());
         dataNode.setDataSourceFactory(node.getDataSourceFactory());
         dataNode.setSchemaUpdateStrategyName(node.getSchemaUpdateStrategyName());
+        dataNode.setRowReaderFactory(node.getRowReaderFactory());
         dataNode.setEntityResolver(new EntityResolver(colection));
         return dataNode;
     }

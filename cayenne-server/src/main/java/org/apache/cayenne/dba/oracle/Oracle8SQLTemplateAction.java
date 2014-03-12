@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -39,9 +40,9 @@ import org.apache.cayenne.query.SQLTemplate;
  */
 class Oracle8SQLTemplateAction extends SQLTemplateAction {
 
-    Oracle8SQLTemplateAction(SQLTemplate query, JdbcAdapter adapter,
-            EntityResolver resolver) {
-        super(query, adapter, resolver);
+    Oracle8SQLTemplateAction(SQLTemplate query, JdbcAdapter adapter, EntityResolver resolver,
+            RowReaderFactory rowReaderFactory) {
+        super(query, adapter, resolver, rowReaderFactory);
     }
 
     /**

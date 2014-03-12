@@ -44,13 +44,14 @@ public class EJBQLAction extends BaseSQLAction {
     protected EJBQLQuery query;
 
     public EJBQLAction(EJBQLQuery query, SQLActionVisitor actionFactory,
-            JdbcAdapter adapter, EntityResolver entityResolver) {
-        super(adapter, entityResolver);
+            JdbcAdapter adapter, EntityResolver entityResolver, RowReaderFactory rowReaderFactory) {
+        super(adapter, entityResolver, rowReaderFactory);
 
         this.query = query;
         this.actionFactory = actionFactory;
     }
 
+    @Override
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
         EJBQLCompiledExpression compiledExpression = query

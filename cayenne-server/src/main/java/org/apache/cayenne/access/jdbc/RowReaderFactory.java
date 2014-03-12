@@ -16,26 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.sqlite;
+package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.access.jdbc.RowReaderFactory;
-import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
- * @since 3.0
+ * Creates RowReader instances for executed queries.
+ * 
+ * @since 3.2
  */
-class SQLiteActionBuilder extends JdbcActionBuilder {
+public interface RowReaderFactory {
 
-    SQLiteActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
-        super(adapter, resolver, rowReaderFactory);
-    }
-
-    @Override
-    public SQLAction sqlAction(SQLTemplate query) {
-        return new SQLiteSQLTemplateAction(query, adapter, getEntityResolver(), rowReaderFactory);
-    }
+    RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata);
 }

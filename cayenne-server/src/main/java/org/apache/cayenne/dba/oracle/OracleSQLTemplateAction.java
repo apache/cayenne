@@ -44,6 +44,7 @@ import java.util.Map;
 
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.RowDescriptorBuilder;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -58,48 +59,35 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 
     protected DbEntity dbEntity;
 
-    OracleSQLTemplateAction(SQLTemplate query, JdbcAdapter adapter,
-            EntityResolver entityResolver) {
-        super(query, adapter, entityResolver);
+    OracleSQLTemplateAction(SQLTemplate query, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(query, adapter, entityResolver, rowReaderFactory);
         this.dbEntity = query.getMetaData(entityResolver).getDbEntity();
     }
 
     @Override
-    protected void processSelectResult(
-            SQLStatement compiled,
-            Connection connection,
-            Statement statement,
-            ResultSet resultSet,
-            OperationObserver callback,
-            long startTime) throws Exception {
+    protected void processSelectResult(SQLStatement compiled, Connection connection, Statement statement,
+            ResultSet resultSet, OperationObserver callback, long startTime) throws Exception {
 
-        // wrap ResultSet to distinguish between Integer and BigDecimal for Oracle NUMBER
+        // wrap ResultSet to distinguish between Integer and BigDecimal for
+        // Oracle NUMBER
         // columns...
 
         if (compiled.getResultColumns().length == 0) {
             resultSet = new OracleResultSetWrapper(resultSet);
         }
 
-        super.processSelectResult(
-                compiled,
-                connection,
-                statement,
-                resultSet,
-                callback,
-                startTime);
+        super.processSelectResult(compiled, connection, statement, resultSet, callback, startTime);
     }
 
     /**
      * @since 3.0
      */
     @Override
-    protected RowDescriptorBuilder configureRowDescriptorBuilder(
-            SQLStatement compiled,
-            ResultSet resultSet) throws SQLException {
+    protected RowDescriptorBuilder configureRowDescriptorBuilder(SQLStatement compiled, ResultSet resultSet)
+            throws SQLException {
 
-        RowDescriptorBuilder builder = super.configureRowDescriptorBuilder(
-                compiled,
-                resultSet);
+        RowDescriptorBuilder builder = super.configureRowDescriptorBuilder(compiled, resultSet);
 
         return builder;
     }
@@ -312,8 +300,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             return delegate.getLong(columnName);
         }
 
-        public Object getObject(int columnIndex, Map<String, Class<?>> map)
-                throws SQLException {
+        public Object getObject(int columnIndex, Map<String, Class<?>> map) throws SQLException {
             return delegate.getObject(columnIndex, map);
         }
 
@@ -321,8 +308,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             return delegate.getObject(columnIndex);
         }
 
-        public Object getObject(String columnLabel, Map<String, Class<?>> map)
-                throws SQLException {
+        public Object getObject(String columnLabel, Map<String, Class<?>> map) throws SQLException {
             return delegate.getObject(columnLabel, map);
         }
 
@@ -386,8 +372,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             return delegate.getTimestamp(columnIndex);
         }
 
-        public Timestamp getTimestamp(String columnName, Calendar cal)
-                throws SQLException {
+        public Timestamp getTimestamp(String columnName, Calendar cal) throws SQLException {
             return delegate.getTimestamp(columnName, cal);
         }
 
@@ -503,13 +488,11 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             delegate.updateArray(columnName, x);
         }
 
-        public void updateAsciiStream(int columnIndex, InputStream x, int length)
-                throws SQLException {
+        public void updateAsciiStream(int columnIndex, InputStream x, int length) throws SQLException {
             delegate.updateAsciiStream(columnIndex, x, length);
         }
 
-        public void updateAsciiStream(String columnName, InputStream x, int length)
-                throws SQLException {
+        public void updateAsciiStream(String columnName, InputStream x, int length) throws SQLException {
             delegate.updateAsciiStream(columnName, x, length);
         }
 
@@ -521,13 +504,11 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             delegate.updateBigDecimal(columnName, x);
         }
 
-        public void updateBinaryStream(int columnIndex, InputStream x, int length)
-                throws SQLException {
+        public void updateBinaryStream(int columnIndex, InputStream x, int length) throws SQLException {
             delegate.updateBinaryStream(columnIndex, x, length);
         }
 
-        public void updateBinaryStream(String columnName, InputStream x, int length)
-                throws SQLException {
+        public void updateBinaryStream(String columnName, InputStream x, int length) throws SQLException {
             delegate.updateBinaryStream(columnName, x, length);
         }
 
@@ -563,13 +544,11 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             delegate.updateBytes(columnName, x);
         }
 
-        public void updateCharacterStream(int columnIndex, Reader x, int length)
-                throws SQLException {
+        public void updateCharacterStream(int columnIndex, Reader x, int length) throws SQLException {
             delegate.updateCharacterStream(columnIndex, x, length);
         }
 
-        public void updateCharacterStream(String columnName, Reader reader, int length)
-                throws SQLException {
+        public void updateCharacterStream(String columnName, Reader reader, int length) throws SQLException {
             delegate.updateCharacterStream(columnName, reader, length);
         }
 
@@ -629,8 +608,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             delegate.updateNull(columnName);
         }
 
-        public void updateObject(int columnIndex, Object x, int scale)
-                throws SQLException {
+        public void updateObject(int columnIndex, Object x, int scale) throws SQLException {
             delegate.updateObject(columnIndex, x, scale);
         }
 
@@ -638,8 +616,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             delegate.updateObject(columnIndex, x);
         }
 
-        public void updateObject(String columnName, Object x, int scale)
-                throws SQLException {
+        public void updateObject(String columnName, Object x, int scale) throws SQLException {
             delegate.updateObject(columnName, x, scale);
         }
 
@@ -763,8 +740,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateAsciiStream(int arg0, InputStream arg1, long arg2)
-                throws SQLException {
+        public void updateAsciiStream(int arg0, InputStream arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -772,8 +748,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateAsciiStream(String arg0, InputStream arg1, long arg2)
-                throws SQLException {
+        public void updateAsciiStream(String arg0, InputStream arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -797,8 +772,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateBinaryStream(int arg0, InputStream arg1, long arg2)
-                throws SQLException {
+        public void updateBinaryStream(int arg0, InputStream arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -806,8 +780,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateBinaryStream(String arg0, InputStream arg1, long arg2)
-                throws SQLException {
+        public void updateBinaryStream(String arg0, InputStream arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -839,8 +812,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateBlob(String arg0, InputStream arg1, long arg2)
-                throws SQLException {
+        public void updateBlob(String arg0, InputStream arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -864,8 +836,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateCharacterStream(int arg0, Reader arg1, long arg2)
-                throws SQLException {
+        public void updateCharacterStream(int arg0, Reader arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -873,8 +844,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateCharacterStream(String arg0, Reader arg1, long arg2)
-                throws SQLException {
+        public void updateCharacterStream(String arg0, Reader arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -930,8 +900,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateNCharacterStream(int arg0, Reader arg1, long arg2)
-                throws SQLException {
+        public void updateNCharacterStream(int arg0, Reader arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -939,8 +908,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateNCharacterStream(String arg0, Reader arg1, long arg2)
-                throws SQLException {
+        public void updateNCharacterStream(String arg0, Reader arg1, long arg2) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -1100,8 +1068,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
          * @since 3.0
          */
         // JDBC 4 compatibility under Java 1.5
-        public void updateSQLXML(String columnLabel, SQLXML xmlObject)
-                throws SQLException {
+        public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException {
             throw new UnsupportedOperationException();
         }
 
@@ -1135,8 +1102,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
         public String getColumnClassName(int column) throws SQLException {
             String className = delegate.getColumnClassName(column);
 
-            if (BigDecimal.class.getName().equals(className)
-                    && getColumnType(column) == Types.INTEGER) {
+            if (BigDecimal.class.getName().equals(className) && getColumnType(column) == Types.INTEGER) {
                 className = Integer.class.getName();
             }
 
@@ -1165,8 +1131,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             // this only detects INTEGER but not BIGINT...
             if (type == Types.NUMERIC) {
                 int precision = delegate.getPrecision(column);
-                if ((precision == 10 || precision == 38)
-                        && delegate.getScale(column) == 0) {
+                if ((precision == 10 || precision == 38) && delegate.getScale(column) == 0) {
                     type = Types.INTEGER;
                 }
             }

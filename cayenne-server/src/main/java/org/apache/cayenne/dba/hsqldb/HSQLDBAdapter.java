@@ -90,7 +90,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new HSQLActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new HSQLActionBuilder(this, node.getEntityResolver(), node.getRowReaderFactory()));
     }
 
     /**

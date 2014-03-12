@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -38,12 +37,17 @@ import org.apache.cayenne.query.SQLAction;
  */
 public abstract class BaseSQLAction implements SQLAction {
 
+    protected RowReaderFactory rowReaderFactory;
     protected JdbcAdapter adapter;
     protected EntityResolver entityResolver;
 
-    public BaseSQLAction(JdbcAdapter adapter, EntityResolver entityResolver) {
+    /**
+     * @since 3.2
+     */
+    public BaseSQLAction(JdbcAdapter adapter, EntityResolver entityResolver, RowReaderFactory rowReaderFactory) {
         this.adapter = adapter;
         this.entityResolver = entityResolver;
+        this.rowReaderFactory = rowReaderFactory;
     }
 
     public JdbcAdapter getAdapter() {
@@ -57,6 +61,7 @@ public abstract class BaseSQLAction implements SQLAction {
     /**
      * Helper method to process a ResultSet.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void readResultSet(ResultSet resultSet, RowDescriptor descriptor, Query query, OperationObserver delegate)
             throws SQLException, Exception {
 
@@ -64,14 +69,15 @@ public abstract class BaseSQLAction implements SQLAction {
 
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
 
-        JDBCResultIterator<DataRow> resultReader = new JDBCResultIterator<DataRow>(null, resultSet, descriptor,
-                metadata);
+        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, metadata);
 
-        LimitResultIterator<DataRow> it = new LimitResultIterator<DataRow>(resultReader,
-                getInMemoryOffset(metadata.getFetchOffset()), metadata.getFetchLimit());
+        JDBCResultIterator resultReader = new JDBCResultIterator(null, resultSet, rowReader);
+
+        LimitResultIterator it = new LimitResultIterator(resultReader, getInMemoryOffset(metadata.getFetchOffset()),
+                metadata.getFetchLimit());
 
         if (!delegate.isIteratedResult()) {
-            List<DataRow> resultRows = it.allRows();
+            List resultRows = it.allRows();
             adapter.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - t1);
 
             delegate.nextRows(query, resultRows);

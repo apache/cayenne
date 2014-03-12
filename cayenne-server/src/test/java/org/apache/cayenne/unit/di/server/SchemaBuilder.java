@@ -36,6 +36,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.DefaultRowReaderFactory;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.dba.DbAdapter;
@@ -151,6 +152,7 @@ public class SchemaBuilder {
         node.addDataMap(map);
 
         node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
+        node.setRowReaderFactory(new DefaultRowReaderFactory());
         domain.addNode(node);
     }
 

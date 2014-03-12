@@ -29,6 +29,7 @@ import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -105,6 +106,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     @Inject
     protected RuntimeProperties runtimeProperties;
+    
+    @Inject
+    protected RowReaderFactory rowReaderFactory;
 
     @Override
     public DataDomain get() throws ConfigurationException {
@@ -189,6 +193,8 @@ public class DataDomainProvider implements Provider<DataDomain> {
         DataNode dataNode = new DataNode(nodeDescriptor.getName());
 
         dataNode.setJdbcEventLogger(jdbcEventLogger);
+        dataNode.setRowReaderFactory(rowReaderFactory);
+        
         dataNode.setDataSourceLocation(nodeDescriptor.getParameters());
 
         DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);

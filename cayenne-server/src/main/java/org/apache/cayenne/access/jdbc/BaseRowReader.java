@@ -54,8 +54,10 @@ abstract class BaseRowReader<T> implements RowReader<T> {
         }
     }
 
+    @Override
     public abstract T readRow(ResultSet resultSet);
 
+    @Override
     public void setPostProcessor(DataRowPostProcessor postProcessor) {
         this.postProcessor = postProcessor;
     }

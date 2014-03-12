@@ -52,8 +52,12 @@ public class BatchAction extends BaseSQLAction {
     protected BatchQuery query;
     protected RowDescriptor keyRowDescriptor;
 
-    public BatchAction(BatchQuery batchQuery, JdbcAdapter adapter, EntityResolver entityResolver) {
-        super(adapter, entityResolver);
+    /**
+     * @since 3.2
+     */
+    public BatchAction(BatchQuery batchQuery, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(adapter, entityResolver, rowReaderFactory);
         this.query = batchQuery;
     }
 
@@ -242,6 +246,7 @@ public class BatchAction extends BaseSQLAction {
     /**
      * Implements generated keys extraction supported in JDBC 3.0 specification.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void processGeneratedKeys(Statement statement, OperationObserver observer) throws SQLException,
             CayenneException {
 
@@ -280,8 +285,9 @@ public class BatchAction extends BaseSQLAction {
             this.keyRowDescriptor = builder.getDescriptor(getAdapter().getExtendedTypes());
         }
 
-        ResultIterator iterator = new JDBCResultIterator(null, keysRS, keyRowDescriptor,
+        RowReader<?> rowReader = rowReaderFactory.createRowReader(keyRowDescriptor,
                 query.getMetaData(getEntityResolver()));
+        ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
         observer.nextGeneratedRows(query, iterator);
     }

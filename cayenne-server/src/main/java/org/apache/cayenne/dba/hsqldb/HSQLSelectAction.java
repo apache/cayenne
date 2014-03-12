@@ -20,6 +20,7 @@ package org.apache.cayenne.dba.hsqldb;
 
 import java.sql.Connection;
 
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -31,8 +32,9 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class HSQLSelectAction extends SelectAction {
 
-	<T> HSQLSelectAction(SelectQuery<T> query, JdbcAdapter adapter, EntityResolver entityResolver) {
-        super(query, adapter, entityResolver);
+    <T> HSQLSelectAction(SelectQuery<T> query, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(query, adapter, entityResolver, rowReaderFactory);
     }
 
     @Override

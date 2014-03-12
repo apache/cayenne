@@ -30,6 +30,7 @@ import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -43,9 +44,9 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class OracleProcedureAction extends ProcedureAction {
 
-    OracleProcedureAction(ProcedureQuery query, JdbcAdapter adapter,
-            EntityResolver entityResolver) {
-        super(query, adapter, entityResolver);
+    OracleProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(query, adapter, entityResolver, rowReaderFactory);
     }
 
     /**

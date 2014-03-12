@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import static org.mockito.Mockito.mock;
+
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -144,7 +146,7 @@ public class ResultDirectiveTest extends ServerCase {
 
         SQLTemplateAction action = new SQLTemplateAction(template, dbAdapter, runtime
                 .getDataDomain()
-                .getEntityResolver());
+                .getEntityResolver(), mock(RowReaderFactory.class));
 
         assertSame(dbAdapter, action.getAdapter());
 

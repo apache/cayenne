@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import static org.mockito.Mockito.mock;
+
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -236,7 +238,7 @@ public class BindDirectiveTest extends ServerCase {
         SQLTemplateAction action = new SQLTemplateAction(
                 template,
                 adapter,
-                context.getEntityResolver());
+                context.getEntityResolver(), mock(RowReaderFactory.class));
 
         Connection c = dataSourceFactory.getSharedDataSource().getConnection();
         try {

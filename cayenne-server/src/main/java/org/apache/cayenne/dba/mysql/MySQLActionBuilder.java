@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.mysql;
 
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -31,17 +32,17 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class MySQLActionBuilder extends JdbcActionBuilder {
 
-    MySQLActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
-        super(adapter, resolver);
+    MySQLActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
+        super(adapter, resolver, rowReaderFactory);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new MySQLSelectAction(query, adapter, entityResolver);
+        return new MySQLSelectAction(query, adapter, entityResolver, rowReaderFactory);
     }
 
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new MySQLProcedureAction(query, getAdapter(), getEntityResolver());
+        return new MySQLProcedureAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
     }
 }

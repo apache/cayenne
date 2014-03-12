@@ -254,6 +254,6 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new DB2ActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new DB2ActionBuilder(this, node.getEntityResolver(), node.getRowReaderFactory()));
     }
 }

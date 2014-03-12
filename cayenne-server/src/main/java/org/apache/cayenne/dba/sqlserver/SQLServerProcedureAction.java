@@ -30,6 +30,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -48,9 +49,12 @@ import org.apache.cayenne.query.Query;
  */
 public class SQLServerProcedureAction extends ProcedureAction {
 
-    public SQLServerProcedureAction(ProcedureQuery query, JdbcAdapter adapter,
-            EntityResolver entityResolver) {
-        super(query, adapter, entityResolver);
+    /**
+     * @since 3.2
+     */
+    public SQLServerProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(query, adapter, entityResolver, rowReaderFactory);
     }
 
     @Override
@@ -147,10 +151,12 @@ public class SQLServerProcedureAction extends ProcedureAction {
             }
         }
 
+        @Override
         public void nextBatchCount(Query query, int[] resultCount) {
             observer.nextBatchCount(query, resultCount);
         }
 
+        @Override
         public void nextCount(Query query, int resultCount) {
             // does not delegate to wrapped observer
             // but instead caches results locally.
@@ -161,6 +167,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
             counts.add(Integer.valueOf(resultCount));
         }
 
+        @Override
         public void nextRows(Query query, List<?> dataRows) {
             // does not delegate to wrapped observer
             // but instead caches results locally.
@@ -171,22 +178,27 @@ public class SQLServerProcedureAction extends ProcedureAction {
             results.add(dataRows);
         }
 
+        @Override
         public void nextRows(Query q, ResultIterator it) {
             observer.nextRows(q, it);
         }
 
+        @Override
         public void nextGlobalException(Exception ex) {
             observer.nextGlobalException(ex);
         }
 
+        @Override
         public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
             observer.nextGeneratedRows(query, keysIterator);
         }
 
+        @Override
         public void nextQueryException(Query query, Exception ex) {
             observer.nextQueryException(query, ex);
         }
 
+        @Override
         public boolean isIteratedResult() {
             return observer.isIteratedResult();
         }

@@ -29,6 +29,8 @@ import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
+import org.apache.cayenne.access.jdbc.DefaultRowReaderFactory;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
 import org.apache.cayenne.access.types.BigIntegerType;
 import org.apache.cayenne.access.types.BooleanType;
@@ -213,7 +215,7 @@ public class ServerModule implements Module {
         binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
 
         binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
-
+        
         // a service to load project XML descriptors
         binder.bind(DataChannelDescriptorLoader.class).to(
                 XMLDataChannelDescriptorLoader.class);
@@ -256,5 +258,6 @@ public class ServerModule implements Module {
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
         
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+        binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
     }
 }

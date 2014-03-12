@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -88,7 +90,7 @@ public class BatchActionLockingTest extends ServerCase {
 
         boolean generatesKeys = false;
 
-        BatchAction action = new BatchAction(batchQuery, adapter, resolver);
+        BatchAction action = new BatchAction(batchQuery, adapter, resolver, mock(RowReaderFactory.class));
         action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
         assertEquals(0, mockConnection.getNumberCommits());
         assertEquals(0, mockConnection.getNumberRollbacks());
@@ -124,7 +126,7 @@ public class BatchActionLockingTest extends ServerCase {
         preparedStatementResultSetHandler.prepareUpdateCount("DELETE", 0);
 
         boolean generatesKeys = false;
-        BatchAction action = new BatchAction(batchQuery, adapter, resolver);
+        BatchAction action = new BatchAction(batchQuery, adapter, resolver, mock(RowReaderFactory.class));
         try {
             action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
             fail("No OptimisticLockingFailureException thrown.");

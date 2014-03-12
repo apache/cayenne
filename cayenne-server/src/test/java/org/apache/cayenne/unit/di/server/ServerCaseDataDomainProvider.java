@@ -22,6 +22,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -43,6 +44,9 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
     
     @Inject
     private UnitDbAdapter unitDbAdapter;
+    
+    @Inject
+    protected RowReaderFactory rowReaderFactory;
 
     @Override
     protected DataDomain createDataDomain(String name) {
@@ -60,6 +64,7 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
             // add nodes and DataSources dynamically...
             node = new DataNode(dataMap.getName());
             node.setJdbcEventLogger(jdbcEventLogger);
+            node.setRowReaderFactory(rowReaderFactory);
 
             // shared or dedicated DataSources can be mapped per DataMap
             node.setDataSource(dataSourceFactory.getDataSource(dataMap.getName()));

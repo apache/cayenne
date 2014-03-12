@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.BatchQuery;
@@ -33,18 +34,18 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class Oracle8ActionBuilder extends OracleActionBuilder {
 
-    Oracle8ActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
-        super(adapter, resolver);
+    Oracle8ActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
+        super(adapter, resolver, rowReaderFactory);
     }
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new Oracle8SQLTemplateAction(query, adapter, getEntityResolver());
+        return new Oracle8SQLTemplateAction(query, adapter, getEntityResolver(), rowReaderFactory);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new Oracle8SelectAction(query, getAdapter(), getEntityResolver());
+        return new Oracle8SelectAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
     }
 
     @Override
@@ -63,7 +64,7 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
             OracleBatchAction action = new OracleBatchAction(
                     query,
                     adapter,
-                    getEntityResolver());
+                    getEntityResolver(), rowReaderFactory);
             action.setBatch(runningAsBatch);
             return action;
         }

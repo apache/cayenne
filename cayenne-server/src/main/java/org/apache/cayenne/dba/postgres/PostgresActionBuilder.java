@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -31,17 +32,17 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class PostgresActionBuilder extends JdbcActionBuilder {
 
-    public PostgresActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
-        super(adapter, resolver);
+    public PostgresActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
+        super(adapter, resolver, rowReaderFactory);
     }
 
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new PostgresProcedureAction(query, getAdapter(), getEntityResolver());
+        return new PostgresProcedureAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new PostgresSelectAction(query, adapter, entityResolver);
+        return new PostgresSelectAction(query, adapter, entityResolver, rowReaderFactory);
     }
 }

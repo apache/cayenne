@@ -63,13 +63,16 @@ public class SQLTemplateAction implements SQLAction {
     protected QueryMetadata queryMetadata;
 
     protected DbEntity dbEntity;
+    private RowReaderFactory rowReaderFactory;
 
     /**
-     * @since 3.0
+     * @since 3.2
      */
-    public SQLTemplateAction(SQLTemplate query, JdbcAdapter adapter, EntityResolver entityResolver) {
+    public SQLTemplateAction(SQLTemplate query, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
         this.query = query;
         this.adapter = adapter;
+        this.rowReaderFactory = rowReaderFactory;
         this.queryMetadata = query.getMetaData(entityResolver);
         this.dbEntity = query.getMetaData(entityResolver).getDbEntity();
     }
@@ -188,6 +191,7 @@ public class SQLTemplateAction implements SQLAction {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void processSelectResult(SQLStatement compiled, Connection connection, Statement statement,
             ResultSet resultSet, OperationObserver callback, final long startTime) throws Exception {
 
@@ -195,9 +199,9 @@ public class SQLTemplateAction implements SQLAction {
 
         ExtendedTypeMap types = getAdapter().getExtendedTypes();
         RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
+        RowReader<?> rowReader = rowReaderFactory.createRowReader(builder.getDescriptor(types), queryMetadata);
 
-        JDBCResultIterator result = new JDBCResultIterator(statement, resultSet, builder.getDescriptor(types),
-                queryMetadata);
+        JDBCResultIterator result = new JDBCResultIterator(statement, resultSet, rowReader);
 
         ResultIterator it = result;
 

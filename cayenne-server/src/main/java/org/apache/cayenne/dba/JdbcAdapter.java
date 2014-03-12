@@ -110,6 +110,7 @@ public class JdbcAdapter implements DbAdapter {
      * 
      * @since 1.0.4
      */
+    @Override
     public String getBatchTerminator() {
         return ";";
     }
@@ -206,6 +207,7 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * Returns primary key generator associated with this DbAdapter.
      */
+    @Override
     public PkGenerator getPkGenerator() {
         return pkGenerator;
     }
@@ -224,6 +226,7 @@ public class JdbcAdapter implements DbAdapter {
      * 
      * @since 1.1
      */
+    @Override
     public boolean supportsUniqueConstraints() {
         return supportsUniqueConstraints;
     }
@@ -238,6 +241,7 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * @since 3.0
      */
+    @Override
     public Collection<String> dropTableStatements(DbEntity table) {
 
         StringBuilder buf = new StringBuilder("DROP TABLE ");
@@ -250,6 +254,7 @@ public class JdbcAdapter implements DbAdapter {
      * Returns a SQL string that can be used to create database table
      * corresponding to <code>ent</code> parameter.
      */
+    @Override
     public String createTable(DbEntity entity) {
 
         StringBuffer sqlBuffer = new StringBuffer();
@@ -315,6 +320,7 @@ public class JdbcAdapter implements DbAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
 
         String[] types = externalTypesForJdbcType(column.getType());
@@ -360,6 +366,7 @@ public class JdbcAdapter implements DbAdapter {
      * 
      * @since 1.1
      */
+    @Override
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
 
         if (columns == null || columns.isEmpty()) {
@@ -391,6 +398,7 @@ public class JdbcAdapter implements DbAdapter {
      * Returns a SQL string that can be used to create a foreign key constraint
      * for the relationship.
      */
+    @Override
     public String createFkConstraint(DbRelationship rel) {
 
         DbEntity source = (DbEntity) rel.getSourceEntity();
@@ -423,14 +431,17 @@ public class JdbcAdapter implements DbAdapter {
         return buf.toString();
     }
 
+    @Override
     public String[] externalTypesForJdbcType(int type) {
         return typesHandler.externalTypesForJdbcType(type);
     }
 
+    @Override
     public ExtendedTypeMap getExtendedTypes() {
         return extendedTypes;
     }
 
+    @Override
     public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
 
         DbAttribute attr = new DbAttribute();
@@ -449,10 +460,12 @@ public class JdbcAdapter implements DbAdapter {
         return attr;
     }
 
+    @Override
     public String tableTypeForTable() {
         return "TABLE";
     }
 
+    @Override
     public String tableTypeForView() {
         return "VIEW";
     }
@@ -460,6 +473,7 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * Creates and returns a default implementation of a qualifier translator.
      */
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         QualifierTranslator translator = new QualifierTranslator(queryAssembler);
         translator.setCaseInsensitive(caseInsensitiveCollations);
@@ -471,10 +485,12 @@ public class JdbcAdapter implements DbAdapter {
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new JdbcActionBuilder(this, node.getEntityResolver()));
+        return query.createSQLAction(new JdbcActionBuilder(this, node.getEntityResolver(), node.getRowReaderFactory()));
     }
 
+    @Override
     public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
             throws SQLException, Exception {
 
@@ -486,6 +502,7 @@ public class JdbcAdapter implements DbAdapter {
         }
     }
 
+    @Override
     public boolean supportsBatchUpdates() {
         return this.supportsBatchUpdates;
     }
@@ -497,6 +514,7 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * @since 1.2
      */
+    @Override
     public boolean supportsGeneratedKeys() {
         return supportsGeneratedKeys;
     }

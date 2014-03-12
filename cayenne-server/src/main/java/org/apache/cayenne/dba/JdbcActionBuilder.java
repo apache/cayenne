@@ -22,6 +22,7 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.access.jdbc.EJBQLAction;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -45,13 +46,19 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     protected JdbcAdapter adapter;
     protected EntityResolver entityResolver;
     protected JdbcEventLogger logger;
+    protected RowReaderFactory rowReaderFactory;
 
-    public JdbcActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
+    /**
+     * @since 3.2
+     */
+    public JdbcActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
         this.adapter = adapter;
         this.entityResolver = resolver;
+        this.rowReaderFactory = rowReaderFactory;
         this.logger = adapter.getJdbcEventLogger();
     }
 
+    @Override
     public SQLAction batchAction(BatchQuery query) {
         // check run strategy...
 
@@ -59,28 +66,28 @@ public class JdbcActionBuilder implements SQLActionVisitor {
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
         boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
-        BatchAction action = new BatchAction(query, adapter, entityResolver);
+        BatchAction action = new BatchAction(query, adapter, entityResolver, rowReaderFactory);
         action.setBatch(runningAsBatch);
         return action;
     }
 
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new ProcedureAction(query, adapter, entityResolver);
+        return new ProcedureAction(query, adapter, entityResolver, rowReaderFactory);
     }
 
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SelectAction(query, adapter, entityResolver);
+        return new SelectAction(query, adapter, entityResolver, rowReaderFactory);
     }
 
     public SQLAction sqlAction(SQLTemplate query) {
-        return new SQLTemplateAction(query, adapter, entityResolver);
+        return new SQLTemplateAction(query, adapter, entityResolver, rowReaderFactory);
     }
 
     /**
      * @since 3.0
      */
     public SQLAction ejbqlAction(EJBQLQuery query) {
-        return new EJBQLAction(query, this, adapter, entityResolver);
+        return new EJBQLAction(query, this, adapter, entityResolver, rowReaderFactory);
     }
 
     /**

@@ -45,8 +45,12 @@ public class SelectAction extends BaseSQLAction {
 
     protected SelectQuery<?> query;
 
-    public SelectAction(SelectQuery<?> query, JdbcAdapter adapter, EntityResolver entityResolver) {
-        super(adapter, entityResolver);
+    /**
+     * @since 3.2
+     */
+    public SelectAction(SelectQuery<?> query, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(adapter, entityResolver, rowReaderFactory);
         this.query = query;
     }
 
@@ -60,6 +64,7 @@ public class SelectAction extends BaseSQLAction {
         return translator;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
@@ -86,8 +91,10 @@ public class SelectAction extends BaseSQLAction {
         QueryMetadata md = query.getMetaData(getEntityResolver());
         RowDescriptor descriptor = new RowDescriptorBuilder().setColumns(translator.getResultColumns()).getDescriptor(
                 getAdapter().getExtendedTypes());
+        
+        RowReader<?> rowReader = rowReaderFactory.createRowReader(descriptor, md);
 
-        JDBCResultIterator workerIterator = new JDBCResultIterator(prepStmt, rs, descriptor, md);
+        JDBCResultIterator workerIterator = new JDBCResultIterator(prepStmt, rs, rowReader);
 
         workerIterator.setPostProcessor(DataRowPostProcessor.createPostProcessor(translator));
 

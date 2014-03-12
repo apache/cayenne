@@ -85,8 +85,8 @@ public class Oracle8Adapter extends OracleAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new Oracle8ActionBuilder(this, node
-                .getEntityResolver()));
+        return query.createSQLAction(new Oracle8ActionBuilder(this, node.getEntityResolver(), node
+                .getRowReaderFactory()));
     }
 
     @Override

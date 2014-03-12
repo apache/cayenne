@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import static org.mockito.Mockito.mock;
+
 import java.sql.Connection;
 import java.sql.Statement;
 
@@ -35,7 +37,15 @@ import com.mockrunner.mock.jdbc.MockStatement;
 public class JDBCResultIteratorTest extends TestCase {
 
     public void testNextDataRow() throws Exception {
-        JDBCResultIterator it = makeIterator();
+        Connection c = new MockConnection();
+        Statement s = new MockStatement(c);
+        MockResultSet rs = new MockResultSet("rs");
+        rs.addColumn("a", new Object[] { "1", "2", "3" });
+        
+        RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
+        RowReader<?> rowReader = new DefaultRowReaderFactory().createRowReader(descriptor, new MockQueryMetadata());
+
+        JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
 
         DataRow row = (DataRow) it.nextRow();
 
@@ -49,9 +59,10 @@ public class JDBCResultIteratorTest extends TestCase {
         MockStatement s = new MockStatement(c);
         MockResultSet rs = new MockResultSet("rs");
         rs.addColumn("a", new Object[] { "1", "2", "3" });
-        RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
 
-        JDBCResultIterator it = new JDBCResultIterator(s, rs, descriptor, new MockQueryMetadata());
+        RowReader<?> rowReader = mock(RowReader.class);
+
+        JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
 
         assertFalse(rs.isClosed());
         assertFalse(s.isClosed());
@@ -61,17 +72,6 @@ public class JDBCResultIteratorTest extends TestCase {
 
         assertTrue(rs.isClosed());
         assertTrue(s.isClosed());
-    }
-
-    JDBCResultIterator makeIterator() throws Exception {
-
-        Connection c = new MockConnection();
-        Statement s = new MockStatement(c);
-        MockResultSet rs = new MockResultSet("rs");
-        rs.addColumn("a", new Object[] { "1", "2", "3" });
-
-        RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
-        return new JDBCResultIterator(s, rs, descriptor, new MockQueryMetadata());
     }
 
 }

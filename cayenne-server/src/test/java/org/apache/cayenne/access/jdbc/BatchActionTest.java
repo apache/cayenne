@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import static org.mockito.Mockito.mock;
+
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -47,10 +49,10 @@ public class BatchActionTest extends ServerCase {
 
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
                 .getDbEntity(), 5);
-        assertTrue(new BatchAction(batch1, adapter, resolver).hasGeneratedKeys());
+        assertTrue(new BatchAction(batch1, adapter, resolver, mock(RowReaderFactory.class)).hasGeneratedKeys());
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
-        assertFalse(new BatchAction(batch2, adapter, resolver).hasGeneratedKeys());
+        assertFalse(new BatchAction(batch2, adapter, resolver, mock(RowReaderFactory.class)).hasGeneratedKeys());
     }
 
     public void testHasGeneratedKeys2() throws Exception {
@@ -61,10 +63,10 @@ public class BatchActionTest extends ServerCase {
 
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
                 .getDbEntity(), 5);
-        assertFalse(new BatchAction(batch1, adapter, resolver).hasGeneratedKeys());
+        assertFalse(new BatchAction(batch1, adapter, resolver, mock(RowReaderFactory.class)).hasGeneratedKeys());
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
-        assertFalse(new BatchAction(batch2, adapter, resolver).hasGeneratedKeys());
+        assertFalse(new BatchAction(batch2, adapter, resolver, mock(RowReaderFactory.class)).hasGeneratedKeys());
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {

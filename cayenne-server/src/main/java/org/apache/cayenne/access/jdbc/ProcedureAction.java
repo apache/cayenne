@@ -53,12 +53,16 @@ public class ProcedureAction extends BaseSQLAction {
      */
     protected int processedResultSets;
 
-    public ProcedureAction(ProcedureQuery query, JdbcAdapter adapter,
-            EntityResolver entityResolver) {
-        super(adapter, entityResolver);
+    /**
+     * @since 3.2
+     */
+    public ProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(adapter, entityResolver, rowReaderFactory);
         this.query = query;
     }
 
+    @Override
     public void performAction(Connection connection, OperationObserver observer)
             throws SQLException, Exception {
 

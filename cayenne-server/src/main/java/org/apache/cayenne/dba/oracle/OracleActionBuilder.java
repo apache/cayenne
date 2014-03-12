@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -33,13 +34,13 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OracleActionBuilder extends JdbcActionBuilder {
 
-    OracleActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
-        super(adapter, resolver);
+    OracleActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
+        super(adapter, resolver, rowReaderFactory);
     }
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
-        return new OracleSQLTemplateAction(query, adapter, getEntityResolver());
+        return new OracleSQLTemplateAction(query, adapter, getEntityResolver(), rowReaderFactory);
     }
 
     @Override
@@ -48,18 +49,14 @@ class OracleActionBuilder extends JdbcActionBuilder {
         // special handling for LOB updates
         if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
             return new OracleLOBBatchAction(query, getAdapter());
-        }
-        else {
+        } else {
 
             // optimistic locking is not supported in batches due to JDBC driver
             // limitations
             boolean useOptimisticLock = query.isUsingOptimisticLocking();
             boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
 
-            OracleBatchAction action = new OracleBatchAction(
-                    query,
-                    adapter,
-                    getEntityResolver());
+            OracleBatchAction action = new OracleBatchAction(query, adapter, getEntityResolver(), rowReaderFactory);
             action.setBatch(runningAsBatch);
             return action;
         }
@@ -68,11 +65,11 @@ class OracleActionBuilder extends JdbcActionBuilder {
 
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new OracleProcedureAction(query, getAdapter(), getEntityResolver());
+        return new OracleProcedureAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new OracleSelectAction(query, getAdapter(), getEntityResolver());
+        return new OracleSelectAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
     }
 }

@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.trans.ProcedureTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -36,8 +37,9 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class DB2ProcedureAction extends ProcedureAction {
 
-    DB2ProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver) {
-        super(query, adapter, entityResolver);
+    DB2ProcedureAction(ProcedureQuery query, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(query, adapter, entityResolver, rowReaderFactory);
     }
 
     @Override

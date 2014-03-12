@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.openbase;
 
 import java.sql.Connection;
 
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.trans.SelectTranslator;
 import org.apache.cayenne.dba.JdbcActionBuilder;
@@ -34,13 +35,13 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OpenBaseActionBuilder extends JdbcActionBuilder {
 
-    OpenBaseActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
-        super(adapter, resolver);
+    OpenBaseActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
+        super(adapter, resolver, rowReaderFactory);
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-       return new SelectAction(query, adapter, entityResolver) {
+        return new SelectAction(query, adapter, entityResolver, rowReaderFactory) {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {

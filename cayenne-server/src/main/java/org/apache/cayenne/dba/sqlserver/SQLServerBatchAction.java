@@ -26,6 +26,7 @@ import java.util.Collections;
 
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.BatchAction;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
@@ -37,9 +38,9 @@ import org.apache.cayenne.query.InsertBatchQuery;
  */
 public class SQLServerBatchAction extends BatchAction {
 
-    public SQLServerBatchAction(BatchQuery batchQuery, JdbcAdapter adapter,
-            EntityResolver entityResolver) {
-        super(batchQuery, adapter, entityResolver);
+    public SQLServerBatchAction(BatchQuery batchQuery, JdbcAdapter adapter, EntityResolver entityResolver,
+            RowReaderFactory rowReaderFactory) {
+        super(batchQuery, adapter, entityResolver, rowReaderFactory);
     }
 
     @Override

@@ -124,7 +124,8 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     @Override
     public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new MySQLActionBuilder(this, node.getEntityResolver()));
+        return query
+                .createSQLAction(new MySQLActionBuilder(this, node.getEntityResolver(), node.getRowReaderFactory()));
     }
 
     /**

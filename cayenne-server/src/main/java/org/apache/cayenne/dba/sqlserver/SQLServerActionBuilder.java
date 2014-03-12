@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.access.jdbc.BatchAction;
+import org.apache.cayenne.access.jdbc.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -34,8 +35,11 @@ import org.apache.cayenne.query.SQLAction;
  */
 public class SQLServerActionBuilder extends JdbcActionBuilder {
 
-    public SQLServerActionBuilder(JdbcAdapter adapter, EntityResolver resolver) {
-        super(adapter, resolver);
+    /**
+     * @since 3.2
+     */
+    public SQLServerActionBuilder(JdbcAdapter adapter, EntityResolver resolver, RowReaderFactory rowReaderFactory) {
+        super(adapter, resolver, rowReaderFactory);
     }
     
     @Override
@@ -46,18 +50,18 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
         boolean runningAsBatch = !useOptimisticLock && adapter.supportsBatchUpdates();
-        BatchAction action = new SQLServerBatchAction(query, adapter, entityResolver);
+        BatchAction action = new SQLServerBatchAction(query, adapter, entityResolver, rowReaderFactory);
         action.setBatch(runningAsBatch);
         return action;
     }
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SQLServerSelectAction(query, adapter, entityResolver);
+        return new SQLServerSelectAction(query, adapter, entityResolver, rowReaderFactory);
     }    
     
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
-        return new SQLServerProcedureAction(query, getAdapter(), getEntityResolver());
+        return new SQLServerProcedureAction(query, getAdapter(), getEntityResolver(), rowReaderFactory);
     }
 }
