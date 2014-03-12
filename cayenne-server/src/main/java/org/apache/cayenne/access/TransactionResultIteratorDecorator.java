@@ -42,6 +42,7 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
         this.tx = tx;
     }
 
+    @Override
     public Iterator<T> iterator() {
         return result.iterator();
     }
@@ -49,6 +50,7 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
     /**
      * Closes the result and commits the transaction.
      */
+    @Override
     public void close() {
 
         try {
@@ -71,6 +73,7 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public List<T> allRows() {
         List<T> list = new ArrayList<T>();
 
@@ -81,6 +84,7 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
         return list;
     }
 
+    @Override
     public boolean hasNextRow() {
         return result.hasNextRow();
     }
@@ -88,6 +92,7 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public T nextRow() {
         return result.nextRow();
     }
@@ -95,6 +100,7 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public void skipRow() {
         result.skipRow();
     }

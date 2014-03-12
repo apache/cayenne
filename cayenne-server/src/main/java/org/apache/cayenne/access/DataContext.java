@@ -799,10 +799,12 @@ public class DataContext extends BaseContext {
             final ObjectResolver resolver = new ObjectResolver(this, descriptor, true);
             return new ResultIterator<T>() {
 
+                @Override
                 public Iterator<T> iterator() {
                     return new ResultIteratorIterator<T>(this);
                 }
 
+                @Override
                 public List<T> allRows() {
                     List<T> list = new ArrayList<T>();
 
@@ -813,10 +815,12 @@ public class DataContext extends BaseContext {
                     return list;
                 }
 
+                @Override
                 public boolean hasNextRow() {
                     return rows.hasNextRow();
                 }
 
+                @Override
                 public T nextRow() {
                     DataRow row = rows.nextRow();
                     List<T> objects = (List<T>) resolver
@@ -824,10 +828,12 @@ public class DataContext extends BaseContext {
                     return (T) objects.get(0);
                 }
 
+                @Override
                 public void skipRow() {
                     rows.skipRow();
                 }
 
+                @Override
                 public void close() {
                     rows.close();
                 }

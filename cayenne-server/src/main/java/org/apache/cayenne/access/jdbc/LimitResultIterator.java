@@ -58,6 +58,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
     /**
      * @since 3.2
      */
+    @Override
     public Iterator<T> iterator() {
         return new ResultIteratorIterator<T>(this);
     }
@@ -77,6 +78,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
         }
     }
 
+    @Override
     public void close() {
         delegate.close();
     }
@@ -84,6 +86,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public List<T> allRows() {
 
         List<T> list = new ArrayList<T>();
@@ -95,6 +98,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
         return list;
     }
 
+    @Override
     public boolean hasNextRow() {
         return nextRow;
     }
@@ -102,6 +106,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public T nextRow() {
         if (!hasNextRow()) {
             throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
@@ -115,6 +120,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
     /**
      * @since 3.0
      */
+    @Override
     public void skipRow() {
         delegate.skipRow();
     }

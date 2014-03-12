@@ -36,11 +36,13 @@ class CollectionResultIterator<T> implements ResultIterator<T> {
         this.iterator = c.iterator();
     }
 
+    @Override
     public Iterator<T> iterator() {
         checkIterator();
         return iterator;
     }
 
+    @Override
     public List<T> allRows() {
 
         List<T> list = new ArrayList<T>();
@@ -51,21 +53,25 @@ class CollectionResultIterator<T> implements ResultIterator<T> {
         return list;
     }
 
+    @Override
     public boolean hasNextRow() {
         checkIterator();
         return iterator.hasNext();
     }
 
+    @Override
     public T nextRow() {
         checkIterator();
         return iterator.next();
     }
 
+    @Override
     public void skipRow() {
         checkIterator();
         iterator.next();
     }
 
+    @Override
     public void close() {
         iterator = null;
     }
