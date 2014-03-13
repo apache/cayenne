@@ -93,50 +93,62 @@ public class AutoAdapter implements DbAdapter {
         return adapterProvider.get();
     }
 
+    @Override
     public String getBatchTerminator() {
         return getAdapter().getBatchTerminator();
     }
 
+    @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
         return getAdapter().getQualifierTranslator(queryAssembler);
     }
 
+    @Override
     public SQLAction getAction(Query query, DataNode node) {
         return getAdapter().getAction(query, node);
     }
 
+    @Override
     public boolean supportsUniqueConstraints() {
         return getAdapter().supportsUniqueConstraints();
     }
 
+    @Override
     public boolean supportsGeneratedKeys() {
         return getAdapter().supportsGeneratedKeys();
     }
 
+    @Override
     public boolean supportsBatchUpdates() {
         return getAdapter().supportsBatchUpdates();
     }
 
+    @Override
     public Collection<String> dropTableStatements(DbEntity table) {
         return getAdapter().dropTableStatements(table);
     }
 
+    @Override
     public String createTable(DbEntity entity) {
         return getAdapter().createTable(entity);
     }
 
+    @Override
     public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
         return getAdapter().createUniqueConstraint(source, columns);
     }
 
+    @Override
     public String createFkConstraint(DbRelationship rel) {
         return getAdapter().createFkConstraint(rel);
     }
 
+    @Override
     public String[] externalTypesForJdbcType(int type) {
         return getAdapter().externalTypesForJdbcType(type);
     }
 
+    @Override
     public ExtendedTypeMap getExtendedTypes() {
         return getAdapter().getExtendedTypes();
     }
@@ -144,6 +156,7 @@ public class AutoAdapter implements DbAdapter {
     /**
      * Returns a primary key generator.
      */
+    @Override
     public PkGenerator getPkGenerator() {
         return (pkGenerator != null) ? pkGenerator : getAdapter().getPkGenerator();
     }
@@ -156,6 +169,7 @@ public class AutoAdapter implements DbAdapter {
         this.pkGenerator = pkGenerator;
     }
 
+    @Override
     public DbAttribute buildAttribute(
             String name,
             String typeName,
@@ -173,6 +187,7 @@ public class AutoAdapter implements DbAdapter {
                 allowNulls);
     }
 
+    @Override
     public void bindParameter(
             PreparedStatement statement,
             Object object,
@@ -182,18 +197,22 @@ public class AutoAdapter implements DbAdapter {
         getAdapter().bindParameter(statement, object, pos, sqlType, precision);
     }
 
+    @Override
     public String tableTypeForTable() {
         return getAdapter().tableTypeForTable();
     }
 
+    @Override
     public String tableTypeForView() {
         return getAdapter().tableTypeForView();
     }
 
+    @Override
     public MergerFactory mergerFactory() {
         return getAdapter().mergerFactory();
     }
 
+    @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         getAdapter().createTableAppendColumn(sqlBuffer, column);
     }
@@ -202,6 +221,7 @@ public class AutoAdapter implements DbAdapter {
      * @deprecated since 3.2
      */
     @Deprecated
+    @Override
     public QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) {
         return getAdapter().getQuotingStrategy(isQuoteStrategy);
     }
@@ -209,6 +229,7 @@ public class AutoAdapter implements DbAdapter {
     /**
      * @since 3.2
      */
+    @Override
     public QuotingStrategy getQuotingStrategy() {
         return getAdapter().getQuotingStrategy();
     }

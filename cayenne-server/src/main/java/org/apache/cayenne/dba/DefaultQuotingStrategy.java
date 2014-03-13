@@ -40,38 +40,46 @@ public class DefaultQuotingStrategy implements QuotingStrategy {
     /**
      * @deprecated since 3.2
      */
+    @Override
     @Deprecated
     public String quoteString(String name) {
         return quotedIdentifier((DataMap) null, name);
     }
 
+    @Override
     @Deprecated
     public String quoteFullyQualifiedName(DbEntity entity) {
         return quotedFullyQualifiedName(entity);
     }
 
+    @Override
     public String quotedFullyQualifiedName(DbEntity entity) {
         return quotedIdentifier(entity.getDataMap(), entity.getCatalog(), entity.getSchema(), entity.getName());
     }
 
+    @Override
     public String quotedName(DbAttribute attribute) {
         return quotedIdentifier(attribute.getEntity().getDataMap(), attribute.getName());
     }
 
+    @Override
     public String quotedSourceName(DbJoin join) {
         DataMap dataMap = join.getSource().getEntity().getDataMap();
         return quotedIdentifier(dataMap, join.getSourceName());
     }
 
+    @Override
     public String quotedTargetName(DbJoin join) {
         DataMap dataMap = join.getTarget().getEntity().getDataMap();
         return quotedIdentifier(dataMap, join.getTargetName());
     }
 
+    @Override
     public String quotedIdentifier(Entity entity, String... identifierParts) {
         return quotedIdentifier(entity.getDataMap(), identifierParts);
     }
 
+    @Override
     public String quotedIdentifier(DataMap dataMap, String... identifierParts) {
 
         String startQuote, endQuote;
