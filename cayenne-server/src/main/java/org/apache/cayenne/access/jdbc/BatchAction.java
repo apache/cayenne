@@ -286,7 +286,7 @@ public class BatchAction extends BaseSQLAction {
             this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
         }
 
-        RowReader<?> rowReader = dataNode.createRowReader(keyRowDescriptor,
+        RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor,
                 query.getMetaData(dataNode.getEntityResolver()),
                 Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
         ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);

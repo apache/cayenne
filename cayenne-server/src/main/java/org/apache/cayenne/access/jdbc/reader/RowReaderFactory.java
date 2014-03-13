@@ -33,6 +33,6 @@ import org.apache.cayenne.query.QueryMetadata;
  */
 public interface RowReaderFactory {
 
-    RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
+    RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
             Map<ObjAttribute, ColumnDescriptor> attributeOverrides);
 }

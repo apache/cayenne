@@ -50,8 +50,9 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
- * An abstraction of a single physical data storage. This is usually a database server,
- * but can potentially be some other storage type like an LDAP server, etc.
+ * An abstraction of a single physical data storage. This is usually a database
+ * server, but can potentially be some other storage type like an LDAP server,
+ * etc.
  */
 public class DataNode implements QueryEngine {
 
@@ -137,7 +138,8 @@ public class DataNode implements QueryEngine {
     }
 
     /**
-     * Returns node name. Name is used to uniquely identify DataNode within a DataDomain.
+     * Returns node name. Name is used to uniquely identify DataNode within a
+     * DataDomain.
      */
     public String getName() {
         return name;
@@ -148,8 +150,9 @@ public class DataNode implements QueryEngine {
     }
 
     /**
-     * Returns a location of DataSource of this node. Depending on how this node was
-     * created, location is either a JNDI name, or a location of node XML file, etc.
+     * Returns a location of DataSource of this node. Depending on how this node
+     * was created, location is either a JNDI name, or a location of node XML
+     * file, etc.
      */
     public String getDataSourceLocation() {
         return dataSourceLocation;
@@ -217,8 +220,8 @@ public class DataNode implements QueryEngine {
     }
 
     /**
-     * Returns DbAdapter object. This is a plugin that handles RDBMS vendor-specific
-     * features.
+     * Returns DbAdapter object. This is a plugin that handles RDBMS
+     * vendor-specific features.
      */
     public DbAdapter getAdapter() {
         return adapter;
@@ -243,9 +246,7 @@ public class DataNode implements QueryEngine {
      * 
      * @since 1.1
      */
-    public void performQueries(
-            Collection<? extends Query> queries,
-            OperationObserver callback) {
+    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
 
         int listSize = queries.size();
         if (listSize == 0) {
@@ -253,22 +254,21 @@ public class DataNode implements QueryEngine {
         }
 
         if (callback.isIteratedResult() && listSize > 1) {
-            throw new CayenneRuntimeException(
-                    "Iterated queries are not allowed in a batch. Batch size: "
-                            + listSize);
+            throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: " + listSize);
         }
 
         // do this meaningless inexpensive operation to trigger AutoAdapter lazy
-        // initialization before opening a connection. Otherwise we may end up with two
-        // connections open simultaneously, possibly hitting connection pool upper limit.
+        // initialization before opening a connection. Otherwise we may end up
+        // with two
+        // connections open simultaneously, possibly hitting connection pool
+        // upper limit.
         getAdapter().getExtendedTypes();
 
         Connection connection = null;
 
         try {
             connection = this.getDataSource().getConnection();
-        }
-        catch (Exception globalEx) {
+        } catch (Exception globalEx) {
             jdbcEventLogger.logQueryError(globalEx);
 
             Transaction transaction = Transaction.getThreadTransaction();
@@ -288,8 +288,7 @@ public class DataNode implements QueryEngine {
                 // catch exceptions for each individual query
                 try {
                     queryRunner.runQuery(connection, nextQuery);
-                }
-                catch (Exception queryEx) {
+                } catch (Exception queryEx) {
                     jdbcEventLogger.logQueryError(queryEx);
 
                     // notify consumer of the exception,
@@ -303,12 +302,10 @@ public class DataNode implements QueryEngine {
                     break;
                 }
             }
-        }
-        finally {
+        } finally {
             try {
                 connection.close();
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 // ignore closing exceptions...
             }
         }
@@ -322,9 +319,9 @@ public class DataNode implements QueryEngine {
     }
 
     /**
-     * Sets EntityResolver. DataNode relies on externally set EntityResolver, so if the
-     * node is created outside of DataDomain stack, a valid EntityResolver must be
-     * provided explicitly.
+     * Sets EntityResolver. DataNode relies on externally set EntityResolver, so
+     * if the node is created outside of DataDomain stack, a valid
+     * EntityResolver must be provided explicitly.
      * 
      * @since 1.1
      */
@@ -337,7 +334,8 @@ public class DataNode implements QueryEngine {
         return new ToStringBuilder(this).append("name", getName()).toString();
     }
 
-    // a read-through DataSource that ensures returning the same connection within
+    // a read-through DataSource that ensures returning the same connection
+    // within
     // transaction.
     final class TransactionDataSource implements DataSource {
 
@@ -358,8 +356,10 @@ public class DataNode implements QueryEngine {
                     t.addConnection(key, c);
                 }
 
-                // wrap transaction-attached connections in a decorator that prevents them
-                // from being closed by callers, as transaction should take care of them
+                // wrap transaction-attached connections in a decorator that
+                // prevents them
+                // from being closed by callers, as transaction should take care
+                // of them
                 // on commit or rollback.
                 return new TransactionConnectionDecorator(c);
             }
@@ -367,8 +367,7 @@ public class DataNode implements QueryEngine {
             return dataSource.getConnection();
         }
 
-        public Connection getConnection(String username, String password)
-                throws SQLException {
+        public Connection getConnection(String username, String password) throws SQLException {
             if (schemaUpdateStrategy != null) {
                 schemaUpdateStrategy.updateSchema(DataNode.this);
             }
@@ -382,8 +381,10 @@ public class DataNode implements QueryEngine {
                     t.addConnection(key, c);
                 }
 
-                // wrap transaction-attached connections in a decorator that prevents them
-                // from being closed by callers, as transaction should take care of them
+                // wrap transaction-attached connections in a decorator that
+                // prevents them
+                // from being closed by callers, as transaction should take care
+                // of them
                 // on commit or rollback.
                 return new TransactionConnectionDecorator(c);
             }
@@ -429,32 +430,33 @@ public class DataNode implements QueryEngine {
 
         /**
          * @since 3.1
-         *
-         * JDBC 4.1 compatibility under Java 1.5
+         * 
+         *        JDBC 4.1 compatibility under Java 1.5
          */
         public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-            // don't throw SQLFeatureNotSupported - this will break JDK 1.5 runtime
+            // don't throw SQLFeatureNotSupported - this will break JDK 1.5
+            // runtime
             throw new UnsupportedOperationException();
         }
     }
-    
+
     /**
      * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
      * 
      * @since 3.2
      */
-    public RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
-        return createRowReader(descriptor, queryMetadata, Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+    public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
+        return rowReader(descriptor, queryMetadata, Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
     }
-    
+
     /**
      * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
      * 
      * @since 3.2
      */
-    public RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
+    public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
             Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
-        return rowReaderFactory.createRowReader(descriptor, queryMetadata, getAdapter(), attributeOverrides);
+        return rowReaderFactory.rowReader(descriptor, queryMetadata, getAdapter(), attributeOverrides);
     }
 
     /**
@@ -470,7 +472,7 @@ public class DataNode implements QueryEngine {
     public void setRowReaderFactory(RowReaderFactory rowReaderFactory) {
         this.rowReaderFactory = rowReaderFactory;
     }
-    
+
     /**
      * @since 3.2
      */

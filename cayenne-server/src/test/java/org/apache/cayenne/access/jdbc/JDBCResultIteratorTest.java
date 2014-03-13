@@ -48,7 +48,7 @@ public class JDBCResultIteratorTest extends TestCase {
         rs.addColumn("a", new Object[] { "1", "2", "3" });
 
         RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
-        RowReader<?> rowReader = new DefaultRowReaderFactory().createRowReader(descriptor, new MockQueryMetadata(),
+        RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(descriptor, new MockQueryMetadata(),
                 mock(DbAdapter.class), Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
 
         JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
