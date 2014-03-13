@@ -20,6 +20,8 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -48,6 +50,9 @@ public class BatchQueryBuilderTest extends ServerCase {
             public String createSqlString(BatchQuery batch) {
 				return null;
 			}
+			@Override
+            public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
+            }
 		};
 
 		assertSame(adapter, builder.getAdapter());
@@ -65,6 +70,10 @@ public class BatchQueryBuilderTest extends ServerCase {
             public String createSqlString(BatchQuery batch) {
 				return null;
 			}
+			
+			@Override
+            public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
+            }
 		};
 		
 		builder.setTrimFunction(trimFunction);
@@ -92,6 +101,10 @@ public class BatchQueryBuilderTest extends ServerCase {
 			@Override
             public String createSqlString(BatchQuery batch) {
 				return null;
+			}
+			
+			@Override
+			public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
 			}
 		};
 

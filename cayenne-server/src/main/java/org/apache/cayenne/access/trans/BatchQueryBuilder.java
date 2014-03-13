@@ -95,18 +95,7 @@ public abstract class BatchQueryBuilder {
      * 
      * @since 1.2
      */
-    public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
-
-        List<DbAttribute> dbAttributes = query.getDbAttributes();
-        int attributeCount = dbAttributes.size();
-
-        for (int i = 0; i < attributeCount; i++) {
-            Object value = query.getValue(i);
-            DbAttribute attribute = dbAttributes.get(i);
-            adapter.bindParameter(statement, value, i + 1, attribute.getType(), attribute.getScale());
-
-        }
-    }
+    public abstract void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception;
 
     /**
      * Returns a list of values for the current batch iteration. Used primarily
