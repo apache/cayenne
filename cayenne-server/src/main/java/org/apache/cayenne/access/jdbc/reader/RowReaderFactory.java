@@ -16,20 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.jdbc.reader;
 
-import java.sql.ResultSet;
+import java.util.Map;
+
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
- * A strategy class that encapsulates an algorithm for converting a single
- * ResultSet row into a DataRow.
+ * Creates RowReader instances for executed queries.
  * 
- * @since 3.0
+ * @since 3.2
  */
-public interface RowReader<T> {
+public interface RowReaderFactory {
 
-    /**
-     * Extracts a DataRow from the ResultSet at its current position.
-     */
-    T readRow(ResultSet resultSet);
+    RowReader<?> createRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
+            Map<ObjAttribute, ColumnDescriptor> attributeOverrides);
 }

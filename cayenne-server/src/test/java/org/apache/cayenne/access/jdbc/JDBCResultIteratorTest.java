@@ -28,6 +28,8 @@ import java.util.Collections;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
+import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.ObjAttribute;

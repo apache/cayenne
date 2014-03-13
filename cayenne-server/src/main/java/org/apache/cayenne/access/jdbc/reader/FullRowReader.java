@@ -16,12 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.jdbc.reader;
 
 import java.sql.ResultSet;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 

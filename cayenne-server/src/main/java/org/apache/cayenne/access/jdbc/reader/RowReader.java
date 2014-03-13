@@ -16,37 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.jdbc.reader;
 
 import java.sql.ResultSet;
 
 /**
- * A row reader for complex result sets resolved as object arrays.
+ * A strategy class that encapsulates an algorithm for converting a single
+ * ResultSet row into a DataRow.
  * 
  * @since 3.0
  */
-class CompoundRowReader implements RowReader<Object[]> {
+public interface RowReader<T> {
 
-    private RowReader<?>[] readers;
-
-    CompoundRowReader(int width) {
-        this.readers = new RowReader[width];
-    }
-
-    void addRowReader(int pos, RowReader<?> reader) {
-        this.readers[pos] = reader;
-    }
-
-    @Override
-    public Object[] readRow(ResultSet resultSet) {
-
-        int width = readers.length;
-        Object[] row = new Object[width];
-
-        for (int i = 0; i < width; i++) {
-            row[i] = readers[i].readRow(resultSet);
-        }
-
-        return row;
-    }
+    /**
+     * Extracts a DataRow from the ResultSet at its current position.
+     */
+    T readRow(ResultSet resultSet);
 }

@@ -22,6 +22,7 @@ package org.apache.cayenne.access.jdbc;
 import static org.mockito.Mockito.mock;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;

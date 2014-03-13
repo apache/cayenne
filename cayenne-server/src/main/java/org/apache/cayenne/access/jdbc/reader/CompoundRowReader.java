@@ -16,34 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.jdbc.reader;
 
 import java.sql.ResultSet;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.QueryMetadata;
-
 /**
+ * A row reader for complex result sets resolved as object arrays.
+ * 
  * @since 3.0
  */
-class InheritanceAwareRowReader extends FullRowReader {
+class CompoundRowReader implements RowReader<Object[]> {
 
-    private EntityInheritanceTree entityInheritanceTree;
+    private RowReader<?>[] readers;
 
-    InheritanceAwareRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
-        super(descriptor, queryMetadata, postProcessor);
-        this.entityInheritanceTree = queryMetadata.getClassDescriptor().getEntityInheritanceTree();
+    CompoundRowReader(int width) {
+        this.readers = new RowReader[width];
+    }
+
+    void addRowReader(int pos, RowReader<?> reader) {
+        this.readers[pos] = reader;
     }
 
     @Override
-    void postprocessRow(ResultSet resultSet, DataRow dataRow) throws Exception {
-        if (postProcessor != null) {
-            postProcessor.postprocessRow(resultSet, dataRow);
+    public Object[] readRow(ResultSet resultSet) {
+
+        int width = readers.length;
+        Object[] row = new Object[width];
+
+        for (int i = 0; i < width; i++) {
+            row[i] = readers[i].readRow(resultSet);
         }
 
-        ObjEntity entity = entityInheritanceTree.entityMatchingRow(dataRow);
-        dataRow.setEntityName(entity != null ? entity.getName() : entityName);
+        return row;
     }
 }

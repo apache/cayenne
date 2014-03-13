@@ -33,6 +33,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
+import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;

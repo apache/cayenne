@@ -16,27 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.jdbc.reader;
 
 import java.sql.ResultSet;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * @since 3.0
  */
-class InheritanceAwareEntityRowReader extends EntityRowReader {
+class InheritanceAwareRowReader extends FullRowReader {
 
     private EntityInheritanceTree entityInheritanceTree;
 
-    public InheritanceAwareEntityRowReader(RowDescriptor descriptor, EntityResultSegment segmentMetadata,
-            DataRowPostProcessor postProcessor) {
-        
-        super(descriptor, segmentMetadata, postProcessor);
-        this.entityInheritanceTree = segmentMetadata.getClassDescriptor().getEntityInheritanceTree();
+    InheritanceAwareRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
+        super(descriptor, queryMetadata, postProcessor);
+        this.entityInheritanceTree = queryMetadata.getClassDescriptor().getEntityInheritanceTree();
     }
 
     @Override

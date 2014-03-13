@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.util.ResultIteratorIterator;
 
 /**

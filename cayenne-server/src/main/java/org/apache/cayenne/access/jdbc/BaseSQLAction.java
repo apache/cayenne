@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
