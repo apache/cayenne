@@ -29,14 +29,17 @@ import org.apache.cayenne.dba.DbAdapter;
  */
 public class DefaultBatchQueryBuilderFactory implements BatchQueryBuilderFactory {
 
+    @Override
     public BatchQueryBuilder createDeleteQueryBuilder(DbAdapter adapter) {
         return new DeleteBatchQueryBuilder(adapter);
     }
 
+    @Override
     public BatchQueryBuilder createInsertQueryBuilder(DbAdapter adapter) {
         return new InsertBatchQueryBuilder(adapter);
     }
 
+    @Override
     public BatchQueryBuilder createUpdateQueryBuilder(DbAdapter adapter) {
         return new UpdateBatchQueryBuilder(adapter);
     }
