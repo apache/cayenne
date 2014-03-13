@@ -27,21 +27,25 @@ import java.sql.ResultSet;
  */
 public class DoubleType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Double.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         double d = rs.getDouble(index);
         return rs.wasNull() ? null : d;
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         double d = rs.getDouble(index);
         return rs.wasNull() ? null : d;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

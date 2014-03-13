@@ -25,20 +25,22 @@ import java.sql.ResultSet;
 
 public class MockExtendedType implements ExtendedType {
 
-    protected Class objectClass;
+    protected Class<?> objectClass;
 
     public MockExtendedType() {
         this(Object.class);
     }
 
-    public MockExtendedType(Class objectClass) {
+    public MockExtendedType(Class<?> objectClass) {
         this.objectClass = objectClass;
     }
 
+    @Override
     public String getClassName() {
         return objectClass.getName();
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,
@@ -47,10 +49,12 @@ public class MockExtendedType implements ExtendedType {
             int precision) throws Exception {
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return objectClass.newInstance();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return objectClass.newInstance();

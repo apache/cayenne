@@ -28,19 +28,23 @@ import java.sql.Timestamp;
  */
 public class TimestampType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Timestamp.class.getName();
     }
 
+    @Override
     public Timestamp materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getTimestamp(index);
     }
 
+    @Override
     public Timestamp materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
         return cs.getTimestamp(index);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

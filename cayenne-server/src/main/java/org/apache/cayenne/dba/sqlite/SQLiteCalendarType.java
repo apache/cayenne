@@ -41,10 +41,12 @@ class SQLiteCalendarType implements ExtendedType {
         this.delegateDateType = new SQLiteDateType();
     }
 
+    @Override
     public String getClassName() {
         return delegateCalendarType.getClassName();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
 
@@ -58,6 +60,7 @@ class SQLiteCalendarType implements ExtendedType {
         return calendar;
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         Date date = (Date) delegateDateType.materializeObject(rs, index, type);
         if (date == null) {
@@ -69,6 +72,7 @@ class SQLiteCalendarType implements ExtendedType {
         return calendar;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

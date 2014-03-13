@@ -28,19 +28,23 @@ import java.sql.ResultSet;
  */
 public class DateType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Date.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getDate(index);
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getDate(index);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

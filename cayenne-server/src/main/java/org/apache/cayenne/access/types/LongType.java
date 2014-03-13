@@ -27,21 +27,25 @@ import java.sql.ResultSet;
  */
 public class LongType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Long.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         long value = rs.getLong(index);
         return (rs.wasNull()) ? null : value;
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         long value = rs.getLong(index);
         return (rs.wasNull()) ? null : value;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

@@ -31,10 +31,12 @@ import java.sql.ResultSet;
  */
 public class VoidType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Void.TYPE.getName();
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,
@@ -44,10 +46,12 @@ public class VoidType implements ExtendedType {
         statement.setNull(pos, type);
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return null;
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return null;

@@ -51,10 +51,12 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
         this.calendarClass = calendarClass;
     }
 
+    @Override
     public String getClassName() {
         return calendarClass.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         Date val = null;
@@ -95,6 +97,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
         return calendar;
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         Date val = null;
@@ -135,6 +138,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
         return calendar;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

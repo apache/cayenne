@@ -29,19 +29,23 @@ import java.sql.ResultSet;
  */
 public class ObjectType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Object.class.getName();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getObject(index);
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getObject(index);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

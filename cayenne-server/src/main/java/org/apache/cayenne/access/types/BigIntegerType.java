@@ -30,10 +30,12 @@ import org.apache.cayenne.dba.TypesMapping;
  */
 public class BigIntegerType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return BigInteger.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         Object object = rs.getObject(index);
         if (object == null) {
@@ -43,6 +45,7 @@ public class BigIntegerType implements ExtendedType {
         return new BigInteger(object.toString());
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         Object object = rs.getObject(index);
@@ -53,6 +56,7 @@ public class BigIntegerType implements ExtendedType {
         return new BigInteger(object.toString());
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

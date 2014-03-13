@@ -27,21 +27,25 @@ import java.sql.ResultSet;
  */
 public class FloatType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Float.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         float f = rs.getFloat(index);
         return rs.wasNull() ? null : f;
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         float f = rs.getFloat(index);
         return rs.wasNull() ? null : f;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

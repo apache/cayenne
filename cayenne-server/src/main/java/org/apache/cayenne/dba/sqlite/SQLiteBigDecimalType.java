@@ -30,10 +30,12 @@ import org.apache.cayenne.access.types.ExtendedType;
  */
 class SQLiteBigDecimalType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return BigDecimal.class.getName();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         // BigDecimals are not supported by the zentus driver... in addition the driver
@@ -43,6 +45,7 @@ class SQLiteBigDecimalType implements ExtendedType {
         return (string == null) ? null : new BigDecimal(string);
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         // BigDecimals are not supported by the zentus driver... in addition the driver
         // throws an NPE on 'getDouble' if the value is null, and also there are rounding
@@ -51,6 +54,7 @@ class SQLiteBigDecimalType implements ExtendedType {
         return (string == null) ? null : new BigDecimal(string);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

@@ -29,19 +29,23 @@ import org.apache.cayenne.access.types.ExtendedType;
  */
 public class CAY_207StringType2 implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return CAY_207String2.class.getName();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return new CAY_207String2(rs.getString(index));
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return new CAY_207String2(rs.getString(index));
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

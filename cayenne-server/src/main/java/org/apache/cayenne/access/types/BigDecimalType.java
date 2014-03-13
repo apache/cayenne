@@ -28,19 +28,23 @@ import java.sql.ResultSet;
  */
 public class BigDecimalType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return BigDecimal.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getBigDecimal(index);
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getBigDecimal(index);
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

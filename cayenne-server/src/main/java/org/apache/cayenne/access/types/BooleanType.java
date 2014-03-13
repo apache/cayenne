@@ -34,10 +34,12 @@ import java.sql.Types;
  */
 public class BooleanType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Boolean.class.getName();
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,
@@ -57,11 +59,13 @@ public class BooleanType implements ExtendedType {
         }
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         boolean b = rs.getBoolean(index);
         return (rs.wasNull()) ? null : b ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    @Override
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         boolean b = st.getBoolean(index);

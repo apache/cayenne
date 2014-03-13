@@ -36,6 +36,7 @@ public class UtilDateType implements ExtendedType {
     /**
      * Returns "java.util.Date".
      */
+    @Override
     public String getClassName() {
         return Date.class.getName();
     }
@@ -55,6 +56,7 @@ public class UtilDateType implements ExtendedType {
                             + TypesMapping.getSqlNameByType(type));
     }
 
+    @Override
     public Date materializeObject(ResultSet rs, int index, int type) throws Exception {
         Date val = null;
 
@@ -77,6 +79,7 @@ public class UtilDateType implements ExtendedType {
         return val == null ? null : new Date(val.getTime());
     }
 
+    @Override
     public Date materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
         Date val = null;
@@ -100,6 +103,7 @@ public class UtilDateType implements ExtendedType {
         return val == null ? null : new Date(val.getTime());
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

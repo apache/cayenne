@@ -32,10 +32,12 @@ import org.apache.cayenne.CayenneRuntimeException;
  */
 public class UUIDType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return UUID.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         String uuid = rs.getString(index);
         if (uuid == null) {
@@ -50,6 +52,7 @@ public class UUIDType implements ExtendedType {
         }
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
 
@@ -66,6 +69,7 @@ public class UUIDType implements ExtendedType {
         }
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

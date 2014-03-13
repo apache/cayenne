@@ -71,10 +71,12 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
         }
     }
 
+    @Override
     public String getClassName() {
         return enumerationClass.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         if (TypesMapping.isNumeric(type)) {
             int i = rs.getInt(index);
@@ -86,6 +88,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
         }
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         if (TypesMapping.isNumeric(type)) {
@@ -98,6 +101,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
         }
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

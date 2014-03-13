@@ -321,10 +321,12 @@ public class OracleAdapter extends JdbcAdapter {
      */
     final class OracleBooleanType implements ExtendedType {
 
+        @Override
         public String getClassName() {
             return Boolean.class.getName();
         }
 
+        @Override
         public void setJdbcObject(
                 PreparedStatement st,
                 Object val,
@@ -343,6 +345,7 @@ public class OracleAdapter extends JdbcAdapter {
             }
         }
 
+        @Override
         public Object materializeObject(ResultSet rs, int index, int type)
                 throws Exception {
 
@@ -352,6 +355,7 @@ public class OracleAdapter extends JdbcAdapter {
             return (rs.wasNull()) ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
         }
 
+        @Override
         public Object materializeObject(CallableStatement st, int index, int type)
                 throws Exception {
 

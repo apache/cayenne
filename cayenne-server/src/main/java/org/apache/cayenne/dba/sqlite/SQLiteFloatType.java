@@ -29,10 +29,12 @@ import org.apache.cayenne.access.types.ExtendedType;
  */
 class SQLiteFloatType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return Float.class.getName();
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
@@ -41,6 +43,7 @@ class SQLiteFloatType implements ExtendedType {
         return (n == null) ? null : new Float(n.floatValue());
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
         // an object.
@@ -48,6 +51,7 @@ class SQLiteFloatType implements ExtendedType {
         return (n == null) ? null : new Float(n.floatValue());
     }
     
+    @Override
     public void setJdbcObject(
             PreparedStatement st,
             Object val,

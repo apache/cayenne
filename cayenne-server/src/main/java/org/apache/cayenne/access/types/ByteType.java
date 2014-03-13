@@ -39,21 +39,25 @@ public class ByteType implements ExtendedType {
         this.widenBytes = widenBytes;
     }
 
+    @Override
     public String getClassName() {
         return Byte.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         byte b = rs.getByte(index);
         return (rs.wasNull()) ? null : b;
     }
 
+    @Override
     public Object materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         byte b = st.getByte(index);
         return (st.wasNull()) ? null : b;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,

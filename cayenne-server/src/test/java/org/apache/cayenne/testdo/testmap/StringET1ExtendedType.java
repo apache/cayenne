@@ -26,21 +26,25 @@ import org.apache.cayenne.access.types.ExtendedType;
 
 public class StringET1ExtendedType implements ExtendedType {
 
+    @Override
     public String getClassName() {
         return StringET1.class.getName();
     }
 
+    @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
         String string = rs.getString(index);
         return string != null ? new StringET1(string) : null;
     }
 
+    @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         String string = rs.getString(index);
         return string != null ? new StringET1(string) : null;
     }
 
+    @Override
     public void setJdbcObject(
             PreparedStatement statement,
             Object value,
