@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.sql.Connection;
+
 import org.apache.cayenne.TranslationCase;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
@@ -26,6 +28,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -34,6 +37,21 @@ public class OrderingTranslatorTest extends ServerCase {
     @Inject
     private DataNode node;
 
+    @Inject
+    private ServerCaseDataSourceFactory dataSourceFactory;
+
+    private Connection connection;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
+    }
+
+    @Override
+    protected void tearDownBeforeInjection() throws Exception {
+        connection.close();
+    }
+
     /**
      * Tests ascending ordering on string attribute.
      */
@@ -41,23 +59,15 @@ public class OrderingTranslatorTest extends ServerCase {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING);
 
-        TstQueryAssembler qa = new TstQueryAssembler(node, q);
+        TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
 
-        try {
-            TranslationCase tstCase = new TranslationCase(
-                    "Artist",
-                    null,
-                    "ta.ARTIST_NAME");
+        TranslationCase tstCase = new TranslationCase("Artist", null, "ta.ARTIST_NAME");
 
-            StringBuilder out = new StringBuilder();
-            new OrderingTranslator(qa).appendPart(out);
+        StringBuilder out = new StringBuilder();
+        new OrderingTranslator(qa).appendPart(out);
 
-            assertTrue(out.length() > 0);
-            tstCase.assertTranslatedWell(out.toString());
-        }
-        finally {
-            qa.dispose();
-        }
+        assertTrue(out.length() > 0);
+        tstCase.assertTranslatedWell(out.toString());
     }
 
     /**
@@ -67,23 +77,15 @@ public class OrderingTranslatorTest extends ServerCase {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.DESCENDING);
 
-        TstQueryAssembler qa = new TstQueryAssembler(node, q);
+        TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
 
-        try {
-            TranslationCase tstCase = new TranslationCase(
-                    "Artist",
-                    null,
-                    "ta.ARTIST_NAME DESC");
+        TranslationCase tstCase = new TranslationCase("Artist", null, "ta.ARTIST_NAME DESC");
 
-            StringBuilder out = new StringBuilder();
-            new OrderingTranslator(qa).appendPart(out);
+        StringBuilder out = new StringBuilder();
+        new OrderingTranslator(qa).appendPart(out);
 
-            assertTrue(out.length() > 0);
-            tstCase.assertTranslatedWell(out.toString());
-        }
-        finally {
-            qa.dispose();
-        }
+        assertTrue(out.length() > 0);
+        tstCase.assertTranslatedWell(out.toString());
     }
 
     /**
@@ -93,25 +95,17 @@ public class OrderingTranslatorTest extends ServerCase {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
 
-        TstQueryAssembler qa = new TstQueryAssembler(node, q);
+        TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
 
-        try {
-            TranslationCase tstCase = new TranslationCase(
-                    "Artist",
-                    null,
-                    "UPPER(ta.ARTIST_NAME)");
+        TranslationCase tstCase = new TranslationCase("Artist", null, "UPPER(ta.ARTIST_NAME)");
 
-            StringBuilder out = new StringBuilder();
-            new OrderingTranslator(qa).appendPart(out);
+        StringBuilder out = new StringBuilder();
+        new OrderingTranslator(qa).appendPart(out);
 
-            assertTrue(out.length() > 0);
-            String orderBySql = out.toString();
-            assertTrue(orderBySql.contains("UPPER("));
-            tstCase.assertTranslatedWell(orderBySql);
-        }
-        finally {
-            qa.dispose();
-        }
+        assertTrue(out.length() > 0);
+        String orderBySql = out.toString();
+        assertTrue(orderBySql.contains("UPPER("));
+        tstCase.assertTranslatedWell(orderBySql);
     }
 
     public void testDoTranslation5() throws Exception {
@@ -119,31 +113,23 @@ public class OrderingTranslatorTest extends ServerCase {
         q.addOrdering("artistName", SortOrder.DESCENDING_INSENSITIVE);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);
 
-        TstQueryAssembler qa = new TstQueryAssembler(node, q);
+        TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
 
-        try {
-            TranslationCase tstCase = new TranslationCase(
-                    "Artist",
-                    null,
-                    "UPPER(ta.ARTIST_NAME) DESC, ta.ESTIMATED_PRICE");
+        TranslationCase tstCase = new TranslationCase("Artist", null, "UPPER(ta.ARTIST_NAME) DESC, ta.ESTIMATED_PRICE");
 
-            StringBuilder out = new StringBuilder();
-            new OrderingTranslator(qa).appendPart(out);
+        StringBuilder out = new StringBuilder();
+        new OrderingTranslator(qa).appendPart(out);
 
-            assertTrue(out.length() > 0);
-            String orderBySql = out.toString();
+        assertTrue(out.length() > 0);
+        String orderBySql = out.toString();
 
-            // Check there is an UPPER modifier
-            int indexOfUpper = orderBySql.indexOf("UPPER(");
-            assertTrue(indexOfUpper != -1);
+        // Check there is an UPPER modifier
+        int indexOfUpper = orderBySql.indexOf("UPPER(");
+        assertTrue(indexOfUpper != -1);
 
-            // and ensure there is only ONE upper modifier
-            assertTrue(orderBySql.indexOf("UPPER(", indexOfUpper + 1) == -1);
-            tstCase.assertTranslatedWell(orderBySql);
-        }
-        finally {
-            qa.dispose();
-        }
+        // and ensure there is only ONE upper modifier
+        assertTrue(orderBySql.indexOf("UPPER(", indexOfUpper + 1) == -1);
+        tstCase.assertTranslatedWell(orderBySql);
     }
 
     public void testDoTranslation6() throws Exception {
@@ -151,32 +137,25 @@ public class OrderingTranslatorTest extends ServerCase {
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING_INSENSITIVE);
 
-        TstQueryAssembler qa = new TstQueryAssembler(node, q);
+        TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
 
-        try {
-            TranslationCase tstCase = new TranslationCase(
-                    "Artist",
-                    null,
-                    "UPPER(ta.ARTIST_NAME), UPPER(ta.ESTIMATED_PRICE)");
+        TranslationCase tstCase = new TranslationCase("Artist", null,
+                "UPPER(ta.ARTIST_NAME), UPPER(ta.ESTIMATED_PRICE)");
 
-            StringBuilder out = new StringBuilder();
-            new OrderingTranslator(qa).appendPart(out);
+        StringBuilder out = new StringBuilder();
+        new OrderingTranslator(qa).appendPart(out);
 
-            assertTrue(out.length() > 0);
-            String orderBySql = out.toString();
+        assertTrue(out.length() > 0);
+        String orderBySql = out.toString();
 
-            // Check there is at least one UPPER modifier
-            int indexOfUpper = orderBySql.indexOf("UPPER(");
-            assertTrue(indexOfUpper != -1);
+        // Check there is at least one UPPER modifier
+        int indexOfUpper = orderBySql.indexOf("UPPER(");
+        assertTrue(indexOfUpper != -1);
 
-            // and ensure there is another after it
-            assertTrue(orderBySql.indexOf("UPPER(", indexOfUpper + 1) != -1);
+        // and ensure there is another after it
+        assertTrue(orderBySql.indexOf("UPPER(", indexOfUpper + 1) != -1);
 
-            tstCase.assertTranslatedWell(orderBySql);
-        }
-        finally {
-            qa.dispose();
-        }
+        tstCase.assertTranslatedWell(orderBySql);
     }
 
     public void testDoTranslation3() throws Exception {
@@ -185,23 +164,15 @@ public class OrderingTranslatorTest extends ServerCase {
         q.addOrdering("artistName", SortOrder.DESCENDING);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);
 
-        TstQueryAssembler qa = new TstQueryAssembler(node, q);
+        TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
 
-        try {
-            TranslationCase tstCase = new TranslationCase(
-                    "Artist",
-                    null,
-                    "ta.ARTIST_NAME DESC, ta.ESTIMATED_PRICE");
+        TranslationCase tstCase = new TranslationCase("Artist", null, "ta.ARTIST_NAME DESC, ta.ESTIMATED_PRICE");
 
-            StringBuilder out = new StringBuilder();
-            new OrderingTranslator(qa).appendPart(out);
+        StringBuilder out = new StringBuilder();
+        new OrderingTranslator(qa).appendPart(out);
 
-            assertTrue(out.length() > 0);
-            String orderBySql = out.toString();
-            tstCase.assertTranslatedWell(orderBySql);
-        }
-        finally {
-            qa.dispose();
-        }
+        assertTrue(out.length() > 0);
+        String orderBySql = out.toString();
+        tstCase.assertTranslatedWell(orderBySql);
     }
 }

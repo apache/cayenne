@@ -33,13 +33,7 @@ public class SQLServerSelectAction extends SelectAction {
 
     @Override
     protected SelectTranslator createTranslator(Connection connection) {
-        SelectTranslator translator = new SQLServerSelectTranslator();
-        translator.setQuery(query);
-        translator.setAdapter(dataNode.getAdapter());
-        translator.setEntityResolver(dataNode.getEntityResolver());
-        translator.setConnection(connection);
-        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-        return translator;
+        return new SQLServerSelectTranslator(query, dataNode, connection);
     }
 
 }

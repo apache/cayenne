@@ -18,11 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlserver;
 
+import java.sql.Connection;
+
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 
 public class SQLServerSelectTranslator extends SelectTranslator {
 	
+    /**
+     * @since 3.2
+     */
+    public SQLServerSelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
+    
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
         QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());

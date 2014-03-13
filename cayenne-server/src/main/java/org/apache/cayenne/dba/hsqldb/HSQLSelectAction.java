@@ -41,12 +41,6 @@ class HSQLSelectAction extends SelectAction {
 
     @Override
     protected SelectTranslator createTranslator(Connection connection) {
-        SelectTranslator translator = new HSQLSelectTranslator();
-        translator.setQuery(query);
-        translator.setAdapter(dataNode.getAdapter());
-        translator.setEntityResolver(dataNode.getEntityResolver());
-        translator.setConnection(connection);
-        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-        return translator;
+        return new HSQLSelectTranslator(query, dataNode, connection);
     }
 }

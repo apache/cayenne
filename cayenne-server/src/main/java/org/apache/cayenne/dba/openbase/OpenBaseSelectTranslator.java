@@ -19,14 +19,25 @@
 
 package org.apache.cayenne.dba.openbase;
 
+import java.sql.Connection;
+
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.JoinStack;
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
  */
 class OpenBaseSelectTranslator extends SelectTranslator {
 
+    /**
+     * @since 3.2
+     */
+    public OpenBaseSelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
+    
     @Override
     protected JoinStack createJoinStack() {
         return new OpenBaseJoinStack(getAdapter(), queryMetadata.getDataMap(), this);

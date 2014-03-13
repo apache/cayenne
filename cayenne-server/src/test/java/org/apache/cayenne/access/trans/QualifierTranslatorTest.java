@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.sql.Connection;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataNode;
@@ -35,6 +37,7 @@ import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -43,32 +46,37 @@ public class QualifierTranslatorTest extends ServerCase {
     @Inject
     private DataNode node;
 
+    @Inject
+    private ServerCaseDataSourceFactory dataSourceFactory;
+
+    private Connection connection;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
+    }
+
+    @Override
+    protected void tearDownBeforeInjection() throws Exception {
+        connection.close();
+    }
+
     public void testNonQualifiedQuery() throws Exception {
-        TstQueryAssembler qa = new TstQueryAssembler(node, new MockQuery());
+        TstQueryAssembler qa = new TstQueryAssembler(new MockQuery(), node, connection);
 
         try {
             new QualifierTranslator(qa).appendPart(new StringBuilder());
             fail();
-        }
-        catch (ClassCastException ccex) {
+        } catch (ClassCastException ccex) {
             // exception expected
-        }
-        finally {
-            qa.dispose();
         }
     }
 
     public void testNullQualifier() throws Exception {
-        TstQueryAssembler qa = new TstQueryAssembler(node, new SelectQuery());
+        TstQueryAssembler qa = new TstQueryAssembler(new SelectQuery<Object>(), node, connection);
 
         StringBuilder out = new StringBuilder();
-        try {
-            new QualifierTranslator(qa).appendPart(out);
-        }
-        finally {
-            qa.dispose();
-        }
-
+        new QualifierTranslator(qa).appendPart(out);
         assertEquals(0, out.length());
     }
 
@@ -95,12 +103,8 @@ public class QualifierTranslatorTest extends ServerCase {
         Expression e1 = ExpressionFactory.matchExp("toGallery", g1);
         Expression e2 = e1.orExp(ExpressionFactory.matchExp("toGallery", g2));
 
-        TstExpressionCase extraCase = new TstExpressionCase(
-                "Exhibit",
-                e2,
-                "(ta.GALLERY_ID = ?) OR (ta.GALLERY_ID = ?)",
-                4,
-                4);
+        TstExpressionCase extraCase = new TstExpressionCase("Exhibit", e2,
+                "(ta.GALLERY_ID = ?) OR (ta.GALLERY_ID = ?)", 4, 4);
 
         TstExpressionSuite suite = new TstExpressionSuite() {
         };
@@ -110,36 +114,25 @@ public class QualifierTranslatorTest extends ServerCase {
 
     private void doExpressionTest(TstExpressionSuite suite) throws Exception {
 
-        TstQueryAssembler qa = new TstQueryAssembler(node, new MockQuery());
+        TstExpressionCase[] cases = suite.cases();
 
-        try {
-            TstExpressionCase[] cases = suite.cases();
+        int len = cases.length;
+        for (int i = 0; i < len; i++) {
+            try {
 
-            int len = cases.length;
-            for (int i = 0; i < len; i++) {
-                try {
+                ObjEntity entity = node.getEntityResolver().getObjEntity(cases[i].getRootEntity());
+                assertNotNull(entity);
+                SelectQuery q = new SelectQuery(entity);
+                q.setQualifier(cases[i].getCayenneExp());
 
-                    ObjEntity entity = node.getEntityResolver().getObjEntity(
-                            cases[i].getRootEntity());
-                    assertNotNull(entity);
-                    SelectQuery q = new SelectQuery(entity);
-                    q.setQualifier(cases[i].getCayenneExp());
-                    qa.setQuery(q);
+                TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
 
-                    StringBuilder out = new StringBuilder();
-                    new QualifierTranslator(qa).appendPart(out);
-                    cases[i].assertTranslatedWell(out.toString());
-                }
-                catch (Exception ex) {
-                    throw new CayenneRuntimeException("Failed case: ["
-                            + i
-                            + "]: "
-                            + cases[i], ex);
-                }
+                StringBuilder out = new StringBuilder();
+                new QualifierTranslator(qa).appendPart(out);
+                cases[i].assertTranslatedWell(out.toString());
+            } catch (Exception ex) {
+                throw new CayenneRuntimeException("Failed case: [" + i + "]: " + cases[i], ex);
             }
-        }
-        finally {
-            qa.dispose();
         }
     }
 }

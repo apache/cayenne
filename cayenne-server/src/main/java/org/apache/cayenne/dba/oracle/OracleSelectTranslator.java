@@ -19,16 +19,26 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.Query;
 
 /**
  * Select translator that implements Oracle-specific optimizations.
  * 
  */
 class OracleSelectTranslator extends SelectTranslator {
+    
+    /**
+     * @since 3.2
+     */
+    public OracleSelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
 
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {

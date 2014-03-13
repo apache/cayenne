@@ -18,9 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.dba.ingres;
 
+import java.sql.Connection;
+
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.Query;
 
 public class IngresSelectTranslator extends SelectTranslator {
+    
+    /**
+     * @since 3.2
+     */
+    public IngresSelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
 
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {

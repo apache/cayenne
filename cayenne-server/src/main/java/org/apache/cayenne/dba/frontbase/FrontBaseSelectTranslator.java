@@ -19,7 +19,11 @@
 
 package org.apache.cayenne.dba.frontbase;
 
+import java.sql.Connection;
+
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
@@ -27,6 +31,13 @@ import org.apache.cayenne.access.trans.SelectTranslator;
 class FrontBaseSelectTranslator extends SelectTranslator {
 
     static final String SELECT_PREFIX = "SELECT";
+
+    /**
+     * @since 3.2
+     */
+    public FrontBaseSelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
 
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {

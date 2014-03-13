@@ -53,13 +53,7 @@ public class SelectAction extends BaseSQLAction {
     }
 
     protected SelectTranslator createTranslator(Connection connection) {
-        SelectTranslator translator = new SelectTranslator();
-        translator.setQuery(query);
-        translator.setAdapter(dataNode.getAdapter());
-        translator.setEntityResolver(dataNode.getEntityResolver());
-        translator.setConnection(connection);
-        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-        return translator;
+        return new SelectTranslator(query, dataNode, connection);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

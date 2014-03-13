@@ -35,12 +35,6 @@ class Oracle8SelectAction extends OracleSelectAction {
 
     @Override
     protected SelectTranslator createTranslator(Connection connection) {
-        SelectTranslator translator = new Oracle8SelectTranslator();
-        translator.setQuery(query);
-        translator.setAdapter(dataNode.getAdapter());
-        translator.setEntityResolver(dataNode.getEntityResolver());
-        translator.setConnection(connection);
-        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-        return translator;
+        return new Oracle8SelectTranslator(query, dataNode, connection);
     }
 }

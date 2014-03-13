@@ -19,43 +19,28 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.query.Query;
 
 public class TstQueryAssembler extends QueryAssembler {
 
-    protected List dbRels = new ArrayList();
+    protected List<DbRelationship> dbRels;
 
-    public TstQueryAssembler(DataNode node, Query q) {
-
-        super.setAdapter(node.getAdapter());
-
-        try {
-            super.setConnection(node.getDataSource().getConnection());
-        }
-        catch (Exception ex) {
-            throw new CayenneRuntimeException("Error getting connection...", ex);
-        }
-        super.setEntityResolver(node.getEntityResolver());
-        super.setQuery(q);
-    }
-
-    public void dispose() throws SQLException {
-        connection.close();
+    public TstQueryAssembler(Query q, DataNode node, Connection connection) throws SQLException {
+        super(q, node, connection);
+        dbRels = new ArrayList<DbRelationship>();
     }
 
     @Override
-    public void dbRelationshipAdded(
-            DbRelationship relationship,
-            JoinType joinType,
-            String joinSplitAlias) {
+    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType, String joinSplitAlias) {
         dbRels.add(relationship);
     }
 
@@ -79,7 +64,7 @@ public class TstQueryAssembler extends QueryAssembler {
         return "SELECT * FROM ARTIST";
     }
 
-    public List getAttributes() {
+    public List<DbAttribute> getAttributes() {
         return attributes;
     }
 

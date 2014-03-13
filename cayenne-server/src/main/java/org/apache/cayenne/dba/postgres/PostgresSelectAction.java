@@ -41,12 +41,6 @@ class PostgresSelectAction extends SelectAction {
 
     @Override
     protected SelectTranslator createTranslator(Connection connection) {
-        SelectTranslator translator = new PostgresSelectTranslator();
-        translator.setQuery(query);
-        translator.setAdapter(dataNode.getAdapter());
-        translator.setEntityResolver(dataNode.getEntityResolver());
-        translator.setConnection(connection);
-        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-        return translator;
+        return new PostgresSelectTranslator(query, dataNode, connection);
     }
 }

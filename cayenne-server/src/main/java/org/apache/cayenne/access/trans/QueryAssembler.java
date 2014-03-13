@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -56,7 +56,8 @@ public abstract class QueryAssembler {
     protected List<Object> values = new ArrayList<Object>();
 
     /**
-     * PreparedStatement attributes matching entries in <code>values</code> list.
+     * PreparedStatement attributes matching entries in <code>values</code>
+     * list.
      */
     protected List<DbAttribute> attributes = new ArrayList<DbAttribute>();
 
@@ -64,9 +65,17 @@ public abstract class QueryAssembler {
      * The index parameter will be inserted at in parameter list
      */
     protected int parameterIndex;
-    
-    public QueryAssembler() {
-        this.logger = NoopJdbcEventLogger.getInstance();
+
+    /**
+     * @since 3.2
+     */
+    public QueryAssembler(Query query, DataNode dataNode, Connection connection) {
+        this.logger = dataNode.getJdbcEventLogger();
+        this.entityResolver = dataNode.getEntityResolver();
+        this.adapter = dataNode.getAdapter();
+        this.query = query;
+        this.connection = connection;
+        this.queryMetadata = query.getMetaData(entityResolver);
     }
 
     /**
@@ -97,46 +106,11 @@ public abstract class QueryAssembler {
         return queryMetadata;
     }
 
-    public void setQuery(Query query) {
-        this.query = query;
-        refreshMetadata();
-    }
-
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
-
-    public void setAdapter(DbAdapter adapter) {
-        this.adapter = adapter;
-    }
-    
-    /**
-     * @since 3.1
-     */
-    public void setJdbcEventLogger(JdbcEventLogger logger) {
-        this.logger = logger;
-    }
-    
     /**
      * @since 3.1
      */
     public JdbcEventLogger getJdbcEventLogger() {
         return logger;
-    }
-
-    public void setEntityResolver(EntityResolver entityResolver) {
-        this.entityResolver = entityResolver;
-        refreshMetadata();
-    }
-
-    private void refreshMetadata() {
-        if (query != null && entityResolver != null) {
-            queryMetadata = query.getMetaData(entityResolver);
-        }
-        else {
-            queryMetadata = null;
-        }
-        cachedSqlString = null;
     }
 
     public DbEntity getRootDbEntity() {
@@ -148,15 +122,16 @@ public abstract class QueryAssembler {
     }
 
     /**
-     * A callback invoked by a child qualifier or ordering processor allowing query
-     * assembler to reset its join stack.
+     * A callback invoked by a child qualifier or ordering processor allowing
+     * query assembler to reset its join stack.
      * 
      * @since 3.0
      */
     public abstract void resetJoinStack();
 
     /**
-     * Returns an alias of the table which is currently at the top of the join stack.
+     * Returns an alias of the table which is currently at the top of the join
+     * stack.
      * 
      * @since 3.0
      */
@@ -167,21 +142,18 @@ public abstract class QueryAssembler {
      * 
      * @since 3.0
      */
-    public abstract void dbRelationshipAdded(
-            DbRelationship relationship,
-            JoinType joinType,
-            String joinSplitAlias);
+    public abstract void dbRelationshipAdded(DbRelationship relationship, JoinType joinType, String joinSplitAlias);
 
     /**
-     * Translates query into sql string. This is a workhorse method of QueryAssembler. It
-     * is called internally from <code>createStatement</code>. Usually there is no need to
-     * invoke it explicitly.
+     * Translates query into sql string. This is a workhorse method of
+     * QueryAssembler. It is called internally from <code>createStatement</code>
+     * . Usually there is no need to invoke it explicitly.
      */
     public abstract String createSqlString() throws Exception;
 
     /**
-     * Returns <code>true</code> if table aliases are supported. Default implementation
-     * returns false.
+     * Returns <code>true</code> if table aliases are supported. Default
+     * implementation returns false.
      */
     public boolean supportsTableAliases() {
         return false;
@@ -190,8 +162,10 @@ public abstract class QueryAssembler {
     /**
      * Registers <code>anObject</code> as a PreparedStatement parameter.
      * 
-     * @param anObject object that represents a value of DbAttribute
-     * @param dbAttr DbAttribute being processed.
+     * @param anObject
+     *            object that represents a value of DbAttribute
+     * @param dbAttr
+     *            DbAttribute being processed.
      */
     public void addToParamList(DbAttribute dbAttr, Object anObject) {
         attributes.add(parameterIndex, dbAttr);
@@ -211,8 +185,9 @@ public abstract class QueryAssembler {
     }
 
     /**
-     * Initializes prepared statements with collected parameters. Called internally from
-     * "createStatement". Cayenne users shouldn't normally call it directly.
+     * Initializes prepared statements with collected parameters. Called
+     * internally from "createStatement". Cayenne users shouldn't normally call
+     * it directly.
      */
     protected void initStatement(PreparedStatement stmt) throws Exception {
         if (values != null && values.size() > 0) {
@@ -222,16 +197,15 @@ public abstract class QueryAssembler {
 
                 DbAttribute attr = attributes.get(i);
 
-                // null DbAttributes are a result of inferior qualifier processing
+                // null DbAttributes are a result of inferior qualifier
+                // processing
                 // (qualifier can't map parameters to DbAttributes and therefore
                 // only supports standard java types now)
                 // hence, a special moronic case here:
                 if (attr == null) {
                     stmt.setObject(i + 1, val);
-                }
-                else {
-                    adapter.bindParameter(stmt, val, i + 1, attr.getType(), attr
-                            .getScale());
+                } else {
+                    adapter.bindParameter(stmt, val, i + 1, attr.getType(), attr.getScale());
                 }
             }
         }

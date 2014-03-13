@@ -19,13 +19,24 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import java.sql.Connection;
+
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
  */
 class PostgresSelectTranslator extends SelectTranslator {
 
+    /**
+     * @since 3.2
+     */
+    public PostgresSelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
+    
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
 

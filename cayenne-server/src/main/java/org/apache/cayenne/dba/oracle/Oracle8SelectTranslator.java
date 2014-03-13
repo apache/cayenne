@@ -18,13 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
+import java.sql.Connection;
+
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.JoinStack;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 3.0
  */
 class Oracle8SelectTranslator extends OracleSelectTranslator {
 
+    /**
+     * @since 3.2
+     */
+    public Oracle8SelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
+    
     /**
      * Returns an old style joint stack for Oracle8 that does not support explicit join
      * syntax.

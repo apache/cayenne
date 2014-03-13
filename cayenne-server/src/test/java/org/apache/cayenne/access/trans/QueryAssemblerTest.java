@@ -19,11 +19,14 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.sql.Connection;
+
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -32,42 +35,39 @@ public class QueryAssemblerTest extends ServerCase {
     @Inject
     private DataNode dataNode;
 
-    protected TstQueryAssembler qa;
+    @Inject
+    private ServerCaseDataSourceFactory dataSourceFactory;
+
+    private Connection connection;
+
+    private TstQueryAssembler qa;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        qa = new TstQueryAssembler(dataNode, new SelectQuery());
+        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
+        this.qa = new TstQueryAssembler(new SelectQuery<Object>(), dataNode, connection);
+    }
+
+    @Override
+    protected void tearDownBeforeInjection() throws Exception {
+        connection.close();
     }
 
     public void testGetQuery() throws Exception {
-        try {
-            assertNotNull(qa.getQuery());
-        }
-        finally {
-            qa.dispose();
-        }
+        assertNotNull(qa.getQuery());
     }
 
     public void testAddToParamList() throws Exception {
-        try {
-            assertEquals(0, qa.getAttributes().size());
-            assertEquals(0, qa.getValues().size());
 
-            qa.addToParamList(new DbAttribute(), new Object());
-            assertEquals(1, qa.getAttributes().size());
-            assertEquals(1, qa.getValues().size());
-        }
-        finally {
-            qa.dispose();
-        }
+        assertEquals(0, qa.getAttributes().size());
+        assertEquals(0, qa.getValues().size());
+
+        qa.addToParamList(new DbAttribute(), new Object());
+        assertEquals(1, qa.getAttributes().size());
+        assertEquals(1, qa.getValues().size());
     }
 
     public void testCreateStatement() throws Exception {
-        try {
-            assertNotNull(qa.createStatement());
-        }
-        finally {
-            qa.dispose();
-        }
+        assertNotNull(qa.createStatement());
     }
 }

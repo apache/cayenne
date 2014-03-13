@@ -43,13 +43,7 @@ class OpenBaseActionBuilder extends JdbcActionBuilder {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {
-                SelectTranslator translator = new OpenBaseSelectTranslator();
-                translator.setQuery(query);
-                translator.setAdapter(dataNode.getAdapter());
-                translator.setEntityResolver(dataNode.getEntityResolver());
-                translator.setConnection(connection);
-                translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-                return translator;
+                return new OpenBaseSelectTranslator(query, dataNode, connection);
             }
         };
     }

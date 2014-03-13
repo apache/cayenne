@@ -40,13 +40,7 @@ class FrontBaseActionBuilder extends JdbcActionBuilder {
 
             @Override
             protected SelectTranslator createTranslator(Connection connection) {
-                SelectTranslator translator = new FrontBaseSelectTranslator();
-                translator.setQuery(query);
-                translator.setAdapter(dataNode.getAdapter());
-                translator.setEntityResolver(dataNode.getEntityResolver());
-                translator.setConnection(connection);
-                translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-                return translator;
+                return new FrontBaseSelectTranslator(query, dataNode, connection);
             }
         };
     }

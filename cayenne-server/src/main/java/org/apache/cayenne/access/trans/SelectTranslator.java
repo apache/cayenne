@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.trans;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
@@ -46,6 +48,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -78,6 +81,13 @@ public class SelectTranslator extends QueryAssembler {
     }
 
     JoinStack joinStack;
+    
+    /**
+     * @since 3.2
+     */
+    public SelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
 
     public JoinStack getJoinStack() {
         if (joinStack == null) {

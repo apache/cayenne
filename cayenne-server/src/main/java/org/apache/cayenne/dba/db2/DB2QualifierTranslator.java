@@ -32,8 +32,6 @@ import org.apache.cayenne.exp.parser.ASTNotEqual;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
 
-/**
- */
 public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
 
     public DB2QualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {

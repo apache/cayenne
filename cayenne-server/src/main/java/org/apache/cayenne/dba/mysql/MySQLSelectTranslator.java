@@ -19,12 +19,23 @@
 
 package org.apache.cayenne.dba.mysql;
 
+import java.sql.Connection;
+
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
  */
 class MySQLSelectTranslator extends SelectTranslator {
+
+    /**
+     * @since 3.2
+     */
+    public MySQLSelectTranslator(Query query, DataNode dataNode, Connection connection) {
+        super(query, dataNode, connection);
+    }
 
     @Override
     protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
@@ -34,7 +45,8 @@ class MySQLSelectTranslator extends SelectTranslator {
         if (offset > 0 || limit > 0) {
             buffer.append(" LIMIT ");
 
-            // both OFFSET and LIMIT must be present, so come up with defaults if one of
+            // both OFFSET and LIMIT must be present, so come up with defaults
+            // if one of
             // them is not set by the user
             if (limit == 0) {
                 limit = Integer.MAX_VALUE;
