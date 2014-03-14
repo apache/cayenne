@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
