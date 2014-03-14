@@ -47,5 +47,4 @@ public class MockQueryCache implements QueryCache {
     public int size() {
         return 0;
     }
-
 }

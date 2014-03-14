@@ -34,7 +34,6 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class DeleteBatchQuery extends BatchQuery {
 
-    protected List<Map> qualifierSnapshots;
     protected List<DbAttribute> dbAttributes;
     protected boolean usingOptimisticLocking;
 
@@ -43,11 +42,13 @@ public class DeleteBatchQuery extends BatchQuery {
 
     /**
      * Creates new DeleteBatchQuery. Used by
-     * ContextCommit.categorizeFlattenedDeletesAndCreateBatches for deleting flattenned
-     * relationships.
+     * ContextCommit.categorizeFlattenedDeletesAndCreateBatches for deleting
+     * flattenned relationships.
      * 
-     * @param dbEntity Table or view to delete.
-     * @param batchCapacity Estimated size of the batch.
+     * @param dbEntity
+     *            Table or view to delete.
+     * @param batchCapacity
+     *            Estimated size of the batch.
      */
     public DeleteBatchQuery(DbEntity dbEntity, int batchCapacity) {
         this(dbEntity, dbEntity.getPrimaryKeys(), Collections.EMPTY_SET, batchCapacity);
@@ -56,27 +57,25 @@ public class DeleteBatchQuery extends BatchQuery {
     /**
      * Creates new DeleteBatchQuery.
      * 
-     * @param dbEntity Table or view to delete.
-     * @param qualifierAttributes DbAttributes used in the WHERE clause.
-     * @param nullQualifierNames DbAttribute names in the WHERE clause that have null
-     *            values.
-     * @param batchCapacity Estimated size of the batch.
+     * @param dbEntity
+     *            Table or view to delete.
+     * @param qualifierAttributes
+     *            DbAttributes used in the WHERE clause.
+     * @param nullQualifierNames
+     *            DbAttribute names in the WHERE clause that have null values.
+     * @param batchCapacity
+     *            Estimated size of the batch.
      */
-    public DeleteBatchQuery(DbEntity dbEntity,
-            Collection<DbAttribute> qualifierAttributes, Collection<String> nullQualifierNames,
-            int batchCapacity) {
+    public DeleteBatchQuery(DbEntity dbEntity, Collection<DbAttribute> qualifierAttributes,
+            Collection<String> nullQualifierNames, int batchCapacity) {
 
-        super(dbEntity);
+        super(dbEntity, batchCapacity);
 
         this.qualifierAttributes = qualifierAttributes;
-        this.nullQualifierNames = nullQualifierNames != null
-                ? nullQualifierNames
-                : Collections.EMPTY_SET;
+        this.nullQualifierNames = nullQualifierNames != null ? nullQualifierNames : Collections.<String> emptySet();
 
-        qualifierSnapshots = new ArrayList<Map>(batchCapacity);
         dbAttributes = new ArrayList<DbAttribute>(qualifierAttributes.size());
         dbAttributes.addAll(qualifierAttributes);
-        batchIndex = -1;
     }
 
     /**
@@ -112,32 +111,18 @@ public class DeleteBatchQuery extends BatchQuery {
         return qualifierAttributes;
     }
 
-    @Override
-    public Object getValue(int dbAttributeIndex) {
-        DbAttribute attribute = dbAttributes.get(dbAttributeIndex);
-        return getCurrentQualifier().get(attribute.getName());
-    }
-
-    public void add(Map dataObjectId) {
-        qualifierSnapshots.add(dataObjectId);
-    }
-
-    @Override
-    public int size() {
-        return qualifierSnapshots.size();
+    public void add(Map<String, Object> dataObjectId) {
+        
+        rows.add(new BatchQueryRow(null, dataObjectId) {
+            @Override
+            public Object getValue(int i) {
+                return qualifier.get(dbAttributes.get(i).getName());
+            }
+        });
     }
 
     @Override
     public List<DbAttribute> getDbAttributes() {
         return dbAttributes;
-    }
-
-    /**
-     * Returns a snapshot of the current qualifier values.
-     * 
-     * @since 1.2
-     */
-    public Map getCurrentQualifier() {
-        return qualifierSnapshots.get(batchIndex);
     }
 }

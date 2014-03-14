@@ -31,17 +31,8 @@ import org.apache.cayenne.map.DbEntity;
 
 /**
  * Batched UPDATE query.
- * 
  */
 public class UpdateBatchQuery extends BatchQuery {
-
-    /**
-     * @since 1.2
-     */
-    protected List<ObjectId> objectIds;
-
-    protected List<Map> qualifierSnapshots;
-    protected List<Map> updateSnapshots;
 
     protected boolean usingOptimisticLocking;
 
@@ -53,30 +44,27 @@ public class UpdateBatchQuery extends BatchQuery {
     /**
      * Creates new UpdateBatchQuery.
      * 
-     * @param dbEntity Table or view to update.
-     * @param qualifierAttributes DbAttributes used in the WHERE clause.
-     * @param nullQualifierNames DbAttribute names in the WHERE clause that have null
-     *            values.
-     * @param updatedAttribute DbAttributes describing updated columns.
-     * @param batchCapacity Estimated size of the batch.
+     * @param dbEntity
+     *            Table or view to update.
+     * @param qualifierAttributes
+     *            DbAttributes used in the WHERE clause.
+     * @param nullQualifierNames
+     *            DbAttribute names in the WHERE clause that have null values.
+     * @param updatedAttribute
+     *            DbAttributes describing updated columns.
+     * @param batchCapacity
+     *            Estimated size of the batch.
      */
     public UpdateBatchQuery(DbEntity dbEntity, List<DbAttribute> qualifierAttributes,
             List<DbAttribute> updatedAttribute, Collection<String> nullQualifierNames, int batchCapacity) {
 
-        super(dbEntity);
+        super(dbEntity, batchCapacity);
 
         this.updatedAttributes = updatedAttribute;
         this.qualifierAttributes = qualifierAttributes;
-        this.nullQualifierNames = nullQualifierNames != null
-                ? nullQualifierNames
-                : Collections.EMPTY_SET;
+        this.nullQualifierNames = nullQualifierNames != null ? nullQualifierNames : Collections.EMPTY_SET;
 
-        qualifierSnapshots = new ArrayList<Map>(batchCapacity);
-        updateSnapshots = new ArrayList<Map>(batchCapacity);
-        objectIds = new ArrayList<ObjectId>(batchCapacity);
-
-        dbAttributes = new ArrayList<DbAttribute>(updatedAttributes.size()
-                + qualifierAttributes.size());
+        dbAttributes = new ArrayList<DbAttribute>(updatedAttributes.size() + qualifierAttributes.size());
         dbAttributes.addAll(updatedAttributes);
         dbAttributes.addAll(qualifierAttributes);
     }
@@ -107,21 +95,10 @@ public class UpdateBatchQuery extends BatchQuery {
         this.usingOptimisticLocking = usingOptimisticLocking;
     }
 
-    @Override
-    public Object getValue(int dbAttributeIndex) {
-        DbAttribute attribute = dbAttributes.get(dbAttributeIndex);
-
-        // take value either from updated values or id's,
-        // depending on the index
-        Object snapshot = (dbAttributeIndex < updatedAttributes.size()) ? updateSnapshots
-                .get(batchIndex) : qualifierSnapshots.get(batchIndex);
-        return getValue((Map<String, Object>) snapshot, attribute);
-    }
-
     /**
      * Adds a parameter row to the batch.
      */
-    public void add(Map qualifierSnapshot, Map<?, ?> updateSnapshot) {
+    public void add(Map<String, Object> qualifierSnapshot, Map<String, Object> updateSnapshot) {
         add(qualifierSnapshot, updateSnapshot, null);
     }
 
@@ -130,15 +107,15 @@ public class UpdateBatchQuery extends BatchQuery {
      * 
      * @since 1.2
      */
-    public void add(Map qualifierSnapshot, Map<?, ?> updateSnapshot, ObjectId id) {
-        qualifierSnapshots.add(qualifierSnapshot);
-        updateSnapshots.add(updateSnapshot);
-        objectIds.add(id);
-    }
+    public void add(Map<String, Object> qualifierSnapshot, final Map<String, Object> updateSnapshot, ObjectId id) {
 
-    @Override
-    public int size() {
-        return qualifierSnapshots.size();
+        rows.add(new BatchQueryRow(id, qualifierSnapshot) {
+            @Override
+            public Object getValue(int i) {
+                Map<String, Object> snapshot = (i < updatedAttributes.size()) ? updateSnapshot : qualifier;
+                return getValue(snapshot, dbAttributes.get(i));
+            }
+        });
     }
 
     @Override
@@ -149,7 +126,7 @@ public class UpdateBatchQuery extends BatchQuery {
     /**
      * @since 1.1
      */
-    public List <DbAttribute> getUpdatedAttributes() {
+    public List<DbAttribute> getUpdatedAttributes() {
         return Collections.unmodifiableList(updatedAttributes);
     }
 
@@ -160,24 +137,4 @@ public class UpdateBatchQuery extends BatchQuery {
         return Collections.unmodifiableList(qualifierAttributes);
     }
 
-    /**
-     * Returns a snapshot of the current qualifier values.
-     * 
-     * @since 1.1
-     */
-    public Map getCurrentQualifier() {
-        return qualifierSnapshots.get(batchIndex);
-    }
-
-    /**
-     * Returns an ObjectId associated with the current batch iteration. Used internally by
-     * Cayenne to match current iteration with a specific object and assign it generated
-     * keys.
-     * 
-     * @since 1.2
-     */
-    @Override
-    public ObjectId getObjectId() {
-        return objectIds.get(batchIndex);
-    }
 }

@@ -74,13 +74,12 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 sorter.sortObjectsForEntity(descriptor.getEntity(), objects, false);
 
                 for (Persistent o : objects) {
-                    Map<Object, Object> snapshot = diffBuilder.buildDBDiff(parent.objectDiff(o.getObjectId()));
+                    Map<String, Object> snapshot = diffBuilder.buildDBDiff(parent.objectDiff(o.getObjectId()));
 
                     // we need to insert even if there is no changes to default
-                    // values
-                    // so creating an empty changes map
+                    // values so creating an empty changes map
                     if (snapshot == null) {
-                        snapshot = new HashMap<Object, Object>();
+                        snapshot = new HashMap<String, Object>();
                     }
 
                     batch.add(snapshot, o.getObjectId());

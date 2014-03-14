@@ -19,22 +19,20 @@
 
 package org.apache.cayenne.query;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.commons.collections.Factory;
 
 /**
- * BatchQuery and its descendants allow to group similar data for the batch database
- * modifications, including inserts, updates and deletes. Single BatchQuery corresponds to
- * a parameterized PreparedStatement and a matrix of values.
+ * BatchQuery and its descendants allow to group similar data for the batch
+ * database modifications, including inserts, updates and deletes. Single
+ * BatchQuery corresponds to a parameterized PreparedStatement and a matrix of
+ * values.
  * 
  */
 public abstract class BatchQuery implements Query {
@@ -42,26 +40,35 @@ public abstract class BatchQuery implements Query {
     /**
      * @since 1.2
      */
-    protected int batchIndex;
-
-    /**
-     * @since 1.2
-     */
     protected DbEntity dbEntity;
 
     protected String name;
-    
+
     /**
      * @since 3.1
      */
     protected DataMap dataMap;
 
-    
-    public BatchQuery(DbEntity dbEntity) {
+    /**
+     * @since 3.2
+     */
+    protected List<BatchQueryRow> rows;
+
+    /**
+     * @since 3.2
+     */
+    public BatchQuery(DbEntity dbEntity, int batchCapacity) {
         this.dbEntity = dbEntity;
-        this.batchIndex = -1;
+        this.rows = new ArrayList<BatchQueryRow>(batchCapacity);
     }
-    
+
+    /**
+     * @since 3.2
+     */
+    public List<BatchQueryRow> getRows() {
+        return rows;
+    }
+
     @Override
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitQuery(this);
@@ -75,7 +82,7 @@ public abstract class BatchQuery implements Query {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * @since 3.1
      */
@@ -112,10 +119,7 @@ public abstract class BatchQuery implements Query {
      */
     @Override
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        router.route(
-                router.engineForDataMap(dbEntity.getDataMap()),
-                this,
-                substitutedQuery);
+        router.route(router.engineForDataMap(dbEntity.getDataMap()), this, substitutedQuery);
     }
 
     /**
@@ -145,99 +149,15 @@ public abstract class BatchQuery implements Query {
     }
 
     /**
-     * Returns <code>true</code> if this batch query has no parameter rows.
-     */
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
-    /**
      * Returns a list of DbAttributes describing batch parameters.
      */
     public abstract List<DbAttribute> getDbAttributes();
 
     /**
-     * Rewinds batch to the first parameter row.
+     * @deprecated since 3.2 use getRows().size().
      */
-    public void reset() {
-        batchIndex = -1;
-    }
-
-    /**
-     * Repositions batch to the next object, so that subsequent calls to getObject(int)
-     * would return the values of the next batch object. Returns <code>true</code> if
-     * batch has more objects to iterate over, <code>false</code> otherwise.
-     */
-    public boolean next() {
-        batchIndex++;
-        return size() > batchIndex;
-    }
-
-    /**
-     * Returns a value at a given index for the current batch iteration.
-     * 
-     * @since 1.2
-     */
-    public abstract Object getValue(int valueIndex);
-
-    /**
-     * Returns the number of parameter rows in a batch.
-     */
-    public abstract int size();
-
-    /**
-     * A helper method used by subclasses to resolve deferred values on demand. This is
-     * useful when a certain value comes from a generated key of another master object.
-     * 
-     * @since 1.2
-     */
-    protected Object getValue(Map<String, Object> valueMap, DbAttribute attribute) {
-
-        Object value = valueMap.get(attribute.getName());
-
-        // if a value is a Factory, resolve it here...
-        // slight chance that a normal value will implement Factory interface???
-        if (value instanceof Factory) {
-            value = ((Factory) value).create();
-
-            // update replacement id
-            if (attribute.isPrimaryKey()) {
-                // sanity check
-                if (value == null) {
-                    String name = attribute.getEntity() != null ? attribute
-                            .getEntity()
-                            .getName() : "<null>";
-                    throw new CayenneRuntimeException("Failed to generate PK: "
-                            + name
-                            + "."
-                            + attribute.getName());
-                }
-
-                ObjectId id = getObjectId();
-                if (id != null) {
-                    // always override with fresh value as this is what's in the DB
-                    id.getReplacementIdMap().put(attribute.getName(), value);
-                }
-            }
-
-            // update snapshot
-            valueMap.put(attribute.getName(), value);
-        }
-
-        return value;
-    }
-
-    /**
-     * Returns an ObjectId associated with the current batch iteration. Used internally by
-     * Cayenne to match current iteration with a specific object and assign it generated
-     * keys.
-     * <p>
-     * Default implementation simply returns null.
-     * </p>
-     * 
-     * @since 1.2
-     */
-    public ObjectId getObjectId() {
-        return null;
+    @Deprecated
+    public int size() {
+        return rows.size();
     }
 }

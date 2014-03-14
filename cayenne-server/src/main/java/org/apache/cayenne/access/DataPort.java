@@ -237,7 +237,7 @@ public class DataPort {
                 }
 
                 // commit remaining batch if needed
-                if (insert.size() > 0) {
+                if (insert.getRows().size() > 0) {
                     destinationNode.performQueries(Collections.singletonList((Query) insert), insertObserver);
                 }
 

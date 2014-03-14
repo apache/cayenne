@@ -94,7 +94,7 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
                 for (Persistent o : objects) {
                     ObjectDiff diff = parent.objectDiff(o.getObjectId());
 
-                    Map<String, ?> qualifierSnapshot = qualifierBuilder
+                    Map<String, Object> qualifierSnapshot = qualifierBuilder
                             .createQualifierSnapshot(diff);
 
                     // organize batches by the nulls in qualifier

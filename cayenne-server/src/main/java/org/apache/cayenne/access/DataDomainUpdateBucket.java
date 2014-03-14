@@ -70,7 +70,7 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                     Persistent o = objects.next();
                     ObjectDiff diff = parent.objectDiff(o.getObjectId());
 
-                    Map<Object, Object> snapshot = diffBuilder.buildDBDiff(diff);
+                    Map<String, Object> snapshot = diffBuilder.buildDBDiff(diff);
 
                     // check whether MODIFIED object has real db-level modifications
                     if (snapshot == null) {
@@ -81,7 +81,7 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                     // attempt is made to modify a read only entity
                     checkReadOnly(entity);
 
-                    Map qualifierSnapshot = qualifierBuilder
+                    Map<String, Object> qualifierSnapshot = qualifierBuilder
                             .createQualifierSnapshot(diff);
 
                     // organize batches by the updated columns + nulls in qualifier
