@@ -35,7 +35,6 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.trans.LOBBatchQueryBuilder;
-import org.apache.cayenne.access.trans.LOBBatchQueryWrapper;
 import org.apache.cayenne.access.trans.LOBInsertBatchQueryBuilder;
 import org.apache.cayenne.access.trans.LOBUpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
@@ -67,19 +66,15 @@ class OracleLOBBatchAction implements SQLAction {
         return adapter;
     }
 
-    public void performAction(Connection connection, OperationObserver observer)
-            throws SQLException, Exception {
+    public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
         LOBBatchQueryBuilder queryBuilder;
         if (query instanceof InsertBatchQuery) {
             queryBuilder = new LOBInsertBatchQueryBuilder((InsertBatchQuery) query, getAdapter());
-        }
-        else if (query instanceof UpdateBatchQuery) {
+        } else if (query instanceof UpdateBatchQuery) {
             queryBuilder = new LOBUpdateBatchQueryBuilder((UpdateBatchQuery) query, getAdapter());
-        }
-        else {
-            throw new CayenneException(
-                    "Unsupported batch type for special LOB processing: " + query);
+        } else {
+            throw new CayenneException("Unsupported batch type for special LOB processing: " + query);
         }
 
         queryBuilder.setTrimFunction(OracleAdapter.TRIM_FUNCTION);
@@ -90,14 +85,16 @@ class OracleLOBBatchAction implements SQLAction {
         // for each batch set, since prepared statements
         // may be different depending on whether LOBs are NULL or not..
 
-        LOBBatchQueryWrapper selectQuery = new LOBBatchQueryWrapper(query);
-        List<DbAttribute> qualifierAttributes = selectQuery
-                .getDbAttributesForLOBSelectQualifier();
+        OracleLOBBatchQueryWrapper selectQuery = new OracleLOBBatchQueryWrapper(query);
+        List<DbAttribute> qualifierAttributes = selectQuery.getDbAttributesForLOBSelectQualifier();
 
         boolean isLoggable = logger.isLoggable();
 
         query.reset();
-        while (selectQuery.next()) {
+        while (query.next()) {
+
+            selectQuery.indexLOBAttributes();
+
             int updated = 0;
             String updateStr = queryBuilder.createSqlString();
 
@@ -108,22 +105,16 @@ class OracleLOBBatchAction implements SQLAction {
 
                 if (isLoggable) {
                     List bindings = queryBuilder.getValuesForLOBUpdateParameters();
-                    logger.logQueryParameters(
-                            "bind",
-                            null,
-                            bindings,
-                            query instanceof InsertBatchQuery);
+                    logger.logQueryParameters("bind", null, bindings, query instanceof InsertBatchQuery);
                 }
 
                 queryBuilder.bindParameters(statement);
                 updated = statement.executeUpdate();
                 logger.logUpdateCount(updated);
-            }
-            finally {
+            } finally {
                 try {
                     statement.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                 }
             }
 
@@ -135,14 +126,10 @@ class OracleLOBBatchAction implements SQLAction {
         }
     }
 
-    void processLOBRow(
-            Connection con,
-            LOBBatchQueryBuilder queryBuilder,
-            LOBBatchQueryWrapper selectQuery,
+    void processLOBRow(Connection con, LOBBatchQueryBuilder queryBuilder, OracleLOBBatchQueryWrapper selectQuery,
             List<DbAttribute> qualifierAttributes) throws SQLException, Exception {
 
-        List<DbAttribute> lobAttributes = selectQuery
-                .getDbAttributesForUpdatedLOBColumns();
+        List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
         if (lobAttributes.size() == 0) {
             return;
         }
@@ -154,9 +141,7 @@ class OracleLOBBatchAction implements SQLAction {
         int parametersSize = qualifierValues.size();
         int lobSize = lobAttributes.size();
 
-        String selectStr = queryBuilder.createLOBSelectString(
-                lobAttributes,
-                qualifierAttributes);
+        String selectStr = queryBuilder.createLOBSelectString(lobAttributes, qualifierAttributes);
 
         if (isLoggable) {
             logger.logQuery(selectStr, qualifierValues);
@@ -169,12 +154,7 @@ class OracleLOBBatchAction implements SQLAction {
                 Object value = qualifierValues.get(i);
                 DbAttribute attribute = qualifierAttributes.get(i);
 
-                adapter.bindParameter(
-                        selectStatement,
-                        value,
-                        i + 1,
-                        attribute.getType(),
-                        attribute.getScale());
+                adapter.bindParameter(selectStatement, value, i + 1, attribute.getType(), attribute.getScale());
             }
 
             ResultSet result = selectStatement.executeQuery();
@@ -196,56 +176,44 @@ class OracleLOBBatchAction implements SQLAction {
 
                         if (clobVal instanceof char[]) {
                             writeClob(clob, (char[]) clobVal);
-                        }
-                        else {
+                        } else {
                             writeClob(clob, clobVal.toString());
                         }
-                    }
-                    else if (type == Types.BLOB) {
+                    } else if (type == Types.BLOB) {
                         Blob blob = result.getBlob(i + 1);
 
                         Object blobVal = lobValues.get(i);
                         if (blobVal instanceof byte[]) {
                             writeBlob(blob, (byte[]) blobVal);
+                        } else {
+                            String className = (blobVal != null) ? blobVal.getClass().getName() : null;
+                            throw new CayenneRuntimeException("Unsupported class of BLOB value: " + className);
                         }
-                        else {
-                            String className = (blobVal != null) ? blobVal
-                                    .getClass()
-                                    .getName() : null;
-                            throw new CayenneRuntimeException(
-                                    "Unsupported class of BLOB value: " + className);
-                        }
-                    }
-                    else {
-                        throw new CayenneRuntimeException(
-                                "Only BLOB or CLOB is expected here, got: " + type);
+                    } else {
+                        throw new CayenneRuntimeException("Only BLOB or CLOB is expected here, got: " + type);
                     }
                 }
 
                 if (result.next()) {
                     throw new CayenneRuntimeException("More than one LOB row found.");
                 }
-            }
-            finally {
+            } finally {
                 try {
                     result.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                 }
             }
-        }
-        finally {
+        } finally {
             try {
                 selectStatement.close();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
             }
         }
     }
 
     /**
-     * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done using Oracle
-     * driver utilities, using reflection.
+     * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done
+     * using Oracle driver utilities, using reflection.
      */
     protected void writeBlob(Blob blob, byte[] value) {
 
@@ -254,21 +222,17 @@ class OracleLOBBatchAction implements SQLAction {
             try {
                 out.write(value);
                 out.flush();
-            }
-            finally {
+            } finally {
                 out.close();
             }
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException(
-                    "Error processing BLOB.",
-                    Util.unwindException(e));
+        } catch (Exception e) {
+            throw new CayenneRuntimeException("Error processing BLOB.", Util.unwindException(e));
         }
     }
 
     /**
-     * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done using Oracle
-     * driver utilities.
+     * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done
+     * using Oracle driver utilities.
      */
     protected void writeClob(Clob clob, char[] value) {
         try {
@@ -277,22 +241,18 @@ class OracleLOBBatchAction implements SQLAction {
             try {
                 out.write(value);
                 out.flush();
-            }
-            finally {
+            } finally {
                 out.close();
             }
 
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException(
-                    "Error processing CLOB.",
-                    Util.unwindException(e));
+        } catch (Exception e) {
+            throw new CayenneRuntimeException("Error processing CLOB.", Util.unwindException(e));
         }
     }
 
     /**
-     * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done using Oracle
-     * driver utilities.
+     * Writing of LOBs is not supported prior to JDBC 3.0 and has to be done
+     * using Oracle driver utilities.
      */
     protected void writeClob(Clob clob, String value) {
         try {
@@ -301,15 +261,11 @@ class OracleLOBBatchAction implements SQLAction {
             try {
                 out.write(value);
                 out.flush();
-            }
-            finally {
+            } finally {
                 out.close();
             }
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException(
-                    "Error processing CLOB.",
-                    Util.unwindException(e));
+        } catch (Exception e) {
+            throw new CayenneRuntimeException("Error processing CLOB.", Util.unwindException(e));
         }
     }
 }

@@ -17,8 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.dba.oracle;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,11 +32,11 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 
 /**
- * Helper class to extract the information from BatchQueries, essential for LOB columns
- * processing.
+ * Helper class to extract the information from BatchQueries, essential for LOB
+ * columns processing.
  * 
  */
-public class LOBBatchQueryWrapper {
+class OracleLOBBatchQueryWrapper {
 
     protected BatchQuery query;
 
@@ -48,9 +47,7 @@ public class LOBBatchQueryWrapper {
     protected boolean[] allLOBAttributes;
     protected Object[] updatedLOBAttributes;
 
-    protected boolean hasNext;
-
-    public LOBBatchQueryWrapper(BatchQuery query) {
+    OracleLOBBatchQueryWrapper(BatchQuery query) {
         this.query = query;
         this.dbAttributes = query.getDbAttributes();
 
@@ -60,16 +57,6 @@ public class LOBBatchQueryWrapper {
         this.updatedLOBAttributes = new Object[len];
 
         indexQualifierAttributes();
-    }
-
-    public boolean next() {
-        hasNext = query.next();
-
-        if (hasNext) {
-            indexLOBAttributes();
-        }
-
-        return hasNext;
     }
 
     /**
@@ -88,7 +75,7 @@ public class LOBBatchQueryWrapper {
     /**
      * Indexes attributes
      */
-    protected void indexLOBAttributes() {
+    void indexLOBAttributes() {
         int len = updatedLOBAttributes.length;
         for (int i = 0; i < len; i++) {
             updatedLOBAttributes[i] = null;
@@ -103,8 +90,7 @@ public class LOBBatchQueryWrapper {
 
                 if (dbAttributes.get(i).getType() == Types.BLOB) {
                     updatedLOBAttributes[i] = convertToBlobValue(value);
-                }
-                else {
+                } else {
                     updatedLOBAttributes[i] = convertToClobValue(value);
                 }
             }
@@ -118,8 +104,7 @@ public class LOBBatchQueryWrapper {
         if (value instanceof byte[]) {
             byte[] bytes = (byte[]) value;
             return bytes.length == 0 ? null : bytes;
-        }
-        else if (value instanceof Serializable) {
+        } else if (value instanceof Serializable) {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
                 @Override
@@ -132,11 +117,10 @@ public class LOBBatchQueryWrapper {
                 ObjectOutputStream out = new ObjectOutputStream(bytes);
                 out.writeObject(value);
                 out.close();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new CayenneRuntimeException("Error serializing object", e);
             }
-            
+
             return bytes.toByteArray();
         }
 
@@ -151,18 +135,17 @@ public class LOBBatchQueryWrapper {
         if (value instanceof char[]) {
             char[] chars = (char[]) value;
             return (chars.length == 0) ? null : chars;
-        }
-        else {
+        } else {
             String strValue = value.toString();
             return (strValue.length() == 0) ? null : strValue;
         }
     }
 
     /**
-     * Returns a list of DbAttributes used in the qualifier of the query that selects a
-     * LOB row for LOB update.
+     * Returns a list of DbAttributes used in the qualifier of the query that
+     * selects a LOB row for LOB update.
      */
-    public List<DbAttribute> getDbAttributesForLOBSelectQualifier() {
+    List<DbAttribute> getDbAttributesForLOBSelectQualifier() {
 
         int len = qualifierAttributes.length;
         List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
@@ -176,14 +159,11 @@ public class LOBBatchQueryWrapper {
     }
 
     /**
-     * Returns a list of DbAttributes that correspond to the LOB columns updated in the
-     * current row in the batch query. The list will not include LOB attributes that are
-     * null or empty.
+     * Returns a list of DbAttributes that correspond to the LOB columns updated
+     * in the current row in the batch query. The list will not include LOB
+     * attributes that are null or empty.
      */
-    public List<DbAttribute> getDbAttributesForUpdatedLOBColumns() {
-        if (!hasNext) {
-            throw new IllegalStateException("No more rows in the BatchQuery.");
-        }
+    List<DbAttribute> getDbAttributesForUpdatedLOBColumns() {
 
         int len = updatedLOBAttributes.length;
         List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
@@ -196,10 +176,7 @@ public class LOBBatchQueryWrapper {
         return attributes;
     }
 
-    public List getValuesForLOBSelectQualifier() {
-        if (!hasNext) {
-            throw new IllegalStateException("No more rows in the BatchQuery.");
-        }
+    List getValuesForLOBSelectQualifier() {
 
         int len = this.qualifierAttributes.length;
         List values = new ArrayList(len);
@@ -212,10 +189,7 @@ public class LOBBatchQueryWrapper {
         return values;
     }
 
-    public List getValuesForUpdatedLOBColumns() {
-        if (!hasNext) {
-            throw new IllegalStateException("No more rows in the BatchQuery.");
-        }
+    List getValuesForUpdatedLOBColumns() {
 
         int len = this.updatedLOBAttributes.length;
         List values = new ArrayList(len);
@@ -228,10 +202,4 @@ public class LOBBatchQueryWrapper {
         return values;
     }
 
-    /**
-     * Returns wrapped BatchQuery.
-     */
-    public BatchQuery getQuery() {
-        return query;
-    }
 }
