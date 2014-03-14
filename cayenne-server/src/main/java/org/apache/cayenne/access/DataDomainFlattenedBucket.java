@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -53,8 +54,7 @@ class DataDomainFlattenedBucket {
 
     void addFlattenedInsert(DbEntity flattenedEntity, FlattenedArcKey flattenedArcKey) {
 
-        InsertBatchQuery relationInsertQuery = flattenedInsertQueries
-                .get(flattenedEntity);
+        InsertBatchQuery relationInsertQuery = flattenedInsertQueries.get(flattenedEntity);
 
         if (relationInsertQuery == null) {
             relationInsertQuery = new InsertBatchQuery(flattenedEntity, 50);
@@ -68,11 +68,11 @@ class DataDomainFlattenedBucket {
 
     void addFlattenedDelete(DbEntity flattenedEntity, FlattenedArcKey flattenedDeleteInfo) {
 
-        DeleteBatchQuery relationDeleteQuery = flattenedDeleteQueries
-                .get(flattenedEntity);
+        DeleteBatchQuery relationDeleteQuery = flattenedDeleteQueries.get(flattenedEntity);
         if (relationDeleteQuery == null) {
             boolean optimisticLocking = false;
-            relationDeleteQuery = new DeleteBatchQuery(flattenedEntity, 50);
+            relationDeleteQuery = new DeleteBatchQuery(flattenedEntity, flattenedEntity.getPrimaryKeys(),
+                    Collections.<String> emptySet(), 50);
             relationDeleteQuery.setUsingOptimisticLocking(optimisticLocking);
             flattenedDeleteQueries.put(flattenedEntity, relationDeleteQuery);
         }

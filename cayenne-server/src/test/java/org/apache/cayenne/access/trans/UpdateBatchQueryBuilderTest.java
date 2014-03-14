@@ -66,7 +66,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
         List idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
         List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-        UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, null, 1);
+        UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
+                Collections.<String> emptySet(), 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(updateQuery, adapter);
@@ -105,7 +106,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
             List idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
             List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-            UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, null, 1);
+            UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
+                    Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
             UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(updateQuery, adapter);

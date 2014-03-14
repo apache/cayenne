@@ -54,12 +54,15 @@ public abstract class BatchQuery implements Query {
      */
     protected List<BatchQueryRow> rows;
 
+    protected List<DbAttribute> dbAttributes;
+
     /**
      * @since 3.2
      */
-    public BatchQuery(DbEntity dbEntity, int batchCapacity) {
+    public BatchQuery(DbEntity dbEntity, List<DbAttribute> dbAttributes, int batchCapacity) {
         this.dbEntity = dbEntity;
         this.rows = new ArrayList<BatchQueryRow>(batchCapacity);
+        this.dbAttributes = dbAttributes;
     }
 
     /**
@@ -151,7 +154,9 @@ public abstract class BatchQuery implements Query {
     /**
      * Returns a list of DbAttributes describing batch parameters.
      */
-    public abstract List<DbAttribute> getDbAttributes();
+    public List<DbAttribute> getDbAttributes() {
+        return dbAttributes;
+    }
 
     /**
      * @deprecated since 3.2 use getRows().size().

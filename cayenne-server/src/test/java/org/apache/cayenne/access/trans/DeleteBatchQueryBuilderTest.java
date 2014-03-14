@@ -68,7 +68,7 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
 
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
+        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(deleteQuery, adapter);
@@ -103,7 +103,7 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
+            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
             DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(deleteQuery, adapter);
             String generatedSql = builder.createSqlString();

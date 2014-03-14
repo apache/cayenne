@@ -21,8 +21,6 @@ package org.apache.cayenne.query;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DbAttribute;
@@ -34,25 +32,10 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class DeleteBatchQuery extends BatchQuery {
 
-    protected List<DbAttribute> dbAttributes;
     protected boolean usingOptimisticLocking;
 
     private Collection<DbAttribute> qualifierAttributes;
     private Collection<String> nullQualifierNames;
-
-    /**
-     * Creates new DeleteBatchQuery. Used by
-     * ContextCommit.categorizeFlattenedDeletesAndCreateBatches for deleting
-     * flattenned relationships.
-     * 
-     * @param dbEntity
-     *            Table or view to delete.
-     * @param batchCapacity
-     *            Estimated size of the batch.
-     */
-    public DeleteBatchQuery(DbEntity dbEntity, int batchCapacity) {
-        this(dbEntity, dbEntity.getPrimaryKeys(), Collections.EMPTY_SET, batchCapacity);
-    }
 
     /**
      * Creates new DeleteBatchQuery.
@@ -69,13 +52,14 @@ public class DeleteBatchQuery extends BatchQuery {
     public DeleteBatchQuery(DbEntity dbEntity, Collection<DbAttribute> qualifierAttributes,
             Collection<String> nullQualifierNames, int batchCapacity) {
 
-        super(dbEntity, batchCapacity);
+        super(dbEntity, new ArrayList<DbAttribute>(qualifierAttributes), batchCapacity);
+
+        if (nullQualifierNames == null) {
+            throw new NullPointerException("Null 'nullQualifierNames'");
+        }
 
         this.qualifierAttributes = qualifierAttributes;
-        this.nullQualifierNames = nullQualifierNames != null ? nullQualifierNames : Collections.<String> emptySet();
-
-        dbAttributes = new ArrayList<DbAttribute>(qualifierAttributes.size());
-        dbAttributes.addAll(qualifierAttributes);
+        this.nullQualifierNames = nullQualifierNames;
     }
 
     /**
@@ -112,17 +96,12 @@ public class DeleteBatchQuery extends BatchQuery {
     }
 
     public void add(Map<String, Object> dataObjectId) {
-        
+
         rows.add(new BatchQueryRow(null, dataObjectId) {
             @Override
             public Object getValue(int i) {
                 return qualifier.get(dbAttributes.get(i).getName());
             }
         });
-    }
-
-    @Override
-    public List<DbAttribute> getDbAttributes() {
-        return dbAttributes;
     }
 }

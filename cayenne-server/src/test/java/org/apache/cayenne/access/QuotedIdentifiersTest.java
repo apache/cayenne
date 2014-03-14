@@ -86,19 +86,12 @@ public class QuotedIdentifiersTest extends ServerCase {
     }
 
     public void testPrefetchQuote() throws Exception {
-        DbEntity entity = context
-                .getEntityResolver()
-                .getObjEntity(QuoteAdress.class)
-                .getDbEntity();
+        DbEntity entity = context.getEntityResolver().getObjEntity(QuoteAdress.class).getDbEntity();
         List idAttributes = Collections.singletonList(entity.getAttribute("City"));
         List updatedAttributes = Collections.singletonList(entity.getAttribute("City"));
 
-        UpdateBatchQuery updateQuery = new UpdateBatchQuery(
-                entity,
-                idAttributes,
-                updatedAttributes,
-                null,
-                1);
+        UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
+                Collections.<String> emptySet(), 1);
 
         List objects3 = context.performQuery(updateQuery);
         assertEquals(0, objects3.size());
@@ -106,32 +99,25 @@ public class QuotedIdentifiersTest extends ServerCase {
         SelectQuery qQuote_Person2 = new SelectQuery(Quote_Person.class);
         List objects4 = context.performQuery(qQuote_Person2);
         assertEquals(2, objects4.size());
-        
-        SelectQuery qQuote_Person3 = new SelectQuery(Quote_Person.class, ExpressionFactory.matchExp(
-                "salary",100));
+
+        SelectQuery qQuote_Person3 = new SelectQuery(Quote_Person.class, ExpressionFactory.matchExp("salary", 100));
         List objects5 = context.performQuery(qQuote_Person3);
         assertEquals(1, objects5.size());
-        
-        SelectQuery qQuote_Person4 = new SelectQuery(Quote_Person.class, ExpressionFactory.matchExp(
-                "group","107324"));
+
+        SelectQuery qQuote_Person4 = new SelectQuery(Quote_Person.class, ExpressionFactory.matchExp("group", "107324"));
         List objects6 = context.performQuery(qQuote_Person4);
         assertEquals(1, objects6.size());
-        
-        SelectQuery quoteAdress1 = new SelectQuery(QuoteAdress.class, ExpressionFactory.matchExp(
-                "group","324"));
+
+        SelectQuery quoteAdress1 = new SelectQuery(QuoteAdress.class, ExpressionFactory.matchExp("group", "324"));
         List objects7 = context.performQuery(quoteAdress1);
         assertEquals(1, objects7.size());
-        
-        ObjectIdQuery queryObjectId = new ObjectIdQuery(new ObjectId(
-                "QuoteAdress",
-                QuoteAdress.GROUP_PROPERTY,
-                "324"));
-        
+
+        ObjectIdQuery queryObjectId = new ObjectIdQuery(new ObjectId("QuoteAdress", QuoteAdress.GROUP_PROPERTY, "324"));
+
         List objects8 = context.performQuery(queryObjectId);
         assertEquals(1, objects8.size());
-        
-        ObjectIdQuery queryObjectId2 = new ObjectIdQuery(new ObjectId(
-                "Quote_Person", "GROUP", "1111"));
+
+        ObjectIdQuery queryObjectId2 = new ObjectIdQuery(new ObjectId("Quote_Person", "GROUP", "1111"));
         List objects9 = context.performQuery(queryObjectId2);
         assertEquals(1, objects9.size());
 

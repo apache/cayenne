@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
@@ -35,14 +34,11 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class InsertBatchQuery extends BatchQuery {
 
-    protected List<DbAttribute> dbAttributes;
-
     /**
      * Creates new InsertBatchQuery for a given DbEntity and estimated capacity.
      */
     public InsertBatchQuery(DbEntity entity, int batchCapacity) {
-        super(entity, batchCapacity);
-        this.dbAttributes = new ArrayList<DbAttribute>(getDbEntity().getAttributes());
+        super(entity, new ArrayList<DbAttribute>(entity.getAttributes()), batchCapacity);
     }
 
     /**
@@ -70,8 +66,4 @@ public class InsertBatchQuery extends BatchQuery {
         });
     }
 
-    @Override
-    public List<DbAttribute> getDbAttributes() {
-        return dbAttributes;
-    }
 }

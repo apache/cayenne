@@ -75,7 +75,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("SOFT_TEST_ID"));
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
+        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
         DeleteBatchQueryBuilder builder = createBuilder(deleteQuery);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
@@ -106,7 +106,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("SOFT_TEST_ID"));
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
+            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
             DeleteBatchQueryBuilder builder = createBuilder(deleteQuery, adapter);
             String generatedSql = builder.createSqlString();

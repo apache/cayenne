@@ -39,7 +39,15 @@ public class UpdateBatchQuery extends BatchQuery {
     private List<DbAttribute> updatedAttributes;
     private List<DbAttribute> qualifierAttributes;
     private Collection<String> nullQualifierNames;
-    private List<DbAttribute> dbAttributes;
+
+    private static List<DbAttribute> toDbAttributes(List<DbAttribute> qualifierAttributes,
+            List<DbAttribute> updatedAttributes) {
+        List<DbAttribute> dbAttributes = new ArrayList<DbAttribute>(updatedAttributes.size()
+                + qualifierAttributes.size());
+        dbAttributes.addAll(updatedAttributes);
+        dbAttributes.addAll(qualifierAttributes);
+        return dbAttributes;
+    }
 
     /**
      * Creates new UpdateBatchQuery.
@@ -56,17 +64,17 @@ public class UpdateBatchQuery extends BatchQuery {
      *            Estimated size of the batch.
      */
     public UpdateBatchQuery(DbEntity dbEntity, List<DbAttribute> qualifierAttributes,
-            List<DbAttribute> updatedAttribute, Collection<String> nullQualifierNames, int batchCapacity) {
+            List<DbAttribute> updatedAttributes, Collection<String> nullQualifierNames, int batchCapacity) {
 
-        super(dbEntity, batchCapacity);
+        super(dbEntity, toDbAttributes(qualifierAttributes, updatedAttributes), batchCapacity);
 
-        this.updatedAttributes = updatedAttribute;
+        if (nullQualifierNames == null) {
+            throw new NullPointerException("Null 'nullQualifierNames'");
+        }
+
+        this.updatedAttributes = updatedAttributes;
         this.qualifierAttributes = qualifierAttributes;
-        this.nullQualifierNames = nullQualifierNames != null ? nullQualifierNames : Collections.EMPTY_SET;
-
-        dbAttributes = new ArrayList<DbAttribute>(updatedAttributes.size() + qualifierAttributes.size());
-        dbAttributes.addAll(updatedAttributes);
-        dbAttributes.addAll(qualifierAttributes);
+        this.nullQualifierNames = nullQualifierNames;
     }
 
     /**
