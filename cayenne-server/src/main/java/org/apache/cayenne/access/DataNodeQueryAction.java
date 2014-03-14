@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -66,9 +67,10 @@ class DataNodeQueryAction {
             public void nextRows(Query q, ResultIterator it) {
                 observer.nextRows(originalQuery, it);
             }
-
-            public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
-                observer.nextGeneratedRows(originalQuery, keysIterator);
+            
+            @Override
+            public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
+                observer.nextGeneratedRows(originalQuery, keys, idToUpdate);
             }
 
             public void nextGlobalException(Exception ex) {

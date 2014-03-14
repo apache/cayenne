@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.Query;
 
@@ -60,9 +61,9 @@ public interface OperationObserver extends OperationHints {
      * Callback method invoked after each batch of generated values is read during an
      * update.
      * 
-     * @since 3.0
+     * @since 3.2
      */
-    void nextGeneratedRows(Query query, ResultIterator keysIterator);
+    void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate);
 
     /**
      * Callback method invoked on exceptions that happen during an execution of a specific

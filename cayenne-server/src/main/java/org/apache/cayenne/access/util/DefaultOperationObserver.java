@@ -124,11 +124,11 @@ public class DefaultOperationObserver implements OperationObserver {
      * Closes ResultIterator without reading its data. If you implement a custom
      * subclass, only call super if closing the iterator is what you need.
      * 
-     * @since 3.0
+     * @since 3.2
      */
-    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
-        if (keysIterator != null) {
-            keysIterator.close();
+    public void nextGeneratedRows(Query query, ResultIterator keys, org.apache.cayenne.ObjectId idToUpdate) {
+        if (keys != null) {
+            keys.close();
         }
     }
 

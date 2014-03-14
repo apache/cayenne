@@ -48,10 +48,12 @@ class DataDomainFlushObserver implements OperationObserver {
         this.logger = logger;
     }
 
+    @Override
     public void nextQueryException(Query query, Exception ex) {
         throw new CayenneRuntimeException("Raising from query exception.", Util.unwindException(ex));
     }
 
+    @Override
     public void nextGlobalException(Exception ex) {
         throw new CayenneRuntimeException("Raising from underlyingQueryEngine exception.", Util.unwindException(ex));
     }
@@ -61,8 +63,9 @@ class DataDomainFlushObserver implements OperationObserver {
      * 
      * @since 1.2
      */
+    @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
+    public void nextGeneratedRows(Query query, ResultIterator keysIterator, ObjectId idToUpdate) {
 
         // read and close the iterator before doing anything else
         List<DataRow> keys;
@@ -77,10 +80,7 @@ class DataDomainFlushObserver implements OperationObserver {
                     + query);
         }
 
-        BatchQuery batch = (BatchQuery) query;
-
-        ObjectId id = batch.getObjectId();
-        if (id == null || !id.isTemporary()) {
+        if (idToUpdate == null || !idToUpdate.isTemporary()) {
             // why would this happen?
             return;
         }
@@ -110,6 +110,7 @@ class DataDomainFlushObserver implements OperationObserver {
                     + "Generated key: " + key);
         }
 
+        BatchQuery batch = (BatchQuery) query;
         for (DbAttribute attribute : batch.getDbEntity().getGeneratedAttributes()) {
 
             // batch can have generated attributes that are not PKs, e.g.
@@ -123,7 +124,7 @@ class DataDomainFlushObserver implements OperationObserver {
 
                 // I guess we should override any existing value,
                 // as generated key is the latest thing that exists in the DB.
-                id.getReplacementIdMap().put(attribute.getName(), value);
+                idToUpdate.getReplacementIdMap().put(attribute.getName(), value);
                 break;
             }
         }
@@ -137,21 +138,26 @@ class DataDomainFlushObserver implements OperationObserver {
         return this.logger;
     }
 
+    @Override
     public void nextBatchCount(Query query, int[] resultCount) {
     }
 
+    @Override
     public void nextCount(Query query, int resultCount) {
     }
 
+    @Override
     public void nextRows(Query query, List<?> dataRows) {
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public void nextRows(Query q, ResultIterator it) {
         throw new UnsupportedOperationException(
                 "'nextDataRows(Query,ResultIterator)' is unsupported (and unexpected) on commit.");
     }
 
+    @Override
     public boolean isIteratedResult() {
         return false;
     }

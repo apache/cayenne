@@ -560,16 +560,18 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
+    @Override
     public void nextRows(Query q, ResultIterator it) {
         throw new CayenneRuntimeException("Invalid attempt to fetch a cursor.");
     }
 
-    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
-        if (keysIterator != null) {
+    @Override
+    public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
+        if (keys != null) {
             try {
-                nextRows(query, keysIterator.allRows());
+                nextRows(query, keys.allRows());
             } finally {
-                keysIterator.close();
+                keys.close();
             }
         }
     }

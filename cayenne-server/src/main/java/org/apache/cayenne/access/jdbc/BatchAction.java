@@ -239,6 +239,8 @@ public class BatchAction extends BaseSQLAction {
 
     /**
      * Implements generated keys extraction supported in JDBC 3.0 specification.
+     * 
+     * @since 3.2
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void processGeneratedKeys(Statement statement, OperationObserver observer) throws SQLException,
@@ -283,6 +285,6 @@ public class BatchAction extends BaseSQLAction {
                 Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
         ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
-        observer.nextGeneratedRows(query, iterator);
+        observer.nextGeneratedRows(query, iterator, query.getObjectId());
     }
 }

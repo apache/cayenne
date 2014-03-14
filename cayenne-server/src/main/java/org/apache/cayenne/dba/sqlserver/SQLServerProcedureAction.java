@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -184,10 +185,10 @@ public class SQLServerProcedureAction extends ProcedureAction {
         public void nextGlobalException(Exception ex) {
             observer.nextGlobalException(ex);
         }
-
+        
         @Override
-        public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
-            observer.nextGeneratedRows(query, keysIterator);
+        public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
+            observer.nextGeneratedRows(query, keys, idToUpdate);
         }
 
         @Override

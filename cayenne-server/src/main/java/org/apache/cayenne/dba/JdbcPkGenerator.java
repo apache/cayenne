@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -402,8 +403,9 @@ public class JdbcPkGenerator implements PkGenerator {
 
         public void nextBatchCount(Query query, int[] resultCount) {
         }
-
-        public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
+     
+        @Override
+        public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
         }
 
         public void nextRows(Query q, ResultIterator it) {

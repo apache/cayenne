@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.Query;
@@ -80,6 +81,7 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
+    @Override
     public void route(QueryEngine engine, Query query, Query substitutedQuery) {
 
         List<Query> queries = null;
@@ -109,6 +111,7 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
+    @Override
     public QueryEngine engineForDataMap(DataMap map) {
         if (map == null) {
             throw new NullPointerException("Null DataMap, can't determine DataNode.");
@@ -146,34 +149,42 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
         return node;
     }
 
+    @Override
     public void nextCount(Query query, int resultCount) {
         callback.nextCount(queryForExecutedQuery(query), resultCount);
     }
 
+    @Override
     public void nextBatchCount(Query query, int[] resultCount) {
         callback.nextBatchCount(queryForExecutedQuery(query), resultCount);
     }
 
+    @Override
     public void nextRows(Query query, List<?> dataRows) {
         callback.nextRows(queryForExecutedQuery(query), dataRows);
     }
 
+    @Override
     public void nextRows(Query q, ResultIterator it) {
         callback.nextRows(queryForExecutedQuery(q), it);
     }
 
-    public void nextGeneratedRows(Query query, ResultIterator keysIterator) {
-        callback.nextGeneratedRows(queryForExecutedQuery(query), keysIterator);
+    @Override
+    public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
+        callback.nextGeneratedRows(queryForExecutedQuery(query), keys, idToUpdate);
     }
 
+    @Override
     public void nextQueryException(Query query, Exception ex) {
         callback.nextQueryException(queryForExecutedQuery(query), ex);
     }
 
+    @Override
     public void nextGlobalException(Exception e) {
         callback.nextGlobalException(e);
     }
 
+    @Override
     public boolean isIteratedResult() {
         return callback.isIteratedResult();
     }
