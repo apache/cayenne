@@ -31,12 +31,12 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 
 public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
 
-    public LOBUpdateBatchQueryBuilder(DbAdapter adapter) {
-        super(adapter);
+    public LOBUpdateBatchQueryBuilder(UpdateBatchQuery query, DbAdapter adapter) {
+        super(query, adapter);
     }
 
     @Override
-    public List getValuesForLOBUpdateParameters(BatchQuery query) {
+    public List getValuesForLOBUpdateParameters() {
         int len = query.getDbAttributes().size();
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
@@ -62,39 +62,39 @@ public class LOBUpdateBatchQueryBuilder extends LOBBatchQueryBuilder {
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) {
-        UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
+    public String createSqlString() {
+        UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
         List<DbAttribute> idDbAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        StringBuffer query = new StringBuffer("UPDATE ");
-        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
-        query.append(" SET ");
+        StringBuffer buffer = new StringBuffer("UPDATE ");
+        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
+        buffer.append(" SET ");
 
         int len = updatedDbAttributes.size();
         for (int i = 0; i < len; i++) {
             if (i > 0) {
-                query.append(", ");
+                buffer.append(", ");
             }
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            query.append(strategy.quotedName(attribute));
-            query.append(" = ");
-            appendUpdatedParameter(query, attribute, batch.getValue(i));
+            buffer.append(strategy.quotedName(attribute));
+            buffer.append(" = ");
+            appendUpdatedParameter(buffer, attribute, query.getValue(i));
         }
 
-        query.append(" WHERE ");
+        buffer.append(" WHERE ");
         Iterator<DbAttribute> i = idDbAttributes.iterator();
         while (i.hasNext()) {
             DbAttribute attribute = i.next();
-            appendDbAttribute(query, attribute);
-            query.append(" = ?");
+            appendDbAttribute(buffer, attribute);
+            buffer.append(" = ?");
             if (i.hasNext()) {
-                query.append(" AND ");
+                buffer.append(" AND ");
             }
         }
-        return query.toString();
+        return buffer.toString();
     }
 }

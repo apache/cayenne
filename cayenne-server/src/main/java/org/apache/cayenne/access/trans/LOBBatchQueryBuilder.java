@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.trans;
 
 import java.sql.PreparedStatement;
@@ -42,21 +41,18 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
     protected String newClobFunction;
     protected String newBlobFunction;
 
-    public LOBBatchQueryBuilder(DbAdapter adapter) {
-        super(adapter);
+    public LOBBatchQueryBuilder(BatchQuery query, DbAdapter adapter) {
+        super(query, adapter);
     }
 
-    public abstract List getValuesForLOBUpdateParameters(BatchQuery query);
+    public abstract List getValuesForLOBUpdateParameters();
 
-    public String createLOBSelectString(
-            BatchQuery updateQuery,
-            List selectedLOBAttributes,
-            List qualifierAttributes) {
+    public String createLOBSelectString(List selectedLOBAttributes, List qualifierAttributes) {
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-		StringBuffer buf = new StringBuffer();
-		buf.append("SELECT ");
+        StringBuffer buf = new StringBuffer();
+        buf.append("SELECT ");
 
         Iterator it = selectedLOBAttributes.iterator();
         while (it.hasNext()) {
@@ -67,10 +63,7 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
             }
         }
 
-        buf
-                .append(" FROM ")
-                .append(strategy.quotedFullyQualifiedName(updateQuery.getDbEntity()))
-                .append(" WHERE ");
+        buf.append(" FROM ").append(strategy.quotedFullyQualifiedName(query.getDbEntity())).append(" WHERE ");
 
         it = qualifierAttributes.iterator();
         while (it.hasNext()) {
@@ -87,33 +80,23 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
     }
 
     /**
-     * Appends parameter placeholder for the value of the column being updated. If
-     * requested, performs special handling on LOB columns.
+     * Appends parameter placeholder for the value of the column being updated.
+     * If requested, performs special handling on LOB columns.
      */
-    protected void appendUpdatedParameter(
-            StringBuffer buf,
-            DbAttribute dbAttribute,
-            Object value) {
+    protected void appendUpdatedParameter(StringBuffer buf, DbAttribute dbAttribute, Object value) {
 
         int type = dbAttribute.getType();
 
         if (isUpdateableColumn(value, type)) {
             buf.append('?');
-        }
-        else {
+        } else {
             if (type == Types.CLOB) {
                 buf.append(newClobFunction);
-            }
-            else if (type == Types.BLOB) {
+            } else if (type == Types.BLOB) {
                 buf.append(newBlobFunction);
-            }
-            else {
-                throw new CayenneRuntimeException("Unknown LOB column type: "
-                        + type
-                        + "("
-                        + TypesMapping.getSqlNameByType(type)
-                        + "). Query buffer: "
-                        + buf);
+            } else {
+                throw new CayenneRuntimeException("Unknown LOB column type: " + type + "("
+                        + TypesMapping.getSqlNameByType(type) + "). Query buffer: " + buf);
             }
         }
     }
@@ -122,8 +105,7 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
      * Binds BatchQuery parameters to the PreparedStatement.
      */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQuery query)
-            throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
 
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int attributeCount = dbAttributes.size();
@@ -135,11 +117,10 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
             DbAttribute attribute = dbAttributes.get(i);
             int type = attribute.getType();
 
-            // TODO: (Andrus) This works as long as there is no LOBs in qualifier
+            // TODO: (Andrus) This works as long as there is no LOBs in
+            // qualifier
             if (isUpdateableColumn(value, type)) {
-                adapter
-                        .bindParameter(statement, value, j, type, attribute
-                                .getScale());
+                adapter.bindParameter(statement, value, j, type, attribute.getScale());
 
                 j++;
             }

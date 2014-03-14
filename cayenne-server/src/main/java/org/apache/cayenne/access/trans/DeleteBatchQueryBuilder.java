@@ -27,7 +27,6 @@ import java.util.Iterator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
@@ -36,38 +35,38 @@ import org.apache.cayenne.query.DeleteBatchQuery;
  */
 public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
 
-    public DeleteBatchQueryBuilder(DbAdapter adapter) {
-        super(adapter);
+    public DeleteBatchQueryBuilder(DeleteBatchQuery query, DbAdapter adapter) {
+        super(query, adapter);
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) throws IOException {
+    public String createSqlString() throws IOException {
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        StringBuffer query = new StringBuffer("DELETE FROM ");
-        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
+        StringBuffer buffer = new StringBuffer("DELETE FROM ");
+        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
 
-        applyQualifier(query, batch);
+        applyQualifier(buffer);
 
-        return query.toString();
+        return buffer.toString();
     }
 
     /**
      * Appends WHERE clause to SQL string
      */
-    protected void applyQualifier(StringBuffer query, BatchQuery batch) {
-        query.append(" WHERE ");
+    protected void applyQualifier(StringBuffer buffer) {
+        buffer.append(" WHERE ");
 
-        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) batch;
+        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
         Iterator<DbAttribute> i = deleteBatch.getQualifierAttributes().iterator();
         while (i.hasNext()) {
             DbAttribute attribute = i.next();
-            appendDbAttribute(query, attribute);
-            query.append(deleteBatch.isNull(attribute) ? " IS NULL" : " = ?");
+            appendDbAttribute(buffer, attribute);
+            buffer.append(deleteBatch.isNull(attribute) ? " IS NULL" : " = ?");
 
             if (i.hasNext()) {
-                query.append(" AND ");
+                buffer.append(" AND ");
             }
         }
     }
@@ -76,11 +75,11 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
      * Binds BatchQuery parameters to the PreparedStatement.
      */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
 
-        int parameterIndex = getFirstParameterIndex(query);
+        int parameterIndex = getFirstParameterIndex();
         int i = 0;
 
         for (DbAttribute attribute : deleteBatch.getQualifierAttributes()) {
@@ -98,7 +97,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
     /**
      * @return index of first parameter in delete clause
      */
-    protected int getFirstParameterIndex(BatchQuery query) {
+    protected int getFirstParameterIndex() {
         return 1;
     }
 

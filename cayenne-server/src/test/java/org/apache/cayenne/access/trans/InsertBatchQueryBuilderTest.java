@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.trans;
 
+import static org.mockito.Mockito.mock;
+
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -48,7 +50,7 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
-        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(adapter);
+        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(mock(InsertBatchQuery.class), adapter);
 
         assertSame(adapter, builder.getAdapter());
     }
@@ -58,9 +60,9 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
                 .getDbEntity();
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
-        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(adapter);
-        String generatedSql = builder.createSqlString(deleteQuery);
+        InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
+        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(insertQuery, adapter);
+        String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("INSERT INTO " + entity.getName() + " (DESCRIPTION, LOCKING_TEST_ID, NAME) VALUES (?, ?, ?)",
                 generatedSql);
@@ -75,9 +77,9 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
 
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
-            InsertBatchQuery deleteQuery = new InsertBatchQuery(entity, 1);
-            InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(adapter);
-            String generatedSql = builder.createSqlString(deleteQuery);
+            InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
+            InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(insertQuery, adapter);
+            String generatedSql = builder.createSqlString();
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);

@@ -20,6 +20,8 @@
 
 package org.apache.cayenne.access.trans;
 
+import static org.mockito.Mockito.mock;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -40,87 +42,80 @@ public class BatchQueryBuilderTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
-	public void testConstructor() throws Exception {
-		DbAdapter adapter = objectFactory.newInstance(
-		        DbAdapter.class, 
-		        JdbcAdapter.class.getName());
-		BatchQueryBuilder builder =
-			new BatchQueryBuilder(adapter) {
-			@Override
-            public String createSqlString(BatchQuery batch) {
-				return null;
-			}
-			@Override
-            public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
+    public void testConstructor() throws Exception {
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        BatchQueryBuilder builder = new BatchQueryBuilder(mock(BatchQuery.class), adapter) {
+            @Override
+            public String createSqlString() {
+                return null;
             }
-		};
 
-		assertSame(adapter, builder.getAdapter());
-	}
-
-	public void testAppendDbAttribute1() throws Exception {
-	    DbAdapter adapter = objectFactory.newInstance(
-                DbAdapter.class, 
-                JdbcAdapter.class.getName());
-		String trimFunction = "testTrim";
-
-		BatchQueryBuilder builder =
-			new BatchQueryBuilder(adapter) {
-			@Override
-            public String createSqlString(BatchQuery batch) {
-				return null;
-			}
-			
-			@Override
-            public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
+            @Override
+            public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
             }
-		};
-		
-		builder.setTrimFunction(trimFunction);
+        };
 
-		StringBuffer buf = new StringBuffer();
-		DbEntity entity = new DbEntity("Test");
-		DbAttribute attr = new DbAttribute("testAttr", Types.CHAR, null);
-		attr.setEntity(entity);
-		builder.appendDbAttribute(buf, attr);
-		assertEquals("testTrim(testAttr)", buf.toString());
+        assertSame(adapter, builder.getAdapter());
+    }
 
-		buf = new StringBuffer();
-		attr = new DbAttribute("testAttr", Types.VARCHAR, null);
-		attr.setEntity(entity);
-		builder.appendDbAttribute(buf, attr);
-		assertEquals("testAttr", buf.toString());
-	}
+    public void testAppendDbAttribute1() throws Exception {
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+        String trimFunction = "testTrim";
 
-	public void testAppendDbAttribute2() throws Exception {
-	    DbAdapter adapter = objectFactory.newInstance(
-                DbAdapter.class, 
-                JdbcAdapter.class.getName());
+        BatchQueryBuilder builder = new BatchQueryBuilder(mock(BatchQuery.class), adapter) {
+            @Override
+            public String createSqlString() {
+                return null;
+            }
 
-		BatchQueryBuilder builder = new BatchQueryBuilder(adapter) {
-			@Override
-            public String createSqlString(BatchQuery batch) {
-				return null;
-			}
-			
-			@Override
-			public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
-			}
-		};
+            @Override
+            public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+            }
+        };
 
-		StringBuffer buf = new StringBuffer();
-		DbEntity entity = new DbEntity("Test");
-		
-		DbAttribute attr = new DbAttribute("testAttr", Types.CHAR, null);
-		attr.setEntity(entity);
-		builder.appendDbAttribute(buf, attr);
-		assertEquals("testAttr", buf.toString());
+        builder.setTrimFunction(trimFunction);
 
-		buf = new StringBuffer();
-		attr = new DbAttribute("testAttr", Types.VARCHAR, null);
-		attr.setEntity(entity);
-		
-		builder.appendDbAttribute(buf, attr);
-		assertEquals("testAttr", buf.toString());
-	}
+        StringBuffer buf = new StringBuffer();
+        DbEntity entity = new DbEntity("Test");
+        DbAttribute attr = new DbAttribute("testAttr", Types.CHAR, null);
+        attr.setEntity(entity);
+        builder.appendDbAttribute(buf, attr);
+        assertEquals("testTrim(testAttr)", buf.toString());
+
+        buf = new StringBuffer();
+        attr = new DbAttribute("testAttr", Types.VARCHAR, null);
+        attr.setEntity(entity);
+        builder.appendDbAttribute(buf, attr);
+        assertEquals("testAttr", buf.toString());
+    }
+
+    public void testAppendDbAttribute2() throws Exception {
+        DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+
+        BatchQueryBuilder builder = new BatchQueryBuilder(mock(BatchQuery.class), adapter) {
+            @Override
+            public String createSqlString() {
+                return null;
+            }
+
+            @Override
+            public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+            }
+        };
+
+        StringBuffer buf = new StringBuffer();
+        DbEntity entity = new DbEntity("Test");
+
+        DbAttribute attr = new DbAttribute("testAttr", Types.CHAR, null);
+        attr.setEntity(entity);
+        builder.appendDbAttribute(buf, attr);
+        assertEquals("testAttr", buf.toString());
+
+        buf = new StringBuffer();
+        attr = new DbAttribute("testAttr", Types.VARCHAR, null);
+        attr.setEntity(entity);
+
+        builder.appendDbAttribute(buf, attr);
+        assertEquals("testAttr", buf.toString());
+    }
 }

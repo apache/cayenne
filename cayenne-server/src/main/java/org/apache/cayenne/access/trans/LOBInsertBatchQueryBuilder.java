@@ -26,16 +26,16 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
 
 public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
 
-    public LOBInsertBatchQueryBuilder(DbAdapter adapter) {
-        super(adapter);
+    public LOBInsertBatchQueryBuilder(InsertBatchQuery query, DbAdapter adapter) {
+        super(query, adapter);
     }
 
     @Override
-    public List getValuesForLOBUpdateParameters(BatchQuery query) {
+    public List getValuesForLOBUpdateParameters() {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
@@ -52,31 +52,31 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) {
-        List<DbAttribute> dbAttributes = batch.getDbAttributes();
+    public String createSqlString() {
+        List<DbAttribute> dbAttributes = query.getDbAttributes();
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        StringBuffer query = new StringBuffer("INSERT INTO ");
-        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
-        query.append(" (");
+        StringBuffer buffer = new StringBuffer("INSERT INTO ");
+        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
+        buffer.append(" (");
 
         for (Iterator<DbAttribute> i = dbAttributes.iterator(); i.hasNext();) {
             DbAttribute attribute = i.next();
-            query.append(strategy.quotedName(attribute));
+            buffer.append(strategy.quotedName(attribute));
             if (i.hasNext()) {
-                query.append(", ");
+                buffer.append(", ");
             }
         }
-        query.append(") VALUES (");
+        buffer.append(") VALUES (");
         for (int i = 0; i < dbAttributes.size(); i++) {
             if (i > 0) {
-                query.append(", ");
+                buffer.append(", ");
             }
 
-            appendUpdatedParameter(query, dbAttributes.get(i), batch.getValue(i));
+            appendUpdatedParameter(buffer, dbAttributes.get(i), query.getValue(i));
         }
-        query.append(')');
-        return query.toString();
+        buffer.append(')');
+        return buffer.toString();
     }
 }

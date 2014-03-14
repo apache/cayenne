@@ -61,13 +61,13 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
-    private DeleteBatchQueryBuilder createBuilder() {
+    private DeleteBatchQueryBuilder createBuilder(DeleteBatchQuery query) {
         JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
-        return createBuilder(adapter);
+        return createBuilder(query, adapter);
     }
 
-    private DeleteBatchQueryBuilder createBuilder(JdbcAdapter adapter) {
-        return (DeleteBatchQueryBuilder) new SoftDeleteQueryBuilderFactory().createDeleteQueryBuilder(adapter);
+    private DeleteBatchQueryBuilder createBuilder(DeleteBatchQuery query, JdbcAdapter adapter) {
+        return (DeleteBatchQueryBuilder) new SoftDeleteQueryBuilderFactory().createDeleteQueryBuilder(query, adapter);
     }
 
     public void testCreateSqlString() throws Exception {
@@ -76,8 +76,8 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("SOFT_TEST_ID"));
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
-        DeleteBatchQueryBuilder builder = createBuilder();
-        String generatedSql = builder.createSqlString(deleteQuery);
+        DeleteBatchQueryBuilder builder = createBuilder(deleteQuery);
+        String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE SOFT_TEST_ID = ?", generatedSql);
     }
@@ -91,8 +91,8 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
         Collection<String> nullAttributes = Collections.singleton("NAME");
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
-        DeleteBatchQueryBuilder builder = createBuilder();
-        String generatedSql = builder.createSqlString(deleteQuery);
+        DeleteBatchQueryBuilder builder = createBuilder(deleteQuery);
+        String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE SOFT_TEST_ID = ? AND NAME IS NULL",
                 generatedSql);
@@ -108,8 +108,8 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, null, 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-            DeleteBatchQueryBuilder builder = createBuilder(adapter);
-            String generatedSql = builder.createSqlString(deleteQuery);
+            DeleteBatchQueryBuilder builder = createBuilder(deleteQuery, adapter);
+            String generatedSql = builder.createSqlString();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();

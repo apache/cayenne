@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.trans;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +55,7 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
 
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
+        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(mock(UpdateBatchQuery.class), adapter);
         assertSame(adapter, builder.getAdapter());
     }
 
@@ -67,8 +69,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, null, 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
-        String generatedSql = builder.createSqlString(updateQuery);
+        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(updateQuery, adapter);
+        String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
@@ -86,8 +88,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, nullAttributes, 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
-        String generatedSql = builder.createSqlString(updateQuery);
+        UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(updateQuery, adapter);
+        String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
 
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
@@ -106,8 +108,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
             UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, null, 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
-            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
-            String generatedSql = builder.createSqlString(updateQuery);
+            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(updateQuery, adapter);
+            String generatedSql = builder.createSqlString();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
@@ -137,8 +139,8 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
                     nullAttributes, 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
-            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(adapter);
-            String generatedSql = builder.createSqlString(updateQuery);
+            UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(updateQuery, adapter);
+            String generatedSql = builder.createSqlString();
             assertNotNull(generatedSql);
 
             String charStart = unitAdapter.getIdentifiersStartQuote();

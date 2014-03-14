@@ -23,6 +23,9 @@ import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.access.trans.InsertBatchQueryBuilder;
 import org.apache.cayenne.access.trans.UpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
  * Default implementation of {@link BatchQueryBuilderFactory}.
@@ -30,18 +33,18 @@ import org.apache.cayenne.dba.DbAdapter;
 public class DefaultBatchQueryBuilderFactory implements BatchQueryBuilderFactory {
 
     @Override
-    public BatchQueryBuilder createDeleteQueryBuilder(DbAdapter adapter) {
-        return new DeleteBatchQueryBuilder(adapter);
+    public BatchQueryBuilder createDeleteQueryBuilder(DeleteBatchQuery query, DbAdapter adapter) {
+        return new DeleteBatchQueryBuilder(query, adapter);
     }
 
     @Override
-    public BatchQueryBuilder createInsertQueryBuilder(DbAdapter adapter) {
-        return new InsertBatchQueryBuilder(adapter);
+    public BatchQueryBuilder createInsertQueryBuilder(InsertBatchQuery query, DbAdapter adapter) {
+        return new InsertBatchQueryBuilder(query, adapter);
     }
 
     @Override
-    public BatchQueryBuilder createUpdateQueryBuilder(DbAdapter adapter) {
-        return new UpdateBatchQueryBuilder(adapter);
+    public BatchQueryBuilder createUpdateQueryBuilder(UpdateBatchQuery query, DbAdapter adapter) {
+        return new UpdateBatchQueryBuilder(query, adapter);
     }
-    
+
 }

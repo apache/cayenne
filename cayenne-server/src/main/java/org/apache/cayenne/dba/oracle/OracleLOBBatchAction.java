@@ -72,10 +72,10 @@ class OracleLOBBatchAction implements SQLAction {
 
         LOBBatchQueryBuilder queryBuilder;
         if (query instanceof InsertBatchQuery) {
-            queryBuilder = new LOBInsertBatchQueryBuilder(getAdapter());
+            queryBuilder = new LOBInsertBatchQueryBuilder((InsertBatchQuery) query, getAdapter());
         }
         else if (query instanceof UpdateBatchQuery) {
-            queryBuilder = new LOBUpdateBatchQueryBuilder(getAdapter());
+            queryBuilder = new LOBUpdateBatchQueryBuilder((UpdateBatchQuery) query, getAdapter());
         }
         else {
             throw new CayenneException(
@@ -99,7 +99,7 @@ class OracleLOBBatchAction implements SQLAction {
         query.reset();
         while (selectQuery.next()) {
             int updated = 0;
-            String updateStr = queryBuilder.createSqlString(query);
+            String updateStr = queryBuilder.createSqlString();
 
             // 1. run row update
             logger.logQuery(updateStr, Collections.EMPTY_LIST);
@@ -107,7 +107,7 @@ class OracleLOBBatchAction implements SQLAction {
             try {
 
                 if (isLoggable) {
-                    List bindings = queryBuilder.getValuesForLOBUpdateParameters(query);
+                    List bindings = queryBuilder.getValuesForLOBUpdateParameters();
                     logger.logQueryParameters(
                             "bind",
                             null,
@@ -115,7 +115,7 @@ class OracleLOBBatchAction implements SQLAction {
                             query instanceof InsertBatchQuery);
                 }
 
-                queryBuilder.bindParameters(statement, query);
+                queryBuilder.bindParameters(statement);
                 updated = statement.executeUpdate();
                 logger.logUpdateCount(updated);
             }
@@ -155,7 +155,6 @@ class OracleLOBBatchAction implements SQLAction {
         int lobSize = lobAttributes.size();
 
         String selectStr = queryBuilder.createLOBSelectString(
-                selectQuery.getQuery(),
                 lobAttributes,
                 qualifierAttributes);
 

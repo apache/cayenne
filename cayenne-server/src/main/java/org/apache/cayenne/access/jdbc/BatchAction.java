@@ -90,11 +90,11 @@ public class BatchAction extends BaseSQLAction {
         }
 
         if (query instanceof InsertBatchQuery) {
-            return factory.createInsertQueryBuilder(dataNode.getAdapter());
+            return factory.createInsertQueryBuilder((InsertBatchQuery) query, dataNode.getAdapter());
         } else if (query instanceof UpdateBatchQuery) {
-            return factory.createUpdateQueryBuilder(dataNode.getAdapter());
+            return factory.createUpdateQueryBuilder((UpdateBatchQuery) query, dataNode.getAdapter());
         } else if (query instanceof DeleteBatchQuery) {
-            return factory.createDeleteQueryBuilder(dataNode.getAdapter());
+            return factory.createDeleteQueryBuilder((DeleteBatchQuery) query, dataNode.getAdapter());
         } else {
             throw new CayenneException("Unsupported batch query: " + query);
         }
@@ -103,7 +103,7 @@ public class BatchAction extends BaseSQLAction {
     protected void runAsBatch(Connection con, BatchQueryBuilder queryBuilder, OperationObserver delegate)
             throws SQLException, Exception {
 
-        String queryStr = queryBuilder.createSqlString(query);
+        String queryStr = queryBuilder.createSqlString();
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
         boolean isLoggable = logger.isLoggable();
 
@@ -119,10 +119,10 @@ public class BatchAction extends BaseSQLAction {
 
                 if (isLoggable) {
                     logger.logQueryParameters("batch bind", query.getDbAttributes(),
-                            queryBuilder.getParameterValues(query), query instanceof InsertBatchQuery);
+                            queryBuilder.getParameterValues(), query instanceof InsertBatchQuery);
                 }
 
-                queryBuilder.bindParameters(statement, query);
+                queryBuilder.bindParameters(statement);
                 statement.addBatch();
             }
 
@@ -164,7 +164,7 @@ public class BatchAction extends BaseSQLAction {
         boolean isLoggable = logger.isLoggable();
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-        String queryStr = queryBuilder.createSqlString(query);
+        String queryStr = queryBuilder.createSqlString();
 
         // log batch SQL execution
         logger.logQuery(queryStr, Collections.EMPTY_LIST);
@@ -177,11 +177,11 @@ public class BatchAction extends BaseSQLAction {
         try {
             while (query.next()) {
                 if (isLoggable) {
-                    logger.logQueryParameters("bind", query.getDbAttributes(), queryBuilder.getParameterValues(query),
+                    logger.logQueryParameters("bind", query.getDbAttributes(), queryBuilder.getParameterValues(),
                             query instanceof InsertBatchQuery);
                 }
 
-                queryBuilder.bindParameters(statement, query);
+                queryBuilder.bindParameters(statement);
 
                 int updated = statement.executeUpdate();
                 if (useOptimisticLock && updated != 1) {

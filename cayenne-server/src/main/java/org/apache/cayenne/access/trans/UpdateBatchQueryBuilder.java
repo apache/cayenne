@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
@@ -37,55 +36,55 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 
 public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
 
-    public UpdateBatchQueryBuilder(DbAdapter adapter) {
-        super(adapter);
+    public UpdateBatchQueryBuilder(UpdateBatchQuery query, DbAdapter adapter) {
+        super(query, adapter);
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) throws IOException {
-        UpdateBatchQuery updateBatch = (UpdateBatchQuery) batch;
+    public String createSqlString() throws IOException {
+        UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
-        StringBuffer query = new StringBuffer("UPDATE ");
-        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
-        query.append(" SET ");
+        StringBuffer buffer = new StringBuffer("UPDATE ");
+        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
+        buffer.append(" SET ");
 
         int len = updatedDbAttributes.size();
         for (int i = 0; i < len; i++) {
             if (i > 0) {
-                query.append(", ");
+                buffer.append(", ");
             }
 
             DbAttribute attribute = updatedDbAttributes.get(i);
-            query.append(strategy.quotedName(attribute));
-            query.append(" = ?");
+            buffer.append(strategy.quotedName(attribute));
+            buffer.append(" = ?");
         }
 
-        query.append(" WHERE ");
+        buffer.append(" WHERE ");
 
         Iterator<DbAttribute> i = qualifierAttributes.iterator();
         while (i.hasNext()) {
             DbAttribute attribute = i.next();
-            appendDbAttribute(query, attribute);
-            query.append(updateBatch.isNull(attribute) ? " IS NULL" : " = ?");
+            appendDbAttribute(buffer, attribute);
+            buffer.append(updateBatch.isNull(attribute) ? " IS NULL" : " = ?");
 
             if (i.hasNext()) {
-                query.append(" AND ");
+                buffer.append(" AND ");
             }
         }
 
-        return query.toString();
+        return buffer.toString();
     }
 
     /**
      * Binds BatchQuery parameters to the PreparedStatement.
      */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
 
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();

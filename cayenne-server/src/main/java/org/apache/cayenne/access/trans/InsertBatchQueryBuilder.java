@@ -28,26 +28,26 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
 
 /**
  * Translator of InsertBatchQueries.
  */
 public class InsertBatchQueryBuilder extends BatchQueryBuilder {
 
-    public InsertBatchQueryBuilder(DbAdapter adapter) {
-        super(adapter);
+    public InsertBatchQueryBuilder(InsertBatchQuery query, DbAdapter adapter) {
+        super(query, adapter);
     }
 
     /**
-     * Binds parameters for the current batch iteration to the PreparedStatement. Performs
-     * filtering of attributes based on column generation rules.
+     * Binds parameters for the current batch iteration to the
+     * PreparedStatement. Performs filtering of attributes based on column
+     * generation rules.
      * 
      * @since 1.2
      */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQuery query)
-            throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
 
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int attributeCount = dbAttributes.size();
@@ -58,20 +58,20 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
             if (includeInBatch(attribute)) {
                 j++;
                 Object value = query.getValue(i);
-                adapter.bindParameter(statement, value, j, attribute.getType(), attribute
-                        .getScale());
+                adapter.bindParameter(statement, value, j, attribute.getType(), attribute.getScale());
             }
         }
     }
 
     /**
-     * Returns a list of values for the current batch iteration. Performs filtering of
-     * attributes based on column generation rules. Used primarily for logging.
+     * Returns a list of values for the current batch iteration. Performs
+     * filtering of attributes based on column generation rules. Used primarily
+     * for logging.
      * 
      * @since 1.2
      */
     @Override
-    public List<Object> getParameterValues(BatchQuery query) {
+    public List<Object> getParameterValues() {
         List<DbAttribute> attributes = query.getDbAttributes();
         int len = attributes.size();
         List<Object> values = new ArrayList<Object>(len);
@@ -85,44 +85,45 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) throws IOException {
+    public String createSqlString() throws IOException {
 
-        List<DbAttribute> dbAttributes = batch.getDbAttributes();
-        QuotingStrategy strategy =  getAdapter().getQuotingStrategy();
+        List<DbAttribute> dbAttributes = query.getDbAttributes();
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        StringBuilder query = new StringBuilder("INSERT INTO ");
-        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
-        query.append(" (");
+        StringBuilder buffer = new StringBuilder("INSERT INTO ");
+        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
+        buffer.append(" (");
 
         int columnCount = 0;
         for (DbAttribute attribute : dbAttributes) {
 
             // attribute inclusion rule - one of the rules below must be true:
             // (1) attribute not generated
-            // (2) attribute is generated and PK and adapter does not support generated
+            // (2) attribute is generated and PK and adapter does not support
+            // generated
             // keys
 
             if (includeInBatch(attribute)) {
 
                 if (columnCount > 0) {
-                    query.append(", ");
+                    buffer.append(", ");
                 }
-                query.append(strategy.quotedName(attribute));
+                buffer.append(strategy.quotedName(attribute));
                 columnCount++;
             }
         }
 
-        query.append(") VALUES (");
+        buffer.append(") VALUES (");
 
         for (int i = 0; i < columnCount; i++) {
             if (i > 0) {
-                query.append(", ");
+                buffer.append(", ");
             }
 
-            query.append('?');
+            buffer.append('?');
         }
-        query.append(')');
-        return query.toString();
+        buffer.append(')');
+        return buffer.toString();
     }
 
     /**
@@ -133,10 +134,10 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
     protected boolean includeInBatch(DbAttribute attribute) {
         // attribute inclusion rule - one of the rules below must be true:
         // (1) attribute not generated
-        // (2) attribute is generated and PK and adapter does not support generated
+        // (2) attribute is generated and PK and adapter does not support
+        // generated
         // keys
 
-        return !attribute.isGenerated()
-                || (attribute.isPrimaryKey() && !adapter.supportsGeneratedKeys());
+        return !attribute.isGenerated() || (attribute.isPrimaryKey() && !adapter.supportsGeneratedKeys());
     }
 }

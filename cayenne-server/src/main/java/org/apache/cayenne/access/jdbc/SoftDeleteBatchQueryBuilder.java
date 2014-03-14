@@ -27,7 +27,7 @@ import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
  * Implementation of {@link DeleteBatchQueryBuilder}, which uses 'soft' delete
@@ -37,47 +37,47 @@ public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
 
     private String deletedFieldName;
 
-    public SoftDeleteBatchQueryBuilder(DbAdapter adapter, String deletedFieldName) {
-        super(adapter);
+    public SoftDeleteBatchQueryBuilder(DeleteBatchQuery query, DbAdapter adapter, String deletedFieldName) {
+        super(query, adapter);
         this.deletedFieldName = deletedFieldName;
     }
 
     @Override
-    public String createSqlString(BatchQuery batch) throws IOException {
-        if (!needSoftDelete(batch)) {
-            return super.createSqlString(batch);
+    public String createSqlString() throws IOException {
+        if (!needSoftDelete()) {
+            return super.createSqlString();
         }
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        StringBuffer query = new StringBuffer("UPDATE ");
-        query.append(strategy.quotedFullyQualifiedName(batch.getDbEntity()));
-        query.append(" SET ").append(strategy.quotedIdentifier(batch.getDbEntity(), deletedFieldName)).append(" = ?");
+        StringBuffer buffer = new StringBuffer("UPDATE ");
+        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
+        buffer.append(" SET ").append(strategy.quotedIdentifier(query.getDbEntity(), deletedFieldName)).append(" = ?");
 
-        applyQualifier(query, batch);
+        applyQualifier(buffer);
 
-        return query.toString();
+        return buffer.toString();
     }
 
     @Override
-    protected int getFirstParameterIndex(BatchQuery query) {
-        return needSoftDelete(query) ? 2 : 1;
+    protected int getFirstParameterIndex() {
+        return needSoftDelete() ? 2 : 1;
     }
 
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception {
-        if (needSoftDelete(query)) {
+    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+        if (needSoftDelete()) {
             // binding first parameter (which is 'deleted') as true
             adapter.bindParameter(statement, true, 1, Types.BOOLEAN, -1);
         }
 
-        super.bindParameters(statement, query);
+        super.bindParameters(statement);
     }
 
     /**
      * @return whether 'soft' deletion should be used
      */
-    protected boolean needSoftDelete(BatchQuery query) {
+    protected boolean needSoftDelete() {
         DbAttribute attr = query.getDbEntity().getAttribute(deletedFieldName);
         return attr != null && attr.getType() == Types.BOOLEAN;
     }

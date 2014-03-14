@@ -20,10 +20,13 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
- * Factory which creates BatchQueryBuilders for different types of queries, which, in
- * their turn, create SQL strings for batch queries.
+ * Factory which creates BatchQueryBuilders for different types of queries,
+ * which, in their turn, create SQL strings for batch queries.
  * 
  * @since 3.0
  */
@@ -31,16 +34,22 @@ public interface BatchQueryBuilderFactory {
 
     /**
      * Creates query builder for INSERT queries
+     * 
+     * @since 3.2
      */
-    BatchQueryBuilder createInsertQueryBuilder(DbAdapter adapter);
+    BatchQueryBuilder createInsertQueryBuilder(InsertBatchQuery query, DbAdapter adapter);
 
     /**
      * Creates query builder for UPDATE queries
+     * 
+     * @since 3.2
      */
-    BatchQueryBuilder createUpdateQueryBuilder(DbAdapter adapter);
+    BatchQueryBuilder createUpdateQueryBuilder(UpdateBatchQuery query, DbAdapter adapter);
 
     /**
      * Creates query builder for DELETE queries
+     * 
+     * @since 3.2
      */
-    BatchQueryBuilder createDeleteQueryBuilder(DbAdapter adapter);
+    BatchQueryBuilder createDeleteQueryBuilder(DeleteBatchQuery query, DbAdapter adapter);
 }

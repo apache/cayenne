@@ -36,10 +36,12 @@ import org.apache.cayenne.query.BatchQuery;
  */
 public abstract class BatchQueryBuilder {
 
+    protected BatchQuery query;
     protected DbAdapter adapter;
     protected String trimFunction;
 
-    public BatchQueryBuilder(DbAdapter adapter) {
+    public BatchQueryBuilder(BatchQuery query, DbAdapter adapter) {
+        this.query = query;
         this.adapter = adapter;
     }
 
@@ -47,9 +49,10 @@ public abstract class BatchQueryBuilder {
      * Translates BatchQuery into an SQL string formatted to use in a
      * PreparedStatement.
      * 
+     * @since 3.2
      * @throws IOException
      */
-    public abstract String createSqlString(BatchQuery batch) throws IOException;
+    public abstract String createSqlString() throws IOException;
 
     /**
      * Appends the name of the column to the query buffer. Subclasses use this
@@ -93,9 +96,9 @@ public abstract class BatchQueryBuilder {
      * Binds parameters for the current batch iteration to the
      * PreparedStatement.
      * 
-     * @since 1.2
+     * @since 3.2
      */
-    public abstract void bindParameters(PreparedStatement statement, BatchQuery query) throws SQLException, Exception;
+    public abstract void bindParameters(PreparedStatement statement) throws SQLException, Exception;
 
     /**
      * Returns a list of values for the current batch iteration. Used primarily
@@ -103,7 +106,7 @@ public abstract class BatchQueryBuilder {
      * 
      * @since 1.2
      */
-    public List<Object> getParameterValues(BatchQuery query) {
+    public List<Object> getParameterValues() {
         int len = query.getDbAttributes().size();
         List<Object> values = new ArrayList<Object>(len);
         for (int i = 0; i < len; i++) {

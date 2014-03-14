@@ -20,6 +20,7 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
  * Implementation of {@link #BatchQueryBuilderFactory}, which uses 'soft' delete
@@ -45,8 +46,8 @@ public class SoftDeleteQueryBuilderFactory extends DefaultBatchQueryBuilderFacto
     }
     
     @Override
-    public BatchQueryBuilder createDeleteQueryBuilder(DbAdapter adapter) {
-        return new SoftDeleteBatchQueryBuilder(adapter, deletedFieldName);
+    public BatchQueryBuilder createDeleteQueryBuilder(DeleteBatchQuery query, DbAdapter adapter) {
+        return new SoftDeleteBatchQueryBuilder(query, adapter, deletedFieldName);
     }
     
     /**
