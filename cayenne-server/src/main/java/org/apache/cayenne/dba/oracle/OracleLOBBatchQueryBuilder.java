@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.dba.oracle;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
@@ -36,18 +37,18 @@ import org.apache.cayenne.query.BatchQuery;
  * Superclass of query builders for the DML operations involving LOBs.
  * 
  */
-public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
+abstract class OracleLOBBatchQueryBuilder extends BatchQueryBuilder {
 
     protected String newClobFunction;
     protected String newBlobFunction;
 
-    public LOBBatchQueryBuilder(BatchQuery query, DbAdapter adapter) {
+    OracleLOBBatchQueryBuilder(BatchQuery query, DbAdapter adapter) {
         super(query, adapter);
     }
 
-    public abstract List getValuesForLOBUpdateParameters();
+    abstract List getValuesForLOBUpdateParameters();
 
-    public String createLOBSelectString(List selectedLOBAttributes, List qualifierAttributes) {
+    String createLOBSelectString(List selectedLOBAttributes, List qualifierAttributes) {
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
@@ -131,19 +132,11 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
         return value == null || (type != Types.BLOB && type != Types.CLOB);
     }
 
-    public String getNewBlobFunction() {
-        return newBlobFunction;
-    }
-
-    public String getNewClobFunction() {
-        return newClobFunction;
-    }
-
-    public void setNewBlobFunction(String string) {
+    void setNewBlobFunction(String string) {
         newBlobFunction = string;
     }
 
-    public void setNewClobFunction(String string) {
+    void setNewClobFunction(String string) {
         newClobFunction = string;
     }
 }

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.dba.oracle;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,14 +28,14 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.InsertBatchQuery;
 
-public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
+class OracleLOBInsertBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
 
-    public LOBInsertBatchQueryBuilder(InsertBatchQuery query, DbAdapter adapter) {
+    OracleLOBInsertBatchQueryBuilder(InsertBatchQuery query, DbAdapter adapter) {
         super(query, adapter);
     }
 
     @Override
-    public List getValuesForLOBUpdateParameters() {
+    List getValuesForLOBUpdateParameters() {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 

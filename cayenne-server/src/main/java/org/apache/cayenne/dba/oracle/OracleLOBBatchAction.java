@@ -34,9 +34,6 @@ import java.util.List;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.trans.LOBBatchQueryBuilder;
-import org.apache.cayenne.access.trans.LOBInsertBatchQueryBuilder;
-import org.apache.cayenne.access.trans.LOBUpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -68,11 +65,11 @@ class OracleLOBBatchAction implements SQLAction {
 
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        LOBBatchQueryBuilder queryBuilder;
+        OracleLOBBatchQueryBuilder queryBuilder;
         if (query instanceof InsertBatchQuery) {
-            queryBuilder = new LOBInsertBatchQueryBuilder((InsertBatchQuery) query, getAdapter());
+            queryBuilder = new OracleLOBInsertBatchQueryBuilder((InsertBatchQuery) query, getAdapter());
         } else if (query instanceof UpdateBatchQuery) {
-            queryBuilder = new LOBUpdateBatchQueryBuilder((UpdateBatchQuery) query, getAdapter());
+            queryBuilder = new OracleLOBUpdateBatchQueryBuilder((UpdateBatchQuery) query, getAdapter());
         } else {
             throw new CayenneException("Unsupported batch type for special LOB processing: " + query);
         }
@@ -126,7 +123,7 @@ class OracleLOBBatchAction implements SQLAction {
         }
     }
 
-    void processLOBRow(Connection con, LOBBatchQueryBuilder queryBuilder, OracleLOBBatchQueryWrapper selectQuery,
+    void processLOBRow(Connection con, OracleLOBBatchQueryBuilder queryBuilder, OracleLOBBatchQueryWrapper selectQuery,
             List<DbAttribute> qualifierAttributes) throws SQLException, Exception {
 
         List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
