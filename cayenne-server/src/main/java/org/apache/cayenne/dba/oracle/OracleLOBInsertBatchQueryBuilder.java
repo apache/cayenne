@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
 class OracleLOBInsertBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
@@ -35,13 +36,13 @@ class OracleLOBInsertBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
     }
 
     @Override
-    List getValuesForLOBUpdateParameters() {
+    List getValuesForLOBUpdateParameters(BatchQueryRow row) {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
         List values = new ArrayList(len);
         for (int i = 0; i < len; i++) {
-            Object value = query.getValue(i);
+            Object value = row.getValue(i);
             DbAttribute attribute = dbAttributes.get(i);
             if (isUpdateableColumn(value, attribute.getType())) {
                 values.add(value);
@@ -52,7 +53,7 @@ class OracleLOBInsertBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
     }
 
     @Override
-    public String createSqlString() {
+    public String createSqlString(BatchQueryRow row) {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
@@ -74,7 +75,7 @@ class OracleLOBInsertBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
                 buffer.append(", ");
             }
 
-            appendUpdatedParameter(buffer, dbAttributes.get(i), query.getValue(i));
+            appendUpdatedParameter(buffer, dbAttributes.get(i), row.getValue(i));
         }
         buffer.append(')');
         return buffer.toString();

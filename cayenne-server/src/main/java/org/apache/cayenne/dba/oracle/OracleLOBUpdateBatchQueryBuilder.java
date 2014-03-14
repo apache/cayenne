@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 class OracleLOBUpdateBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
@@ -35,7 +36,7 @@ class OracleLOBUpdateBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
     }
 
     @Override
-    List getValuesForLOBUpdateParameters() {
+    List getValuesForLOBUpdateParameters(BatchQueryRow row) {
         int len = query.getDbAttributes().size();
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
@@ -47,21 +48,21 @@ class OracleLOBUpdateBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
         int qualifierLen = qualifierAttributes.size();
         for (int i = 0; i < updatedLen; i++) {
             DbAttribute attribute = updatedDbAttributes.get(i);
-            Object value = query.getValue(i);
+            Object value = row.getValue(i);
             if (isUpdateableColumn(value, attribute.getType())) {
                 values.add(value);
             }
         }
 
         for (int i = 0; i < qualifierLen; i++) {
-            values.add(query.getValue(updatedLen + i));
+            values.add(row.getValue(updatedLen + i));
         }
 
         return values;
     }
 
     @Override
-    public String createSqlString() {
+    public String createSqlString(BatchQueryRow row) {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
         List<DbAttribute> idDbAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
@@ -81,7 +82,7 @@ class OracleLOBUpdateBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
             DbAttribute attribute = updatedDbAttributes.get(i);
             buffer.append(strategy.quotedName(attribute));
             buffer.append(" = ");
-            appendUpdatedParameter(buffer, attribute, query.getValue(i));
+            appendUpdatedParameter(buffer, attribute, row.getValue(i));
         }
 
         buffer.append(" WHERE ");

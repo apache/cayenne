@@ -38,6 +38,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.UpdateBatchQuery;
@@ -87,13 +88,12 @@ class OracleLOBBatchAction implements SQLAction {
 
         boolean isLoggable = logger.isLoggable();
 
-        query.reset();
-        while (query.next()) {
+        for(BatchQueryRow row : query.getRows()) {
 
-            selectQuery.indexLOBAttributes();
+            selectQuery.indexLOBAttributes(row);
 
             int updated = 0;
-            String updateStr = queryBuilder.createSqlString();
+            String updateStr = queryBuilder.createSqlString(row);
 
             // 1. run row update
             logger.logQuery(updateStr, Collections.EMPTY_LIST);
@@ -101,11 +101,11 @@ class OracleLOBBatchAction implements SQLAction {
             try {
 
                 if (isLoggable) {
-                    List bindings = queryBuilder.getValuesForLOBUpdateParameters();
+                    List bindings = queryBuilder.getValuesForLOBUpdateParameters(row);
                     logger.logQueryParameters("bind", null, bindings, query instanceof InsertBatchQuery);
                 }
 
-                queryBuilder.bindParameters(statement);
+                queryBuilder.bindParameters(statement, row);
                 updated = statement.executeUpdate();
                 logger.logUpdateCount(updated);
             } finally {
@@ -116,7 +116,7 @@ class OracleLOBBatchAction implements SQLAction {
             }
 
             // 2. run row LOB update (SELECT...FOR UPDATE and writing out LOBs)
-            processLOBRow(connection, queryBuilder, selectQuery, qualifierAttributes);
+            processLOBRow(connection, queryBuilder, selectQuery, qualifierAttributes, row);
 
             // finally, notify delegate that the row was updated
             observer.nextCount(query, updated);
@@ -124,7 +124,7 @@ class OracleLOBBatchAction implements SQLAction {
     }
 
     void processLOBRow(Connection con, OracleLOBBatchQueryBuilder queryBuilder, OracleLOBBatchQueryWrapper selectQuery,
-            List<DbAttribute> qualifierAttributes) throws SQLException, Exception {
+            List<DbAttribute> qualifierAttributes, BatchQueryRow row) throws SQLException, Exception {
 
         List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
         if (lobAttributes.size() == 0) {
@@ -133,7 +133,7 @@ class OracleLOBBatchAction implements SQLAction {
 
         boolean isLoggable = logger.isLoggable();
 
-        List qualifierValues = selectQuery.getValuesForLOBSelectQualifier();
+        List qualifierValues = selectQuery.getValuesForLOBSelectQualifier(row);
         List lobValues = selectQuery.getValuesForUpdatedLOBColumns();
         int parametersSize = qualifierValues.size();
         int lobSize = lobAttributes.size();

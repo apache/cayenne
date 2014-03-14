@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
@@ -84,7 +85,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
      * Binds BatchQuery parameters to the PreparedStatement.
      */
     @Override
-    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
 
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
@@ -93,14 +94,14 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
         int len = updatedDbAttributes.size();
         int parameterIndex = 1;
         for (int i = 0; i < len; i++) {
-            Object value = query.getValue(i);
+            Object value = row.getValue(i);
 
             DbAttribute attribute = updatedDbAttributes.get(i);
             adapter.bindParameter(statement, value, parameterIndex++, attribute.getType(), attribute.getScale());
         }
 
         for (int i = 0; i < qualifierAttributes.size(); i++) {
-            Object value = query.getValue(len + i);
+            Object value = row.getValue(len + i);
             DbAttribute attribute = qualifierAttributes.get(i);
 
             // skip null attributes... they are translated as "IS NULL"

@@ -27,6 +27,7 @@ import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
@@ -65,13 +66,13 @@ public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
     }
 
     @Override
-    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
         if (needSoftDelete()) {
             // binding first parameter (which is 'deleted') as true
             adapter.bindParameter(statement, true, 1, Types.BOOLEAN, -1);
         }
 
-        super.bindParameters(statement);
+        super.bindParameters(statement, row);
     }
 
     /**

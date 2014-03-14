@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.ResultIterator;
@@ -40,6 +39,7 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
@@ -111,18 +111,17 @@ public class BatchAction extends BaseSQLAction {
         logger.logQuery(queryStr, Collections.EMPTY_LIST);
 
         // run batch
-        query.reset();
 
         PreparedStatement statement = con.prepareStatement(queryStr);
         try {
-            while (query.next()) {
+            for (BatchQueryRow row : query.getRows()) {
 
                 if (isLoggable) {
                     logger.logQueryParameters("batch bind", query.getDbAttributes(),
-                            queryBuilder.getParameterValues(), query instanceof InsertBatchQuery);
+                            queryBuilder.getParameterValues(row), query instanceof InsertBatchQuery);
                 }
 
-                queryBuilder.bindParameters(statement);
+                queryBuilder.bindParameters(statement, row);
                 statement.addBatch();
             }
 
@@ -170,36 +169,28 @@ public class BatchAction extends BaseSQLAction {
         logger.logQuery(queryStr, Collections.EMPTY_LIST);
 
         // run batch queries one by one
-        query.reset();
 
         PreparedStatement statement = (generatesKeys) ? connection.prepareStatement(queryStr,
                 Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(queryStr);
         try {
-            while (query.next()) {
+            for(BatchQueryRow row : query.getRows()) {
                 if (isLoggable) {
-                    logger.logQueryParameters("bind", query.getDbAttributes(), queryBuilder.getParameterValues(),
+                    logger.logQueryParameters("bind", query.getDbAttributes(), queryBuilder.getParameterValues(row),
                             query instanceof InsertBatchQuery);
                 }
 
-                queryBuilder.bindParameters(statement);
+                queryBuilder.bindParameters(statement, row);
 
                 int updated = statement.executeUpdate();
                 if (useOptimisticLock && updated != 1) {
-
-                    Map snapshot = Collections.EMPTY_MAP;
-                    if (query instanceof UpdateBatchQuery) {
-                        snapshot = ((UpdateBatchQuery) query).getCurrentQualifier();
-                    } else if (query instanceof DeleteBatchQuery) {
-                        snapshot = ((DeleteBatchQuery) query).getCurrentQualifier();
-                    }
-
-                    throw new OptimisticLockException(query.getObjectId(), query.getDbEntity(), queryStr, snapshot);
+                    throw new OptimisticLockException(row.getObjectId(), query.getDbEntity(), queryStr,
+                            row.getQualifier());
                 }
 
                 delegate.nextCount(query, updated);
 
                 if (generatesKeys) {
-                    processGeneratedKeys(statement, delegate);
+                    processGeneratedKeys(statement, delegate, row);
                 }
 
                 if (isLoggable) {
@@ -243,7 +234,7 @@ public class BatchAction extends BaseSQLAction {
      * @since 3.2
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void processGeneratedKeys(Statement statement, OperationObserver observer) throws SQLException,
+    protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row) throws SQLException,
             CayenneException {
 
         ResultSet keysRS = statement.getGeneratedKeys();
@@ -285,6 +276,6 @@ public class BatchAction extends BaseSQLAction {
                 Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
         ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
-        observer.nextGeneratedRows(query, iterator, query.getObjectId());
+        observer.nextGeneratedRows(query, iterator, row.getObjectId());
     }
 }

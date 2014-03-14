@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
 /**
@@ -47,7 +48,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
      * @since 1.2
      */
     @Override
-    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
 
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int attributeCount = dbAttributes.size();
@@ -57,7 +58,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
             DbAttribute attribute = dbAttributes.get(i);
             if (includeInBatch(attribute)) {
                 j++;
-                Object value = query.getValue(i);
+                Object value = row.getValue(i);
                 adapter.bindParameter(statement, value, j, attribute.getType(), attribute.getScale());
             }
         }
@@ -71,14 +72,14 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
      * @since 1.2
      */
     @Override
-    public List<Object> getParameterValues() {
+    public List<Object> getParameterValues(BatchQueryRow row) {
         List<DbAttribute> attributes = query.getDbAttributes();
         int len = attributes.size();
         List<Object> values = new ArrayList<Object>(len);
         for (int i = 0; i < len; i++) {
             DbAttribute attribute = attributes.get(i);
             if (includeInBatch(attribute)) {
-                values.add(query.getValue(i));
+                values.add(row.getValue(i));
             }
         }
         return values;

@@ -30,6 +30,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * Superclass of batch query translators.
@@ -98,7 +99,7 @@ public abstract class BatchQueryBuilder {
      * 
      * @since 3.2
      */
-    public abstract void bindParameters(PreparedStatement statement) throws SQLException, Exception;
+    public abstract void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception;
 
     /**
      * Returns a list of values for the current batch iteration. Used primarily
@@ -106,11 +107,11 @@ public abstract class BatchQueryBuilder {
      * 
      * @since 1.2
      */
-    public List<Object> getParameterValues() {
+    public List<Object> getParameterValues(BatchQueryRow row) {
         int len = query.getDbAttributes().size();
         List<Object> values = new ArrayList<Object>(len);
         for (int i = 0; i < len; i++) {
-            values.add(query.getValue(i));
+            values.add(row.getValue(i));
         }
         return values;
     }

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -32,6 +33,7 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * Superclass of query builders for the DML operations involving LOBs.
@@ -46,7 +48,14 @@ abstract class OracleLOBBatchQueryBuilder extends BatchQueryBuilder {
         super(query, adapter);
     }
 
-    abstract List getValuesForLOBUpdateParameters();
+    abstract List getValuesForLOBUpdateParameters(BatchQueryRow row);
+    
+    abstract String createSqlString(BatchQueryRow row);
+    
+    @Override
+    public final String createSqlString() throws IOException {
+        throw new UnsupportedOperationException();
+    }
 
     String createLOBSelectString(List selectedLOBAttributes, List qualifierAttributes) {
 
@@ -104,9 +113,11 @@ abstract class OracleLOBBatchQueryBuilder extends BatchQueryBuilder {
 
     /**
      * Binds BatchQuery parameters to the PreparedStatement.
+     * 
+     * @since 3.2
      */
     @Override
-    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
 
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int attributeCount = dbAttributes.size();
@@ -114,7 +125,7 @@ abstract class OracleLOBBatchQueryBuilder extends BatchQueryBuilder {
         // i - attribute position in the query
         // j - PreparedStatement parameter position (starts with "1")
         for (int i = 0, j = 1; i < attributeCount; i++) {
-            Object value = query.getValue(i);
+            Object value = row.getValue(i);
             DbAttribute attribute = dbAttributes.get(i);
             int type = attribute.getType();
 

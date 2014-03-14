@@ -33,6 +33,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -51,7 +52,7 @@ public class BatchQueryBuilderTest extends ServerCase {
             }
 
             @Override
-            public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+            public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
             }
         };
 
@@ -69,7 +70,7 @@ public class BatchQueryBuilderTest extends ServerCase {
             }
 
             @Override
-            public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+            public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
             }
         };
 
@@ -99,7 +100,7 @@ public class BatchQueryBuilderTest extends ServerCase {
             }
 
             @Override
-            public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+            public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
             }
         };
 

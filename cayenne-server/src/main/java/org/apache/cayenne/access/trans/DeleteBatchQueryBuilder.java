@@ -27,6 +27,7 @@ import java.util.Iterator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
@@ -73,9 +74,11 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
 
     /**
      * Binds BatchQuery parameters to the PreparedStatement.
+     * 
+     * @since 3.2
      */
     @Override
-    public void bindParameters(PreparedStatement statement) throws SQLException, Exception {
+    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
 
@@ -83,7 +86,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
         int i = 0;
 
         for (DbAttribute attribute : deleteBatch.getQualifierAttributes()) {
-            Object value = query.getValue(i++);
+            Object value = row.getValue(i++);
 
             // skip null attributes... they are translated as "IS NULL"
             if (deleteBatch.isNull(attribute)) {

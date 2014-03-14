@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * Helper class to extract the information from BatchQueries, essential for LOB
@@ -75,14 +76,14 @@ class OracleLOBBatchQueryWrapper {
     /**
      * Indexes attributes
      */
-    void indexLOBAttributes() {
+    void indexLOBAttributes(BatchQueryRow row) {
         int len = updatedLOBAttributes.length;
         for (int i = 0; i < len; i++) {
             updatedLOBAttributes[i] = null;
 
             if (allLOBAttributes[i]) {
                 // skip null and empty LOBs
-                Object value = query.getValue(i);
+                Object value = row.getValue(i);
 
                 if (value == null) {
                     continue;
@@ -176,13 +177,13 @@ class OracleLOBBatchQueryWrapper {
         return attributes;
     }
 
-    List getValuesForLOBSelectQualifier() {
+    List getValuesForLOBSelectQualifier(BatchQueryRow row) {
 
         int len = this.qualifierAttributes.length;
         List values = new ArrayList(len);
         for (int i = 0; i < len; i++) {
             if (this.qualifierAttributes[i]) {
-                values.add(query.getValue(i));
+                values.add(row.getValue(i));
             }
         }
 
