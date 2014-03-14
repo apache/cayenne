@@ -96,7 +96,7 @@ public class BatchActionLockingTest extends ServerCase {
         node.setAdapter(adapter);
         node.setEntityResolver(resolver);
         node.setRowReaderFactory(mock(RowReaderFactory.class));
-        BatchAction action = new BatchAction(batchQuery, node);
+        BatchAction action = new BatchAction(batchQuery, node, false);
         action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
         assertEquals(0, mockConnection.getNumberCommits());
         assertEquals(0, mockConnection.getNumberRollbacks());
@@ -136,7 +136,7 @@ public class BatchActionLockingTest extends ServerCase {
         node.setAdapter(adapter);
         node.setEntityResolver(resolver);
         node.setRowReaderFactory(mock(RowReaderFactory.class));
-        BatchAction action = new BatchAction(batchQuery, node);
+        BatchAction action = new BatchAction(batchQuery, node, false);
         try {
             action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
             fail("No OptimisticLockingFailureException thrown.");

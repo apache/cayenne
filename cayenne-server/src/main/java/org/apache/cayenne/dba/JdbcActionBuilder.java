@@ -58,9 +58,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
         boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
-        BatchAction action = new BatchAction(query, dataNode);
-        action.setBatch(runningAsBatch);
-        return action;
+        return new BatchAction(query, dataNode, runningAsBatch);
     }
 
     @Override

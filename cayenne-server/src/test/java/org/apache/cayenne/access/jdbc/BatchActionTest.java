@@ -55,11 +55,11 @@ public class BatchActionTest extends ServerCase {
         node.setAdapter(adapter);
         node.setEntityResolver(resolver);
         node.setRowReaderFactory(mock(RowReaderFactory.class));
-        
-        assertTrue(new BatchAction(batch1, node).hasGeneratedKeys());
+
+        assertTrue(new BatchAction(batch1, node, false).hasGeneratedKeys());
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
-        assertFalse(new BatchAction(batch2, node).hasGeneratedKeys());
+        assertFalse(new BatchAction(batch2, node, false).hasGeneratedKeys());
     }
 
     public void testHasGeneratedKeys2() throws Exception {
@@ -70,16 +70,16 @@ public class BatchActionTest extends ServerCase {
 
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
                 .getDbEntity(), 5);
-        
+
         DataNode node = new DataNode();
         node.setAdapter(adapter);
         node.setEntityResolver(resolver);
         node.setRowReaderFactory(mock(RowReaderFactory.class));
-        
-        assertFalse(new BatchAction(batch1, node).hasGeneratedKeys());
+
+        assertFalse(new BatchAction(batch1, node, false).hasGeneratedKeys());
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
-        assertFalse(new BatchAction(batch2, node).hasGeneratedKeys());
+        assertFalse(new BatchAction(batch2, node, false).hasGeneratedKeys());
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {

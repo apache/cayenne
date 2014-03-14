@@ -36,8 +36,8 @@ import org.apache.cayenne.query.InsertBatchQuery;
  */
 public class SQLServerBatchAction extends BatchAction {
 
-    public SQLServerBatchAction(BatchQuery batchQuery, DataNode dataNode) {
-        super(batchQuery, dataNode);
+    public SQLServerBatchAction(BatchQuery batchQuery, DataNode dataNode, boolean runningAsBatch) {
+        super(batchQuery, dataNode, runningAsBatch);
     }
 
     @Override

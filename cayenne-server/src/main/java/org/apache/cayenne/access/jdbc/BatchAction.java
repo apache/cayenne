@@ -49,16 +49,17 @@ import org.apache.cayenne.query.UpdateBatchQuery;
  */
 public class BatchAction extends BaseSQLAction {
 
-    protected boolean batch;
+    protected boolean runningAsBatch;
     protected BatchQuery query;
     protected RowDescriptor keyRowDescriptor;
 
     /**
      * @since 3.2
      */
-    public BatchAction(BatchQuery batchQuery, DataNode dataNode) {
+    public BatchAction(BatchQuery query, DataNode dataNode, boolean runningAsBatch) {
         super(dataNode);
-        this.query = batchQuery;
+        this.query = query;
+        this.runningAsBatch = runningAsBatch;
     }
 
     /**
@@ -68,21 +69,13 @@ public class BatchAction extends BaseSQLAction {
         return query;
     }
 
-    public boolean isBatch() {
-        return batch;
-    }
-
-    public void setBatch(boolean runningAsBatch) {
-        this.batch = runningAsBatch;
-    }
-
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
         BatchQueryBuilder queryBuilder = createBuilder();
         boolean generatesKeys = hasGeneratedKeys();
 
-        if (batch && !generatesKeys) {
+        if (runningAsBatch && !generatesKeys) {
             runAsBatch(connection, queryBuilder, observer);
         } else {
             runAsIndividualQueries(connection, queryBuilder, observer, generatesKeys);
@@ -286,8 +279,7 @@ public class BatchAction extends BaseSQLAction {
             this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
         }
 
-        RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor,
-                query.getMetaData(dataNode.getEntityResolver()),
+        RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()),
                 Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
         ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 

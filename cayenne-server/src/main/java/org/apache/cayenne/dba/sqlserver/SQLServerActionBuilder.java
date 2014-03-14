@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -48,9 +47,7 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
         boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
-        BatchAction action = new SQLServerBatchAction(query, dataNode);
-        action.setBatch(runningAsBatch);
-        return action;
+        return new SQLServerBatchAction(query, dataNode, runningAsBatch);
     }
 
     @Override

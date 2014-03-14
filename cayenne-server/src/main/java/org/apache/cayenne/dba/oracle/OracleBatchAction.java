@@ -33,8 +33,8 @@ class OracleBatchAction extends BatchAction {
     /**
      * @since 3.2
      */
-    OracleBatchAction(BatchQuery batchQuery, DataNode dataNode) {
-        super(batchQuery, dataNode);
+    OracleBatchAction(BatchQuery batchQuery, DataNode dataNode, boolean runningAsBatch) {
+        super(batchQuery, dataNode, runningAsBatch);
     }
 
     @Override

@@ -58,9 +58,7 @@ class Oracle8ActionBuilder extends OracleActionBuilder {
             boolean useOptimisticLock = query.isUsingOptimisticLocking();
             boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
 
-            OracleBatchAction action = new OracleBatchAction(query, dataNode);
-            action.setBatch(runningAsBatch);
-            return action;
+            return new OracleBatchAction(query, dataNode, runningAsBatch);
         }
     }
 }
