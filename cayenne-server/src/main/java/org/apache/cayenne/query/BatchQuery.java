@@ -62,10 +62,12 @@ public abstract class BatchQuery implements Query {
         this.batchIndex = -1;
     }
     
+    @Override
     public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
         return visitor.visitQuery(this);
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -77,6 +79,7 @@ public abstract class BatchQuery implements Query {
     /**
      * @since 3.1
      */
+    @Override
     public DataMap getDataMap() {
         return dataMap;
     }
@@ -93,6 +96,7 @@ public abstract class BatchQuery implements Query {
      * 
      * @since 1.2
      */
+    @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return new DefaultQueryMetadata() {
 
@@ -106,6 +110,7 @@ public abstract class BatchQuery implements Query {
     /**
      * @since 1.2
      */
+    @Override
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         router.route(
                 router.engineForDataMap(dbEntity.getDataMap()),
@@ -118,6 +123,7 @@ public abstract class BatchQuery implements Query {
      * 
      * @since 1.2
      */
+    @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return visitor.batchAction(this);
     }
