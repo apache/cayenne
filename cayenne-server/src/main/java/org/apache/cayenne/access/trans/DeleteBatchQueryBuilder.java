@@ -44,7 +44,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        StringBuffer buffer = new StringBuffer("DELETE FROM ");
+        StringBuilder buffer = new StringBuilder("DELETE FROM ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
 
         applyQualifier(buffer);
@@ -55,7 +55,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
     /**
      * Appends WHERE clause to SQL string
      */
-    protected void applyQualifier(StringBuffer buffer) {
+    protected void applyQualifier(StringBuilder buffer) {
         buffer.append(" WHERE ");
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;

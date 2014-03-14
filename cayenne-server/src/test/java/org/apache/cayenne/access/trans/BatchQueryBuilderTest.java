@@ -75,14 +75,14 @@ public class BatchQueryBuilderTest extends ServerCase {
 
         builder.setTrimFunction(trimFunction);
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         DbEntity entity = new DbEntity("Test");
         DbAttribute attr = new DbAttribute("testAttr", Types.CHAR, null);
         attr.setEntity(entity);
         builder.appendDbAttribute(buf, attr);
         assertEquals("testTrim(testAttr)", buf.toString());
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         attr = new DbAttribute("testAttr", Types.VARCHAR, null);
         attr.setEntity(entity);
         builder.appendDbAttribute(buf, attr);
@@ -103,7 +103,7 @@ public class BatchQueryBuilderTest extends ServerCase {
             }
         };
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         DbEntity entity = new DbEntity("Test");
 
         DbAttribute attr = new DbAttribute("testAttr", Types.CHAR, null);
@@ -111,7 +111,7 @@ public class BatchQueryBuilderTest extends ServerCase {
         builder.appendDbAttribute(buf, attr);
         assertEquals("testAttr", buf.toString());
 
-        buf = new StringBuffer();
+        buf = new StringBuilder();
         attr = new DbAttribute("testAttr", Types.VARCHAR, null);
         attr.setEntity(entity);
 

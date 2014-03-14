@@ -49,7 +49,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
-        StringBuffer buffer = new StringBuffer("UPDATE ");
+        StringBuilder buffer = new StringBuilder("UPDATE ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
         buffer.append(" SET ");
 

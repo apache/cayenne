@@ -57,7 +57,7 @@ public class LOBInsertBatchQueryBuilder extends LOBBatchQueryBuilder {
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        StringBuffer buffer = new StringBuffer("INSERT INTO ");
+        StringBuilder buffer = new StringBuilder("INSERT INTO ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
         buffer.append(" (");
 

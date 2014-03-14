@@ -59,7 +59,7 @@ public abstract class BatchQueryBuilder {
      * method to append column names in the WHERE clause, i.e. for the columns
      * that are not being updated.
      */
-    protected void appendDbAttribute(StringBuffer buf, DbAttribute dbAttribute) {
+    protected void appendDbAttribute(StringBuilder buf, DbAttribute dbAttribute) {
 
         // TODO: (Andrus) is there a need for trimming binary types?
         boolean trim = dbAttribute.getType() == Types.CHAR && trimFunction != null;

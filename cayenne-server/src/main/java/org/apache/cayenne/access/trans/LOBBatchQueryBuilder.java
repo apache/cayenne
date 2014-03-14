@@ -51,7 +51,7 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
 
         QuotingStrategy strategy = getAdapter().getQuotingStrategy();
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("SELECT ");
 
         Iterator it = selectedLOBAttributes.iterator();
@@ -83,7 +83,7 @@ public abstract class LOBBatchQueryBuilder extends BatchQueryBuilder {
      * Appends parameter placeholder for the value of the column being updated.
      * If requested, performs special handling on LOB columns.
      */
-    protected void appendUpdatedParameter(StringBuffer buf, DbAttribute dbAttribute, Object value) {
+    protected void appendUpdatedParameter(StringBuilder buf, DbAttribute dbAttribute, Object value) {
 
         int type = dbAttribute.getType();
 
