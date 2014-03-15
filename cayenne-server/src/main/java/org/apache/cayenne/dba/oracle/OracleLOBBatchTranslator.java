@@ -49,24 +49,24 @@ abstract class OracleLOBBatchTranslator extends BatchTranslator {
     }
 
     abstract List<Object> getValuesForLOBUpdateParameters(BatchQueryRow row);
-    
+
     abstract String createSqlString(BatchQueryRow row);
-    
+
     @Override
     public final String createSqlString() throws IOException {
         throw new UnsupportedOperationException();
     }
 
-    String createLOBSelectString(List selectedLOBAttributes, List qualifierAttributes) {
+    String createLOBSelectString(List<DbAttribute> selectedLOBAttributes, List<DbAttribute> qualifierAttributes) {
 
         QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         StringBuilder buf = new StringBuilder();
         buf.append("SELECT ");
 
-        Iterator it = selectedLOBAttributes.iterator();
+        Iterator<DbAttribute> it = selectedLOBAttributes.iterator();
         while (it.hasNext()) {
-            buf.append(strategy.quotedName((DbAttribute) it.next()));
+            buf.append(strategy.quotedName(it.next()));
 
             if (it.hasNext()) {
                 buf.append(", ");

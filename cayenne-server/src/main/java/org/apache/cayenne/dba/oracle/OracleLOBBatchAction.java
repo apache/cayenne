@@ -64,6 +64,7 @@ class OracleLOBBatchAction implements SQLAction {
         return adapter;
     }
 
+    @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
         OracleLOBBatchTranslator queryBuilder;
