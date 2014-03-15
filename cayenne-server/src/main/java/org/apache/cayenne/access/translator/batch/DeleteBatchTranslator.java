@@ -20,9 +20,9 @@
 package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -73,16 +73,15 @@ public class DeleteBatchTranslator extends BatchTranslator {
     }
 
     /**
-     * Binds BatchQuery parameters to the PreparedStatement.
-     * 
      * @since 3.2
      */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
+    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
+        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(deleteBatch
+                .getQualifierAttributes().size());
 
-        int parameterIndex = getFirstParameterIndex();
         int i = 0;
 
         for (DbAttribute attribute : deleteBatch.getQualifierAttributes()) {
@@ -93,15 +92,9 @@ public class DeleteBatchTranslator extends BatchTranslator {
                 continue;
             }
 
-            adapter.bindParameter(statement, value, parameterIndex++, attribute.getType(), attribute.getScale());
+            bindings.add(new BatchParameterBinding(attribute, value));
         }
-    }
 
-    /**
-     * @return index of first parameter in delete clause
-     */
-    protected int getFirstParameterIndex() {
-        return 1;
+        return bindings;
     }
-
 }

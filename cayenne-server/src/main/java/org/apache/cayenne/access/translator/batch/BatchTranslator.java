@@ -20,8 +20,6 @@
 package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,12 +84,9 @@ public abstract class BatchTranslator {
     }
 
     /**
-     * Binds parameters for the current batch iteration to the
-     * PreparedStatement.
-     * 
-     * @since 3.2
+     * Returns PreparedStatement bindings for a given row.
      */
-    public abstract void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception;
+    public abstract List<BatchParameterBinding> createBindings(BatchQueryRow row);
 
     /**
      * Returns a list of values for the current batch iteration. Used primarily

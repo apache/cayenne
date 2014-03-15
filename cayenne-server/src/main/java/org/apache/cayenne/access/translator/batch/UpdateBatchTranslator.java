@@ -20,8 +20,7 @@
 package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,35 +80,38 @@ public class UpdateBatchTranslator extends BatchTranslator {
         return buffer.toString();
     }
 
-    /**
-     * Binds BatchQuery parameters to the PreparedStatement.
-     */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
+    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
 
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
-        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
-        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
-        int len = updatedDbAttributes.size();
-        int parameterIndex = 1;
-        for (int i = 0; i < len; i++) {
+        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
+        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
+
+        int ul = updatedDbAttributes.size();
+        int ql = qualifierAttributes.size();
+
+        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(ul + ql);
+
+        for (int i = 0; i < ul; i++) {
             Object value = row.getValue(i);
 
-            DbAttribute attribute = updatedDbAttributes.get(i);
-            adapter.bindParameter(statement, value, parameterIndex++, attribute.getType(), attribute.getScale());
+            DbAttribute a = updatedDbAttributes.get(i);
+            bindings.add(new BatchParameterBinding(a, value));
         }
 
-        for (int i = 0; i < qualifierAttributes.size(); i++) {
-            Object value = row.getValue(len + i);
-            DbAttribute attribute = qualifierAttributes.get(i);
+        for (int i = 0; i < ql; i++) {
+            Object value = row.getValue(ul + i);
+            DbAttribute a = qualifierAttributes.get(i);
 
             // skip null attributes... they are translated as "IS NULL"
-            if (updateBatch.isNull(attribute)) {
+            if (updateBatch.isNull(a)) {
                 continue;
             }
 
-            adapter.bindParameter(statement, value, parameterIndex++, attribute.getType(), attribute.getScale());
+            bindings.add(new BatchParameterBinding(a, value));
         }
+
+        return bindings;
     }
 }

@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.ResultIterator;
@@ -33,8 +34,10 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -53,6 +56,15 @@ public class BatchAction extends BaseSQLAction {
     protected boolean runningAsBatch;
     protected BatchQuery query;
     protected RowDescriptor keyRowDescriptor;
+
+    private static void bind(DbAdapter adapter, PreparedStatement statement, List<BatchParameterBinding> bindings)
+            throws SQLException, Exception {
+        int len = bindings.size();
+        for (int i = 1; i <= len; i++) {
+            BatchParameterBinding b = bindings.get(i);
+            adapter.bindParameter(statement, b.getValue(), i, b.getAttribute().getType(), b.getAttribute().getScale());
+        }
+    }
 
     /**
      * @since 3.2
@@ -113,6 +125,7 @@ public class BatchAction extends BaseSQLAction {
 
         // run batch
 
+        DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = con.prepareStatement(queryStr);
         try {
             for (BatchQueryRow row : query.getRows()) {
@@ -121,8 +134,10 @@ public class BatchAction extends BaseSQLAction {
                     logger.logQueryParameters("batch bind", query.getDbAttributes(),
                             queryBuilder.getParameterValues(row), query instanceof InsertBatchQuery);
                 }
+                
+                List<BatchParameterBinding> bindings = queryBuilder.createBindings(row);
+                bind(adapter, statement, bindings);
 
-                queryBuilder.bindParameters(statement, row);
                 statement.addBatch();
             }
 
@@ -171,16 +186,18 @@ public class BatchAction extends BaseSQLAction {
 
         // run batch queries one by one
 
+        DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = (generatesKeys) ? connection.prepareStatement(queryStr,
                 Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(queryStr);
         try {
-            for(BatchQueryRow row : query.getRows()) {
+            for (BatchQueryRow row : query.getRows()) {
                 if (isLoggable) {
                     logger.logQueryParameters("bind", query.getDbAttributes(), queryBuilder.getParameterValues(row),
                             query instanceof InsertBatchQuery);
                 }
 
-                queryBuilder.bindParameters(statement, row);
+                List<BatchParameterBinding> bindings = queryBuilder.createBindings(row);
+                bind(adapter, statement, bindings);
 
                 int updated = statement.executeUpdate();
                 if (useOptimisticLock && updated != 1) {
@@ -235,8 +252,8 @@ public class BatchAction extends BaseSQLAction {
      * @since 3.2
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row) throws SQLException,
-            CayenneException {
+    protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)
+            throws SQLException, CayenneException {
 
         ResultSet keysRS = statement.getGeneratedKeys();
 

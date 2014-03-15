@@ -19,9 +19,8 @@
 package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -60,18 +59,16 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
     }
 
     @Override
-    protected int getFirstParameterIndex() {
-        return needSoftDelete() ? 2 : 1;
-    }
+    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
 
-    @Override
-    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
+        List<BatchParameterBinding> bindings = super.createBindings(row);
+
         if (needSoftDelete()) {
-            // binding first parameter (which is 'deleted') as true
-            adapter.bindParameter(statement, true, 1, Types.BOOLEAN, -1);
+            DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
+            bindings.add(0, new BatchParameterBinding(deleteAttribute, true));
         }
 
-        super.bindParameters(statement, row);
+        return bindings;
     }
 
     /**

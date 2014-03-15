@@ -20,8 +20,6 @@
 package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,27 +39,25 @@ public class InsertBatchTranslator extends BatchTranslator {
     }
 
     /**
-     * Binds parameters for the current batch iteration to the
-     * PreparedStatement. Performs filtering of attributes based on column
-     * generation rules.
-     * 
-     * @since 1.2
+     * @since 3.2
      */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
+    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
 
-        List<DbAttribute> dbAttributes = query.getDbAttributes();
-        int attributeCount = dbAttributes.size();
+        List<DbAttribute> attributes = query.getDbAttributes();
+        int len = attributes.size();
 
-        // must use an independent counter "j" for prepared statement index
-        for (int i = 0, j = 0; i < attributeCount; i++) {
-            DbAttribute attribute = dbAttributes.get(i);
-            if (includeInBatch(attribute)) {
-                j++;
+        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(len);
+
+        for (int i = 0; i < len; i++) {
+            DbAttribute a = attributes.get(i);
+            if (includeInBatch(a)) {
                 Object value = row.getValue(i);
-                adapter.bindParameter(statement, value, j, attribute.getType(), attribute.getScale());
+                bindings.add(new BatchParameterBinding(a, value));
             }
         }
+
+        return bindings;
     }
 
     /**
