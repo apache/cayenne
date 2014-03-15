@@ -40,6 +40,7 @@ CAY-1911 BatchQuery refactoring - make Iterable
 CAY-1912 BatchQueryBuilder refactoring
 CAY-1913 Refactor org.apache.cayenne.access.trans into query-specific packages
 CAY-1914 Refactor EJBQL-related translators to a standalone 'org.apache.cayenne.access.translator.ejbql' package
+CAY-1915 BatchTranslator instead of performing bindings should return binding object whose values can be altered
 
 Bug Fixes:
 
