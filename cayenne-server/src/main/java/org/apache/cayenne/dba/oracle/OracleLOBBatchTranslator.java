@@ -48,7 +48,7 @@ abstract class OracleLOBBatchTranslator extends BatchTranslator {
         super(query, adapter);
     }
 
-    abstract List getValuesForLOBUpdateParameters(BatchQueryRow row);
+    abstract List<Object> getValuesForLOBUpdateParameters(BatchQueryRow row);
     
     abstract String createSqlString(BatchQueryRow row);
     

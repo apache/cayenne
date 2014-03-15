@@ -36,11 +36,11 @@ class OracleLOBInsertBatchTranslator extends OracleLOBBatchTranslator {
     }
 
     @Override
-    List getValuesForLOBUpdateParameters(BatchQueryRow row) {
+    List<Object> getValuesForLOBUpdateParameters(BatchQueryRow row) {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
-        List values = new ArrayList(len);
+        List<Object> values = new ArrayList<Object>(len);
         for (int i = 0; i < len; i++) {
             Object value = row.getValue(i);
             DbAttribute attribute = dbAttributes.get(i);
