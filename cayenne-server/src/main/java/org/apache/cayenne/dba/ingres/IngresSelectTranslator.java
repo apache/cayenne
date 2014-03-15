@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.ingres;
 import java.sql.Connection;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.query.Query;
 
 public class IngresSelectTranslator extends SelectTranslator {

@@ -23,8 +23,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.trans.QualifierTranslator;
-import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.translator.select.QualifierTranslator;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;

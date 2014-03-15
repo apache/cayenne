@@ -21,9 +21,9 @@ package org.apache.cayenne.dba.openbase;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.cayenne.access.trans.JoinStack;
-import org.apache.cayenne.access.trans.JoinTreeNode;
-import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.translator.select.JoinStack;
+import org.apache.cayenne.access.translator.select.JoinTreeNode;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;

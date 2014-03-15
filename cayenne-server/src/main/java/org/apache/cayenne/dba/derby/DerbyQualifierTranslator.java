@@ -20,8 +20,9 @@ package org.apache.cayenne.dba.derby;
 
 import java.io.IOException;
 import java.sql.Types;
-import org.apache.cayenne.access.trans.QueryAssembler;
-import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
+
+import org.apache.cayenne.access.translator.select.QueryAssembler;
+import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTEqual;
 import org.apache.cayenne.exp.parser.ASTNotEqual;

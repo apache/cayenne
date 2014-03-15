@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
-import org.apache.cayenne.access.trans.ProcedureTranslator;
+import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.map.Procedure;
 
 /**

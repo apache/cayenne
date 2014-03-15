@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.access.translator.procedure;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;

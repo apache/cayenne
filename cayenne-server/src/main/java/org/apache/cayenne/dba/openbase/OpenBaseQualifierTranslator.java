@@ -22,8 +22,8 @@ package org.apache.cayenne.dba.openbase;
 import java.io.IOException;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.trans.QualifierTranslator;
-import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.translator.select.QualifierTranslator;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.map.DbAttribute;

@@ -21,8 +21,8 @@ package org.apache.cayenne.dba.firebird;
 
 import java.io.IOException;
 
-import org.apache.cayenne.access.trans.QualifierTranslator;
-import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.translator.select.QualifierTranslator;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.dba.oracle.OracleQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 

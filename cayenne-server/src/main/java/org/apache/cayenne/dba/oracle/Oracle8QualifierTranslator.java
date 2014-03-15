@@ -20,7 +20,7 @@ package org.apache.cayenne.dba.oracle;
 
 import java.io.IOException;
 
-import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 
 /**
  * Extends the TrimmingQualifierTranslator that Cayenne normally uses for Oracle.

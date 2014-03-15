@@ -17,12 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.access.translator.select;
 
 import java.sql.Connection;
 
 import org.apache.cayenne.TranslationCase;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.select.OrderingTranslator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;

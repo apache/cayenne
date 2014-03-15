@@ -24,7 +24,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.trans.SelectTranslator;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.query.Query;
 
 /**

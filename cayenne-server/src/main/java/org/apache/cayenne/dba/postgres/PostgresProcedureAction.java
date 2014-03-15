@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.postgres;
 import java.sql.Connection;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.trans.ProcedureTranslator;
+import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.dba.sqlserver.SQLServerProcedureAction;
 import org.apache.cayenne.query.ProcedureQuery;
 
