@@ -20,6 +20,7 @@ package org.apache.cayenne.log;
 
 import java.util.List;
 
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -57,24 +58,32 @@ public interface JdbcEventLogger {
 
     void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time);
 
-    void logQueryParameters(
-            String label,
-            List<DbAttribute> attrs,
-            List<Object> parameters,
-            boolean isInserting);
+    /**
+     * @since 3.2
+     */
+    void logQueryParameters(String label, List<BatchParameterBinding> bindings);
+
+    /**
+     * @deprecated since 3.2 in favor of
+     *             {@link #logQueryParameters(String, List)}
+     */
+    @Deprecated
+    void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting);
 
     void logSelectCount(int count, long time);
-    
+
     /**
      * 
      * @param count
-     * @param time (milliseconds) time query took to run
-     * @param sql SQL that was executed, printed when time exceeds timeThreshold
+     * @param time
+     *            (milliseconds) time query took to run
+     * @param sql
+     *            SQL that was executed, printed when time exceeds timeThreshold
      * 
      * @since 3.2
      */
     void logSelectCount(int count, long time, String sql);
-    
+
     void logUpdateCount(int count);
 
     void logBeginTransaction(String transactionLabel);
@@ -86,7 +95,8 @@ public interface JdbcEventLogger {
     void logQueryError(Throwable th);
 
     /**
-     * Returns true if current thread default log level is high enough to generate output.
+     * Returns true if current thread default log level is high enough to
+     * generate output.
      */
     boolean isLoggable();
 }

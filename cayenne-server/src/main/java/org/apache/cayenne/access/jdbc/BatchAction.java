@@ -62,7 +62,8 @@ public class BatchAction extends BaseSQLAction {
         int len = bindings.size();
         for (int i = 0; i < len; i++) {
             BatchParameterBinding b = bindings.get(i);
-            adapter.bindParameter(statement, b.getValue(), i + 1, b.getAttribute().getType(), b.getAttribute().getScale());
+            adapter.bindParameter(statement, b.getValue(), i + 1, b.getAttribute().getType(), b.getAttribute()
+                    .getScale());
         }
     }
 
@@ -130,12 +131,8 @@ public class BatchAction extends BaseSQLAction {
         try {
             for (BatchQueryRow row : query.getRows()) {
 
-                if (isLoggable) {
-                    logger.logQueryParameters("batch bind", query.getDbAttributes(),
-                            queryBuilder.getParameterValues(row), query instanceof InsertBatchQuery);
-                }
-                
                 List<BatchParameterBinding> bindings = queryBuilder.createBindings(row);
+                logger.logQueryParameters("batch bind", bindings);
                 bind(adapter, statement, bindings);
 
                 statement.addBatch();
@@ -176,7 +173,6 @@ public class BatchAction extends BaseSQLAction {
             OperationObserver delegate, boolean generatesKeys) throws SQLException, Exception {
 
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-        boolean isLoggable = logger.isLoggable();
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
         String queryStr = queryBuilder.createSqlString();
@@ -191,12 +187,10 @@ public class BatchAction extends BaseSQLAction {
                 Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(queryStr);
         try {
             for (BatchQueryRow row : query.getRows()) {
-                if (isLoggable) {
-                    logger.logQueryParameters("bind", query.getDbAttributes(), queryBuilder.getParameterValues(row),
-                            query instanceof InsertBatchQuery);
-                }
 
                 List<BatchParameterBinding> bindings = queryBuilder.createBindings(row);
+                logger.logQueryParameters("bind", bindings);
+
                 bind(adapter, statement, bindings);
 
                 int updated = statement.executeUpdate();
@@ -211,9 +205,7 @@ public class BatchAction extends BaseSQLAction {
                     processGeneratedKeys(statement, delegate, row);
                 }
 
-                if (isLoggable) {
-                    logger.logUpdateCount(updated);
-                }
+                logger.logUpdateCount(updated);
             }
         } finally {
             try {

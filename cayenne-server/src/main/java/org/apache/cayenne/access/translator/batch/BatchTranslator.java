@@ -21,7 +21,6 @@ package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -87,20 +86,5 @@ public abstract class BatchTranslator {
      * Returns PreparedStatement bindings for a given row.
      */
     public abstract List<BatchParameterBinding> createBindings(BatchQueryRow row);
-
-    /**
-     * Returns a list of values for the current batch iteration. Used primarily
-     * for logging.
-     * 
-     * @since 1.2
-     */
-    public List<Object> getParameterValues(BatchQueryRow row) {
-        int len = query.getDbAttributes().size();
-        List<Object> values = new ArrayList<Object>(len);
-        for (int i = 0; i < len; i++) {
-            values.add(row.getValue(i));
-        }
-        return values;
-    }
 
 }

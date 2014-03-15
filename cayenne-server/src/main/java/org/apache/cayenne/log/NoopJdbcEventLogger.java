@@ -20,6 +20,7 @@ package org.apache.cayenne.log;
 
 import java.util.List;
 
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -65,11 +66,17 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
     public void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time) {
     }
 
+    @Override
+    @Deprecated
     public void logQueryParameters(
             String label,
             List<DbAttribute> attrs,
             List<Object> parameters,
             boolean isInserting) {
+    }
+    
+    @Override
+    public void logQueryParameters(String label, List<BatchParameterBinding> bindings) {
     }
 
     public void logSelectCount(int count, long time) {

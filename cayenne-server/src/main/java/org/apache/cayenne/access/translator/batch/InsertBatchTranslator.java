@@ -60,27 +60,6 @@ public class InsertBatchTranslator extends BatchTranslator {
         return bindings;
     }
 
-    /**
-     * Returns a list of values for the current batch iteration. Performs
-     * filtering of attributes based on column generation rules. Used primarily
-     * for logging.
-     * 
-     * @since 1.2
-     */
-    @Override
-    public List<Object> getParameterValues(BatchQueryRow row) {
-        List<DbAttribute> attributes = query.getDbAttributes();
-        int len = attributes.size();
-        List<Object> values = new ArrayList<Object>(len);
-        for (int i = 0; i < len; i++) {
-            DbAttribute attribute = attributes.get(i);
-            if (includeInBatch(attribute)) {
-                values.add(row.getValue(i));
-            }
-        }
-        return values;
-    }
-
     @Override
     public String createSqlString() throws IOException {
 

@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -224,6 +225,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         logQuery(queryStr, null, params, -1);
     }
 
+    @Deprecated
     private void buildLog(StringBuilder buffer, String prefix, String postfix, List<DbAttribute> attributes,
             List<?> parameters, boolean isInserting) {
         if (parameters != null && parameters.size() > 0) {
@@ -267,6 +269,31 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    private void buildLog(StringBuilder buffer, List<BatchParameterBinding> bindings) {
+
+        int len = bindings.size();
+
+        for (int i = 0; i < len; i++) {
+
+            if (i > 0) {
+                buffer.append(", ");
+            }
+
+            BatchParameterBinding b = bindings.get(i);
+            DbAttribute attribute = b.getAttribute();
+
+            buffer.append(i + 1);
+
+            if (attribute != null) {
+                buffer.append("->");
+                buffer.append(attribute.getName());
+            }
+
+            buffer.append(":");
+            sqlLiteralForObject(buffer, b.getValue());
+        }
+    }
+
     private boolean isInserting(String query) {
         if (query == null || query.length() == 0)
             return false;
@@ -294,6 +321,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
+    @Deprecated
     @Override
     public void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) {
         String prefix = "[" + label + ": ";
@@ -305,13 +333,27 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
     }
 
     @Override
+    public void logQueryParameters(String label, List<BatchParameterBinding> bindings) {
+
+        if (isLoggable() && bindings.size() > 0) {
+            StringBuilder buffer = new StringBuilder();
+
+            buffer.append("[").append(label).append(": ");
+            buildLog(buffer, bindings);
+            buffer.append("]");
+
+            logger.info(buffer.toString());
+        }
+    }
+
+    @Override
     public void logSelectCount(int count, long time) {
         logSelectCount(count, time, null);
     }
 
     @Override
     public void logSelectCount(int count, long time, String sql) {
-        
+
         if (isLoggable()) {
             StringBuilder buf = new StringBuilder();
 
