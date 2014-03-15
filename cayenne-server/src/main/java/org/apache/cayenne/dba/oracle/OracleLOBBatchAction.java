@@ -54,13 +54,14 @@ class OracleLOBBatchAction implements SQLAction {
     DbAdapter adapter;
 
     protected JdbcEventLogger logger;
-    
+
     private static void bind(DbAdapter adapter, PreparedStatement statement, List<BatchParameterBinding> bindings)
             throws SQLException, Exception {
         int len = bindings.size();
         for (int i = 0; i < len; i++) {
             BatchParameterBinding b = bindings.get(i);
-            adapter.bindParameter(statement, b.getValue(), i + 1, b.getAttribute().getType(), b.getAttribute().getScale());
+            adapter.bindParameter(statement, b.getValue(), i + 1, b.getAttribute().getType(), b.getAttribute()
+                    .getScale());
         }
     }
 
@@ -77,18 +78,18 @@ class OracleLOBBatchAction implements SQLAction {
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        OracleLOBBatchTranslator queryBuilder;
+        OracleLOBBatchTranslator translator;
         if (query instanceof InsertBatchQuery) {
-            queryBuilder = new OracleLOBInsertBatchTranslator((InsertBatchQuery) query, getAdapter());
+            translator = new OracleLOBInsertBatchTranslator((InsertBatchQuery) query, getAdapter());
         } else if (query instanceof UpdateBatchQuery) {
-            queryBuilder = new OracleLOBUpdateBatchTranslator((UpdateBatchQuery) query, getAdapter());
+            translator = new OracleLOBUpdateBatchTranslator((UpdateBatchQuery) query, getAdapter());
         } else {
             throw new CayenneException("Unsupported batch type for special LOB processing: " + query);
         }
 
-        queryBuilder.setTrimFunction(OracleAdapter.TRIM_FUNCTION);
-        queryBuilder.setNewBlobFunction(OracleAdapter.NEW_BLOB_FUNCTION);
-        queryBuilder.setNewClobFunction(OracleAdapter.NEW_CLOB_FUNCTION);
+        translator.setTrimFunction(OracleAdapter.TRIM_FUNCTION);
+        translator.setNewBlobFunction(OracleAdapter.NEW_BLOB_FUNCTION);
+        translator.setNewClobFunction(OracleAdapter.NEW_CLOB_FUNCTION);
 
         // no batching is done, queries are translated
         // for each batch set, since prepared statements
@@ -97,26 +98,21 @@ class OracleLOBBatchAction implements SQLAction {
         OracleLOBBatchQueryWrapper selectQuery = new OracleLOBBatchQueryWrapper(query);
         List<DbAttribute> qualifierAttributes = selectQuery.getDbAttributesForLOBSelectQualifier();
 
-        boolean isLoggable = logger.isLoggable();
-
-        for(BatchQueryRow row : query.getRows()) {
+        for (BatchQueryRow row : query.getRows()) {
 
             selectQuery.indexLOBAttributes(row);
 
             int updated = 0;
-            String updateStr = queryBuilder.createSqlString(row);
+            String updateStr = translator.createSqlString(row);
 
             // 1. run row update
             logger.logQuery(updateStr, Collections.EMPTY_LIST);
             PreparedStatement statement = connection.prepareStatement(updateStr);
             try {
 
-                if (isLoggable) {
-                    List<Object> bindings = queryBuilder.getValuesForLOBUpdateParameters(row);
-                    logger.logQueryParameters("bind", null, bindings, query instanceof InsertBatchQuery);
-                }
-                
-                List<BatchParameterBinding> bindings = queryBuilder.createBindings(row);
+                List<BatchParameterBinding> bindings = translator.createBindings(row);
+                logger.logQueryParameters("bind", bindings);
+
                 bind(adapter, statement, bindings);
 
                 updated = statement.executeUpdate();
@@ -129,7 +125,7 @@ class OracleLOBBatchAction implements SQLAction {
             }
 
             // 2. run row LOB update (SELECT...FOR UPDATE and writing out LOBs)
-            processLOBRow(connection, queryBuilder, selectQuery, qualifierAttributes, row);
+            processLOBRow(connection, translator, selectQuery, qualifierAttributes, row);
 
             // finally, notify delegate that the row was updated
             observer.nextCount(query, updated);
