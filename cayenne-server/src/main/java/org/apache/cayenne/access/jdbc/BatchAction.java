@@ -60,9 +60,9 @@ public class BatchAction extends BaseSQLAction {
     private static void bind(DbAdapter adapter, PreparedStatement statement, List<BatchParameterBinding> bindings)
             throws SQLException, Exception {
         int len = bindings.size();
-        for (int i = 1; i <= len; i++) {
+        for (int i = 0; i < len; i++) {
             BatchParameterBinding b = bindings.get(i);
-            adapter.bindParameter(statement, b.getValue(), i, b.getAttribute().getType(), b.getAttribute().getScale());
+            adapter.bindParameter(statement, b.getValue(), i + 1, b.getAttribute().getType(), b.getAttribute().getScale());
         }
     }
 

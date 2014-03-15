@@ -101,7 +101,7 @@ public class UpdateBatchTranslator extends BatchTranslator {
         }
 
         for (int i = 0; i < ql; i++) {
-            Object value = row.getValue(ul + i);
+
             DbAttribute a = qualifierAttributes.get(i);
 
             // skip null attributes... they are translated as "IS NULL"
@@ -109,6 +109,7 @@ public class UpdateBatchTranslator extends BatchTranslator {
                 continue;
             }
 
+            Object value = row.getValue(ul + i);
             bindings.add(new BatchParameterBinding(a, value));
         }
 

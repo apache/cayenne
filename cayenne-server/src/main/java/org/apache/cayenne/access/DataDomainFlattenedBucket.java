@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -71,8 +73,9 @@ class DataDomainFlattenedBucket {
         DeleteBatchQuery relationDeleteQuery = flattenedDeleteQueries.get(flattenedEntity);
         if (relationDeleteQuery == null) {
             boolean optimisticLocking = false;
-            relationDeleteQuery = new DeleteBatchQuery(flattenedEntity, flattenedEntity.getPrimaryKeys(),
-                    Collections.<String> emptySet(), 50);
+            Collection<DbAttribute> pk = flattenedEntity.getPrimaryKeys();
+            List<DbAttribute> pkList = pk instanceof List ? (List<DbAttribute>) pk : new ArrayList<DbAttribute>(pk);
+            relationDeleteQuery = new DeleteBatchQuery(flattenedEntity, pkList, Collections.<String> emptySet(), 50);
             relationDeleteQuery.setUsingOptimisticLocking(optimisticLocking);
             flattenedDeleteQueries.put(flattenedEntity, relationDeleteQuery);
         }

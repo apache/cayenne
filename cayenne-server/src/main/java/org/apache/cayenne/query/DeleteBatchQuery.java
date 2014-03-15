@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.map.DbAttribute;
@@ -34,7 +34,6 @@ public class DeleteBatchQuery extends BatchQuery {
 
     protected boolean usingOptimisticLocking;
 
-    private Collection<DbAttribute> qualifierAttributes;
     private Collection<String> nullQualifierNames;
 
     /**
@@ -49,16 +48,15 @@ public class DeleteBatchQuery extends BatchQuery {
      * @param batchCapacity
      *            Estimated size of the batch.
      */
-    public DeleteBatchQuery(DbEntity dbEntity, Collection<DbAttribute> qualifierAttributes,
+    public DeleteBatchQuery(DbEntity dbEntity, List<DbAttribute> qualifierAttributes,
             Collection<String> nullQualifierNames, int batchCapacity) {
 
-        super(dbEntity, new ArrayList<DbAttribute>(qualifierAttributes), batchCapacity);
+        super(dbEntity, qualifierAttributes, batchCapacity);
 
         if (nullQualifierNames == null) {
             throw new NullPointerException("Null 'nullQualifierNames'");
         }
 
-        this.qualifierAttributes = qualifierAttributes;
         this.nullQualifierNames = nullQualifierNames;
     }
 
@@ -86,13 +84,6 @@ public class DeleteBatchQuery extends BatchQuery {
      */
     public void setUsingOptimisticLocking(boolean usingOptimisticLocking) {
         this.usingOptimisticLocking = usingOptimisticLocking;
-    }
-
-    /**
-     * @since 3.0 (since 3.0 changed to return collection instead of a list).
-     */
-    public Collection<DbAttribute> getQualifierAttributes() {
-        return qualifierAttributes;
     }
 
     public void add(Map<String, Object> dataObjectId) {

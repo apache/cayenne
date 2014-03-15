@@ -20,13 +20,13 @@
 package org.apache.cayenne.dba.oracle;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -111,20 +111,14 @@ abstract class OracleLOBBatchTranslator extends BatchTranslator {
         }
     }
 
-    /**
-     * Binds BatchQuery parameters to the PreparedStatement.
-     * 
-     * @since 3.2
-     */
     @Override
-    public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
-
+    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
-        int attributeCount = dbAttributes.size();
+        int len = dbAttributes.size();
 
-        // i - attribute position in the query
-        // j - PreparedStatement parameter position (starts with "1")
-        for (int i = 0, j = 1; i < attributeCount; i++) {
+        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(len);
+
+        for (int i = 0; i < len; i++) {
             Object value = row.getValue(i);
             DbAttribute attribute = dbAttributes.get(i);
             int type = attribute.getType();
@@ -132,11 +126,11 @@ abstract class OracleLOBBatchTranslator extends BatchTranslator {
             // TODO: (Andrus) This works as long as there is no LOBs in
             // qualifier
             if (isUpdateableColumn(value, type)) {
-                adapter.bindParameter(statement, value, j, type, attribute.getScale());
-
-                j++;
+                bindings.add(new BatchParameterBinding(attribute, value));
             }
         }
+
+        return bindings;
     }
 
     protected boolean isUpdateableColumn(Object value, int type) {

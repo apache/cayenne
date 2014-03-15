@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access.translator.batch;
 
 import static org.mockito.Mockito.mock;
@@ -25,6 +24,8 @@ import static org.mockito.Mockito.mock;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
@@ -40,7 +41,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class BatchTranslatorTest extends ServerCase {
-    
+
     @Inject
     private AdhocObjectFactory objectFactory;
 
@@ -53,7 +54,8 @@ public class BatchTranslatorTest extends ServerCase {
             }
 
             @Override
-            public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
+            public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
+                return Collections.emptyList();
             }
         };
 
@@ -71,7 +73,8 @@ public class BatchTranslatorTest extends ServerCase {
             }
 
             @Override
-            public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
+            public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
+                return Collections.emptyList();
             }
         };
 
@@ -101,7 +104,8 @@ public class BatchTranslatorTest extends ServerCase {
             }
 
             @Override
-            public void bindParameters(PreparedStatement statement, BatchQueryRow row) throws SQLException, Exception {
+            public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
+                return Collections.emptyList();
             }
         };
 

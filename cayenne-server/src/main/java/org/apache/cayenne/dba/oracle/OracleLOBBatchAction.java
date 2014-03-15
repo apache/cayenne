@@ -34,6 +34,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -53,6 +54,15 @@ class OracleLOBBatchAction implements SQLAction {
     DbAdapter adapter;
 
     protected JdbcEventLogger logger;
+    
+    private static void bind(DbAdapter adapter, PreparedStatement statement, List<BatchParameterBinding> bindings)
+            throws SQLException, Exception {
+        int len = bindings.size();
+        for (int i = 0; i < len; i++) {
+            BatchParameterBinding b = bindings.get(i);
+            adapter.bindParameter(statement, b.getValue(), i + 1, b.getAttribute().getType(), b.getAttribute().getScale());
+        }
+    }
 
     OracleLOBBatchAction(BatchQuery query, DbAdapter adapter, JdbcEventLogger logger) {
         this.adapter = adapter;
@@ -105,8 +115,10 @@ class OracleLOBBatchAction implements SQLAction {
                     List<Object> bindings = queryBuilder.getValuesForLOBUpdateParameters(row);
                     logger.logQueryParameters("bind", null, bindings, query instanceof InsertBatchQuery);
                 }
+                
+                List<BatchParameterBinding> bindings = queryBuilder.createBindings(row);
+                bind(adapter, statement, bindings);
 
-                queryBuilder.bindParameters(statement, row);
                 updated = statement.executeUpdate();
                 logger.logUpdateCount(updated);
             } finally {

@@ -60,7 +60,7 @@ public class DeleteBatchTranslator extends BatchTranslator {
         buffer.append(" WHERE ");
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
-        Iterator<DbAttribute> i = deleteBatch.getQualifierAttributes().iterator();
+        Iterator<DbAttribute> i = deleteBatch.getDbAttributes().iterator();
         while (i.hasNext()) {
             DbAttribute attribute = i.next();
             appendDbAttribute(buffer, attribute);
@@ -79,20 +79,22 @@ public class DeleteBatchTranslator extends BatchTranslator {
     public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
 
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
-        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(deleteBatch
-                .getQualifierAttributes().size());
+        List<DbAttribute> attributes = deleteBatch.getDbAttributes();
+        int len = attributes.size();
 
-        int i = 0;
+        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(len);
 
-        for (DbAttribute attribute : deleteBatch.getQualifierAttributes()) {
-            Object value = row.getValue(i++);
+        for (int i = 0; i < len; i++) {
+
+            DbAttribute a = attributes.get(i);
 
             // skip null attributes... they are translated as "IS NULL"
-            if (deleteBatch.isNull(attribute)) {
+            if (deleteBatch.isNull(a)) {
                 continue;
             }
 
-            bindings.add(new BatchParameterBinding(attribute, value));
+            Object value = row.getValue(i);
+            bindings.add(new BatchParameterBinding(a, value));
         }
 
         return bindings;
