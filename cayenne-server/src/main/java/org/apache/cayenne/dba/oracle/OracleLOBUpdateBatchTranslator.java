@@ -27,26 +27,35 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
-import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.UpdateBatchQuery;
 
-class OracleLOBInsertBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
+class OracleLOBUpdateBatchTranslator extends OracleLOBBatchTranslator {
 
-    OracleLOBInsertBatchQueryBuilder(InsertBatchQuery query, DbAdapter adapter) {
+    OracleLOBUpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter) {
         super(query, adapter);
     }
 
     @Override
     List getValuesForLOBUpdateParameters(BatchQueryRow row) {
-        List<DbAttribute> dbAttributes = query.getDbAttributes();
-        int len = dbAttributes.size();
+        int len = query.getDbAttributes().size();
+        UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
         List values = new ArrayList(len);
-        for (int i = 0; i < len; i++) {
+        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
+        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
+
+        int updatedLen = updatedDbAttributes.size();
+        int qualifierLen = qualifierAttributes.size();
+        for (int i = 0; i < updatedLen; i++) {
+            DbAttribute attribute = updatedDbAttributes.get(i);
             Object value = row.getValue(i);
-            DbAttribute attribute = dbAttributes.get(i);
             if (isUpdateableColumn(value, attribute.getType())) {
                 values.add(value);
             }
+        }
+
+        for (int i = 0; i < qualifierLen; i++) {
+            values.add(row.getValue(updatedLen + i));
         }
 
         return values;
@@ -54,30 +63,38 @@ class OracleLOBInsertBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
 
     @Override
     public String createSqlString(BatchQueryRow row) {
-        List<DbAttribute> dbAttributes = query.getDbAttributes();
+        UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
+        List<DbAttribute> idDbAttributes = updateBatch.getQualifierAttributes();
+        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
         QuotingStrategy strategy = adapter.getQuotingStrategy();
 
-        StringBuilder buffer = new StringBuilder("INSERT INTO ");
+        StringBuilder buffer = new StringBuilder("UPDATE ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
-        buffer.append(" (");
+        buffer.append(" SET ");
 
-        for (Iterator<DbAttribute> i = dbAttributes.iterator(); i.hasNext();) {
-            DbAttribute attribute = i.next();
-            buffer.append(strategy.quotedName(attribute));
-            if (i.hasNext()) {
-                buffer.append(", ");
-            }
-        }
-        buffer.append(") VALUES (");
-        for (int i = 0; i < dbAttributes.size(); i++) {
+        int len = updatedDbAttributes.size();
+        for (int i = 0; i < len; i++) {
             if (i > 0) {
                 buffer.append(", ");
             }
 
-            appendUpdatedParameter(buffer, dbAttributes.get(i), row.getValue(i));
+            DbAttribute attribute = updatedDbAttributes.get(i);
+            buffer.append(strategy.quotedName(attribute));
+            buffer.append(" = ");
+            appendUpdatedParameter(buffer, attribute, row.getValue(i));
         }
-        buffer.append(')');
+
+        buffer.append(" WHERE ");
+        Iterator<DbAttribute> i = idDbAttributes.iterator();
+        while (i.hasNext()) {
+            DbAttribute attribute = i.next();
+            appendDbAttribute(buffer, attribute);
+            buffer.append(" = ?");
+            if (i.hasNext()) {
+                buffer.append(" AND ");
+            }
+        }
         return buffer.toString();
     }
 }

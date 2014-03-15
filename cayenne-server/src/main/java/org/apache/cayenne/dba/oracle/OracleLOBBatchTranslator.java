@@ -39,12 +39,12 @@ import org.apache.cayenne.query.BatchQueryRow;
  * Superclass of query builders for the DML operations involving LOBs.
  * 
  */
-abstract class OracleLOBBatchQueryBuilder extends BatchTranslator {
+abstract class OracleLOBBatchTranslator extends BatchTranslator {
 
     protected String newClobFunction;
     protected String newBlobFunction;
 
-    OracleLOBBatchQueryBuilder(BatchQuery query, DbAdapter adapter) {
+    OracleLOBBatchTranslator(BatchQuery query, DbAdapter adapter) {
         super(query, adapter);
     }
 

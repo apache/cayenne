@@ -66,11 +66,11 @@ class OracleLOBBatchAction implements SQLAction {
 
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        OracleLOBBatchQueryBuilder queryBuilder;
+        OracleLOBBatchTranslator queryBuilder;
         if (query instanceof InsertBatchQuery) {
-            queryBuilder = new OracleLOBInsertBatchQueryBuilder((InsertBatchQuery) query, getAdapter());
+            queryBuilder = new OracleLOBInsertBatchTranslator((InsertBatchQuery) query, getAdapter());
         } else if (query instanceof UpdateBatchQuery) {
-            queryBuilder = new OracleLOBUpdateBatchQueryBuilder((UpdateBatchQuery) query, getAdapter());
+            queryBuilder = new OracleLOBUpdateBatchTranslator((UpdateBatchQuery) query, getAdapter());
         } else {
             throw new CayenneException("Unsupported batch type for special LOB processing: " + query);
         }
@@ -123,7 +123,7 @@ class OracleLOBBatchAction implements SQLAction {
         }
     }
 
-    void processLOBRow(Connection con, OracleLOBBatchQueryBuilder queryBuilder, OracleLOBBatchQueryWrapper selectQuery,
+    void processLOBRow(Connection con, OracleLOBBatchTranslator queryBuilder, OracleLOBBatchQueryWrapper selectQuery,
             List<DbAttribute> qualifierAttributes, BatchQueryRow row) throws SQLException, Exception {
 
         List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
