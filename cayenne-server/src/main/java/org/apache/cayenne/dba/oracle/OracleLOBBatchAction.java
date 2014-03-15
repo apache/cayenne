@@ -101,7 +101,7 @@ class OracleLOBBatchAction implements SQLAction {
             try {
 
                 if (isLoggable) {
-                    List bindings = queryBuilder.getValuesForLOBUpdateParameters(row);
+                    List<Object> bindings = queryBuilder.getValuesForLOBUpdateParameters(row);
                     logger.logQueryParameters("bind", null, bindings, query instanceof InsertBatchQuery);
                 }
 
@@ -133,8 +133,8 @@ class OracleLOBBatchAction implements SQLAction {
 
         boolean isLoggable = logger.isLoggable();
 
-        List qualifierValues = selectQuery.getValuesForLOBSelectQualifier(row);
-        List lobValues = selectQuery.getValuesForUpdatedLOBColumns();
+        List<Object> qualifierValues = selectQuery.getValuesForLOBSelectQualifier(row);
+        List<Object> lobValues = selectQuery.getValuesForUpdatedLOBColumns();
         int parametersSize = qualifierValues.size();
         int lobSize = lobAttributes.size();
 

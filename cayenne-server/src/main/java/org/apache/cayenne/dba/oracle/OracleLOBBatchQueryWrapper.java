@@ -177,10 +177,10 @@ class OracleLOBBatchQueryWrapper {
         return attributes;
     }
 
-    List getValuesForLOBSelectQualifier(BatchQueryRow row) {
+    List<Object> getValuesForLOBSelectQualifier(BatchQueryRow row) {
 
         int len = this.qualifierAttributes.length;
-        List values = new ArrayList(len);
+        List<Object> values = new ArrayList<Object>(len);
         for (int i = 0; i < len; i++) {
             if (this.qualifierAttributes[i]) {
                 values.add(row.getValue(i));
@@ -190,10 +190,10 @@ class OracleLOBBatchQueryWrapper {
         return values;
     }
 
-    List getValuesForUpdatedLOBColumns() {
+    List<Object> getValuesForUpdatedLOBColumns() {
 
         int len = this.updatedLOBAttributes.length;
-        List values = new ArrayList(len);
+        List<Object> values = new ArrayList<Object>(len);
         for (int i = 0; i < len; i++) {
             if (this.updatedLOBAttributes[i] != null) {
                 values.add(this.updatedLOBAttributes[i]);
