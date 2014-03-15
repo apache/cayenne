@@ -23,7 +23,6 @@ import java.sql.SQLException;
 
 /**
  * A JDBC template for reading a single row from the database.
- * 
  */
 abstract class RowTemplate<T> extends ResultSetTemplate<T> {
 

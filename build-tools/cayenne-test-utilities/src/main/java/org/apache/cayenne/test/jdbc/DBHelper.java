@@ -25,6 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -41,9 +43,9 @@ public class DBHelper {
     }
 
     /**
-     * Quotes a SQL identifier as appropriate for the given DB. This implementation
-     * returns the identifier unchanged, while subclasses can implement a custom quoting
-     * strategy.
+     * Quotes a SQL identifier as appropriate for the given DB. This
+     * implementation returns the identifier unchanged, while subclasses can
+     * implement a custom quoting strategy.
      */
     protected String quote(String sqlIdentifier) {
         return sqlIdentifier;
@@ -80,20 +82,48 @@ public class DBHelper {
         }.execute(sql.toString());
     }
 
+    public List<Object[]> selectAll(String table, final String[] columns) throws SQLException {
+        if (columns.length == 0) {
+            throw new IllegalArgumentException("No columns");
+        }
+
+        StringBuilder sql = new StringBuilder("select ");
+        sql.append(quote(columns[0]));
+        for (int i = 1; i < columns.length; i++) {
+            sql.append(", ").append(quote(columns[i]));
+        }
+        sql.append(" from ").append(quote(table));
+
+        return new ResultSetTemplate<List<Object[]>>(this) {
+            @Override
+            List<Object[]> readResultSet(ResultSet rs, String sql) throws SQLException {
+
+                List<Object[]> result = new ArrayList<Object[]>();
+                while (rs.next()) {
+
+                    Object[] row = new Object[columns.length];
+                    for (int i = 1; i <= row.length; i++) {
+                        row[i - 1] = rs.getObject(i);
+                    }
+
+                    result.add(row);
+                }
+
+                return result;
+            }
+        }.execute(sql.toString());
+    }
+
     /**
-     * Inserts a single row. Columns types can be null and will be determined from
-     * ParameterMetaData in this case. The later scenario will not work if values contains
-     * nulls and the DB is Oracle.
+     * Inserts a single row. Columns types can be null and will be determined
+     * from ParameterMetaData in this case. The later scenario will not work if
+     * values contains nulls and the DB is Oracle.
      */
-    public void insert(String table, String[] columns, Object[] values, int[] columnTypes)
-            throws SQLException {
+    public void insert(String table, String[] columns, Object[] values, int[] columnTypes) throws SQLException {
 
         if (columns.length != values.length) {
-            throw new IllegalArgumentException(
-                    "Columns and values arrays have different sizes: "
-                            + columns.length
-                            + " and "
-                            + values.length);
+            throw new IllegalArgumentException("Columns and values arrays have different sizes: " + columns.length
+                    + " and " + values.length);
         }
 
         if (columns.length == 0) {
@@ -134,26 +164,22 @@ public class DBHelper {
                             }
 
                             type = parameters.getParameterType(i + 1);
-                        }
-                        else {
+                        } else {
                             type = columnTypes[i];
                         }
 
                         st.setNull(i + 1, type);
-                    }
-                    else {
+                    } else {
                         st.setObject(i + 1, values[i]);
                     }
                 }
 
                 st.executeUpdate();
-            }
-            finally {
+            } finally {
                 st.close();
             }
             c.commit();
-        }
-        finally {
+        } finally {
             c.close();
         }
 
@@ -337,13 +363,11 @@ public class DBHelper {
 
         try {
             connection.setAutoCommit(false);
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
 
             try {
                 connection.close();
-            }
-            catch (SQLException ignored) {
+            } catch (SQLException ignored) {
             }
         }
         return connection;

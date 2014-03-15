@@ -21,6 +21,7 @@ package org.apache.cayenne.test.jdbc;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * JDBC utility class for setting up and analyzing the DB data sets for a single table.
@@ -102,6 +103,10 @@ public class TableHelper {
      */
     public Object[] select() throws SQLException {
         return dbHelper.select(tableName, columns);
+    }
+    
+    public List<Object[]> selectAll() throws SQLException {
+        return dbHelper.selectAll(tableName, columns);
     }
 
     public int getRowCount() throws SQLException {
