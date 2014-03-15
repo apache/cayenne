@@ -16,41 +16,59 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.ejbql;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 
 /**
- * A translator of EJBQL DELETE statements into SQL.
+ * A translator of EJBQL UPDATE statements into SQL.
  * 
  * @since 3.0
  */
-public class EJBQLDeleteTranslator extends EJBQLBaseVisitor {
+class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
 
-    protected EJBQLTranslationContext context;
+    private EJBQLTranslationContext context;
+    private int itemCount;
 
-    public EJBQLDeleteTranslator(EJBQLTranslationContext context) {
+    EJBQLUpdateTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
 
-    @Override
-    public boolean visitDelete(EJBQLExpression expression) {
-        context.append("DELETE");
-        return true;
+    EJBQLTranslationContext getContext() {
+        return context;
     }
 
     @Override
-    public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
-        context.append(" FROM");
-        expression.visit(context.getTranslatorFactory().getFromTranslator(context));
-        return false;
+    public boolean visitUpdate(EJBQLExpression expression) {
+        context.append("UPDATE");
+        return true;
     }
 
     @Override
     public boolean visitWhere(EJBQLExpression expression) {
         context.append(" WHERE");
         expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
+        return false;
+    }
+
+    @Override
+    public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
+        expression.visit(context.getTranslatorFactory().getFromTranslator(context));
+
+        return false;
+    }
+
+    @Override
+    public boolean visitUpdateItem(EJBQLExpression expression, int finishedChildIndex) {
+        if (itemCount++ > 0) {
+            context.append(',');
+        }
+        else {
+            context.append(" SET");
+        }
+
+        expression.visit(context.getTranslatorFactory().getUpdateItemTranslator(context));
         return false;
     }
 }

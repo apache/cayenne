@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sybase;
 
-import org.apache.cayenne.access.jdbc.EJBQLConditionTranslator;
-import org.apache.cayenne.access.jdbc.EJBQLTranslationContext;
+import org.apache.cayenne.access.translator.ejbql.EJBQLConditionTranslator;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 
 class SybaseEJBQLConditionTranslator extends EJBQLConditionTranslator {

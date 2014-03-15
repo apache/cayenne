@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.ejbql;
 
 import java.util.Collection;
 import java.util.HashMap;

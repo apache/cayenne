@@ -16,51 +16,41 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.ejbql;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
-import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
-import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
+ * A translator of EJBQL DELETE statements into SQL.
+ * 
  * @since 3.0
  */
-class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
+public class EJBQLDeleteTranslator extends EJBQLBaseVisitor {
 
-    private EJBQLTranslationContext context;
-    private int itemCount;
+    protected EJBQLTranslationContext context;
 
-    EJBQLOrderByTranslator(EJBQLTranslationContext context) {
+    public EJBQLDeleteTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
 
     @Override
-    public boolean visitOrderByItem(EJBQLExpression expression) {
-        if (itemCount++ > 0) {
-            context.append(',');
-        }
-
+    public boolean visitDelete(EJBQLExpression expression) {
+        context.append("DELETE");
         return true;
     }
 
     @Override
-    public boolean visitDescending(EJBQLExpression expression) {
-        context.append(" DESC");
-        return true;
+    public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
+        context.append(" FROM");
+        expression.visit(context.getTranslatorFactory().getFromTranslator(context));
+        return false;
     }
 
     @Override
-    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
-
-        EJBQLExpressionVisitor childVisitor = new EJBQLPathTranslator(context) {
-
-            @Override
-            protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
-                throw new EJBQLException("Can't order on multi-column paths or objects");
-            }
-        };
-        expression.visit(childVisitor);
+    public boolean visitWhere(EJBQLExpression expression) {
+        context.append(" WHERE");
+        expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
         return false;
     }
 }

@@ -23,6 +23,8 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;

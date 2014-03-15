@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.ejbql;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,7 +98,7 @@ public class EJBQLTranslationContext {
         bufferStack.add(stackTop);
     }
 
-    SQLTemplate getQuery() {
+    public SQLTemplate getQuery() {
 
         // concatenate buffers...
         StringBuilder main = bufferChain.get(0);

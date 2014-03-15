@@ -20,10 +20,10 @@ package org.apache.cayenne.dba.oracle;
 
 import java.sql.Types;
 
-import org.apache.cayenne.access.jdbc.EJBQLConditionTranslator;
-import org.apache.cayenne.access.jdbc.EJBQLMultiColumnOperand;
-import org.apache.cayenne.access.jdbc.EJBQLPathTranslator;
-import org.apache.cayenne.access.jdbc.EJBQLTranslationContext;
+import org.apache.cayenne.access.translator.ejbql.EJBQLConditionTranslator;
+import org.apache.cayenne.access.translator.ejbql.EJBQLMultiColumnOperand;
+import org.apache.cayenne.access.translator.ejbql.EJBQLPathTranslator;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.ObjAttribute;
 

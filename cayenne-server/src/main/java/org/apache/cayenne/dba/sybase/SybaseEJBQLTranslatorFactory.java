@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sybase;
 
-import org.apache.cayenne.access.jdbc.EJBQLTranslationContext;
-import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 class SybaseEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {

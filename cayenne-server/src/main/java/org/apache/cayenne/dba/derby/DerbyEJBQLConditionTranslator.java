@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.derby;
 
-import org.apache.cayenne.access.jdbc.EJBQLConditionTranslator;
-import org.apache.cayenne.access.jdbc.EJBQLTranslationContext;
+import org.apache.cayenne.access.translator.ejbql.EJBQLConditionTranslator;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 
 /**

@@ -16,59 +16,51 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.ejbql;
 
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
+import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * A translator of EJBQL UPDATE statements into SQL.
- * 
  * @since 3.0
  */
-class EJBQLUpdateTranslator extends EJBQLBaseVisitor {
+class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
 
     private EJBQLTranslationContext context;
     private int itemCount;
 
-    EJBQLUpdateTranslator(EJBQLTranslationContext context) {
+    EJBQLOrderByTranslator(EJBQLTranslationContext context) {
         this.context = context;
     }
 
-    EJBQLTranslationContext getContext() {
-        return context;
-    }
-
     @Override
-    public boolean visitUpdate(EJBQLExpression expression) {
-        context.append("UPDATE");
+    public boolean visitOrderByItem(EJBQLExpression expression) {
+        if (itemCount++ > 0) {
+            context.append(',');
+        }
+
         return true;
     }
 
     @Override
-    public boolean visitWhere(EJBQLExpression expression) {
-        context.append(" WHERE");
-        expression.visit(context.getTranslatorFactory().getConditionTranslator(context));
-        return false;
+    public boolean visitDescending(EJBQLExpression expression) {
+        context.append(" DESC");
+        return true;
     }
 
     @Override
-    public boolean visitFrom(EJBQLExpression expression, int finishedChildIndex) {
-        expression.visit(context.getTranslatorFactory().getFromTranslator(context));
+    public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
 
-        return false;
-    }
+        EJBQLExpressionVisitor childVisitor = new EJBQLPathTranslator(context) {
 
-    @Override
-    public boolean visitUpdateItem(EJBQLExpression expression, int finishedChildIndex) {
-        if (itemCount++ > 0) {
-            context.append(',');
-        }
-        else {
-            context.append(" SET");
-        }
-
-        expression.visit(context.getTranslatorFactory().getUpdateItemTranslator(context));
+            @Override
+            protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
+                throw new EJBQLException("Can't order on multi-column paths or objects");
+            }
+        };
+        expression.visit(childVisitor);
         return false;
     }
 }
