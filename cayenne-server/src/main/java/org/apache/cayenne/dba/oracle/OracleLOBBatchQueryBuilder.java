@@ -59,7 +59,7 @@ abstract class OracleLOBBatchQueryBuilder extends BatchQueryBuilder {
 
     String createLOBSelectString(List selectedLOBAttributes, List qualifierAttributes) {
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         StringBuilder buf = new StringBuilder();
         buf.append("SELECT ");

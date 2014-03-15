@@ -56,7 +56,7 @@ public class UpdateBatchQueryBuilderTest extends ServerCase {
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         UpdateBatchQueryBuilder builder = new UpdateBatchQueryBuilder(mock(UpdateBatchQuery.class), adapter);
-        assertSame(adapter, builder.getAdapter());
+        assertSame(adapter, builder.adapter);
     }
 
     public void testCreateSqlString() throws Exception {

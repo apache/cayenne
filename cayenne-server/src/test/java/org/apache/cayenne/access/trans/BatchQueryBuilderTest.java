@@ -56,7 +56,7 @@ public class BatchQueryBuilderTest extends ServerCase {
             }
         };
 
-        assertSame(adapter, builder.getAdapter());
+        assertSame(adapter, builder.adapter);
     }
 
     public void testAppendDbAttribute1() throws Exception {

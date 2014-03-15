@@ -45,7 +45,7 @@ public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
     public String createSqlString() throws IOException {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();

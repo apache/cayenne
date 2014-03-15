@@ -52,7 +52,7 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
 
         InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(mock(InsertBatchQuery.class), adapter);
 
-        assertSame(adapter, builder.getAdapter());
+        assertSame(adapter, builder.adapter);
     }
 
     public void testCreateSqlString() throws Exception {

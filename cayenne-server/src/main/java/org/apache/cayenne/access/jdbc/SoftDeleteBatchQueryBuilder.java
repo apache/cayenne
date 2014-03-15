@@ -49,7 +49,7 @@ public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
             return super.createSqlString();
         }
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         StringBuilder buffer = new StringBuilder("UPDATE ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));

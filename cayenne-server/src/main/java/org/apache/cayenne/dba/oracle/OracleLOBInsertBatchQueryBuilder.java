@@ -56,7 +56,7 @@ class OracleLOBInsertBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
     public String createSqlString(BatchQueryRow row) {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         StringBuilder buffer = new StringBuilder("INSERT INTO ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));

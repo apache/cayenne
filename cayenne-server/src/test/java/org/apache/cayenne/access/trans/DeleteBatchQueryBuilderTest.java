@@ -59,7 +59,7 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
 
         DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(mock(DeleteBatchQuery.class), adapter);
 
-        assertSame(adapter, builder.getAdapter());
+        assertSame(adapter, builder.adapter);
     }
 
     public void testCreateSqlString() throws Exception {

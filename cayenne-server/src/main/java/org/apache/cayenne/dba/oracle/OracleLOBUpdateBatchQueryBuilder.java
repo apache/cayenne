@@ -67,7 +67,7 @@ class OracleLOBUpdateBatchQueryBuilder extends OracleLOBBatchQueryBuilder {
         List<DbAttribute> idDbAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         StringBuilder buffer = new StringBuilder("UPDATE ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));

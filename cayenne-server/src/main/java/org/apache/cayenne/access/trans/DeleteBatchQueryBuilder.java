@@ -43,7 +43,7 @@ public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
     @Override
     public String createSqlString() throws IOException {
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         StringBuilder buffer = new StringBuilder("DELETE FROM ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));

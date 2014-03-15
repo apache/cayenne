@@ -89,7 +89,7 @@ public class InsertBatchQueryBuilder extends BatchQueryBuilder {
     public String createSqlString() throws IOException {
 
         List<DbAttribute> dbAttributes = query.getDbAttributes();
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         StringBuilder buffer = new StringBuilder("INSERT INTO ");
         buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));

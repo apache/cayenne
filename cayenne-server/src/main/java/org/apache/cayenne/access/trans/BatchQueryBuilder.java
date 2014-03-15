@@ -68,21 +68,13 @@ public abstract class BatchQueryBuilder {
             buf.append(trimFunction).append('(');
         }
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        QuotingStrategy strategy = adapter.getQuotingStrategy();
 
         buf.append(strategy.quotedName(dbAttribute));
 
         if (trim) {
             buf.append(')');
         }
-    }
-
-    public void setAdapter(DbAdapter adapter) {
-        this.adapter = adapter;
-    }
-
-    public DbAdapter getAdapter() {
-        return adapter;
     }
 
     public String getTrimFunction() {
