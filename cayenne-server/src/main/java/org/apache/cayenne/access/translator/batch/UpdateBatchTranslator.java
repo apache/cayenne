@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -35,9 +35,9 @@ import org.apache.cayenne.query.UpdateBatchQuery;
  * A translator for UpdateBatchQueries that produces parameterized SQL.
  */
 
-public class UpdateBatchQueryBuilder extends BatchQueryBuilder {
+public class UpdateBatchTranslator extends BatchTranslator {
 
-    public UpdateBatchQueryBuilder(UpdateBatchQuery query, DbAdapter adapter) {
+    public UpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter) {
         super(query, adapter);
     }
 

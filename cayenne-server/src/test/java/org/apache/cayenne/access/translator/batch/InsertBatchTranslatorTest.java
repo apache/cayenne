@@ -16,10 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.access.translator.batch;
 
 import static org.mockito.Mockito.mock;
 
+import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -33,7 +34,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.LOCKING_PROJECT)
-public class InsertBatchQueryBuilderTest extends ServerCase {
+public class InsertBatchTranslatorTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
@@ -50,7 +51,7 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
-        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(mock(InsertBatchQuery.class), adapter);
+        InsertBatchTranslator builder = new InsertBatchTranslator(mock(InsertBatchQuery.class), adapter);
 
         assertSame(adapter, builder.adapter);
     }
@@ -61,7 +62,7 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
-        InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(insertQuery, adapter);
+        InsertBatchTranslator builder = new InsertBatchTranslator(insertQuery, adapter);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("INSERT INTO " + entity.getName() + " (DESCRIPTION, LOCKING_TEST_ID, NAME) VALUES (?, ?, ?)",
@@ -78,7 +79,7 @@ public class InsertBatchQueryBuilderTest extends ServerCase {
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
             InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
-            InsertBatchQueryBuilder builder = new InsertBatchQueryBuilder(insertQuery, adapter);
+            InsertBatchTranslator builder = new InsertBatchTranslator(insertQuery, adapter);
             String generatedSql = builder.createSqlString();
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();

@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.access.translator.batch;
 
 import static org.mockito.Mockito.mock;
 
@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -38,14 +39,14 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class BatchQueryBuilderTest extends ServerCase {
+public class BatchTranslatorTest extends ServerCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;
 
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        BatchQueryBuilder builder = new BatchQueryBuilder(mock(BatchQuery.class), adapter) {
+        BatchTranslator builder = new BatchTranslator(mock(BatchQuery.class), adapter) {
             @Override
             public String createSqlString() {
                 return null;
@@ -63,7 +64,7 @@ public class BatchQueryBuilderTest extends ServerCase {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String trimFunction = "testTrim";
 
-        BatchQueryBuilder builder = new BatchQueryBuilder(mock(BatchQuery.class), adapter) {
+        BatchTranslator builder = new BatchTranslator(mock(BatchQuery.class), adapter) {
             @Override
             public String createSqlString() {
                 return null;
@@ -93,7 +94,7 @@ public class BatchQueryBuilderTest extends ServerCase {
     public void testAppendDbAttribute2() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
-        BatchQueryBuilder builder = new BatchQueryBuilder(mock(BatchQuery.class), adapter) {
+        BatchTranslator builder = new BatchTranslator(mock(BatchQuery.class), adapter) {
             @Override
             public String createSqlString() {
                 return null;

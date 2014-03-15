@@ -16,35 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.trans.BatchQueryBuilder;
-import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
-import org.apache.cayenne.access.trans.InsertBatchQueryBuilder;
-import org.apache.cayenne.access.trans.UpdateBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
- * Default implementation of {@link BatchQueryBuilderFactory}.
+ * Factory which creates BatchQueryBuilders for different types of queries,
+ * which, in their turn, create SQL strings for batch queries.
+ * 
+ * @since 3.2
  */
-public class DefaultBatchQueryBuilderFactory implements BatchQueryBuilderFactory {
+public interface BatchTranslatorFactory {
 
-    @Override
-    public BatchQueryBuilder createDeleteQueryBuilder(DeleteBatchQuery query, DbAdapter adapter) {
-        return new DeleteBatchQueryBuilder(query, adapter);
-    }
+    /**
+     * Creates query builder for INSERT queries
+     */
+    BatchTranslator insertTranslator(InsertBatchQuery query, DbAdapter adapter);
 
-    @Override
-    public BatchQueryBuilder createInsertQueryBuilder(InsertBatchQuery query, DbAdapter adapter) {
-        return new InsertBatchQueryBuilder(query, adapter);
-    }
+    /**
+     * Creates query builder for UPDATE queries
+     */
+    BatchTranslator updateTranslator(UpdateBatchQuery query, DbAdapter adapter);
 
-    @Override
-    public BatchQueryBuilder createUpdateQueryBuilder(UpdateBatchQuery query, DbAdapter adapter) {
-        return new UpdateBatchQueryBuilder(query, adapter);
-    }
-
+    /**
+     * Creates query builder for DELETE queries
+     */
+    BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter);
 }

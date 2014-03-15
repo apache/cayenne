@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.oracle;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.access.trans.BatchQueryBuilder;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.query.BatchQuery;
 
 /**
@@ -38,9 +38,9 @@ class OracleBatchAction extends BatchAction {
     }
 
     @Override
-    protected BatchQueryBuilder createBuilder() throws CayenneException {
+    protected BatchTranslator createBuilder() throws CayenneException {
         // intercept super call to configure the builder...
-        BatchQueryBuilder builder = super.createBuilder();
+        BatchTranslator builder = super.createBuilder();
         builder.setTrimFunction(OracleAdapter.TRIM_FUNCTION);
         return builder;
     }

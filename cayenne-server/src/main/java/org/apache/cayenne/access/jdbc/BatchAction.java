@@ -33,7 +33,8 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.trans.BatchQueryBuilder;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -72,7 +73,7 @@ public class BatchAction extends BaseSQLAction {
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        BatchQueryBuilder queryBuilder = createBuilder();
+        BatchTranslator queryBuilder = createBuilder();
         boolean generatesKeys = hasGeneratedKeys();
 
         if (runningAsBatch && !generatesKeys) {
@@ -82,25 +83,25 @@ public class BatchAction extends BaseSQLAction {
         }
     }
 
-    protected BatchQueryBuilder createBuilder() throws CayenneException {
-        BatchQueryBuilderFactory factory = dataNode.getBatchQueryBuilderFactory();
+    protected BatchTranslator createBuilder() throws CayenneException {
+        BatchTranslatorFactory factory = dataNode.getBatchQueryBuilderFactory();
 
         if (factory == null) {
             throw new IllegalStateException("Adapter BatchQueryBuilderFactory is null");
         }
 
         if (query instanceof InsertBatchQuery) {
-            return factory.createInsertQueryBuilder((InsertBatchQuery) query, dataNode.getAdapter());
+            return factory.insertTranslator((InsertBatchQuery) query, dataNode.getAdapter());
         } else if (query instanceof UpdateBatchQuery) {
-            return factory.createUpdateQueryBuilder((UpdateBatchQuery) query, dataNode.getAdapter());
+            return factory.updateTranslator((UpdateBatchQuery) query, dataNode.getAdapter());
         } else if (query instanceof DeleteBatchQuery) {
-            return factory.createDeleteQueryBuilder((DeleteBatchQuery) query, dataNode.getAdapter());
+            return factory.deleteTranslator((DeleteBatchQuery) query, dataNode.getAdapter());
         } else {
             throw new CayenneException("Unsupported batch query: " + query);
         }
     }
 
-    protected void runAsBatch(Connection con, BatchQueryBuilder queryBuilder, OperationObserver delegate)
+    protected void runAsBatch(Connection con, BatchTranslator queryBuilder, OperationObserver delegate)
             throws SQLException, Exception {
 
         String queryStr = queryBuilder.createSqlString();
@@ -156,7 +157,7 @@ public class BatchAction extends BaseSQLAction {
     /**
      * Executes batch as individual queries over the same prepared statement.
      */
-    protected void runAsIndividualQueries(Connection connection, BatchQueryBuilder queryBuilder,
+    protected void runAsIndividualQueries(Connection connection, BatchTranslator queryBuilder,
             OperationObserver delegate, boolean generatesKeys) throws SQLException, Exception {
 
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();

@@ -30,11 +30,11 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.jdbc.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -77,7 +77,7 @@ public class JdbcAdapter implements DbAdapter {
      * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
      */
     @Inject
-    protected BatchQueryBuilderFactory batchQueryBuilderFactory;
+    protected BatchTranslatorFactory batchQueryBuilderFactory;
 
     @Inject
     protected JdbcEventLogger logger;
@@ -587,7 +587,7 @@ public class JdbcAdapter implements DbAdapter {
      * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
      */
     @Deprecated
-    public BatchQueryBuilderFactory getBatchQueryBuilderFactory() {
+    public BatchTranslatorFactory getBatchQueryBuilderFactory() {
         return batchQueryBuilderFactory;
     }
 
@@ -596,7 +596,7 @@ public class JdbcAdapter implements DbAdapter {
      * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
      */
     @Deprecated
-    public void setBatchQueryBuilderFactory(BatchQueryBuilderFactory batchQueryBuilderFactory) {
+    public void setBatchQueryBuilderFactory(BatchTranslatorFactory batchQueryBuilderFactory) {
         this.batchQueryBuilderFactory = batchQueryBuilderFactory;
     }
     

@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.tools.configuration;
 
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
-import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -87,7 +87,7 @@ public class ToolsModule implements Module {
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
 
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-        binder.bind(BatchQueryBuilderFactory.class).to(DefaultBatchQueryBuilderFactory.class);
+        binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
         // TODO: this is cloned from ServerModule... figure out how to reuse

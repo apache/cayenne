@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -35,13 +35,13 @@ import org.apache.cayenne.query.BatchQueryRow;
 /**
  * Superclass of batch query translators.
  */
-public abstract class BatchQueryBuilder {
+public abstract class BatchTranslator {
 
     protected BatchQuery query;
     protected DbAdapter adapter;
     protected String trimFunction;
 
-    public BatchQueryBuilder(BatchQuery query, DbAdapter adapter) {
+    public BatchTranslator(BatchQuery query, DbAdapter adapter) {
         this.query = query;
         this.adapter = adapter;
     }

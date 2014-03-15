@@ -37,6 +37,7 @@ CAY-1904 Simple injection-friendly constructor for AuditableFilter
 CAY-1907 RowReaderFactory
 CAY-1908 Refactor all SQLActions to work with DataNode
 CAY-1911 BatchQuery refactoring - make Iterable
+CAY-1912 BatchQueryBuilder refactoring
 
 Bug Fixes:
 

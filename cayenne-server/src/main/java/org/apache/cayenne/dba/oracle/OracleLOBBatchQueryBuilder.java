@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.trans.BatchQueryBuilder;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
@@ -39,7 +39,7 @@ import org.apache.cayenne.query.BatchQueryRow;
  * Superclass of query builders for the DML operations involving LOBs.
  * 
  */
-abstract class OracleLOBBatchQueryBuilder extends BatchQueryBuilder {
+abstract class OracleLOBBatchQueryBuilder extends BatchTranslator {
 
     protected String newClobFunction;
     protected String newBlobFunction;

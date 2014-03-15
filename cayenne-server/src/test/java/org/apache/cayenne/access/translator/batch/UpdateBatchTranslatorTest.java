@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.access.translator.batch;
 
 import static org.mockito.Mockito.mock;
 
@@ -26,21 +26,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.LOCKING_PROJECT)
-public class DeleteBatchQueryBuilderTest extends ServerCase {
+public class UpdateBatchTranslatorTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
@@ -56,9 +56,7 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
 
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-
-        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(mock(DeleteBatchQuery.class), adapter);
-
+        UpdateBatchTranslator builder = new UpdateBatchTranslator(mock(UpdateBatchQuery.class), adapter);
         assertSame(adapter, builder.adapter);
     }
 
@@ -66,33 +64,38 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
+        List idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
+        List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
+        UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
+                Collections.<String> emptySet(), 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(deleteQuery, adapter);
+        UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
-        assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ?", generatedSql);
+        assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
 
     public void testCreateSqlStringWithNulls() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"),
-                entity.getAttribute("NAME"));
+        List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
 
-        Collection<String> nullAttributes = Collections.singleton("NAME");
+        List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
+        Collection nullAttributes = Collections.singleton("NAME");
+
+        UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, nullAttributes, 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(deleteQuery, adapter);
+        UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
-        assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ? AND NAME IS NULL", generatedSql);
+
+        assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
+                generatedSql);
     }
 
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
@@ -101,23 +104,26 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
+            List idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
+            List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
+            UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
+                    Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-            DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(deleteQuery, adapter);
+
+            UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
             String generatedSql = builder.createSqlString();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
 
             assertNotNull(generatedSql);
-            assertEquals("DELETE FROM " + charStart + entity.getName() + charEnd + " WHERE " + charStart
-                    + "LOCKING_TEST_ID" + charEnd + " = ?", generatedSql);
+            assertEquals("UPDATE " + charStart + entity.getName() + charEnd + " SET " + charStart + "DESCRIPTION"
+                    + charEnd + " = ? WHERE " + charStart + "LOCKING_TEST_ID" + charEnd + " = ?", generatedSql);
+
         } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }
-
     }
 
     public void testCreateSqlStringWithNullsWithIdentifiersQuote() throws Exception {
@@ -126,28 +132,29 @@ public class DeleteBatchQueryBuilderTest extends ServerCase {
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
+            List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
 
-            List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"),
-                    entity.getAttribute("NAME"));
+            List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-            Collection<String> nullAttributes = Collections.singleton("NAME");
+            Collection nullAttributes = Collections.singleton("NAME");
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
-
+            UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
+                    nullAttributes, 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
-            DeleteBatchQueryBuilder builder = new DeleteBatchQueryBuilder(deleteQuery, adapter);
+            UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
             String generatedSql = builder.createSqlString();
+            assertNotNull(generatedSql);
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
-            assertNotNull(generatedSql);
+            assertEquals("UPDATE " + charStart + entity.getName() + charEnd + " SET " + charStart + "DESCRIPTION"
+                    + charEnd + " = ? WHERE " + charStart + "LOCKING_TEST_ID" + charEnd + " = ? AND " + charStart
+                    + "NAME" + charEnd + " IS NULL", generatedSql);
 
-            assertEquals("DELETE FROM " + charStart + entity.getName() + charEnd + " WHERE " + charStart
-                    + "LOCKING_TEST_ID" + charEnd + " = ? AND " + charStart + "NAME" + charEnd + " IS NULL",
-                    generatedSql);
         } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }
     }
+
 }

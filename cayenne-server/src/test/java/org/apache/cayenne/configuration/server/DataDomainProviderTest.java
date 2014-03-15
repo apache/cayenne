@@ -32,9 +32,9 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
-import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
@@ -187,7 +187,7 @@ public class DataDomainProviderTest extends TestCase {
                 binder.bind(SchemaUpdateStrategy.class).toInstance(new SkipSchemaUpdateStrategy());
                 binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(BatchQueryBuilderFactory.class).to(DefaultBatchQueryBuilderFactory.class);
+                binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
 
                 binder.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);

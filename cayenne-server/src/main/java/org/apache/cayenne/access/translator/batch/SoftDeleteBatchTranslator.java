@@ -16,14 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
@@ -31,14 +30,14 @@ import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
- * Implementation of {@link DeleteBatchQueryBuilder}, which uses 'soft' delete
+ * Implementation of {@link DeleteBatchTranslator}, which uses 'soft' delete
  * (runs UPDATE and sets 'deleted' field to true instead-of running SQL DELETE)
  */
-public class SoftDeleteBatchQueryBuilder extends DeleteBatchQueryBuilder {
+public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
 
     private String deletedFieldName;
 
-    public SoftDeleteBatchQueryBuilder(DeleteBatchQuery query, DbAdapter adapter, String deletedFieldName) {
+    public SoftDeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter, String deletedFieldName) {
         super(query, adapter);
         this.deletedFieldName = deletedFieldName;
     }

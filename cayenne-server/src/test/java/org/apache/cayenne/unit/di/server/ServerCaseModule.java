@@ -26,7 +26,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
 import org.apache.cayenne.access.types.BigIntegerType;
 import org.apache.cayenne.access.types.BooleanType;
@@ -196,7 +196,7 @@ public class ServerCaseModule implements Module {
         // this factory is a hack that allows to inject to DbAdapters loaded outside of
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed
         // in the ServerModule is ignored
-        binder.bind(BatchQueryBuilderFactory.class).toProvider(
+        binder.bind(BatchTranslatorFactory.class).toProvider(
                 ServerCaseBatchQueryBuilderFactoryProvider.class);
         binder.bind(DataChannelInterceptor.class).to(
                 ServerCaseDataChannelInterceptor.class);

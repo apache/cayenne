@@ -32,7 +32,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
+import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -81,7 +81,7 @@ public class BatchActionLockingTest extends ServerCase {
         batchQuery.setUsingOptimisticLocking(true);
         batchQuery.add(qualifierSnapshot);
 
-        DeleteBatchQueryBuilder batchQueryBuilder = new DeleteBatchQueryBuilder(batchQuery, adapter);
+        DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
 
         MockConnection mockConnection = new MockConnection();
         PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
@@ -122,7 +122,7 @@ public class BatchActionLockingTest extends ServerCase {
         batchQuery.setUsingOptimisticLocking(true);
         batchQuery.add(qualifierSnapshot);
 
-        DeleteBatchQueryBuilder batchQueryBuilder = new DeleteBatchQueryBuilder(batchQuery, adapter);
+        DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
 
         MockConnection mockConnection = new MockConnection();
         PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection

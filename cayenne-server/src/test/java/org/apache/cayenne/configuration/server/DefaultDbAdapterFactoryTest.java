@@ -29,7 +29,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
@@ -113,7 +113,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(BatchQueryBuilderFactory.class).toInstance(mock(BatchQueryBuilderFactory.class));
+                binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
             }
         };
 
@@ -148,7 +148,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(BatchQueryBuilderFactory.class).toInstance(mock(BatchQueryBuilderFactory.class));
+                binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
             }
         };
 

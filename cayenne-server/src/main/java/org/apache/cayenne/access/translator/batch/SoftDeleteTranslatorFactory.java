@@ -16,17 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
  * Implementation of {@link #BatchQueryBuilderFactory}, which uses 'soft' delete
  * (runs UPDATE and sets 'deleted' field to true instead-of running SQL DELETE)
+ * 
+ * @since 3.2
  */
-public class SoftDeleteQueryBuilderFactory extends DefaultBatchQueryBuilderFactory {
+public class SoftDeleteTranslatorFactory extends DefaultBatchTranslatorFactory {
     /**
      * Default name of 'deleted' field
      */
@@ -37,17 +38,17 @@ public class SoftDeleteQueryBuilderFactory extends DefaultBatchQueryBuilderFacto
      */
     private String deletedFieldName;
     
-    public SoftDeleteQueryBuilderFactory() {
+    public SoftDeleteTranslatorFactory() {
         this(DEFAULT_DELETED_FIELD_NAME);
     }
     
-    public SoftDeleteQueryBuilderFactory(String deletedFieldName) {
+    public SoftDeleteTranslatorFactory(String deletedFieldName) {
         this.deletedFieldName = deletedFieldName;
     }
     
     @Override
-    public BatchQueryBuilder createDeleteQueryBuilder(DeleteBatchQuery query, DbAdapter adapter) {
-        return new SoftDeleteBatchQueryBuilder(query, adapter, deletedFieldName);
+    public BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter) {
+        return new SoftDeleteBatchTranslator(query, adapter, deletedFieldName);
     }
     
     /**

@@ -27,10 +27,10 @@ import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
-import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
 import org.apache.cayenne.access.types.BigIntegerType;
 import org.apache.cayenne.access.types.BooleanType;
@@ -247,8 +247,8 @@ public class ServerModule implements Module {
         // configured by the owning domain
         binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
 
-        binder.bind(BatchQueryBuilderFactory.class).to(
-                DefaultBatchQueryBuilderFactory.class);
+        binder.bind(BatchTranslatorFactory.class).to(
+                DefaultBatchTranslatorFactory.class);
 
         // a default ObjectMapRetainStrategy used to create objects map for ObjectStore
         binder.bind(ObjectMapRetainStrategy.class).to(

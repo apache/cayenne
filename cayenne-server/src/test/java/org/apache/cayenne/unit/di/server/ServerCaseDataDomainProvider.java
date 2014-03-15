@@ -22,8 +22,8 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -50,7 +50,7 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
     protected RowReaderFactory rowReaderFactory;
     
     @Inject
-    protected BatchQueryBuilderFactory batchQueryBuilderFactory;
+    protected BatchTranslatorFactory batchQueryBuilderFactory;
 
     @Override
     protected DataDomain createDataDomain(String name) {

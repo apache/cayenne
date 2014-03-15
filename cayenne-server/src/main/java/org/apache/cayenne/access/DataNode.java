@@ -34,11 +34,11 @@ import javax.sql.DataSource;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -68,7 +68,7 @@ public class DataNode implements QueryEngine {
 
     private JdbcEventLogger jdbcEventLogger;
     private RowReaderFactory rowReaderFactory;
-    private BatchQueryBuilderFactory batchQueryBuilderFactory;
+    private BatchTranslatorFactory batchQueryBuilderFactory;
 
     TransactionDataSource readThroughDataSource;
 
@@ -476,14 +476,14 @@ public class DataNode implements QueryEngine {
     /**
      * @since 3.2
      */
-    public BatchQueryBuilderFactory getBatchQueryBuilderFactory() {
+    public BatchTranslatorFactory getBatchQueryBuilderFactory() {
         return batchQueryBuilderFactory;
     }
 
     /**
      * @since 3.2
      */
-    public void setBatchQueryBuilderFactory(BatchQueryBuilderFactory batchQueryBuilderFactory) {
+    public void setBatchQueryBuilderFactory(BatchTranslatorFactory batchQueryBuilderFactory) {
         this.batchQueryBuilderFactory = batchQueryBuilderFactory;
     }
 }

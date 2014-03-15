@@ -16,40 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.trans.BatchQueryBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
- * Factory which creates BatchQueryBuilders for different types of queries,
- * which, in their turn, create SQL strings for batch queries.
+ * Default implementation of {@link BatchTranslatorFactory}.
  * 
- * @since 3.0
+ * @since 3.2
  */
-public interface BatchQueryBuilderFactory {
+public class DefaultBatchTranslatorFactory implements BatchTranslatorFactory {
 
-    /**
-     * Creates query builder for INSERT queries
-     * 
-     * @since 3.2
-     */
-    BatchQueryBuilder createInsertQueryBuilder(InsertBatchQuery query, DbAdapter adapter);
+    @Override
+    public BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter) {
+        return new DeleteBatchTranslator(query, adapter);
+    }
 
-    /**
-     * Creates query builder for UPDATE queries
-     * 
-     * @since 3.2
-     */
-    BatchQueryBuilder createUpdateQueryBuilder(UpdateBatchQuery query, DbAdapter adapter);
+    @Override
+    public BatchTranslator insertTranslator(InsertBatchQuery query, DbAdapter adapter) {
+        return new InsertBatchTranslator(query, adapter);
+    }
 
-    /**
-     * Creates query builder for DELETE queries
-     * 
-     * @since 3.2
-     */
-    BatchQueryBuilder createDeleteQueryBuilder(DeleteBatchQuery query, DbAdapter adapter);
+    @Override
+    public BatchTranslator updateTranslator(UpdateBatchQuery query, DbAdapter adapter) {
+        return new UpdateBatchTranslator(query, adapter);
+    }
+
 }

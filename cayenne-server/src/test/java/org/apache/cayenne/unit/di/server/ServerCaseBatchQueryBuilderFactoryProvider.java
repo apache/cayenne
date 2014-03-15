@@ -19,14 +19,14 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
-import org.apache.cayenne.access.jdbc.DefaultBatchQueryBuilderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.di.Provider;
 
 public class ServerCaseBatchQueryBuilderFactoryProvider implements
-        Provider<BatchQueryBuilderFactory> {
+        Provider<BatchTranslatorFactory> {
 
-    public BatchQueryBuilderFactory get() throws ConfigurationException {
-        return new DefaultBatchQueryBuilderFactory();
+    public BatchTranslatorFactory get() throws ConfigurationException {
+        return new DefaultBatchTranslatorFactory();
     }
 }

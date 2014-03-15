@@ -29,8 +29,8 @@ import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -112,7 +112,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected RowReaderFactory rowReaderFactory;
     
     @Inject
-    protected BatchQueryBuilderFactory batchQueryBuilderFactory;
+    protected BatchTranslatorFactory batchQueryBuilderFactory;
 
     @Override
     public DataDomain get() throws ConfigurationException {

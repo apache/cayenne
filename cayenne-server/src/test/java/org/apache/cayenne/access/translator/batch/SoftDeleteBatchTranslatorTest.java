@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.access.translator.batch;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +26,9 @@ import java.util.List;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.trans.DeleteBatchQueryBuilder;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
+import org.apache.cayenne.access.translator.batch.SoftDeleteTranslatorFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -44,7 +46,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.LOCKING_PROJECT)
-public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
+public class SoftDeleteBatchTranslatorTest extends ServerCase {
 
     @Inject
     private ObjectContext context;
@@ -61,13 +63,13 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
-    private DeleteBatchQueryBuilder createBuilder(DeleteBatchQuery query) {
+    private DeleteBatchTranslator createBuilder(DeleteBatchQuery query) {
         JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
         return createBuilder(query, adapter);
     }
 
-    private DeleteBatchQueryBuilder createBuilder(DeleteBatchQuery query, JdbcAdapter adapter) {
-        return (DeleteBatchQueryBuilder) new SoftDeleteQueryBuilderFactory().createDeleteQueryBuilder(query, adapter);
+    private DeleteBatchTranslator createBuilder(DeleteBatchQuery query, JdbcAdapter adapter) {
+        return (DeleteBatchTranslator) new SoftDeleteTranslatorFactory().deleteTranslator(query, adapter);
     }
 
     public void testCreateSqlString() throws Exception {
@@ -76,7 +78,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("SOFT_TEST_ID"));
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
-        DeleteBatchQueryBuilder builder = createBuilder(deleteQuery);
+        DeleteBatchTranslator builder = createBuilder(deleteQuery);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE SOFT_TEST_ID = ?", generatedSql);
@@ -91,7 +93,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
         Collection<String> nullAttributes = Collections.singleton("NAME");
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
-        DeleteBatchQueryBuilder builder = createBuilder(deleteQuery);
+        DeleteBatchTranslator builder = createBuilder(deleteQuery);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE SOFT_TEST_ID = ? AND NAME IS NULL",
@@ -108,7 +110,7 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-            DeleteBatchQueryBuilder builder = createBuilder(deleteQuery, adapter);
+            DeleteBatchTranslator builder = createBuilder(deleteQuery, adapter);
             String generatedSql = builder.createSqlString();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
@@ -128,9 +130,9 @@ public class SoftDeleteBatchQueryBuilderTest extends ServerCase {
         final DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
 
         JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-        BatchQueryBuilderFactory oldFactory = dataNode.getBatchQueryBuilderFactory();
+        BatchTranslatorFactory oldFactory = dataNode.getBatchQueryBuilderFactory();
         try {
-            dataNode.setBatchQueryBuilderFactory(new SoftDeleteQueryBuilderFactory());
+            dataNode.setBatchQueryBuilderFactory(new SoftDeleteTranslatorFactory());
 
             final SoftTest test = context.newObject(SoftTest.class);
             test.setName("SoftDeleteBatchQueryBuilderTest");

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.trans;
+package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -34,9 +34,9 @@ import org.apache.cayenne.query.DeleteBatchQuery;
  * Translator for delete BatchQueries. Creates parameterized DELETE SQL
  * statements.
  */
-public class DeleteBatchQueryBuilder extends BatchQueryBuilder {
+public class DeleteBatchTranslator extends BatchTranslator {
 
-    public DeleteBatchQueryBuilder(DeleteBatchQuery query, DbAdapter adapter) {
+    public DeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter) {
         super(query, adapter);
     }
 
