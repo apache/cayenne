@@ -38,6 +38,7 @@ CAY-1907 RowReaderFactory
 CAY-1908 Refactor all SQLActions to work with DataNode
 CAY-1911 BatchQuery refactoring - make Iterable
 CAY-1912 BatchQueryBuilder refactoring
+CAY-1913 Refactor org.apache.cayenne.access.trans into query-specific packages
 
 Bug Fixes:
 
