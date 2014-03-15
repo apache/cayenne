@@ -86,17 +86,17 @@ public class BatchAction extends BaseSQLAction {
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        BatchTranslator queryBuilder = createBuilder();
+        BatchTranslator translator = createTranslator();
         boolean generatesKeys = hasGeneratedKeys();
 
         if (runningAsBatch && !generatesKeys) {
-            runAsBatch(connection, queryBuilder, observer);
+            runAsBatch(connection, translator, observer);
         } else {
-            runAsIndividualQueries(connection, queryBuilder, observer, generatesKeys);
+            runAsIndividualQueries(connection, translator, observer, generatesKeys);
         }
     }
 
-    protected BatchTranslator createBuilder() throws CayenneException {
+    protected BatchTranslator createTranslator() throws CayenneException {
         BatchTranslatorFactory factory = dataNode.getBatchQueryBuilderFactory();
 
         if (factory == null) {
@@ -114,10 +114,10 @@ public class BatchAction extends BaseSQLAction {
         }
     }
 
-    protected void runAsBatch(Connection con, BatchTranslator queryBuilder, OperationObserver delegate)
+    protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate)
             throws SQLException, Exception {
 
-        String queryStr = queryBuilder.createSqlString();
+        String queryStr = translator.createSqlString();
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
         boolean isLoggable = logger.isLoggable();
 
@@ -131,7 +131,7 @@ public class BatchAction extends BaseSQLAction {
         try {
             for (BatchQueryRow row : query.getRows()) {
 
-                List<BatchParameterBinding> bindings = queryBuilder.createBindings(row);
+                List<BatchParameterBinding> bindings = translator.createBindings(row);
                 logger.logQueryParameters("batch bind", bindings);
                 bind(adapter, statement, bindings);
 
@@ -169,13 +169,13 @@ public class BatchAction extends BaseSQLAction {
     /**
      * Executes batch as individual queries over the same prepared statement.
      */
-    protected void runAsIndividualQueries(Connection connection, BatchTranslator queryBuilder,
+    protected void runAsIndividualQueries(Connection connection, BatchTranslator translator,
             OperationObserver delegate, boolean generatesKeys) throws SQLException, Exception {
 
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-        String queryStr = queryBuilder.createSqlString();
+        String queryStr = translator.createSqlString();
 
         // log batch SQL execution
         logger.logQuery(queryStr, Collections.EMPTY_LIST);
@@ -188,7 +188,7 @@ public class BatchAction extends BaseSQLAction {
         try {
             for (BatchQueryRow row : query.getRows()) {
 
-                List<BatchParameterBinding> bindings = queryBuilder.createBindings(row);
+                List<BatchParameterBinding> bindings = translator.createBindings(row);
                 logger.logQueryParameters("bind", bindings);
 
                 bind(adapter, statement, bindings);

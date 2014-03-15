@@ -38,9 +38,9 @@ class OracleBatchAction extends BatchAction {
     }
 
     @Override
-    protected BatchTranslator createBuilder() throws CayenneException {
+    protected BatchTranslator createTranslator() throws CayenneException {
         // intercept super call to configure the builder...
-        BatchTranslator builder = super.createBuilder();
+        BatchTranslator builder = super.createTranslator();
         builder.setTrimFunction(OracleAdapter.TRIM_FUNCTION);
         return builder;
     }
