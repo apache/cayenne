@@ -62,6 +62,28 @@ public class DataContextBlobTest extends ServerCase {
     protected boolean skipEmptyLOBTests() {
         return !accessStackAdapter.handlesNullVsEmptyLOBs();
     }
+    
+    public void testManyBlobsInOneTX() throws Exception {
+        if (skipTests()) {
+            return;
+        }
+
+        for (int i = 0; i < 3; i++) {
+            BlobTestEntity b = context.newObject(BlobTestEntity.class);
+
+            byte[] bytes = new byte[1024];
+            for (int j = 0; j < 1024; j++) {
+                bytes[j] = (byte) (65 + (50 + j) % 50);
+            }
+
+            b.setBlobCol(bytes);
+            context.commitChanges();
+        }
+
+        // read the CLOB in the new context
+        List<BlobTestEntity> objects2 = context2.select(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
+        assertEquals(3, objects2.size());
+    }
 
     public void testEmptyBlob() throws Exception {
         if (skipTests()) {
