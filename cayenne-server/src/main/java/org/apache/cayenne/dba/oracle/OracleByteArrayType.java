@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
-import java.io.ByteArrayInputStream;
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 
@@ -40,10 +40,12 @@ public class OracleByteArrayType extends ByteArrayType {
             int scale) throws Exception {
         if (type == Types.BLOB) {
             if (isUsingBlobs()) {
-                byte[] bytes = (byte[])val;
-                st.setBinaryStream(pos, new ByteArrayInputStream(bytes), bytes.length);
-            }
-            else {
+                
+                Blob blob = st.getConnection().createBlob();
+                blob.setBytes(1,  (byte[]) val);
+                st.setBlob(pos, blob);
+                
+            } else {
                 st.setBytes(pos, (byte[]) val);
             }
         }

@@ -37,7 +37,7 @@ import org.apache.cayenne.query.BatchQueryRow;
  * columns processing.
  * 
  */
-class OracleLOBBatchQueryWrapper {
+class Oracle8LOBBatchQueryWrapper {
 
     protected BatchQuery query;
 
@@ -48,7 +48,7 @@ class OracleLOBBatchQueryWrapper {
     protected boolean[] allLOBAttributes;
     protected Object[] updatedLOBAttributes;
 
-    OracleLOBBatchQueryWrapper(BatchQuery query) {
+    Oracle8LOBBatchQueryWrapper(BatchQuery query) {
         this.query = query;
         this.dbAttributes = query.getDbAttributes();
 

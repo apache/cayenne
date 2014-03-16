@@ -29,9 +29,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
-class OracleLOBInsertBatchTranslator extends OracleLOBBatchTranslator {
+class Oracle8LOBInsertBatchTranslator extends Oracle8LOBBatchTranslator {
 
-    OracleLOBInsertBatchTranslator(InsertBatchQuery query, DbAdapter adapter) {
+    Oracle8LOBInsertBatchTranslator(InsertBatchQuery query, DbAdapter adapter) {
         super(query, adapter);
     }
 

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
+import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 
@@ -45,7 +46,16 @@ public class OracleCharType extends CharType {
             int type,
             int precision) throws Exception {
         if (type == Types.CLOB) {
-            st.setString(pos, (String) val);
+
+            if (isUsingClobs()) {
+
+                Clob clob = st.getConnection().createClob();
+                clob.setString(1, (String) val);
+                st.setClob(pos, clob);
+                
+            } else {
+                st.setString(pos, (String) val);
+            }
         }
         else {
             // use exactly this method to solve CAY-1470

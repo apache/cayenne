@@ -44,19 +44,13 @@ class OracleActionBuilder extends JdbcActionBuilder {
     @Override
     public SQLAction batchAction(BatchQuery query) {
 
-        // special handling for LOB updates
-        if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
-            return new OracleLOBBatchAction(query, dataNode.getAdapter(), dataNode.getJdbcEventLogger());
-        } else {
+        // optimistic locking is not supported in batches due to JDBC driver
+        // limitations
+        // TODO: is this still true with ojdbc6.jar?
+        boolean useOptimisticLock = query.isUsingOptimisticLocking();
+        boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
 
-            // optimistic locking is not supported in batches due to JDBC driver
-            // limitations
-            boolean useOptimisticLock = query.isUsingOptimisticLocking();
-            boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
-
-            return new OracleBatchAction(query, dataNode, runningAsBatch);
-        }
-
+        return new OracleBatchAction(query, dataNode, runningAsBatch);
     }
 
     @Override

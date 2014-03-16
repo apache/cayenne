@@ -152,6 +152,8 @@ public class ByteArrayType implements ExtendedType {
     }
 
     protected Blob writeBlob(byte[] bytes) {
+        // TODO: should we use Connection.createBlob() instead? (Like Oracle
+        // ByteArrayType does)
         return bytes != null ? new MemoryBlob(bytes) : null;
     }
 
