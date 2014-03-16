@@ -53,8 +53,7 @@ public class EJBQLAction extends BaseSQLAction {
     }
 
     @Override
-    public void performAction(Connection connection, OperationObserver observer)
- throws SQLException, Exception {
+    public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
         EJBQLCompiledExpression compiledExpression = query.getExpression(dataNode.getEntityResolver());
         final EJBQLTranslatorFactory translatorFactory = ((JdbcAdapter) dataNode.getAdapter())
                 .getEjbqlTranslatorFactory();
