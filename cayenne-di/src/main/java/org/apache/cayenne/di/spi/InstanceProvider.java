@@ -32,6 +32,7 @@ class InstanceProvider<T> implements Provider<T> {
         this.value = value;
     }
 
+    @Override
     public T get() throws DIRuntimeException {
         return value;
     }

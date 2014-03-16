@@ -37,6 +37,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         this.bindingKey = bindingKey;
     }
 
+    @Override
     public BindingBuilder<T> to(Class<? extends T> implementation)
             throws DIRuntimeException {
 
@@ -49,13 +50,15 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         return this;
     }
 
+    @Override
     public BindingBuilder<T> toInstance(T instance) throws DIRuntimeException {
         Provider<T> provider0 = new InstanceProvider<T>(instance);
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
         injector.putBinding(bindingKey, provider1);
         return this;
-    };
+    }
 
+    @Override
     public BindingBuilder<T> toProvider(
             Class<? extends Provider<? extends T>> providerType) {
 
@@ -73,6 +76,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         return this;
     }
 
+    @Override
     public BindingBuilder<T> toProviderInstance(Provider<? extends T> provider) {
 
         Provider<Provider<? extends T>> provider0 = new InstanceProvider<Provider<? extends T>>(
@@ -88,14 +92,17 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         return this;
     }
 
+    @Override
     public void in(Scope scope) {
         injector.changeBindingScope(bindingKey, scope);
     }
 
+    @Override
     public void withoutScope() {
         in(injector.getNoScope());
     }
 
+    @Override
     public void inSingletonScope() {
         in(injector.getSingletonScope());
     }

@@ -122,6 +122,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         }
     }
 
+    @Override
     public T get() {
 
         Class<?>[] constructorParameters = constructor.getParameterTypes();

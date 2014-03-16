@@ -34,6 +34,7 @@ class CustomProvidersProvider<T> implements Provider<T> {
         this.providerOfProviders = providerOfProviders;
     }
 
+    @Override
     public T get() throws DIRuntimeException {
         return providerOfProviders.get().get();
     }

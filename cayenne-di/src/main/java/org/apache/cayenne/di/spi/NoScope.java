@@ -28,6 +28,7 @@ final class NoScope implements Scope {
 
     static final Scope INSTANCE = new NoScope();
 
+    @Override
     public <T> Provider<T> scope(Provider<T> unscoped) {
         return unscoped;
     }

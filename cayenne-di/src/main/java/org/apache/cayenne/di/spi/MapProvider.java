@@ -36,6 +36,7 @@ class MapProvider implements Provider<Map<String, ?>> {
         this.providers = new HashMap<String, Provider<?>>();
     }
 
+    @Override
     public Map<String, ?> get() throws DIRuntimeException {
         Map<String, Object> map = new HashMap<String, Object>();
 

@@ -35,6 +35,7 @@ class ListProvider implements Provider<List<?>> {
         this.providers = new ArrayList<Provider<?>>();
     }
 
+    @Override
     public List<?> get() throws DIRuntimeException {
         List<Object> list = new ArrayList<Object>(providers.size());
 

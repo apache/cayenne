@@ -38,6 +38,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
         this.injector = injector;
     }
 
+    @Override
     public T get() throws DIRuntimeException {
         T object = delegate.get();
         injectMembers(object, object.getClass());

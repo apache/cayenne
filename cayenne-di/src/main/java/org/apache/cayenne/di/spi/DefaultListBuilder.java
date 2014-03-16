@@ -44,12 +44,14 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         getListProvider();
     }
 
+    @Override
     public ListBuilder<T> add(Class<? extends T> interfaceType)
             throws DIRuntimeException {
         getListProvider().add(injector.getProvider(interfaceType));
         return this;
     }
 
+    @Override
     public ListBuilder<T> add(T value) throws DIRuntimeException {
 
         Provider<T> provider0 = new InstanceProvider<T>(value);
@@ -59,6 +61,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         return this;
     }
 
+    @Override
     public ListBuilder<T> addAll(Collection<T> values) throws DIRuntimeException {
 
         ListProvider listProvider = getListProvider();
@@ -89,6 +92,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         return provider;
     }
 
+    @Override
     public void in(Scope scope) {
         injector.changeBindingScope(bindingKey, scope);
     }

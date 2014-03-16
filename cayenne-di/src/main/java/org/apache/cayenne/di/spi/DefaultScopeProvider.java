@@ -41,6 +41,7 @@ public class DefaultScopeProvider<T> implements Provider<T> {
         scope.addScopeEventListener(this);
     }
 
+    @Override
     public T get() {
 
         if (instance == null) {

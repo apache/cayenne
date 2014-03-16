@@ -39,14 +39,17 @@ class DefaultBinder implements Binder {
         this.injector = injector;
     }
 
+    @Override
     public <T> BindingBuilder<T> bind(Class<T> interfaceType) {
         return new DefaultBindingBuilder<T>(Key.get(interfaceType), injector);
     }
 
+    @Override
     public <T> BindingBuilder<T> bind(Key<T> key) {
         return new DefaultBindingBuilder<T>(key, injector);
     }
 
+    @Override
     public <T> ListBuilder<T> bindList(String bindingName) {
         Class<?> listClass = List.class;
         return new DefaultListBuilder<T>(
@@ -54,6 +57,7 @@ class DefaultBinder implements Binder {
                 injector);
     }
 
+    @Override
     public <T> MapBuilder<T> bindMap(String bindingName) {
         Class<?> mapClass = Map.class;
         return new DefaultMapBuilder<T>(Key.get(

@@ -126,18 +126,22 @@ public class DefaultInjector implements Injector {
         binding.changeScope(scope);
     }
 
+    @Override
     public <T> T getInstance(Class<T> type) throws DIRuntimeException {
         return getProvider(type).get();
     }
 
+    @Override
     public <T> T getInstance(Key<T> key) throws DIRuntimeException {
         return getProvider(key).get();
     }
 
+    @Override
     public <T> Provider<T> getProvider(Class<T> type) throws DIRuntimeException {
         return getProvider(Key.get(type));
     }
 
+    @Override
     public <T> Provider<T> getProvider(Key<T> key) throws DIRuntimeException {
 
         if (key == null) {
@@ -155,12 +159,14 @@ public class DefaultInjector implements Injector {
         return binding.getScoped();
     }
 
+    @Override
     public void injectMembers(Object object) {
         Provider<Object> provider0 = new InstanceProvider<Object>(object);
         Provider<Object> provider1 = new FieldInjectingProvider<Object>(provider0, this);
         provider1.get();
     }
 
+    @Override
     public void shutdown() {
         singletonScope.shutdown();
     }

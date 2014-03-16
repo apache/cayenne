@@ -150,6 +150,7 @@ public class DefaultScope implements Scope {
         }
     }
 
+    @Override
     public <T> Provider<T> scope(Provider<T> unscoped) {
         return new DefaultScopeProvider<T>(this, unscoped);
     }

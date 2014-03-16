@@ -44,6 +44,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         getMapProvider();
     }
 
+    @Override
     public MapBuilder<T> put(String key, Class<? extends T> interfaceType)
             throws DIRuntimeException {
 
@@ -52,6 +53,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         return this;
     }
 
+    @Override
     public MapBuilder<T> put(String key, T value) throws DIRuntimeException {
 
         Provider<T> provider0 = new InstanceProvider<T>(value);
@@ -62,6 +64,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         return this;
     }
 
+    @Override
     public MapBuilder<T> putAll(Map<String, T> map) throws DIRuntimeException {
 
         MapProvider provider = getMapProvider();
@@ -91,6 +94,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         return provider;
     }
 
+    @Override
     public void in(Scope scope) {
         injector.changeBindingScope(bindingKey, scope);
     }
