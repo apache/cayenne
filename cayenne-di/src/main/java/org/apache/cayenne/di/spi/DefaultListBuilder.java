@@ -83,7 +83,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
             injector.putBinding(bindingKey, provider);
         }
         else {
-            provider = (ListProvider) binding.getUnscoped();
+            provider = (ListProvider) binding.getOriginal();
         }
 
         return provider;

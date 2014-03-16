@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.BindingBuilder;
+import org.apache.cayenne.di.DecoratorBuilder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
@@ -59,5 +60,14 @@ class DefaultBinder implements Binder {
                 (Class<Map<String, ?>>) mapClass,
                 bindingName), injector);
     }
-
+    
+    @Override
+    public <T> DecoratorBuilder<T> decorate(Class<T> interfaceType) {
+        return new DefaultDecoratorBuilder<T>(Key.get(interfaceType), injector);
+    }
+    
+    @Override
+    public <T> DecoratorBuilder<T> decorate(Key<T> key) {
+        return new DefaultDecoratorBuilder<T>(key, injector);
+    }
 }

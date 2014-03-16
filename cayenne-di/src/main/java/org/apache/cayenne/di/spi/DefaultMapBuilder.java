@@ -85,7 +85,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
             injector.putBinding(bindingKey, provider);
         }
         else {
-            provider = (MapProvider) binding.getUnscoped();
+            provider = (MapProvider) binding.getOriginal();
         }
 
         return provider;

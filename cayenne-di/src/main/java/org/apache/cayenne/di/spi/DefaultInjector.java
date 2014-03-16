@@ -20,6 +20,7 @@ package org.apache.cayenne.di.spi;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Injector;
@@ -39,6 +40,7 @@ public class DefaultInjector implements Injector {
     private Scope noScope;
 
     private Map<Key<?>, Binding<?>> bindings;
+    private Map<Key<?>, Decoration<?>> decorations;
     private InjectionStack injectionStack;
     private Scope defaultScope;
 
@@ -51,6 +53,7 @@ public class DefaultInjector implements Injector {
         this.defaultScope = singletonScope;
 
         this.bindings = new HashMap<Key<?>, Binding<?>>();
+        this.decorations = new HashMap<Key<?>, Decoration<?>>();
         this.injectionStack = new InjectionStack();
 
         DefaultBinder binder = new DefaultBinder(this);
@@ -64,6 +67,8 @@ public class DefaultInjector implements Injector {
             for (Module module : modules) {
                 module.configure(binder);
             }
+            
+            applyDecorators();
         }
     }
 
@@ -84,6 +89,28 @@ public class DefaultInjector implements Injector {
     <T> void putBinding(Key<T> bindingKey, Provider<T> provider) {
         // TODO: andrus 11/15/2009 - report overriding existing binding??
         bindings.put(bindingKey, new Binding<T>(provider, defaultScope));
+    }
+    
+    <T> void putDecorationAfter(Key<T> bindingKey, DecoratorProvider<T> decoratorProvider) {
+
+        Decoration<T> decoration = (Decoration<T>) decorations.get(bindingKey);
+        if (decoration == null) {
+            decoration = new Decoration<T>();
+            decorations.put(bindingKey, decoration);
+        }
+
+        decoration.after(decoratorProvider);
+    }
+    
+    <T> void putDecorationBefore(Key<T> bindingKey, DecoratorProvider<T> decoratorProvider) {
+
+        Decoration<T> decoration = (Decoration<T>) decorations.get(bindingKey);
+        if (decoration == null) {
+            decoration = new Decoration<T>();
+            decorations.put(bindingKey, decoration);
+        }
+
+        decoration.before(decoratorProvider);
     }
 
     <T> void changeBindingScope(Key<T> bindingKey, Scope scope) {
@@ -145,5 +172,17 @@ public class DefaultInjector implements Injector {
     Scope getNoScope() {
         return noScope;
     }
+    
+    void applyDecorators() {
+        for (Entry<Key<?>, Decoration<?>> e : decorations.entrySet()) {
 
+            Binding b = bindings.get(e.getKey());
+            if (b == null) {
+                // TODO: print warning - decorator of a non-existing service..
+                continue;
+            }
+
+            b.decorate(e.getValue());
+        }
+    }
 }

@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.util.List;
+
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 
@@ -29,12 +31,16 @@ import org.apache.cayenne.di.Scope;
  */
 class Binding<T> {
 
-    private Provider<T> unscoped;
+    private Provider<T> original;
+    private Provider<T> decorated;
     private Provider<T> scoped;
+    private Scope scope;
 
     Binding(Provider<T> provider, Scope initialScope) {
-        this.unscoped = provider;
-        this.scoped = initialScope != null ? initialScope.scope(provider) : provider;
+        this.original = provider;
+        this.decorated = provider;
+        
+        changeScope(initialScope);
     }
 
     void changeScope(Scope scope) {
@@ -42,11 +48,28 @@ class Binding<T> {
             scope = NoScope.INSTANCE;
         }
 
-        scoped = scope.scope(unscoped);
+        this.scoped = scope.scope(original);
+        this.scope = scope;
+    }
+    
+    void decorate(Decoration<T> decoration) {
+
+        List<DecoratorProvider<T>> decorators = decoration.decorators();
+        if (decorators.isEmpty()) {
+            return;
+        }
+
+        Provider<T> provider = this.original;
+        for (DecoratorProvider<T> decoratorProvider : decorators) {
+            provider = decoratorProvider.get(provider);
+        }
+        
+        this.decorated = provider;
+        this.scoped = scope.scope(decorated);
     }
 
-    Provider<T> getUnscoped() {
-        return unscoped;
+    Provider<T> getOriginal() {
+        return original;
     }
 
     Provider<T> getScoped() {

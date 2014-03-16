@@ -58,4 +58,14 @@ public interface Binder {
      * DI capabilities.
      */
     <T> ListBuilder<T> bindList(String bindingName);
+    
+    /**
+     * @since 3.2
+     */
+    <T> DecoratorBuilder<T> decorate(Class<T> interfaceType);
+    
+    /**
+     * @since 3.2
+     */
+    <T> DecoratorBuilder<T> decorate(Key<T> key);
 }

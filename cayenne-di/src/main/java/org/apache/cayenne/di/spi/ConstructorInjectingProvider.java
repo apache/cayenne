@@ -130,34 +130,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         InjectionStack stack = injector.getInjectionStack();
 
         for (int i = 0; i < constructorParameters.length; i++) {
-
-            Class<?> parameter = constructorParameters[i];
-
-            if (Provider.class.equals(parameter)) {
-
-                Class<?> objectClass = DIUtil.parameterClass(genericTypes[i]);
-
-                if (objectClass == null) {
-                    throw new DIRuntimeException(
-                            "Constructor provider parameter %s must be "
-                                    + "parameterized to be usable for injection",
-                            parameter.getName());
-                }
-
-                args[i] = injector.getProvider(Key.get(objectClass, bindingNames[i]));
-            }
-            else {
-
-                Key<?> key = Key.get(parameter, bindingNames[i]);
-
-                stack.push(key);
-                try {
-                    args[i] = injector.getInstance(key);
-                }
-                finally {
-                    stack.pop();
-                }
-            }
+            args[i] = value(constructorParameters[i], genericTypes[i], bindingNames[i], stack);
         }
 
         try {
@@ -168,6 +141,31 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
                     "Error instantiating class '%s'",
                     e,
                     constructor.getDeclaringClass().getName());
+        }
+    }
+    
+    protected Object value(Class<?> parameter, Type genericType, String bindingName, InjectionStack stack) {
+
+        if (Provider.class.equals(parameter)) {
+
+            Class<?> objectClass = DIUtil.parameterClass(genericType);
+
+            if (objectClass == null) {
+                throw new DIRuntimeException("Constructor provider parameter %s must be "
+                        + "parameterized to be usable for injection", parameter.getName());
+            }
+
+            return injector.getProvider(Key.get(objectClass, bindingName));
+        } else {
+
+            Key<?> key = Key.get(parameter, bindingName);
+
+            stack.push(key);
+            try {
+                return injector.getInstance(key);
+            } finally {
+                stack.pop();
+            }
         }
     }
 

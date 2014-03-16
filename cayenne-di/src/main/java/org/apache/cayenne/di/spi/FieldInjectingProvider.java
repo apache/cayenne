@@ -64,50 +64,47 @@ class FieldInjectingProvider<T> implements Provider<T> {
 
     private void injectMember(Object object, Field field, String bindingName) {
 
-        InjectionStack stack = injector.getInjectionStack();
+        Object value = value(field, bindingName);
 
-        Object value;
+        field.setAccessible(true);
+        try {
+            field.set(object, value);
+        } catch (Exception e) {
+            String message = String.format("Error injecting into field %s.%s of type %s", field.getDeclaringClass()
+                    .getName(), field.getName(), field.getType().getName());
+            throw new DIRuntimeException(message, e);
+        }
+    }
+    
+    /**
+     * @since 3.2
+     */
+    protected Object value(Field field, String bindingName) {
+
         Class<?> fieldType = field.getType();
+        InjectionStack stack = injector.getInjectionStack();
 
         if (Provider.class.equals(fieldType)) {
 
             Class<?> objectClass = DIUtil.parameterClass(field.getGenericType());
 
             if (objectClass == null) {
-                throw new DIRuntimeException(
-                        "Provider field %s.%s of type %s must be "
-                                + "parameterized to be usable for injection",
-                        field.getDeclaringClass().getName(),
-                        field.getName(),
-                        fieldType.getName());
+                throw new DIRuntimeException("Provider field %s.%s of type %s must be "
+                        + "parameterized to be usable for injection", field.getDeclaringClass().getName(),
+                        field.getName(), fieldType.getName());
             }
 
-            value = injector.getProvider(Key.get(objectClass, bindingName));
-        }
-        else {
+            return injector.getProvider(Key.get(objectClass, bindingName));
+        } else {
 
             Key<?> key = Key.get(fieldType, bindingName);
 
             stack.push(key);
             try {
-                value = injector.getInstance(key);
-            }
-            finally {
+                return injector.getInstance(key);
+            } finally {
                 stack.pop();
             }
-        }
-
-        field.setAccessible(true);
-        try {
-            field.set(object, value);
-        }
-        catch (Exception e) {
-            String message = String.format(
-                    "Error injecting into field %s.%s of type %s",
-                    field.getDeclaringClass().getName(),
-                    field.getName(),
-                    fieldType.getName());
-            throw new DIRuntimeException(message, e);
         }
     }
 }
