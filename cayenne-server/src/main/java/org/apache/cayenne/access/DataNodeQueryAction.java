@@ -52,18 +52,22 @@ class DataNodeQueryAction {
         // the underlying SQLAction uses query substitute...
         OperationObserver wrapper = new OperationObserver() {
 
+            @Override
             public void nextBatchCount(Query query, int[] resultCount) {
                 observer.nextBatchCount(originalQuery, resultCount);
             }
 
+            @Override
             public void nextCount(Query query, int resultCount) {
                 observer.nextCount(originalQuery, resultCount);
             }
 
+            @Override
             public void nextRows(Query query, List<?> dataRows) {
                 observer.nextRows(originalQuery, dataRows);
             }
 
+            @Override
             public void nextRows(Query q, ResultIterator it) {
                 observer.nextRows(originalQuery, it);
             }
@@ -73,14 +77,17 @@ class DataNodeQueryAction {
                 observer.nextGeneratedRows(originalQuery, keys, idToUpdate);
             }
 
+            @Override
             public void nextGlobalException(Exception ex) {
                 observer.nextGlobalException(ex);
             }
 
+            @Override
             public void nextQueryException(Query query, Exception ex) {
                 observer.nextQueryException(originalQuery, ex);
             }
 
+            @Override
             public boolean isIteratedResult() {
                 return observer.isIteratedResult();
             }
