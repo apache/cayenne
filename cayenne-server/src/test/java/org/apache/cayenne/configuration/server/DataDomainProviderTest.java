@@ -193,6 +193,7 @@ public class DataDomainProviderTest extends TestCase {
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
                 binder.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
+                binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
             }
         };
 

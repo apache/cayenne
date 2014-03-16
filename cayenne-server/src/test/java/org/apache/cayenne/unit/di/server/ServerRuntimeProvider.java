@@ -20,6 +20,7 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.configuration.server.DataNodeFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
@@ -67,6 +68,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
             binder.bind(DbAdapter.class).toProviderInstance(dbAdapterProvider);
             binder.bind(DataDomain.class).toProvider(ServerCaseDataDomainProvider.class);
+            binder.bind(DataNodeFactory.class).to(ServerCaseDataNodeFactory.class);
             binder.bind(UnitDbAdapter.class).toInstance(unitDbAdapter);
 
             // map DataSources for all test DataNode names

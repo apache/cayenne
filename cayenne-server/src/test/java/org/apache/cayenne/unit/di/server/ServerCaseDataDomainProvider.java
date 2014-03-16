@@ -21,13 +21,10 @@ package org.apache.cayenne.unit.di.server;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
-import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataDomainProvider;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.configuration.server.DataNodeFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -35,22 +32,10 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 class ServerCaseDataDomainProvider extends DataDomainProvider {
 
     @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
-
-    @Inject
-    private DbAdapter adapter;
-
-    @Inject
-    private JdbcEventLogger jdbcEventLogger;
-    
-    @Inject
     private UnitDbAdapter unitDbAdapter;
-    
+
     @Inject
-    protected RowReaderFactory rowReaderFactory;
-    
-    @Inject
-    protected BatchTranslatorFactory batchQueryBuilderFactory;
+    protected DataNodeFactory dataNodeFactory;
 
     @Override
     protected DataDomain createDataDomain(String name) {
@@ -62,26 +47,21 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
 
         DataDomain domain = super.createAndInitDataDomain();
         DataNode node = null;
-       
+
         for (DataMap dataMap : domain.getDataMaps()) {
 
             // add nodes and DataSources dynamically...
-            node = new DataNode(dataMap.getName());
-            node.setJdbcEventLogger(jdbcEventLogger);
-            node.setRowReaderFactory(rowReaderFactory);
-            node.setBatchTranslatorFactory(batchQueryBuilderFactory);
+            DataNodeDescriptor descriptor = new DataNodeDescriptor(dataMap.getName());
 
-            // shared or dedicated DataSources can be mapped per DataMap
-            node.setDataSource(dataSourceFactory.getDataSource(dataMap.getName()));
-            node.setAdapter(adapter);
+            node = dataNodeFactory.createDataNode(descriptor);
+
             node.addDataMap(dataMap);
-            node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
 
             // tweak procedures for testing...
             for (Procedure proc : dataMap.getProcedures()) {
                 unitDbAdapter.tweakProcedure(proc);
             }
-            
+
             // customizations from SimpleAccessStackAdapter that are not yet
             // ported...
             // those can be done better now
@@ -94,8 +74,8 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
 
             domain.addNode(node);
         }
-        
-        if(domain.getDataMaps().size() == 1) {
+
+        if (domain.getDataMaps().size() == 1) {
             domain.setDefaultNode(node);
         }
 

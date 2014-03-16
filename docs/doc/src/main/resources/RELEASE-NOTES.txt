@@ -42,6 +42,7 @@ CAY-1913 Refactor org.apache.cayenne.access.trans into query-specific packages
 CAY-1914 Refactor EJBQL-related translators to a standalone 'org.apache.cayenne.access.translator.ejbql' package
 CAY-1915 BatchTranslator instead of performing bindings should return binding object whose values can be altered
 CAY-1918 Replace Oracle LOB hacks with JDBC 4.0 API
+CAY-1919 Split DataNode creation into a separate DataNodeFactory
 
 Bug Fixes:
 
