@@ -69,7 +69,7 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
             node = new DataNode(dataMap.getName());
             node.setJdbcEventLogger(jdbcEventLogger);
             node.setRowReaderFactory(rowReaderFactory);
-            node.setBatchQueryBuilderFactory(batchQueryBuilderFactory);
+            node.setBatchTranslatorFactory(batchQueryBuilderFactory);
 
             // shared or dedicated DataSources can be mapped per DataMap
             node.setDataSource(dataSourceFactory.getDataSource(dataMap.getName()));

@@ -198,7 +198,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
         dataNode.setJdbcEventLogger(jdbcEventLogger);
         dataNode.setRowReaderFactory(rowReaderFactory);
-        dataNode.setBatchQueryBuilderFactory(batchQueryBuilderFactory);
+        dataNode.setBatchTranslatorFactory(batchQueryBuilderFactory);
         
         dataNode.setDataSourceLocation(nodeDescriptor.getParameters());
 

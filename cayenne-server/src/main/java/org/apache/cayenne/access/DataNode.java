@@ -68,7 +68,7 @@ public class DataNode implements QueryEngine {
 
     private JdbcEventLogger jdbcEventLogger;
     private RowReaderFactory rowReaderFactory;
-    private BatchTranslatorFactory batchQueryBuilderFactory;
+    private BatchTranslatorFactory batchTranslatorFactory;
 
     TransactionDataSource readThroughDataSource;
 
@@ -476,14 +476,14 @@ public class DataNode implements QueryEngine {
     /**
      * @since 3.2
      */
-    public BatchTranslatorFactory getBatchQueryBuilderFactory() {
-        return batchQueryBuilderFactory;
+    public BatchTranslatorFactory getBatchTranslatorFactory() {
+        return batchTranslatorFactory;
     }
 
     /**
      * @since 3.2
      */
-    public void setBatchQueryBuilderFactory(BatchTranslatorFactory batchQueryBuilderFactory) {
-        this.batchQueryBuilderFactory = batchQueryBuilderFactory;
+    public void setBatchTranslatorFactory(BatchTranslatorFactory batchTranslatorFactory) {
+        this.batchTranslatorFactory = batchTranslatorFactory;
     }
 }

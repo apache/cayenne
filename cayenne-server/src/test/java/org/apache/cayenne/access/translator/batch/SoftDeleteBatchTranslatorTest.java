@@ -130,9 +130,9 @@ public class SoftDeleteBatchTranslatorTest extends ServerCase {
         final DbEntity entity = context.getEntityResolver().getObjEntity(SoftTest.class).getDbEntity();
 
         JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-        BatchTranslatorFactory oldFactory = dataNode.getBatchQueryBuilderFactory();
+        BatchTranslatorFactory oldFactory = dataNode.getBatchTranslatorFactory();
         try {
-            dataNode.setBatchQueryBuilderFactory(new SoftDeleteTranslatorFactory());
+            dataNode.setBatchTranslatorFactory(new SoftDeleteTranslatorFactory());
 
             final SoftTest test = context.newObject(SoftTest.class);
             test.setName("SoftDeleteBatchQueryBuilderTest");
@@ -170,7 +170,7 @@ public class SoftDeleteBatchTranslatorTest extends ServerCase {
             }.runTest(200);
         } finally {
             context.performQuery(new SQLTemplate(entity, "DELETE FROM SOFT_TEST"));
-            dataNode.setBatchQueryBuilderFactory(oldFactory);
+            dataNode.setBatchTranslatorFactory(oldFactory);
         }
     }
 

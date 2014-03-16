@@ -154,7 +154,7 @@ public class SchemaBuilder {
 
         node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
         node.setRowReaderFactory(new DefaultRowReaderFactory());
-        node.setBatchQueryBuilderFactory(new DefaultBatchTranslatorFactory());
+        node.setBatchTranslatorFactory(new DefaultBatchTranslatorFactory());
         domain.addNode(node);
     }
 

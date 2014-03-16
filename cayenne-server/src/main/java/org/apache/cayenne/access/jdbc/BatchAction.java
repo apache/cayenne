@@ -97,7 +97,7 @@ public class BatchAction extends BaseSQLAction {
     }
 
     protected BatchTranslator createTranslator() throws CayenneException {
-        BatchTranslatorFactory factory = dataNode.getBatchQueryBuilderFactory();
+        BatchTranslatorFactory factory = dataNode.getBatchTranslatorFactory();
 
         if (factory == null) {
             throw new IllegalStateException("Adapter BatchQueryBuilderFactory is null");
