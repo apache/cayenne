@@ -39,6 +39,7 @@ public class SQLiteSniffer implements DbAdapterDetector {
         this.objectFactory = objectFactory;
     }
 
+    @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         if (dbName == null || !dbName.toUpperCase().contains("SQLITE")) {

@@ -40,6 +40,7 @@ public class SybaseSniffer implements DbAdapterDetector {
         this.objectFactory = objectFactory;
     }
 
+    @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         // JTDS driver returns "sql server" for Sybase, so need to handle it differently
         String driver = md.getDriverName();
