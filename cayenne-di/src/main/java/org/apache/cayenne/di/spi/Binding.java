@@ -48,6 +48,9 @@ class Binding<T> {
             scope = NoScope.INSTANCE;
         }
 
+        // TODO: what happens to the old scoped value? Seems like this leaks
+        // scope event listeners and may cause unexpected events...
+        
         this.scoped = scope.scope(original);
         this.scope = scope;
     }
@@ -63,8 +66,12 @@ class Binding<T> {
         for (DecoratorProvider<T> decoratorProvider : decorators) {
             provider = decoratorProvider.get(provider);
         }
-        
+
         this.decorated = provider;
+
+        // TODO: what happens to the old scoped value? Seems like this leaks
+        // scope event listeners and may cause unexpected events...
+
         this.scoped = scope.scope(decorated);
     }
 
