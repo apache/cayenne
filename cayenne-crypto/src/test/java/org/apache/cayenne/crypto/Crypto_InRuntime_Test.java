@@ -26,9 +26,10 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.Rot13PasswordEncoder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.db.Table1;
+import org.apache.cayenne.crypto.unit.Rot13CipherService;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
@@ -38,13 +39,12 @@ public class Crypto_InRuntime_Test extends TestCase {
 
     private TableHelper table1;
 
-    private Rot13PasswordEncoder rot13Cipher;
-
     @Override
     protected void setUp() throws Exception {
 
-        this.runtime = new ServerRuntime("cayenne-crypto.xml");
-        this.rot13Cipher = new Rot13PasswordEncoder();
+        Module crypto = new CryptoModuleBuilder().cipherService(Rot13CipherService.class).build();
+
+        this.runtime = new ServerRuntime("cayenne-crypto.xml", crypto);
 
         DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
 
@@ -64,10 +64,10 @@ public class Crypto_InRuntime_Test extends TestCase {
 
         Object[] data = table1.select();
         assertEquals("plain_1", data[1]);
-        assertEquals(rot13Cipher.rotate("crypto_1"), data[2]);
+        assertEquals(Rot13CipherService.rotate("crypto_1"), data[2]);
     }
 
-    public void testInsert_Multiple() throws SQLException {
+    public void testInsert_MultipleObjects() throws SQLException {
 
         ObjectContext context = runtime.newContext();
 
@@ -89,8 +89,8 @@ public class Crypto_InRuntime_Test extends TestCase {
             cipherByPlain.put(r[1], r[2]);
         }
 
-        assertEquals(rot13Cipher.rotate("crypto_1"), cipherByPlain.get("a"));
-        assertEquals(rot13Cipher.rotate("crypto_2"), cipherByPlain.get("b"));
+        assertEquals(Rot13CipherService.rotate("crypto_1"), cipherByPlain.get("a"));
+        assertEquals(Rot13CipherService.rotate("crypto_2"), cipherByPlain.get("b"));
     }
 
 }
