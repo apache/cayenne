@@ -172,7 +172,7 @@ public class ClassGenerationAction {
 
         String superPackageName = this.superPkg;
         if (superPackageName == null) {
-            superPackageName = packageName;
+            superPackageName = packageName + ".auto";
         }
 
         context.put(Artifact.BASE_CLASS_KEY, baseClassName);

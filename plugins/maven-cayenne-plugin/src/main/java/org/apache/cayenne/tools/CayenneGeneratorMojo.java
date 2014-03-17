@@ -58,8 +58,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * Destination directory for Java classes (ignoring their package names).
 	 * 
-	 * @parameter expression="${cgen.destDir}" default-value=
-	 *            "${project.build.sourceDirectory}/java/generated-sources/cayenne"
+	 * @parameter expression="${cgen.destDir}" default-value="${project.build.sourceDirectory}"
 	 */
 	private File destDir;
 
@@ -141,7 +140,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * <code>usepkgpath</code> is set to <code>true</code>. Otherwise classes
 	 * from different packages will end up in the same directory.
 	 * 
-	 * @parameter expression="${cgen.superPkg}"
+	 * @parameter expression="${cgen.superPkg}" 
 	 */
 	private String superPkg;
 

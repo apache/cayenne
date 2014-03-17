@@ -167,7 +167,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
         assertFalse(pkga.exists());
     }
 
-    /** Test pairs generation including full package path. */
+    /** Test pairs generation including full package path, default superclass package. */
     public void testPairs1() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "pairs-tree");
@@ -191,7 +191,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
 
         File _a = new File(
                 mapDir,
-                convertPath("org/apache/cayenne/testdo/testmap/_Artist.java"));
+                convertPath("org/apache/cayenne/testdo/testmap/auto/_Artist.java"));
         assertTrue(_a.exists());
         assertContents(
                 _a,
