@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.cipher;
 /**
  * @since 3.2
  */
-public interface CipherService {
+public interface CryptoHandler {
 
     Object encrypt(Object plaintext, int jdbcType);
 

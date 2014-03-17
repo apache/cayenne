@@ -20,7 +20,8 @@ package org.apache.cayenne.crypto;
 
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
-import org.apache.cayenne.crypto.cipher.CipherService;
+import org.apache.cayenne.crypto.cipher.CryptoHandler;
+import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 
@@ -34,24 +35,33 @@ import org.apache.cayenne.di.Module;
  */
 public class CryptoModuleBuilder {
 
-    private Class<? extends CipherService> cipherServiceType;
+    private Class<? extends CryptoHandler> cryptoHandlerType;
+    private Class<? extends ColumnMapper> columnMapperType;
 
-    public CryptoModuleBuilder cipherService(Class<? extends CipherService> cipherServiceType) {
-        this.cipherServiceType = cipherServiceType;
+    public CryptoModuleBuilder cryptoHandler(Class<? extends CryptoHandler> cryptoHandlerType) {
+        this.cryptoHandlerType = cryptoHandlerType;
         return this;
     }
 
+    /**
+     * Produces a module that can be used to start Cayenne runtime.
+     */
     public Module build() {
 
-        if (cipherServiceType == null) {
-            throw new IllegalStateException("'CipherService' is not initialized");
+        if (cryptoHandlerType == null) {
+            throw new IllegalStateException("'CryptoHandler' is not initialized");
+        }
+
+        if (columnMapperType == null) {
+            throw new IllegalStateException("'ColumnMapper' is not initialized");
         }
 
         return new Module() {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(CipherService.class).to(cipherServiceType);
+                binder.bind(CryptoHandler.class).to(cryptoHandlerType);
+                binder.bind(ColumnMapper.class).to(columnMapperType);
                 binder.decorate(BatchTranslatorFactory.class).after(CryptoBatchTranslatorFactoryDecorator.class);
             }
         };

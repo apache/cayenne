@@ -42,7 +42,7 @@ public class Crypto_InRuntime_Test extends TestCase {
     @Override
     protected void setUp() throws Exception {
 
-        Module crypto = new CryptoModuleBuilder().cipherService(Rot13CipherService.class).build();
+        Module crypto = new CryptoModuleBuilder().cryptoHandler(Rot13CipherService.class).build();
 
         this.runtime = new ServerRuntime("cayenne-crypto.xml", crypto);
 

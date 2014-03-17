@@ -20,9 +20,9 @@ package org.apache.cayenne.crypto.unit;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.cayenne.crypto.cipher.CipherService;
+import org.apache.cayenne.crypto.cipher.CryptoHandler;
 
-public class Rot13CipherService implements CipherService {
+public class Rot13CipherService implements CryptoHandler {
 
     public static String rotate(String value) {
         if (value == null) {

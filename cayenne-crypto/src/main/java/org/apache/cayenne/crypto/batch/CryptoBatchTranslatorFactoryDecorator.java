@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.crypto.cipher.CipherService;
+import org.apache.cayenne.crypto.cipher.CryptoHandler;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -36,12 +36,12 @@ import org.apache.cayenne.query.BatchQueryRow;
  */
 public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFactory {
 
-    private CipherService cipherService;
+    private CryptoHandler cipherService;
     private ColumnMapper columnMapper;
     private BatchTranslatorFactory delegate;
 
     public CryptoBatchTranslatorFactoryDecorator(@Inject BatchTranslatorFactory delegate,
-            @Inject CipherService cipherService, @Inject ColumnMapper columnMapper) {
+            @Inject CryptoHandler cipherService, @Inject ColumnMapper columnMapper) {
 
         this.columnMapper = columnMapper;
         this.cipherService = cipherService;
