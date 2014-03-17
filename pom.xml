@@ -49,6 +49,7 @@
 		<module>cayenne-tools</module>
 		<module>cayenne-project</module>
 		<module>cayenne-lifecycle</module>
+		<module>cayenne-crypto</module>
 		<module>itests</module>
 		<module>modeler</module>
 		<module>plugins</module>

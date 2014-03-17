@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/7/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/7/modelMap http://cayenne.apache.org/schema/7/modelMap.xsd"
+	 project-version="7">
+	<property name="defaultPackage" value="org.apache.cayenne.crypto.db"/>
+	<db-entity name="TABLE1">
+		<db-attribute name="CRYPTO_STRING" type="CLOB"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PLAIN_STRING" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="Table1" className="org.apache.cayenne.crypto.db.Table1" dbEntityName="TABLE1">
+		<obj-attribute name="cryptoString" type="java.lang.String" db-attribute-path="CRYPTO_STRING"/>
+		<obj-attribute name="plainString" type="java.lang.String" db-attribute-path="PLAIN_STRING"/>
+	</obj-entity>
+</data-map>
