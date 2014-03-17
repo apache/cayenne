@@ -36,15 +36,15 @@ import org.apache.cayenne.query.BatchQueryRow;
  */
 public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFactory {
 
-    private CryptoHandler cipherService;
+    private CryptoHandler cryptoHandler;
     private ColumnMapper columnMapper;
     private BatchTranslatorFactory delegate;
 
     public CryptoBatchTranslatorFactoryDecorator(@Inject BatchTranslatorFactory delegate,
-            @Inject CryptoHandler cipherService, @Inject ColumnMapper columnMapper) {
+            @Inject CryptoHandler cryptoHandler, @Inject ColumnMapper columnMapper) {
 
         this.columnMapper = columnMapper;
-        this.cipherService = cipherService;
+        this.cryptoHandler = cryptoHandler;
         this.delegate = delegate;
     }
 
@@ -70,7 +70,7 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
 
                 for (BatchParameterBinding b : bindings) {
                     if (columnMapper.isEncrypted(b.getAttribute())) {
-                        Object encrypted = cipherService.encrypt(b.getValue(), b.getAttribute().getType());
+                        Object encrypted = cryptoHandler.encrypt(b.getValue(), b.getAttribute().getType());
                         b.setValue(encrypted);
                     }
                 }

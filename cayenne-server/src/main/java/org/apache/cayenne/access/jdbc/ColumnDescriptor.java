@@ -37,6 +37,7 @@ import org.apache.cayenne.util.ToStringBuilder;
  */
 public class ColumnDescriptor {
 
+    protected DbAttribute attribute;
     protected String tableName;
     protected String procedureName;
 
@@ -75,6 +76,8 @@ public class ColumnDescriptor {
      */
     public ColumnDescriptor(DbAttribute attribute, String tableAlias) {
         this(attribute.getName(), attribute.getType());
+
+        this.attribute = attribute;
         this.namePrefix = tableAlias;
 
         if (attribute.getEntity() != null) {
@@ -132,6 +135,17 @@ public class ColumnDescriptor {
             }
         }
         return name;
+    }
+
+    /**
+     * Returns a DbAttribute for this column. Since columns descriptors can be
+     * initialized in a context where a DbAttribite is unknown, this method may
+     * return null.
+     * 
+     * @since 3.2
+     */
+    public DbAttribute getAttribute() {
+        return attribute;
     }
 
     /**

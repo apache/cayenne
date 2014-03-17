@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
+import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
 import org.apache.cayenne.crypto.cipher.CryptoHandler;
 import org.apache.cayenne.crypto.map.ColumnMapper;
+import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 
@@ -81,8 +83,9 @@ public class CryptoModuleBuilder {
                 } else {
                     binder.bind(ColumnMapper.class).toInstance(columnMapper);
                 }
-                
-                binder.decorate(BatchTranslatorFactory.class).after(CryptoBatchTranslatorFactoryDecorator.class);
+
+                binder.decorate(BatchTranslatorFactory.class).before(CryptoBatchTranslatorFactoryDecorator.class);
+                binder.decorate(RowReaderFactory.class).before(CryptoRowReaderFactoryDecorator.class);
             }
         };
     }

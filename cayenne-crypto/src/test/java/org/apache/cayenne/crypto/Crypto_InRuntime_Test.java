@@ -31,6 +31,7 @@ import org.apache.cayenne.crypto.db.Table1;
 import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.unit.Rot13CryptoHandler;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
@@ -93,6 +94,23 @@ public class Crypto_InRuntime_Test extends TestCase {
 
         assertEquals(Rot13CryptoHandler.rotate("crypto_1"), cipherByPlain.get("a"));
         assertEquals(Rot13CryptoHandler.rotate("crypto_2"), cipherByPlain.get("b"));
+    }
+
+    public void test_SelectQuery() throws SQLException {
+
+        table1.insert(1, "plain_1", Rot13CryptoHandler.rotate("crypto_1"));
+        table1.insert(2, "plain_2", Rot13CryptoHandler.rotate("crypto_2"));
+        table1.insert(3, "plain_3", Rot13CryptoHandler.rotate("crypto_3"));
+
+        SelectQuery<Table1> select = SelectQuery.query(Table1.class);
+        select.addOrdering(Table1.PLAIN_STRING.asc());
+
+        List<Table1> result = runtime.newContext().select(select);
+
+        assertEquals(3, result.size());
+        assertEquals("crypto_1", result.get(0).getCryptoString());
+        assertEquals("crypto_2", result.get(1).getCryptoString());
+        assertEquals("crypto_3", result.get(2).getCryptoString());
     }
 
 }
