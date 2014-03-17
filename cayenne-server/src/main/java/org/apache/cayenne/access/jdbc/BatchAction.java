@@ -44,9 +44,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
-import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
  * @since 1.2
@@ -103,15 +101,7 @@ public class BatchAction extends BaseSQLAction {
             throw new IllegalStateException("Adapter BatchQueryBuilderFactory is null");
         }
 
-        if (query instanceof InsertBatchQuery) {
-            return factory.insertTranslator((InsertBatchQuery) query, dataNode.getAdapter());
-        } else if (query instanceof UpdateBatchQuery) {
-            return factory.updateTranslator((UpdateBatchQuery) query, dataNode.getAdapter());
-        } else if (query instanceof DeleteBatchQuery) {
-            return factory.deleteTranslator((DeleteBatchQuery) query, dataNode.getAdapter());
-        } else {
-            throw new CayenneException("Unsupported batch query: " + query);
-        }
+        return factory.translator(query, dataNode.getAdapter());
     }
 
     protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate)

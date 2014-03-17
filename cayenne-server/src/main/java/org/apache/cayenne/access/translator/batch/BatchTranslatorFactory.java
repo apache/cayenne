@@ -19,9 +19,7 @@
 package org.apache.cayenne.access.translator.batch;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.query.DeleteBatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.query.BatchQuery;
 
 /**
  * Factory which creates BatchQueryBuilders for different types of queries,
@@ -32,17 +30,7 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 public interface BatchTranslatorFactory {
 
     /**
-     * Creates query builder for INSERT queries
+     * Creates a proper translator for a BatchQuery
      */
-    BatchTranslator insertTranslator(InsertBatchQuery query, DbAdapter adapter);
-
-    /**
-     * Creates query builder for UPDATE queries
-     */
-    BatchTranslator updateTranslator(UpdateBatchQuery query, DbAdapter adapter);
-
-    /**
-     * Creates query builder for DELETE queries
-     */
-    BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter);
+    BatchTranslator translator(BatchQuery query, DbAdapter adapter);
 }

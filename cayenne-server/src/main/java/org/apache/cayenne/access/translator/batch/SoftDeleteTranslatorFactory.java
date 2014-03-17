@@ -47,7 +47,7 @@ public class SoftDeleteTranslatorFactory extends DefaultBatchTranslatorFactory {
     }
     
     @Override
-    public BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter) {
+    protected BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter) {
         return new SoftDeleteBatchTranslator(query, adapter, deletedFieldName);
     }
     
