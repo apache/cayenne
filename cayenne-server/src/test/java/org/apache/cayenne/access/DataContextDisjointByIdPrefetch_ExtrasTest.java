@@ -87,7 +87,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
         // http://technet.microsoft.com/en-us/library/ms188059.aspx
 
         Collection<Object> invalidate = new ArrayList<Object>();
-        ObjectContext context = runtime.getContext();
+        ObjectContext context = runtime.newContext();
 
         Bag b1 = context.newObject(Bag.class);
         invalidate.add(b1);
@@ -329,11 +329,10 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
     public void testJointPrefetchInChild() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Bag.class);
-        query.addPrefetch(Bag.BOXES_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
-        query.addPrefetch(Bag.BOXES_PROPERTY + "." + Box.BALLS_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-        final List<Bag> result = context.performQuery(query);
+        SelectQuery<Bag> query = new SelectQuery<Bag>(Bag.class);
+        query.addPrefetch(Bag.BOXES.disjointById());
+        query.addPrefetch(Bag.BOXES.dot(Box.BALLS).joint());
+        final List<Bag> result = context.select(query);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
