@@ -70,8 +70,8 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
 
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
                 "_Artist");
-        assertContents("org/apache/cayenne/testdo/testmap/_Artist.java", "_Artist",
-                "org.apache.cayenne.testdo.testmap", "CayenneDataObject");
+        assertContents("org/apache/cayenne/testdo/testmap/auto/_Artist.java", "_Artist",
+                "org.apache.cayenne.testdo.testmap.auto", "CayenneDataObject");
     }
 
     /** Test pairs generation in the same directory. */
