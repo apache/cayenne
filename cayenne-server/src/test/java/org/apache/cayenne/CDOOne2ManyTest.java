@@ -60,8 +60,8 @@ public class CDOOne2ManyTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("GALLERY");
         dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
