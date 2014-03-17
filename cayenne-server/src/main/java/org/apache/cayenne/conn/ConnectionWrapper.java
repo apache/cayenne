@@ -113,6 +113,7 @@ public class ConnectionWrapper implements Connection {
         pooledConnection.connectionErrorNotification(exception);
     }
 
+    @Override
     public void clearWarnings() throws SQLException {
         try {
             connection.clearWarnings();
@@ -123,6 +124,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void close() throws SQLException {
         if (null != pooledConnection) {
             pooledConnection.returnConnectionToThePool();
@@ -131,6 +133,7 @@ public class ConnectionWrapper implements Connection {
         pooledConnection = null;
     }
 
+    @Override
     public void commit() throws SQLException {
         try {
             connection.commit();
@@ -141,6 +144,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public Statement createStatement() throws SQLException {
         try {
             return connection.createStatement();
@@ -153,6 +157,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency)
             throws SQLException {
         try {
@@ -166,6 +171,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public boolean getAutoCommit() throws SQLException {
         try {
             return connection.getAutoCommit();
@@ -176,6 +182,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public String getCatalog() throws SQLException {
         try {
             return connection.getCatalog();
@@ -186,6 +193,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         try {
             return connection.getMetaData();
@@ -196,6 +204,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public int getTransactionIsolation() throws SQLException {
         try {
             return connection.getTransactionIsolation();
@@ -206,6 +215,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public SQLWarning getWarnings() throws SQLException {
         try {
             return connection.getWarnings();
@@ -216,6 +226,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public boolean isClosed() throws SQLException {
         if (connection != null) {
             try {
@@ -230,6 +241,7 @@ public class ConnectionWrapper implements Connection {
             return true;
     }
 
+    @Override
     public boolean isReadOnly() throws SQLException {
         try {
             return connection.isReadOnly();
@@ -240,6 +252,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public String nativeSQL(String sql) throws SQLException {
         try {
             return connection.nativeSQL(sql);
@@ -250,6 +263,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public CallableStatement prepareCall(String sql) throws SQLException {
         try {
             return connection.prepareCall(sql);
@@ -262,6 +276,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public CallableStatement prepareCall(
             String sql,
             int resultSetType,
@@ -277,6 +292,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
         try {
             return connection.prepareStatement(sql);
@@ -289,6 +305,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public PreparedStatement prepareStatement(
             String sql,
             int resultSetType,
@@ -304,6 +321,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void rollback() throws SQLException {
         try {
             connection.rollback();
@@ -314,6 +332,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
         try {
             connection.setAutoCommit(autoCommit);
@@ -331,6 +350,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void setCatalog(String catalog) throws SQLException {
         try {
             connection.setCatalog(catalog);
@@ -341,6 +361,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void setReadOnly(boolean readOnly) throws SQLException {
         try {
             connection.setReadOnly(readOnly);
@@ -351,6 +372,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void setTransactionIsolation(int level) throws SQLException {
         try {
             connection.setTransactionIsolation(level);
@@ -361,6 +383,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public Map<String,Class<?>> getTypeMap() throws SQLException {
         try {
             return connection.getTypeMap();
@@ -371,6 +394,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
         try {
             connection.setTypeMap(map);
@@ -381,36 +405,43 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public void setHoldability(int holdability) throws SQLException {
         throw new java.lang.UnsupportedOperationException(
                 "Method setHoldability() not yet implemented.");
     }
 
+    @Override
     public int getHoldability() throws SQLException {
         throw new java.lang.UnsupportedOperationException(
                 "Method getHoldability() not yet implemented.");
     }
 
+    @Override
     public Savepoint setSavepoint() throws SQLException {
         throw new java.lang.UnsupportedOperationException(
                 "Method setSavepoint() not yet implemented.");
     }
 
+    @Override
     public Savepoint setSavepoint(String name) throws SQLException {
         throw new java.lang.UnsupportedOperationException(
                 "Method setSavepoint() not yet implemented.");
     }
 
+    @Override
     public void rollback(Savepoint savepoint) throws SQLException {
         throw new java.lang.UnsupportedOperationException(
                 "Method rollback() not yet implemented.");
     }
 
+    @Override
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         throw new java.lang.UnsupportedOperationException(
                 "Method releaseSavepoint() not yet implemented.");
     }
 
+    @Override
     public Statement createStatement(
             int resultSetType,
             int resultSetConcurrency,
@@ -419,6 +450,7 @@ public class ConnectionWrapper implements Connection {
                 "Method createStatement() not yet implemented.");
     }
 
+    @Override
     public PreparedStatement prepareStatement(
             String sql,
             int resultSetType,
@@ -428,6 +460,7 @@ public class ConnectionWrapper implements Connection {
                 "Method prepareStatement() not yet implemented.");
     }
 
+    @Override
     public CallableStatement prepareCall(
             String sql,
             int resultSetType,
@@ -452,8 +485,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
     
-    
-
+    @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys)
             throws SQLException {
 
@@ -468,6 +500,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
             throws SQLException {
         try {
@@ -481,6 +514,7 @@ public class ConnectionWrapper implements Connection {
         }
     }
 
+    @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames)
             throws SQLException {
         try {
@@ -497,96 +531,164 @@ public class ConnectionWrapper implements Connection {
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
-    public Array createArrayOf(String arg0, Object[] arg1) throws SQLException {
-        throw new UnsupportedOperationException();
+    @Override
+    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        try {
+            return connection.createArrayOf(typeName, elements);
+        }
+        catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return createArrayOf(typeName, elements);
+        }
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
+    @Override
     public Blob createBlob() throws SQLException {
-        throw new UnsupportedOperationException();
+        try {
+            return connection.createBlob();
+        } catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return createBlob();
+        }
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
+    @Override
     public Clob createClob() throws SQLException {
-        throw new UnsupportedOperationException();
+        try {
+            return connection.createClob();
+        } catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return createClob();
+        }
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
-    public Struct createStruct(String arg0, Object[] arg1) throws SQLException {
-        throw new UnsupportedOperationException();
+    @Override
+    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        try {
+            return connection.createStruct(typeName, attributes);
+        } catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return createStruct(typeName, attributes);
+        }
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
+    @Override
     public Properties getClientInfo() throws SQLException {
-        throw new UnsupportedOperationException();
+        try {
+            return connection.getClientInfo();
+        } catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return getClientInfo();
+        }
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
-    public String getClientInfo(String arg0) throws SQLException {
-        throw new UnsupportedOperationException();
+    @Override
+    public String getClientInfo(String name) throws SQLException {
+        try {
+            return connection.getClientInfo(name);
+        } catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return getClientInfo(name);
+        }
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
-    public boolean isValid(int arg0) throws SQLException {
-        throw new UnsupportedOperationException();
+    @Override
+    public boolean isValid(int timeout) throws SQLException {
+        try {
+            return connection.isValid(timeout);
+        } catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return isValid(timeout);
+        }
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
+    @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        // TODO: we can implement that now.
         throw new UnsupportedOperationException();
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
+    @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
+        // TODO: we can implement that now.
         throw new UnsupportedOperationException();
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
+    @Override
     public NClob createNClob() throws SQLException {
-        throw new UnsupportedOperationException();
+        try {
+            return connection.createNClob();
+        } catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return createNClob();
+        }
     }
 
     /**
      * @since 3.0
      */
-    // JDBC 4 compatibility under Java 1.5
+    @Override
     public SQLXML createSQLXML() throws SQLException {
-        throw new UnsupportedOperationException();
+        try {
+            return connection.createSQLXML();
+        } catch (SQLException sqlEx) {
+
+            // reconnect has code to prevent loops
+            reconnect(sqlEx);
+            return createSQLXML();
+        }
     }
 
     /**
      * @since 3.0
      */
     // JDBC 4 compatibility under Java 1.5
+    @Override
     public void setClientInfo(Properties properties) throws SQLClientInfoException {
+        // TODO: we can implement that now.
         throw new UnsupportedOperationException();
     }
 
@@ -594,7 +696,9 @@ public class ConnectionWrapper implements Connection {
      * @since 3.0
      */
     // JDBC 4 compatibility under Java 1.5
+    @Override
     public void setClientInfo(String name, String value) throws SQLClientInfoException {
+        // TODO: we can implement that now.
         throw new UnsupportedOperationException();
     }
 
