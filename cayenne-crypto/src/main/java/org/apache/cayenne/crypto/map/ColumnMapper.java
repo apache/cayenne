@@ -16,14 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.map;
+
+import org.apache.cayenne.map.DbAttribute;
 
 /**
  * @since 3.2
  */
-public interface CipherService {
+public interface ColumnMapper {
 
-    Object encrypt(Object plaintext, int jdbcType);
-
-    Object decrypt(Object ciphertext, int jdbcType);
+    /**
+     * Returns true if a given DbAttribute is encrypted.
+     */
+    boolean isEncrypted(DbAttribute column);
 }

@@ -59,12 +59,13 @@ public class Rot13CipherService implements CipherService {
     }
 
     @Override
-    public byte[] decrypt(byte[] ciphertext) {
-        return rotate(ciphertext);
+    public Object decrypt(Object ciphertext, int jdbcType) {
+        return rotate(ciphertext.toString());
     }
 
     @Override
-    public byte[] encrypt(byte[] plaintext) {
-        return rotate(plaintext);
+    public Object encrypt(Object plaintext, int jdbcType) {
+        return rotate(plaintext.toString().getBytes());
     }
+
 }

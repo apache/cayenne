@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
 import org.apache.cayenne.crypto.cipher.CipherService;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
@@ -50,6 +52,7 @@ public class CryptoModuleBuilder {
             @Override
             public void configure(Binder binder) {
                 binder.bind(CipherService.class).to(cipherServiceType);
+                binder.decorate(BatchTranslatorFactory.class).after(CryptoBatchTranslatorFactoryDecorator.class);
             }
         };
     }
