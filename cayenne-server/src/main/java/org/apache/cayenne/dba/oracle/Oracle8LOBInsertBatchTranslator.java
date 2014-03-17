@@ -31,8 +31,8 @@ import org.apache.cayenne.query.InsertBatchQuery;
 
 class Oracle8LOBInsertBatchTranslator extends Oracle8LOBBatchTranslator {
 
-    Oracle8LOBInsertBatchTranslator(InsertBatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
+    Oracle8LOBInsertBatchTranslator(InsertBatchQuery query, DbAdapter adapter, String trimFunction) {
+        super(query, adapter, trimFunction);
     }
 
     @Override

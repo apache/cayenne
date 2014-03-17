@@ -81,7 +81,7 @@ public class BatchActionLockingTest extends ServerCase {
         batchQuery.setUsingOptimisticLocking(true);
         batchQuery.add(qualifierSnapshot);
 
-        DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
+        DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter, null);
 
         MockConnection mockConnection = new MockConnection();
         PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
@@ -122,7 +122,7 @@ public class BatchActionLockingTest extends ServerCase {
         batchQuery.setUsingOptimisticLocking(true);
         batchQuery.add(qualifierSnapshot);
 
-        DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
+        DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter, null);
 
         MockConnection mockConnection = new MockConnection();
         PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection

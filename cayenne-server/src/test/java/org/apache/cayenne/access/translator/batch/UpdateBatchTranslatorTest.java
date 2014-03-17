@@ -56,7 +56,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
 
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchTranslator builder = new UpdateBatchTranslator(mock(UpdateBatchQuery.class), adapter);
+        UpdateBatchTranslator builder = new UpdateBatchTranslator(mock(UpdateBatchQuery.class), adapter, null);
         assertSame(adapter, builder.adapter);
     }
 
@@ -71,7 +71,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
                 Collections.<String> emptySet(), 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
+        UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter, null);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
@@ -90,7 +90,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, nullAttributes, 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
+        UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter, null);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
 
@@ -111,7 +111,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
                     Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
-            UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
+            UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter, null);
             String generatedSql = builder.createSqlString();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
@@ -142,7 +142,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
                     nullAttributes, 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
-            UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter);
+            UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter, null);
             String generatedSql = builder.createSqlString();
             assertNotNull(generatedSql);
 

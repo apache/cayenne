@@ -36,7 +36,6 @@ import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -95,13 +94,7 @@ public class BatchAction extends BaseSQLAction {
     }
 
     protected BatchTranslator createTranslator() throws CayenneException {
-        BatchTranslatorFactory factory = dataNode.getBatchTranslatorFactory();
-
-        if (factory == null) {
-            throw new IllegalStateException("Adapter BatchQueryBuilderFactory is null");
-        }
-
-        return factory.translator(query, dataNode.getAdapter());
+        return dataNode.batchTranslator(query, null);
     }
 
     protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate)

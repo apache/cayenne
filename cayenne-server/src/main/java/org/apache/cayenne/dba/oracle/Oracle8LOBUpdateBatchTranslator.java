@@ -31,8 +31,8 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 
 class Oracle8LOBUpdateBatchTranslator extends Oracle8LOBBatchTranslator {
 
-    Oracle8LOBUpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
+    Oracle8LOBUpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter, String trimFunction) {
+        super(query, adapter, trimFunction);
     }
 
     @Override

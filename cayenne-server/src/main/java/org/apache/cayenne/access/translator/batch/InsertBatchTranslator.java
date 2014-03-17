@@ -32,10 +32,12 @@ import org.apache.cayenne.query.InsertBatchQuery;
 /**
  * Translator of InsertBatchQueries.
  */
-public class InsertBatchTranslator extends BatchTranslator {
+public class InsertBatchTranslator extends DefaultBatchTranslator {
 
     public InsertBatchTranslator(InsertBatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
+        // no trimming is needed here, so passing hardcoded NULL for trim
+        // function
+        super(query, adapter, null);
     }
 
     /**

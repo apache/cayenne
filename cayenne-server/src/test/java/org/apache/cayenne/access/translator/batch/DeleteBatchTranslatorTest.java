@@ -58,7 +58,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(mock(DeleteBatchQuery.class), adapter);
+        DeleteBatchTranslator builder = new DeleteBatchTranslator(mock(DeleteBatchQuery.class), adapter, null);
 
         assertSame(adapter, builder.adapter);
     }
@@ -72,7 +72,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
+        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ?", generatedSql);
@@ -90,7 +90,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
+        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
         String generatedSql = builder.createSqlString();
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ? AND NAME IS NULL", generatedSql);
@@ -106,7 +106,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
 
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
+            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
             String generatedSql = builder.createSqlString();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
@@ -137,7 +137,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
 
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
-            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
+            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
             String generatedSql = builder.createSqlString();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();

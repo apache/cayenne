@@ -32,5 +32,5 @@ public interface BatchTranslatorFactory {
     /**
      * Creates a proper translator for a BatchQuery
      */
-    BatchTranslator translator(BatchQuery query, DbAdapter adapter);
+    BatchTranslator translator(BatchQuery query, DbAdapter adapter, String trimFunction);
 }

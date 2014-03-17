@@ -34,10 +34,10 @@ import org.apache.cayenne.query.DeleteBatchQuery;
  * Translator for delete BatchQueries. Creates parameterized DELETE SQL
  * statements.
  */
-public class DeleteBatchTranslator extends BatchTranslator {
+public class DeleteBatchTranslator extends DefaultBatchTranslator {
 
-    public DeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
+    public DeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter, String trimFunction) {
+        super(query, adapter, trimFunction);
     }
 
     @Override

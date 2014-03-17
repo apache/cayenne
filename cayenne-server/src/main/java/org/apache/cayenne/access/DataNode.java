@@ -38,6 +38,7 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -45,6 +46,7 @@ import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.ToStringBuilder;
@@ -459,6 +461,13 @@ public class DataNode implements QueryEngine {
     public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
             Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
         return rowReaderFactory.rowReader(descriptor, queryMetadata, getAdapter(), attributeOverrides);
+    }
+    
+    /**
+     * @since 3.2
+     */
+    public BatchTranslator batchTranslator(BatchQuery query, String trimFunction) {
+        return batchTranslatorFactory.translator(query, getAdapter(), trimFunction);
     }
 
     /**

@@ -20,71 +20,27 @@
 package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
-import java.sql.Types;
 import java.util.List;
 
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * Superclass of batch query translators.
+ * 
+ * @since 3.2
  */
-public abstract class BatchTranslator {
-
-    protected BatchQuery query;
-    protected DbAdapter adapter;
-    protected String trimFunction;
-
-    public BatchTranslator(BatchQuery query, DbAdapter adapter) {
-        this.query = query;
-        this.adapter = adapter;
-    }
+public interface BatchTranslator {
 
     /**
      * Translates BatchQuery into an SQL string formatted to use in a
      * PreparedStatement.
-     * 
-     * @since 3.2
-     * @throws IOException
      */
-    public abstract String createSqlString() throws IOException;
-
-    /**
-     * Appends the name of the column to the query buffer. Subclasses use this
-     * method to append column names in the WHERE clause, i.e. for the columns
-     * that are not being updated.
-     */
-    protected void appendDbAttribute(StringBuilder buf, DbAttribute dbAttribute) {
-
-        // TODO: (Andrus) is there a need for trimming binary types?
-        boolean trim = dbAttribute.getType() == Types.CHAR && trimFunction != null;
-        if (trim) {
-            buf.append(trimFunction).append('(');
-        }
-
-        QuotingStrategy strategy = adapter.getQuotingStrategy();
-
-        buf.append(strategy.quotedName(dbAttribute));
-
-        if (trim) {
-            buf.append(')');
-        }
-    }
-
-    public String getTrimFunction() {
-        return trimFunction;
-    }
-
-    public void setTrimFunction(String string) {
-        trimFunction = string;
-    }
+    String createSqlString() throws IOException;
 
     /**
      * Returns PreparedStatement bindings for a given row.
      */
-    public abstract List<BatchParameterBinding> createBindings(BatchQueryRow row);
+    List<BatchParameterBinding> createBindings(BatchQueryRow row);
 
+    String getTrimFunction();
 }

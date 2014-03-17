@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.batch;
 
+import java.sql.Types;
+
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
@@ -32,25 +35,30 @@ public class SoftDeleteTranslatorFactory extends DefaultBatchTranslatorFactory {
      * Default name of 'deleted' field
      */
     public static final String DEFAULT_DELETED_FIELD_NAME = "DELETED";
-    
+
     /**
      * Name of 'deleted' field
      */
     private String deletedFieldName;
-    
+
     public SoftDeleteTranslatorFactory() {
         this(DEFAULT_DELETED_FIELD_NAME);
     }
-    
+
     public SoftDeleteTranslatorFactory(String deletedFieldName) {
         this.deletedFieldName = deletedFieldName;
     }
-    
+
     @Override
-    protected BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter) {
-        return new SoftDeleteBatchTranslator(query, adapter, deletedFieldName);
+    protected BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter, String trimFunction) {
+
+        DbAttribute attr = query.getDbEntity().getAttribute(deletedFieldName);
+        boolean needsSoftDelete = attr != null && attr.getType() == Types.BOOLEAN;
+
+        return needsSoftDelete ? new SoftDeleteBatchTranslator(query, adapter, trimFunction, deletedFieldName) : super
+                .deleteTranslator(query, adapter, trimFunction);
     }
-    
+
     /**
      * @return name of 'deleted' field
      */

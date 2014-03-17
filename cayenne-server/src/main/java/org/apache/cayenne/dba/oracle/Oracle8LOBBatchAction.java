@@ -76,14 +76,13 @@ class Oracle8LOBBatchAction implements SQLAction {
 
         Oracle8LOBBatchTranslator translator;
         if (query instanceof InsertBatchQuery) {
-            translator = new Oracle8LOBInsertBatchTranslator((InsertBatchQuery) query, adapter);
+            translator = new Oracle8LOBInsertBatchTranslator((InsertBatchQuery) query, adapter, OracleAdapter.TRIM_FUNCTION);
         } else if (query instanceof UpdateBatchQuery) {
-            translator = new Oracle8LOBUpdateBatchTranslator((UpdateBatchQuery) query, adapter);
+            translator = new Oracle8LOBUpdateBatchTranslator((UpdateBatchQuery) query, adapter, OracleAdapter.TRIM_FUNCTION);
         } else {
             throw new CayenneException("Unsupported batch type for special LOB processing: " + query);
         }
 
-        translator.setTrimFunction(OracleAdapter.TRIM_FUNCTION);
         translator.setNewBlobFunction(OracleAdapter.NEW_BLOB_FUNCTION);
         translator.setNewClobFunction(OracleAdapter.NEW_CLOB_FUNCTION);
 

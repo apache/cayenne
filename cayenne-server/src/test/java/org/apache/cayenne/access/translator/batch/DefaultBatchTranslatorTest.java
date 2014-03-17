@@ -21,13 +21,10 @@ package org.apache.cayenne.access.translator.batch;
 
 import static org.mockito.Mockito.mock;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -40,14 +37,14 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class BatchTranslatorTest extends ServerCase {
+public class DefaultBatchTranslatorTest extends ServerCase {
 
     @Inject
     private AdhocObjectFactory objectFactory;
 
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        BatchTranslator builder = new BatchTranslator(mock(BatchQuery.class), adapter) {
+        DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override
             public String createSqlString() {
                 return null;
@@ -66,7 +63,7 @@ public class BatchTranslatorTest extends ServerCase {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String trimFunction = "testTrim";
 
-        BatchTranslator builder = new BatchTranslator(mock(BatchQuery.class), adapter) {
+        DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, trimFunction) {
             @Override
             public String createSqlString() {
                 return null;
@@ -77,8 +74,6 @@ public class BatchTranslatorTest extends ServerCase {
                 return Collections.emptyList();
             }
         };
-
-        builder.setTrimFunction(trimFunction);
 
         StringBuilder buf = new StringBuilder();
         DbEntity entity = new DbEntity("Test");
@@ -97,7 +92,7 @@ public class BatchTranslatorTest extends ServerCase {
     public void testAppendDbAttribute2() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
-        BatchTranslator builder = new BatchTranslator(mock(BatchQuery.class), adapter) {
+        DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override
             public String createSqlString() {
                 return null;

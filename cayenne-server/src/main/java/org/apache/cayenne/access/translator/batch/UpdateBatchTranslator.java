@@ -33,11 +33,10 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 /**
  * A translator for UpdateBatchQueries that produces parameterized SQL.
  */
+public class UpdateBatchTranslator extends DefaultBatchTranslator {
 
-public class UpdateBatchTranslator extends BatchTranslator {
-
-    public UpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
+    public UpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter, String trimFunction) {
+        super(query, adapter, trimFunction);
     }
 
     @Override

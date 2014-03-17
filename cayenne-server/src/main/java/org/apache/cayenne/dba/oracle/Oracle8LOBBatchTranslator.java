@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
-import org.apache.cayenne.access.translator.batch.BatchTranslator;
+import org.apache.cayenne.access.translator.batch.DefaultBatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
@@ -39,13 +39,13 @@ import org.apache.cayenne.query.BatchQueryRow;
  * Superclass of query builders for the DML operations involving LOBs.
  * 
  */
-abstract class Oracle8LOBBatchTranslator extends BatchTranslator {
+abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
 
     protected String newClobFunction;
     protected String newBlobFunction;
 
-    Oracle8LOBBatchTranslator(BatchQuery query, DbAdapter adapter) {
-        super(query, adapter);
+    Oracle8LOBBatchTranslator(BatchQuery query, DbAdapter adapter, String trimFunction) {
+        super(query, adapter, trimFunction);
     }
 
     abstract List<Object> getValuesForLOBUpdateParameters(BatchQueryRow row);

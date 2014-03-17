@@ -19,7 +19,6 @@
 package org.apache.cayenne.access.translator.batch;
 
 import java.io.IOException;
-import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -36,16 +35,14 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
 
     private String deletedFieldName;
 
-    public SoftDeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter, String deletedFieldName) {
-        super(query, adapter);
+    public SoftDeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter, String trimFunction,
+            String deletedFieldName) {
+        super(query, adapter, trimFunction);
         this.deletedFieldName = deletedFieldName;
     }
 
     @Override
     public String createSqlString() throws IOException {
-        if (!needSoftDelete()) {
-            return super.createSqlString();
-        }
 
         QuotingStrategy strategy = adapter.getQuotingStrategy();
 
@@ -63,19 +60,10 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
 
         List<BatchParameterBinding> bindings = super.createBindings(row);
 
-        if (needSoftDelete()) {
-            DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
-            bindings.add(0, new BatchParameterBinding(deleteAttribute, true));
-        }
+        DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
+        bindings.add(0, new BatchParameterBinding(deleteAttribute, true));
 
         return bindings;
     }
 
-    /**
-     * @return whether 'soft' deletion should be used
-     */
-    protected boolean needSoftDelete() {
-        DbAttribute attr = query.getDbEntity().getAttribute(deletedFieldName);
-        return attr != null && attr.getType() == Types.BOOLEAN;
-    }
 }
