@@ -22,7 +22,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.cayenne.crypto.cipher.CryptoHandler;
 
-public class Rot13CipherService implements CryptoHandler {
+public class Rot13CryptoHandler implements CryptoHandler {
 
     public static String rotate(String value) {
         if (value == null) {
@@ -65,7 +65,7 @@ public class Rot13CipherService implements CryptoHandler {
 
     @Override
     public Object encrypt(Object plaintext, int jdbcType) {
-        return rotate(plaintext.toString().getBytes());
+        return rotate(plaintext.toString());
     }
 
 }

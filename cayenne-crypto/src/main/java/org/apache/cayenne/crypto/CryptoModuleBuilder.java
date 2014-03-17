@@ -36,10 +36,24 @@ import org.apache.cayenne.di.Module;
 public class CryptoModuleBuilder {
 
     private Class<? extends CryptoHandler> cryptoHandlerType;
+
+    private ColumnMapper columnMapper;
     private Class<? extends ColumnMapper> columnMapperType;
 
     public CryptoModuleBuilder cryptoHandler(Class<? extends CryptoHandler> cryptoHandlerType) {
         this.cryptoHandlerType = cryptoHandlerType;
+        return this;
+    }
+
+    public CryptoModuleBuilder columnMapper(Class<? extends ColumnMapper> columnMapperType) {
+        this.columnMapperType = columnMapperType;
+        this.columnMapper = null;
+        return this;
+    }
+
+    public CryptoModuleBuilder columnMapper(ColumnMapper columnMapper) {
+        this.columnMapperType = null;
+        this.columnMapper = columnMapper;
         return this;
     }
 
@@ -52,7 +66,7 @@ public class CryptoModuleBuilder {
             throw new IllegalStateException("'CryptoHandler' is not initialized");
         }
 
-        if (columnMapperType == null) {
+        if (columnMapperType == null && columnMapper == null) {
             throw new IllegalStateException("'ColumnMapper' is not initialized");
         }
 
@@ -61,7 +75,13 @@ public class CryptoModuleBuilder {
             @Override
             public void configure(Binder binder) {
                 binder.bind(CryptoHandler.class).to(cryptoHandlerType);
-                binder.bind(ColumnMapper.class).to(columnMapperType);
+
+                if (columnMapperType != null) {
+                    binder.bind(ColumnMapper.class).to(columnMapperType);
+                } else {
+                    binder.bind(ColumnMapper.class).toInstance(columnMapper);
+                }
+                
                 binder.decorate(BatchTranslatorFactory.class).after(CryptoBatchTranslatorFactoryDecorator.class);
             }
         };
