@@ -179,7 +179,7 @@ public class ASTList extends SimpleNode {
             this.values = new Object[size];
             System.arraycopy((Object[]) value, 0, this.values, 0, size);
         } else if (value instanceof Collection) {
-            this.values = ((Collection) value).toArray();
+            this.values = ((Collection) value).toArray(new Object[((Collection) value).size()]);
         } else if (value instanceof Iterator) {
             List values = new ArrayList();
             Iterator it = (Iterator) value;
