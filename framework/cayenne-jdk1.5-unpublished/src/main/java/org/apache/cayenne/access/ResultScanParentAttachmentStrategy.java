@@ -107,6 +107,10 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         }
         
         List<DataRow> rows = parentNode.getDataRows();
+        if(rows == null) {
+            return;
+        }
+
         int size = objects.size();
         for (int i = 0; i < size; i++) {
 
