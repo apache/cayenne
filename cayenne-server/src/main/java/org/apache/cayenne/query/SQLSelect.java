@@ -274,7 +274,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
      * names in uppercase) is portable across database engines that can have
      * varying default capitalization. Default (null) value indicates that
      * column names provided in result set are used unchanged.
-     * <p/>
+     * <p>
      * Note that while a non-default setting is useful for queries that do not
      * rely on a #result directive to describe columns, it works for all
      * SQLTemplates the same way.

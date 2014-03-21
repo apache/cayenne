@@ -58,7 +58,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
 
     /**
      * Db-relationships path that is set but not yet parsed (turned into
-     * List<DbRelationship>) Used during map loading
+     * List&lt;DbRelationship&gt;) Used during map loading
      */
     String deferredPath;
 

@@ -97,8 +97,8 @@ public class XMLEncoder {
 
     /**
      * Prints an XML attribute. The value is trimmed (so leading and following spaces are
-     * lost) and then encoded to be a proper XML attribute value. E.g. "&" becomes
-     * "&amp;", etc.
+     * lost) and then encoded to be a proper XML attribute value. E.g. "&amp;" becomes
+     * "&amp;amp;", etc.
      * 
      * @since 3.1
      */

@@ -51,7 +51,7 @@ public abstract class PatternMatchNode extends ConditionNode {
     /**
      * <p>This method will return an escape character for the like
      * clause.  The escape character will eventually end up in the
-     * query as <code>...(t0.foo LIKE ? {escape '|'}) where the
+     * query as <code>...(t0.foo LIKE ? {escape '|'})</code> where the
      * pipe symbol is the escape character.</p>
      *
      * <p>Note that having no escape character is represented as 

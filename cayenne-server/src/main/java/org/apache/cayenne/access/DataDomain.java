@@ -258,7 +258,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Returns <code>true</code> if DataContexts produced by this DataDomain are
      * using shared DataRowStore. Returns <code>false</code> if each DataContext
      * would work with its own DataRowStore. Note that this setting can be
-     * overwritten per DataContext. See {@link #createDataContext(boolean)}.
+     * overwritten per DataContext.
      */
     public boolean isSharedCacheEnabled() {
         return sharedCacheEnabled;

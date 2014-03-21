@@ -49,8 +49,8 @@ import org.apache.velocity.runtime.parser.node.Node;
  * <strong>Binding literal parameter value:</strong>
  * </p>
  * <p>
- * <code>"WHERE SOME_COLUMN > #bind($xyz)"</code> produces
- * <code>"WHERE SOME_COLUMN > ?"</code> and also places the value of the "xyz" parameter
+ * <code>"WHERE SOME_COLUMN &gt; #bind($xyz)"</code> produces
+ * <code>"WHERE SOME_COLUMN &gt; ?"</code> and also places the value of the "xyz" parameter
  * in the context "bindings" collection.
  * </p>
  * <p>

@@ -34,7 +34,7 @@ public interface AdhocObjectFactory {
 
     /**
      * Returns a Java class loaded using ClassLoader returned from
-     * {@link #getClassLoader(String)} for a given class name.
+     * {@link ClassLoaderManager#getClassLoader(String)} for a given class name.
      * 
      * @since 3.2
      */

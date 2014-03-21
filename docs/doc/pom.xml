@@ -193,6 +193,18 @@
 					<!-- this is relative to target/site/apidocs  -->
 					<destDir>doc/api</destDir>
 					<stylesheet>java</stylesheet>
+                    <additionalDependencies>
+                        <additionalDependency>
+                            <groupId>jgroups</groupId>
+                            <artifactId>jgroups-all</artifactId>
+                            <version>2.2.7</version>
+                        </additionalDependency>
+                        <additionalDependency>
+                            <groupId>net.sf.ehcache</groupId>
+                            <artifactId>ehcache-core</artifactId>
+                            <version>2.4.3</version>
+                        </additionalDependency>
+                    </additionalDependencies>
 				</configuration>
 				<executions>
 					<execution>

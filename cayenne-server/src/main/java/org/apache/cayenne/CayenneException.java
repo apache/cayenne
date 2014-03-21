@@ -55,7 +55,7 @@ public class CayenneException extends Exception {
     /**
      * Constructs an <code>CayenneException</code> with the specified detail message.
      * 
-     * @param message the detail message.
+     * @param messageFormat the detail message format string.
      */
     public CayenneException(String messageFormat, Object... messageArgs) {
         super(String.format(messageFormat, messageArgs));

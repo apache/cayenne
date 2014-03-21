@@ -53,7 +53,7 @@ public class MemoryClob implements Clob {
      * internal character buffer is not much larger than required to represent the value.
      * 
      * @param data the character sequence representing the Clob value
-     * @throws SQLException if the argument is null
+     * @throws CayenneRuntimeException if the argument is null
      */
     public MemoryClob(String data) {
 

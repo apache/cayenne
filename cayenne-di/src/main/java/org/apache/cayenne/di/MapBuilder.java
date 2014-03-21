@@ -23,8 +23,7 @@ import java.util.Map;
 import org.apache.cayenne.di.DIRuntimeException;
 
 /**
- * A binding builder for map configurations. Creates a parameterized map of type <String,
- * T>.
+ * A binding builder for map configurations. Creates a parameterized map of type &lt;String, T&gt;.
  * 
  * @param <T> A type of the map values.
  * @since 3.1

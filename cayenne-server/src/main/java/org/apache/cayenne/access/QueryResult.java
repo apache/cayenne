@@ -67,7 +67,7 @@ public class QueryResult extends DefaultOperationObserver {
     }
 
     /**
-     * Returns the first update count for the query. This is a shortcut for <code>(Integer)getUpdates(query).get(0)<code>, kind of like Google's "I'm feeling lucky".
+     * Returns the first update count for the query. This is a shortcut for <code>(Integer)getUpdates(query).get(0)</code>, kind of like Google's "I'm feeling lucky".
      * Returns -1 if no update count is found for the query.
      */
     public int getFirstUpdateCount(Query query) {
@@ -124,7 +124,7 @@ public class QueryResult extends DefaultOperationObserver {
     }
 
     /**
-     * Returns the first results for the query. This is a shortcut for <code>(List)getRows(query).get(0)<code>, kind of like Google's "I'm feeling lucky".
+     * Returns the first results for the query. This is a shortcut for <code>(List)getRows(query).get(0)</code>, kind of like Google's "I'm feeling lucky".
      */
     public List getFirstRows(Query query) {
         List allResults = getResults(query);

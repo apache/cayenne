@@ -29,48 +29,48 @@ public interface Constants {
     // DI "collections"
 
     /**
-     * A DI container key for the Map<String, String> storing properties used by built-in
+     * A DI container key for the Map&lt;String, String&gt; storing properties used by built-in
      * Cayenne service.
      */
     public static final String PROPERTIES_MAP = "cayenne.properties";
 
     /**
-     * A DI container key for the List<DbAdapterDetector> that contains objects that can
+     * A DI container key for the List&lt;DbAdapterDetector&gt; that contains objects that can
      * discover the type of current database and install the correct DbAdapter in runtime.
      */
     public static final String SERVER_ADAPTER_DETECTORS_LIST = "cayenne.server.adapter_detectors";
 
     /**
-     * A DI container key for the List<DataChannelFilter> storing DataDomain filters.
+     * A DI container key for the List&lt;DataChannelFilter&gt; storing DataDomain filters.
      */
     public static final String SERVER_DOMAIN_FILTERS_LIST = "cayenne.server.domain_filters";
 
     /**
-     * A DI container key for the List<String> storing locations of the one of more
+     * A DI container key for the List&lt;String&gt; storing locations of the one of more
      * project configuration files.
      */
     public static final String SERVER_PROJECT_LOCATIONS_LIST = "cayenne.server.project_locations";
 
     /**
-     * A DI container key for the List<ExtendedType> storing default adapter-agnostic
+     * A DI container key for the List&lt;ExtendedType&gt; storing default adapter-agnostic
      * ExtendedTypes.
      */
     public static final String SERVER_DEFAULT_TYPES_LIST = "cayenne.server.default_types";
 
     /**
-     * A DI container key for the List<ExtendedType> storing a user-provided
+     * A DI container key for the List&lt;ExtendedType&gt; storing a user-provided
      * ExtendedTypes.
      */
     public static final String SERVER_USER_TYPES_LIST = "cayenne.server.user_types";
 
     /**
-     * A DI container key for the List<ExtendedTypeFactory> storing default and
+     * A DI container key for the List&lt;ExtendedTypeFactory&gt; storing default and
      * user-provided ExtendedTypeFactories.
      */
     public static final String SERVER_TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
 
     /**
-     * A server-side DI container key for the Map<String, String> storing event bridge
+     * A server-side DI container key for the Map&lt;String, String&gt; storing event bridge
      * properties passed to the ROP client on bootstrap.
      */
     public static final String SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP = "cayenne.server.rop_event_bridge_properties";

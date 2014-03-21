@@ -62,8 +62,8 @@ import org.apache.cayenne.resource.ResourceLocator;
  * <p>
  * Foreign key constraints are supported by InnoDB engine and NOT supported by
  * MyISAM engine. This adapter by default assumes MyISAM, so
- * {@link org.apache.cayenne.dba.JdbcAdapter#supportsFkConstraints()} will
- * return false. Users can manually change this by calling
+ * <code>supportsFkConstraints</code> will
+ * be false. Users can manually change this by calling
  * <em>setSupportsFkConstraints(true)</em> or better by using an
  * {@link org.apache.cayenne.dba.AutoAdapter}, i.e. not entering the adapter
  * name at all for the DataNode, letting Cayenne guess it in runtime. In the

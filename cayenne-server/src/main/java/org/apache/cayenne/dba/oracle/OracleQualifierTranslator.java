@@ -34,7 +34,7 @@ import org.apache.commons.collections.Transformer;
 
 /**
  * Oracle qualifier translator. In particular, trims INs with more than 1000 elements to
- * an OR-set of INs with <= 1000 elements
+ * an OR-set of INs with &lt;= 1000 elements
  */
 public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
 

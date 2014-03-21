@@ -20,7 +20,7 @@ package org.apache.cayenne.map;
 
 
 /**
- * A "synthetic" server-side ObjAttribute used to describe unmapped PK>.
+ * A "synthetic" server-side ObjAttribute used to describe unmapped PK.
  * 
  * @since 3.0
  */

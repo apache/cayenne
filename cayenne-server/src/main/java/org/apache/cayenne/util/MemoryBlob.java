@@ -77,7 +77,7 @@ public class MemoryBlob implements Blob {
      * to <code>length</code> consecutive bytes starting at position <code>pos</code>.
      * <p>
      * The official specification is ambiguous in that it does not precisely indicate the
-     * policy to be observed when pos > this.length() - length. One policy would be to
+     * policy to be observed when pos &gt; this.length() - length. One policy would be to
      * retrieve the octets from pos to this.length(). Another would be to throw an
      * exception. This implementation observes the later policy.
      * 

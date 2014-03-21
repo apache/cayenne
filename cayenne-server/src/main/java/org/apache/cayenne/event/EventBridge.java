@@ -28,7 +28,7 @@ import java.util.HashSet;
 import org.apache.cayenne.util.Util;
 
 /**
- * An object that passes events between a local EventManager and some other event dispatch
+ * <p>An object that passes events between a local EventManager and some other event dispatch
  * mechanism. The most common example is sending local events to remote JVMs and receiving
  * remote events dispatched by those VMs. EventBridge makes possible to connect a network
  * of regular EventManagers in a single "virtual" distributed EventManager.

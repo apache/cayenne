@@ -44,7 +44,7 @@ public interface Binder {
     <T> BindingBuilder<T> bind(Key<T> key);
 
     /**
-     * Starts a binding of a java.util.Map<String, ?> distinguished by its binding name.
+     * Starts a binding of a java.util.Map&lt;String, ?&gt; distinguished by its binding name.
      * Map binding should continue using returned MapBuilder. This is somewhat equivalent
      * of using "bind(Map.class, bindingName)", however returned MapBuilder provides extra
      * DI capabilities.
@@ -52,7 +52,7 @@ public interface Binder {
     <T> MapBuilder<T> bindMap(String bindingName);
 
     /**
-     * Starts a binding of a java.util.List<?> distinguished by its binding name. List
+     * Starts a binding of a java.util.List&lt;?&gt; distinguished by its binding name. List
      * binding should continue using returned ListBuilder. This is somewhat equivalent of
      * using "bind(List.class, bindingName)", however returned ListBuilder provides extra
      * DI capabilities.

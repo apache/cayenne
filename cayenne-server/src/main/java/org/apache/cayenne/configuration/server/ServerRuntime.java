@@ -33,7 +33,7 @@ import org.apache.cayenne.tx.TransactionalOperation;
  * An object representing Cayenne server-stack that connects directly to the
  * database via JDBC. This is an entry point for user applications to access
  * Cayenne, which encapsulates the dependency injection internals. The term
- * "server" is used as opposed to ROP "client" (see {@link ClientRuntime}). Any
+ * "server" is used as opposed to ROP "client" (see {@link CayenneRuntime}). Any
  * application, desktop, server, etc. that has a direct JDBC connection should
  * be using this runtime.
  * 

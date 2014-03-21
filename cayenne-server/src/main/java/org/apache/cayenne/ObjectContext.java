@@ -156,7 +156,7 @@ public interface ObjectContext extends DataChannel, Serializable {
 
     /**
      * Resets all uncommitted changes made to the objects in this ObjectContext.
-     * Same as {@link #rollbackChanges()()}, but rollback is local to this
+     * Same as {@link #rollbackChanges()}, but rollback is local to this
      * context and no cascading changes undoing occurs.
      */
     void rollbackChangesLocally();

@@ -27,7 +27,7 @@ import org.apache.cayenne.reflect.ToManyMapProperty;
 /**
  * A convenience base superclass for concrete Persistent objects. Provides implementation
  * of properties declared in Persistent interface.
- * <h4>POJO Note</h4>
+ * <h1>POJO Note</h1>
  * <p>
  * If having PersistentObject as a superclass presents a problem in an application, source
  * code of this class can be copied verbatim to a custom class generation template.

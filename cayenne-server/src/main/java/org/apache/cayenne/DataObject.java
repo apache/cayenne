@@ -76,7 +76,7 @@ public interface DataObject extends Persistent {
      * <br>
      * </li>
      * <li>Read to-many relationship in the middle of the path:<br>
-     * <code>List<String> names = (List<String>)artist.readNestedProperty("paintingArray.paintingName");</code>
+     * <code>List&lt;String&gt; names = (List&lt;String&gt;)artist.readNestedProperty("paintingArray.paintingName");</code>
      * <br>
      * <br>
      * </li>

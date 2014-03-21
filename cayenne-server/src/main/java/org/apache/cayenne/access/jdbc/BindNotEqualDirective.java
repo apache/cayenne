@@ -25,7 +25,7 @@ import java.io.Writer;
 import org.apache.velocity.context.InternalContextAdapter;
 
 /**
- * A custom Velocity directive to create a PreparedStatement parameter text for "<>?".
+ * A custom Velocity directive to create a PreparedStatement parameter text for "&lt;&gt;?".
  * If null value is encountered, generated text will look like "IS NOT NULL". Usage in
  * Velocity template is "WHERE SOME_COLUMN #bindNotEqual($xyz)".
  * 

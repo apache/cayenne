@@ -31,7 +31,7 @@ public interface TransactionManager {
 
     /**
      * Starts a new transaction (or joins an existing one) calling
-     * {@link TransactionalOperation#perform(CayenneRuntime)}, and then
+     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then
      * committing or rolling back the transaction. Frees the user
      */
     <T> T performInTransaction(TransactionalOperation<T> op);

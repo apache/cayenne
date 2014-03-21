@@ -45,7 +45,7 @@ public interface QueryCache {
      * Returns a cached query result for the given QueryMetadata. If the result is not
      * cached or is expired, cache will use provided factory to rebuild the value and
      * store it in the cache. A corollary is that this method never returns null.
-     * <p/>
+     * <p>
      * Compared to {@link #get(QueryMetadata)}, this method allows the cache to do
      * appropriate synchronization when refreshing the entry, preventing multiple threads
      * from running the same query when a missing entry is requested by multiple threads

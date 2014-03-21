@@ -26,7 +26,7 @@ import java.rmi.RemoteException;
  * Interface of a Cayenne remote service.
  * 
  * @since 1.2
- * @see org.apache.cayenne.remote.hessian.service.HessianServlet
+ * @see org.apache.cayenne.configuration.rop.server.ROPHessianServlet
  */
 public interface RemoteService extends Remote {
 

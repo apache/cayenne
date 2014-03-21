@@ -25,7 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
 
 /**
- * Bitwise conjunction (AND or '&') expression
+ * Bitwise conjunction (AND or '&amp;') expression
  * 
  * @since 3.1
  */

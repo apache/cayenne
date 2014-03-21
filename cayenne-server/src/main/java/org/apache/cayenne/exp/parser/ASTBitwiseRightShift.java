@@ -25,7 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
 
 /**
- * Bitwise right shift '>>' operation.
+ * Bitwise right shift '&gt;&gt;' operation.
  * 
  * @since 3.2
  */

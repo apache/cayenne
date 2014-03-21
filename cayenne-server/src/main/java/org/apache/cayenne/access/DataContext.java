@@ -463,7 +463,7 @@ public class DataContext extends BaseContext {
      * Instantiates a new object and registers it with this context. Object
      * class is determined from the mapped entity. Object class must have a
      * default constructor.
-     * <p/>
+     * <p>
      * <i>Note: in most cases {@link #newObject(Class)} method should be used,
      * however this method is helpful when generic persistent classes are
      * used.</i>
@@ -502,7 +502,7 @@ public class DataContext extends BaseContext {
      * Registers a transient object with the context, recursively registering
      * all transient persistent objects attached to this object via
      * relationships.
-     * <p/>
+     * <p>
      * <i>Note that since 3.0 this method takes Object as an argument instead of
      * a {@link DataObject}.</i>
      * 

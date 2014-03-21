@@ -58,7 +58,7 @@ public class UpdateBatchQuery extends BatchQuery {
      *            DbAttributes used in the WHERE clause.
      * @param nullQualifierNames
      *            DbAttribute names in the WHERE clause that have null values.
-     * @param updatedAttribute
+     * @param updatedAttributes
      *            DbAttributes describing updated columns.
      * @param batchCapacity
      *            Estimated size of the batch.

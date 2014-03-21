@@ -52,7 +52,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
     /**
      * Creates new DistinctResultIterator wrapping another ResultIterator.
      * 
-     * @param wrappedIterator
+     * @param delegate
      * @param defaultEntity
      *            an entity needed to build ObjectIds for distinct comparison.
      */

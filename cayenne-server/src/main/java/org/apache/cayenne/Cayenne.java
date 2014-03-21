@@ -102,7 +102,7 @@ public class Cayenne {
      * traverse object relationships until the final object is found. If a null
      * object found while traversing path, null is returned. If a list is
      * encountered in the middle of the path, CayenneRuntimeException is thrown.
-     * Unlike {@link #readPropertyDirectly(String)}, this method will resolve an
+     * Unlike {@link DataObject#readPropertyDirectly(String)}, this method will resolve an
      * object if it is HOLLOW.
      * <p>
      * Examples:
@@ -129,7 +129,7 @@ public class Cayenne {
      * <br>
      * </li>
      * <li>Read to-many relationship in the middle of the path:<br>
-     * <code>List<String> names = (List<String>)Cayenne.readNestedProperty(artist, "paintingArray.paintingName");</code>
+     * <code>List&lt;String&gt; names = (List&lt;String&gt;)Cayenne.readNestedProperty(artist, "paintingArray.paintingName");</code>
      * <br>
      * <br>
      * </li>

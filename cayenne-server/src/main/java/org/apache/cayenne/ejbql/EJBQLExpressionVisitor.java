@@ -137,9 +137,9 @@ public interface EJBQLExpressionVisitor {
     boolean visitFromItem(EJBQLFromItem expression, int finishedChildIndex);
 
     /**
-     * Called on visiting ">=" expression and also after visiting every expression child.
+     * Called on visiting "&gt;=" expression and also after visiting every expression child.
      * 
-     * @param expression an ">=" node being visited.
+     * @param expression an "&gt;=" node being visited.
      * @param finishedChildIndex "-1" when the expression node is visited for the first
      *            time, before its children; otherwise this is an index of a child just
      *            visited.
@@ -147,9 +147,9 @@ public interface EJBQLExpressionVisitor {
     boolean visitGreaterOrEqual(EJBQLExpression expression, int finishedChildIndex);
 
     /**
-     * Called on visiting ">=" expression and also after visiting every expression child.
+     * Called on visiting "&gt;=" expression and also after visiting every expression child.
      * 
-     * @param expression an ">=" node being visited.
+     * @param expression an "&gt;=" node being visited.
      * @param finishedChildIndex "-1" when the expression node is visited for the first
      *            time, before its children; otherwise this is an index of a child just
      *            visited.
@@ -179,9 +179,9 @@ public interface EJBQLExpressionVisitor {
     boolean visitLength(EJBQLExpression expression, int finishedChildIndex);
 
     /**
-     * Called on visiting "<=" expression and also after visiting every expression child.
+     * Called on visiting "&lt;=" expression and also after visiting every expression child.
      * 
-     * @param expression an "<=" node being visited.
+     * @param expression an "&lt;=" node being visited.
      * @param finishedChildIndex "-1" when the expression node is visited for the first
      *            time, before its children; otherwise this is an index of a child just
      *            visited.
@@ -189,9 +189,9 @@ public interface EJBQLExpressionVisitor {
     boolean visitLessOrEqual(EJBQLExpression expression, int finishedChildIndex);
 
     /**
-     * Called on visiting "<" expression and also after visiting every expression child.
+     * Called on visiting "&lt;" expression and also after visiting every expression child.
      * 
-     * @param expression an "<" node being visited.
+     * @param expression an "&lt;" node being visited.
      * @param finishedChildIndex "-1" when the expression node is visited for the first
      *            time, before its children; otherwise this is an index of a child just
      *            visited.

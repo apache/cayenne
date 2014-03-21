@@ -249,7 +249,7 @@ public class HashCodeBuilder {
      * <p>
      * This adds <code>iConstant * 1</code> to the <code>hashCode</code> and not a
      * <code>1231</code> or <code>1237</code> as done in java.lang.Boolean. This is in
-     * accordance with the <quote>Effective Java</quote> design.
+     * accordance with the <i>Effective Java</i> design.
      * </p>
      * 
      * @param value the boolean to add to the <code>hashCode</code>
