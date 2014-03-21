@@ -20,12 +20,13 @@ package org.apache.cayenne.access.translator.batch;
 
 import java.sql.Types;
 
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
- * Implementation of {@link #BatchQueryBuilderFactory}, which uses 'soft' delete
+ * Implementation of {link #BatchTranslator}, which uses 'soft' delete
  * (runs UPDATE and sets 'deleted' field to true instead-of running SQL DELETE)
  * 
  * @since 3.2
