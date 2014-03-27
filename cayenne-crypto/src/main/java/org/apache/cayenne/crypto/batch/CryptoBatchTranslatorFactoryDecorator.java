@@ -55,11 +55,6 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
         return new BatchTranslator() {
 
             @Override
-            public String getTrimFunction() {
-                return delegateTranslator.getTrimFunction();
-            }
-
-            @Override
             public String createSqlString() throws IOException {
                 return delegateTranslator.createSqlString();
             }

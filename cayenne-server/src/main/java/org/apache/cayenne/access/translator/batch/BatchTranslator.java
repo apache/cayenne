@@ -41,6 +41,4 @@ public interface BatchTranslator {
      * Returns PreparedStatement bindings for a given row.
      */
     List<BatchParameterBinding> createBindings(BatchQueryRow row);
-
-    String getTrimFunction();
 }

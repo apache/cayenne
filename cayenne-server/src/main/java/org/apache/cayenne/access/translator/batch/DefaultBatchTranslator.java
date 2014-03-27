@@ -45,11 +45,6 @@ public abstract class DefaultBatchTranslator implements BatchTranslator {
         this.trimFunction = trimFunction;
     }
 
-    @Override
-    public String getTrimFunction() {
-        return trimFunction;
-    }
-
     /**
      * Translates BatchQuery into an SQL string formatted to use in a
      * PreparedStatement.
