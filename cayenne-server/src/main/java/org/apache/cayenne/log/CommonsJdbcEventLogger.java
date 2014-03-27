@@ -269,30 +269,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
         }
     }
 
-    private void buildLog(StringBuilder buffer, List<BatchParameterBinding> bindings) {
-
-        int len = bindings.size();
-
-        for (int i = 0; i < len; i++) {
-
-            if (i > 0) {
-                buffer.append(", ");
-            }
-
-            BatchParameterBinding b = bindings.get(i);
-            DbAttribute attribute = b.getAttribute();
-
-            buffer.append(i + 1);
-
-            if (attribute != null) {
-                buffer.append("->");
-                buffer.append(attribute.getName());
-            }
-
-            buffer.append(":");
-            sqlLiteralForObject(buffer, b.getValue());
-        }
-    }
+   
 
     private boolean isInserting(String query) {
         if (query == null || query.length() == 0)
@@ -333,16 +310,47 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
     }
 
     @Override
-    public void logQueryParameters(String label, List<BatchParameterBinding> bindings) {
+    public void logQueryParameters(String label, BatchParameterBinding[] bindings) {
 
-        if (isLoggable() && bindings.size() > 0) {
-            StringBuilder buffer = new StringBuilder();
+        if (isLoggable() && bindings.length > 0) {
 
-            buffer.append("[").append(label).append(": ");
-            buildLog(buffer, bindings);
-            buffer.append("]");
+            boolean hasIncluded = false;
+            StringBuilder buffer = null;
 
-            logger.info(buffer.toString());
+            int len = bindings.length;
+            for (int i = 0, j = 1; i < len; i++) {
+                BatchParameterBinding b = bindings[i];
+
+                if (b.isExcluded()) {
+                    continue;
+                }
+
+                if (hasIncluded) {
+                    buffer.append(", ");
+                } else {
+                    hasIncluded = true;
+                    buffer = new StringBuilder();
+                    buffer.append("[").append(label).append(": ");
+                }
+
+                DbAttribute attribute = b.getAttribute();
+
+                buffer.append(j++);
+
+                if (attribute != null) {
+                    buffer.append("->");
+                    buffer.append(attribute.getName());
+                }
+
+                buffer.append(":");
+                sqlLiteralForObject(buffer, b.getValue());
+            }
+
+            if (hasIncluded) {
+                buffer.append("]");
+
+                logger.info(buffer.toString());
+            }
         }
     }
 

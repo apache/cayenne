@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.List;
-
 import org.apache.cayenne.query.BatchQueryRow;
 
 /**
@@ -36,7 +34,16 @@ public interface BatchTranslator {
     String getSql();
 
     /**
-     * Returns PreparedStatement bindings for a given row.
+     * Returns the widest possible array of bindings for this query. Each
+     * binding's position corresponds to a value position in
+     * {@link BatchQueryRow}.
      */
-    List<BatchParameterBinding> createBindings(BatchQueryRow row);
+    BatchParameterBinding[] getBindings();
+
+    /**
+     * Updates internal bindings to be used with a given row, returning updated
+     * bindings array. Note that usually the returned array is the same copy on
+     * every iteration, only with changed object state.
+     */
+    BatchParameterBinding[] updateBindings(BatchQueryRow row);
 }

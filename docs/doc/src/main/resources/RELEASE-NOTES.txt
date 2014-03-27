@@ -44,6 +44,7 @@ CAY-1915 BatchTranslator instead of performing bindings should return binding ob
 CAY-1918 Replace Oracle LOB hacks with JDBC 4.0 API
 CAY-1919 Split DataNode creation into a separate DataNodeFactory
 CAY-1920 DI: add support for decorators
+CAY-1923 Optimize BatchTranslator - use fixed size array of BatchParameterBinding
 
 Bug Fixes:
 

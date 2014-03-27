@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -37,28 +36,6 @@ public class InsertBatchTranslator extends DefaultBatchTranslator {
         // no trimming is needed here, so passing hardcoded NULL for trim
         // function
         super(query, adapter, null);
-    }
-
-    /**
-     * @since 3.2
-     */
-    @Override
-    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
-
-        List<DbAttribute> attributes = query.getDbAttributes();
-        int len = attributes.size();
-
-        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(len);
-
-        for (int i = 0; i < len; i++) {
-            DbAttribute a = attributes.get(i);
-            if (includeInBatch(a)) {
-                Object value = row.getValue(i);
-                bindings.add(new BatchParameterBinding(a, value));
-            }
-        }
-
-        return bindings;
     }
 
     @Override
@@ -101,6 +78,48 @@ public class InsertBatchTranslator extends DefaultBatchTranslator {
         }
         buffer.append(')');
         return buffer.toString();
+    }
+
+    @Override
+    protected BatchParameterBinding[] createBindings() {
+        List<DbAttribute> attributes = query.getDbAttributes();
+        int len = attributes.size();
+
+        BatchParameterBinding[] bindings = new BatchParameterBinding[len];
+
+        for (int i = 0; i < len; i++) {
+            DbAttribute a = attributes.get(i);
+            bindings[i] = new BatchParameterBinding(a);
+
+            // include/exclude state depends on DbAttribute only and can be
+            // precompiled here
+            if (includeInBatch(a)) {
+                // setting fake position here... all we care about is that it is
+                // > -1
+                bindings[i].include(1, null);
+            } else {
+                bindings[i].exclude();
+            }
+        }
+
+        return bindings;
+    }
+
+    @Override
+    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+        int len = bindings.length;
+
+        for (int i = 0, j = 1; i < len; i++) {
+
+            BatchParameterBinding b = bindings[i];
+
+            // exclusions are permanent
+            if (!b.isExcluded()) {
+                b.include(j++, row.getValue(i));
+            }
+        }
+
+        return bindings;
     }
 
     /**

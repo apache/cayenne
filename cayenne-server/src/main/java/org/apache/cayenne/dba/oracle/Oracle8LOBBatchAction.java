@@ -55,13 +55,12 @@ class Oracle8LOBBatchAction implements SQLAction {
     private DbAdapter adapter;
     private JdbcEventLogger logger;
 
-    private static void bind(DbAdapter adapter, PreparedStatement statement, List<BatchParameterBinding> bindings)
+    private static void bind(DbAdapter adapter, PreparedStatement statement, BatchParameterBinding[] bindings)
             throws SQLException, Exception {
-        int len = bindings.size();
-        for (int i = 0; i < len; i++) {
-            BatchParameterBinding b = bindings.get(i);
-            adapter.bindParameter(statement, b.getValue(), i + 1, b.getAttribute().getType(), b.getAttribute()
-                    .getScale());
+
+        for (BatchParameterBinding b : bindings) {
+            adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
+                    .getAttribute().getScale());
         }
     }
 
@@ -105,7 +104,7 @@ class Oracle8LOBBatchAction implements SQLAction {
             PreparedStatement statement = connection.prepareStatement(updateStr);
             try {
 
-                List<BatchParameterBinding> bindings = translator.createBindings(row);
+                BatchParameterBinding[] bindings = translator.updateBindings(row);
                 logger.logQueryParameters("bind", bindings);
 
                 bind(adapter, statement, bindings);

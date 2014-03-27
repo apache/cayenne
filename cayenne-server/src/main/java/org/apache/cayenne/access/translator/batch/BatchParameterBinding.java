@@ -25,12 +25,15 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class BatchParameterBinding {
 
+    static final int EXCLUDED_POSITION = -1;
+
     private DbAttribute attribute;
     private Object value;
+    private int statementPosition;
 
-    public BatchParameterBinding(DbAttribute attribute, Object value) {
+    public BatchParameterBinding(DbAttribute attribute) {
         this.attribute = attribute;
-        this.value = value;
+        this.statementPosition = EXCLUDED_POSITION;
     }
 
     public DbAttribute getAttribute() {
@@ -42,6 +45,35 @@ public class BatchParameterBinding {
     }
 
     public void setValue(Object value) {
+        this.value = value;
+    }
+
+    public int getStatementPosition() {
+        return statementPosition;
+    }
+
+    public void setStatementPosition(int statementPosition) {
+        this.statementPosition = statementPosition;
+    }
+
+    public boolean isExcluded() {
+        return statementPosition == EXCLUDED_POSITION;
+    }
+
+    /**
+     * Marks the binding object as excluded for the current iteration.
+     */
+    public void exclude() {
+        this.statementPosition = EXCLUDED_POSITION;
+        this.value = null;
+    }
+
+    /**
+     * Sets the value of the binding and initializes statement position var,
+     * thus "including" this binding in the current iteration.
+     */
+    public void include(int statementPosition, Object value) {
+        this.statementPosition = statementPosition;
         this.value = value;
     }
 }

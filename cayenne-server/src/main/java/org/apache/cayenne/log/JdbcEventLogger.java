@@ -61,7 +61,7 @@ public interface JdbcEventLogger {
     /**
      * @since 3.2
      */
-    void logQueryParameters(String label, List<BatchParameterBinding> bindings);
+    void logQueryParameters(String label, BatchParameterBinding[] bindings);
 
     /**
      * @deprecated since 3.2 in favor of

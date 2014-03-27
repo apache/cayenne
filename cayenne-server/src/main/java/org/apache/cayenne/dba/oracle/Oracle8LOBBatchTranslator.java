@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.oracle;
 
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -109,23 +108,41 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
             }
         }
     }
-
+    
     @Override
-    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
+    protected BatchParameterBinding[] createBindings() {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
-        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(len);
+        BatchParameterBinding[] bindings = new BatchParameterBinding[len];
 
         for (int i = 0; i < len; i++) {
-            Object value = row.getValue(i);
             DbAttribute attribute = dbAttributes.get(i);
+            bindings[i] = new BatchParameterBinding(attribute);
+        }
+
+        return bindings;
+    }
+    
+    @Override
+    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+
+        int len = bindings.length;
+
+        for (int i = 0, j = 1; i < len; i++) {
+
+            BatchParameterBinding b = bindings[i];
+
+            Object value = row.getValue(i);
+            DbAttribute attribute = b.getAttribute();
             int type = attribute.getType();
 
             // TODO: (Andrus) This works as long as there is no LOBs in
             // qualifier
             if (isUpdateableColumn(value, type)) {
-                bindings.add(new BatchParameterBinding(attribute, value));
+                b.include(j++, value);
+            } else {
+                b.exclude();
             }
         }
 

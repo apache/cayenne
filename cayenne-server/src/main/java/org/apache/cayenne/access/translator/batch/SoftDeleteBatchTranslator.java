@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
@@ -55,14 +53,42 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
     }
 
     @Override
-    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
+    protected BatchParameterBinding[] createBindings() {
 
-        List<BatchParameterBinding> bindings = super.createBindings(row);
+        BatchParameterBinding[] superBindings = super.createBindings();
+
+        int slen = superBindings.length;
+
+        BatchParameterBinding[] bindings = new BatchParameterBinding[slen + 1];
 
         DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
-        bindings.add(0, new BatchParameterBinding(deleteAttribute, true));
+        bindings[0] = new BatchParameterBinding(deleteAttribute);
+        bindings[0].include(1, true);
+        
+        System.arraycopy(superBindings, 0, bindings, 1, slen);
 
         return bindings;
     }
 
+    @Override
+    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+        int len = bindings.length;
+
+        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
+
+        // skip position 0... Otherwise follow super algorithm
+        for (int i = 1, j = 2; i < len; i++) {
+
+            BatchParameterBinding b = bindings[i];
+
+            // skip null attributes... they are translated as "IS NULL"
+            if (deleteBatch.isNull(b.getAttribute())) {
+                b.exclude();
+            } else {
+                b.include(j++, row.getValue(i - 1));
+            }
+        }
+
+        return bindings;
+    }
 }

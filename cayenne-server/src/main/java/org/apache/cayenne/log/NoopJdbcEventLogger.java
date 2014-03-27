@@ -76,7 +76,7 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
     }
     
     @Override
-    public void logQueryParameters(String label, List<BatchParameterBinding> bindings) {
+    public void logQueryParameters(String label, BatchParameterBinding[] bindings) {
     }
 
     public void logSelectCount(int count, long time) {

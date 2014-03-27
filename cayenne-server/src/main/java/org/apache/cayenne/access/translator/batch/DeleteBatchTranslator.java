@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -71,29 +70,39 @@ public class DeleteBatchTranslator extends DefaultBatchTranslator {
         }
     }
 
-    /**
-     * @since 3.2
-     */
     @Override
-    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
-
+    protected BatchParameterBinding[] createBindings() {
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
         List<DbAttribute> attributes = deleteBatch.getDbAttributes();
         int len = attributes.size();
 
-        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(len);
+        BatchParameterBinding[] bindings = new BatchParameterBinding[len];
 
         for (int i = 0; i < len; i++) {
-
             DbAttribute a = attributes.get(i);
+            bindings[i] = new BatchParameterBinding(a);
+        }
+
+        return bindings;
+    }
+
+    @Override
+    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+
+        int len = bindings.length;
+
+        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
+
+        for (int i = 0, j = 1; i < len; i++) {
+
+            BatchParameterBinding b = bindings[i];
 
             // skip null attributes... they are translated as "IS NULL"
-            if (deleteBatch.isNull(a)) {
-                continue;
+            if (deleteBatch.isNull(b.getAttribute())) {
+                b.exclude();
+            } else {
+                b.include(j++, row.getValue(i));
             }
-
-            Object value = row.getValue(i);
-            bindings.add(new BatchParameterBinding(a, value));
         }
 
         return bindings;

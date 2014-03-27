@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.ResultIterator;
@@ -54,13 +53,14 @@ public class BatchAction extends BaseSQLAction {
     protected BatchQuery query;
     protected RowDescriptor keyRowDescriptor;
 
-    private static void bind(DbAdapter adapter, PreparedStatement statement, List<BatchParameterBinding> bindings)
+    private static void bind(DbAdapter adapter, PreparedStatement statement, BatchParameterBinding[] bindings)
             throws SQLException, Exception {
-        int len = bindings.size();
-        for (int i = 0; i < len; i++) {
-            BatchParameterBinding b = bindings.get(i);
-            adapter.bindParameter(statement, b.getValue(), i + 1, b.getAttribute().getType(), b.getAttribute()
-                    .getScale());
+
+        for (BatchParameterBinding b : bindings) {
+            if (!b.isExcluded()) {
+                adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
+                        .getAttribute().getScale());
+            }
         }
     }
 
@@ -100,21 +100,21 @@ public class BatchAction extends BaseSQLAction {
     protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate)
             throws SQLException, Exception {
 
-        String queryStr = translator.getSql();
+        String sql = translator.getSql();
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
         boolean isLoggable = logger.isLoggable();
 
         // log batch SQL execution
-        logger.logQuery(queryStr, Collections.EMPTY_LIST);
+        logger.logQuery(sql, Collections.EMPTY_LIST);
 
         // run batch
 
         DbAdapter adapter = dataNode.getAdapter();
-        PreparedStatement statement = con.prepareStatement(queryStr);
+        PreparedStatement statement = con.prepareStatement(sql);
         try {
             for (BatchQueryRow row : query.getRows()) {
 
-                List<BatchParameterBinding> bindings = translator.createBindings(row);
+                BatchParameterBinding[] bindings = translator.updateBindings(row);
                 logger.logQueryParameters("batch bind", bindings);
                 bind(adapter, statement, bindings);
 
@@ -171,7 +171,7 @@ public class BatchAction extends BaseSQLAction {
         try {
             for (BatchQueryRow row : query.getRows()) {
 
-                List<BatchParameterBinding> bindings = translator.createBindings(row);
+                BatchParameterBinding[] bindings = translator.updateBindings(row);
                 logger.logQueryParameters("bind", bindings);
 
                 bind(adapter, statement, bindings);

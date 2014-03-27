@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -79,7 +78,32 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
     }
 
     @Override
-    public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
+    protected BatchParameterBinding[] createBindings() {
+        UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
+
+        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
+        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
+
+        int ul = updatedDbAttributes.size();
+        int ql = qualifierAttributes.size();
+
+        BatchParameterBinding[] bindings = new BatchParameterBinding[ul + ql];
+
+        for (int i = 0; i < ul; i++) {
+            DbAttribute a = updatedDbAttributes.get(i);
+            bindings[i] = new BatchParameterBinding(a);
+        }
+
+        for (int i = 0; i < ql; i++) {
+            DbAttribute a = qualifierAttributes.get(i);
+            bindings[ul + i] = new BatchParameterBinding(a);
+        }
+
+        return bindings;
+    }
+
+    @Override
+    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
 
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
@@ -89,13 +113,11 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
         int ul = updatedDbAttributes.size();
         int ql = qualifierAttributes.size();
 
-        List<BatchParameterBinding> bindings = new ArrayList<BatchParameterBinding>(ul + ql);
+        int j = 1;
 
         for (int i = 0; i < ul; i++) {
             Object value = row.getValue(i);
-
-            DbAttribute a = updatedDbAttributes.get(i);
-            bindings.add(new BatchParameterBinding(a, value));
+            bindings[i].include(j++, value);
         }
 
         for (int i = 0; i < ql; i++) {
@@ -108,7 +130,7 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
             }
 
             Object value = row.getValue(ul + i);
-            bindings.add(new BatchParameterBinding(a, value));
+            bindings[ul + i].include(j++, value);
         }
 
         return bindings;

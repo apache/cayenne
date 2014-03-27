@@ -19,7 +19,6 @@
 package org.apache.cayenne.access.translator.batch;
 
 import java.sql.Types;
-import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -40,6 +39,7 @@ public abstract class DefaultBatchTranslator implements BatchTranslator {
 
     protected boolean translated;
     protected String sql;
+    protected BatchParameterBinding[] bindings;
 
     public DefaultBatchTranslator(BatchQuery query, DbAdapter adapter, String trimFunction) {
         this.query = query;
@@ -50,11 +50,10 @@ public abstract class DefaultBatchTranslator implements BatchTranslator {
     protected void ensureTranslated() {
         if (!translated) {
             this.sql = createSql();
+            this.bindings = createBindings();
             translated = true;
         }
     }
-
-    protected abstract String createSql();
 
     /**
      * Translates BatchQuery into an SQL string formatted to use in a
@@ -66,11 +65,23 @@ public abstract class DefaultBatchTranslator implements BatchTranslator {
         return sql;
     }
 
-    /**
-     * Returns PreparedStatement bindings for a given row.
-     */
     @Override
-    public abstract List<BatchParameterBinding> createBindings(BatchQueryRow row);
+    public BatchParameterBinding[] getBindings() {
+        ensureTranslated();
+        return bindings;
+    }
+    
+    @Override
+    public BatchParameterBinding[] updateBindings(BatchQueryRow row) {
+        ensureTranslated();
+        return doUpdateBindings(row);
+    }
+
+    protected abstract String createSql();
+
+    protected abstract BatchParameterBinding[] createBindings();
+    
+    protected abstract BatchParameterBinding[] doUpdateBindings(BatchQueryRow row);
 
     /**
      * Appends the name of the column to the query buffer. Subclasses use this

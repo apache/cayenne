@@ -22,8 +22,6 @@ package org.apache.cayenne.access.translator.batch;
 import static org.mockito.Mockito.mock;
 
 import java.sql.Types;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -51,8 +49,13 @@ public class DefaultBatchTranslatorTest extends ServerCase {
             }
 
             @Override
-            public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
-                return Collections.emptyList();
+            protected BatchParameterBinding[] createBindings() {
+                return new BatchParameterBinding[0];
+            }
+
+            @Override
+            protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new BatchParameterBinding[0];
             }
         };
 
@@ -71,8 +74,13 @@ public class DefaultBatchTranslatorTest extends ServerCase {
             }
 
             @Override
-            public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
-                return Collections.emptyList();
+            protected BatchParameterBinding[] createBindings() {
+                return new BatchParameterBinding[0];
+            }
+
+            @Override
+            protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new BatchParameterBinding[0];
             }
         };
 
@@ -100,8 +108,13 @@ public class DefaultBatchTranslatorTest extends ServerCase {
             }
 
             @Override
-            public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
-                return Collections.emptyList();
+            protected BatchParameterBinding[] createBindings() {
+                return new BatchParameterBinding[0];
+            }
+
+            @Override
+            protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new BatchParameterBinding[0];
             }
         };
 

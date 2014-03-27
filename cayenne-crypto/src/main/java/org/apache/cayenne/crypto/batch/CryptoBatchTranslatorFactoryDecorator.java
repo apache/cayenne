@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.batch;
 
-import java.util.List;
-
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
@@ -57,10 +55,16 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
             public String getSql() {
                 return delegateTranslator.getSql();
             }
-
+            
             @Override
-            public List<BatchParameterBinding> createBindings(BatchQueryRow row) {
-                List<BatchParameterBinding> bindings = delegateTranslator.createBindings(row);
+            public BatchParameterBinding[] getBindings() {
+                return delegateTranslator.getBindings();
+            }
+            
+            @Override
+            public BatchParameterBinding[] updateBindings(BatchQueryRow row) {
+              
+                BatchParameterBinding[] bindings = delegateTranslator.updateBindings(row);
 
                 for (BatchParameterBinding b : bindings) {
                     if (columnMapper.isEncrypted(b.getAttribute())) {
