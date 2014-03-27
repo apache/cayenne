@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.batch;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -42,7 +41,7 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
     }
 
     @Override
-    public String createSqlString() throws IOException {
+    protected String createSql() {
 
         QuotingStrategy strategy = adapter.getQuotingStrategy();
 

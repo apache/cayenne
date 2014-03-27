@@ -63,7 +63,7 @@ public class InsertBatchTranslatorTest extends ServerCase {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
         InsertBatchTranslator builder = new InsertBatchTranslator(insertQuery, adapter);
-        String generatedSql = builder.createSqlString();
+        String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
         assertEquals("INSERT INTO " + entity.getName() + " (DESCRIPTION, LOCKING_TEST_ID, NAME) VALUES (?, ?, ?)",
                 generatedSql);
@@ -80,7 +80,7 @@ public class InsertBatchTranslatorTest extends ServerCase {
 
             InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
             InsertBatchTranslator builder = new InsertBatchTranslator(insertQuery, adapter);
-            String generatedSql = builder.createSqlString();
+            String generatedSql = builder.getSql();
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);

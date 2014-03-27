@@ -62,7 +62,7 @@ class Oracle8LOBUpdateBatchTranslator extends Oracle8LOBBatchTranslator {
     }
 
     @Override
-    public String createSqlString(BatchQueryRow row) {
+    public String createSql(BatchQueryRow row) {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
         List<DbAttribute> idDbAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();

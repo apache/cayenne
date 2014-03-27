@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.io.IOException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,10 +49,10 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
 
     abstract List<Object> getValuesForLOBUpdateParameters(BatchQueryRow row);
 
-    abstract String createSqlString(BatchQueryRow row);
+    abstract String createSql(BatchQueryRow row);
 
     @Override
-    public final String createSqlString() throws IOException {
+    protected String createSql() {
         throw new UnsupportedOperationException();
     }
 

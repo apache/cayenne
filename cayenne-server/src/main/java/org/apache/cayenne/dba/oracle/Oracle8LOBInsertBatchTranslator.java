@@ -53,7 +53,7 @@ class Oracle8LOBInsertBatchTranslator extends Oracle8LOBBatchTranslator {
     }
 
     @Override
-    public String createSqlString(BatchQueryRow row) {
+    public String createSql(BatchQueryRow row) {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
 
         QuotingStrategy strategy = adapter.getQuotingStrategy();

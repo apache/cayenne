@@ -73,7 +73,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
-        String generatedSql = builder.createSqlString();
+        String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
@@ -91,7 +91,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
-        String generatedSql = builder.createSqlString();
+        String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ? AND NAME IS NULL", generatedSql);
     }
@@ -107,7 +107,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
             DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
-            String generatedSql = builder.createSqlString();
+            String generatedSql = builder.getSql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
@@ -138,7 +138,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
             DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
-            String generatedSql = builder.createSqlString();
+            String generatedSql = builder.getSql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();

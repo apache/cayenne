@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.batch;
 
-import java.io.IOException;
 import java.sql.Types;
 import java.util.List;
 
@@ -39,18 +38,33 @@ public abstract class DefaultBatchTranslator implements BatchTranslator {
     protected DbAdapter adapter;
     protected String trimFunction;
 
+    protected boolean translated;
+    protected String sql;
+
     public DefaultBatchTranslator(BatchQuery query, DbAdapter adapter, String trimFunction) {
         this.query = query;
         this.adapter = adapter;
         this.trimFunction = trimFunction;
     }
 
+    protected void ensureTranslated() {
+        if (!translated) {
+            this.sql = createSql();
+            translated = true;
+        }
+    }
+
+    protected abstract String createSql();
+
     /**
      * Translates BatchQuery into an SQL string formatted to use in a
      * PreparedStatement.
      */
     @Override
-    public abstract String createSqlString() throws IOException;
+    public String getSql() {
+        ensureTranslated();
+        return sql;
+    }
 
     /**
      * Returns PreparedStatement bindings for a given row.

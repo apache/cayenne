@@ -46,7 +46,7 @@ public class DefaultBatchTranslatorTest extends ServerCase {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override
-            public String createSqlString() {
+            protected String createSql() {
                 return null;
             }
 
@@ -64,8 +64,9 @@ public class DefaultBatchTranslatorTest extends ServerCase {
         String trimFunction = "testTrim";
 
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, trimFunction) {
+
             @Override
-            public String createSqlString() {
+            protected String createSql() {
                 return null;
             }
 
@@ -94,7 +95,7 @@ public class DefaultBatchTranslatorTest extends ServerCase {
 
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
             @Override
-            public String createSqlString() {
+            protected String createSql() {
                 return null;
             }
 

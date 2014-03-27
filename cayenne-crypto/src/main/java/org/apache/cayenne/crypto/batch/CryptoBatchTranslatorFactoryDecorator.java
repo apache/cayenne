@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.batch;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
@@ -55,8 +54,8 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
         return new BatchTranslator() {
 
             @Override
-            public String createSqlString() throws IOException {
-                return delegateTranslator.createSqlString();
+            public String getSql() {
+                return delegateTranslator.getSql();
             }
 
             @Override

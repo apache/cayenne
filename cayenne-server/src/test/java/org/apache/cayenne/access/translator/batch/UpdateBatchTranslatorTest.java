@@ -72,7 +72,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter, null);
-        String generatedSql = builder.createSqlString();
+        String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
@@ -91,7 +91,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter, null);
-        String generatedSql = builder.createSqlString();
+        String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
 
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
@@ -112,7 +112,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
             UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter, null);
-            String generatedSql = builder.createSqlString();
+            String generatedSql = builder.getSql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
@@ -143,7 +143,7 @@ public class UpdateBatchTranslatorTest extends ServerCase {
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
             UpdateBatchTranslator builder = new UpdateBatchTranslator(updateQuery, adapter, null);
-            String generatedSql = builder.createSqlString();
+            String generatedSql = builder.getSql();
             assertNotNull(generatedSql);
 
             String charStart = unitAdapter.getIdentifiersStartQuote();

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +62,7 @@ public class InsertBatchTranslator extends DefaultBatchTranslator {
     }
 
     @Override
-    public String createSqlString() throws IOException {
+    protected String createSql() {
 
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         QuotingStrategy strategy = adapter.getQuotingStrategy();

@@ -98,7 +98,7 @@ class Oracle8LOBBatchAction implements SQLAction {
             selectQuery.indexLOBAttributes(row);
 
             int updated = 0;
-            String updateStr = translator.createSqlString(row);
+            String updateStr = translator.createSql(row);
 
             // 1. run row update
             logger.logQuery(updateStr, Collections.EMPTY_LIST);

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.cayenne.query.BatchQueryRow;
@@ -32,10 +31,9 @@ import org.apache.cayenne.query.BatchQueryRow;
 public interface BatchTranslator {
 
     /**
-     * Translates BatchQuery into an SQL string formatted to use in a
-     * PreparedStatement.
+     * Returns SQL String that can be used to init a PreparedStatement.
      */
-    String createSqlString() throws IOException;
+    String getSql();
 
     /**
      * Returns PreparedStatement bindings for a given row.

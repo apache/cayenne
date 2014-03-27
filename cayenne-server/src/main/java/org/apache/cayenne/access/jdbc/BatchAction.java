@@ -100,7 +100,7 @@ public class BatchAction extends BaseSQLAction {
     protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate)
             throws SQLException, Exception {
 
-        String queryStr = translator.createSqlString();
+        String queryStr = translator.getSql();
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
         boolean isLoggable = logger.isLoggable();
 
@@ -158,7 +158,7 @@ public class BatchAction extends BaseSQLAction {
         JdbcEventLogger logger = dataNode.getJdbcEventLogger();
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-        String queryStr = translator.createSqlString();
+        String queryStr = translator.getSql();
 
         // log batch SQL execution
         logger.logQuery(queryStr, Collections.EMPTY_LIST);

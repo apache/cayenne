@@ -79,7 +79,7 @@ public class SoftDeleteBatchTranslatorTest extends ServerCase {
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
         DeleteBatchTranslator builder = createTranslator(deleteQuery);
-        String generatedSql = builder.createSqlString();
+        String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE SOFT_TEST_ID = ?", generatedSql);
     }
@@ -94,7 +94,7 @@ public class SoftDeleteBatchTranslatorTest extends ServerCase {
 
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
         DeleteBatchTranslator builder = createTranslator(deleteQuery);
-        String generatedSql = builder.createSqlString();
+        String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE SOFT_TEST_ID = ? AND NAME IS NULL",
                 generatedSql);
@@ -111,7 +111,7 @@ public class SoftDeleteBatchTranslatorTest extends ServerCase {
             DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
             DeleteBatchTranslator builder = createTranslator(deleteQuery, adapter);
-            String generatedSql = builder.createSqlString();
+            String generatedSql = builder.getSql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
