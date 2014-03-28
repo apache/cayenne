@@ -21,8 +21,8 @@ package org.apache.cayenne.crypto.batch;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.crypto.cipher.CryptoHandler;
-import org.apache.cayenne.crypto.map.ColumnMapper;
+import org.apache.cayenne.crypto.cipher.Encryptor;
+import org.apache.cayenne.crypto.cipher.EncryptorFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.BatchQuery;
@@ -33,15 +33,13 @@ import org.apache.cayenne.query.BatchQueryRow;
  */
 public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFactory {
 
-    private CryptoHandler cryptoHandler;
-    private ColumnMapper columnMapper;
+    private EncryptorFactory encryptorFactory;
     private BatchTranslatorFactory delegate;
 
     public CryptoBatchTranslatorFactoryDecorator(@Inject BatchTranslatorFactory delegate,
-            @Inject CryptoHandler cryptoHandler, @Inject ColumnMapper columnMapper) {
+            @Inject EncryptorFactory encryptorFactory) {
 
-        this.columnMapper = columnMapper;
-        this.cryptoHandler = cryptoHandler;
+        this.encryptorFactory = encryptorFactory;
         this.delegate = delegate;
     }
 
@@ -51,26 +49,42 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
 
         return new BatchTranslator() {
 
+            private int len;
+            private Encryptor[] encryptors;
+
+            private void ensureEncryptorsCompiled() {
+                if (encryptors == null) {
+                    BatchParameterBinding[] bindings = getBindings();
+
+                    this.len = bindings.length;
+                    this.encryptors = new Encryptor[len];
+
+                    for (int i = 0; i < len; i++) {
+                        encryptors[i] = encryptorFactory.getEncryptor(bindings[i].getAttribute());
+                    }
+                }
+            }
+
             @Override
             public String getSql() {
                 return delegateTranslator.getSql();
             }
-            
+
             @Override
             public BatchParameterBinding[] getBindings() {
                 return delegateTranslator.getBindings();
             }
-            
+
             @Override
             public BatchParameterBinding[] updateBindings(BatchQueryRow row) {
-              
+
+                ensureEncryptorsCompiled();
+
                 BatchParameterBinding[] bindings = delegateTranslator.updateBindings(row);
 
-                for (BatchParameterBinding b : bindings) {
-                    if (columnMapper.isEncrypted(b.getAttribute())) {
-                        Object encrypted = cryptoHandler.encrypt(b.getValue(), b.getAttribute().getType());
-                        b.setValue(encrypted);
-                    }
+                for (int i = 0; i < len; i++) {
+                    Object encrypted = encryptors[i].encrypt(bindings[i].getValue());
+                    bindings[i].setValue(encrypted);
                 }
 
                 return bindings;
