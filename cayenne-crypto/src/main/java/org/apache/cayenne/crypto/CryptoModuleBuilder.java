@@ -21,10 +21,12 @@ package org.apache.cayenne.crypto;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
+import org.apache.cayenne.crypto.cipher.CipherFactory;
+import org.apache.cayenne.crypto.cipher.DefaultCipherFactory;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
-import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
+import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.crypto.transformer.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
@@ -39,13 +41,48 @@ import org.apache.cayenne.di.Module;
  */
 public class CryptoModuleBuilder {
 
+    private static final String DEFAULT_CIPHER_ALGORITHM = "AES";
+    private static final String DEFAULT_CIPHER_MODE = "CBC";
+    private static final String DEFAULT_CIPHER_PADDING = "PKCS5Padding";
+
     private Class<? extends ValueTransformerFactory> valueTransformerFactoryType;
 
     private ColumnMapper columnMapper;
     private Class<? extends ColumnMapper> columnMapperType;
 
-    public CryptoModuleBuilder valueTransformer(Class<? extends ValueTransformerFactory> valueTransformerFactoryType) {
-        this.valueTransformerFactoryType = valueTransformerFactoryType;
+    private String cipherAlgoritm;
+    private String cipherMode;
+    private String cipherPadding;
+    private Class<? extends CipherFactory> cipherFactoryType;
+
+    public CryptoModuleBuilder() {
+
+        // init some sensible defaults that work in JVM without extra
+        // packages...
+        this.cipherAlgoritm = DEFAULT_CIPHER_ALGORITHM;
+        this.cipherMode = DEFAULT_CIPHER_MODE;
+        this.cipherPadding = DEFAULT_CIPHER_PADDING;
+
+        this.cipherFactoryType = DefaultCipherFactory.class;
+    }
+
+    public CryptoModuleBuilder cipherAlgorithm(String algorithm) {
+        this.cipherAlgoritm = algorithm;
+        return this;
+    }
+
+    public CryptoModuleBuilder cipherMode(String mode) {
+        this.cipherMode = mode;
+        return this;
+    }
+
+    public CryptoModuleBuilder cipherFactory(Class<? extends CipherFactory> factoryType) {
+        this.cipherFactoryType = factoryType;
+        return this;
+    }
+
+    public CryptoModuleBuilder valueTransformer(Class<? extends ValueTransformerFactory> factoryType) {
+        this.valueTransformerFactoryType = factoryType;
         return this;
     }
 
@@ -74,11 +111,21 @@ public class CryptoModuleBuilder {
             throw new IllegalStateException("'ColumnMapper' is not initialized");
         }
 
+        if (cipherFactoryType == null) {
+            throw new IllegalStateException("'CipherFactory' is not initialized");
+        }
+
         return new Module() {
 
             @Override
             public void configure(Binder binder) {
 
+                // init default cipher settings
+                binder.bindMap(CryptoConstants.PROPERTIES_MAP).put(CryptoConstants.CIPHER_ALGORITHM, cipherAlgoritm)
+                        .put(CryptoConstants.CIPHER_MODE, cipherMode)
+                        .put(CryptoConstants.CIPHER_PADDING, cipherPadding);
+
+                binder.bind(CipherFactory.class).to(cipherFactoryType);
                 binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
                 binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
 
@@ -93,5 +140,4 @@ public class CryptoModuleBuilder {
             }
         };
     }
-
 }

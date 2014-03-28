@@ -24,18 +24,22 @@ import java.util.Map;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
 public class DefaultTransformerFactory implements TransformerFactory {
 
+    private CipherFactory cipherFactory;
     private ColumnMapper columnMapper;
     private ValueTransformerFactory transformerFactory;
 
-    public DefaultTransformerFactory(@Inject ColumnMapper columnMapper, @Inject ValueTransformerFactory transformerFactory) {
+    public DefaultTransformerFactory(@Inject ColumnMapper columnMapper,
+            @Inject ValueTransformerFactory transformerFactory, @Inject CipherFactory cipherFactory) {
         this.columnMapper = columnMapper;
         this.transformerFactory = transformerFactory;
+        this.cipherFactory = cipherFactory;
     }
 
     @Override
@@ -73,8 +77,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
                 transformers[i] = transformerFactory.decryptor(cd.getAttribute().getType());
             }
 
-            // TODO: use real cipher
-            return new DefaultMapTransformer(keys, transformers, null);
+            return new DefaultMapTransformer(keys, transformers, cipherFactory.cipher());
         }
 
         return null;
@@ -111,8 +114,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
                 transformers[i] = transformerFactory.encryptor(b.getAttribute().getType());
             }
 
-            // TODO: use real cipher
-            return new DefaultBindingsTransformer(positions, transformers, null);
+            return new DefaultBindingsTransformer(positions, transformers, cipherFactory.cipher());
         }
 
         return null;
