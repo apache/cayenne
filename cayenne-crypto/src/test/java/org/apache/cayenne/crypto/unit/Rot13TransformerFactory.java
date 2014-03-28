@@ -20,15 +20,14 @@ package org.apache.cayenne.crypto.unit;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.cayenne.crypto.cipher.CryptoFactory;
-import org.apache.cayenne.crypto.cipher.Decryptor;
-import org.apache.cayenne.crypto.cipher.Encryptor;
-import org.apache.cayenne.map.DbAttribute;
+import javax.crypto.Cipher;
 
-public class Rot13CryptoFactory implements CryptoFactory {
+import org.apache.cayenne.crypto.cipher.ValueTransformer;
+import org.apache.cayenne.crypto.cipher.ValueTransformerFactory;
 
-    private Encryptor stringEncryptor;
-    private Decryptor stringDecryptor;
+public class Rot13TransformerFactory implements ValueTransformerFactory {
+
+    private ValueTransformer stringTransformer;
 
     public static String rotate(String value) {
         if (value == null) {
@@ -64,31 +63,24 @@ public class Rot13CryptoFactory implements CryptoFactory {
         }
     }
 
-    public Rot13CryptoFactory() {
-        this.stringEncryptor = new Encryptor() {
+    public Rot13TransformerFactory() {
+        this.stringTransformer = new ValueTransformer() {
 
             @Override
-            public Object encrypt(Object plaintext) {
-                return plaintext != null ? rotate(plaintext.toString()) : null;
+            public Object transform(Cipher cipher, Object value) {
+                return value != null ? rotate(value.toString()) : null;
             }
         };
 
-        this.stringDecryptor = new Decryptor() {
-
-            @Override
-            public Object decrypt(Object ciphertext) {
-                return ciphertext != null ? rotate(ciphertext.toString()) : null;
-            }
-        };
     }
 
     @Override
-    public Encryptor getEncryptor(DbAttribute column) {
-        return stringEncryptor;
+    public ValueTransformer getDecryptor(int jdbcType) {
+        return stringTransformer;
     }
 
     @Override
-    public Decryptor getDecryptor(DbAttribute column) {
-        return stringDecryptor;
+    public ValueTransformer getEncryptor(int jdbcType) {
+        return stringTransformer;
     }
 }

@@ -18,12 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.cipher;
 
+import javax.crypto.Cipher;
+
 /**
- * An decryptor object configured to decrypt a value of a certain type.
+ * An encryptor or decryptor of a single value.
  * 
  * @since 3.2
  */
-public interface Decryptor {
+public interface ValueTransformer {
 
-    Object decrypt(Object ciphertext);
+    Object transform(Cipher cipher, Object value);
 }

@@ -16,20 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.unit;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import java.sql.Types;
 
-/**
- * A factory that creates encryption/decryption handlers that can be used to
- * process data.
- * 
- * @since 3.2
- */
-public interface CryptoFactory {
+import junit.framework.TestCase;
 
-    BindingsTransformer createEncryptor(BatchParameterBinding[] bindings);
+public class Rot13TransformerFactoryTest extends TestCase {
 
-    MapTransformer createDecryptor(ColumnDescriptor[] columns, Object sampleRow);
+    public void testEncrypt() {
+
+        Rot13TransformerFactory factory = new Rot13TransformerFactory();
+        assertEquals("nop", factory.getEncryptor(Types.BINARY).transform(null, "abc"));
+    }
+
+    public void testDecrypt() {
+
+        Rot13TransformerFactory factory = new Rot13TransformerFactory();
+        assertEquals("nop", factory.getDecryptor(Types.BINARY).transform(null, "abc"));
+    }
+
 }

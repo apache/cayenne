@@ -18,18 +18,34 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.cipher;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import java.util.Map;
 
-/**
- * A factory that creates encryption/decryption handlers that can be used to
- * process data.
- * 
- * @since 3.2
- */
-public interface CryptoFactory {
+import javax.crypto.Cipher;
 
-    BindingsTransformer createEncryptor(BatchParameterBinding[] bindings);
+public class DefaultMapTransformer implements MapTransformer {
 
-    MapTransformer createDecryptor(ColumnDescriptor[] columns, Object sampleRow);
+    private String[] keys;
+    private ValueTransformer[] transformers;
+    private Cipher cipher;
+
+    public DefaultMapTransformer(String[] keys, ValueTransformer[] transformers, Cipher cipher) {
+        this.keys = keys;
+        this.transformers = transformers;
+        this.cipher = cipher;
+    }
+
+    @Override
+    public void transform(Map<String, Object> map) {
+
+        int len = keys.length;
+
+        for (int i = 0; i < len; i++) {
+            Object value = map.get(keys[i]);
+
+            if (value != null) {
+                Object transformed = transformers[i].transform(cipher, value);
+                map.put(keys[i], transformed);
+            }
+        }
+    }
 }

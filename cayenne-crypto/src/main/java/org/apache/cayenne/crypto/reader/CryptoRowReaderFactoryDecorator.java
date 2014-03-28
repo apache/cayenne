@@ -19,8 +19,6 @@
 package org.apache.cayenne.crypto.reader;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
@@ -28,27 +26,20 @@ import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.crypto.cipher.CryptoFactory;
-import org.apache.cayenne.crypto.cipher.Decryptor;
-import org.apache.cayenne.crypto.map.ColumnMapper;
+import org.apache.cayenne.crypto.cipher.MapTransformer;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.QueryMetadata;
 
 public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
 
-    private static final MapEntryDecryptor[] EMPTY_DECRYPTORS = new MapEntryDecryptor[0];
-
     private RowReaderFactory delegate;
     private CryptoFactory cryptoFactory;
-    private ColumnMapper columnMapper;
 
-    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate, @Inject CryptoFactory cryptoFactory,
-            @Inject ColumnMapper columnMapper) {
+    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate, @Inject CryptoFactory cryptoFactory) {
         this.delegate = delegate;
         this.cryptoFactory = cryptoFactory;
-        this.columnMapper = columnMapper;
     }
 
     @Override
@@ -59,37 +50,13 @@ public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
 
         return new RowReader<Object>() {
 
-            private int len;
-            private MapEntryDecryptor[] decryptors;
+            private boolean decryptorCompiled;
+            private MapTransformer decryptor;
 
             private void ensureDecryptorCompiled(Object row) {
-                if (decryptors == null) {
-
-                    List<MapEntryDecryptor> decList = null;
-
-                    if (row instanceof Map) {
-
-                        ColumnDescriptor[] columns = descriptor.getColumns();
-                        int len = columns.length;
-
-                        for (int i = 0; i < len; i++) {
-
-                            DbAttribute a = columns[i].getAttribute();
-                            if (a != null && columnMapper.isEncrypted(a)) {
-                                if (decList == null) {
-                                    decList = new ArrayList<MapEntryDecryptor>(len - i);
-                                }
-
-                                decList.add(new MapEntryDecryptor(columns[i].getDataRowKey(), cryptoFactory
-                                        .getDecryptor(a)));
-                            }
-                        }
-
-                    }
-
-                    this.decryptors = decList == null ? EMPTY_DECRYPTORS : decList
-                            .toArray(new MapEntryDecryptor[decList.size()]);
-                    this.len = decryptors.length;
+                if (!decryptorCompiled) {
+                    decryptor = cryptoFactory.createDecryptor(descriptor.getColumns(), row);
+                    decryptorCompiled = true;
                 }
             }
 
@@ -99,33 +66,16 @@ public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
 
                 ensureDecryptorCompiled(row);
 
-                if (len > 0) {
+                if (decryptor != null) {
+
                     @SuppressWarnings({ "unchecked", "rawtypes" })
                     Map<String, Object> map = (Map) row;
 
-                    for (int i = 0; i < len; i++) {
-
-                        MapEntryDecryptor decryptor = decryptors[i];
-                        Object encrypted = map.get(decryptor.key);
-
-                        if (encrypted != null) {
-                            map.put(decryptor.key, decryptor.decryptor.decrypt(encrypted));
-                        }
-                    }
+                    decryptor.transform(map);
                 }
 
                 return row;
             }
         };
-    }
-
-    class MapEntryDecryptor {
-        final String key;
-        final Decryptor decryptor;
-
-        MapEntryDecryptor(String key, Decryptor decryptor) {
-            this.key = key;
-            this.decryptor = decryptor;
-        }
     }
 }

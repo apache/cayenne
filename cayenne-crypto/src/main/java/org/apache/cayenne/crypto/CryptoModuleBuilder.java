@@ -22,6 +22,8 @@ import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
 import org.apache.cayenne.crypto.cipher.CryptoFactory;
+import org.apache.cayenne.crypto.cipher.DefaultCryptoFactory;
+import org.apache.cayenne.crypto.cipher.ValueTransformerFactory;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.di.Binder;
@@ -37,13 +39,13 @@ import org.apache.cayenne.di.Module;
  */
 public class CryptoModuleBuilder {
 
-    private Class<? extends CryptoFactory> cryptoFactoryType;
+    private Class<? extends ValueTransformerFactory> valueTransformerFactoryType;
 
     private ColumnMapper columnMapper;
     private Class<? extends ColumnMapper> columnMapperType;
 
-    public CryptoModuleBuilder cryptoFactory(Class<? extends CryptoFactory> cryptoFactoryType) {
-        this.cryptoFactoryType = cryptoFactoryType;
+    public CryptoModuleBuilder valueTransformer(Class<? extends ValueTransformerFactory> valueTransformerFactoryType) {
+        this.valueTransformerFactoryType = valueTransformerFactoryType;
         return this;
     }
 
@@ -64,8 +66,8 @@ public class CryptoModuleBuilder {
      */
     public Module build() {
 
-        if (cryptoFactoryType == null) {
-            throw new IllegalStateException("'CryptoHandler' is not initialized");
+        if (valueTransformerFactoryType == null) {
+            throw new IllegalStateException("'ValueTransformerFactory' is not initialized");
         }
 
         if (columnMapperType == null && columnMapper == null) {
@@ -76,7 +78,9 @@ public class CryptoModuleBuilder {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(CryptoFactory.class).to(cryptoFactoryType);
+
+                binder.bind(CryptoFactory.class).to(DefaultCryptoFactory.class);
+                binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
 
                 if (columnMapperType != null) {
                     binder.bind(ColumnMapper.class).to(columnMapperType);

@@ -18,18 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.cipher;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
-
 /**
- * A factory that creates encryption/decryption handlers that can be used to
- * process data.
- * 
  * @since 3.2
  */
-public interface CryptoFactory {
+public interface ValueTransformerFactory {
 
-    BindingsTransformer createEncryptor(BatchParameterBinding[] bindings);
+    ValueTransformer getEncryptor(int jdbcType);
 
-    MapTransformer createDecryptor(ColumnDescriptor[] columns, Object sampleRow);
+    ValueTransformer getDecryptor(int jdbcType);
 }

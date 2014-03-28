@@ -16,24 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.unit;
+package org.apache.cayenne.crypto.cipher;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 
-import org.apache.cayenne.map.DbAttribute;
+/**
+ * @since 3.2
+ */
+public interface BindingsTransformer {
 
-public class Rot13CryptoFactoryTest extends TestCase {
-
-    public void testEncrypt() {
-
-        Rot13CryptoFactory factory = new Rot13CryptoFactory();
-        assertEquals("nop", factory.getEncryptor(new DbAttribute()).encrypt("abc"));
-    }
-
-    public void testDecrypt() {
-
-        Rot13CryptoFactory factory = new Rot13CryptoFactory();
-        assertEquals("nop", factory.getDecryptor(new DbAttribute()).decrypt("abc"));
-    }
-
+    void transform(BatchParameterBinding[] bindings);
 }
