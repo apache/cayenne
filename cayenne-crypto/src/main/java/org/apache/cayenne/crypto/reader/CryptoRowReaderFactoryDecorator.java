@@ -27,7 +27,8 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.crypto.cipher.CryptoHandler;
+import org.apache.cayenne.crypto.cipher.CryptoFactory;
+import org.apache.cayenne.crypto.cipher.Decryptor;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -37,70 +38,78 @@ import org.apache.cayenne.query.QueryMetadata;
 
 public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
 
-    private RowReaderFactory delegate;
-    private ColumnMapper columnMapper;
-    private CryptoHandler cryptoHandler;
+    private static final MapEntryDecryptor[] EMPTY_DECRYPTORS = new MapEntryDecryptor[0];
 
-    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate, @Inject CryptoHandler cryptoHandler,
+    private RowReaderFactory delegate;
+    private CryptoFactory cryptoFactory;
+    private ColumnMapper columnMapper;
+
+    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate, @Inject CryptoFactory cryptoFactory,
             @Inject ColumnMapper columnMapper) {
         this.delegate = delegate;
+        this.cryptoFactory = cryptoFactory;
         this.columnMapper = columnMapper;
-        this.cryptoHandler = cryptoHandler;
     }
 
     @Override
-    public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
+    public RowReader<?> rowReader(final RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
             Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
-
-        List<ColumnDescriptor> encryptedColumns = null;
-
-        for (ColumnDescriptor cd : descriptor.getColumns()) {
-
-            DbAttribute attribute = cd.getAttribute();
-            if (attribute != null && columnMapper.isEncrypted(attribute)) {
-                if (encryptedColumns == null) {
-                    encryptedColumns = new ArrayList<ColumnDescriptor>();
-                }
-
-                encryptedColumns.add(cd);
-            }
-        }
 
         final RowReader<?> delegateReader = delegate.rowReader(descriptor, queryMetadata, adapter, attributeOverrides);
 
-        if (encryptedColumns == null) {
-            return delegateReader;
-        }
-
-        final int len = encryptedColumns.size();
-        final String[] labels = new String[len];
-        final int[] types = new int[len];
-
-        for (int i = 0; i < len; i++) {
-            labels[i] = encryptedColumns.get(i).getDataRowKey();
-            types[i] = encryptedColumns.get(i).getJdbcType();
-        }
-
         return new RowReader<Object>() {
-            private Boolean canDecrypt;
+
+            private int len;
+            private MapEntryDecryptor[] decryptors;
+
+            private void ensureDecryptorCompiled(Object row) {
+                if (decryptors == null) {
+
+                    List<MapEntryDecryptor> decList = null;
+
+                    if (row instanceof Map) {
+
+                        ColumnDescriptor[] columns = descriptor.getColumns();
+                        int len = columns.length;
+
+                        for (int i = 0; i < len; i++) {
+
+                            DbAttribute a = columns[i].getAttribute();
+                            if (a != null && columnMapper.isEncrypted(a)) {
+                                if (decList == null) {
+                                    decList = new ArrayList<MapEntryDecryptor>(len - i);
+                                }
+
+                                decList.add(new MapEntryDecryptor(columns[i].getDataRowKey(), cryptoFactory
+                                        .getDecryptor(a)));
+                            }
+                        }
+
+                    }
+
+                    this.decryptors = decList == null ? EMPTY_DECRYPTORS : decList
+                            .toArray(new MapEntryDecryptor[decList.size()]);
+                    this.len = decryptors.length;
+                }
+            }
 
             @Override
             public Object readRow(ResultSet resultSet) {
                 Object row = delegateReader.readRow(resultSet);
 
-                if (canDecrypt == null) {
-                    canDecrypt = row instanceof Map;
-                }
+                ensureDecryptorCompiled(row);
 
-                if (canDecrypt) {
+                if (len > 0) {
                     @SuppressWarnings({ "unchecked", "rawtypes" })
                     Map<String, Object> map = (Map) row;
 
                     for (int i = 0; i < len; i++) {
-                        Object encrypted = map.get(labels[i]);
+
+                        MapEntryDecryptor decryptor = decryptors[i];
+                        Object encrypted = map.get(decryptor.key);
 
                         if (encrypted != null) {
-                            map.put(labels[i], cryptoHandler.decrypt(encrypted, types[i]));
+                            map.put(decryptor.key, decryptor.decryptor.decrypt(encrypted));
                         }
                     }
                 }
@@ -110,4 +119,13 @@ public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
         };
     }
 
+    class MapEntryDecryptor {
+        final String key;
+        final Decryptor decryptor;
+
+        MapEntryDecryptor(String key, Decryptor decryptor) {
+            this.key = key;
+            this.decryptor = decryptor;
+        }
+    }
 }

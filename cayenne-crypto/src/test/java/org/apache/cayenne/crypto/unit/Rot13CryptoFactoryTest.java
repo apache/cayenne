@@ -18,20 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.unit;
 
-import java.sql.Types;
-
 import junit.framework.TestCase;
 
-public class Rot13CryptoHandlerTest extends TestCase {
+import org.apache.cayenne.map.DbAttribute;
+
+public class Rot13CryptoFactoryTest extends TestCase {
 
     public void testEncrypt() {
-        Rot13CryptoHandler handler = new Rot13CryptoHandler();
-        assertEquals("nop", handler.encrypt("abc", Types.VARCHAR));
+
+        Rot13CryptoFactory factory = new Rot13CryptoFactory();
+        assertEquals("nop", factory.getEncryptor(new DbAttribute()).encrypt("abc"));
     }
-    
+
     public void testDecrypt() {
-        Rot13CryptoHandler handler = new Rot13CryptoHandler();
-        assertEquals("nop", handler.decrypt("abc", Types.VARCHAR));
+
+        Rot13CryptoFactory factory = new Rot13CryptoFactory();
+        assertEquals("nop", factory.getDecryptor(new DbAttribute()).decrypt("abc"));
     }
 
 }

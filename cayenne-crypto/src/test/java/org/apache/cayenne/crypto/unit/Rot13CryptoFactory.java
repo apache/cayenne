@@ -20,9 +20,15 @@ package org.apache.cayenne.crypto.unit;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.cayenne.crypto.cipher.CryptoHandler;
+import org.apache.cayenne.crypto.cipher.CryptoFactory;
+import org.apache.cayenne.crypto.cipher.Decryptor;
+import org.apache.cayenne.crypto.cipher.Encryptor;
+import org.apache.cayenne.map.DbAttribute;
 
-public class Rot13CryptoHandler implements CryptoHandler {
+public class Rot13CryptoFactory implements CryptoFactory {
+
+    private Encryptor stringEncryptor;
+    private Decryptor stringDecryptor;
 
     public static String rotate(String value) {
         if (value == null) {
@@ -58,14 +64,31 @@ public class Rot13CryptoHandler implements CryptoHandler {
         }
     }
 
-    @Override
-    public Object decrypt(Object ciphertext, int jdbcType) {
-        return rotate(ciphertext.toString());
+    public Rot13CryptoFactory() {
+        this.stringEncryptor = new Encryptor() {
+
+            @Override
+            public Object encrypt(Object plaintext) {
+                return plaintext != null ? rotate(plaintext.toString()) : null;
+            }
+        };
+
+        this.stringDecryptor = new Decryptor() {
+
+            @Override
+            public Object decrypt(Object ciphertext) {
+                return ciphertext != null ? rotate(ciphertext.toString()) : null;
+            }
+        };
     }
 
     @Override
-    public Object encrypt(Object plaintext, int jdbcType) {
-        return rotate(plaintext.toString());
+    public Encryptor getEncryptor(DbAttribute column) {
+        return stringEncryptor;
     }
 
+    @Override
+    public Decryptor getDecryptor(DbAttribute column) {
+        return stringDecryptor;
+    }
 }

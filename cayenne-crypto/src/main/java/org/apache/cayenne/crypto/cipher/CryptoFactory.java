@@ -21,9 +21,14 @@ package org.apache.cayenne.crypto.cipher;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
+ * A factory that creates encryption/decryption handlers that can be used to
+ * process data.
+ * 
  * @since 3.2
  */
-public interface EncryptorFactory {
+public interface CryptoFactory {
 
     Encryptor getEncryptor(DbAttribute column);
+
+    Decryptor getDecryptor(DbAttribute column);
 }

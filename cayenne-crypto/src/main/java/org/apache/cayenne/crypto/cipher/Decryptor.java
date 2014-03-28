@@ -19,11 +19,11 @@
 package org.apache.cayenne.crypto.cipher;
 
 /**
+ * An decryptor object configured to decrypt a value of a certain type.
+ * 
  * @since 3.2
  */
-public interface CryptoHandler {
+public interface Decryptor {
 
-    Object encrypt(Object plaintext, int jdbcType);
-
-    Object decrypt(Object ciphertext, int jdbcType);
+    Object decrypt(Object ciphertext);
 }

@@ -25,5 +25,5 @@ package org.apache.cayenne.crypto.cipher;
  */
 public interface Encryptor {
 
-    Object encrypt(Object value);
+    Object encrypt(Object plaintext);
 }

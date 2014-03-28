@@ -29,7 +29,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.db.Table1;
 import org.apache.cayenne.crypto.map.PatternColumnMapper;
-import org.apache.cayenne.crypto.unit.Rot13CryptoHandler;
+import org.apache.cayenne.crypto.unit.Rot13CryptoFactory;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -44,7 +44,7 @@ public class Crypto_InRuntime_Test extends TestCase {
     @Override
     protected void setUp() throws Exception {
 
-        Module crypto = new CryptoModuleBuilder().cryptoHandler(Rot13CryptoHandler.class)
+        Module crypto = new CryptoModuleBuilder().cryptoFactory(Rot13CryptoFactory.class)
                 .columnMapper(new PatternColumnMapper("^CRYPTO_")).build();
 
         this.runtime = new ServerRuntime("cayenne-crypto.xml", crypto);
@@ -67,7 +67,7 @@ public class Crypto_InRuntime_Test extends TestCase {
 
         Object[] data = table1.select();
         assertEquals("plain_1", data[1]);
-        assertEquals(Rot13CryptoHandler.rotate("crypto_1"), data[2]);
+        assertEquals(Rot13CryptoFactory.rotate("crypto_1"), data[2]);
     }
 
     public void testInsert_MultipleObjects() throws SQLException {
@@ -92,15 +92,15 @@ public class Crypto_InRuntime_Test extends TestCase {
             cipherByPlain.put(r[1], r[2]);
         }
 
-        assertEquals(Rot13CryptoHandler.rotate("crypto_1"), cipherByPlain.get("a"));
-        assertEquals(Rot13CryptoHandler.rotate("crypto_2"), cipherByPlain.get("b"));
+        assertEquals(Rot13CryptoFactory.rotate("crypto_1"), cipherByPlain.get("a"));
+        assertEquals(Rot13CryptoFactory.rotate("crypto_2"), cipherByPlain.get("b"));
     }
 
     public void test_SelectQuery() throws SQLException {
 
-        table1.insert(1, "plain_1", Rot13CryptoHandler.rotate("crypto_1"));
-        table1.insert(2, "plain_2", Rot13CryptoHandler.rotate("crypto_2"));
-        table1.insert(3, "plain_3", Rot13CryptoHandler.rotate("crypto_3"));
+        table1.insert(1, "plain_1", Rot13CryptoFactory.rotate("crypto_1"));
+        table1.insert(2, "plain_2", Rot13CryptoFactory.rotate("crypto_2"));
+        table1.insert(3, "plain_3", Rot13CryptoFactory.rotate("crypto_3"));
 
         SelectQuery<Table1> select = SelectQuery.query(Table1.class);
         select.addOrdering(Table1.PLAIN_STRING.asc());

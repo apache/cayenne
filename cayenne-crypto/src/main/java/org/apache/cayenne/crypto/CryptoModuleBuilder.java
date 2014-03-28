@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
-import org.apache.cayenne.crypto.cipher.CryptoHandler;
+import org.apache.cayenne.crypto.cipher.CryptoFactory;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.di.Binder;
@@ -37,13 +37,13 @@ import org.apache.cayenne.di.Module;
  */
 public class CryptoModuleBuilder {
 
-    private Class<? extends CryptoHandler> cryptoHandlerType;
+    private Class<? extends CryptoFactory> cryptoFactoryType;
 
     private ColumnMapper columnMapper;
     private Class<? extends ColumnMapper> columnMapperType;
 
-    public CryptoModuleBuilder cryptoHandler(Class<? extends CryptoHandler> cryptoHandlerType) {
-        this.cryptoHandlerType = cryptoHandlerType;
+    public CryptoModuleBuilder cryptoFactory(Class<? extends CryptoFactory> cryptoFactoryType) {
+        this.cryptoFactoryType = cryptoFactoryType;
         return this;
     }
 
@@ -64,7 +64,7 @@ public class CryptoModuleBuilder {
      */
     public Module build() {
 
-        if (cryptoHandlerType == null) {
+        if (cryptoFactoryType == null) {
             throw new IllegalStateException("'CryptoHandler' is not initialized");
         }
 
@@ -76,7 +76,7 @@ public class CryptoModuleBuilder {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(CryptoHandler.class).to(cryptoHandlerType);
+                binder.bind(CryptoFactory.class).to(cryptoFactoryType);
 
                 if (columnMapperType != null) {
                     binder.bind(ColumnMapper.class).to(columnMapperType);
