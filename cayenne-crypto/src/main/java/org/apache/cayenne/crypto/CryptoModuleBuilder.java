@@ -21,11 +21,11 @@ package org.apache.cayenne.crypto;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
-import org.apache.cayenne.crypto.cipher.CryptoFactory;
-import org.apache.cayenne.crypto.cipher.DefaultCryptoFactory;
-import org.apache.cayenne.crypto.cipher.ValueTransformerFactory;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
+import org.apache.cayenne.crypto.transformer.TransformerFactory;
+import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
+import org.apache.cayenne.crypto.transformer.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 
@@ -79,7 +79,7 @@ public class CryptoModuleBuilder {
             @Override
             public void configure(Binder binder) {
 
-                binder.bind(CryptoFactory.class).to(DefaultCryptoFactory.class);
+                binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
                 binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
 
                 if (columnMapperType != null) {

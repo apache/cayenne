@@ -25,8 +25,8 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.crypto.cipher.CryptoFactory;
-import org.apache.cayenne.crypto.cipher.MapTransformer;
+import org.apache.cayenne.crypto.transformer.TransformerFactory;
+import org.apache.cayenne.crypto.transformer.MapTransformer;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjAttribute;
@@ -35,9 +35,9 @@ import org.apache.cayenne.query.QueryMetadata;
 public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
 
     private RowReaderFactory delegate;
-    private CryptoFactory cryptoFactory;
+    private TransformerFactory cryptoFactory;
 
-    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate, @Inject CryptoFactory cryptoFactory) {
+    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate, @Inject TransformerFactory cryptoFactory) {
         this.delegate = delegate;
         this.cryptoFactory = cryptoFactory;
     }
@@ -55,7 +55,7 @@ public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
 
             private void ensureDecryptorCompiled(Object row) {
                 if (!decryptorCompiled) {
-                    decryptor = cryptoFactory.createDecryptor(descriptor.getColumns(), row);
+                    decryptor = cryptoFactory.decryptor(descriptor.getColumns(), row);
                     decryptorCompiled = true;
                 }
             }

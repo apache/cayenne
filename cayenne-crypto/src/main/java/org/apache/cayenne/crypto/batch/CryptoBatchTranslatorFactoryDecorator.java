@@ -21,8 +21,8 @@ package org.apache.cayenne.crypto.batch;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.crypto.cipher.BindingsTransformer;
-import org.apache.cayenne.crypto.cipher.CryptoFactory;
+import org.apache.cayenne.crypto.transformer.BindingsTransformer;
+import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.BatchQuery;
@@ -33,11 +33,11 @@ import org.apache.cayenne.query.BatchQueryRow;
  */
 public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFactory {
 
-    private CryptoFactory cryptoFactory;
+    private TransformerFactory cryptoFactory;
     private BatchTranslatorFactory delegate;
 
     public CryptoBatchTranslatorFactoryDecorator(@Inject BatchTranslatorFactory delegate,
-            @Inject CryptoFactory cryptoFactory) {
+            @Inject TransformerFactory cryptoFactory) {
 
         this.cryptoFactory = cryptoFactory;
         this.delegate = delegate;
@@ -54,7 +54,7 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
 
             private void ensureEncryptorCompiled() {
                 if (!encryptorCompiled) {
-                    encryptor = cryptoFactory.createEncryptor(getBindings());
+                    encryptor = cryptoFactory.encryptor(getBindings());
                     encryptorCompiled = true;
                 }
 

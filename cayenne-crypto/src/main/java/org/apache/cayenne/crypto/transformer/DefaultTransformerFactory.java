@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.transformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +28,18 @@ import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
-public class DefaultCryptoFactory implements CryptoFactory {
+public class DefaultTransformerFactory implements TransformerFactory {
 
     private ColumnMapper columnMapper;
     private ValueTransformerFactory transformerFactory;
 
-    public DefaultCryptoFactory(@Inject ColumnMapper columnMapper, @Inject ValueTransformerFactory transformerFactory) {
+    public DefaultTransformerFactory(@Inject ColumnMapper columnMapper, @Inject ValueTransformerFactory transformerFactory) {
         this.columnMapper = columnMapper;
         this.transformerFactory = transformerFactory;
     }
 
     @Override
-    public MapTransformer createDecryptor(ColumnDescriptor[] columns, Object sampleRow) {
+    public MapTransformer decryptor(ColumnDescriptor[] columns, Object sampleRow) {
 
         if (!(sampleRow instanceof Map)) {
             return null;
@@ -70,7 +70,7 @@ public class DefaultCryptoFactory implements CryptoFactory {
 
                 ColumnDescriptor cd = columns[cryptoColumns.get(i)];
                 keys[i] = cd.getDataRowKey();
-                transformers[i] = transformerFactory.getDecryptor(cd.getAttribute().getType());
+                transformers[i] = transformerFactory.decryptor(cd.getAttribute().getType());
             }
 
             // TODO: use real cipher
@@ -81,7 +81,7 @@ public class DefaultCryptoFactory implements CryptoFactory {
     }
 
     @Override
-    public BindingsTransformer createEncryptor(BatchParameterBinding[] bindings) {
+    public BindingsTransformer encryptor(BatchParameterBinding[] bindings) {
         int len = bindings.length;
         List<Integer> cryptoColumns = null;
 
@@ -108,7 +108,7 @@ public class DefaultCryptoFactory implements CryptoFactory {
                 int pos = cryptoColumns.get(i);
                 BatchParameterBinding b = bindings[pos];
                 positions[i] = pos;
-                transformers[i] = transformerFactory.getEncryptor(b.getAttribute().getType());
+                transformers[i] = transformerFactory.encryptor(b.getAttribute().getType());
             }
 
             // TODO: use real cipher

@@ -16,14 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.transformer;
 
-import java.util.Map;
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 
 /**
+ * A factory that creates encryption transformers used for processing batch
+ * bindings and decryption transformers - for result rows.
+ * 
  * @since 3.2
  */
-public interface MapTransformer {
+public interface TransformerFactory {
 
-    void transform(Map<String, Object> map);
+    BindingsTransformer encryptor(BatchParameterBinding[] bindings);
+
+    MapTransformer decryptor(ColumnDescriptor[] columns, Object sampleRow);
 }

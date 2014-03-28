@@ -16,16 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.transformer;
 
-import javax.crypto.Cipher;
+import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 
 /**
- * An encryptor or decryptor of a single value.
- * 
  * @since 3.2
  */
-public interface ValueTransformer {
+public interface BindingsTransformer {
 
-    Object transform(Cipher cipher, Object value);
+    void transform(BatchParameterBinding[] bindings);
 }

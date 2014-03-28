@@ -22,8 +22,8 @@ import java.io.UnsupportedEncodingException;
 
 import javax.crypto.Cipher;
 
-import org.apache.cayenne.crypto.cipher.ValueTransformer;
-import org.apache.cayenne.crypto.cipher.ValueTransformerFactory;
+import org.apache.cayenne.crypto.transformer.ValueTransformer;
+import org.apache.cayenne.crypto.transformer.ValueTransformerFactory;
 
 public class Rot13TransformerFactory implements ValueTransformerFactory {
 
@@ -75,12 +75,12 @@ public class Rot13TransformerFactory implements ValueTransformerFactory {
     }
 
     @Override
-    public ValueTransformer getDecryptor(int jdbcType) {
+    public ValueTransformer decryptor(int jdbcType) {
         return stringTransformer;
     }
 
     @Override
-    public ValueTransformer getEncryptor(int jdbcType) {
+    public ValueTransformer encryptor(int jdbcType) {
         return stringTransformer;
     }
 }

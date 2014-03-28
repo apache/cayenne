@@ -27,13 +27,13 @@ public class Rot13TransformerFactoryTest extends TestCase {
     public void testEncrypt() {
 
         Rot13TransformerFactory factory = new Rot13TransformerFactory();
-        assertEquals("nop", factory.getEncryptor(Types.BINARY).transform(null, "abc"));
+        assertEquals("nop", factory.encryptor(Types.BINARY).transform(null, "abc"));
     }
 
     public void testDecrypt() {
 
         Rot13TransformerFactory factory = new Rot13TransformerFactory();
-        assertEquals("nop", factory.getDecryptor(Types.BINARY).transform(null, "abc"));
+        assertEquals("nop", factory.decryptor(Types.BINARY).transform(null, "abc"));
     }
 
 }

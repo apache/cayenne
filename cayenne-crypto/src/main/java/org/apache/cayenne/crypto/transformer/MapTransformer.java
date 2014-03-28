@@ -16,37 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.transformer;
 
-import javax.crypto.Cipher;
-
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import java.util.Map;
 
 /**
  * @since 3.2
  */
-public class DefaultBindingsTransformer implements BindingsTransformer {
+public interface MapTransformer {
 
-    private int[] positions;
-    private ValueTransformer[] transformers;
-    private Cipher cipher;
-
-    public DefaultBindingsTransformer(int[] positions, ValueTransformer[] transformers, Cipher cipher) {
-        this.positions = positions;
-        this.transformers = transformers;
-        this.cipher = cipher;
-    }
-
-    @Override
-    public void transform(BatchParameterBinding[] bindings) {
-
-        int len = positions.length;
-
-        for (int i = 0; i < len; i++) {
-            BatchParameterBinding b = bindings[positions[i]];
-            Object transformed = transformers[i].transform(cipher, b.getValue());
-            b.setValue(transformed);
-        }
-    }
-
+    void transform(Map<String, Object> map);
 }

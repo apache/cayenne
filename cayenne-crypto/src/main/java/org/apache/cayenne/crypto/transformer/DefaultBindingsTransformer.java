@@ -16,20 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.transformer;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import javax.crypto.Cipher;
+
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 
 /**
- * A factory that creates encryption/decryption handlers that can be used to
- * process data.
- * 
  * @since 3.2
  */
-public interface CryptoFactory {
+public class DefaultBindingsTransformer implements BindingsTransformer {
 
-    BindingsTransformer createEncryptor(BatchParameterBinding[] bindings);
+    private int[] positions;
+    private ValueTransformer[] transformers;
+    private Cipher cipher;
 
-    MapTransformer createDecryptor(ColumnDescriptor[] columns, Object sampleRow);
+    public DefaultBindingsTransformer(int[] positions, ValueTransformer[] transformers, Cipher cipher) {
+        this.positions = positions;
+        this.transformers = transformers;
+        this.cipher = cipher;
+    }
+
+    @Override
+    public void transform(BatchParameterBinding[] bindings) {
+
+        int len = positions.length;
+
+        for (int i = 0; i < len; i++) {
+            BatchParameterBinding b = bindings[positions[i]];
+            Object transformed = transformers[i].transform(cipher, b.getValue());
+            b.setValue(transformed);
+        }
+    }
+
 }
