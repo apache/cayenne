@@ -18,22 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import javax.crypto.Cipher;
-
 /**
  * @since 3.2
  */
-public class JceValueEncryptor implements ValueTransformer {
+final class BytesToBytesConverter implements ToBytesConverter {
 
-    final ToBytesConverter toBytes;
-
-    public JceValueEncryptor(ToBytesConverter toBytes) {
-        this.toBytes = toBytes;
-    }
+    static final ToBytesConverter INSTANCE = new BytesToBytesConverter();
 
     @Override
-    public Object transform(Cipher cipher, Object value) {
-        throw new UnsupportedOperationException("TODO");
+    public byte[] toBytes(Object value) {
+        return (byte[]) value;
     }
 
 }

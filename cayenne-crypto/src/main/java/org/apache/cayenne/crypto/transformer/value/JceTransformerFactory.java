@@ -19,6 +19,7 @@
 package org.apache.cayenne.crypto.transformer.value;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,7 +69,12 @@ public class JceTransformerFactory implements ValueTransformerFactory {
     }
 
     protected Map<String, ToBytesConverter> createToBytesConverters() {
+        Map<String, ToBytesConverter> map = new HashMap<String, ToBytesConverter>();
 
+        map.put("byte[]", BytesToBytesConverter.INSTANCE);
+        map.put(String.class.getName(), StringToBytesConverter.INSTANCE);
+
+        return map;
     }
 
     protected ValueTransformer createEncryptor(DbAttribute a) {

@@ -18,22 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import javax.crypto.Cipher;
+import java.nio.charset.Charset;
 
 /**
  * @since 3.2
  */
-public class JceValueEncryptor implements ValueTransformer {
+final class StringToBytesConverter implements ToBytesConverter {
 
-    final ToBytesConverter toBytes;
+    static final ToBytesConverter INSTANCE = new StringToBytesConverter();
 
-    public JceValueEncryptor(ToBytesConverter toBytes) {
-        this.toBytes = toBytes;
+    private Charset utf8;
+
+    StringToBytesConverter() {
+        this.utf8 = Charset.forName("UTF-8");
     }
 
     @Override
-    public Object transform(Cipher cipher, Object value) {
-        throw new UnsupportedOperationException("TODO");
+    public byte[] toBytes(Object value) {
+        return ((String) value).getBytes(utf8);
     }
 
 }
