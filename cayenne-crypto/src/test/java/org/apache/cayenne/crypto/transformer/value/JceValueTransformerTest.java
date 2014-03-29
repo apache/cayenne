@@ -38,7 +38,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.junit.Before;
 import org.junit.Test;
 
-public class JceValueEncryptorTest {
+public class JceValueTransformerTest {
 
     private Cipher encCipher;
     private Cipher decCipher;
@@ -62,7 +62,7 @@ public class JceValueEncryptorTest {
     @Test
     public void testTransform_BytesToBytes() throws IllegalBlockSizeException, BadPaddingException {
 
-        JceValueEncryptor e = new JceValueEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
+        JceValueTransformer e = new JceValueTransformer(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
         byte[] b1 = new byte[] { 1, 2 };
         byte[] b2 = new byte[] { 2, 3 };
@@ -83,7 +83,7 @@ public class JceValueEncryptorTest {
     @Test
     public void testTransform_BytesToBytes_DifferentSizes() {
 
-        JceValueEncryptor e = new JceValueEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
+        JceValueTransformer e = new JceValueTransformer(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
         int blockSize = encCipher.getBlockSize();
 
@@ -121,7 +121,7 @@ public class JceValueEncryptorTest {
     public void testTransform_StringToBytes() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
-        JceValueEncryptor e = new JceValueEncryptor(StringToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
+        JceValueTransformer e = new JceValueTransformer(Utf8ToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
         String s1 = "ab";
         String s2 = "cd";
@@ -130,20 +130,20 @@ public class JceValueEncryptorTest {
 
         assertNotNull(b1_t);
         assertEquals(encCipher.getBlockSize(), b1_t.length);
-        assertEquals(s1, new String(decCipher.doFinal(b1_t), StringToBytesConverter.DEFAULT_CHARSET));
+        assertEquals(s1, new String(decCipher.doFinal(b1_t), Utf8ToBytesConverter.DEFAULT_CHARSET));
 
         byte[] b2_t = (byte[]) e.transform(encCipher, s2);
 
         assertNotNull(b2_t);
         assertEquals(encCipher.getBlockSize(), b2_t.length);
-        assertEquals(s2, new String(decCipher.doFinal(b2_t), StringToBytesConverter.DEFAULT_CHARSET));
+        assertEquals(s2, new String(decCipher.doFinal(b2_t), Utf8ToBytesConverter.DEFAULT_CHARSET));
     }
 
     @Test
     public void testTransform_StringToString() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
-        JceValueEncryptor e = new JceValueEncryptor(StringToBytesConverter.INSTANCE, Base64FromBytesConverter.INSTANCE);
+        JceValueTransformer e = new JceValueTransformer(Utf8ToBytesConverter.INSTANCE, Base64FromBytesConverter.INSTANCE);
 
         String s1 = "ab";
 
@@ -160,7 +160,7 @@ public class JceValueEncryptorTest {
         assertNotEquals(s1_t, s1);
 
         byte[] b1_t = DatatypeConverter.parseBase64Binary(s1_t);
-        assertEquals(s1, new String(decCipher.doFinal(b1_t), StringToBytesConverter.DEFAULT_CHARSET));
+        assertEquals(s1, new String(decCipher.doFinal(b1_t), Utf8ToBytesConverter.DEFAULT_CHARSET));
 
         String s2_t = (String) e.transform(encCipher, s2);
 
@@ -168,6 +168,6 @@ public class JceValueEncryptorTest {
         assertNotEquals(s2_t, s2);
 
         byte[] b2_t = DatatypeConverter.parseBase64Binary(s2_t);
-        assertEquals(s2, new String(decCipher.doFinal(b2_t), StringToBytesConverter.DEFAULT_CHARSET));
+        assertEquals(s2, new String(decCipher.doFinal(b2_t), Utf8ToBytesConverter.DEFAULT_CHARSET));
     }
 }

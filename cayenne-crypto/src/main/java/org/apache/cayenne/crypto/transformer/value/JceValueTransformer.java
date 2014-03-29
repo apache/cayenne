@@ -27,12 +27,12 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
 /**
  * @since 3.2
  */
-public class JceValueEncryptor implements ValueTransformer {
+public class JceValueTransformer implements ValueTransformer {
 
     private ToBytesConverter preConverter;
     private FromBytesConverter postConverter;
 
-    public JceValueEncryptor(ToBytesConverter preConverter, FromBytesConverter postConverter) {
+    public JceValueTransformer(ToBytesConverter preConverter, FromBytesConverter postConverter) {
         this.preConverter = preConverter;
         this.postConverter = postConverter;
     }

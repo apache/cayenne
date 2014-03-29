@@ -37,12 +37,14 @@ public class JceTransformerFactoryTest {
 
     private DbEntity t1;
     private DbEntity t2;
+    private DbEntity t3;
 
     @Before
     public void setUp() throws Exception {
         ServerRuntime runtime = new ServerRuntime("cayenne-crypto.xml");
         this.t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
         this.t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
+        this.t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");
     }
 
     @Test
@@ -82,18 +84,46 @@ public class JceTransformerFactoryTest {
 
         ValueTransformer t1 = f.createEncryptor(t1_ct);
         assertNotNull(t1);
-        assertTrue(t1 instanceof JceValueEncryptor);
-        assertSame(StringToBytesConverter.INSTANCE, ((JceValueEncryptor) t1).getPreConverter());
-        assertSame(Base64FromBytesConverter.INSTANCE, ((JceValueEncryptor) t1).getPostConverter());
+        assertTrue(t1 instanceof JceValueTransformer);
+        assertSame(Utf8ToBytesConverter.INSTANCE, ((JceValueTransformer) t1).getPreConverter());
+        assertSame(Base64FromBytesConverter.INSTANCE, ((JceValueTransformer) t1).getPostConverter());
 
         DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
 
         ValueTransformer t2 = f.createEncryptor(t2_cb);
         assertNotNull(t2);
-        assertTrue(t2 instanceof JceValueEncryptor);
-        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueEncryptor) t2).getPreConverter());
-        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueEncryptor) t2).getPostConverter());
+        assertTrue(t2 instanceof JceValueTransformer);
+        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueTransformer) t2).getPreConverter());
+        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueTransformer) t2).getPostConverter());
+    }
 
+    @Test
+    public void testCreateDecryptor() {
+        JceTransformerFactory f = new JceTransformerFactory();
+
+        DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
+
+        ValueTransformer t1 = f.createDecryptor(t1_ct);
+        assertNotNull(t1);
+        assertTrue(t1 instanceof JceValueTransformer);
+        assertSame(Base64ToBytesConverter.INSTANCE, ((JceValueTransformer) t1).getPreConverter());
+        assertSame(Utf8FromBytesConverter.INSTANCE, ((JceValueTransformer) t1).getPostConverter());
+
+        DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
+
+        ValueTransformer t2 = f.createDecryptor(t2_cb);
+        assertNotNull(t2);
+        assertTrue(t2 instanceof JceValueTransformer);
+        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueTransformer) t2).getPreConverter());
+        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueTransformer) t2).getPostConverter());
+        
+        DbAttribute t3_cb = t3.getAttribute("CRYPTO_BYTES");
+
+        ValueTransformer t3 = f.createDecryptor(t3_cb);
+        assertNotNull(t3);
+        assertTrue(t3 instanceof JceValueTransformer);
+        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueTransformer) t3).getPreConverter());
+        assertSame(Utf8FromBytesConverter.INSTANCE, ((JceValueTransformer) t3).getPostConverter());
     }
 
 }

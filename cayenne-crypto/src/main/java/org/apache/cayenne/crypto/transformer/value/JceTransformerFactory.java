@@ -41,21 +41,39 @@ import org.apache.cayenne.map.ObjEntity;
  */
 public class JceTransformerFactory implements ValueTransformerFactory {
 
-    private Map<String, ToBytesConverter> toBytesConverters;
-    private Map<Integer, FromBytesConverter> fromBytesConverters;
+    private Map<String, ToBytesConverter> objectToBytes;
+    private Map<Integer, ToBytesConverter> dbToBytes;
+
+    private Map<String, FromBytesConverter> bytesToObject;
+    private Map<Integer, FromBytesConverter> bytesToDb;
 
     private ConcurrentMap<DbAttribute, ValueTransformer> encryptors;
+    private ConcurrentMap<DbAttribute, ValueTransformer> decryptors;
 
     public JceTransformerFactory() {
-        this.toBytesConverters = createToBytesConverters();
-        this.fromBytesConverters = createFromBytesConverters();
-
         this.encryptors = new ConcurrentHashMap<DbAttribute, ValueTransformer>();
+        this.decryptors = new ConcurrentHashMap<DbAttribute, ValueTransformer>();
+
+        this.objectToBytes = createObjectToBytesConverters();
+        this.dbToBytes = createDbToBytesConverters();
+        this.bytesToObject = createBytesToObjectConverters();
+        this.bytesToDb = createBytesToDbConverters();
+
     }
 
     @Override
     public ValueTransformer decryptor(DbAttribute a) {
-        throw new UnsupportedOperationException("TODO");
+        ValueTransformer e = decryptors.get(a);
+
+        if (e == null) {
+
+            ValueTransformer newTransformer = createDecryptor(a);
+            ValueTransformer oldTransformer = decryptors.putIfAbsent(a, newTransformer);
+
+            e = oldTransformer != null ? oldTransformer : newTransformer;
+        }
+
+        return e;
     }
 
     @Override
@@ -73,16 +91,42 @@ public class JceTransformerFactory implements ValueTransformerFactory {
         return e;
     }
 
-    protected Map<String, ToBytesConverter> createToBytesConverters() {
-        Map<String, ToBytesConverter> map = new HashMap<String, ToBytesConverter>();
+    protected Map<Integer, ToBytesConverter> createDbToBytesConverters() {
+        Map<Integer, ToBytesConverter> map = new HashMap<Integer, ToBytesConverter>();
 
-        map.put("byte[]", BytesToBytesConverter.INSTANCE);
-        map.put(String.class.getName(), StringToBytesConverter.INSTANCE);
+        map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
+        map.put(Types.BLOB, BytesToBytesConverter.INSTANCE);
+        map.put(Types.VARBINARY, BytesToBytesConverter.INSTANCE);
+        map.put(Types.LONGVARBINARY, BytesToBytesConverter.INSTANCE);
+
+        map.put(Types.CHAR, Base64ToBytesConverter.INSTANCE);
+        map.put(Types.CLOB, Base64ToBytesConverter.INSTANCE);
+        map.put(Types.LONGNVARCHAR, Base64ToBytesConverter.INSTANCE);
+        map.put(Types.VARCHAR, Base64ToBytesConverter.INSTANCE);
 
         return map;
     }
 
-    protected Map<Integer, FromBytesConverter> createFromBytesConverters() {
+    protected Map<String, ToBytesConverter> createObjectToBytesConverters() {
+        Map<String, ToBytesConverter> map = new HashMap<String, ToBytesConverter>();
+
+        map.put("byte[]", BytesToBytesConverter.INSTANCE);
+        map.put(String.class.getName(), Utf8ToBytesConverter.INSTANCE);
+
+        return map;
+    }
+
+    protected Map<String, FromBytesConverter> createBytesToObjectConverters() {
+
+        Map<String, FromBytesConverter> map = new HashMap<String, FromBytesConverter>();
+
+        map.put("byte[]", BytesToBytesConverter.INSTANCE);
+        map.put(String.class.getName(), Utf8FromBytesConverter.INSTANCE);
+
+        return map;
+    }
+
+    protected Map<Integer, FromBytesConverter> createBytesToDbConverters() {
         Map<Integer, FromBytesConverter> map = new HashMap<Integer, FromBytesConverter>();
 
         map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
@@ -102,19 +146,37 @@ public class JceTransformerFactory implements ValueTransformerFactory {
 
         String type = getJavaType(a);
 
-        ToBytesConverter toBytes = toBytesConverters.get(type);
+        ToBytesConverter toBytes = objectToBytes.get(type);
         if (toBytes == null) {
             throw new IllegalArgumentException("The type " + type + " for attribute " + a
-                    + " has no to-bytes conversion");
+                    + " has no object-to-bytes conversion");
         }
 
-        FromBytesConverter fromBytes = fromBytesConverters.get(a.getType());
+        FromBytesConverter fromBytes = bytesToDb.get(a.getType());
+        if (fromBytes == null) {
+            throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
+                    + " for attribute " + a + " has no bytes-to-db conversion");
+        }
+
+        return new JceValueTransformer(toBytes, fromBytes);
+    }
+
+    protected ValueTransformer createDecryptor(DbAttribute a) {
+
+        ToBytesConverter toBytes = dbToBytes.get(a.getType());
+        if (toBytes == null) {
+            throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
+                    + " for attribute " + a + " has no db-to-bytes conversion");
+        }
+
+        String type = getJavaType(a);
+        FromBytesConverter fromBytes = bytesToObject.get(type);
         if (fromBytes == null) {
             throw new IllegalArgumentException("The type " + type + " for attribute " + a
-                    + " has no from-bytes conversion");
+                    + " has no bytes-to-object conversion");
         }
 
-        return new JceValueEncryptor(toBytes, fromBytes);
+        return new JceValueTransformer(toBytes, fromBytes);
     }
 
     // TODO: calculating Java type of ObjAttribute may become unneeded per
