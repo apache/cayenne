@@ -85,8 +85,8 @@ public class JceTransformerFactoryTest {
         ValueTransformer t1 = f.createEncryptor(t1_ct);
         assertNotNull(t1);
         assertTrue(t1 instanceof JceValueTransformer);
-        assertSame(Utf8ToBytesConverter.INSTANCE, ((JceValueTransformer) t1).getPreConverter());
-        assertSame(Base64FromBytesConverter.INSTANCE, ((JceValueTransformer) t1).getPostConverter());
+        assertSame(Utf8StringConverter.INSTANCE, ((JceValueTransformer) t1).getPreConverter());
+        assertSame(Base64StringConverter.INSTANCE, ((JceValueTransformer) t1).getPostConverter());
 
         DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
 
@@ -106,8 +106,8 @@ public class JceTransformerFactoryTest {
         ValueTransformer t1 = f.createDecryptor(t1_ct);
         assertNotNull(t1);
         assertTrue(t1 instanceof JceValueTransformer);
-        assertSame(Base64ToBytesConverter.INSTANCE, ((JceValueTransformer) t1).getPreConverter());
-        assertSame(Utf8FromBytesConverter.INSTANCE, ((JceValueTransformer) t1).getPostConverter());
+        assertSame(Base64StringConverter.INSTANCE, ((JceValueTransformer) t1).getPreConverter());
+        assertSame(Utf8StringConverter.INSTANCE, ((JceValueTransformer) t1).getPostConverter());
 
         DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
 
@@ -123,7 +123,7 @@ public class JceTransformerFactoryTest {
         assertNotNull(t3);
         assertTrue(t3 instanceof JceValueTransformer);
         assertSame(BytesToBytesConverter.INSTANCE, ((JceValueTransformer) t3).getPreConverter());
-        assertSame(Utf8FromBytesConverter.INSTANCE, ((JceValueTransformer) t3).getPostConverter());
+        assertSame(Utf8StringConverter.INSTANCE, ((JceValueTransformer) t3).getPostConverter());
     }
 
 }

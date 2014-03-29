@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.transformer.value;
 /**
  * @since 3.2
  */
-final class BytesToBytesConverter implements ToBytesConverter, FromBytesConverter {
+class BytesToBytesConverter implements BytesConverter {
 
     static final BytesToBytesConverter INSTANCE = new BytesToBytesConverter();
 

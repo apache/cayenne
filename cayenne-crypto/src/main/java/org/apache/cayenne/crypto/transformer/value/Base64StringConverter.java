@@ -23,13 +23,18 @@ import javax.xml.bind.DatatypeConverter;
 /**
  * @since 3.2
  */
-class Base64ToBytesConverter implements ToBytesConverter {
+class Base64StringConverter implements BytesConverter {
 
-    static final ToBytesConverter INSTANCE = new Base64ToBytesConverter();
+    static final BytesConverter INSTANCE = new Base64StringConverter();
 
     @Override
     public byte[] toBytes(Object value) {
         return DatatypeConverter.parseBase64Binary((String) value);
+    }
+
+    @Override
+    public Object fromBytes(byte[] bytes) {
+        return DatatypeConverter.printBase64Binary(bytes);
     }
 
 }

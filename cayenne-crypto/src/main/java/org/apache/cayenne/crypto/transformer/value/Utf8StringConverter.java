@@ -18,10 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
+import java.nio.charset.Charset;
+
 /**
  * @since 3.2
  */
-interface ToBytesConverter {
+final class Utf8StringConverter implements BytesConverter {
 
-    byte[] toBytes(Object value);
+    static final String DEFAULT_CHARSET = "UTF-8";
+
+    static final BytesConverter INSTANCE = new Utf8StringConverter();
+
+    private Charset utf8;
+
+    Utf8StringConverter() {
+        this.utf8 = Charset.forName(DEFAULT_CHARSET);
+    }
+
+    @Override
+    public byte[] toBytes(Object value) {
+        return ((String) value).getBytes(utf8);
+    }
+    
+    @Override
+    public Object fromBytes(byte[] bytes) {
+        return new String(bytes, utf8);
+    }
+
 }
