@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
+import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,10 +42,14 @@ import org.apache.cayenne.map.ObjEntity;
 public class JceTransformerFactory implements ValueTransformerFactory {
 
     private Map<String, ToBytesConverter> toBytesConverters;
+    private Map<Integer, FromBytesConverter> fromBytesConverters;
+
     private ConcurrentMap<DbAttribute, ValueTransformer> encryptors;
 
     public JceTransformerFactory() {
         this.toBytesConverters = createToBytesConverters();
+        this.fromBytesConverters = createFromBytesConverters();
+
         this.encryptors = new ConcurrentHashMap<DbAttribute, ValueTransformer>();
     }
 
@@ -77,16 +82,39 @@ public class JceTransformerFactory implements ValueTransformerFactory {
         return map;
     }
 
+    protected Map<Integer, FromBytesConverter> createFromBytesConverters() {
+        Map<Integer, FromBytesConverter> map = new HashMap<Integer, FromBytesConverter>();
+
+        map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
+        map.put(Types.BLOB, BytesToBytesConverter.INSTANCE);
+        map.put(Types.VARBINARY, BytesToBytesConverter.INSTANCE);
+        map.put(Types.LONGVARBINARY, BytesToBytesConverter.INSTANCE);
+
+        map.put(Types.CHAR, Base64FromBytesConverter.INSTANCE);
+        map.put(Types.CLOB, Base64FromBytesConverter.INSTANCE);
+        map.put(Types.LONGNVARCHAR, Base64FromBytesConverter.INSTANCE);
+        map.put(Types.VARCHAR, Base64FromBytesConverter.INSTANCE);
+
+        return map;
+    }
+
     protected ValueTransformer createEncryptor(DbAttribute a) {
 
         String type = getJavaType(a);
+
         ToBytesConverter toBytes = toBytesConverters.get(type);
         if (toBytes == null) {
             throw new IllegalArgumentException("The type " + type + " for attribute " + a
-                    + " has no to-byte conversion");
+                    + " has no to-bytes conversion");
         }
 
-        return new JceValueEncryptor(toBytes);
+        FromBytesConverter fromBytes = fromBytesConverters.get(a.getType());
+        if (fromBytes == null) {
+            throw new IllegalArgumentException("The type " + type + " for attribute " + a
+                    + " has no from-bytes conversion");
+        }
+
+        return new JceValueEncryptor(toBytes, fromBytes);
     }
 
     // TODO: calculating Java type of ObjAttribute may become unneeded per

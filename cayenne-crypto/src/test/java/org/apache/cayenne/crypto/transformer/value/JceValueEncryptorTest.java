@@ -20,6 +20,7 @@ package org.apache.cayenne.crypto.transformer.value;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.UnsupportedEncodingException;
@@ -32,6 +33,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.xml.bind.DatatypeConverter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +62,7 @@ public class JceValueEncryptorTest {
     @Test
     public void testTransform_BytesToBytes() throws IllegalBlockSizeException, BadPaddingException {
 
-        JceValueEncryptor e = new JceValueEncryptor(BytesToBytesConverter.INSTANCE);
+        JceValueEncryptor e = new JceValueEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
         byte[] b1 = new byte[] { 1, 2 };
         byte[] b2 = new byte[] { 2, 3 };
@@ -81,7 +83,7 @@ public class JceValueEncryptorTest {
     @Test
     public void testTransform_BytesToBytes_DifferentSizes() {
 
-        JceValueEncryptor e = new JceValueEncryptor(BytesToBytesConverter.INSTANCE);
+        JceValueEncryptor e = new JceValueEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
         int blockSize = encCipher.getBlockSize();
 
@@ -119,7 +121,7 @@ public class JceValueEncryptorTest {
     public void testTransform_StringToBytes() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
-        JceValueEncryptor e = new JceValueEncryptor(StringToBytesConverter.INSTANCE);
+        JceValueEncryptor e = new JceValueEncryptor(StringToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
         String s1 = "ab";
         String s2 = "cd";
@@ -128,12 +130,44 @@ public class JceValueEncryptorTest {
 
         assertNotNull(b1_t);
         assertEquals(encCipher.getBlockSize(), b1_t.length);
-        assertEquals(s1, new String(decCipher.doFinal(b1_t), "UTF-8"));
+        assertEquals(s1, new String(decCipher.doFinal(b1_t), StringToBytesConverter.DEFAULT_CHARSET));
 
         byte[] b2_t = (byte[]) e.transform(encCipher, s2);
 
         assertNotNull(b2_t);
         assertEquals(encCipher.getBlockSize(), b2_t.length);
-        assertEquals(s2, new String(decCipher.doFinal(b2_t), "UTF-8"));
+        assertEquals(s2, new String(decCipher.doFinal(b2_t), StringToBytesConverter.DEFAULT_CHARSET));
+    }
+
+    @Test
+    public void testTransform_StringToString() throws UnsupportedEncodingException, IllegalBlockSizeException,
+            BadPaddingException {
+
+        JceValueEncryptor e = new JceValueEncryptor(StringToBytesConverter.INSTANCE, Base64FromBytesConverter.INSTANCE);
+
+        String s1 = "ab";
+
+        // try to get beyond a single block boundary and a Base64 line...
+        String s2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                + "Pellentesque nisi sapien, mattis eu porttitor in, tempus quis lorem. "
+                + "Integer vel dignissim quam. Maecenas pellentesque est erat, eget semper ipsum aliquet vitae. "
+                + "Donec convallis mi vitae luctus rutrum. Sed ut imperdiet ante. Praesent condimentum velit eget "
+                + "felis pretium blandit. Praesent lacus tortor, facilisis eget sapien quis, hendrerit iaculis tellus.";
+
+        String s1_t = (String) e.transform(encCipher, s1);
+
+        assertNotNull(s1_t);
+        assertNotEquals(s1_t, s1);
+
+        byte[] b1_t = DatatypeConverter.parseBase64Binary(s1_t);
+        assertEquals(s1, new String(decCipher.doFinal(b1_t), StringToBytesConverter.DEFAULT_CHARSET));
+
+        String s2_t = (String) e.transform(encCipher, s2);
+
+        assertNotNull(s2_t);
+        assertNotEquals(s2_t, s2);
+
+        byte[] b2_t = DatatypeConverter.parseBase64Binary(s2_t);
+        assertEquals(s2, new String(decCipher.doFinal(b2_t), StringToBytesConverter.DEFAULT_CHARSET));
     }
 }

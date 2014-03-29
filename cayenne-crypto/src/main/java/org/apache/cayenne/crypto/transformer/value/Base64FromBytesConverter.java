@@ -18,21 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
+import javax.xml.bind.DatatypeConverter;
+
 /**
+ * Generates a Base64-encoded String from a byte array. generated String does
+ * not contain line breaks that are used for MIME Base64, but are meaningless in
+ * a DB.
+ * 
  * @since 3.2
  */
-final class BytesToBytesConverter implements ToBytesConverter, FromBytesConverter {
+class Base64FromBytesConverter implements FromBytesConverter {
 
-    static final BytesToBytesConverter INSTANCE = new BytesToBytesConverter();
-
-    @Override
-    public byte[] toBytes(Object value) {
-        return (byte[]) value;
-    }
+    static final FromBytesConverter INSTANCE = new Base64FromBytesConverter();
 
     @Override
     public Object fromBytes(byte[] bytes) {
-        return bytes;
+        return DatatypeConverter.printBase64Binary(bytes);
     }
 
 }

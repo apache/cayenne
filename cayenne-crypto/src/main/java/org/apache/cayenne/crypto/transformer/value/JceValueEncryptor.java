@@ -29,16 +29,26 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
  */
 public class JceValueEncryptor implements ValueTransformer {
 
-    final ToBytesConverter toBytes;
+    private ToBytesConverter preConverter;
+    private FromBytesConverter postConverter;
 
-    public JceValueEncryptor(ToBytesConverter toBytes) {
-        this.toBytes = toBytes;
+    public JceValueEncryptor(ToBytesConverter preConverter, FromBytesConverter postConverter) {
+        this.preConverter = preConverter;
+        this.postConverter = postConverter;
+    }
+
+    ToBytesConverter getPreConverter() {
+        return preConverter;
+    }
+
+    FromBytesConverter getPostConverter() {
+        return postConverter;
     }
 
     @Override
     public Object transform(Cipher cipher, Object value) {
 
-        byte[] bytes = toBytes.toBytes(value);
+        byte[] bytes = preConverter.toBytes(value);
         byte[] transformed;
 
         try {
@@ -49,7 +59,7 @@ public class JceValueEncryptor implements ValueTransformer {
             throw new CayenneCryptoException("Bad padding", e);
         }
 
-        return transformed;
+        return postConverter.fromBytes(transformed);
     }
 
 }

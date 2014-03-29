@@ -20,7 +20,6 @@ package org.apache.cayenne.crypto.transformer.value;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -84,14 +83,17 @@ public class JceTransformerFactoryTest {
         ValueTransformer t1 = f.createEncryptor(t1_ct);
         assertNotNull(t1);
         assertTrue(t1 instanceof JceValueEncryptor);
-        assertNotSame(BytesToBytesConverter.INSTANCE, ((JceValueEncryptor) t1).toBytes);
+        assertSame(StringToBytesConverter.INSTANCE, ((JceValueEncryptor) t1).getPreConverter());
+        assertSame(Base64FromBytesConverter.INSTANCE, ((JceValueEncryptor) t1).getPostConverter());
 
         DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
 
         ValueTransformer t2 = f.createEncryptor(t2_cb);
         assertNotNull(t2);
         assertTrue(t2 instanceof JceValueEncryptor);
-        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueEncryptor) t2).toBytes);
+        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueEncryptor) t2).getPreConverter());
+        assertSame(BytesToBytesConverter.INSTANCE, ((JceValueEncryptor) t2).getPostConverter());
+
     }
 
 }
