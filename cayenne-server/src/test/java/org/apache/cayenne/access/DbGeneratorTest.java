@@ -46,7 +46,7 @@ public class DbGeneratorTest extends ServerCase {
     protected void setUpAfterInjection() throws Exception {
         generator = new DbGenerator(adapter, runtime
                 .getDataDomain()
-                .getDataMap("testmap"), logger);
+                .getDataMap("tstmap"), logger);
     }
 
     public void testAdapter() throws Exception {
@@ -54,7 +54,7 @@ public class DbGeneratorTest extends ServerCase {
     }
 
     public void testPkFilteringLogic() throws Exception {
-        DataMap map = runtime.getDataDomain().getDataMap("testmap");
+        DataMap map = runtime.getDataDomain().getDataMap("tstmap");
         DbEntity artistExhibit = map.getDbEntity("ARTIST_EXHIBIT");
         DbEntity exhibit = map.getDbEntity("EXHIBIT");
 

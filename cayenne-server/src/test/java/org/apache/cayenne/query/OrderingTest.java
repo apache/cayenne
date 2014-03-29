@@ -26,7 +26,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.util.TestBean;
+import org.apache.cayenne.unit.util.TstBean;
 
 public class OrderingTest extends TestCase {
 
@@ -125,9 +125,9 @@ public class OrderingTest extends TestCase {
 
     public void testCompare4() throws Exception {
         // compare on non-persistent property
-        TestBean t1 = new TestBean(1000);
-        TestBean t2 = new TestBean(2000);
-        TestBean t3 = new TestBean(2000);
+        TstBean t1 = new TstBean(1000);
+        TstBean t2 = new TstBean(2000);
+        TstBean t3 = new TstBean(2000);
 
         Ordering ordering = new Ordering("integer", SortOrder.ASCENDING);
         assertTrue(ordering.compare(t1, t2) < 0);
@@ -137,35 +137,35 @@ public class OrderingTest extends TestCase {
 
     public void testOrderList2() throws Exception {
         // compare on non-persistent property
-        List<TestBean> list = new ArrayList<TestBean>(3);
+        List<TstBean> list = new ArrayList<TstBean>(3);
 
-        list.add(new TestBean(5));
-        list.add(new TestBean(2));
-        list.add(new TestBean(3));
+        list.add(new TstBean(5));
+        list.add(new TstBean(2));
+        list.add(new TstBean(3));
 
         new Ordering("integer", SortOrder.ASCENDING).orderList(list);
-        assertEquals(2, ((TestBean) list.get(0)).getInteger().intValue());
-        assertEquals(3, ((TestBean) list.get(1)).getInteger().intValue());
-        assertEquals(5, ((TestBean) list.get(2)).getInteger().intValue());
+        assertEquals(2, ((TstBean) list.get(0)).getInteger().intValue());
+        assertEquals(3, ((TstBean) list.get(1)).getInteger().intValue());
+        assertEquals(5, ((TstBean) list.get(2)).getInteger().intValue());
     }
 
     public void testOrderListWithMultipleOrderings2() throws Exception {
         // compare on non-persistent property
-        List<TestBean> list = new ArrayList<TestBean>(6);
+        List<TstBean> list = new ArrayList<TstBean>(6);
 
-        list.add(new TestBean("c", 1));
-        list.add(new TestBean("c", 30));
-        list.add(new TestBean("a", 5));
-        list.add(new TestBean("b", 1));
-        list.add(new TestBean("b", 2));
-        list.add(new TestBean("b", 5));
+        list.add(new TstBean("c", 1));
+        list.add(new TstBean("c", 30));
+        list.add(new TstBean("a", 5));
+        list.add(new TstBean("b", 1));
+        list.add(new TstBean("b", 2));
+        list.add(new TstBean("b", 5));
 
         List<Ordering> orderings = new ArrayList<Ordering>(2);
         orderings.add(new Ordering("string", SortOrder.ASCENDING));
         orderings.add(new Ordering("integer", SortOrder.DESCENDING));
 
         // clone list and then order
-        List<TestBean> orderedList = new ArrayList<TestBean>(list);
+        List<TstBean> orderedList = new ArrayList<TstBean>(list);
         Ordering.orderList(orderedList, orderings);
 
         assertEquals(list.get(2), orderedList.get(0));

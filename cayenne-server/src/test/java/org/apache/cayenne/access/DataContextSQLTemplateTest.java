@@ -129,7 +129,7 @@ public class DataContextSQLTemplateTest extends ServerCase {
                 + "GROUP BY t0.ARTIST_ID, t0.ARTIST_NAME, t0.DATE_OF_BIRTH "
                 + "ORDER BY t0.ARTIST_ID";
 
-        DataMap map = context.getEntityResolver().getDataMap("testmap");
+        DataMap map = context.getEntityResolver().getDataMap("tstmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
@@ -168,7 +168,7 @@ public class DataContextSQLTemplateTest extends ServerCase {
         createFourArtists();
         
         SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
-        query.setDataNodeName("testmap");
+        query.setDataNodeName("tstmap");
         assertEquals(4, context.performQuery(query).size());
     }
     
@@ -183,7 +183,7 @@ public class DataContextSQLTemplateTest extends ServerCase {
 
         String sql = "SELECT count(1) AS X FROM ARTIST";
 
-        DataMap map = context.getEntityResolver().getDataMap("testmap");
+        DataMap map = context.getEntityResolver().getDataMap("tstmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),
@@ -210,7 +210,7 @@ public class DataContextSQLTemplateTest extends ServerCase {
 
         String sql = "SELECT count(1) AS X, 77 AS Y FROM ARTIST";
 
-        DataMap map = context.getEntityResolver().getDataMap("testmap");
+        DataMap map = context.getEntityResolver().getDataMap("tstmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),

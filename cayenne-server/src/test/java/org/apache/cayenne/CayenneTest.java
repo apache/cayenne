@@ -123,7 +123,7 @@ public class CayenneTest extends ServerCase {
 
         String sql = "SELECT count(1) AS X FROM ARTIST";
 
-        DataMap map = context.getEntityResolver().getDataMap("testmap");
+        DataMap map = context.getEntityResolver().getDataMap("tstmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
         query.setTemplate(
                 FrontBaseAdapter.class.getName(),

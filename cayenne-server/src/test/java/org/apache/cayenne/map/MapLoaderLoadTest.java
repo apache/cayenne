@@ -85,7 +85,7 @@ public class MapLoaderLoadTest extends TestCase {
 
     public void testLoadTestMap() throws Exception {
         MapLoader mapLoader = new MapLoader();
-        DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
+        DataMap map = mapLoader.loadDataMap(getMapXml("tstmap.map.xml"));
         assertNotNull(map);
 
         // test procedures
@@ -107,7 +107,7 @@ public class MapLoaderLoadTest extends TestCase {
         assertNotNull(ent.getSuperClassName());
 
         //text exclude... parameters
-        ObjEntity artistCallbackTestEntity = map.getObjEntity("ArtistCallbackTest");
+        ObjEntity artistCallbackTestEntity = map.getObjEntity("ArtistCallback");
         assertTrue(artistCallbackTestEntity.isExcludingDefaultListeners());
         assertTrue(artistCallbackTestEntity.isExcludingSuperclassListeners());
 
@@ -117,7 +117,7 @@ public class MapLoaderLoadTest extends TestCase {
     public void testEncodeAsXML() throws FileNotFoundException {
         // load map
         MapLoader mapLoader = new MapLoader();
-        DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
+        DataMap map = mapLoader.loadDataMap(getMapXml("tstmap.map.xml"));
         assertNotNull(map);
 
         // encode map

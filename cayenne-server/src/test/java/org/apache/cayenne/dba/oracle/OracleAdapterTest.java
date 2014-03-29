@@ -39,7 +39,7 @@ public class OracleAdapterTest extends ServerCase {
     private AdhocObjectFactory objectFactory;
 
     public void testUpdatesLOBColumns() throws Exception {
-        DataMap map = runtime.getDataDomain().getDataMap("testmap");
+        DataMap map = runtime.getDataDomain().getDataMap("tstmap");
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
                 .getDbEntity("BLOB_TEST"), 1)));
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map

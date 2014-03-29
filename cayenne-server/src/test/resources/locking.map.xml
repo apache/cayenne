@@ -24,10 +24,10 @@
 		<db-attribute name="LOCKING_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
-	<db-entity name="SOFT_TEST">
+	<db-entity name="SOFT_DELETE">
 		<db-attribute name="DELETED" type="BOOLEAN"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-		<db-attribute name="SOFT_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<qualifier><![CDATA[DELETED = false]]></qualifier>
 	</db-entity>
 	<db-entity name="TIME_LOCKING_TEST">
@@ -49,7 +49,7 @@
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="DESCRIPTION"/>
 		<obj-attribute name="name" type="java.lang.String" lock="true" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="SoftTest" className="org.apache.cayenne.testdo.locking.SoftTest" dbEntityName="SOFT_TEST">
+	<obj-entity name="SoftDelete" className="org.apache.cayenne.testdo.locking.SoftDelete" dbEntityName="SOFT_DELETE">
 		<obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 		<post-add method-name="onPrePersist"/>

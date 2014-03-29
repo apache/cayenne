@@ -16,19 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.dbsync;
+package org.apache.cayenne.testdo.locking;
 
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.testdo.locking.auto._SoftDelete;
 
-public class TestSchemaUpdateStrategy implements SchemaUpdateStrategy {
+public class SoftDelete extends _SoftDelete {
 
-    public TestSchemaUpdateStrategy() {
+    @Override
+    protected void onPrePersist() {
+        setDeleted(false);
     }
 
-    public void updateSchema(DataNode dataNode) {
-    }
-
-    public void generateUpdateSchema(DataNode dataNode) {
-    }
 }

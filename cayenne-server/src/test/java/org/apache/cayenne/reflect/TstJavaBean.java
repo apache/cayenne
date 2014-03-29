@@ -24,7 +24,7 @@ import java.util.Date;
 
 import org.apache.cayenne.util.ToStringBuilder;
 
-public class TestJavaBean extends Object {
+public class TstJavaBean extends Object {
 
     protected String stringField;
     protected byte byteField;
@@ -38,7 +38,7 @@ public class TestJavaBean extends Object {
     protected Number numberField;
     protected byte[] byteArrayField;
     protected Object objectField;
-    protected TestJavaBean related;
+    protected TstJavaBean related;
     protected Date dateField;
     protected Timestamp timestampField;
     protected StringBuilder stringBuilderField;
@@ -102,12 +102,12 @@ public class TestJavaBean extends Object {
     }
 
     
-    public TestJavaBean getRelated() {
+    public TstJavaBean getRelated() {
         return related;
     }
 
     
-    public void setRelated(TestJavaBean related) {
+    public void setRelated(TstJavaBean related) {
         this.related = related;
     }
 

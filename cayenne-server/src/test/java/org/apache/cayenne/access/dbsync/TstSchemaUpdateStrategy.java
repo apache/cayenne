@@ -16,22 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.testdo.testmap;
+package org.apache.cayenne.access.dbsync;
 
-import org.apache.cayenne.testdo.testmap.auto._ArtistCallbackTest;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 
-/**
- * Class for testing callbacks
- */
-public class ArtistCallbackTest extends _ArtistCallbackTest {
-    private static final long serialVersionUID = 1L; 
-    
-    public void prePersistEntityObjEntity() {}
-    public void postPersistEntityObjEntity() {}
-    public void preUpdateEntityObjEntity() {}
-    public void postUpdateEntityObjEntity() {}
-    public void preRemoveEntityObjEntity() {}
-    public void postRemoveEntityObjEntity() {}
-    public void postLoadEntityObjEntity() {}
+public class TstSchemaUpdateStrategy implements SchemaUpdateStrategy {
+
+    public TstSchemaUpdateStrategy() {
+    }
+
+    public void updateSchema(DataNode dataNode) {
+    }
+
+    public void generateUpdateSchema(DataNode dataNode) {
+    }
 }
-

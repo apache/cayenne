@@ -37,7 +37,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.TestBean;
+import org.apache.cayenne.unit.util.TstBean;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ExpressionEvaluateInMemoryTest extends ServerCase {
@@ -95,11 +95,11 @@ public class ExpressionEvaluateInMemoryTest extends ServerCase {
     public void testEvaluateOBJ_PATH_JavaBean() throws Exception {
         ASTObjPath node = new ASTObjPath("property2");
 
-        TestBean b1 = new TestBean();
+        TstBean b1 = new TstBean();
         b1.setProperty2(1);
         assertEquals(new Integer(1), node.evaluate(b1));
 
-        TestBean b2 = new TestBean();
+        TstBean b2 = new TstBean();
         b2.setProperty2(-3);
         assertEquals(new Integer(-3), node.evaluate(b2));
     }

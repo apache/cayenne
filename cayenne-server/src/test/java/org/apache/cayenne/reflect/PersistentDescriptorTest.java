@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.unit.util.TestBean;
+import org.apache.cayenne.unit.util.TstBean;
 
 public class PersistentDescriptorTest extends TestCase {
 
@@ -41,17 +41,17 @@ public class PersistentDescriptorTest extends TestCase {
         PersistentDescriptor d1 = new PersistentDescriptor();
 
         ObjAttribute attribute = mock(ObjAttribute.class);
-        FieldAccessor accessor = new FieldAccessor(TestBean.class, "string",
+        FieldAccessor accessor = new FieldAccessor(TstBean.class, "string",
                 String.class);
         PropertyDescriptor property = new SimpleAttributeProperty(d1, accessor,
                 attribute);
 
         d1.addDeclaredProperty(property);
 
-        TestBean from = new TestBean();
+        TstBean from = new TstBean();
         from.setString("123");
 
-        TestBean to = new TestBean();
+        TstBean to = new TstBean();
 
         d1.shallowMerge(from, to);
         assertEquals("123", to.getString());

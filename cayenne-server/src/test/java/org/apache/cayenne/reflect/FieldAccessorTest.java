@@ -22,28 +22,28 @@ package org.apache.cayenne.reflect;
 import junit.framework.TestCase;
 
 import org.apache.cayenne.reflect.FieldAccessor;
-import org.apache.cayenne.unit.util.TestBean;
+import org.apache.cayenne.unit.util.TstBean;
 
 public class FieldAccessorTest extends TestCase {
 
     public void testConstructor() {
-        FieldAccessor accessor = new FieldAccessor(TestBean.class, "string", String.class);
+        FieldAccessor accessor = new FieldAccessor(TstBean.class, "string", String.class);
         assertEquals("string", accessor.getName());
     }
 
     public void testGet() {
-        FieldAccessor accessor = new FieldAccessor(TestBean.class, "string", String.class);
+        FieldAccessor accessor = new FieldAccessor(TstBean.class, "string", String.class);
 
-        TestBean object = new TestBean();
+        TstBean object = new TstBean();
         object.setString("abc");
         assertEquals("abc", accessor.getValue(object));
     }
 
     public void testSetValue() {
-        TestFields object = new TestFields();
+        TstFields object = new TstFields();
 
         // string
-        new FieldAccessor(TestFields.class, "stringField", String.class).setValue(
+        new FieldAccessor(TstFields.class, "stringField", String.class).setValue(
                 object,
                 "aaa");
         assertEquals("aaa", object.stringField);
@@ -52,7 +52,7 @@ public class FieldAccessorTest extends TestCase {
         byte[] bytes = new byte[] {
                 1, 2, 3
         };
-        new FieldAccessor(TestFields.class, "byteArrayField", byte[].class).setValue(
+        new FieldAccessor(TstFields.class, "byteArrayField", byte[].class).setValue(
                 object,
                 bytes);
         assertSame(bytes, object.byteArrayField);
@@ -61,24 +61,24 @@ public class FieldAccessorTest extends TestCase {
         String[] strings = new String[] {
                 "a", "b"
         };
-        new FieldAccessor(TestFields.class, "stringArrayField", String[].class).setValue(
+        new FieldAccessor(TstFields.class, "stringArrayField", String[].class).setValue(
                 object,
                 strings);
         assertSame(strings, object.stringArrayField);
     }
 
     public void testSetValuePrimitive() {
-        TestFields object = new TestFields();
+        TstFields object = new TstFields();
 
         // primitive int .. write non-null
-        new FieldAccessor(TestFields.class, "intField", Integer.TYPE).setValue(
+        new FieldAccessor(TstFields.class, "intField", Integer.TYPE).setValue(
                 object,
                 new Integer(6));
         assertEquals(6, object.intField);
 
         // primitive int .. write null
         object.intField = 55;
-        new FieldAccessor(TestFields.class, "intField", Integer.TYPE).setValue(
+        new FieldAccessor(TstFields.class, "intField", Integer.TYPE).setValue(
                 object,
                 null);
 

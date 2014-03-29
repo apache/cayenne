@@ -23,12 +23,12 @@ package org.apache.cayenne.testdo.testmap;
  *
  */
 public class EntityListenerObjEntity {
-    public void prePersistEntityListener(ArtistCallbackTest entity) {}
-    public void postPersistEntityListener(ArtistCallbackTest entity) {}
-    public void preUpdateEntityListener(ArtistCallbackTest entity) {}
-    public void postUpdateEntityListener(ArtistCallbackTest entity) {}
-    public void preRemoveEntityListener(ArtistCallbackTest entity) {}
-    public void postRemoveEntityListener(ArtistCallbackTest entity) {}
-    public void postLoadEntityListener(ArtistCallbackTest entity) {}
+    public void prePersistEntityListener(ArtistCallback entity) {}
+    public void postPersistEntityListener(ArtistCallback entity) {}
+    public void preUpdateEntityListener(ArtistCallback entity) {}
+    public void postUpdateEntityListener(ArtistCallback entity) {}
+    public void preRemoveEntityListener(ArtistCallback entity) {}
+    public void postRemoveEntityListener(ArtistCallback entity) {}
+    public void postLoadEntityListener(ArtistCallback entity) {}
 }
 

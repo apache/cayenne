@@ -30,7 +30,7 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.unit.util.TestBean;
+import org.apache.cayenne.unit.util.TstBean;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class CayenneDataObjectTest extends ServerCase {
@@ -80,14 +80,14 @@ public class CayenneDataObjectTest extends ServerCase {
 
     public void testReadNestedPropertyNonDataObjectPath() {
         CayenneDataObject o1 = new CayenneDataObject();
-        TestBean o2 = new TestBean();
+        TstBean o2 = new TstBean();
         o2.setInteger(new Integer(55));
         o1.writePropertyDirectly("o2", o2);
 
         assertSame(o2, o1.readNestedProperty("o2"));
         assertEquals(new Integer(55), o1.readNestedProperty("o2.integer"));
-        assertEquals(TestBean.class, o1.readNestedProperty("o2.class"));
-        assertEquals(TestBean.class.getName(), o1.readNestedProperty("o2.class.name"));
+        assertEquals(TstBean.class, o1.readNestedProperty("o2.class"));
+        assertEquals(TstBean.class.getName(), o1.readNestedProperty("o2.class.name"));
     }
 
     public void testReadNestedPropertyToManyInMiddle() throws Exception {

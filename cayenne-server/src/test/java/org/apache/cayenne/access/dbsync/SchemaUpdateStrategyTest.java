@@ -169,10 +169,10 @@ public class SchemaUpdateStrategyTest extends ServerCase {
         DataMap map = node.getEntityResolver().getDataMap("sus-map");
         DataNode dataNode = createDataNode(map);
 
-        setStrategy(TestSchemaUpdateStrategy.class.getName(), dataNode);
+        setStrategy(TstSchemaUpdateStrategy.class.getName(), dataNode);
 
         dataNode.performQueries(Collections.singletonList((Query) query), observer);
-        assertTrue(dataNode.getSchemaUpdateStrategy() instanceof TestSchemaUpdateStrategy);
+        assertTrue(dataNode.getSchemaUpdateStrategy() instanceof TstSchemaUpdateStrategy);
     }
 
     private void withOneTableForThrowOnPartialAndMixStrategy(String strategy) {

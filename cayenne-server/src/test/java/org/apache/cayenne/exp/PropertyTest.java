@@ -23,7 +23,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.cayenne.reflect.TestJavaBean;
+import org.apache.cayenne.reflect.TstJavaBean;
 import org.apache.cayenne.reflect.UnresolvablePathException;
 import org.apache.cayenne.util.Util;
 
@@ -43,15 +43,15 @@ public class PropertyTest extends TestCase {
     }
     
     public void testGetFrom() {
-    	TestJavaBean bean = new TestJavaBean();
+    	TstJavaBean bean = new TstJavaBean();
     	bean.setIntField(7);
     	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
     	assertEquals(Integer.valueOf(7), INT_FIELD.getFrom(bean));
     }
     
     public void testGetFromNestedProperty() {
-    	TestJavaBean bean = new TestJavaBean();
-    	TestJavaBean nestedBean = new TestJavaBean();
+    	TstJavaBean bean = new TstJavaBean();
+    	TstJavaBean nestedBean = new TstJavaBean();
     	nestedBean.setIntField(7);
     	bean.setObjectField(nestedBean);
     	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
@@ -59,7 +59,7 @@ public class PropertyTest extends TestCase {
     }
     
     public void testGetFromNestedNull() {
-    	TestJavaBean bean = new TestJavaBean();
+    	TstJavaBean bean = new TstJavaBean();
     	bean.setObjectField(null);
     	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
     	try {
@@ -74,37 +74,37 @@ public class PropertyTest extends TestCase {
     }
     
     public void testGetFromAll() {
-    	TestJavaBean bean = new TestJavaBean();
+    	TstJavaBean bean = new TstJavaBean();
     	bean.setIntField(7);
     	
-    	TestJavaBean bean2 = new TestJavaBean();
+    	TstJavaBean bean2 = new TstJavaBean();
     	bean2.setIntField(8);
     	
-    	List<TestJavaBean> beans = Arrays.asList(bean, bean2);
+    	List<TstJavaBean> beans = Arrays.asList(bean, bean2);
 
     	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
     	assertEquals(Arrays.asList(7, 8), INT_FIELD.getFromAll(beans));
     }
     
     public void testSetIn() {
-    	TestJavaBean bean = new TestJavaBean();
+    	TstJavaBean bean = new TstJavaBean();
     	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
     	INT_FIELD.setIn(bean, 7);
     	assertEquals(7, bean.getIntField());
     }
     
     public void testSetInNestedProperty() {
-    	TestJavaBean bean = new TestJavaBean();
-    	bean.setObjectField(new TestJavaBean());
+    	TstJavaBean bean = new TstJavaBean();
+    	bean.setObjectField(new TstJavaBean());
     	
     	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
 
     	OBJECT_FIELD_INT_FIELD.setIn(bean, 7);
-    	assertEquals(7, ((TestJavaBean)bean.getObjectField()).getIntField());
+    	assertEquals(7, ((TstJavaBean)bean.getObjectField()).getIntField());
     }
     
     public void testSetInNestedNull() {
-    	TestJavaBean bean = new TestJavaBean();
+    	TstJavaBean bean = new TstJavaBean();
     	bean.setObjectField(null);
     	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
     	try {
@@ -119,9 +119,9 @@ public class PropertyTest extends TestCase {
     }
     
     public void testSetInAll() {
-    	TestJavaBean bean = new TestJavaBean();
-    	TestJavaBean bean2 = new TestJavaBean();
-    	List<TestJavaBean> beans = Arrays.asList(bean, bean2);
+    	TstJavaBean bean = new TstJavaBean();
+    	TstJavaBean bean2 = new TstJavaBean();
+    	List<TstJavaBean> beans = Arrays.asList(bean, bean2);
 
     	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
     	INT_FIELD.setInAll(beans, 7);

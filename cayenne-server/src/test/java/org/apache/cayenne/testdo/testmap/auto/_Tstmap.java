@@ -14,7 +14,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public class _Testmap {
+public class _Tstmap {
 
     public static final String EJBQL_QUERY_TEST_QUERYNAME = "EjbqlQueryTest";
 

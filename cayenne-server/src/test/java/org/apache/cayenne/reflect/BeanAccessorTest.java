@@ -28,14 +28,14 @@ public class BeanAccessorTest extends TestCase {
     public void testByteArrayProperty() {
 
         BeanAccessor accessor = new BeanAccessor(
-                TestJavaBean.class,
+                TstJavaBean.class,
                 "byteArrayField",
                 byte[].class);
 
         byte[] bytes = new byte[] {
                 5, 6, 7
         };
-        TestJavaBean o1 = new TestJavaBean();
+        TstJavaBean o1 = new TstJavaBean();
 
         assertNull(o1.getByteArrayField());
         accessor.setValue(o1, bytes);
@@ -46,11 +46,11 @@ public class BeanAccessorTest extends TestCase {
     public void testStringProperty() {
 
         BeanAccessor accessor = new BeanAccessor(
-                TestJavaBean.class,
+                TstJavaBean.class,
                 "stringField",
                 String.class);
 
-        TestJavaBean o1 = new TestJavaBean();
+        TstJavaBean o1 = new TstJavaBean();
 
         assertNull(o1.getStringField());
         accessor.setValue(o1, "ABC");
@@ -61,11 +61,11 @@ public class BeanAccessorTest extends TestCase {
     public void testIntProperty() {
 
         BeanAccessor accessor = new BeanAccessor(
-                TestJavaBean.class,
+                TstJavaBean.class,
                 "intField",
                 Integer.TYPE);
 
-        TestJavaBean o1 = new TestJavaBean();
+        TstJavaBean o1 = new TstJavaBean();
 
         assertEquals(0, o1.getIntField());
         accessor.setValue(o1, new Integer(5));

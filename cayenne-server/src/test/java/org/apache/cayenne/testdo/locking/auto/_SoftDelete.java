@@ -8,12 +8,12 @@ import org.apache.cayenne.CayenneDataObject;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _SoftTest extends CayenneDataObject {
+public abstract class _SoftDelete extends CayenneDataObject {
 
     public static final String DELETED_PROPERTY = "deleted";
     public static final String NAME_PROPERTY = "name";
 
-    public static final String SOFT_TEST_ID_PK_COLUMN = "SOFT_TEST_ID";
+    public static final String ID_PK_COLUMN = "ID";
 
     public void setDeleted(Boolean deleted) {
         writeProperty(DELETED_PROPERTY, deleted);

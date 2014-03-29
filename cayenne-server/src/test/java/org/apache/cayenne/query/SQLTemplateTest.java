@@ -54,14 +54,14 @@ public class SQLTemplateTest extends ServerCase {
     }
 
     public void testSQLTemplateForDataMap() {
-        DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+        DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
         SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
         List<DataRow> result = context.performQuery(q1);
         assertEquals(0, result.size());
     }
 
     public void testSQLTemplateForDataMapWithInsert() {
-        DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+        DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
         String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
         SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
         context.performNonSelectingQuery(q1);
@@ -72,7 +72,7 @@ public class SQLTemplateTest extends ServerCase {
     }
 
     public void testSQLTemplateForDataMapWithInsertException() {
-        DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+        DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
         String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
         SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
         context.performNonSelectingQuery(q1);

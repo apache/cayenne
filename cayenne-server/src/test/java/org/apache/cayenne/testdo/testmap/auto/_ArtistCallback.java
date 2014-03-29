@@ -11,7 +11,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ArtistCallbackTest extends CayenneDataObject {
+public abstract class _ArtistCallback extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 

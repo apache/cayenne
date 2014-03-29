@@ -18,19 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.testmap;
 
-import org.apache.cayenne.testdo.testmap.auto._Testmap;
+import org.apache.cayenne.testdo.testmap.auto._ArtistCallback;
 
-public class Testmap extends _Testmap {
-
-    private static Testmap instance;
-
-    private Testmap() {}
-
-    public static Testmap getInstance() {
-        if(instance == null) {
-            instance = new Testmap();
-        }
-
-        return instance;
-    }
+/**
+ * Class for testing callbacks
+ */
+public class ArtistCallback extends _ArtistCallback {
+    private static final long serialVersionUID = 1L; 
+    
+    public void prePersistEntityObjEntity() {}
+    public void postPersistEntityObjEntity() {}
+    public void preUpdateEntityObjEntity() {}
+    public void postUpdateEntityObjEntity() {}
+    public void preRemoveEntityObjEntity() {}
+    public void postRemoveEntityObjEntity() {}
+    public void postLoadEntityObjEntity() {}
 }
+

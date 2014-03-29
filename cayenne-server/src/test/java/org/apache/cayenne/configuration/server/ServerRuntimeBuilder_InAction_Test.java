@@ -60,7 +60,7 @@ public class ServerRuntimeBuilder_InAction_Test extends ServerCase {
         tArtist.insert(33001, "AA1");
         tArtist.insert(33002, "AA2");
 
-        this.dataSource = runtime.getDataSource("testmap");
+        this.dataSource = runtime.getDataSource("tstmap");
     }
 
     public void testConfigFree_WithDataSource() {

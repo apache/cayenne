@@ -40,14 +40,14 @@ public class PropertyUtilsTest extends TestCase {
     public void testCreateAccessor() {
 
         Accessor accessor = PropertyUtils.createAccessor(
-                TestJavaBean.class,
+                TstJavaBean.class,
                 "byteArrayField");
         assertNotNull(accessor);
 
-        TestJavaBean o1 = createBean();
+        TstJavaBean o1 = createBean();
         assertSame(o1.getByteArrayField(), accessor.getValue(o1));
 
-        TestJavaBean o2 = new TestJavaBean();
+        TstJavaBean o2 = new TstJavaBean();
         assertNull(o2.getByteArrayField());
         accessor.setValue(o2, o1.getByteArrayField());
         assertNotNull(o2.getByteArrayField());
@@ -57,19 +57,19 @@ public class PropertyUtilsTest extends TestCase {
     public void testCreateAccessorNested() {
 
         Accessor accessor = PropertyUtils.createAccessor(
-                TestJavaBean.class,
+                TstJavaBean.class,
                 "related.byteArrayField");
         assertNotNull(accessor);
 
-        TestJavaBean o1 = createBean();
-        o1.setRelated(new TestJavaBean());
+        TstJavaBean o1 = createBean();
+        o1.setRelated(new TstJavaBean());
         o1.getRelated().setByteArrayField(new byte[] {
                 3, 4, 5
         });
         assertSame(o1.getRelated().getByteArrayField(), accessor.getValue(o1));
 
-        TestJavaBean o2 = new TestJavaBean();
-        o2.setRelated(new TestJavaBean());
+        TstJavaBean o2 = new TstJavaBean();
+        o2.setRelated(new TstJavaBean());
 
         byte[] b1 = new byte[] {
                 6, 7, 8
@@ -79,7 +79,7 @@ public class PropertyUtilsTest extends TestCase {
     }
 
     public void testGetProperty() {
-        TestJavaBean o1 = createBean();
+        TstJavaBean o1 = createBean();
 
         assertSame(o1.getByteArrayField(), PropertyUtils
                 .getProperty(o1, "byteArrayField"));
@@ -96,8 +96,8 @@ public class PropertyUtilsTest extends TestCase {
     }
 
     public void testSetProperty() {
-        TestJavaBean o1 = createBean();
-        TestJavaBean o2 = new TestJavaBean();
+        TstJavaBean o1 = createBean();
+        TstJavaBean o2 = new TstJavaBean();
 
         PropertyUtils.setProperty(o2, "byteArrayField", o1.getByteArrayField());
         PropertyUtils.setProperty(o2, "integerField", o1.getIntegerField());
@@ -139,7 +139,7 @@ public class PropertyUtilsTest extends TestCase {
     }
 
     public void testSetConverted() {
-        TestJavaBean o1 = new TestJavaBean();
+        TstJavaBean o1 = new TstJavaBean();
 
         // Object -> String
         Object object = new Object();
@@ -230,7 +230,7 @@ public class PropertyUtilsTest extends TestCase {
                 }
             });
 
-            TestJavaBean o1 = new TestJavaBean();
+            TstJavaBean o1 = new TstJavaBean();
 
             // String to date
             PropertyUtils.setProperty(o1, "dateField", "2013-08-01");
@@ -245,7 +245,7 @@ public class PropertyUtilsTest extends TestCase {
     }
     
     public void testSetNull() {
-        TestJavaBean o1 = new TestJavaBean();
+        TstJavaBean o1 = new TstJavaBean();
 
         o1.setStringField("xyz");
         PropertyUtils.setProperty(o1, "stringField", null);
@@ -292,8 +292,8 @@ public class PropertyUtilsTest extends TestCase {
         assertEquals(445, o1.getNumber());
     }
 
-    protected TestJavaBean createBean() {
-        TestJavaBean o1 = new TestJavaBean();
+    protected TstJavaBean createBean() {
+        TstJavaBean o1 = new TstJavaBean();
         o1.setByteArrayField(new byte[] {
                 1, 2, 3
         });

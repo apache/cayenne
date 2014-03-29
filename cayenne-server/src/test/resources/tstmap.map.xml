@@ -330,7 +330,7 @@
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
 	</obj-entity>
-	<obj-entity name="ArtistCallbackTest" className="org.apache.cayenne.testdo.testmap.ArtistCallbackTest" dbEntityName="ARTIST_CT" exclude-superclass-listeners="true" exclude-default-listeners="true">
+	<obj-entity name="ArtistCallback" className="org.apache.cayenne.testdo.testmap.ArtistCallback" dbEntityName="ARTIST_CT" exclude-superclass-listeners="true" exclude-default-listeners="true">
 		<obj-attribute name="artistName" type="java.lang.String"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
 		<post-add method-name="prePersistEntityObjEntity"/>

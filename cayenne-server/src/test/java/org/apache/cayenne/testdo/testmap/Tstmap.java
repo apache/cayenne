@@ -16,15 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.testdo.locking;
+package org.apache.cayenne.testdo.testmap;
 
-import org.apache.cayenne.testdo.locking.auto._SoftTest;
+import org.apache.cayenne.testdo.testmap.auto._Tstmap;
 
-public class SoftTest extends _SoftTest {
+public class Tstmap extends _Tstmap {
 
-    @Override
-    protected void onPrePersist() {
-        setDeleted(false);
+    private static Tstmap instance;
+
+    private Tstmap() {}
+
+    public static Tstmap getInstance() {
+        if(instance == null) {
+            instance = new Tstmap();
+        }
+
+        return instance;
     }
-
 }

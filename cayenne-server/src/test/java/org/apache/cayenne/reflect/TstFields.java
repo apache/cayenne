@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.reflect;
 
-public class TestFields {
+public class TstFields {
 
     protected String stringField;
     protected int intField;

@@ -26,7 +26,7 @@ import java.util.Date;
  * A non-persistent Java Bean. Useful for testing Cayenne operations that rely on
  * introspection.
  */
-public class TestBean {
+public class TstBean {
 
     protected Integer integer;
     protected String string;
@@ -34,32 +34,32 @@ public class TestBean {
     protected int property2;
     protected Date dateProperty;
     protected Collection<?> collection;
-    protected TestBean relatedBean;
+    protected TstBean relatedBean;
 
-    public static TestBean testFixtureWithCollection(
+    public static TstBean testFixtureWithCollection(
             String rootBaseName,
             String childBaseName) {
-        TestBean root = new TestBean(rootBaseName, 0);
+        TstBean root = new TstBean(rootBaseName, 0);
 
-        Collection<TestBean> collection = new ArrayList<TestBean>(10);
+        Collection<TstBean> collection = new ArrayList<TstBean>(10);
         for (int i = 0; i < 10; i++) {
-            collection.add(new TestBean(childBaseName + i, i));
+            collection.add(new TstBean(childBaseName + i, i));
         }
 
         root.setCollection(collection);
         return root;
     }
 
-    public TestBean() {
+    public TstBean() {
 
     }
 
-    public TestBean(String string, int intValue) {
+    public TstBean(String string, int intValue) {
         this.string = string;
         this.integer = new Integer(intValue);
     }
 
-    public TestBean(int intValue) {
+    public TstBean(int intValue) {
         integer = new Integer(intValue);
     }
 
@@ -111,11 +111,11 @@ public class TestBean {
         this.dateProperty = dateProperty;
     }
 
-    public TestBean getRelatedBean() {
+    public TstBean getRelatedBean() {
         return relatedBean;
     }
 
-    public void setRelatedBean(TestBean relatedBean) {
+    public void setRelatedBean(TstBean relatedBean) {
         this.relatedBean = relatedBean;
     }
 }
