@@ -18,18 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import javax.crypto.Cipher;
-
 /**
- * An encryptor or decryptor of a single value.
- * 
  * @since 3.2
  */
-public interface ValueTransformer {
+interface ToBytesConverter {
 
-    /**
-     * Transforms a value using the provided Cipher. Cipher is assumed to be
-     * fully initialized and its state reset from any previous operations.
-     */
-    Object transform(Cipher cipher, Object value);
+    byte[] toBytes(Object value);
 }

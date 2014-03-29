@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
+import org.apache.cayenne.map.DbAttribute;
+
 /**
  * A factory that creates transformers for encryption/decryption of individual
  * values.
@@ -26,7 +28,7 @@ package org.apache.cayenne.crypto.transformer.value;
  */
 public interface ValueTransformerFactory {
 
-    ValueTransformer encryptor(int jdbcType);
+    ValueTransformer encryptor(DbAttribute a);
 
-    ValueTransformer decryptor(int jdbcType);
+    ValueTransformer decryptor(DbAttribute a);
 }

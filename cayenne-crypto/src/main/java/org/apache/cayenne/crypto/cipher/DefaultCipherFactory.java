@@ -29,6 +29,9 @@ import org.apache.cayenne.crypto.CryptoConstants;
 import org.apache.cayenne.di.Inject;
 
 /**
+ * Creates and returns a new {@link Cipher} configured using properties from
+ * {@link CryptoConstants#PROPERTIES_MAP}.
+ * 
  * @since 3.2
  */
 public class DefaultCipherFactory implements CipherFactory {

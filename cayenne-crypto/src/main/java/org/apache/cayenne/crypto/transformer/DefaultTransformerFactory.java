@@ -79,7 +79,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
                 ColumnDescriptor cd = columns[cryptoColumns.get(i)];
                 keys[i] = cd.getDataRowKey();
-                transformers[i] = transformerFactory.decryptor(cd.getAttribute().getType());
+                transformers[i] = transformerFactory.decryptor(cd.getAttribute());
             }
 
             return new DefaultMapTransformer(keys, transformers, cipherFactory.cipher());
@@ -116,7 +116,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
                 int pos = cryptoColumns.get(i);
                 BatchParameterBinding b = bindings[pos];
                 positions[i] = pos;
-                transformers[i] = transformerFactory.encryptor(b.getAttribute().getType());
+                transformers[i] = transformerFactory.encryptor(b.getAttribute());
             }
 
             return new DefaultBindingsTransformer(positions, transformers, cipherFactory.cipher());

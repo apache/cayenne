@@ -57,7 +57,6 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
                     encryptor = cryptoFactory.encryptor(getBindings());
                     encryptorCompiled = true;
                 }
-
             }
 
             @Override

@@ -24,6 +24,7 @@ import javax.crypto.Cipher;
 
 import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
+import org.apache.cayenne.map.DbAttribute;
 
 public class Rot13TransformerFactory implements ValueTransformerFactory {
 
@@ -75,12 +76,12 @@ public class Rot13TransformerFactory implements ValueTransformerFactory {
     }
 
     @Override
-    public ValueTransformer decryptor(int jdbcType) {
+    public ValueTransformer decryptor(DbAttribute a) {
         return stringTransformer;
     }
 
     @Override
-    public ValueTransformer encryptor(int jdbcType) {
+    public ValueTransformer encryptor(DbAttribute a) {
         return stringTransformer;
     }
 }
