@@ -18,18 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.unit;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.cayenne.map.DbAttribute;
+import org.junit.Test;
 
-public class Rot13TransformerFactoryTest extends TestCase {
+public class Rot13TransformerFactoryTest {
 
+    @Test
     public void testEncrypt() {
 
         Rot13TransformerFactory factory = new Rot13TransformerFactory();
         assertEquals("nop", factory.encryptor(new DbAttribute()).transform(null, "abc"));
     }
 
+    @Test
     public void testDecrypt() {
 
         Rot13TransformerFactory factory = new Rot13TransformerFactory();

@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -34,15 +34,17 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.junit.Before;
+import org.junit.Test;
 
-public class Crypto_InRuntime_Test extends TestCase {
+public class Crypto_InRuntime_Test {
 
     private ServerRuntime runtime;
 
     private TableHelper table1;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
         Module crypto = new CryptoModuleBuilder().valueTransformer(Rot13TransformerFactory.class)
                 .columnMapper(new PatternColumnMapper("^CRYPTO_")).build();
@@ -55,6 +57,7 @@ public class Crypto_InRuntime_Test extends TestCase {
         table1.deleteAll();
     }
 
+    @Test
     public void testInsert() throws SQLException {
 
         ObjectContext context = runtime.newContext();
@@ -70,6 +73,7 @@ public class Crypto_InRuntime_Test extends TestCase {
         assertEquals(Rot13TransformerFactory.rotate("crypto_1"), data[2]);
     }
 
+    @Test
     public void testInsert_MultipleObjects() throws SQLException {
 
         ObjectContext context = runtime.newContext();
@@ -96,6 +100,7 @@ public class Crypto_InRuntime_Test extends TestCase {
         assertEquals(Rot13TransformerFactory.rotate("crypto_2"), cipherByPlain.get("b"));
     }
 
+    @Test
     public void test_SelectQuery() throws SQLException {
 
         table1.insert(1, "plain_1", Rot13TransformerFactory.rotate("crypto_1"));

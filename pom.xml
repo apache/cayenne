@@ -38,6 +38,10 @@
 	<properties>
 		<maven.build.timestamp.format>MMM dd yyyy HH:mm:ss</maven.build.timestamp.format>
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
+		
+		<!-- 2 junit generations will coexist for some time -->
+		<junit3.version>3.8.1</junit3.version>
+		<junit4.version>4.11</junit4.version>
 	</properties>
 
 	<url>http://cayenne.apache.org/</url>
@@ -447,7 +451,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>3.8.1</version>
+				<version>${junit3.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

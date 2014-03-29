@@ -18,12 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.map;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.cayenne.map.DbAttribute;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+public class PatternColumnMapperTest {
 
-public class PatternColumnMapperTest extends TestCase {
-
+    @Test
     public void testIsEncrypted() {
         PatternColumnMapper mapper = new PatternColumnMapper("^bla_");
 

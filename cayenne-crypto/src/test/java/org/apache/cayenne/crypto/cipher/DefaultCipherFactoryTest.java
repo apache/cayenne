@@ -18,50 +18,57 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.cipher;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.Cipher;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.apache.cayenne.crypto.CryptoConstants;
+import org.junit.Test;
 
-public class DefaultCipherFactoryTest extends TestCase {
+public class DefaultCipherFactoryTest {
 
+    @Test
     public void testConstructor() {
 
         Map<String, String> properties = new HashMap<String, String>();
-
-        try {
-            new DefaultCipherFactory(properties);
-            fail("Must have thrown");
-        } catch (CayenneCryptoException e) {
-            // expected
-        }
-
         properties.put(CryptoConstants.CIPHER_ALGORITHM, "AES");
-        try {
-            new DefaultCipherFactory(properties);
-            fail("Must have thrown");
-        } catch (CayenneCryptoException e) {
-            // expected
-        }
-
         properties.put(CryptoConstants.CIPHER_MODE, "CBC");
-        try {
-            new DefaultCipherFactory(properties);
-            fail("Must have thrown");
-        } catch (CayenneCryptoException e) {
-            // expected
-        }
-
         properties.put(CryptoConstants.CIPHER_PADDING, "PKCS5Padding");
+        
         DefaultCipherFactory f = new DefaultCipherFactory(properties);
         assertEquals("AES/CBC/PKCS5Padding", f.transformation);
     }
 
+    @Test(expected = CayenneCryptoException.class)
+    public void testConstructor_Missing3Props() {
+        Map<String, String> properties = new HashMap<String, String>();
+        
+        new DefaultCipherFactory(properties);
+    }
+
+    @Test(expected = CayenneCryptoException.class)
+    public void testConstructor_Missing2Props() {
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put(CryptoConstants.CIPHER_ALGORITHM, "AES");
+        
+        new DefaultCipherFactory(properties);
+    }
+
+    @Test(expected = CayenneCryptoException.class)
+    public void testConstructor_Missing1Props() {
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put(CryptoConstants.CIPHER_ALGORITHM, "AES");
+        properties.put(CryptoConstants.CIPHER_MODE, "CBC");
+        
+        new DefaultCipherFactory(properties);
+    }
+
+    @Test
     public void testGetCipher() {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put(CryptoConstants.CIPHER_ALGORITHM, "AES");

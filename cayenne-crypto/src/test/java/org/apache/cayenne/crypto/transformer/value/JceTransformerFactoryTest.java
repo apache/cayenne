@@ -18,29 +18,35 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.sql.Types;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Before;
+import org.junit.Test;
 
-public class JceTransformerFactoryTest extends TestCase {
+public class JceTransformerFactoryTest {
 
     private DbEntity t1;
     private DbEntity t2;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         ServerRuntime runtime = new ServerRuntime("cayenne-crypto.xml");
         this.t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
         this.t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
     }
 
+    @Test
     public void testGetJavaType() {
 
         JceTransformerFactory f = new JceTransformerFactory();
@@ -69,6 +75,7 @@ public class JceTransformerFactoryTest extends TestCase {
         assertEquals("java.lang.String", f.getJavaType(fakeA2));
     }
 
+    @Test
     public void testCreateEncryptor() {
         JceTransformerFactory f = new JceTransformerFactory();
 
