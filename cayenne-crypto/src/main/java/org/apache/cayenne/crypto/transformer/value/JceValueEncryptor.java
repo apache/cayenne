@@ -18,7 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+
+import org.apache.cayenne.crypto.CayenneCryptoException;
 
 /**
  * @since 3.2
@@ -33,7 +37,19 @@ public class JceValueEncryptor implements ValueTransformer {
 
     @Override
     public Object transform(Cipher cipher, Object value) {
-        throw new UnsupportedOperationException("TODO");
+
+        byte[] bytes = toBytes.toBytes(value);
+        byte[] transformed;
+
+        try {
+            transformed = cipher.doFinal(bytes);
+        } catch (IllegalBlockSizeException e) {
+            throw new CayenneCryptoException("Illegal block size", e);
+        } catch (BadPaddingException e) {
+            throw new CayenneCryptoException("Bad padding", e);
+        }
+
+        return transformed;
     }
 
 }

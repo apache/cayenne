@@ -29,7 +29,8 @@ public interface ValueTransformer {
 
     /**
      * Transforms a value using the provided Cipher. Cipher is assumed to be
-     * fully initialized and its state reset from any previous operations.
+     * fully initialized for the right operation (encryption or decryption) and
+     * its state reset from any previous operations.
      */
     Object transform(Cipher cipher, Object value);
 }
