@@ -22,6 +22,11 @@ import java.util.Map;
 
 import javax.crypto.Cipher;
 
+import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
+
+/**
+ * @since 3.2
+ */
 public class DefaultMapTransformer implements MapTransformer {
 
     private String[] keys;

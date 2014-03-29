@@ -16,38 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.transformer;
-
-import javax.crypto.Cipher;
-
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
-import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
+package org.apache.cayenne.crypto.transformer.value;
 
 /**
+ * A factory that creates transformers for encryption/decryption of individual
+ * values.
+ * 
  * @since 3.2
  */
-public class DefaultBindingsTransformer implements BindingsTransformer {
+public interface ValueTransformerFactory {
 
-    private int[] positions;
-    private ValueTransformer[] transformers;
-    private Cipher cipher;
+    ValueTransformer encryptor(int jdbcType);
 
-    public DefaultBindingsTransformer(int[] positions, ValueTransformer[] transformers, Cipher cipher) {
-        this.positions = positions;
-        this.transformers = transformers;
-        this.cipher = cipher;
-    }
-
-    @Override
-    public void transform(BatchParameterBinding[] bindings) {
-
-        int len = positions.length;
-
-        for (int i = 0; i < len; i++) {
-            BatchParameterBinding b = bindings[positions[i]];
-            Object transformed = transformers[i].transform(cipher, b.getValue());
-            b.setValue(transformed);
-        }
-    }
-
+    ValueTransformer decryptor(int jdbcType);
 }

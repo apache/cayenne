@@ -16,17 +16,29 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.transformer;
+package org.apache.cayenne.crypto.transformer.value;
 
 /**
- * A factory that creates transformers for encryption/decryption of individual
- * values.
+ * A {@link ValueTransformerFactory} that creates encryptors/decryptors that are
+ * taking advantage of the JCE (Java Cryptography Extension) ciphers.
  * 
  * @since 3.2
  */
-public interface ValueTransformerFactory {
+public class JceTransformerFactory implements ValueTransformerFactory {
 
-    ValueTransformer encryptor(int jdbcType);
+    public JceTransformerFactory() {
+        // TODO Auto-generated constructor stub
+    }
 
-    ValueTransformer decryptor(int jdbcType);
+    @Override
+    public ValueTransformer decryptor(int jdbcType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ValueTransformer encryptor(int jdbcType) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
 }

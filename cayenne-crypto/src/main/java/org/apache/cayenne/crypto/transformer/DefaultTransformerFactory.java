@@ -26,9 +26,14 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.map.ColumnMapper;
+import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
+import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
+/**
+ * @since 3.2
+ */
 public class DefaultTransformerFactory implements TransformerFactory {
 
     private CipherFactory cipherFactory;

@@ -27,7 +27,7 @@ import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
-import org.apache.cayenne.crypto.transformer.ValueTransformerFactory;
+import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 
