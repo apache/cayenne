@@ -28,7 +28,6 @@ import java.util.Map;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.db.Table1;
-import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.unit.Rot13TransformerFactory;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.SelectQuery;
@@ -37,7 +36,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Crypto_InRuntime_Rot13_Test {
+public class Runtime_Rot13_Test {
 
     private ServerRuntime runtime;
 
@@ -46,8 +45,7 @@ public class Crypto_InRuntime_Rot13_Test {
     @Before
     public void setUp() throws Exception {
 
-        Module crypto = new CryptoModuleBuilder().valueTransformer(Rot13TransformerFactory.class)
-                .columnMapper(new PatternColumnMapper("^CRYPTO_")).build();
+        Module crypto = new CryptoModuleBuilder().valueTransformer(Rot13TransformerFactory.class).build();
 
         this.runtime = new ServerRuntime("cayenne-crypto.xml", crypto);
 
