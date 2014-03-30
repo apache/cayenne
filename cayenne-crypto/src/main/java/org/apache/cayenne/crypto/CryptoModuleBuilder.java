@@ -28,7 +28,7 @@ import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
 import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.cipher.DefaultCipherFactory;
 import org.apache.cayenne.crypto.key.KeySource;
-import org.apache.cayenne.crypto.key.KeyStoreKeySource;
+import org.apache.cayenne.crypto.key.JceksKeySource;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
@@ -80,7 +80,7 @@ public class CryptoModuleBuilder {
         this.cipherPadding = DEFAULT_CIPHER_PADDING;
 
         this.cipherFactoryType = DefaultCipherFactory.class;
-        this.keySourceType = KeyStoreKeySource.class;
+        this.keySourceType = JceksKeySource.class;
 
         this.columnMapperPattern = "^CRYPTO_";
     }
@@ -127,7 +127,7 @@ public class CryptoModuleBuilder {
     }
 
     /**
-     * Sets a password used that unlocks a secret key.
+     * Sets a password that unlocks a secret key.
      */
     public CryptoModuleBuilder keyPassword(char[] password) {
         this.keyPassword = password;
@@ -217,7 +217,7 @@ public class CryptoModuleBuilder {
                         .put(CryptoConstants.CIPHER_PADDING, cipherPadding);
 
                 if (keyStoreUrl != null) {
-                    props.put(CryptoConstants.JCEKS_KEYSTORE_URL, keyStoreUrl);
+                    props.put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
                 }
 
                 // char[] credentials... stored as char[] to potentially allow

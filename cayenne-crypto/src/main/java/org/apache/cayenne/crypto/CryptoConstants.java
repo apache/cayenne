@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
+import org.apache.cayenne.crypto.key.KeySource;
+
 /**
  * @since 3.2
  */
@@ -40,10 +42,11 @@ public interface CryptoConstants {
     public static final String CIPHER_PADDING = "cayenne.crypto.cipher.padding";
 
     /**
-     * Defines a URL of a KeyStore of "jceks" type - the only type that supports
-     * secret key storage.
+     * Defines a URL of a KeyStore. The actual format depends on the
+     * {@link KeySource} implementation that will be reading it. E.g. it can be
+     * a "jceks" Java key store.
      */
-    public static final String JCEKS_KEYSTORE_URL = "cayenne.crypto.jceks.keystore.url";
+    public static final String KEYSTORE_URL = "cayenne.crypto.keystore.url";
 
     /**
      * A password to access a secret key within the keystore.

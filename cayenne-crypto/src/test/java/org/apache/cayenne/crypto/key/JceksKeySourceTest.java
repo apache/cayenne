@@ -31,7 +31,7 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.apache.cayenne.crypto.CryptoConstants;
 import org.junit.Test;
 
-public class KeyStoreKeySourceTest {
+public class JceksKeySourceTest {
 
     public static final char[] TEST_KEY_PASS = "testkeypass".toCharArray();
     public static final String KS1_JCEKS = "ks1.jceks";
@@ -40,7 +40,7 @@ public class KeyStoreKeySourceTest {
     public void testConstructor_NoUrl() {
         Map<String, String> props = new HashMap<String, String>();
         Map<String, char[]> creds = new HashMap<String, char[]>();
-        new KeyStoreKeySource(props, creds);
+        new JceksKeySource(props, creds);
     }
 
     @Test
@@ -50,12 +50,12 @@ public class KeyStoreKeySourceTest {
         assertNotNull(url);
 
         Map<String, String> props = new HashMap<String, String>();
-        props.put(CryptoConstants.JCEKS_KEYSTORE_URL, url.toExternalForm());
+        props.put(CryptoConstants.KEYSTORE_URL, url.toExternalForm());
 
         Map<String, char[]> creds = new HashMap<String, char[]>();
         creds.put(CryptoConstants.KEY_PASSWORD, TEST_KEY_PASS);
 
-        KeyStoreKeySource ks = new KeyStoreKeySource(props, creds);
+        JceksKeySource ks = new JceksKeySource(props, creds);
 
         assertNull(ks.getKey("no-such-key"));
 
