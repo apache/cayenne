@@ -33,7 +33,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.junit.Before;
 import org.junit.Test;
 
-public class JceTransformerFactoryTest {
+public class JceValueTransformerFactoryTest {
 
     private DbEntity t1;
     private DbEntity t2;
@@ -50,7 +50,7 @@ public class JceTransformerFactoryTest {
     @Test
     public void testGetJavaType() {
 
-        JceTransformerFactory f = new JceTransformerFactory();
+        JceValueTransformerFactory f = new JceValueTransformerFactory();
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
         assertEquals("java.lang.String", f.getJavaType(t1_ct));
@@ -78,7 +78,7 @@ public class JceTransformerFactoryTest {
 
     @Test
     public void testCreateEncryptor() {
-        JceTransformerFactory f = new JceTransformerFactory();
+        JceValueTransformerFactory f = new JceValueTransformerFactory();
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -99,7 +99,7 @@ public class JceTransformerFactoryTest {
 
     @Test
     public void testCreateDecryptor() {
-        JceTransformerFactory f = new JceTransformerFactory();
+        JceValueTransformerFactory f = new JceValueTransformerFactory();
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -128,7 +128,7 @@ public class JceTransformerFactoryTest {
 
     @Test
     public void testEncryptor() {
-        JceTransformerFactory f = new JceTransformerFactory();
+        JceValueTransformerFactory f = new JceValueTransformerFactory();
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -147,7 +147,7 @@ public class JceTransformerFactoryTest {
     
     @Test
     public void testDecryptor() {
-        JceTransformerFactory f = new JceTransformerFactory();
+        JceValueTransformerFactory f = new JceValueTransformerFactory();
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 

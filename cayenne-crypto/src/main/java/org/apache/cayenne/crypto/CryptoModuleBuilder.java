@@ -20,6 +20,7 @@ package org.apache.cayenne.crypto;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
@@ -29,6 +30,7 @@ import org.apache.cayenne.crypto.cipher.DefaultCipherFactory;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.key.KeyStoreKeySource;
 import org.apache.cayenne.crypto.map.ColumnMapper;
+import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
@@ -53,6 +55,7 @@ public class CryptoModuleBuilder {
 
     private Class<? extends ValueTransformerFactory> valueTransformerFactoryType;
 
+    private String columnMapperPattern;
     private ColumnMapper columnMapper;
     private Class<? extends ColumnMapper> columnMapperType;
 
@@ -61,7 +64,8 @@ public class CryptoModuleBuilder {
     private String cipherPadding;
     private Class<? extends CipherFactory> cipherFactoryType;
 
-    private String keyStoreUrl;
+    private URL keyStoreUrl;
+    private String keyStoreUrlString;
     private File keyStoreFile;
     private Class<? extends KeySource> keySourceType;
 
@@ -77,6 +81,8 @@ public class CryptoModuleBuilder {
 
         this.cipherFactoryType = DefaultCipherFactory.class;
         this.keySourceType = KeyStoreKeySource.class;
+
+        this.columnMapperPattern = "^CRYPTO_";
     }
 
     public CryptoModuleBuilder cipherAlgorithm(String algorithm) {
@@ -100,14 +106,23 @@ public class CryptoModuleBuilder {
     }
 
     public CryptoModuleBuilder columnMapper(Class<? extends ColumnMapper> columnMapperType) {
+        this.columnMapperPattern = null;
         this.columnMapperType = columnMapperType;
         this.columnMapper = null;
         return this;
     }
 
     public CryptoModuleBuilder columnMapper(ColumnMapper columnMapper) {
+        this.columnMapperPattern = null;
         this.columnMapperType = null;
         this.columnMapper = columnMapper;
+        return this;
+    }
+
+    public CryptoModuleBuilder columnMapper(String pattern) {
+        this.columnMapperPattern = pattern;
+        this.columnMapperType = null;
+        this.columnMapper = null;
         return this;
     }
 
@@ -121,13 +136,23 @@ public class CryptoModuleBuilder {
 
     public CryptoModuleBuilder keyStore(File file) {
         this.keyStoreUrl = null;
+        this.keyStoreUrlString = null;
         this.keyStoreFile = file;
 
         return this;
     }
 
     public CryptoModuleBuilder keyStore(String url) {
+        this.keyStoreUrl = null;
+        this.keyStoreUrlString = url;
+        this.keyStoreFile = null;
+
+        return this;
+    }
+
+    public CryptoModuleBuilder keyStore(URL url) {
         this.keyStoreUrl = url;
+        this.keyStoreUrlString = null;
         this.keyStoreFile = null;
 
         return this;
@@ -147,7 +172,7 @@ public class CryptoModuleBuilder {
             throw new IllegalStateException("'ValueTransformerFactory' is not initialized");
         }
 
-        if (columnMapperType == null && columnMapper == null) {
+        if (columnMapperType == null && columnMapper == null && columnMapperPattern == null) {
             throw new IllegalStateException("'ColumnMapper' is not initialized");
         }
 
@@ -162,7 +187,9 @@ public class CryptoModuleBuilder {
 
                 String keyStoreUrl = null;
                 if (CryptoModuleBuilder.this.keyStoreUrl != null) {
-                    keyStoreUrl = CryptoModuleBuilder.this.keyStoreUrl;
+                    keyStoreUrl = CryptoModuleBuilder.this.keyStoreUrl.toExternalForm();
+                } else if (CryptoModuleBuilder.this.keyStoreUrlString != null) {
+                    keyStoreUrl = CryptoModuleBuilder.this.keyStoreUrlString;
                 } else if (keyStoreFile != null) {
                     try {
                         keyStoreUrl = keyStoreFile.toURI().toURL().toExternalForm();
@@ -194,7 +221,9 @@ public class CryptoModuleBuilder {
                 binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
                 binder.bind(KeySource.class).to(keySourceType);
 
-                if (columnMapperType != null) {
+                if (columnMapperPattern != null) {
+                    binder.bind(ColumnMapper.class).toInstance(new PatternColumnMapper(columnMapperPattern));
+                } else if (columnMapperType != null) {
                     binder.bind(ColumnMapper.class).to(columnMapperType);
                 } else {
                     binder.bind(ColumnMapper.class).toInstance(columnMapper);

@@ -33,7 +33,8 @@ import org.junit.Test;
 
 public class KeyStoreKeySourceTest {
 
-    private static final char[] TEST_KEY_PASS = "testkeypass".toCharArray();
+    public static final char[] TEST_KEY_PASS = "testkeypass".toCharArray();
+    public static final String KS1_JCEKS = "ks1.jceks";
 
     @Test(expected = CayenneCryptoException.class)
     public void testConstructor_NoUrl() {
@@ -45,12 +46,12 @@ public class KeyStoreKeySourceTest {
     @Test
     public void testGetKey_JCEKS_DES() {
 
-        URL url = getClass().getResource("ks1.jceks");
+        URL url = getClass().getResource(KS1_JCEKS);
         assertNotNull(url);
 
         Map<String, String> props = new HashMap<String, String>();
         props.put(CryptoConstants.KEYSTORE_URL, url.toExternalForm());
-        
+
         Map<String, char[]> creds = new HashMap<String, char[]>();
         creds.put(CryptoConstants.KEY_PASSWORD, TEST_KEY_PASS);
 
@@ -65,7 +66,7 @@ public class KeyStoreKeySourceTest {
         Key k2 = ks.getKey("k2");
         assertNotNull(k2);
         assertEquals("DES", k2.getAlgorithm());
-        
+
         Key k3 = ks.getKey("k3");
         assertNotNull(k3);
         assertEquals("AES", k3.getAlgorithm());

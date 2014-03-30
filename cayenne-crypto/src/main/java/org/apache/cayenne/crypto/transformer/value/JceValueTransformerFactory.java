@@ -39,7 +39,7 @@ import org.apache.cayenne.map.ObjEntity;
  * 
  * @since 3.2
  */
-public class JceTransformerFactory implements ValueTransformerFactory {
+public class JceValueTransformerFactory implements ValueTransformerFactory {
 
     private Map<String, BytesConverter> objectToBytes;
     private Map<Integer, BytesConverter> dbToBytes;
@@ -50,7 +50,7 @@ public class JceTransformerFactory implements ValueTransformerFactory {
     private ConcurrentMap<DbAttribute, ValueTransformer> encryptors;
     private ConcurrentMap<DbAttribute, ValueTransformer> decryptors;
 
-    public JceTransformerFactory() {
+    public JceValueTransformerFactory() {
         this.encryptors = new ConcurrentHashMap<DbAttribute, ValueTransformer>();
         this.decryptors = new ConcurrentHashMap<DbAttribute, ValueTransformer>();
 
