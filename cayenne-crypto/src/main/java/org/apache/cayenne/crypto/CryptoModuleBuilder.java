@@ -34,6 +34,7 @@ import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 
 /**
@@ -62,6 +63,9 @@ public class CryptoModuleBuilder {
 
     private String keyStoreUrl;
     private File keyStoreFile;
+    private Class<? extends KeySource> keySourceType;
+
+    private char[] keyPassword;
 
     public CryptoModuleBuilder() {
 
@@ -72,6 +76,7 @@ public class CryptoModuleBuilder {
         this.cipherPadding = DEFAULT_CIPHER_PADDING;
 
         this.cipherFactoryType = DefaultCipherFactory.class;
+        this.keySourceType = KeyStoreKeySource.class;
     }
 
     public CryptoModuleBuilder cipherAlgorithm(String algorithm) {
@@ -106,6 +111,14 @@ public class CryptoModuleBuilder {
         return this;
     }
 
+    /**
+     * Sets a password used that unlocks a secret key.
+     */
+    public CryptoModuleBuilder keyPassword(char[] password) {
+        this.keyPassword = password;
+        return this;
+    }
+
     public CryptoModuleBuilder keyStore(File file) {
         this.keyStoreUrl = null;
         this.keyStoreFile = file;
@@ -117,6 +130,11 @@ public class CryptoModuleBuilder {
         this.keyStoreUrl = url;
         this.keyStoreFile = null;
 
+        return this;
+    }
+
+    public CryptoModuleBuilder keySource(Class<? extends KeySource> type) {
+        this.keySourceType = type;
         return this;
     }
 
@@ -137,37 +155,44 @@ public class CryptoModuleBuilder {
             throw new IllegalStateException("'CipherFactory' is not initialized");
         }
 
-        if (keyStoreUrl == null && keyStoreFile == null) {
-            throw new IllegalStateException("'keyStore' is not initialized");
-        }
-
-        final String keyStoreUrl;
-        if (this.keyStoreUrl != null) {
-            keyStoreUrl = this.keyStoreUrl;
-        } else {
-            try {
-                keyStoreUrl = keyStoreFile.toURI().toURL().toExternalForm();
-            } catch (MalformedURLException e) {
-                throw new IllegalStateException("Invalid keyStore file", e);
-            }
-        }
-
         return new Module() {
 
             @Override
             public void configure(Binder binder) {
 
-                // init default cipher settings
-                binder.<String> bindMap(CryptoConstants.PROPERTIES_MAP)
+                String keyStoreUrl = null;
+                if (CryptoModuleBuilder.this.keyStoreUrl != null) {
+                    keyStoreUrl = CryptoModuleBuilder.this.keyStoreUrl;
+                } else if (keyStoreFile != null) {
+                    try {
+                        keyStoreUrl = keyStoreFile.toURI().toURL().toExternalForm();
+                    } catch (MalformedURLException e) {
+                        throw new IllegalStateException("Invalid keyStore file", e);
+                    }
+                }
+
+                // String properties
+                MapBuilder<String> props = binder.<String> bindMap(CryptoConstants.PROPERTIES_MAP)
                         .put(CryptoConstants.CIPHER_ALGORITHM, cipherAlgoritm)
                         .put(CryptoConstants.CIPHER_MODE, cipherMode)
-                        .put(CryptoConstants.CIPHER_PADDING, cipherPadding)
-                        .put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
+                        .put(CryptoConstants.CIPHER_PADDING, cipherPadding);
+
+                if (keyStoreUrl != null) {
+                    props.put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
+                }
+
+                // char[] credentials... stored as char[] to potentially allow
+                // wiping them clean in memory...
+                MapBuilder<char[]> creds = binder.<char[]> bindMap(CryptoConstants.CREDENTIALS_MAP);
+
+                if (keyPassword != null) {
+                    creds.put(CryptoConstants.KEY_PASSWORD, keyPassword);
+                }
 
                 binder.bind(CipherFactory.class).to(cipherFactoryType);
                 binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
                 binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
-                binder.bind(KeySource.class).to(KeyStoreKeySource.class);
+                binder.bind(KeySource.class).to(keySourceType);
 
                 if (columnMapperType != null) {
                     binder.bind(ColumnMapper.class).to(columnMapperType);

@@ -24,9 +24,14 @@ package org.apache.cayenne.crypto;
 public interface CryptoConstants {
 
     /**
-     * An injection key for the map of the crypto properties.
+     * An injection key for the Map<String, String> of the crypto properties.
      */
     public static final String PROPERTIES_MAP = "cayenne.crypto.properties";
+
+    /**
+     * An injection key for the map Map<String, char[]> of credentials.
+     */
+    public static final String CREDENTIALS_MAP = "cayenne.crypto.properties";
 
     public static final String CIPHER_ALGORITHM = "cayenne.crypto.cipher.algorithm";
 
@@ -36,11 +41,8 @@ public interface CryptoConstants {
 
     public static final String KEYSTORE_URL = "cayenne.crypto.keystore.url";
 
-    public static final String KEYSTORE_PASSWORD = "cayenne.crypto.keystore.password";
-
     /**
-     * A password to access a secret key within the keystore. (As opposed to
-     * keystore password specified with KEYSTORE_PASSWORD property).
+     * A password to access a secret key within the keystore.
      */
     public static final String KEY_PASSWORD = "cayenne.crypto.key.password";
 

@@ -40,42 +40,40 @@ import org.apache.cayenne.di.Inject;
  */
 public class KeyStoreKeySource implements KeySource {
 
-    private KeyStore keyStore;
-    private char[] keyPasswordChars;
+    // this is the only standard keystore type that supports storing secret keys
+    private static final String JCEKS_KEYSTORE_TYPE = "jceks";
 
-    public KeyStoreKeySource(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties)
-            throws KeyStoreException {
+    private KeyStore keyStore;
+    private char[] keyPassword;
+
+    public KeyStoreKeySource(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties,
+            @Inject(CryptoConstants.CREDENTIALS_MAP) Map<String, char[]> credentials) {
 
         String keyStoreUrl = properties.get(CryptoConstants.KEYSTORE_URL);
         if (keyStoreUrl == null) {
             throw new CayenneCryptoException("KeyStore URL is not set. Property name: " + CryptoConstants.KEYSTORE_URL);
         }
 
-        String keyStorePassword = properties.get(CryptoConstants.KEYSTORE_PASSWORD);
-        // NULL password is valid, though not secure .. so no NULL validation
-
-        String keyPassword = properties.get(CryptoConstants.KEY_PASSWORD);
-        this.keyPasswordChars = keyPassword != null ? keyPassword.toCharArray() : null;
+        this.keyPassword = credentials.get(CryptoConstants.KEY_PASSWORD);
         // NULL password is valid, though not secure .. so no NULL validation
 
         try {
-            this.keyStore = createKeyStore(keyStoreUrl, keyStorePassword);
+            this.keyStore = createKeyStore(keyStoreUrl);
         } catch (Exception e) {
             throw new CayenneCryptoException("Error loading keystore at " + keyStoreUrl, e);
         }
     }
 
-    private KeyStore createKeyStore(String keyStoreUrl, String keyStorePassword) throws KeyStoreException, IOException,
+    private KeyStore createKeyStore(String keyStoreUrl) throws KeyStoreException, IOException,
             NoSuchAlgorithmException, CertificateException {
-        char[] keyStorePasswordChars = keyStorePassword != null ? keyStorePassword.toCharArray() : null;
 
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        KeyStore keyStore = KeyStore.getInstance(JCEKS_KEYSTORE_TYPE);
 
         URL url = new URL(keyStoreUrl);
         InputStream in = url.openStream();
 
         try {
-            keyStore.load(in, keyStorePasswordChars);
+            keyStore.load(in, null);
         } finally {
             in.close();
         }
@@ -86,7 +84,7 @@ public class KeyStoreKeySource implements KeySource {
     @Override
     public Key getKey(String alias) {
         try {
-            return keyStore.getKey(alias, keyPasswordChars);
+            return keyStore.getKey(alias, keyPassword);
         } catch (Exception e) {
             throw new CayenneCryptoException("Error accessing key for alias: " + alias, e);
         }
