@@ -29,12 +29,12 @@ import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
  */
 public class DefaultMapTransformer implements MapTransformer {
 
-    private String[] keys;
+    private String[] mapKeys;
     private ValueTransformer[] transformers;
     private Cipher cipher;
 
-    public DefaultMapTransformer(String[] keys, ValueTransformer[] transformers, Cipher cipher) {
-        this.keys = keys;
+    public DefaultMapTransformer(String[] mapKeys, ValueTransformer[] transformers, Cipher cipher) {
+        this.mapKeys = mapKeys;
         this.transformers = transformers;
         this.cipher = cipher;
     }
@@ -42,14 +42,14 @@ public class DefaultMapTransformer implements MapTransformer {
     @Override
     public void transform(Map<String, Object> map) {
 
-        int len = keys.length;
+        int len = mapKeys.length;
 
         for (int i = 0; i < len; i++) {
-            Object value = map.get(keys[i]);
+            Object value = map.get(mapKeys[i]);
 
             if (value != null) {
                 Object transformed = transformers[i].transform(cipher, value);
-                map.put(keys[i], transformed);
+                map.put(mapKeys[i], transformed);
             }
         }
     }

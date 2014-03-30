@@ -35,11 +35,12 @@ import org.apache.cayenne.query.QueryMetadata;
 public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
 
     private RowReaderFactory delegate;
-    private TransformerFactory cryptoFactory;
+    private TransformerFactory transformerFactory;
 
-    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate, @Inject TransformerFactory cryptoFactory) {
+    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate,
+            @Inject TransformerFactory transformerFactory) {
         this.delegate = delegate;
-        this.cryptoFactory = cryptoFactory;
+        this.transformerFactory = transformerFactory;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class CryptoRowReaderFactoryDecorator implements RowReaderFactory {
 
             private void ensureDecryptorCompiled(Object row) {
                 if (!decryptorCompiled) {
-                    decryptor = cryptoFactory.decryptor(descriptor.getColumns(), row);
+                    decryptor = transformerFactory.decryptor(descriptor.getColumns(), row);
                     decryptorCompiled = true;
                 }
             }

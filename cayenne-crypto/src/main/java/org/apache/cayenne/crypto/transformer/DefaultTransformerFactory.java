@@ -72,17 +72,17 @@ public class DefaultTransformerFactory implements TransformerFactory {
         if (cryptoColumns != null) {
 
             int dlen = cryptoColumns.size();
-            String[] keys = new String[dlen];
+            String[] mapKeys = new String[dlen];
             ValueTransformer[] transformers = new ValueTransformer[dlen];
 
             for (int i = 0; i < dlen; i++) {
 
                 ColumnDescriptor cd = columns[cryptoColumns.get(i)];
-                keys[i] = cd.getDataRowKey();
+                mapKeys[i] = cd.getDataRowKey();
                 transformers[i] = transformerFactory.decryptor(cd.getAttribute());
             }
 
-            return new DefaultMapTransformer(keys, transformers, cipherFactory.cipher());
+            return new DefaultMapTransformer(mapKeys, transformers, cipherFactory.cipher());
         }
 
         return null;
