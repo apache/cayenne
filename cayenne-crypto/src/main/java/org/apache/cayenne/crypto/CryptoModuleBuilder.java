@@ -134,27 +134,39 @@ public class CryptoModuleBuilder {
         return this;
     }
 
+    /**
+     * Instructs builder to use a given file to load keystore data. The KeyStore
+     * must be of "jceks" type and contain all needed secret keys for the target
+     * database.
+     */
     public CryptoModuleBuilder keyStore(File file) {
         this.keyStoreUrl = null;
         this.keyStoreUrlString = null;
         this.keyStoreFile = file;
-
         return this;
     }
 
+    /**
+     * Instructs builder to use a given URL to load keystore data. The KeyStore
+     * must be of "jceks" type and contain all needed secret keys for the target
+     * database.
+     */
     public CryptoModuleBuilder keyStore(String url) {
         this.keyStoreUrl = null;
         this.keyStoreUrlString = url;
         this.keyStoreFile = null;
-
         return this;
     }
 
+    /**
+     * Instructs builder to use a given URL to load keystore data. The KeyStore
+     * must be of "jceks" type and contain all needed secret keys for the target
+     * database.
+     */
     public CryptoModuleBuilder keyStore(URL url) {
         this.keyStoreUrl = url;
         this.keyStoreUrlString = null;
         this.keyStoreFile = null;
-
         return this;
     }
 
@@ -205,7 +217,7 @@ public class CryptoModuleBuilder {
                         .put(CryptoConstants.CIPHER_PADDING, cipherPadding);
 
                 if (keyStoreUrl != null) {
-                    props.put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
+                    props.put(CryptoConstants.JCEKS_KEYSTORE_URL, keyStoreUrl);
                 }
 
                 // char[] credentials... stored as char[] to potentially allow

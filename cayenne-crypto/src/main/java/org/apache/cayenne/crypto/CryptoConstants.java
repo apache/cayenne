@@ -39,7 +39,11 @@ public interface CryptoConstants {
 
     public static final String CIPHER_PADDING = "cayenne.crypto.cipher.padding";
 
-    public static final String KEYSTORE_URL = "cayenne.crypto.keystore.url";
+    /**
+     * Defines a URL of a KeyStore of "jceks" type - the only type that supports
+     * secret key storage.
+     */
+    public static final String JCEKS_KEYSTORE_URL = "cayenne.crypto.jceks.keystore.url";
 
     /**
      * A password to access a secret key within the keystore.

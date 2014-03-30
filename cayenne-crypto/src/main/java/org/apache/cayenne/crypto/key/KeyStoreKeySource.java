@@ -34,7 +34,9 @@ import org.apache.cayenne.di.Inject;
 
 /**
  * A {@link KeySource} based on a JDK KeyStore. DI properties are used to locate
- * the KeyStore and keys within it.
+ * the KeyStore and keys within it. Since Java only supports storing secret keys
+ * in a "jceks" type of of KeyStore, this class assumes that provided keystore
+ * is "jceks", and will throw if it is of a different type.
  * 
  * @since 3.2
  */
@@ -49,9 +51,9 @@ public class KeyStoreKeySource implements KeySource {
     public KeyStoreKeySource(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties,
             @Inject(CryptoConstants.CREDENTIALS_MAP) Map<String, char[]> credentials) {
 
-        String keyStoreUrl = properties.get(CryptoConstants.KEYSTORE_URL);
+        String keyStoreUrl = properties.get(CryptoConstants.JCEKS_KEYSTORE_URL);
         if (keyStoreUrl == null) {
-            throw new CayenneCryptoException("KeyStore URL is not set. Property name: " + CryptoConstants.KEYSTORE_URL);
+            throw new CayenneCryptoException("KeyStore URL is not set. Property name: " + CryptoConstants.JCEKS_KEYSTORE_URL);
         }
 
         this.keyPassword = credentials.get(CryptoConstants.KEY_PASSWORD);

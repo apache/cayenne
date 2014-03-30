@@ -50,7 +50,7 @@ public class KeyStoreKeySourceTest {
         assertNotNull(url);
 
         Map<String, String> props = new HashMap<String, String>();
-        props.put(CryptoConstants.KEYSTORE_URL, url.toExternalForm());
+        props.put(CryptoConstants.JCEKS_KEYSTORE_URL, url.toExternalForm());
 
         Map<String, char[]> creds = new HashMap<String, char[]>();
         creds.put(CryptoConstants.KEY_PASSWORD, TEST_KEY_PASS);
