@@ -18,11 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
 import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.cipher.DefaultCipherFactory;
+import org.apache.cayenne.crypto.key.KeySource;
+import org.apache.cayenne.crypto.key.KeyStoreKeySource;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
@@ -54,6 +59,9 @@ public class CryptoModuleBuilder {
     private String cipherMode;
     private String cipherPadding;
     private Class<? extends CipherFactory> cipherFactoryType;
+
+    private String keyStoreUrl;
+    private File keyStoreFile;
 
     public CryptoModuleBuilder() {
 
@@ -98,6 +106,20 @@ public class CryptoModuleBuilder {
         return this;
     }
 
+    public CryptoModuleBuilder keyStore(File file) {
+        this.keyStoreUrl = null;
+        this.keyStoreFile = file;
+
+        return this;
+    }
+
+    public CryptoModuleBuilder keyStore(String url) {
+        this.keyStoreUrl = url;
+        this.keyStoreFile = null;
+
+        return this;
+    }
+
     /**
      * Produces a module that can be used to start Cayenne runtime.
      */
@@ -115,19 +137,37 @@ public class CryptoModuleBuilder {
             throw new IllegalStateException("'CipherFactory' is not initialized");
         }
 
+        if (keyStoreUrl == null && keyStoreFile == null) {
+            throw new IllegalStateException("'keyStore' is not initialized");
+        }
+
+        final String keyStoreUrl;
+        if (this.keyStoreUrl != null) {
+            keyStoreUrl = this.keyStoreUrl;
+        } else {
+            try {
+                keyStoreUrl = keyStoreFile.toURI().toURL().toExternalForm();
+            } catch (MalformedURLException e) {
+                throw new IllegalStateException("Invalid keyStore file", e);
+            }
+        }
+
         return new Module() {
 
             @Override
             public void configure(Binder binder) {
 
                 // init default cipher settings
-                binder.bindMap(CryptoConstants.PROPERTIES_MAP).put(CryptoConstants.CIPHER_ALGORITHM, cipherAlgoritm)
+                binder.<String> bindMap(CryptoConstants.PROPERTIES_MAP)
+                        .put(CryptoConstants.CIPHER_ALGORITHM, cipherAlgoritm)
                         .put(CryptoConstants.CIPHER_MODE, cipherMode)
-                        .put(CryptoConstants.CIPHER_PADDING, cipherPadding);
+                        .put(CryptoConstants.CIPHER_PADDING, cipherPadding)
+                        .put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
 
                 binder.bind(CipherFactory.class).to(cipherFactoryType);
                 binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
                 binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
+                binder.bind(KeySource.class).to(KeyStoreKeySource.class);
 
                 if (columnMapperType != null) {
                     binder.bind(ColumnMapper.class).to(columnMapperType);

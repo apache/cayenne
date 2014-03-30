@@ -16,32 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto;
+package org.apache.cayenne.crypto.key;
 
-/**
- * @since 3.2
- */
-public interface CryptoConstants {
+import java.security.Key;
 
-    /**
-     * An injection key for the map of the crypto properties.
-     */
-    public static final String PROPERTIES_MAP = "cayenne.crypto.properties";
-
-    public static final String CIPHER_ALGORITHM = "cayenne.crypto.cipher.algorithm";
-
-    public static final String CIPHER_MODE = "cayenne.crypto.cipher.mode";
-
-    public static final String CIPHER_PADDING = "cayenne.crypto.cipher.padding";
-
-    public static final String KEYSTORE_URL = "cayenne.crypto.keystore.url";
-
-    public static final String KEYSTORE_PASSWORD = "cayenne.crypto.keystore.password";
+public interface KeySource {
 
     /**
-     * A password to access a secret key within the keystore. (As opposed to
-     * keystore password specified with KEYSTORE_PASSWORD property).
+     * Returns a named secret key that can be used for data
+     * encryption/decryption.
      */
-    public static final String KEY_PASSWORD = "cayenne.crypto.key.password";
+    Key getKey(String alias);
 
 }
