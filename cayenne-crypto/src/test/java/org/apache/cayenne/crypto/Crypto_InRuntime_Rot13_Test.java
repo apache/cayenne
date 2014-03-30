@@ -37,7 +37,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Crypto_InRuntime_Test {
+public class Crypto_InRuntime_Rot13_Test {
 
     private ServerRuntime runtime;
 
