@@ -31,7 +31,7 @@ public interface CryptoConstants {
     public static final String PROPERTIES_MAP = "cayenne.crypto.properties";
 
     /**
-     * An injection key for the map Map<String, char[]> of credentials.
+     * An injection key for the Map<String, char[]> of credentials.
      */
     public static final String CREDENTIALS_MAP = "cayenne.crypto.properties";
 
