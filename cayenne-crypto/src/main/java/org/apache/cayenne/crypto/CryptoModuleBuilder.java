@@ -34,6 +34,8 @@ import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
+import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
+import org.apache.cayenne.crypto.transformer.bytes.DefaultBytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
@@ -231,6 +233,7 @@ public class CryptoModuleBuilder {
                 binder.bind(CipherFactory.class).to(cipherFactoryType);
                 binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
                 binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
+                binder.bind(BytesTransformerFactory.class).to(DefaultBytesTransformerFactory.class);
                 binder.bind(KeySource.class).to(keySourceType);
 
                 if (columnMapperPattern != null) {

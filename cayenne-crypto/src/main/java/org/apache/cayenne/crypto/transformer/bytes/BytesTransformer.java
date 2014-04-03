@@ -16,28 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
-
-import javax.crypto.Cipher;
+package org.apache.cayenne.crypto.transformer.bytes;
 
 /**
  * @since 3.2
  */
-public interface CipherFactory {
+public interface BytesTransformer {
 
     /**
-     * Creates and returns a new {@link Cipher} configured using settings known
-     * to the factory implementation.
-     * 
-     * @return a new Cipher that is guaranteed to be unused by other callers or
-     *         null if the factory does not support cipher-based encryption.
+     * Returns the size of the transformed data in bytes. This information
+     * allows the caller to pre-size the output array.
      */
-    Cipher cipher();
+    int getOutputSize(int inputLength);
 
-    /**
-     * Returns the block size for the ciphers created by this factory. This
-     * information is needed for the callers to presize they various arrays
-     * before a cipher is available.
-     */
-    int blockSize();
+    void transform(byte[] input, byte[] output, int outputOffset);
 }

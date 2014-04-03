@@ -37,6 +37,7 @@ import org.apache.cayenne.di.Inject;
 public class DefaultCipherFactory implements CipherFactory {
 
     protected String transformation;
+    protected int blockSize;
 
     public DefaultCipherFactory(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties) {
         String algorithm = properties.get(CryptoConstants.CIPHER_ALGORITHM);
@@ -58,6 +59,7 @@ public class DefaultCipherFactory implements CipherFactory {
         }
 
         this.transformation = algorithm + "/" + mode + "/" + padding;
+        this.blockSize = cipher().getBlockSize();
     }
 
     @Override
@@ -69,5 +71,10 @@ public class DefaultCipherFactory implements CipherFactory {
         } catch (NoSuchPaddingException e) {
             throw new CayenneCryptoException("Error instantiating a cipher - no such padding: " + transformation, e);
         }
+    }
+    
+    @Override
+    public int blockSize() {
+        return blockSize;
     }
 }

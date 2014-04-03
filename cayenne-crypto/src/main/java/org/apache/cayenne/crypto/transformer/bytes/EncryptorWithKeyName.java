@@ -16,28 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.transformer.bytes;
 
-import javax.crypto.Cipher;
+public class EncryptorWithKeyName implements BytesTransformer {
 
-/**
- * @since 3.2
- */
-public interface CipherFactory {
+    private BytesTransformer delegate;
+    private int blockSize;
+    private byte[] keyName;
 
-    /**
-     * Creates and returns a new {@link Cipher} configured using settings known
-     * to the factory implementation.
-     * 
-     * @return a new Cipher that is guaranteed to be unused by other callers or
-     *         null if the factory does not support cipher-based encryption.
-     */
-    Cipher cipher();
+    public EncryptorWithKeyName(BytesTransformer delegate, byte[] keyName, int blockSize) {
+        this.delegate = delegate;
+        this.blockSize = blockSize;
+        this.keyName = keyName;
+    }
 
-    /**
-     * Returns the block size for the ciphers created by this factory. This
-     * information is needed for the callers to presize they various arrays
-     * before a cipher is available.
-     */
-    int blockSize();
+    @Override
+    public int getOutputSize(int inputLength) {
+        // add one block for key name storage
+        return blockSize + delegate.getOutputSize(inputLength);
+    }
+
+    @Override
+    public void transform(byte[] input, byte[] output, int outputOffset) {
+        System.arraycopy(keyName, 0, output, outputOffset, blockSize);
+        delegate.transform(input, output, outputOffset + blockSize);
+    }
+
 }

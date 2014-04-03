@@ -16,28 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
+package org.apache.cayenne.crypto.transformer.bytes;
 
-import javax.crypto.Cipher;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-/**
- * @since 3.2
- */
-public interface CipherFactory {
+import java.io.UnsupportedEncodingException;
 
-    /**
-     * Creates and returns a new {@link Cipher} configured using settings known
-     * to the factory implementation.
-     * 
-     * @return a new Cipher that is guaranteed to be unused by other callers or
-     *         null if the factory does not support cipher-based encryption.
-     */
-    Cipher cipher();
+import org.junit.Test;
 
-    /**
-     * Returns the block size for the ciphers created by this factory. This
-     * information is needed for the callers to presize they various arrays
-     * before a cipher is available.
-     */
-    int blockSize();
+public class EncryptorWithKeyNameTest {
+
+    @Test
+    public void testGetOutputSize() throws UnsupportedEncodingException {
+
+        byte[] keyName = "mykey".getBytes("UTF-8");
+        BytesTransformer delegate = mock(BytesTransformer.class);
+        when(delegate.getOutputSize(8)).thenReturn(8);
+
+        // try with non-standard block size..
+        EncryptorWithKeyName encryptor = new EncryptorWithKeyName(delegate, keyName, 17);
+        assertEquals(25, encryptor.getOutputSize(8));
+    }
+
 }

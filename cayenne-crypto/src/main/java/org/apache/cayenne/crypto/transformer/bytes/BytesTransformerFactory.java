@@ -16,28 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.cipher;
-
-import javax.crypto.Cipher;
+package org.apache.cayenne.crypto.transformer.bytes;
 
 /**
+ * A class that encapsulates Cayenne cryptography protocol, which is usually
+ * dependent on the encryption mode.
+ * 
  * @since 3.2
  */
-public interface CipherFactory {
+public interface BytesTransformerFactory {
 
-    /**
-     * Creates and returns a new {@link Cipher} configured using settings known
-     * to the factory implementation.
-     * 
-     * @return a new Cipher that is guaranteed to be unused by other callers or
-     *         null if the factory does not support cipher-based encryption.
-     */
-    Cipher cipher();
+    BytesTransformer encryptor();
 
-    /**
-     * Returns the block size for the ciphers created by this factory. This
-     * information is needed for the callers to presize they various arrays
-     * before a cipher is available.
-     */
-    int blockSize();
+    BytesTransformer decryptor();
 }
