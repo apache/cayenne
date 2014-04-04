@@ -52,8 +52,8 @@ public class CAY_115Test extends ServerCase {
     
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("CLOB_MASTER");
         dbHelper.deleteAll("CLOB_DETAIL");
+        dbHelper.deleteAll("CLOB_MASTER");
         
         tClobMaster = new TableHelper(dbHelper, "CLOB_MASTER");
         tClobMaster.setColumns("CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
