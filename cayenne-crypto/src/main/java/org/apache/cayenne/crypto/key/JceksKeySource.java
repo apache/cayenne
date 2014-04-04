@@ -65,10 +65,10 @@ public class JceksKeySource implements KeySource {
             throw new CayenneCryptoException("Error loading keystore at " + keyStoreUrl, e);
         }
 
-        this.defaultKeyAlias = properties.get(CryptoConstants.DEFAULT_KEY_ALIAS);
+        this.defaultKeyAlias = properties.get(CryptoConstants.ENCRYPTION_KEY_ALIAS);
         if (defaultKeyAlias == null) {
             throw new CayenneCryptoException("Default key alias is not set. Property name: "
-                    + CryptoConstants.DEFAULT_KEY_ALIAS);
+                    + CryptoConstants.ENCRYPTION_KEY_ALIAS);
         }
     }
 

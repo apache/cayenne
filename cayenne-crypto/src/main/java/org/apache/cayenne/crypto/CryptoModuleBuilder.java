@@ -74,8 +74,7 @@ public class CryptoModuleBuilder {
     private Class<? extends KeySource> keySourceType;
     private KeySource keySource;
 
-    private String defaultKeyAlias;
-
+    private String encryptionKeyAlias;
     private char[] keyPassword;
 
     public CryptoModuleBuilder() {
@@ -114,7 +113,7 @@ public class CryptoModuleBuilder {
         this.valueTransformerFactoryType = factoryType;
         return this;
     }
-    
+
     public CryptoModuleBuilder bytesTransformer(Class<? extends BytesTransformerFactory> factoryType) {
         this.bytesTransformerFactoryType = factoryType;
         return this;
@@ -142,19 +141,21 @@ public class CryptoModuleBuilder {
     }
 
     /**
-     * Sets a password that unlocks a secret key.
+     * Configures keystore parameters. The KeyStore must be of "jceks" type and
+     * contain all needed secret keys for the target database. Currently all
+     * keys must be protected with the same password.
+     * 
+     * @param file
+     *            A file to load keystore from.
+     * @param passwordForAllKeys
+     *            A password that unlocks all keys in the keystore.
+     * @param encryptionKeyAlias
+     *            The name of the key in the keystore that should be used for
+     *            encryption by default.
      */
-    public CryptoModuleBuilder keyPassword(char[] password) {
-        this.keyPassword = password;
-        return this;
-    }
-
-    /**
-     * Instructs builder to use a given file to load keystore data. The KeyStore
-     * must be of "jceks" type and contain all needed secret keys for the target
-     * database.
-     */
-    public CryptoModuleBuilder keyStore(File file) {
+    public CryptoModuleBuilder keyStore(File file, char[] passwordForAllKeys, String encryptionKeyAlias) {
+        this.encryptionKeyAlias = encryptionKeyAlias;
+        this.keyPassword = passwordForAllKeys;
         this.keyStoreUrl = null;
         this.keyStoreUrlString = null;
         this.keyStoreFile = file;
@@ -162,11 +163,21 @@ public class CryptoModuleBuilder {
     }
 
     /**
-     * Instructs builder to use a given URL to load keystore data. The KeyStore
-     * must be of "jceks" type and contain all needed secret keys for the target
-     * database.
+     * Configures keystore parameters. The KeyStore must be of "jceks" type and
+     * contain all needed secret keys for the target database. Currently all
+     * keys must be protected with the same password.
+     * 
+     * @param url
+     *            A URL to load keystore from.
+     * @param passwordForAllKeys
+     *            A password that unlocks all keys in the keystore.
+     * @param encryptionKeyAlias
+     *            The name of the key in the keystore that should be used for
+     *            encryption by default.
      */
-    public CryptoModuleBuilder keyStore(String url) {
+    public CryptoModuleBuilder keyStore(String url, char[] passwordForAllKeys, String encryptionKeyAlias) {
+        this.encryptionKeyAlias = encryptionKeyAlias;
+        this.keyPassword = passwordForAllKeys;
         this.keyStoreUrl = null;
         this.keyStoreUrlString = url;
         this.keyStoreFile = null;
@@ -174,11 +185,21 @@ public class CryptoModuleBuilder {
     }
 
     /**
-     * Instructs builder to use a given URL to load keystore data. The KeyStore
-     * must be of "jceks" type and contain all needed secret keys for the target
-     * database.
+     * Configures keystore parameters. The KeyStore must be of "jceks" type and
+     * contain all needed secret keys for the target database. Currently all
+     * keys must be protected with the same password.
+     * 
+     * @param url
+     *            A URL to load keystore from.
+     * @param passwordForAllKeys
+     *            A password that unlocks all keys in the keystore.
+     * @param encryptionKeyAlias
+     *            The name of the key in the keystore that should be used for
+     *            encryption by default.
      */
-    public CryptoModuleBuilder keyStore(URL url) {
+    public CryptoModuleBuilder keyStore(URL url, char[] passwordForAllKeys, String encryptionKeyAlias) {
+        this.encryptionKeyAlias = encryptionKeyAlias;
+        this.keyPassword = passwordForAllKeys;
         this.keyStoreUrl = url;
         this.keyStoreUrlString = null;
         this.keyStoreFile = null;
@@ -194,11 +215,6 @@ public class CryptoModuleBuilder {
     public CryptoModuleBuilder keySource(KeySource keySource) {
         this.keySourceType = null;
         this.keySource = keySource;
-        return this;
-    }
-
-    public CryptoModuleBuilder defaultKeyAlias(String defaultKeyAlias) {
-        this.defaultKeyAlias = defaultKeyAlias;
         return this;
     }
 
@@ -247,8 +263,8 @@ public class CryptoModuleBuilder {
                     props.put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
                 }
 
-                if (defaultKeyAlias != null) {
-                    props.put(CryptoConstants.DEFAULT_KEY_ALIAS, defaultKeyAlias);
+                if (encryptionKeyAlias != null) {
+                    props.put(CryptoConstants.ENCRYPTION_KEY_ALIAS, encryptionKeyAlias);
                 }
 
                 // char[] credentials... stored as char[] to potentially allow

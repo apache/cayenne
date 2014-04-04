@@ -49,13 +49,13 @@ public interface CryptoConstants {
     public static final String KEYSTORE_URL = "cayenne.crypto.keystore.url";
 
     /**
-     * A password to access a secret key within the keystore.
+     * A password to access all secret keys within the keystore.
      */
     public static final String KEY_PASSWORD = "cayenne.crypto.key.password";
 
     /**
      * A symbolic name of the default encryption key in the keystore.
      */
-    public static final String DEFAULT_KEY_ALIAS = "cayenne.crypto.key.defaultalias";
+    public static final String ENCRYPTION_KEY_ALIAS = "cayenne.crypto.key.enc.alias";
 
 }

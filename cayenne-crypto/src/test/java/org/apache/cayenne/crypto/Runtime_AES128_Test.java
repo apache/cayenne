@@ -21,6 +21,7 @@ package org.apache.cayenne.crypto;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.db.Table1;
 import org.apache.cayenne.crypto.db.Table2;
+import org.apache.cayenne.crypto.key.JceksKeySourceTest;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.SelectQuery;
@@ -48,7 +50,8 @@ public class Runtime_AES128_Test {
     @Before
     public void setUp() throws Exception {
 
-        Module crypto = new CryptoModuleBuilder().build();
+        URL keyStoreUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
+        Module crypto = new CryptoModuleBuilder().keyStore(keyStoreUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1").build();
 
         this.runtime = new ServerRuntime("cayenne-crypto.xml", crypto);
 
