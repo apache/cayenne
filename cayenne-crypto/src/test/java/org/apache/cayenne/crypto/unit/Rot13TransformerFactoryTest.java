@@ -29,14 +29,14 @@ public class Rot13TransformerFactoryTest {
     public void testEncrypt() {
 
         Rot13TransformerFactory factory = new Rot13TransformerFactory();
-        assertEquals("nop", factory.encryptor(new DbAttribute()).transform(null, "abc"));
+        assertEquals("nop", factory.encryptor(new DbAttribute()).encrypt(null, "abc"));
     }
 
     @Test
     public void testDecrypt() {
 
         Rot13TransformerFactory factory = new Rot13TransformerFactory();
-        assertEquals("nop", factory.decryptor(new DbAttribute()).transform(null, "abc"));
+        assertEquals("nop", factory.decryptor(new DbAttribute()).decrypt(null, "abc"));
     }
 
 }

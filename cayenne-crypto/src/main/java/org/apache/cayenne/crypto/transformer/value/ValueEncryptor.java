@@ -16,41 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.transformer;
-
-import java.util.Map;
+package org.apache.cayenne.crypto.transformer.value;
 
 import javax.crypto.Cipher;
 
-import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
-
 /**
+ * An encryptor or decryptor of a single value.
+ * 
  * @since 3.2
  */
-public class DefaultMapTransformer implements MapTransformer {
+public interface ValueEncryptor {
 
-    private String[] mapKeys;
-    private ValueDecryptor[] transformers;
-    private Cipher cipher;
-
-    public DefaultMapTransformer(String[] mapKeys, ValueDecryptor[] transformers, Cipher cipher) {
-        this.mapKeys = mapKeys;
-        this.transformers = transformers;
-        this.cipher = cipher;
-    }
-
-    @Override
-    public void transform(Map<String, Object> map) {
-
-        int len = mapKeys.length;
-
-        for (int i = 0; i < len; i++) {
-            Object value = map.get(mapKeys[i]);
-
-            if (value != null) {
-                Object transformed = transformers[i].decrypt(cipher, value);
-                map.put(mapKeys[i], transformed);
-            }
-        }
-    }
+    /**
+     * Transforms a value using the provided Cipher. Cipher is assumed to be
+     * fully initialized for the right operation (encryption or decryption) and
+     * its state reset from any previous operations.
+     */
+    Object encrypt(Cipher cipher, Object value);
 }

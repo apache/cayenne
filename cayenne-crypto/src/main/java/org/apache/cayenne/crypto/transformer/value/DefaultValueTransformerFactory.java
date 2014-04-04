@@ -39,7 +39,7 @@ import org.apache.cayenne.map.ObjEntity;
  * 
  * @since 3.2
  */
-public class JceValueTransformerFactory implements ValueTransformerFactory {
+public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
     private Map<String, BytesConverter> objectToBytes;
     private Map<Integer, BytesConverter> dbToBytes;
@@ -47,12 +47,12 @@ public class JceValueTransformerFactory implements ValueTransformerFactory {
     private Map<String, BytesConverter> bytesToObject;
     private Map<Integer, BytesConverter> bytesToDb;
 
-    private ConcurrentMap<DbAttribute, ValueTransformer> encryptors;
-    private ConcurrentMap<DbAttribute, ValueTransformer> decryptors;
+    private ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
+    private ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
 
-    public JceValueTransformerFactory() {
-        this.encryptors = new ConcurrentHashMap<DbAttribute, ValueTransformer>();
-        this.decryptors = new ConcurrentHashMap<DbAttribute, ValueTransformer>();
+    public DefaultValueTransformerFactory() {
+        this.encryptors = new ConcurrentHashMap<DbAttribute, ValueEncryptor>();
+        this.decryptors = new ConcurrentHashMap<DbAttribute, ValueDecryptor>();
 
         this.objectToBytes = createObjectToBytesConverters();
         this.dbToBytes = createDbToBytesConverters();
@@ -61,13 +61,13 @@ public class JceValueTransformerFactory implements ValueTransformerFactory {
     }
 
     @Override
-    public ValueTransformer decryptor(DbAttribute a) {
-        ValueTransformer e = decryptors.get(a);
+    public ValueDecryptor decryptor(DbAttribute a) {
+        ValueDecryptor e = decryptors.get(a);
 
         if (e == null) {
 
-            ValueTransformer newTransformer = createDecryptor(a);
-            ValueTransformer oldTransformer = decryptors.putIfAbsent(a, newTransformer);
+            ValueDecryptor newTransformer = createDecryptor(a);
+            ValueDecryptor oldTransformer = decryptors.putIfAbsent(a, newTransformer);
 
             e = oldTransformer != null ? oldTransformer : newTransformer;
         }
@@ -76,13 +76,13 @@ public class JceValueTransformerFactory implements ValueTransformerFactory {
     }
 
     @Override
-    public ValueTransformer encryptor(DbAttribute a) {
-        ValueTransformer e = encryptors.get(a);
+    public ValueEncryptor encryptor(DbAttribute a) {
+        ValueEncryptor e = encryptors.get(a);
 
         if (e == null) {
 
-            ValueTransformer newTransformer = createEncryptor(a);
-            ValueTransformer oldTransformer = encryptors.putIfAbsent(a, newTransformer);
+            ValueEncryptor newTransformer = createEncryptor(a);
+            ValueEncryptor oldTransformer = encryptors.putIfAbsent(a, newTransformer);
 
             e = oldTransformer != null ? oldTransformer : newTransformer;
         }
@@ -141,7 +141,7 @@ public class JceValueTransformerFactory implements ValueTransformerFactory {
         return map;
     }
 
-    protected ValueTransformer createEncryptor(DbAttribute a) {
+    protected ValueEncryptor createEncryptor(DbAttribute a) {
 
         String type = getJavaType(a);
 
@@ -157,10 +157,10 @@ public class JceValueTransformerFactory implements ValueTransformerFactory {
                     + " for attribute " + a + " has no bytes-to-db conversion");
         }
 
-        return new JceValueTransformer(toBytes, fromBytes);
+        return new DefaultEncryptor(toBytes, fromBytes);
     }
 
-    protected ValueTransformer createDecryptor(DbAttribute a) {
+    protected ValueDecryptor createDecryptor(DbAttribute a) {
 
         BytesConverter toBytes = dbToBytes.get(a.getType());
         if (toBytes == null) {
@@ -175,7 +175,7 @@ public class JceValueTransformerFactory implements ValueTransformerFactory {
                     + " has no bytes-to-object conversion");
         }
 
-        return new JceValueTransformer(toBytes, fromBytes);
+        return new DefaultDecryptor(toBytes, fromBytes);
     }
 
     // TODO: calculating Java type of ObjAttribute may become unneeded per

@@ -22,13 +22,15 @@ import java.io.UnsupportedEncodingException;
 
 import javax.crypto.Cipher;
 
-import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
+import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
+import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.map.DbAttribute;
 
 public class Rot13TransformerFactory implements ValueTransformerFactory {
 
-    private ValueTransformer stringTransformer;
+    private ValueEncryptor stringEncryptor;
+    private ValueDecryptor stringDecryptor;
 
     public static String rotate(String value) {
         if (value == null) {
@@ -65,10 +67,18 @@ public class Rot13TransformerFactory implements ValueTransformerFactory {
     }
 
     public Rot13TransformerFactory() {
-        this.stringTransformer = new ValueTransformer() {
+        this.stringEncryptor = new ValueEncryptor() {
 
             @Override
-            public Object transform(Cipher cipher, Object value) {
+            public Object encrypt(Cipher cipher, Object value) {
+                return value != null ? rotate(value.toString()) : null;
+            }
+        };
+        
+        this.stringDecryptor = new ValueDecryptor() {
+
+            @Override
+            public Object decrypt(Cipher cipher, Object value) {
                 return value != null ? rotate(value.toString()) : null;
             }
         };
@@ -76,12 +86,12 @@ public class Rot13TransformerFactory implements ValueTransformerFactory {
     }
 
     @Override
-    public ValueTransformer decryptor(DbAttribute a) {
-        return stringTransformer;
+    public ValueDecryptor decryptor(DbAttribute a) {
+        return stringDecryptor;
     }
 
     @Override
-    public ValueTransformer encryptor(DbAttribute a) {
-        return stringTransformer;
+    public ValueEncryptor encryptor(DbAttribute a) {
+        return stringEncryptor;
     }
 }

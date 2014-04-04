@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.transformer;
 import javax.crypto.Cipher;
 
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
-import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
+import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 
 /**
  * @since 3.2
@@ -29,10 +29,10 @@ import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
 public class DefaultBindingsTransformer implements BindingsTransformer {
 
     private int[] positions;
-    private ValueTransformer[] transformers;
+    private ValueEncryptor[] transformers;
     private Cipher cipher;
 
-    public DefaultBindingsTransformer(int[] positions, ValueTransformer[] transformers, Cipher cipher) {
+    public DefaultBindingsTransformer(int[] positions, ValueEncryptor[] transformers, Cipher cipher) {
         this.positions = positions;
         this.transformers = transformers;
         this.cipher = cipher;
@@ -45,7 +45,7 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
 
         for (int i = 0; i < len; i++) {
             BatchParameterBinding b = bindings[positions[i]];
-            Object transformed = transformers[i].transform(cipher, b.getValue());
+            Object transformed = transformers[i].encrypt(cipher, b.getValue());
             b.setValue(transformed);
         }
     }

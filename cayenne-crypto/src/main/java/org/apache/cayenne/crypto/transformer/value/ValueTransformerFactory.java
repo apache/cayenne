@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public interface ValueTransformerFactory {
 
-    ValueTransformer encryptor(DbAttribute a);
+    ValueEncryptor encryptor(DbAttribute a);
 
-    ValueTransformer decryptor(DbAttribute a);
+    ValueDecryptor decryptor(DbAttribute a);
 }

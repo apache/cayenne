@@ -36,7 +36,7 @@ import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.DefaultBytesTransformerFactory;
-import org.apache.cayenne.crypto.transformer.value.JceValueTransformerFactory;
+import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
@@ -87,7 +87,7 @@ public class CryptoModuleBuilder {
 
         this.columnMapperPattern = "^CRYPTO_";
         
-        this.valueTransformerFactoryType = JceValueTransformerFactory.class;
+        this.valueTransformerFactoryType = DefaultValueTransformerFactory.class;
     }
 
     public CryptoModuleBuilder cipherAlgorithm(String algorithm) {

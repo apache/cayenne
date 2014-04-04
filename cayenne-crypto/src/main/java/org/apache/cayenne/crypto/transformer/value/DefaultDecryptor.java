@@ -27,12 +27,12 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
 /**
  * @since 3.2
  */
-public class JceValueTransformer implements ValueTransformer {
+class DefaultDecryptor implements ValueDecryptor {
 
     private BytesConverter preConverter;
     private BytesConverter postConverter;
 
-    public JceValueTransformer(BytesConverter preConverter, BytesConverter postConverter) {
+    public DefaultDecryptor(BytesConverter preConverter, BytesConverter postConverter) {
         this.preConverter = preConverter;
         this.postConverter = postConverter;
     }
@@ -46,7 +46,7 @@ public class JceValueTransformer implements ValueTransformer {
     }
 
     @Override
-    public Object transform(Cipher cipher, Object value) {
+    public Object decrypt(Cipher cipher, Object value) {
 
         byte[] bytes = preConverter.toBytes(value);
         byte[] transformed;

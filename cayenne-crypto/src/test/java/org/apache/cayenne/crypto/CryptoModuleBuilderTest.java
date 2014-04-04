@@ -25,7 +25,7 @@ import java.security.Key;
 
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
-import org.apache.cayenne.crypto.transformer.value.JceValueTransformerFactory;
+import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -37,7 +37,7 @@ public class CryptoModuleBuilderTest {
     public void testBuild_KeySource() {
         Module m = new CryptoModuleBuilder().keyPassword(JceksKeySourceTest.TEST_KEY_PASS)
                 .keyStore(JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS))
-                .valueTransformer(JceValueTransformerFactory.class).build();
+                .valueTransformer(DefaultValueTransformerFactory.class).build();
 
         Injector injector = DIBootstrap.createInjector(m);
 

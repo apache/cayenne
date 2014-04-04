@@ -26,7 +26,8 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.map.ColumnMapper;
-import org.apache.cayenne.crypto.transformer.value.ValueTransformer;
+import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
+import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -73,7 +74,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
             int dlen = cryptoColumns.size();
             String[] mapKeys = new String[dlen];
-            ValueTransformer[] transformers = new ValueTransformer[dlen];
+            ValueDecryptor[] transformers = new ValueDecryptor[dlen];
 
             for (int i = 0; i < dlen; i++) {
 
@@ -110,7 +111,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
             int dlen = cryptoColumns.size();
             int[] positions = new int[dlen];
-            ValueTransformer[] transformers = new ValueTransformer[dlen];
+            ValueEncryptor[] transformers = new ValueEncryptor[dlen];
 
             for (int i = 0; i < dlen; i++) {
                 int pos = cryptoColumns.get(i);

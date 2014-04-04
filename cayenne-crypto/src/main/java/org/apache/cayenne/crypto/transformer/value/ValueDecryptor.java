@@ -21,16 +21,13 @@ package org.apache.cayenne.crypto.transformer.value;
 import javax.crypto.Cipher;
 
 /**
- * An encryptor or decryptor of a single value.
- * 
  * @since 3.2
  */
-public interface ValueTransformer {
-
+public interface ValueDecryptor {
     /**
      * Transforms a value using the provided Cipher. Cipher is assumed to be
      * fully initialized for the right operation (encryption or decryption) and
      * its state reset from any previous operations.
      */
-    Object transform(Cipher cipher, Object value);
+    Object decrypt(Cipher cipher, Object value);
 }
