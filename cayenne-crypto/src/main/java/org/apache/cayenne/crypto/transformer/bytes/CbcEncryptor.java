@@ -21,6 +21,7 @@ package org.apache.cayenne.crypto.transformer.bytes;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -48,13 +49,19 @@ class CbcEncryptor implements BytesEncryptor {
     public CbcEncryptor(Cipher cipher, Key key, byte[] seedIv) {
         this.key = key;
         this.cipher = cipher;
-        this.iv = seedIv;
         this.blockSize = cipher.getBlockSize();
 
-        if (iv.length != blockSize) {
-            throw new CayenneCryptoException("IV size is expected to be the same as block size. Was " + iv.length
+        if (seedIv.length != blockSize) {
+
+            // TODO: perhaps we should truncate/expand it if there's a mismatch
+            throw new CayenneCryptoException("IV size is expected to be the same as block size. Was " + seedIv.length
                     + "; block size was: " + blockSize);
         }
+
+        // making a copy - we are modifying this array, something that should
+        // not be visible oustide this object.
+        this.iv = Arrays.copyOf(seedIv, blockSize);
+
     }
 
     @Override
@@ -72,7 +79,7 @@ class CbcEncryptor implements BytesEncryptor {
         }
     }
 
-    protected void doEncrypt(byte[] plain, byte[] encrypted, int outputOffset) throws InvalidKeyException,
+    private void doEncrypt(byte[] plain, byte[] encrypted, int outputOffset) throws InvalidKeyException,
             InvalidAlgorithmParameterException, ShortBufferException, IllegalBlockSizeException, BadPaddingException {
 
         // copy IV in the first block

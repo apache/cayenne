@@ -33,7 +33,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.cayenne.crypto.unit.CryptoTestUtils;
+import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ public class CbcDecryptorTest {
 
     @Before
     public void before() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
-        byte[] keyBytes = CryptoTestUtils.hexToBytes("a4cb499fa31a6a228e16b7e4741d4fa3");
+        byte[] keyBytes = CryptoUnitUtils.hexToBytes("a4cb499fa31a6a228e16b7e4741d4fa3");
         this.key = new SecretKeySpec(keyBytes, "AES");
 
         this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -70,7 +70,7 @@ public class CbcDecryptorTest {
         CbcDecryptor decryptor = new CbcDecryptor(cipher);
 
         byte[] plain = { 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
-        byte[] ivBytes = CryptoTestUtils.hexToBytes("0591849d87c93414f4405d32f4d69220");
+        byte[] ivBytes = CryptoUnitUtils.hexToBytes("0591849d87c93414f4405d32f4d69220");
 
         Cipher encCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         encCipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(ivBytes));
