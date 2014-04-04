@@ -31,23 +31,18 @@ public class SwapBytesTransformerTest {
         BytesEncryptor instance = SwapBytesTransformer.encryptor();
 
         byte[] input = { 1, 3, 5 };
-        byte[] output = { 8, 11, 13, 0, 0, 0, 5, 6 };
-
-        instance.encrypt(input, output, 3);
-
-        assertArrayEquals(new byte[] { 8, 11, 13, 5, 3, 1, 5, 6 }, output);
+        byte[] output = instance.encrypt(input, 3);
+        assertArrayEquals(new byte[] { 0, 0, 0, 5, 3, 1 }, output);
     }
-    
+
     @Test
     public void testEncrypt_Even() {
 
         BytesEncryptor instance = SwapBytesTransformer.encryptor();
 
         byte[] input = { 1, 3, 5, 8 };
-        byte[] output = { 8, 11, 13, 0, 0, 0, 0};
+        byte[] output = instance.encrypt(input, 3);
 
-        instance.encrypt(input, output, 3);
-
-        assertArrayEquals(new byte[] { 8, 11, 13, 8, 5, 3, 1}, output);
+        assertArrayEquals(new byte[] { 0, 0, 0, 8, 5, 3, 1 }, output);
     }
 }

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -50,7 +51,7 @@ public class DefaultEncryptorTest {
     }
 
     @Test
-    public void testTransform_BytesToBytes() throws IllegalBlockSizeException, BadPaddingException {
+    public void testEncrypt_BytesToBytes() throws IllegalBlockSizeException, BadPaddingException {
 
         DefaultEncryptor e = new DefaultEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
@@ -69,7 +70,14 @@ public class DefaultEncryptorTest {
     }
 
     @Test
-    public void testTransform_StringToBytes() throws UnsupportedEncodingException, IllegalBlockSizeException,
+    public void testEncrypt_BytesToBytes_null() throws IllegalBlockSizeException, BadPaddingException {
+
+        DefaultEncryptor e = new DefaultEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
+        assertNull(e.encrypt(encryptor, null));
+    }
+
+    @Test
+    public void testEncrypt_StringToBytes() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
         DefaultEncryptor e = new DefaultEncryptor(Utf8StringConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
@@ -89,7 +97,7 @@ public class DefaultEncryptorTest {
     }
 
     @Test
-    public void testTransform_StringToString() throws UnsupportedEncodingException, IllegalBlockSizeException,
+    public void testEncrypt_StringToString() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
         DefaultEncryptor e = new DefaultEncryptor(Utf8StringConverter.INSTANCE, Base64StringConverter.INSTANCE);

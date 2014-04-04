@@ -44,11 +44,13 @@ class DefaultEncryptor implements ValueEncryptor {
     @Override
     public Object encrypt(BytesEncryptor encryptor, Object value) {
 
+        // TODO: should we encrypt nulls as well to hide NULL from attackers?
+        if (value == null) {
+            return null;
+        }
+
         byte[] bytes = preConverter.toBytes(value);
-        byte[] transformed = new byte[encryptor.getOutputSize(bytes.length)];
-
-        encryptor.encrypt(bytes, transformed, 0);
-
+        byte[] transformed = encryptor.encrypt(bytes, 0);
         return postConverter.fromBytes(transformed);
     }
 

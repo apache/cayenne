@@ -65,32 +65,31 @@ class CbcEncryptor implements BytesEncryptor {
     }
 
     @Override
-    public int getOutputSize(int inputLength) {
-        // add one block for IV storage
-        return blockSize + cipher.getOutputSize(inputLength);
-    }
+    public byte[] encrypt(byte[] input, int outputOffset) {
 
-    @Override
-    public void encrypt(byte[] input, byte[] output, int outputOffset) {
         try {
-            doEncrypt(input, output, outputOffset);
+            return doEncrypt(input, outputOffset);
         } catch (Exception e) {
             throw new CayenneCryptoException("Error on encryption", e);
         }
     }
 
-    private void doEncrypt(byte[] plain, byte[] encrypted, int outputOffset) throws InvalidKeyException,
+    private byte[] doEncrypt(byte[] plain, int outputOffset) throws InvalidKeyException,
             InvalidAlgorithmParameterException, ShortBufferException, IllegalBlockSizeException, BadPaddingException {
+
+        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
+        byte[] encrypted = new byte[outputOffset + blockSize + cipher.getOutputSize(plain.length)];
 
         // copy IV in the first block
         System.arraycopy(iv, 0, encrypted, outputOffset, blockSize);
 
-        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
         int encBytes = cipher.doFinal(plain, 0, plain.length, encrypted, outputOffset + blockSize);
 
         // store the last block of ciphertext to use as an IV for the next round
         // of encryption...
         System.arraycopy(encrypted, outputOffset + encBytes, iv, 0, blockSize);
+
+        return encrypted;
     }
 
 }

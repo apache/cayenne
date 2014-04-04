@@ -24,14 +24,15 @@ package org.apache.cayenne.crypto.transformer.bytes;
 public interface BytesEncryptor {
 
     /**
-     * Returns the size of the transformed data in bytes. This information
-     * allows the caller to pre-size the output array.
-     */
-    int getOutputSize(int inputLength);
-
-    /**
      * Transform input bytes using default encryption key.
+     * 
+     * @param input
+     *            a buffer with unencrypted bytes.
+     * @param outputOffset
+     *            how much empty space to leave in the beginning of the returned
+     *            output array. This would allow the caller to prepend extra
+     *            data to the encrypted array.
      */
-    void encrypt(byte[] input, byte[] output, int outputOffset);
+    byte[] encrypt(byte[] input, int outputOffset);
 
 }

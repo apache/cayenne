@@ -55,38 +55,6 @@ public class CbcEncryptorTest {
     }
 
     @Test
-    public void testGetOutputSize_DES() throws UnsupportedEncodingException, NoSuchAlgorithmException,
-            NoSuchPaddingException, InvalidKeyException {
-
-        byte[] iv = { 1, 2, 3, 4, 5, 6, 7, 8 };
-        byte[] keyBytes = { 1, 2, 3, 4, 5, 6, 7, 8 };
-        Key key = new SecretKeySpec(keyBytes, "DES");
-
-        Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        assertEquals(8, cipher.getBlockSize());
-
-        CbcEncryptor encryptor = new CbcEncryptor(cipher, key, iv);
-        assertEquals(24, encryptor.getOutputSize(11));
-    }
-
-    @Test
-    public void testGetOutputSize_AES() throws UnsupportedEncodingException, NoSuchAlgorithmException,
-            NoSuchPaddingException, InvalidKeyException {
-
-        byte[] ivBytes = CryptoUnitUtils.hexToBytes("0591849d87c93414f4405d32f4d69220");
-        byte[] keyBytes = CryptoUnitUtils.hexToBytes("a4cb499fa31a6a228e16b7e4741d4fa3");
-        Key key = new SecretKeySpec(keyBytes, "AES");
-
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        assertEquals(16, cipher.getBlockSize());
-
-        CbcEncryptor encryptor = new CbcEncryptor(cipher, key, ivBytes);
-        assertEquals(32, encryptor.getOutputSize(11));
-    }
-
-    @Test
     public void testEncrypt_AES() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 
@@ -103,10 +71,9 @@ public class CbcEncryptorTest {
         // copy ivBytes, as they are reset
         CbcEncryptor encryptor = new CbcEncryptor(cipher, key, ivBytes);
 
-        byte[] encrypted = new byte[encryptor.getOutputSize(plain.length)];
+        byte[] encrypted = encryptor.encrypt(plain, 0);
 
-        encryptor.encrypt(plain, encrypted, 0);
-
+        assertEquals(16 * 3, encrypted.length);
         assertArrayEquals(ivBytes, Arrays.copyOfRange(encrypted, 0, 16));
 
         Cipher decCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");

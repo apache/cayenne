@@ -52,10 +52,15 @@ public class SwapBytesTransformer implements BytesEncryptor, BytesDecryptor {
     }
 
     @Override
-    public void encrypt(byte[] input, byte[] output, int outputOffset) {
+    public byte[] encrypt(byte[] input, int outputOffset) {
+
+        byte[] output = new byte[input.length + outputOffset];
+
         System.arraycopy(input, 0, output, outputOffset, input.length);
 
         swap(output, outputOffset, outputOffset + input.length - 1);
+
+        return output;
     }
 
     private void swap(byte[] buffer, int start, int end) {
@@ -70,10 +75,4 @@ public class SwapBytesTransformer implements BytesEncryptor, BytesDecryptor {
 
         swap(buffer, ++start, --end);
     }
-
-    @Override
-    public int getOutputSize(int inputLength) {
-        return inputLength;
-    }
-
 }

@@ -38,15 +38,12 @@ class EncryptorWithKeyName implements BytesEncryptor {
     }
 
     @Override
-    public int getOutputSize(int inputLength) {
-        // add one block for key name storage
-        return blockSize + delegate.getOutputSize(inputLength);
-    }
+    public byte[] encrypt(byte[] input, int outputOffset) {
+        byte[] output = delegate.encrypt(input, outputOffset + blockSize);
 
-    @Override
-    public void encrypt(byte[] input, byte[] output, int outputOffset) {
         System.arraycopy(keyName, 0, output, outputOffset, blockSize);
-        delegate.encrypt(input, output, outputOffset + blockSize);
+
+        return output;
     }
 
 }

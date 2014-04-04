@@ -20,6 +20,7 @@ package org.apache.cayenne.crypto;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -29,13 +30,11 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.crypto.db.Table1;
 import org.apache.cayenne.crypto.db.Table2;
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.Before;
@@ -51,7 +50,7 @@ public class Runtime_AES128_Test {
     public void setUp() throws Exception {
 
         URL keyStoreUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
-        Module crypto = new CryptoModuleBuilder().keyStore(keyStoreUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1").build();
+        Module crypto = new CryptoModuleBuilder().keyStore(keyStoreUrl, JceksKeySourceTest.TEST_KEY_PASS, "k3").build();
 
         this.runtime = new ServerRuntime("cayenne-crypto.xml", crypto);
 
@@ -88,20 +87,25 @@ public class Runtime_AES128_Test {
 
         Table2 t2 = context.newObject(Table2.class);
         t2.setPlainBytes("b".getBytes());
-        t2.setPlainBytes("crypto_2".getBytes());
+        t2.setCryptoBytes("crypto_2".getBytes());
+        
+        Table2 t3 = context.newObject(Table2.class);
+        t3.setPlainBytes("c".getBytes());
+        t3.setCryptoBytes(null);
 
         context.commitChanges();
 
         List<Object[]> data = table2.selectAll();
-        assertEquals(2, data.size());
+        assertEquals(3, data.size());
 
         Map<String, byte[]> cipherByPlain = new HashMap<String, byte[]>();
         for (Object[] r : data) {
             cipherByPlain.put(new String((byte[]) r[1]), (byte[]) r[2]);
         }
 
-        assertEquals("crypto_1", CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("a"), runtime));
-        assertEquals("crypto_2", CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("b"), runtime));
+        assertArrayEquals("crypto_1".getBytes(), CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("a"), runtime));
+        assertArrayEquals("crypto_2".getBytes(), CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("b"), runtime));
+        assertNull(cipherByPlain.get("c"));
     }
 
     @Test
@@ -115,23 +119,23 @@ public class Runtime_AES128_Test {
 
         Table2 t2 = context.newObject(Table2.class);
         t2.setPlainBytes("b".getBytes());
-        t2.setPlainBytes("crypto_2".getBytes());
+        t2.setCryptoBytes("crypto_2".getBytes());
 
         Table2 t3 = context.newObject(Table2.class);
         t3.setPlainBytes("c".getBytes());
-        t3.setPlainBytes("crypto_3".getBytes());
+        t3.setCryptoBytes(null);
 
         context.commitChanges();
 
         SelectQuery<Table2> select = SelectQuery.query(Table2.class);
-        select.addOrdering("db:" + Table1.ID_PK_COLUMN, SortOrder.ASCENDING);
+        select.addOrdering(Table2.PLAIN_BYTES.asc());
 
         List<Table2> result = runtime.newContext().select(select);
 
         assertEquals(3, result.size());
-        assertEquals("crypto_1".getBytes(), result.get(0).getCryptoBytes());
-        assertEquals("crypto_2".getBytes(), result.get(1).getCryptoBytes());
-        assertEquals("crypto_3".getBytes(), result.get(2).getCryptoBytes());
+        assertArrayEquals("crypto_1".getBytes(), result.get(0).getCryptoBytes());
+        assertArrayEquals("crypto_2".getBytes(), result.get(1).getCryptoBytes());
+        assertArrayEquals(null, result.get(2).getCryptoBytes());
     }
 
 }
