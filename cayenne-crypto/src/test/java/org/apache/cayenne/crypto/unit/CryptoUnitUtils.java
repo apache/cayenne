@@ -19,9 +19,18 @@
 package org.apache.cayenne.crypto.unit;
 
 import java.math.BigInteger;
+import java.security.Key;
 import java.util.Arrays;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.crypto.key.KeySource;
+
 public class CryptoUnitUtils {
+
+    private static final int DEFAULT_BLOCK_SIZE = 16;
 
     public static byte[] hexToBytes(String hexString) {
         byte[] bytes = new BigInteger(hexString, 16).toByteArray();
@@ -31,6 +40,28 @@ public class CryptoUnitUtils {
             return Arrays.copyOfRange(bytes, 1, bytes.length);
         } else {
             return bytes;
+        }
+    }
+
+    public static byte[] decrypt_AES_CBC(byte[] source, ServerRuntime runtime) {
+
+        byte[] keyNameBytes = Arrays.copyOfRange(source, 0, DEFAULT_BLOCK_SIZE);
+        byte[] ivBytes = Arrays.copyOfRange(source, DEFAULT_BLOCK_SIZE, DEFAULT_BLOCK_SIZE * 2);
+        byte[] cipherText = Arrays.copyOfRange(source, DEFAULT_BLOCK_SIZE * 2, source.length - DEFAULT_BLOCK_SIZE * 2);
+
+        try {
+
+            Cipher decCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+            // 'trim' is to get rid of 0 padding
+            String keyName = new String(keyNameBytes, "UTF-8").trim();
+            Key key = runtime.getInjector().getInstance(KeySource.class).getKey(keyName);
+
+            decCipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(ivBytes));
+
+            return decCipher.doFinal(cipherText);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

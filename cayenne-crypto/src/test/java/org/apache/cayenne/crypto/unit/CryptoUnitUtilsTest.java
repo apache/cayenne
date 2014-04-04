@@ -37,5 +37,4 @@ public class CryptoUnitUtilsTest {
                 (byte) 0x20 };
         assertArrayEquals(hexByte2, CryptoUnitUtils.hexToBytes(hexString2));
     }
-
 }
