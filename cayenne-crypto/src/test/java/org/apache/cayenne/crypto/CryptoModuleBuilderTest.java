@@ -23,8 +23,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.security.Key;
 
-import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
+import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -37,7 +37,7 @@ public class CryptoModuleBuilderTest {
     public void testBuild_KeySource() {
         Module m = new CryptoModuleBuilder().keyPassword(JceksKeySourceTest.TEST_KEY_PASS)
                 .keyStore(JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS))
-                .valueTransformer(DefaultValueTransformerFactory.class).build();
+                .valueTransformer(DefaultValueTransformerFactory.class).defaultKeyAlias("k1").build();
 
         Injector injector = DIBootstrap.createInjector(m);
 
@@ -45,6 +45,10 @@ public class CryptoModuleBuilderTest {
         Key k1 = ks.getKey("k1");
         assertNotNull(k1);
         assertEquals("DES", k1.getAlgorithm());
+
+        String dkName = ks.getDefaultKeyAlias();
+
+        assertEquals("k1", dkName);
     }
 
 }

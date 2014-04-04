@@ -27,8 +27,8 @@ import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
 import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.cipher.DefaultCipherFactory;
-import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.key.JceksKeySource;
+import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
@@ -57,6 +57,7 @@ public class CryptoModuleBuilder {
     private static final String DEFAULT_CIPHER_PADDING = "PKCS5Padding";
 
     private Class<? extends ValueTransformerFactory> valueTransformerFactoryType;
+    private Class<? extends BytesTransformerFactory> bytesTransformerFactoryType;
 
     private String columnMapperPattern;
     private ColumnMapper columnMapper;
@@ -71,6 +72,9 @@ public class CryptoModuleBuilder {
     private String keyStoreUrlString;
     private File keyStoreFile;
     private Class<? extends KeySource> keySourceType;
+    private KeySource keySource;
+
+    private String defaultKeyAlias;
 
     private char[] keyPassword;
 
@@ -86,8 +90,9 @@ public class CryptoModuleBuilder {
         this.keySourceType = JceksKeySource.class;
 
         this.columnMapperPattern = "^CRYPTO_";
-        
+
         this.valueTransformerFactoryType = DefaultValueTransformerFactory.class;
+        this.bytesTransformerFactoryType = DefaultBytesTransformerFactory.class;
     }
 
     public CryptoModuleBuilder cipherAlgorithm(String algorithm) {
@@ -107,6 +112,11 @@ public class CryptoModuleBuilder {
 
     public CryptoModuleBuilder valueTransformer(Class<? extends ValueTransformerFactory> factoryType) {
         this.valueTransformerFactoryType = factoryType;
+        return this;
+    }
+    
+    public CryptoModuleBuilder bytesTransformer(Class<? extends BytesTransformerFactory> factoryType) {
+        this.bytesTransformerFactoryType = factoryType;
         return this;
     }
 
@@ -177,6 +187,18 @@ public class CryptoModuleBuilder {
 
     public CryptoModuleBuilder keySource(Class<? extends KeySource> type) {
         this.keySourceType = type;
+        this.keySource = null;
+        return this;
+    }
+
+    public CryptoModuleBuilder keySource(KeySource keySource) {
+        this.keySourceType = null;
+        this.keySource = keySource;
+        return this;
+    }
+
+    public CryptoModuleBuilder defaultKeyAlias(String defaultKeyAlias) {
+        this.defaultKeyAlias = defaultKeyAlias;
         return this;
     }
 
@@ -225,6 +247,10 @@ public class CryptoModuleBuilder {
                     props.put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
                 }
 
+                if (defaultKeyAlias != null) {
+                    props.put(CryptoConstants.DEFAULT_KEY_ALIAS, defaultKeyAlias);
+                }
+
                 // char[] credentials... stored as char[] to potentially allow
                 // wiping them clean in memory...
                 MapBuilder<char[]> creds = binder.<char[]> bindMap(CryptoConstants.CREDENTIALS_MAP);
@@ -236,8 +262,13 @@ public class CryptoModuleBuilder {
                 binder.bind(CipherFactory.class).to(cipherFactoryType);
                 binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
                 binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
-                binder.bind(BytesTransformerFactory.class).to(DefaultBytesTransformerFactory.class);
-                binder.bind(KeySource.class).to(keySourceType);
+                binder.bind(BytesTransformerFactory.class).to(bytesTransformerFactoryType);
+
+                if (keySource != null) {
+                    binder.bind(KeySource.class).toInstance(keySource);
+                } else {
+                    binder.bind(KeySource.class).to(keySourceType);
+                }
 
                 if (columnMapperPattern != null) {
                     binder.bind(ColumnMapper.class).toInstance(new PatternColumnMapper(columnMapperPattern));

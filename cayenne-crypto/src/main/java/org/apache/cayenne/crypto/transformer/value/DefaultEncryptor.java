@@ -18,11 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-
-import org.apache.cayenne.crypto.CayenneCryptoException;
+import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 
 /**
  * @since 3.2
@@ -46,18 +42,12 @@ class DefaultEncryptor implements ValueEncryptor {
     }
 
     @Override
-    public Object encrypt(Cipher cipher, Object value) {
+    public Object encrypt(BytesEncryptor encryptor, Object value) {
 
         byte[] bytes = preConverter.toBytes(value);
-        byte[] transformed;
+        byte[] transformed = new byte[encryptor.getOutputSize(bytes.length)];
 
-        try {
-            transformed = cipher.doFinal(bytes);
-        } catch (IllegalBlockSizeException e) {
-            throw new CayenneCryptoException("Illegal block size", e);
-        } catch (BadPaddingException e) {
-            throw new CayenneCryptoException("Bad padding", e);
-        }
+        encryptor.encrypt(bytes, transformed, 0);
 
         return postConverter.fromBytes(transformed);
     }

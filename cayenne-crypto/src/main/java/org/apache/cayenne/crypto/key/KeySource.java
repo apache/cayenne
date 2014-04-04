@@ -28,4 +28,9 @@ public interface KeySource {
      */
     Key getKey(String alias);
 
+    /**
+     * Returns an alias of the default key.
+     */
+    String getDefaultKeyAlias();
+
 }

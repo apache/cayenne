@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 import java.sql.Types;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class DefaultValueTransformerFactoryTest {
     @Test
     public void testGetJavaType() {
 
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory();
+        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
         assertEquals("java.lang.String", f.getJavaType(t1_ct));
@@ -78,7 +79,7 @@ public class DefaultValueTransformerFactoryTest {
 
     @Test
     public void testCreateEncryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory();
+        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -99,7 +100,7 @@ public class DefaultValueTransformerFactoryTest {
 
     @Test
     public void testCreateDecryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory();
+        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -128,7 +129,7 @@ public class DefaultValueTransformerFactoryTest {
 
     @Test
     public void testEncryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory();
+        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -144,10 +145,10 @@ public class DefaultValueTransformerFactoryTest {
         assertSame(t2, f.encryptor(t2_cb));
         assertSame(t2, f.encryptor(t2_cb));
     }
-    
+
     @Test
     public void testDecryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory();
+        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 

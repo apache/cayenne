@@ -44,14 +44,8 @@ public class DefaultBytesTransformerFactory implements BytesTransformerFactory {
             throw new CayenneCryptoException("Cipher mode is not set. Property name: " + CryptoConstants.CIPHER_MODE);
         }
 
-        String keyName = properties.get(CryptoConstants.DEFAULT_KEY_ALIAS);
-        if (keyName == null) {
-            throw new CayenneCryptoException("Default key alias is not set. Property name: "
-                    + CryptoConstants.DEFAULT_KEY_ALIAS);
-        }
-
         if ("CBC".equals(mode)) {
-            this.delegate = new CbcBytesTransformerFactory(cipherFactory, keySource, keyName);
+            this.delegate = new CbcBytesTransformerFactory(cipherFactory, keySource);
         }
         // TODO: ECB and other modes...
         else {

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
+import java.security.Key;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,7 +27,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -41,6 +44,8 @@ import org.apache.cayenne.map.ObjEntity;
  */
 public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
+    private Key defaultKey;
+
     private Map<String, BytesConverter> objectToBytes;
     private Map<Integer, BytesConverter> dbToBytes;
 
@@ -50,7 +55,9 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
     private ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
     private ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
 
-    public DefaultValueTransformerFactory() {
+    public DefaultValueTransformerFactory(@Inject KeySource keySource) {
+        this.defaultKey = keySource.getKey(keySource.getDefaultKeyAlias());
+
         this.encryptors = new ConcurrentHashMap<DbAttribute, ValueEncryptor>();
         this.decryptors = new ConcurrentHashMap<DbAttribute, ValueDecryptor>();
 
@@ -175,7 +182,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
                     + " has no bytes-to-object conversion");
         }
 
-        return new DefaultDecryptor(toBytes, fromBytes);
+        return new DefaultDecryptor(toBytes, fromBytes, defaultKey);
     }
 
     // TODO: calculating Java type of ObjAttribute may become unneeded per

@@ -56,6 +56,6 @@ public interface CryptoConstants {
     /**
      * A symbolic name of the default encryption key in the keystore.
      */
-    public static final String DEFAULT_KEY_ALIAS = "cayenne.crypto.key.alias";
+    public static final String DEFAULT_KEY_ALIAS = "cayenne.crypto.key.defaultalias";
 
 }

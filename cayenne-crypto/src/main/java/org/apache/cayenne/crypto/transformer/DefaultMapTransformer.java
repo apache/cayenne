@@ -20,8 +20,7 @@ package org.apache.cayenne.crypto.transformer;
 
 import java.util.Map;
 
-import javax.crypto.Cipher;
-
+import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
 
 /**
@@ -31,12 +30,12 @@ public class DefaultMapTransformer implements MapTransformer {
 
     private String[] mapKeys;
     private ValueDecryptor[] transformers;
-    private Cipher cipher;
+    private BytesDecryptor bytesDecryptor;
 
-    public DefaultMapTransformer(String[] mapKeys, ValueDecryptor[] transformers, Cipher cipher) {
+    public DefaultMapTransformer(String[] mapKeys, ValueDecryptor[] transformers, BytesDecryptor bytesDecryptor) {
         this.mapKeys = mapKeys;
         this.transformers = transformers;
-        this.cipher = cipher;
+        this.bytesDecryptor = bytesDecryptor;
     }
 
     @Override
@@ -48,7 +47,7 @@ public class DefaultMapTransformer implements MapTransformer {
             Object value = map.get(mapKeys[i]);
 
             if (value != null) {
-                Object transformed = transformers[i].decrypt(cipher, value);
+                Object transformed = transformers[i].decrypt(bytesDecryptor, value);
                 map.put(mapKeys[i], transformed);
             }
         }

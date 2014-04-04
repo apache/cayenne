@@ -18,21 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
+import java.security.Key;
 
-import org.apache.cayenne.crypto.CayenneCryptoException;
+import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
 
 /**
  * @since 3.2
  */
 class DefaultDecryptor implements ValueDecryptor {
 
+    private Key defaultKey;
     private BytesConverter preConverter;
     private BytesConverter postConverter;
 
-    public DefaultDecryptor(BytesConverter preConverter, BytesConverter postConverter) {
+    public DefaultDecryptor(BytesConverter preConverter, BytesConverter postConverter, Key defaultKey) {
         this.preConverter = preConverter;
         this.postConverter = postConverter;
     }
@@ -46,19 +45,13 @@ class DefaultDecryptor implements ValueDecryptor {
     }
 
     @Override
-    public Object decrypt(Cipher cipher, Object value) {
+    public Object decrypt(BytesDecryptor bytesDecryptor, Object value) {
 
         byte[] bytes = preConverter.toBytes(value);
-        byte[] transformed;
 
-        try {
-            transformed = cipher.doFinal(bytes);
-        } catch (IllegalBlockSizeException e) {
-            throw new CayenneCryptoException("Illegal block size", e);
-        } catch (BadPaddingException e) {
-            throw new CayenneCryptoException("Bad padding", e);
-        }
-
+        // 'defaultKey' is likely to be ignored by the BytesDecryptor, as the
+        // key name is obtained from the record itself
+        byte[] transformed = bytesDecryptor.decrypt(bytes, 0, defaultKey);
         return postConverter.fromBytes(transformed);
     }
 

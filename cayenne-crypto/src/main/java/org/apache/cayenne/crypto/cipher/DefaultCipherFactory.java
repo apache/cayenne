@@ -59,7 +59,6 @@ public class DefaultCipherFactory implements CipherFactory {
         }
 
         this.transformation = algorithm + "/" + mode + "/" + padding;
-        this.blockSize = cipher().getBlockSize();
     }
 
     @Override
@@ -72,9 +71,17 @@ public class DefaultCipherFactory implements CipherFactory {
             throw new CayenneCryptoException("Error instantiating a cipher - no such padding: " + transformation, e);
         }
     }
-    
+
     @Override
     public int blockSize() {
+
+        // lazy init to prevent Cipher initialization in constructor.
+        // synchronization is not required - if we do it multiple times ,
+        // shouldn't be a big deal...
+        if (blockSize == 0) {
+            this.blockSize = cipher().getBlockSize();
+        }
+
         return blockSize;
     }
 }

@@ -19,6 +19,7 @@
 package org.apache.cayenne.crypto;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.Map;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.db.Table1;
+import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.unit.Rot13TransformerFactory;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.SelectQuery;
@@ -45,7 +47,8 @@ public class Runtime_Rot13_Test {
     @Before
     public void setUp() throws Exception {
 
-        Module crypto = new CryptoModuleBuilder().valueTransformer(Rot13TransformerFactory.class).build();
+        Module crypto = new CryptoModuleBuilder().valueTransformer(Rot13TransformerFactory.class)
+                .keySource(mock(KeySource.class)).cipherMode("dummy").build();
 
         this.runtime = new ServerRuntime("cayenne-crypto.xml", crypto);
 

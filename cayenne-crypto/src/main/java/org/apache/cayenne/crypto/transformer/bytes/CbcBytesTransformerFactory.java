@@ -44,10 +44,13 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
     private KeySource keySource;
     private Queue<SecureRandom> randoms;
 
-    public CbcBytesTransformerFactory(CipherFactory cipherFactory, KeySource keySource, String keyName) {
+    public CbcBytesTransformerFactory(CipherFactory cipherFactory, KeySource keySource) {
+
+        String keyName = keySource.getDefaultKeyAlias();
 
         this.randoms = new ConcurrentLinkedQueue<SecureRandom>();
         this.keySource = keySource;
+        this.key = keySource.getKey(keyName);
         this.cipherFactory = cipherFactory;
         this.blockSize = cipherFactory.blockSize();
 

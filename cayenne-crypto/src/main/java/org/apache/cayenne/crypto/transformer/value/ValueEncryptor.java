@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import javax.crypto.Cipher;
+import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 
 /**
  * An encryptor or decryptor of a single value.
@@ -28,9 +28,7 @@ import javax.crypto.Cipher;
 public interface ValueEncryptor {
 
     /**
-     * Transforms a value using the provided Cipher. Cipher is assumed to be
-     * fully initialized for the right operation (encryption or decryption) and
-     * its state reset from any previous operations.
+     * Transforms a value using the provided BytesEncryptor.
      */
-    Object encrypt(Cipher cipher, Object value);
+    Object encrypt(BytesEncryptor bytesEncryptor, Object value);
 }

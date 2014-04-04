@@ -16,19 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.transformer.value;
+package org.apache.cayenne.crypto.unit;
 
-import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
+import static org.junit.Assert.assertArrayEquals;
 
-/**
- * @since 3.2
- */
-public interface ValueDecryptor {
+import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
+import org.junit.Test;
 
-    /**
-     * Transforms a value using the provided Cipher. Cipher is assumed to be
-     * fully initialized for the right operation (encryption or decryption) and
-     * its state reset from any previous operations.
-     */
-    Object decrypt(BytesDecryptor bytesDecryptor, Object value);
+public class SwapBytesTransformerTest {
+
+    @Test
+    public void testEncrypt_Odd() {
+
+        BytesEncryptor instance = SwapBytesTransformer.encryptor();
+
+        byte[] input = { 1, 3, 5 };
+        byte[] output = { 8, 11, 13, 0, 0, 0, 5, 6 };
+
+        instance.encrypt(input, output, 3);
+
+        assertArrayEquals(new byte[] { 8, 11, 13, 5, 3, 1, 5, 6 }, output);
+    }
+    
+    @Test
+    public void testEncrypt_Even() {
+
+        BytesEncryptor instance = SwapBytesTransformer.encryptor();
+
+        byte[] input = { 1, 3, 5, 8 };
+        byte[] output = { 8, 11, 13, 0, 0, 0, 0};
+
+        instance.encrypt(input, output, 3);
+
+        assertArrayEquals(new byte[] { 8, 11, 13, 8, 5, 3, 1}, output);
+    }
 }

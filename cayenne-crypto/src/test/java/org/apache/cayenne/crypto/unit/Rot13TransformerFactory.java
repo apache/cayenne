@@ -20,8 +20,8 @@ package org.apache.cayenne.crypto.unit;
 
 import java.io.UnsupportedEncodingException;
 
-import javax.crypto.Cipher;
-
+import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
+import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
@@ -70,15 +70,15 @@ public class Rot13TransformerFactory implements ValueTransformerFactory {
         this.stringEncryptor = new ValueEncryptor() {
 
             @Override
-            public Object encrypt(Cipher cipher, Object value) {
+            public Object encrypt(BytesEncryptor bytesEncryptor, Object value) {
                 return value != null ? rotate(value.toString()) : null;
             }
         };
-        
+
         this.stringDecryptor = new ValueDecryptor() {
 
             @Override
-            public Object decrypt(Cipher cipher, Object value) {
+            public Object decrypt(BytesDecryptor bytesDecryptor, Object value) {
                 return value != null ? rotate(value.toString()) : null;
             }
         };

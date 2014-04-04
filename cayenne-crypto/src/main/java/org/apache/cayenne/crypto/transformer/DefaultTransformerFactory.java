@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
-import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.map.ColumnMapper;
+import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
@@ -37,15 +37,15 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class DefaultTransformerFactory implements TransformerFactory {
 
-    private CipherFactory cipherFactory;
+    private BytesTransformerFactory bytesTransformerFactory;
     private ColumnMapper columnMapper;
     private ValueTransformerFactory transformerFactory;
 
     public DefaultTransformerFactory(@Inject ColumnMapper columnMapper,
-            @Inject ValueTransformerFactory transformerFactory, @Inject CipherFactory cipherFactory) {
+            @Inject ValueTransformerFactory transformerFactory, @Inject BytesTransformerFactory bytesTransformerFactory) {
         this.columnMapper = columnMapper;
         this.transformerFactory = transformerFactory;
-        this.cipherFactory = cipherFactory;
+        this.bytesTransformerFactory = bytesTransformerFactory;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
                 transformers[i] = transformerFactory.decryptor(cd.getAttribute());
             }
 
-            return new DefaultMapTransformer(mapKeys, transformers, cipherFactory.cipher());
+            return new DefaultMapTransformer(mapKeys, transformers, bytesTransformerFactory.decryptor());
         }
 
         return null;
@@ -120,7 +120,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
                 transformers[i] = transformerFactory.encryptor(b.getAttribute());
             }
 
-            return new DefaultBindingsTransformer(positions, transformers, cipherFactory.cipher());
+            return new DefaultBindingsTransformer(positions, transformers, bytesTransformerFactory.encryptor());
         }
 
         return null;

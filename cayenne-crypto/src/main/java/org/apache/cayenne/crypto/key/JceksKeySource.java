@@ -46,14 +46,14 @@ public class JceksKeySource implements KeySource {
 
     private KeyStore keyStore;
     private char[] keyPassword;
+    private String defaultKeyAlias;
 
     public JceksKeySource(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties,
             @Inject(CryptoConstants.CREDENTIALS_MAP) Map<String, char[]> credentials) {
 
         String keyStoreUrl = properties.get(CryptoConstants.KEYSTORE_URL);
         if (keyStoreUrl == null) {
-            throw new CayenneCryptoException("KeyStore URL is not set. Property name: "
-                    + CryptoConstants.KEYSTORE_URL);
+            throw new CayenneCryptoException("KeyStore URL is not set. Property name: " + CryptoConstants.KEYSTORE_URL);
         }
 
         this.keyPassword = credentials.get(CryptoConstants.KEY_PASSWORD);
@@ -63,6 +63,12 @@ public class JceksKeySource implements KeySource {
             this.keyStore = createKeyStore(keyStoreUrl);
         } catch (Exception e) {
             throw new CayenneCryptoException("Error loading keystore at " + keyStoreUrl, e);
+        }
+
+        this.defaultKeyAlias = properties.get(CryptoConstants.DEFAULT_KEY_ALIAS);
+        if (defaultKeyAlias == null) {
+            throw new CayenneCryptoException("Default key alias is not set. Property name: "
+                    + CryptoConstants.DEFAULT_KEY_ALIAS);
         }
     }
 
@@ -90,5 +96,10 @@ public class JceksKeySource implements KeySource {
         } catch (Exception e) {
             throw new CayenneCryptoException("Error accessing key for alias: " + alias, e);
         }
+    }
+
+    @Override
+    public String getDefaultKeyAlias() {
+        return defaultKeyAlias;
     }
 }
