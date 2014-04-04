@@ -49,8 +49,15 @@ public class DataContextQualifiedEntityTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PERSON");
+        // manually break circular deps
+        dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
 
+        dbHelper.deleteAll("ADDRESS");
+        dbHelper.deleteAll("DEPARTMENT");
+        dbHelper.deleteAll("PERSON_NOTES");
+        dbHelper.deleteAll("PERSON");
+        dbHelper.deleteAll("CLIENT_COMPANY");
+        
         tPerson = new TableHelper(dbHelper, "PERSON");
         tPerson.setColumns(
                 "CLIENT_COMPANY_ID",

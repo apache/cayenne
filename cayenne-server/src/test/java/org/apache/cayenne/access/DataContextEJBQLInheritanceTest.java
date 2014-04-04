@@ -43,15 +43,19 @@ public class DataContextEJBQLInheritanceTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+
+        // manually break circular deps
+        dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+
+        dbHelper.deleteAll("ADDRESS");
+        dbHelper.deleteAll("DEPARTMENT");
+        dbHelper.deleteAll("PERSON_NOTES");
         dbHelper.deleteAll("PERSON");
+        dbHelper.deleteAll("CLIENT_COMPANY");
 
         TableHelper person = new TableHelper(dbHelper, "PERSON");
-        person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY")
-                .setColumnTypes(
-                        Types.INTEGER, 
-                        Types.VARCHAR, 
-                        Types.CHAR,
-                        Types.FLOAT);
+        person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY").setColumnTypes(Types.INTEGER, Types.VARCHAR,
+                Types.CHAR, Types.FLOAT);
 
         person.insert(1, "a", "EE", 20000);
         person.insert(2, "b", "EE", 25000);
@@ -62,32 +66,16 @@ public class DataContextEJBQLInheritanceTest extends ServerCase {
 
     public void testSelect() throws Exception {
 
-        EJBQLQuery superclass = new EJBQLQuery(
-                "select p from AbstractPerson p ORDER BY p.name");
+        EJBQLQuery superclass = new EJBQLQuery("select p from AbstractPerson p ORDER BY p.name");
 
         List<?> superclassResult = context.performQuery(superclass);
         assertEquals(5, superclassResult.size());
 
-        assertEquals(Employee.class.getName(), superclassResult
-                .get(0)
-                .getClass()
-                .getName());
-        assertEquals(Employee.class.getName(), superclassResult
-                .get(1)
-                .getClass()
-                .getName());
-        assertEquals(Manager.class.getName(), superclassResult
-                .get(2)
-                .getClass()
-                .getName());
-        assertEquals(Manager.class.getName(), superclassResult
-                .get(3)
-                .getClass()
-                .getName());
-        assertEquals(CustomerRepresentative.class.getName(), superclassResult
-                .get(4)
-                .getClass()
-                .getName());
+        assertEquals(Employee.class.getName(), superclassResult.get(0).getClass().getName());
+        assertEquals(Employee.class.getName(), superclassResult.get(1).getClass().getName());
+        assertEquals(Manager.class.getName(), superclassResult.get(2).getClass().getName());
+        assertEquals(Manager.class.getName(), superclassResult.get(3).getClass().getName());
+        assertEquals(CustomerRepresentative.class.getName(), superclassResult.get(4).getClass().getName());
 
         EJBQLQuery subclass = new EJBQLQuery("select e from Employee e ORDER BY e.name");
 
