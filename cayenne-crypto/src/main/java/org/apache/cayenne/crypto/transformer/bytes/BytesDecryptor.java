@@ -26,15 +26,9 @@ import java.security.Key;
 public interface BytesDecryptor {
 
     /**
-     * Returns the size of the transformed data in bytes. This information
-     * allows the caller to pre-size the output array.
-     */
-    int getOutputSize(int inputLength);
-
-    /**
      * Transform input bytes using provided encryption key. Note that some
      * implementations may ignore the provided key and e.g. derive the key from
      * the record.
      */
-    void decrypt(byte[] input, byte[] output, int inputOffset, Key key);
+    byte[] decrypt(byte[] input, int inputOffset, Key key);
 }

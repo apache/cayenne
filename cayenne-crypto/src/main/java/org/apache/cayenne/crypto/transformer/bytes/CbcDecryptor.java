@@ -44,21 +44,15 @@ class CbcDecryptor implements BytesDecryptor {
     }
 
     @Override
-    public int getOutputSize(int inputLength) {
-        // strip the IV block size from total size...
-        return cipher.getOutputSize(inputLength) - blockSize;
-    }
-
-    @Override
-    public void decrypt(byte[] input, byte[] output, int inputOffset, Key key) {
+    public byte[] decrypt(byte[] input, int inputOffset, Key key) {
         try {
-            doDecrypt(input, output, inputOffset, key);
+            return doDecrypt(input, inputOffset, key);
         } catch (Exception e) {
             throw new CayenneCryptoException("Error on decryption", e);
         }
     }
 
-    private void doDecrypt(byte[] input, byte[] output, int inputOffset, Key key) throws InvalidKeyException,
+    private byte[] doDecrypt(byte[] input, int inputOffset, Key key) throws InvalidKeyException,
             InvalidAlgorithmParameterException, ShortBufferException, IllegalBlockSizeException, BadPaddingException {
 
         IvParameterSpec iv = iv(input, inputOffset);
@@ -66,7 +60,7 @@ class CbcDecryptor implements BytesDecryptor {
         cipher.init(Cipher.DECRYPT_MODE, key, iv);
 
         int offset = inputOffset + blockSize;
-        cipher.doFinal(input, offset, input.length - offset, output, 0);
+        return cipher.doFinal(input, offset, input.length - offset);
     }
 
     IvParameterSpec iv(byte[] input, int inputOffset) {

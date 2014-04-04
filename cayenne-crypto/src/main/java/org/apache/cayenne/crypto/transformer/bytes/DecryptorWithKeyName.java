@@ -42,19 +42,13 @@ class DecryptorWithKeyName implements BytesDecryptor {
     }
 
     @Override
-    public int getOutputSize(int inputLength) {
-        // strip one block that stores the key name
-        return delegate.getOutputSize(inputLength) - blockSize;
-    }
-
-    @Override
-    public void decrypt(byte[] input, byte[] output, int inputOffset, Key key) {
+    public byte[] decrypt(byte[] input, int inputOffset, Key key) {
 
         // ignoring the parameter key... using the key from the first block
 
         String keyName = keyName(input, inputOffset);
         Key inRecordKey = keySource.getKey(keyName);
-        delegate.decrypt(input, output, inputOffset + blockSize, inRecordKey);
+        return delegate.decrypt(input, inputOffset + blockSize, inRecordKey);
     }
 
     String keyName(byte[] input, int inputOffset) {
