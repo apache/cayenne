@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/7/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
-	 project-version="6">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/7/modelMap http://cayenne.apache.org/schema/7/modelMap.xsd"
+	 project-version="7">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
 	<property name="clientSupported" value="true"/>
@@ -127,9 +127,9 @@
 		<db-attribute name="CLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="CLOB_TEST_RELATION">
+		<db-attribute name="CVALUE" type="INTEGER"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="ID_CLOB" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="CVALUE" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="COMPOUND_FK_TEST">
 		<db-attribute name="F_KEY1" type="VARCHAR" length="20"/>
@@ -795,7 +795,7 @@
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 		<ejbql><![CDATA[select a from Artist a]]></ejbql>
 	</query>
-	<query name="NonSelectingQuery" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+	<query name="NonSelectingQuery" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="tstmap">
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (512, 'No Painting Like This', 12.5)]]></sql>
@@ -805,7 +805,7 @@ VALUES (512, 'No Painting Like This', 12.5)]]></sql>
 		<qualifier><![CDATA[toArtist = $artist]]></qualifier>
 		<ordering><![CDATA[paintingTitle]]></ordering>
 	</query>
-	<query name="ParameterizedNonSelectingQuery" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+	<query name="ParameterizedNonSelectingQuery" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="tstmap">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<sql adapter-class="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) values (#bind($id), #bind($title), #bind($price))]]></sql>
@@ -836,31 +836,31 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 	<query name="QueryWithSharedCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 	</query>
-	<query name="SelectDateTest" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+	<query name="SelectDateTest" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="tstmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
 	</query>
-	<query name="SelectReturnTypesLobsMap1" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+	<query name="SelectReturnTypesLobsMap1" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="tstmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[SELECT * FROM TYPES_MAPPING_LOBS_TEST1]]></sql>
 	</query>
-	<query name="SelectReturnTypesMap1" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+	<query name="SelectReturnTypesMap1" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="tstmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[SELECT * FROM TYPES_MAPPING_TEST1]]></sql>
 	</query>
-	<query name="SelectReturnTypesMap2" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+	<query name="SelectReturnTypesMap2" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="tstmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[SELECT * FROM TYPES_MAPPING_TEST2]]></sql>
 	</query>
-	<query name="SelectTestLower" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+	<query name="SelectTestLower" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="tstmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="LOWER"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
-	<query name="SelectTestUpper" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="testmap">
+	<query name="SelectTestUpper" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="tstmap">
 		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
