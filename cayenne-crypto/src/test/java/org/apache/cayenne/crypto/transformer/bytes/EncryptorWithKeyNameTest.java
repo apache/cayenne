@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class EncryptorWithKeyNameTest {
 
@@ -36,8 +40,44 @@ public class EncryptorWithKeyNameTest {
         when(delegate.getOutputSize(8)).thenReturn(8);
 
         // try with non-standard block size..
-        EncryptorWithKeyName encryptor = new EncryptorWithKeyName(delegate, keyName, 17);
-        assertEquals(25, encryptor.getOutputSize(8));
+        EncryptorWithKeyName encryptor = new EncryptorWithKeyName(delegate, keyName, 5);
+        assertEquals(13, encryptor.getOutputSize(8));
+    }
+
+    @Test
+    public void testTransform() throws UnsupportedEncodingException {
+
+        byte[] keyName = "mykey".getBytes("UTF-8");
+
+        BytesTransformer delegate = mock(BytesTransformer.class);
+        when(delegate.getOutputSize(8)).thenReturn(8);
+
+        byte[] input = { 1, 2, 3, 4, 5, 6, 7, 8 };
+        byte[] output = new byte[16];
+
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+
+                Object[] args = invocation.getArguments();
+                byte[] input = (byte[]) args[0];
+                byte[] output = (byte[]) args[1];
+                int offset = (Integer) args[2];
+
+                for (int i = 0; i < input.length; i++) {
+                    output[i + offset] = 1;
+                }
+
+                return null;
+            }
+        }).when(delegate).transform(input, output, 6);
+
+        // intentionally non-standard block size..
+        EncryptorWithKeyName encryptor = new EncryptorWithKeyName(delegate, keyName, 5);
+
+        encryptor.transform(input, output, 1);
+
+        assertArrayEquals(new byte[] { 0, 'm', 'y', 'k', 'e', 'y', 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 }, output);
     }
 
 }

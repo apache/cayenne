@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
+import org.apache.cayenne.crypto.CayenneCryptoException;
+
 public class EncryptorWithKeyName implements BytesTransformer {
 
     private BytesTransformer delegate;
@@ -28,6 +30,11 @@ public class EncryptorWithKeyName implements BytesTransformer {
         this.delegate = delegate;
         this.blockSize = blockSize;
         this.keyName = keyName;
+
+        if (blockSize != keyName.length) {
+            throw new CayenneCryptoException("keyName size is expected to be the same as block size. Was "
+                    + keyName.length + "; block size was: " + blockSize);
+        }
     }
 
     @Override
