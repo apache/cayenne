@@ -31,6 +31,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.cayenne.crypto.CayenneCryptoException;
+import org.apache.cayenne.crypto.unit.CryptoTestUtils;
 import org.junit.Test;
 
 public class CbcEncryptorTest {
@@ -48,7 +49,7 @@ public class CbcEncryptorTest {
     }
 
     @Test
-    public void testGetOutputSize() throws UnsupportedEncodingException, NoSuchAlgorithmException,
+    public void testGetOutputSize_DES() throws UnsupportedEncodingException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeyException {
 
         byte[] iv = { 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -62,6 +63,29 @@ public class CbcEncryptorTest {
         // try with non-standard block size too...
         CbcEncryptor encryptor = new CbcEncryptor(cipher, key, iv);
         assertEquals(24, encryptor.getOutputSize(11));
+    }
+
+    @Test
+    public void testGetOutputSize_AES() throws UnsupportedEncodingException, NoSuchAlgorithmException,
+            NoSuchPaddingException, InvalidKeyException {
+
+        byte[] ivBytes = CryptoTestUtils.hexToBytes("0591849d87c93414f4405d32f4d69220");
+        byte[] keyBytes = CryptoTestUtils.hexToBytes("a4cb499fa31a6a228e16b7e4741d4fa3");
+        Key key = new SecretKeySpec(keyBytes, "AES");
+
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        assertEquals(16, cipher.getBlockSize());
+
+        // try with non-standard block size too...
+        CbcEncryptor encryptor = new CbcEncryptor(cipher, key, ivBytes);
+        assertEquals(32, encryptor.getOutputSize(11));
+    }
+
+    @Test
+    public void testEncrypt() {
+
+        // CbcEncryptor encryptor = new CbcEncryptor(cipher, key, iv);
     }
 
 }
