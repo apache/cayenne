@@ -60,11 +60,11 @@ public class DefaultBytesTransformerFactory implements BytesTransformerFactory {
         }
     }
 
-    public BytesTransformer encryptor() {
+    public BytesEncryptor encryptor() {
         return delegate.encryptor();
     }
 
-    public BytesTransformer decryptor() {
+    public BytesDecryptor decryptor() {
         return delegate.decryptor();
     }
 }

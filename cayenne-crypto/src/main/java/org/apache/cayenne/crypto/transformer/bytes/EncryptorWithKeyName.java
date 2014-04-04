@@ -20,13 +20,13 @@ package org.apache.cayenne.crypto.transformer.bytes;
 
 import org.apache.cayenne.crypto.CayenneCryptoException;
 
-class EncryptorWithKeyName implements BytesTransformer {
+class EncryptorWithKeyName implements BytesEncryptor {
 
-    private BytesTransformer delegate;
+    private BytesEncryptor delegate;
     private int blockSize;
     private byte[] keyName;
 
-    EncryptorWithKeyName(BytesTransformer delegate, byte[] keyName, int blockSize) {
+    EncryptorWithKeyName(BytesEncryptor delegate, byte[] keyName, int blockSize) {
         this.delegate = delegate;
         this.blockSize = blockSize;
         this.keyName = keyName;
@@ -44,9 +44,9 @@ class EncryptorWithKeyName implements BytesTransformer {
     }
 
     @Override
-    public void transform(byte[] input, byte[] output, int outputOffset) {
+    public void encrypt(byte[] input, byte[] output, int outputOffset) {
         System.arraycopy(keyName, 0, output, outputOffset, blockSize);
-        delegate.transform(input, output, outputOffset + blockSize);
+        delegate.encrypt(input, output, outputOffset + blockSize);
     }
 
 }

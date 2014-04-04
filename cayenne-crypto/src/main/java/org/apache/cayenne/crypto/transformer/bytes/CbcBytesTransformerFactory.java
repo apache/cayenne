@@ -41,11 +41,13 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
     private Key key;
     private byte[] keyName;
     private int blockSize;
+    private KeySource keySource;
     private Queue<SecureRandom> randoms;
 
     public CbcBytesTransformerFactory(CipherFactory cipherFactory, KeySource keySource, String keyName) {
 
         this.randoms = new ConcurrentLinkedQueue<SecureRandom>();
+        this.keySource = keySource;
         this.cipherFactory = cipherFactory;
         this.blockSize = cipherFactory.blockSize();
 
@@ -100,18 +102,22 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
     }
 
     @Override
-    public BytesTransformer encryptor() {
+    public BytesEncryptor encryptor() {
         Cipher cipher = cipherFactory.cipher();
 
-        BytesTransformer cbcEncryptor = new CbcEncryptor(cipher, key, generateSeedIv());
+        BytesEncryptor cbcEncryptor = new CbcEncryptor(cipher, key, generateSeedIv());
 
         // TODO: make adding key name for versioning an optional property
         return new EncryptorWithKeyName(cbcEncryptor, keyName, blockSize);
     }
 
     @Override
-    public BytesTransformer decryptor() {
-        throw new UnsupportedOperationException("TODO");
+    public BytesDecryptor decryptor() {
+        Cipher cipher = cipherFactory.cipher();
+        BytesDecryptor cbcDecryptor = new CbcDecryptor(cipher);
+
+        // TODO: make checking for key name an optional property
+        return new DecryptorWithKeyName(cbcDecryptor, keySource, blockSize);
     }
 
 }

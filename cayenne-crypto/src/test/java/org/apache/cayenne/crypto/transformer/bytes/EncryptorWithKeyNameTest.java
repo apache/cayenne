@@ -36,7 +36,7 @@ public class EncryptorWithKeyNameTest {
     public void testGetOutputSize() throws UnsupportedEncodingException {
 
         byte[] keyName = "mykey".getBytes("UTF-8");
-        BytesTransformer delegate = mock(BytesTransformer.class);
+        BytesEncryptor delegate = mock(BytesEncryptor.class);
         when(delegate.getOutputSize(8)).thenReturn(8);
 
         // try with non-standard block size..
@@ -49,7 +49,7 @@ public class EncryptorWithKeyNameTest {
 
         byte[] keyName = "mykey".getBytes("UTF-8");
 
-        BytesTransformer delegate = mock(BytesTransformer.class);
+        BytesEncryptor delegate = mock(BytesEncryptor.class);
         when(delegate.getOutputSize(8)).thenReturn(8);
 
         byte[] input = { 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -70,12 +70,12 @@ public class EncryptorWithKeyNameTest {
 
                 return null;
             }
-        }).when(delegate).transform(input, output, 6);
+        }).when(delegate).encrypt(input, output, 6);
 
         // intentionally non-standard block size..
         EncryptorWithKeyName encryptor = new EncryptorWithKeyName(delegate, keyName, 5);
 
-        encryptor.transform(input, output, 1);
+        encryptor.encrypt(input, output, 1);
 
         assertArrayEquals(new byte[] { 0, 'm', 'y', 'k', 'e', 'y', 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 }, output);
     }

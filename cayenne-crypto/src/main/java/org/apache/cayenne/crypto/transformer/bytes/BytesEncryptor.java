@@ -19,14 +19,19 @@
 package org.apache.cayenne.crypto.transformer.bytes;
 
 /**
- * A class that encapsulates Cayenne cryptography protocol, which is usually
- * dependent on the encryption mode.
- * 
  * @since 3.2
  */
-public interface BytesTransformerFactory {
+public interface BytesEncryptor {
 
-    BytesEncryptor encryptor();
+    /**
+     * Returns the size of the transformed data in bytes. This information
+     * allows the caller to pre-size the output array.
+     */
+    int getOutputSize(int inputLength);
 
-    BytesDecryptor decryptor();
+    /**
+     * Transform input bytes using default encryption key.
+     */
+    void encrypt(byte[] input, byte[] output, int outputOffset);
+
 }

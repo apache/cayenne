@@ -18,15 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-/**
- * A class that encapsulates Cayenne cryptography protocol, which is usually
- * dependent on the encryption mode.
- * 
- * @since 3.2
- */
-public interface BytesTransformerFactory {
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
-    BytesEncryptor encryptor();
+import org.apache.cayenne.crypto.key.KeySource;
+import org.junit.Test;
 
-    BytesDecryptor decryptor();
+public class DecryptorWithKeyNameTest {
+
+    @Test
+    public void testKeyName() {
+
+        byte[] input1 = { 'a', 'b', 'c', 'd', 'e' };
+        byte[] input2 = { 'a', 'b', 'c', 0, 'e' };
+        byte[] input3 = { 'a', 'b', 0, 0, 'e' };
+
+        DecryptorWithKeyName decryptor = new DecryptorWithKeyName(mock(BytesDecryptor.class), mock(KeySource.class), 3);
+        assertEquals("bcd", decryptor.keyName(input1, 1));
+        assertEquals("bc", decryptor.keyName(input2, 1));
+        assertEquals("b", decryptor.keyName(input3, 1));
+
+    }
+
 }

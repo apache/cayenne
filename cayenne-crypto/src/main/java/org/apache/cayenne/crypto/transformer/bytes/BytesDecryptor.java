@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
+import java.security.Key;
+
 /**
  * @since 3.2
  */
-public interface BytesTransformer {
+public interface BytesDecryptor {
 
     /**
      * Returns the size of the transformed data in bytes. This information
@@ -29,5 +31,10 @@ public interface BytesTransformer {
      */
     int getOutputSize(int inputLength);
 
-    void transform(byte[] input, byte[] output, int outputOffset);
+    /**
+     * Transform input bytes using provided encryption key. Note that some
+     * implementations may ignore the provided key and e.g. derive the key from
+     * the record.
+     */
+    void decrypt(byte[] input, byte[] output, int inputOffset, Key key);
 }

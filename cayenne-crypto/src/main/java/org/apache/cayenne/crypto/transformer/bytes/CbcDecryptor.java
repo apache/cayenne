@@ -31,59 +31,45 @@ import javax.crypto.spec.IvParameterSpec;
 import org.apache.cayenne.crypto.CayenneCryptoException;
 
 /**
- * A {@link BytesEncryptor} that encrypts the provided bytes. The first block in
- * the encrypted bytes is the value of IV used to seed the CBC transformation.
- * It will be needed for decryption. The object is stateful and is not
- * thread-safe.
- * 
  * @since 3.2
  */
-class CbcEncryptor implements BytesEncryptor {
+class CbcDecryptor implements BytesDecryptor {
 
     private Cipher cipher;
-    private byte[] iv;
-    private Key key;
     private int blockSize;
 
-    public CbcEncryptor(Cipher cipher, Key key, byte[] seedIv) {
-        this.key = key;
+    CbcDecryptor(Cipher cipher) {
         this.cipher = cipher;
-        this.iv = seedIv;
         this.blockSize = cipher.getBlockSize();
-
-        if (iv.length != blockSize) {
-            throw new CayenneCryptoException("IV size is expected to be the same as block size. Was " + iv.length
-                    + "; block size was: " + blockSize);
-        }
     }
 
     @Override
     public int getOutputSize(int inputLength) {
-        // add one block for IV storage
-        return blockSize + cipher.getOutputSize(inputLength);
+        // strip the IV block size from total size...
+        return cipher.getOutputSize(inputLength) - blockSize;
     }
 
     @Override
-    public void encrypt(byte[] input, byte[] output, int outputOffset) {
+    public void decrypt(byte[] input, byte[] output, int inputOffset, Key key) {
         try {
-            doEncrypt(input, output, outputOffset);
+            doDecrypt(input, output, inputOffset, key);
         } catch (Exception e) {
-            throw new CayenneCryptoException("Error on encryption", e);
+            throw new CayenneCryptoException("Error on decryption", e);
         }
     }
 
-    protected void doEncrypt(byte[] plain, byte[] encrypted, int outputOffset) throws InvalidKeyException,
+    private void doDecrypt(byte[] input, byte[] output, int inputOffset, Key key) throws InvalidKeyException,
             InvalidAlgorithmParameterException, ShortBufferException, IllegalBlockSizeException, BadPaddingException {
 
-        // copy IV in the first block
-        System.arraycopy(iv, 0, encrypted, outputOffset, blockSize);
+        IvParameterSpec iv = iv(input, inputOffset);
 
-        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
-        int encBytes = cipher.doFinal(plain, 0, plain.length, encrypted, outputOffset + blockSize);
+        cipher.init(Cipher.DECRYPT_MODE, key, iv);
 
-        // store the last block of ciphertext to use as an IV for the next round
-        // of encryption...
-        System.arraycopy(encrypted, outputOffset + encBytes, iv, 0, blockSize);
+        int offset = inputOffset + blockSize;
+        cipher.doFinal(input, offset, input.length - offset, output, 0);
     }
 
+    IvParameterSpec iv(byte[] input, int inputOffset) {
+        return new IvParameterSpec(input, inputOffset, blockSize);
+    }
 }
