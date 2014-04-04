@@ -38,7 +38,7 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
  * 
  * @since 3.2
  */
-public class CbcEncryptor implements BytesTransformer {
+class CbcEncryptor implements BytesTransformer {
 
     private Cipher cipher;
     private byte[] iv;

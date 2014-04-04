@@ -30,7 +30,10 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.key.KeySource;
 
-public class CbcBytesTransformerFactory implements BytesTransformerFactory {
+/**
+ * @since 3.2
+ */
+class CbcBytesTransformerFactory implements BytesTransformerFactory {
 
     private static final String KEY_NAME_CHARSET = "UTF-8";
 
