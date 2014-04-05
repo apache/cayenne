@@ -39,7 +39,8 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @since 3.1
  */
-// there's no guarantee this will survive the further version upgrades, but for now all
+// there's no guarantee this will survive the further version upgrades, but for
+// now all
 // the code here seems like version-agnostic
 public abstract class BaseUpgradeHandler implements UpgradeHandler {
 
@@ -56,7 +57,7 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
 
         this.projectSource = projectSource;
     }
-    
+
     /**
      * Creates a single common EntityResolver for all project DataMaps, setting
      * it as a namespace for all of them. This is needed for resolving cross-map
@@ -70,10 +71,12 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
         }
     }
 
+    @Override
     public Resource getProjectSource() {
         return projectSource;
     }
 
+    @Override
     public UpgradeMetaData getUpgradeMetaData() {
         // no attempts at thread-safety... shouldn't be needed for upgrades
         if (metaData == null) {
@@ -83,25 +86,27 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
         return metaData;
     }
 
+    @Override
     public Resource performUpgrade() throws ConfigurationException {
         UpgradeMetaData metaData = getUpgradeMetaData();
         switch (metaData.getUpgradeType()) {
-            case DOWNGRADE_NEEDED:
-                throw new ConfigurationException("Downgrade can not be performed");
-            case INTERMEDIATE_UPGRADE_NEEDED:
-                throw new ConfigurationException(
-                        "Upgrade can not be performed - intermediate version upgrade needed");
-            case UPGRADE_NEEDED:
-                return doPerformUpgrade(metaData);
-            default:
-                return getProjectSource();
+        case DOWNGRADE_NEEDED:
+            throw new ConfigurationException("Downgrade can not be performed");
+        case INTERMEDIATE_UPGRADE_NEEDED:
+            throw new ConfigurationException("Upgrade can not be performed - intermediate version upgrade needed");
+        case UPGRADE_NEEDED:
+            return doPerformUpgrade(metaData);
+        default:
+            return getProjectSource();
         }
     }
 
     /**
-     * Does the actual project upgrade, assuming the caller already verified that the
-     * upgrade is possible.
-     * @param metaData object describing the type of upgrade
+     * Does the actual project upgrade, assuming the caller already verified
+     * that the upgrade is possible.
+     * 
+     * @param metaData
+     *            object describing the type of upgrade
      */
     protected abstract Resource doPerformUpgrade(UpgradeMetaData metaData) throws ConfigurationException;
 
@@ -111,7 +116,8 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
     protected abstract UpgradeMetaData loadMetaData();
 
     /**
-     * A default method for quick extraction of the project version from an XML file.
+     * A default method for quick extraction of the project version from an XML
+     * file.
      */
     protected String loadProjectVersion() {
 
@@ -127,30 +133,22 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
             parser.setContentHandler(rootHandler);
             parser.setErrorHandler(rootHandler);
             parser.parse(new InputSource(in));
-        }
-        catch (SAXException e) {
-            // expected ... handler will terminate as soon as it finds a root tag.
-        }
-        catch (Exception e) {
-            throw new ConfigurationException(
-                    "Error reading configuration from %s",
-                    e,
-                    url);
-        }
-        finally {
+        } catch (SAXException e) {
+            // expected ... handler will terminate as soon as it finds a root
+            // tag.
+        } catch (Exception e) {
+            throw new ConfigurationException("Error reading configuration from %s", e, url);
+        } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
-            }
-            catch (IOException ioex) {
+            } catch (IOException ioex) {
                 // ignoring...
             }
         }
 
-        return rootHandler.projectVersion != null
-                ? rootHandler.projectVersion
-                : UNKNOWN_VERSION;
+        return rootHandler.projectVersion != null ? rootHandler.projectVersion : UNKNOWN_VERSION;
     }
 
     /**
@@ -181,8 +179,7 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
             if (nextChar == '.' && !dotProcessed) {
                 dotProcessed = true;
                 buffer.append('.');
-            }
-            else if (Character.isDigit(nextChar)) {
+            } else if (Character.isDigit(nextChar)) {
                 buffer.append(nextChar);
             }
         }
@@ -195,15 +192,12 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
         private String projectVersion;
 
         @Override
-        public void startElement(
-                String uri,
-                String localName,
-                String qName,
-                Attributes attributes) throws SAXException {
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
             this.projectVersion = attributes.getValue("", "project-version");
 
-            // bail right away - we are not interested in reading this to the end
+            // bail right away - we are not interested in reading this to the
+            // end
             throw new SAXException("finished");
         }
     }
