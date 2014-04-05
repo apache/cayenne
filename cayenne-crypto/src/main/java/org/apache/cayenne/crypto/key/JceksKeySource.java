@@ -27,6 +27,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.apache.cayenne.crypto.CryptoConstants;
@@ -43,10 +45,35 @@ public class JceksKeySource implements KeySource {
 
     // this is the only standard keystore type that supports storing secret keys
     private static final String JCEKS_KEYSTORE_TYPE = "jceks";
+    private static final Key NULL_KEY = new Key() {
+
+        private static final long serialVersionUID = 4755682444381893880L;
+
+        @Override
+        public String getFormat() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public byte[] getEncoded() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getAlgorithm() {
+            throw new UnsupportedOperationException();
+        }
+    };
 
     private KeyStore keyStore;
     private char[] keyPassword;
     private String defaultKeyAlias;
+
+    // caching the keys may not be a good idea for security reasons, but
+    // re-reading the key from KeyStore for every select row creates a huge
+    // bottleneck... And considering we are caching keystore password, it
+    // probably doesn't make things that much worse
+    private ConcurrentMap<String, Key> keyCache;
 
     public JceksKeySource(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties,
             @Inject(CryptoConstants.CREDENTIALS_MAP) Map<String, char[]> credentials) {
@@ -70,6 +97,8 @@ public class JceksKeySource implements KeySource {
             throw new CayenneCryptoException("Default key alias is not set. Property name: "
                     + CryptoConstants.ENCRYPTION_KEY_ALIAS);
         }
+
+        this.keyCache = new ConcurrentHashMap<String, Key>();
     }
 
     private KeyStore createKeyStore(String keyStoreUrl) throws KeyStoreException, IOException,
@@ -91,8 +120,22 @@ public class JceksKeySource implements KeySource {
 
     @Override
     public Key getKey(String alias) {
+
+        Key key = keyCache.get(alias);
+        if (key == null) {
+
+            Key newKey = createKey(alias);
+            Key oldKey = keyCache.putIfAbsent(alias, newKey);
+            key = oldKey != null ? oldKey : newKey;
+        }
+
+        return key == NULL_KEY ? null : key;
+    }
+
+    protected Key createKey(String alias) {
         try {
-            return keyStore.getKey(alias, keyPassword);
+            Key key = keyStore.getKey(alias, keyPassword);
+            return key != null ? key : NULL_KEY;
         } catch (Exception e) {
             throw new CayenneCryptoException("Error accessing key for alias: " + alias, e);
         }
