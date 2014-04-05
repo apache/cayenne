@@ -68,10 +68,11 @@ public class SchemaBuilder {
 
     public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
 
-    private static String[] DATA_MAPS_REQUIREING_SCHEMA_SETUP = { "tstmap.map.xml", "people.map.xml",
-            "locking.map.xml", "relationships.map.xml", "relationships1.map.xml", "multi-tier.map.xml", "generic.map.xml", "map-db1.map.xml",
-            "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml", "quoted-identifiers.map.xml",
-            "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml", "oneway-rels.map.xml" };
+    private static String[] MAPS_REQUIRING_SCHEMA_SETUP = { "tstmap.map.xml", "people.map.xml",
+            "locking.map.xml", "relationships.map.xml", "relationships1.map.xml", "multi-tier.map.xml",
+            "generic.map.xml", "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml",
+            "quoted-identifiers.map.xml", "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml",
+            "oneway-rels.map.xml" };
 
     // hardcoded dependent entities that should be excluded
     // if LOBs are not supported
@@ -104,15 +105,14 @@ public class SchemaBuilder {
 
         // generate schema combining all DataMaps that require schema support.
         // Schema generation is done like that instead of per DataMap on demand
-        // to avoid
-        // conflicts when dropping and generating PK objects.
+        // to avoid conflicts when dropping and generating PK objects.
 
-        DataMap[] maps = new DataMap[DATA_MAPS_REQUIREING_SCHEMA_SETUP.length];
+        DataMap[] maps = new DataMap[MAPS_REQUIRING_SCHEMA_SETUP.length];
 
         for (int i = 0; i < maps.length; i++) {
-            InputStream stream = getClass().getClassLoader().getResourceAsStream(DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
+            InputStream stream = getClass().getClassLoader().getResourceAsStream(MAPS_REQUIRING_SCHEMA_SETUP[i]);
             InputSource in = new InputSource(stream);
-            in.setSystemId(DATA_MAPS_REQUIREING_SCHEMA_SETUP[i]);
+            in.setSystemId(MAPS_REQUIRING_SCHEMA_SETUP[i]);
             maps[i] = new MapLoader().loadDataMap(in);
         }
 

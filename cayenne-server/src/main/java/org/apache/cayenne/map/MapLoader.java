@@ -27,8 +27,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -44,8 +42,6 @@ public class MapLoader extends DefaultHandler {
     // TODO: andrus, 7/17/2006 - move upgrade logic out of here
     final static String _1_2_PACKAGE_PREFIX = "org.objectstyle.cayenne.";
     final static String _2_0_PACKAGE_PREFIX = "org.apache.cayenne.";
-
-    private static Log logger = LogFactory.getLog(MapLoader.class);
 
     public static final String DATA_MAP_TAG = "data-map";
     public static final String PROPERTY_TAG = "property";
