@@ -56,11 +56,16 @@ class UpgradeHandler_V7 extends BaseUpgradeHandler {
             UpgradeHandler handlerV6 = upgraderV6.getUpgradeHandler(projectSource);
             projectSource = handlerV6.performUpgrade();
         }
+        
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
         ConfigurationTree<DataChannelDescriptor> tree = loader.load(projectSource);
         Project project = new Project(tree);
-        // because listeners are no longer loaded they are not saved in upgraded project
+        
+        attachToNamespace((DataChannelDescriptor) project.getRootNode());
+        
+        // load and safe cycle removes objects no longer supported, specifically listeners.
+        
         projectSaver.save(project); 
         return project.getConfigurationResource();
     }

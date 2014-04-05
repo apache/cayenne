@@ -23,6 +23,9 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
 import org.xml.sax.Attributes;
@@ -52,6 +55,19 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
         }
 
         this.projectSource = projectSource;
+    }
+    
+    /**
+     * Creates a single common EntityResolver for all project DataMaps, setting
+     * it as a namespace for all of them. This is needed for resolving cross-map
+     * relationships.
+     */
+    protected void attachToNamespace(DataChannelDescriptor channelDescriptor) {
+        EntityResolver entityResolver = new EntityResolver(channelDescriptor.getDataMaps());
+
+        for (DataMap map : entityResolver.getDataMaps()) {
+            map.setNamespace(entityResolver);
+        }
     }
 
     public Resource getProjectSource() {
