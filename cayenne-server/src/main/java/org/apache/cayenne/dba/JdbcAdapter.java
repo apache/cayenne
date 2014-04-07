@@ -74,7 +74,8 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
-     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
+     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the
+     *             DataNode.
      */
     @Inject
     protected BatchTranslatorFactory batchQueryBuilderFactory;
@@ -528,10 +529,10 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Returns a translator factory for EJBQL to SQL translation. This property
-     * is normally initialized in constructor by calling
-     * {@link #createEJBQLTranslatorFactory()}, and can be overridden by calling
-     * {@link #setEjbqlTranslatorFactory(EJBQLTranslatorFactory)}.
+     * Returns a translator factory for EJBQL to SQL translation. The factory is
+     * normally initialized in constructor by calling
+     * {@link #createEJBQLTranslatorFactory()}, and can be changed later by
+     * calling {@link #setEjbqlTranslatorFactory(EJBQLTranslatorFactory)}.
      * 
      * @since 3.0
      */
@@ -584,7 +585,8 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
-     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
+     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the
+     *             DataNode.
      */
     @Deprecated
     public BatchTranslatorFactory getBatchQueryBuilderFactory() {
@@ -593,13 +595,14 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
-     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the DataNode.
+     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the
+     *             DataNode.
      */
     @Deprecated
     public void setBatchQueryBuilderFactory(BatchTranslatorFactory batchQueryBuilderFactory) {
         this.batchQueryBuilderFactory = batchQueryBuilderFactory;
     }
-    
+
     /**
      * Simply returns this, as JdbcAdapter is not a wrapper.
      * 

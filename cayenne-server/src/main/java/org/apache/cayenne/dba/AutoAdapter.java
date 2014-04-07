@@ -25,6 +25,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -240,5 +241,13 @@ public class AutoAdapter implements DbAdapter {
     @Override
     public DbAdapter unwrap() {
         return getAdapter();
+    }
+
+    /**
+     * @since 3.2
+     */
+    @Override
+    public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
+        return getAdapter().getEjbqlTranslatorFactory();
     }
 }
