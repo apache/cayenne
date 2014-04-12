@@ -18,12 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade.v7;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.BaseUpgradeHandler;
@@ -64,10 +70,64 @@ class UpgradeHandler_V7 extends BaseUpgradeHandler {
         
         attachToNamespace((DataChannelDescriptor) project.getRootNode());
         
-        // load and safe cycle removes objects no longer supported, specifically listeners.
+        // remove "shadow" attributes per CAY-1795
+        checkObjEntities(project);
         
+        // load and safe cycle removes objects no longer supported, specifically listeners
         projectSaver.save(project); 
         return project.getConfigurationResource();
+    }
+    
+    private void checkObjEntities(Project project) {
+        DataChannelDescriptor rootNode = (DataChannelDescriptor) project.getRootNode();
+
+        List<DataMap> dataList = new ArrayList<DataMap>(rootNode.getDataMaps());
+        List<ObjEntity> objEntityList = null;
+
+        // take ObjEntities from DataMap
+        if (!dataList.isEmpty()) {
+            for (DataMap dataMap : dataList) {
+                objEntityList = new ArrayList<ObjEntity>(dataMap.getObjEntities());
+                ObjEntity superEntity = null;
+
+                // if objEntity has super entity, then checks it
+                // for duplicated attributes
+                for (ObjEntity objEntity : objEntityList) {
+                    superEntity = objEntity.getSuperEntity();
+                    if (superEntity != null) {
+                        removeDuplicatedAttributes(objEntity, superEntity);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove attributes from objEntity, if superEntity has attributes with same
+     * names.
+     */
+    private void removeDuplicatedAttributes(ObjEntity objEntity, ObjEntity superEntity) {
+        List<ObjAttribute> entityAttr = new ArrayList<ObjAttribute>(objEntity.getDeclaredAttributes());
+        List<ObjAttribute> superEntityAttr = new ArrayList<ObjAttribute>(superEntity.getAttributes());
+        List<String> delList = new ArrayList<String>();
+        // entityAttr - attributes of objEntity, without inherited
+        // superEntityAttr - all attributes in the superEntity inheritance
+        // hierarchy
+        // delList - attributes, that will be removed from objEntity
+
+        // if subAttr and superAttr have same names, adds subAttr to delList
+        for (ObjAttribute subAttr : entityAttr) {
+            for (ObjAttribute superAttr : superEntityAttr) {
+                if (subAttr.getName().equals(superAttr.getName())) {
+                    delList.add(subAttr.getName());
+                }
+            }
+        }
+        if (!delList.isEmpty()) {
+            for (String i : delList) {
+                objEntity.removeAttribute(i);
+            }
+        }
     }
 
     @Override
