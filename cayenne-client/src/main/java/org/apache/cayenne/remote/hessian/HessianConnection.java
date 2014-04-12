@@ -21,6 +21,7 @@ package org.apache.cayenne.remote.hessian;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.event.EventBridge;
+import org.apache.cayenne.event.EventBridgeFactory;
 import org.apache.cayenne.remote.BaseConnection;
 import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
@@ -111,12 +112,38 @@ public class HessianConnection extends BaseConnection {
         return sharedSessionName;
     }
 
+    @Override
     public EventBridge getServerEventBridge() throws CayenneRuntimeException {
         if (session == null) {
             connect();
         }
 
-        return session.isServerEventsEnabled() ? session.createServerEventBridge() : null;
+        return createServerEventBridge(session);
+    }
+    
+    /**
+     * Creates an EventBridge that will listen for server events. Returns null if server
+     * events support is not configured in the descriptor.
+     * 
+     * @throws CayenneRuntimeException if EventBridge startup fails for any reason.
+     */
+    protected EventBridge createServerEventBridge(RemoteSession session) throws CayenneRuntimeException {
+
+        if (!session.isServerEventsEnabled()) {
+            return null;
+        }
+
+        try {
+            EventBridgeFactory factory = (EventBridgeFactory) Class.forName(session.getEventBridgeFactory())
+                    .newInstance();
+
+            // must use "name", not the sessionId as an external subject for the
+            // event bridge
+            return factory.createEventBridge(RemoteSession.getSubjects(), session.getName(),
+                    session.getEventBridgeParameters());
+        } catch (Exception ex) {
+            throw new CayenneRuntimeException("Error creating EventBridge.", ex);
+        }
     }
 
     /**

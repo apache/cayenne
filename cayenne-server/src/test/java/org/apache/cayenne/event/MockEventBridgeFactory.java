@@ -33,10 +33,11 @@ public class MockEventBridgeFactory implements EventBridgeFactory {
                 .convertToExternalSubject(localSubject), properties);
     }
 
+    @Override
     public EventBridge createEventBridge(
-            Collection localSubjects,
+            Collection<EventSubject> localSubjects,
             String externalSubject,
-            Map properties) {
+            Map<String, String> properties) {
 
         return new MockEventBridge(localSubjects, externalSubject, properties);
     }

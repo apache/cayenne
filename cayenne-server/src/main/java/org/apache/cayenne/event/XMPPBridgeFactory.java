@@ -48,22 +48,23 @@ public class XMPPBridgeFactory implements EventBridgeFactory {
     public static final String XMPP_LOGIN_PROPERTY = "cayenne.XMPPBridge.xmppLogin";
     public static final String XMPP_PASSWORD_PROPERTY = "cayenne.XMPPBridge.xmppPassword";
 
+    @Override
     public EventBridge createEventBridge(
             Collection<EventSubject> localSubjects,
             String externalSubject,
-            Map<String, Object> properties) {
+            Map<String, String> properties) {
 
-        String chatService = (String) properties.get(XMPP_CHAT_SERVICE_PROPERTY);
-        String host = (String) properties.get(XMPP_HOST_PROPERTY);
+        String chatService = properties.get(XMPP_CHAT_SERVICE_PROPERTY);
+        String host = properties.get(XMPP_HOST_PROPERTY);
 
-        String loginId = (String) properties.get(XMPP_LOGIN_PROPERTY);
-        String password = (String) properties.get(XMPP_PASSWORD_PROPERTY);
+        String loginId = properties.get(XMPP_LOGIN_PROPERTY);
+        String password = properties.get(XMPP_PASSWORD_PROPERTY);
 
-        String secureConnectionString = (String) properties
+        String secureConnectionString = properties
                 .get(XMPP_SECURE_CONNECTION_PROPERTY);
         boolean secureConnection = "true".equalsIgnoreCase(secureConnectionString);
 
-        String portString = (String) properties.get(XMPP_PORT_PROPERTY);
+        String portString = properties.get(XMPP_PORT_PROPERTY);
         int port = -1;
         if (portString != null) {
 

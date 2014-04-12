@@ -38,11 +38,11 @@ public class JMSBridgeFactory implements EventBridgeFactory {
     /**
      * @since 1.2
      */
-    public EventBridge createEventBridge(Collection<EventSubject> localSubjects, String externalSubject, Map<String, Object> properties) {
+    public EventBridge createEventBridge(Collection<EventSubject> localSubjects, String externalSubject, Map<String, String> properties) {
         JMSBridge bridge = new JMSBridge(localSubjects, externalSubject);
 
         // configure properties
-        String topicConnectionFactory = (String) properties
+        String topicConnectionFactory = properties
                 .get(TOPIC_CONNECTION_FACTORY_PROPERTY);
 
         bridge.setTopicConnectionFactoryName(topicConnectionFactory != null

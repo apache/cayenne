@@ -51,14 +51,14 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
     /**
      * Creates a JavaGroupsBridge instance. Since JavaGroups is not shipped with Cayenne
      * and should be installed separately, a common misconfiguration problem may be the
-     * absense of JavaGroups jar file. This factory returns a dummy noop EventBridge, if
+     * absence of JavaGroups jar file. This factory returns a dummy noop EventBridge, if
      * this is the case. This would allow the application to continue to run, but without
      * remote notifications.
      */
     public EventBridge createEventBridge(
             Collection<EventSubject> localSubjects,
             String externalSubject,
-            Map<String, Object> properties) {
+            Map<String, String> properties) {
 
         try {
             // sniff JavaGroups presence
@@ -78,7 +78,7 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
     private EventBridge createJavaGroupsBridge(
             Collection<EventSubject> localSubjects,
             String externalSubject,
-            Map<String, Object> properties) {
+            Map<String, String> properties) {
 
         // create JavaGroupsBridge using reflection to avoid triggering
         // ClassNotFound exceptions due to JavaGroups absence.
@@ -91,9 +91,9 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
             Object bridge = c.newInstance(localSubjects, externalSubject);
 
             // configure properties
-            String multicastAddress = (String) properties.get(MCAST_ADDRESS_PROPERTY);
-            String multicastPort = (String) properties.get(MCAST_PORT_PROPERTY);
-            String configURL = (String) properties.get(JGROUPS_CONFIG_URL_PROPERTY);
+            String multicastAddress = properties.get(MCAST_ADDRESS_PROPERTY);
+            String multicastPort = properties.get(MCAST_PORT_PROPERTY);
+            String configURL = properties.get(JGROUPS_CONFIG_URL_PROPERTY);
 
             PropertyUtils.setProperty(bridge, "configURL", configURL);
             PropertyUtils.setProperty(
@@ -115,7 +115,7 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
     class NoopEventBridge extends EventBridge {
 
         public NoopEventBridge() {
-            super(Collections.EMPTY_SET, null);
+            super(Collections.<EventSubject>emptySet(), null);
         }
 
         @Override

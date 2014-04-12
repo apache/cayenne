@@ -51,7 +51,7 @@ public class RemoteSession implements Serializable {
     protected String sessionId;
 
     protected String eventBridgeFactory;
-    protected Map eventBridgeParameters;
+    protected Map<String, String> eventBridgeParameters;
 
     // private constructor used by hessian deserialization mechanism
     @SuppressWarnings("unused")
@@ -71,7 +71,7 @@ public class RemoteSession implements Serializable {
      * is not null, session will support server events.
      */
     public RemoteSession(String sessionId, String eventBridgeFactory,
-            Map eventBridgeParameters) {
+            Map<String, String> eventBridgeParameters) {
 
         if (sessionId == null) {
             throw new IllegalArgumentException("Null sessionId");
@@ -114,7 +114,10 @@ public class RemoteSession implements Serializable {
      * events support is not configured in the descriptor.
      * 
      * @throws CayenneRuntimeException if EventBridge startup fails for any reason.
+     * 
+     * @deprecated since 3.2. Factory creation should is handled by the client connection.
      */
+    @Deprecated
     public EventBridge createServerEventBridge() throws CayenneRuntimeException {
 
         if (!isServerEventsEnabled()) {
@@ -125,9 +128,9 @@ public class RemoteSession implements Serializable {
             EventBridgeFactory factory = (EventBridgeFactory) Class.forName(
                     eventBridgeFactory).newInstance();
 
-            Map parameters = eventBridgeParameters != null
+            Map<String, String> parameters = eventBridgeParameters != null
                     ? eventBridgeParameters
-                    : Collections.EMPTY_MAP;
+                    : Collections.<String, String>emptyMap();
 
             // must use "name", not the sessionId as an external subject for the event
             // bridge
@@ -152,5 +155,23 @@ public class RemoteSession implements Serializable {
         }
 
         return builder.toString();
+    }
+
+    public static Collection<EventSubject> getSubjects() {
+        return SUBJECTS;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public String getEventBridgeFactory() {
+        return eventBridgeFactory;
+    }
+
+    /**
+     * @since 3.2
+     */
+    public Map<String, String> getEventBridgeParameters() {
+        return eventBridgeParameters != null ? eventBridgeParameters : Collections.<String, String> emptyMap();
     }
 }
