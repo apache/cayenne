@@ -23,10 +23,10 @@ import java.util.Map;
 import org.apache.cayenne.di.Inject;
 
 /**
- * An implementation of {@link RuntimeProperties} that returns properties that were
- * injected via a map in constructor. Each property can be overridden via -D command line
- * option (i.e. in this implementation JVM system properties take precedence over any
- * other property configuration mechanism).
+ * An implementation of {@link RuntimeProperties} that returns properties that
+ * were injected via a map in constructor. Each property can be overridden via
+ * -D command line option (i.e. in this implementation JVM system properties
+ * take precedence over any other property configuration mechanism).
  * 
  * @since 3.1
  */
@@ -38,10 +38,13 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
         this.properties = properties;
     }
 
+    @Override
     public String get(String key) {
 
-        // TODO: note that System.getProperty uses a synchronized hashtable internally as
-        // of Java 1.6. So this method suddenly becomes a synchronization bottleneck.
+        // TODO: note that System.getProperty uses a synchronized hashtable
+        // internally as
+        // of Java 1.6. So this method suddenly becomes a synchronization
+        // bottleneck.
         String property = System.getProperty(key);
 
         if (property != null) {
@@ -50,7 +53,17 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
 
         return properties.get(key);
     }
-    
+
+    /**
+     * @since 3.2
+     */
+    @Override
+    public String get(String key, String defaultValue) {
+        String string = get(key);
+        return string != null ? string : defaultValue;
+    }
+
+    @Override
     public long getLong(String key, long defaultValue) {
         String string = get(key);
         if (string == null) {
@@ -59,13 +72,13 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
 
         try {
             return Long.parseLong(string);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             // incorrect property format, should we rethrow?
             return defaultValue;
         }
     }
 
+    @Override
     public int getInt(String key, int defaultValue) {
         String string = get(key);
         if (string == null) {
@@ -74,13 +87,13 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
 
         try {
             return Integer.parseInt(string);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             // incorrect property format, should we rethrow?
             return defaultValue;
         }
     }
 
+    @Override
     public boolean getBoolean(String key, boolean defaultValue) {
         String string = get(key);
         return string != null ? "true".equalsIgnoreCase(string) : defaultValue;

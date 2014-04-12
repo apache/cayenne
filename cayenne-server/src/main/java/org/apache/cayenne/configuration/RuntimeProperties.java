@@ -29,10 +29,18 @@ public interface RuntimeProperties {
      * Returns a String property value for a given key.
      */
     String get(String key);
-    
+
+    /**
+     * Returns a String property value for a given key or a default value if a
+     * value is not present in properties or is null.
+     * 
+     * @since 3.2
+     */
+    String get(String key, String defaultValue);
+
     int getInt(String key, int defaultValue);
-    
+
     long getLong(String key, long defaultValue);
-    
+
     boolean getBoolean(String key, boolean defaultValue);
 }
