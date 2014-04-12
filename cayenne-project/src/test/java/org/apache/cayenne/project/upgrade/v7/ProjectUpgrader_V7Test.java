@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
@@ -348,7 +349,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
     }
 
     public void testPerformUpgradeFrom6() throws Exception {
-        File testForlder = setupTestDirectory("testUpgrade6a");
+        File testFolder = setupTestDirectory("testUpgrade6a");
         String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/6a/";
         System.out.println(sourceUrl);
         Module testModule = new Module() {
@@ -368,7 +369,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
 
         for (String name : resources) {
             URL xmlUrl = getClass().getClassLoader().getResource(sourceUrl + name);
-            File target = new File(testForlder, name);
+            File target = new File(testFolder, name);
             ResourceUtil.copyResourceToFile(xmlUrl, target);
             files.add(target);
         }
@@ -415,6 +416,83 @@ public class ProjectUpgrader_V7Test extends Project2Case {
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         assertEquals("7", xpath.evaluate("/data-map/@project-version", document));
+    }
+
+    public void testObjAttributeDelete() throws Exception {
+        System.out.println("Test ObjAttribute deleting.");
+
+        File testFolder = setupTestDirectory("testObjAttribute");
+        String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/6a/ObjAttributeDeleting/";
+
+        Module testModule = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+            }
+        };
+
+        ArrayList<String> source = new ArrayList<String>();
+        source.add("cayenne-TestProject.xml");
+        source.add("testProjectMap1.map.xml");
+        source.add("testProjectMap2.map.xml");
+
+        ArrayList<File> file = new ArrayList<File>();
+
+        for (String name : source) {
+            URL xmlUrl = getClass().getClassLoader().getResource(sourceUrl + name);
+            File target = new File(testFolder, name);
+            ResourceUtil.copyResourceToFile(xmlUrl, target);
+            file.add(target);
+        }
+
+        Injector injector = DIBootstrap.createInjector(testModule);
+        ProjectUpgrader_V7 upgrader = new ProjectUpgrader_V7();
+        injector.injectMembers(upgrader);
+
+        Resource resource = new URLResource(file.get(0).toURL());
+        assertNotNull(resource);
+        UpgradeHandler handler = upgrader.getUpgradeHandler(resource);
+        assertNotNull(handler);
+
+        Resource upgraded = handler.performUpgrade();
+        assertNotNull(upgraded);
+        assertNotSame(resource, upgraded);
+
+        assertPerformUpgrade6Cayenne(file.get(0));
+        assertObjAttributeMap1(file.get(1));
+        assertObjAttributeMap2(file.get(2));
+    }
+
+    private void assertObjAttributeMap1(File file) throws Exception {
+        Document document = toDOMTree(file);
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        assertEquals("7", xpath.evaluate("/data-map/@project-version", document));
+
+        String xpathValue = "/data-map/obj-entity[@name='GreatArtist']/obj-attribute";
+        XPathExpression expr = xpath.compile(xpathValue);
+        Node node = (Node) expr.evaluate(document, XPathConstants.NODE);
+
+        assertEquals("attribute2", xpath.evaluate("@name", node));
+    }
+
+    private void assertObjAttributeMap2(File file) throws Exception {
+        Document document = toDOMTree(file);
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        assertEquals("7", xpath.evaluate("/data-map/@project-version", document));
+
+        String xpath_1 = "/data-map/obj-entity[@name='House']/obj-attribute/@name";
+        String xpath_2 = "/data-map/obj-entity[@name='Penthouse']/obj-attribute/@name";
+        XPathExpression expr = xpath.compile(xpath_1);
+        String houseAttr = (String) expr.evaluate(document, XPathConstants.STRING);
+        expr = xpath.compile(xpath_2);
+        String penthouseAttr = (String) expr.evaluate(document, XPathConstants.STRING);
+
+        assertEquals("attribute2", houseAttr);
+        assertEquals("attribute3", penthouseAttr);
     }
 
 }

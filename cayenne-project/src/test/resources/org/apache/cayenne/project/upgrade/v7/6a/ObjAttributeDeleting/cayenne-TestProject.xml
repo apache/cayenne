@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain project-version="6">
+	<map name="testProjectMap1"/>
+	<map name="testProjectMap2"/>
+
+	<node name="testProjectNode"
+		 factory="org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory"
+		 schema-update-strategy="org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy"
+		>
+		<map-ref name="testProjectMap1"/>
+		<map-ref name="testProjectMap2"/>
+		<data-source>
+			<driver/>
+			<url/>
+			<connectionPool min="1" max="1"/>
+			<login/>
+		</data-source>
+	</node>
+</domain>
