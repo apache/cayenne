@@ -187,7 +187,6 @@ public class ProjectUpgrader_V7Test extends Project2Case {
 
     public void testPerformUpgradeFrom3() throws Exception {
 
-        System.out.println("TEST3");
         File testFolder = setupTestDirectory("testPerformUpgrade_3_0_0_1");
         String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/3_0_0_1a/";
 
@@ -351,7 +350,6 @@ public class ProjectUpgrader_V7Test extends Project2Case {
     public void testPerformUpgradeFrom6() throws Exception {
         File testFolder = setupTestDirectory("testUpgrade6a");
         String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/6a/";
-        System.out.println(sourceUrl);
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
@@ -419,17 +417,18 @@ public class ProjectUpgrader_V7Test extends Project2Case {
     }
 
     public void testObjAttributeDelete() throws Exception {
-        System.out.println("Test ObjAttribute deleting.");
 
         File testFolder = setupTestDirectory("testObjAttribute");
-        String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/6a/ObjAttributeDeleting/";
+        String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/6a/delete_shadow_attributes/";
 
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
                 binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
                 binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             }
         };
 
