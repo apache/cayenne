@@ -151,20 +151,6 @@ public class Order extends _Order {
     </section>
     <section xml:id="callback-non-persistent">
         <title>Callbacks on Non-Persistent Listeners</title>
-        
-            <para>
-                <note>
-                    <para>While listener callback methods can be declared in the Modeler (at least
-                        as of this wrting), which ensures their automatic registration in runtime,
-                        there's a big downside to it. The power of the listeners lies in their
-                        complete separation from the XML mapping. The mapping once created, can be
-                        reused in different contexts each having a different set of listeners.
-                        Placing a Java class of the listener in the XML mapping, and relying on
-                        Cayenne to instantiate the listeners severly limits mapping reusability.
-                        Further down in this chapter we'll assume that the listener classes are
-                        never present in the DataMap and are registered via API.</para>
-                </note>
-            </para>
             <para>A listener is simply some application class that has one or more annotated
             callback methods. A callback method signature should be <code>void
                 someMethod(SomePersistentType object)</code>. It can be public, private, protected
