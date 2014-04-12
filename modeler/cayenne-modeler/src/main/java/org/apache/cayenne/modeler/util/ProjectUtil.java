@@ -197,7 +197,7 @@ public class ProjectUtil {
             entity.addAttribute(attribute);
         }
     }
-    
+
     
     /**
      * Changes the name of the embeddable attribute and all references to this embeddable attribute.

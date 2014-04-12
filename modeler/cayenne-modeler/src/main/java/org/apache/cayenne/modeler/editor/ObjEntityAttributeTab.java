@@ -36,7 +36,9 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
@@ -46,11 +48,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
@@ -68,12 +71,17 @@ import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialog;
+import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.editor.wrapper.ObjAttributeWrapper;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
+import org.apache.cayenne.modeler.event.ProjectOnSaveListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -84,7 +92,7 @@ import org.apache.cayenne.modeler.util.combo.AutoCompletion;
  * 
  */
 public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayListener,
-        ObjEntityListener, ObjAttributeListener, ExistingSelectionProcessor {
+        ObjEntityListener, ObjAttributeListener, ExistingSelectionProcessor, ProjectOnSaveListener {
 
     protected ProjectController mediator;
     protected CayenneTable table;
@@ -128,7 +136,8 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
         table = new CayenneTable();
         table.setDefaultRenderer(String.class, new CellRenderer());
-
+        table.setDefaultRenderer(Boolean.class, new CheckBoxRenderer());
+        
         tablePreferences = new TableColumnPreferences(
                 ObjAttributeTableModel.class,
                 "objEntity/attributeTable");
@@ -151,7 +160,8 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         mediator.addObjEntityDisplayListener(this);
         mediator.addObjEntityListener(this);
         mediator.addObjAttributeListener(this);
-
+        mediator.addProjectOnSaveListener(this);
+        
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
             public void valueChanged(ListSelectionEvent e) {
@@ -250,11 +260,18 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
 
-        List listAttrs = model.getObjectList();
+        List<ObjAttributeWrapper> listAttrs = model.getObjectList();
+        
+        // newSel - indexes of attributes to be selected from model
         int[] newSel = new int[attrs.length];
-
+        
+        // search for attributes to select from attributes that model has 
         for (int i = 0; i < attrs.length; i++) {
-            newSel[i] = listAttrs.indexOf(attrs[i]);
+            for (int j = 0; j < listAttrs.size(); j++) {
+                if (listAttrs.get(j).getValue() == attrs[i]) {
+                    newSel[i] = j;
+                }
+            }
         }
 
         table.select(newSel);
@@ -279,7 +296,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
             attrs = new ObjAttribute[sel.length];
 
             for (int i = 0; i < sel.length; i++) {
-                attrs[i] = model.getAttribute(sel[i]);
+                attrs[i] = model.getAttribute(sel[i]).getValue();
             }
 
             if (sel.length == 1) {
@@ -306,19 +323,40 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
     }
 
     public void objAttributeChanged(AttributeEvent e) {
-        rebuildTable((ObjEntity) e.getEntity());
+        ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
+        model.fireTableDataChanged();
         table.select(e.getAttribute());
     }
 
     public void objAttributeAdded(AttributeEvent e) {
-        rebuildTable((ObjEntity) e.getEntity());
+        ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
+
+        if(!model.isValid()){
+            model.resetModel();
+        }
+
+        model.addRow(new ObjAttributeWrapper((ObjAttribute)e.getAttribute()));
+        model.fireTableDataChanged();
         table.select(e.getAttribute());
     }
 
     public void objAttributeRemoved(AttributeEvent e) {
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
-        int ind = model.getObjectList().indexOf(e.getAttribute());
-        model.removeRow(e.getAttribute());
+        int ind = -1;
+        List<ObjAttributeWrapper> list = model.getObjectList();
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getValue() == e.getAttribute()) {
+                ind = i;
+            }
+        }
+        
+        if(!model.isValid()){
+            model.resetModel();
+        }
+
+        model.removeRow(list.get(ind));
+        model.fireTableDataChanged();
         table.select(ind);
     }
 
@@ -332,6 +370,9 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         // Important: process event even if this is the same entity,
         // since the inheritance structure might have changed
         if (entity != null) {
+            
+            // reset model before change ObjEntity
+        	resetTableModel();
             rebuildTable(entity);
         }
 
@@ -342,6 +383,15 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
         }
     }
 
+    
+    private void resetTableModel() {
+    	CayenneTableModel model = table.getCayenneModel();
+        if (model != null && !model.isValid()) {
+            model.resetModel();
+            model.fireTableDataChanged();
+        }
+    }
+    
     protected void rebuildTable(ObjEntity entity) {
         if (table.getEditingRow() != -1 && table.getEditingColumn() != -1) {
             TableCellEditor cellEditor = table.getCellEditor(table.getEditingRow(), table.getEditingColumn());
@@ -428,7 +478,7 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
 
             ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
             column = table.getColumnModel().getColumn(column).getModelIndex();
-            ObjAttribute attribute = model.getAttribute(row);
+            ObjAttributeWrapper attribute = model.getAttribute(row);
             if (column != ObjAttributeTableModel.INHERITED) {
 
                 if (!model.isCellEditable(row, column)) {
@@ -453,12 +503,67 @@ public class ObjEntityAttributeTab extends JPanel implements ObjEntityDisplayLis
                 }
                 setText("");
             }
-            setBackground(isSelected && !hasFocus
-                    ? table.getSelectionBackground()
-                    : table.getBackground());
+            if (!attribute.isValid()) {
+                setBackground(ValidatorDialog.WARNING_COLOR);
+                setToolTipText(attribute.getFailureDescription(column));
+            } else {
+                setBackground(isSelected && !hasFocus ? table
+                        .getSelectionBackground() : table.getBackground());
+                setToolTipText(null);
+            }
 
             return this;
         }
     }
+    
+    final class CheckBoxRenderer extends JCheckBox implements TableCellRenderer {
+
+        public CheckBoxRenderer() {
+            super();
+            setHorizontalAlignment(JLabel.CENTER);
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value, 
+                boolean isSelected, 
+                boolean hasFocus, 
+                int row,
+                int column) {
+
+            ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
+            column = table.getColumnModel().getColumn(column).getModelIndex();
+            ObjAttributeWrapper attribute = model.getAttribute(row);
+            setSelected((value != null && ((Boolean) value)));
+
+            if (!model.isCellEditable(row, column)) {
+                setForeground(Color.GRAY);
+            }
+            else {
+                setForeground(isSelected && !hasFocus ? table
+                        .getSelectionForeground() : table.getForeground());
+            }
+
+            if (!attribute.isValid()) {
+                setBackground(ValidatorDialog.WARNING_COLOR);
+                setToolTipText(attribute.getFailureDescription(column));
+            }
+            else {
+                setBackground(isSelected ? table.getSelectionBackground()
+                        : table.getBackground());
+                setToolTipText(null);
+            }
+
+            return this;
+        }
+
+    }
+
+	@Override
+	public void beforeSaveChanges(ProjectOnSaveEvent e) {
+		resetTableModel();
+	}
 
 }

@@ -26,9 +26,9 @@ import org.apache.cayenne.validation.ValidationResult;
  * 
  * @since 3.1
  */
-abstract class ConfigurationNodeValidator {
+public abstract class ConfigurationNodeValidator {
 
-    void addFailure(
+    public void addFailure(
             ValidationResult validationResult,
             Object source,
             String messageFormat,
@@ -36,5 +36,11 @@ abstract class ConfigurationNodeValidator {
 
         String message = String.format(messageFormat, messageParameters);
         validationResult.addFailure(new SimpleValidationFailure(source, message));
+    }
+    
+    public void addFailure(
+    		ValidationResult validationResult,
+    		SimpleValidationFailure failure) {
+    	validationResult.addFailure(failure);
     }
 }

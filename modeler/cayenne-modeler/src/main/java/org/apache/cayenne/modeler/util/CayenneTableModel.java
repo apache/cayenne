@@ -43,11 +43,11 @@ import org.apache.commons.logging.LogFactory;
  * Superclass of CayenneModeler table model classes.
  * 
  */
-public abstract class CayenneTableModel extends AbstractTableModel {
+public abstract class CayenneTableModel<T> extends AbstractTableModel {
 
     protected ProjectController mediator;
     protected Object eventSource;
-    protected List objectList;
+    protected List<T> objectList;
 
     private static Log logObj = LogFactory.getLog(CayenneTableModel.class);
 
@@ -55,7 +55,7 @@ public abstract class CayenneTableModel extends AbstractTableModel {
      * Constructor for CayenneTableModel.
      */
     public CayenneTableModel(ProjectController mediator, Object eventSource,
-            java.util.List objectList) {
+            java.util.List<T> objectList) {
         
         super();
         this.eventSource = eventSource;
@@ -143,11 +143,11 @@ public abstract class CayenneTableModel extends AbstractTableModel {
     /**
      * Returns internal object list.
      */
-    public java.util.List getObjectList() {
+    public java.util.List<T> getObjectList() {
         return objectList;
     }
 
-    public void addRow(Object row) {
+    public void addRow(T row) {
         objectList.add(row);
         fireTableDataChanged();
     }
@@ -205,6 +205,20 @@ public abstract class CayenneTableModel extends AbstractTableModel {
         Collections.swap(objectList, i, j);
         fireTableDataChanged();
     }
+    
+    /**
+     * Correct errors that model has.
+     */
+    public void resetModel() {
+		// do nothing by default
+	}
+    
+    /**
+     * @return false, if model is not valid. 
+     */
+    public boolean isValid() {
+		return true;
+	}
 
     protected class PropertyComparator implements Comparator {
 

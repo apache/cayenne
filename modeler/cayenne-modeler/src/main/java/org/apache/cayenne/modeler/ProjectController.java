@@ -79,6 +79,7 @@ import org.apache.cayenne.modeler.action.NavigateBackwardAction;
 import org.apache.cayenne.modeler.action.NavigateForwardAction;
 import org.apache.cayenne.modeler.action.RevertAction;
 import org.apache.cayenne.modeler.action.SaveAction;
+import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
@@ -110,6 +111,8 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayListener;
+import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
+import org.apache.cayenne.modeler.event.ProjectOnSaveListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
@@ -233,7 +236,7 @@ public class ProjectController extends CayenneController {
     protected CircularArray controllerStateHistory;
     protected int maxHistorySize = 20;
 
-    private EntityResolver entityResolver;
+    private EntityResolver entityResolver;    
 
     /**
      * Project files watcher. When project file is changed, user will be asked
@@ -574,7 +577,15 @@ public class ProjectController extends CayenneController {
     public void removeDbEntityListener(DbEntityListener listener) {
         listenerList.remove(DbEntityListener.class, listener);
     }
+    
+    public void addProjectOnSaveListener(ProjectOnSaveListener listener) {
+    	listenerList.add(ProjectOnSaveListener.class, listener);
+    }
 
+    public void removeProjectOnSaveListener(ProjectOnSaveListener listener) {
+    	listenerList.remove(ProjectOnSaveListener.class, listener);
+    }
+    
     public void addObjEntityListener(ObjEntityListener listener) {
         listenerList.add(ObjEntityListener.class, listener);
     }
@@ -1491,7 +1502,7 @@ public class ProjectController extends CayenneController {
         if (this.dirty != dirty) {
             this.dirty = dirty;
 
-            application.getActionManager().getAction(SaveAction.class).setEnabled(dirty);
+            enableSave(dirty);
             application.getActionManager().getAction(RevertAction.class).setEnabled(dirty);
 
             if (dirty) {
@@ -1716,6 +1727,14 @@ public class ProjectController extends CayenneController {
             }
         }
     }
+    
+    public void fireProjectOnSaveEvent(ProjectOnSaveEvent e){
+    	for(EventListener listener : listenerList.getListeners(ProjectOnSaveListener.class)){
+    		ProjectOnSaveListener temp = (ProjectOnSaveListener) listener;
+    		temp.beforeSaveChanges(e);
+    	}
+    	
+    }
 
     public ArrayList<Embeddable> getEmbeddableNamesInCurRentDataDomain() {
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProject().getRootNode();
@@ -1758,5 +1777,14 @@ public class ProjectController extends CayenneController {
      */
     public void setEntityTabSelection(int entityTabSelection) {
         this.entityTabSelection = entityTabSelection;
+    }    
+    
+    /**
+     * If true, all save buttons become available.
+     * @param enable
+     */
+    public void enableSave(boolean enable) {
+        application.getActionManager().getAction(SaveAction.class).setEnabled(enable);
+        application.getActionManager().getAction(SaveAsAction.class).setEnabled(enable);
     }
 }

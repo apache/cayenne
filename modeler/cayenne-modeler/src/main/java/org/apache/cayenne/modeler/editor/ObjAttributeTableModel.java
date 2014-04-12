@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -46,13 +47,13 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.wrapper.ObjAttributeWrapper;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -60,24 +61,32 @@ import org.apache.cayenne.util.Util;
  * Allows adding/removing attributes, modifying the types and the names.
  * 
  */
-public class ObjAttributeTableModel extends CayenneTableModel {
+public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrapper> {
 
     // Columns
-    static final int INHERITED = 0;
-    static final int OBJ_ATTRIBUTE = 1;
-    static final int OBJ_ATTRIBUTE_TYPE = 2;
-    static final int DB_ATTRIBUTE = 3;
-    static final int DB_ATTRIBUTE_TYPE = 4;
-    static final int LOCKING = 5;
+    public static final int INHERITED = 0;
+    public static final int OBJ_ATTRIBUTE = 1;
+    public static final int OBJ_ATTRIBUTE_TYPE = 2;
+    public static final int DB_ATTRIBUTE = 3;
+    public static final int DB_ATTRIBUTE_TYPE = 4;
+    public static final int LOCKING = 5;
 
     protected ObjEntity entity;
     protected DbEntity dbEntity;
     private CellEditorForAttributeTable cellEditor;
     private CayenneTable table;
 
+    private static List<ObjAttributeWrapper> wrapObjAttributes(Collection<ObjAttribute> attributes) {
+        List<ObjAttributeWrapper>  wrappedAttributes = new ArrayList<ObjAttributeWrapper>();
+        for(ObjAttribute attr : attributes) {
+            wrappedAttributes.add(new ObjAttributeWrapper(attr));
+        }
+        return wrappedAttributes;
+    }
+
     public ObjAttributeTableModel(ObjEntity entity, ProjectController mediator,
             Object eventSource) {
-        super(mediator, eventSource, new ArrayList<Attribute>(entity.getAttributes()));
+        super(mediator, eventSource, wrapObjAttributes(entity.getAttributes()));
         // take a copy
         this.entity = entity;
         this.dbEntity = entity.getDbEntity();
@@ -85,7 +94,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         // order using local comparator
         Collections.sort(objectList, new AttributeComparator());
     }
-
+    
     protected void orderList() {
         // NOOP
     }
@@ -108,16 +117,16 @@ public class ObjAttributeTableModel extends CayenneTableModel {
      */
     @Override
     public Class<?> getElementsClass() {
-        return ObjAttribute.class;
+        return ObjAttributeWrapper.class;
     }
 
     public DbEntity getDbEntity() {
         return dbEntity;
     }
 
-    public ObjAttribute getAttribute(int row) {
+    public ObjAttributeWrapper getAttribute(int row) {
         return (row >= 0 && row < objectList.size())
-                ? (ObjAttribute) objectList.get(row)
+                ? objectList.get(row)
                 : null;
     }
 
@@ -166,8 +175,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     }
 
     public Object getValueAt(int row, int column) {
-        ObjAttribute attribute = getAttribute(row);
-
+        ObjAttributeWrapper attribute = getAttribute(row);
         if (column == INHERITED) {
             return attribute.isInherited();
         }
@@ -194,7 +202,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         }
     }
 
-    private String getDBAttribute(ObjAttribute attribute, DbAttribute dbAttribute) {
+    private String getDBAttribute(ObjAttributeWrapper attribute, DbAttribute dbAttribute) {
         if (dbAttribute == null) {
             if (!attribute.isInherited()
                     && ((ObjEntity) attribute.getEntity()).isAbstract()) {
@@ -211,10 +219,10 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         return dbAttribute.getName();
     }
 
-    private String getDBAttributeType(ObjAttribute attribute, DbAttribute dbAttribute) {
+    private String getDBAttributeType(ObjAttributeWrapper attribute, DbAttribute dbAttribute) {
         int type;
         if (dbAttribute == null) {
-            if (!(attribute instanceof EmbeddedAttribute)) {
+            if (!(attribute.getValue() instanceof EmbeddedAttribute)) {
                 try {
                     type = TypesMapping.getSqlTypeByJava(attribute.getJavaClass());
                     // have to catch the exception here to make sure that
@@ -249,19 +257,47 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     public CellEditorForAttributeTable getCellEditor() {
         return cellEditor;
     }
+    
+    /**
+     * Correct errors that attributes have.
+     */
+    @Override
+    public void resetModel() {
+        for(ObjAttributeWrapper attribute : objectList) {
+            attribute.resetEdits();
+        }
+    }    
+    
+    /**
+     * @return false, if one or more attributes in model are not valid. 
+     */
+    @Override
+    public boolean isValid() {
+        for(ObjAttributeWrapper attribute : getObjectList()) {
+            if (!attribute.isValid()) {
+                return false;
+            }
+        }
 
+        return true;
+    }
+    
     public void setUpdatedValueAt(Object value, int row, int column) {
-
-        ObjAttribute attribute = getAttribute(row);
-        AttributeEvent event = new AttributeEvent(eventSource, attribute, entity);
+        
+        ObjAttributeWrapper attribute = getAttribute(row);
+        attribute.resetEdits();
+        AttributeEvent event = new AttributeEvent(eventSource, attribute.getValue(), entity);
         String path = null;
         Collection<String> nameAttr = null;
 
         if (column == OBJ_ATTRIBUTE) {
             event.setOldName(attribute.getName());
-            ProjectUtil.setAttributeName(attribute, value != null ? value
-                    .toString()
-                    .trim() : null);
+
+            attribute.setName(value != null ? value.toString().trim() : null);
+
+            if (attribute.isValid()) {
+                attribute.commitEdits();
+            }
             fireTableCellUpdated(row, column);
         }
         else if (column == OBJ_ATTRIBUTE_TYPE) {
@@ -449,8 +485,8 @@ public class ObjAttributeTableModel extends CayenneTableModel {
     final class AttributeComparator implements Comparator {
 
         public int compare(Object o1, Object o2) {
-            Attribute a1 = (Attribute) o1;
-            Attribute a2 = (Attribute) o2;
+            Attribute a1 = ((ObjAttributeWrapper) o1).getValue();
+            Attribute a2 = ((ObjAttributeWrapper) o2).getValue();
 
             int delta = getWeight(a1) - getWeight(a2);
 
@@ -480,9 +516,9 @@ public class ObjAttributeTableModel extends CayenneTableModel {
                 break;
             case DB_ATTRIBUTE:
             case DB_ATTRIBUTE_TYPE:
-                Collections.sort(objectList, new Comparator<ObjAttribute>() {
+                Collections.sort(objectList, new Comparator<ObjAttributeWrapper>() {
 
-                    public int compare(ObjAttribute o1, ObjAttribute o2) {
+                    public int compare(ObjAttributeWrapper o1, ObjAttributeWrapper o2) {
                         Integer compareObjAttributesVal = compareObjAttributes(o1, o2);
                         if (compareObjAttributesVal != null) {
                             return compareObjAttributesVal;
@@ -521,7 +557,7 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         return true;
     }
 
-    private Integer compareObjAttributes(ObjAttribute o1, ObjAttribute o2) {
+    private Integer compareObjAttributes(ObjAttributeWrapper o1, ObjAttributeWrapper o2) {
         if ((o1 == null && o2 == null) || o1 == o2) {
             return 0;
         }
@@ -533,5 +569,4 @@ public class ObjAttributeTableModel extends CayenneTableModel {
         }
         return null;
     }
-
 }

@@ -87,8 +87,15 @@ public class CayenneTable extends JTable {
         setDefaultEditor(String.class, textEditor);
     }
 
+    /**
+     * @return CayenneTableModel, or null if model can't be casted to CayenneTableModel.
+     */
     public CayenneTableModel getCayenneModel() {
-        return (CayenneTableModel) getModel();
+        TableModel model = getModel();
+        if(model instanceof CayenneTableModel) {
+            return (CayenneTableModel) model;
+        }
+        return null;
     }
 
     /**

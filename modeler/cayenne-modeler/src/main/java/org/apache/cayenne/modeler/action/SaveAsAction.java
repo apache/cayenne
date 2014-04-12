@@ -34,6 +34,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project.Project;
@@ -161,7 +162,9 @@ public class SaveAsAction extends CayenneAction {
 
         ProjectValidator projectValidator = getApplication().getInjector().getInstance(ProjectValidator.class);
         ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
-
+        
+        getProjectController().fireProjectOnSaveEvent(new ProjectOnSaveEvent(SaveAsAction.class));
+        
         try {
             if (!saveAll()) {
                 return;

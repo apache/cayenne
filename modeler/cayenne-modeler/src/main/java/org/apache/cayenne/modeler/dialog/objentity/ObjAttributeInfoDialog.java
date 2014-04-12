@@ -103,7 +103,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements
             stringToEmbeddables.put(emb.getClassName(), emb);
             embeddableNames.add(emb.getClassName());
         }
-        initController(model.getAttribute(row));
+        initController(model.getAttribute(row).getValue());
     }
 
     @Override

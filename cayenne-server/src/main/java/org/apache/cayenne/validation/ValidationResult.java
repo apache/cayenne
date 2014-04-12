@@ -102,6 +102,10 @@ public class ValidationResult implements Serializable {
 
         return false;
     }
+    
+    public void clear() {
+    	failures.clear();
+    }
 
     @Override
     public String toString() {
