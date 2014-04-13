@@ -111,7 +111,7 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
         BytesEncryptor cbcEncryptor = new CbcEncryptor(cipher, key, generateSeedIv());
 
         // TODO: make adding key name for versioning an optional property
-        return new EncryptorWithKeyName(cbcEncryptor, keyName, blockSize);
+        return new HeaderEncryptor(cbcEncryptor, keyName, blockSize);
     }
 
     @Override
@@ -120,7 +120,7 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
         BytesDecryptor cbcDecryptor = new CbcDecryptor(cipher);
 
         // TODO: make checking for key name an optional property
-        return new DecryptorWithKeyName(cbcDecryptor, keySource, blockSize);
+        return new HeaderDecryptor(cbcDecryptor, keySource, blockSize);
     }
 
 }

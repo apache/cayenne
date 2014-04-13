@@ -18,46 +18,32 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import java.io.UnsupportedEncodingException;
-import java.security.Key;
-
 import org.apache.cayenne.crypto.CayenneCryptoException;
-import org.apache.cayenne.crypto.key.KeySource;
 
-/**
- * @since 3.2
- */
-class DecryptorWithKeyName implements BytesDecryptor {
+class HeaderEncryptor implements BytesEncryptor {
 
-    private static final String KEY_NAME_CHARSET = "UTF-8";
-
-    private KeySource keySource;
-    private BytesDecryptor delegate;
+    private BytesEncryptor delegate;
     private int blockSize;
+    private byte[] keyName;
 
-    public DecryptorWithKeyName(BytesDecryptor delegate, KeySource keySource, int blockSize) {
+    HeaderEncryptor(BytesEncryptor delegate, byte[] keyName, int blockSize) {
         this.delegate = delegate;
         this.blockSize = blockSize;
-        this.keySource = keySource;
+        this.keyName = keyName;
+
+        if (blockSize != keyName.length) {
+            throw new CayenneCryptoException("keyName size is expected to be the same as block size. Was "
+                    + keyName.length + "; block size was: " + blockSize);
+        }
     }
 
     @Override
-    public byte[] decrypt(byte[] input, int inputOffset, Key key) {
+    public byte[] encrypt(byte[] input, int outputOffset) {
+        byte[] output = delegate.encrypt(input, outputOffset + blockSize);
 
-        // ignoring the parameter key... using the key from the first block
+        System.arraycopy(keyName, 0, output, outputOffset, blockSize);
 
-        String keyName = keyName(input, inputOffset);
-        Key inRecordKey = keySource.getKey(keyName);
-        return delegate.decrypt(input, inputOffset + blockSize, inRecordKey);
-    }
-
-    String keyName(byte[] input, int inputOffset) {
-        try {
-            // 'trim' is to get rid of 0 padding
-            return new String(input, inputOffset, blockSize, KEY_NAME_CHARSET).trim();
-        } catch (UnsupportedEncodingException e) {
-            throw new CayenneCryptoException("Can't decode with " + KEY_NAME_CHARSET, e);
-        }
+        return output;
     }
 
 }

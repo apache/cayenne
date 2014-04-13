@@ -18,26 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertArrayEquals;
 
-import org.apache.cayenne.crypto.key.KeySource;
+import java.io.UnsupportedEncodingException;
+
+import org.apache.cayenne.crypto.unit.SwapBytesTransformer;
 import org.junit.Test;
 
-public class DecryptorWithKeyNameTest {
+public class HeaderEncryptorTest {
 
     @Test
-    public void testKeyName() {
+    public void testTransform() throws UnsupportedEncodingException {
 
-        byte[] input1 = { 'a', 'b', 'c', 'd', 'e' };
-        byte[] input2 = { 'a', 'b', 'c', 0, 'e' };
-        byte[] input3 = { 'a', 'b', 0, 0, 'e' };
+        byte[] keyName = "mykey".getBytes("UTF-8");
 
-        DecryptorWithKeyName decryptor = new DecryptorWithKeyName(mock(BytesDecryptor.class), mock(KeySource.class), 3);
-        assertEquals("bcd", decryptor.keyName(input1, 1));
-        assertEquals("bc", decryptor.keyName(input2, 1));
-        assertEquals("b", decryptor.keyName(input3, 1));
+        BytesEncryptor delegate = SwapBytesTransformer.encryptor();
 
+        byte[] input = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        // intentionally non-standard block size..
+        HeaderEncryptor encryptor = new HeaderEncryptor(delegate, keyName, 5);
+
+        byte[] output = encryptor.encrypt(input, 1);
+        assertArrayEquals(new byte[] { 0, 'm', 'y', 'k', 'e', 'y', 8, 7, 6, 5, 4, 3, 2, 1 }, output);
     }
 
 }

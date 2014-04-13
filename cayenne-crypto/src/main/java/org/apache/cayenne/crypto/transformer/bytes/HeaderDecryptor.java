@@ -18,32 +18,46 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
+import java.io.UnsupportedEncodingException;
+import java.security.Key;
+
 import org.apache.cayenne.crypto.CayenneCryptoException;
+import org.apache.cayenne.crypto.key.KeySource;
 
-class EncryptorWithKeyName implements BytesEncryptor {
+/**
+ * @since 3.2
+ */
+class HeaderDecryptor implements BytesDecryptor {
 
-    private BytesEncryptor delegate;
+    private static final String KEY_NAME_CHARSET = "UTF-8";
+
+    private KeySource keySource;
+    private BytesDecryptor delegate;
     private int blockSize;
-    private byte[] keyName;
 
-    EncryptorWithKeyName(BytesEncryptor delegate, byte[] keyName, int blockSize) {
+    public HeaderDecryptor(BytesDecryptor delegate, KeySource keySource, int blockSize) {
         this.delegate = delegate;
         this.blockSize = blockSize;
-        this.keyName = keyName;
-
-        if (blockSize != keyName.length) {
-            throw new CayenneCryptoException("keyName size is expected to be the same as block size. Was "
-                    + keyName.length + "; block size was: " + blockSize);
-        }
+        this.keySource = keySource;
     }
 
     @Override
-    public byte[] encrypt(byte[] input, int outputOffset) {
-        byte[] output = delegate.encrypt(input, outputOffset + blockSize);
+    public byte[] decrypt(byte[] input, int inputOffset, Key key) {
 
-        System.arraycopy(keyName, 0, output, outputOffset, blockSize);
+        // ignoring the parameter key... using the key from the first block
 
-        return output;
+        String keyName = keyName(input, inputOffset);
+        Key inRecordKey = keySource.getKey(keyName);
+        return delegate.decrypt(input, inputOffset + blockSize, inRecordKey);
+    }
+
+    String keyName(byte[] input, int inputOffset) {
+        try {
+            // 'trim' is to get rid of 0 padding
+            return new String(input, inputOffset, blockSize, KEY_NAME_CHARSET).trim();
+        } catch (UnsupportedEncodingException e) {
+            throw new CayenneCryptoException("Can't decode with " + KEY_NAME_CHARSET, e);
+        }
     }
 
 }
