@@ -98,7 +98,7 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
         BytesDecryptor cbcDecryptor = new CbcDecryptor(cipher);
 
         // TODO: make checking for key name an optional property
-        return new HeaderDecryptor(cbcDecryptor, keySource, blockSize);
+        return new HeaderDecryptor(cbcDecryptor, keySource);
     }
 
 }

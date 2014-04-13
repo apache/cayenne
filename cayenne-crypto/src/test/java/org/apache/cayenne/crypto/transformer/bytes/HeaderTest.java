@@ -19,25 +19,29 @@
 package org.apache.cayenne.crypto.transformer.bytes;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
-import org.apache.cayenne.crypto.key.KeySource;
+import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.junit.Test;
 
-public class HeaderDecryptorTest {
+public class HeaderTest {
 
     @Test
-    public void testKeyName() {
+    public void testCreate_WithKeyName() {
 
-        byte[] input1 = { 'a', 'b', 'c', 'd', 'e' };
-        byte[] input2 = { 'a', 'b', 'c', 0, 'e' };
-        byte[] input3 = { 'a', 'b', 0, 0, 'e' };
+        assertEquals("bcd", Header.create("bcd").getKeyName());
+        assertEquals("bc", Header.create("bc").getKeyName());
+        assertEquals("b", Header.create("b").getKeyName());
+    }
 
-        HeaderDecryptor decryptor = new HeaderDecryptor(mock(BytesDecryptor.class), mock(KeySource.class), 3);
-        assertEquals("bcd", decryptor.keyName(input1, 1));
-        assertEquals("bc", decryptor.keyName(input2, 1));
-        assertEquals("b", decryptor.keyName(input3, 1));
+    @Test
+    public void testCreate_WithData() {
+        byte[] input1 = { 0, 0, 0, 0, 0, 0, 0, 0, 'a', 'b', 'c', 'd', 'e', 0, 0, 0, 0 };
+        assertEquals("bcde", Header.create(input1, 1).getKeyName());
+    }
 
+    @Test(expected = CayenneCryptoException.class)
+    public void testCreate_WithData_WrongLength() {
+        Header.create(new byte[] { 'a', 'b', 0, 0, 'e' }, 0);
     }
 
 }

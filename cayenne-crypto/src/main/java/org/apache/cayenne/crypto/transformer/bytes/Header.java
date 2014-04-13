@@ -53,6 +53,7 @@ public class Header {
     public static final int FLAGS_OFFSET = 0;
 
     private byte[] data;
+    private int offset;
 
     public static Header create(String keyName) {
         byte[] keyNameBytes;
@@ -71,27 +72,35 @@ public class Header {
                     + "' is too long. Its UTF8-encoded form should not exceed " + KEY_NAME_SIZE + " bytes");
         }
 
-        return create(data);
+        return create(data, 0);
     }
 
-    public static Header create(byte[] data) {
+    public static Header create(byte[] data, int offset) {
 
-        if (data.length != HEADER_SIZE) {
+        if (data.length - offset < HEADER_SIZE) {
             throw new CayenneCryptoException("Unexpected header data size: " + data.length + ", expected size is "
                     + HEADER_SIZE);
         }
 
-        Header h = new Header();
-        h.data = data;
-        return h;
+        return new Header(data, offset);
     }
 
     // private constructor... construction is done via factory methods...
-    private Header() {
-
+    private Header(byte[] data, int offset) {
+        this.data = data;
+        this.offset = offset;
     }
 
-    public byte[] getData() {
-        return data;
+    public void store(byte[] output, int outputOffset) {
+        System.arraycopy(data, offset, output, outputOffset, Header.HEADER_SIZE);
+    }
+
+    public String getKeyName() {
+        try {
+            // 'trim' is to get rid of 0 padding
+            return new String(data, offset + KEY_NAME_OFFSET, KEY_NAME_SIZE, KEY_NAME_CHARSET).trim();
+        } catch (UnsupportedEncodingException e) {
+            throw new CayenneCryptoException("Can't decode with " + KEY_NAME_CHARSET, e);
+        }
     }
 }
