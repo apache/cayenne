@@ -30,17 +30,18 @@ public class HeaderEncryptorTest {
     @Test
     public void testTransform() throws UnsupportedEncodingException {
 
-        byte[] keyName = "mykey".getBytes("UTF-8");
+        Header encryptionHeader = Header.create("mykey");
 
         BytesEncryptor delegate = SwapBytesTransformer.encryptor();
 
         byte[] input = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
         // intentionally non-standard block size..
-        HeaderEncryptor encryptor = new HeaderEncryptor(delegate, keyName, 5);
+        HeaderEncryptor encryptor = new HeaderEncryptor(delegate, encryptionHeader);
 
         byte[] output = encryptor.encrypt(input, 1);
-        assertArrayEquals(new byte[] { 0, 'm', 'y', 'k', 'e', 'y', 8, 7, 6, 5, 4, 3, 2, 1 }, output);
+        assertArrayEquals(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 'm', 'y', 'k', 'e', 'y', 0, 0, 0, 8, 7, 6, 5, 4, 3,
+                2, 1 }, output);
     }
 
 }

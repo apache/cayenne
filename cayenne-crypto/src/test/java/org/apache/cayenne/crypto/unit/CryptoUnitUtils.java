@@ -27,6 +27,7 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.key.KeySource;
+import org.apache.cayenne.crypto.transformer.bytes.Header;
 
 public class CryptoUnitUtils {
 
@@ -48,12 +49,12 @@ public class CryptoUnitUtils {
             Cipher decCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
             int blockSize = decCipher.getBlockSize();
-            byte[] keyNameBytes = Arrays.copyOfRange(source, 0, blockSize);
-            byte[] ivBytes = Arrays.copyOfRange(source, blockSize, blockSize * 2);
-            byte[] cipherText = Arrays.copyOfRange(source, blockSize * 2, source.length);
+            byte[] keyNameBytes = Arrays.copyOfRange(source, 0, Header.HEADER_SIZE);
+            byte[] ivBytes = Arrays.copyOfRange(source, Header.HEADER_SIZE, Header.HEADER_SIZE + blockSize);
+            byte[] cipherText = Arrays.copyOfRange(source, Header.HEADER_SIZE + blockSize, source.length);
 
             // 'trim' is to get rid of 0 padding
-            String keyName = new String(keyNameBytes, "UTF-8").trim();
+            String keyName = new String(keyNameBytes, Header.KEY_NAME_OFFSET, Header.KEY_NAME_SIZE, "UTF-8").trim();
             Key key = runtime.getInjector().getInstance(KeySource.class).getKey(keyName);
 
             decCipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(ivBytes));

@@ -45,7 +45,8 @@ public class DefaultBytesTransformerFactory implements BytesTransformerFactory {
         }
 
         if ("CBC".equals(mode)) {
-            this.delegate = new CbcBytesTransformerFactory(cipherFactory, keySource);
+            this.delegate = new CbcBytesTransformerFactory(cipherFactory, keySource, Header.create(keySource
+                    .getDefaultKeyAlias()));
         }
         // TODO: ECB and other modes...
         else {

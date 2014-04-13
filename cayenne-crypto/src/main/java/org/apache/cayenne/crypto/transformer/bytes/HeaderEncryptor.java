@@ -18,31 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import org.apache.cayenne.crypto.CayenneCryptoException;
-
 class HeaderEncryptor implements BytesEncryptor {
 
     private BytesEncryptor delegate;
-    private int blockSize;
-    private byte[] keyName;
+    private Header header;
 
-    HeaderEncryptor(BytesEncryptor delegate, byte[] keyName, int blockSize) {
+    HeaderEncryptor(BytesEncryptor delegate, Header header) {
         this.delegate = delegate;
-        this.blockSize = blockSize;
-        this.keyName = keyName;
-
-        if (blockSize != keyName.length) {
-            throw new CayenneCryptoException("keyName size is expected to be the same as block size. Was "
-                    + keyName.length + "; block size was: " + blockSize);
-        }
+        this.header = header;
     }
 
     @Override
     public byte[] encrypt(byte[] input, int outputOffset) {
-        byte[] output = delegate.encrypt(input, outputOffset + blockSize);
-
-        System.arraycopy(keyName, 0, output, outputOffset, blockSize);
-
+        byte[] output = delegate.encrypt(input, outputOffset + Header.HEADER_SIZE);
+        System.arraycopy(header.getData(), 0, output, outputOffset, Header.HEADER_SIZE);
         return output;
     }
 

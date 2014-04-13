@@ -28,33 +28,33 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
  * 
  * @since 3.2
  */
-class Header {
+public class Header {
 
     private static final String KEY_NAME_CHARSET = "UTF-8";
 
     /**
      * The size of a header byte[] block.
      */
-    static final int HEADER_SIZE = 16;
+    public static final int HEADER_SIZE = 16;
 
     /**
      * The size of a key name within the header block.
      */
-    static final int KEY_NAME_SIZE = 8;
+    public static final int KEY_NAME_SIZE = 8;
 
     /**
      * Position of the key name within the header block.
      */
-    static final int KEY_NAME_OFFSET = 8;
+    public static final int KEY_NAME_OFFSET = 8;
 
     /**
      * Position of the "flags" byte in the header.
      */
-    static final int FLAGS_OFFSET = 0;
+    public static final int FLAGS_OFFSET = 0;
 
     private byte[] data;
 
-    static Header create(String keyName) {
+    public static Header create(String keyName) {
         byte[] keyNameBytes;
         try {
             keyNameBytes = keyName.getBytes(KEY_NAME_CHARSET);
@@ -72,10 +72,9 @@ class Header {
         }
 
         return create(data);
-
     }
 
-    static Header create(byte[] data) {
+    public static Header create(byte[] data) {
 
         if (data.length != HEADER_SIZE) {
             throw new CayenneCryptoException("Unexpected header data size: " + data.length + ", expected size is "
@@ -92,7 +91,7 @@ class Header {
 
     }
 
-    byte[] getData() {
+    public byte[] getData() {
         return data;
     }
 }

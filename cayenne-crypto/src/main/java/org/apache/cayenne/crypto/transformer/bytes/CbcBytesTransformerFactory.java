@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Queue;
@@ -26,7 +25,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.crypto.Cipher;
 
-import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.key.KeySource;
 
@@ -35,41 +33,24 @@ import org.apache.cayenne.crypto.key.KeySource;
  */
 class CbcBytesTransformerFactory implements BytesTransformerFactory {
 
-    private static final String KEY_NAME_CHARSET = "UTF-8";
-
     private CipherFactory cipherFactory;
     private Key key;
-    private byte[] keyName;
+    private Header encryptionHeader;
     private int blockSize;
     private KeySource keySource;
     private Queue<SecureRandom> randoms;
 
-    public CbcBytesTransformerFactory(CipherFactory cipherFactory, KeySource keySource) {
-
-        String keyName = keySource.getDefaultKeyAlias();
+    CbcBytesTransformerFactory(CipherFactory cipherFactory, KeySource keySource, Header encryptionHeader) {
 
         this.randoms = new ConcurrentLinkedQueue<SecureRandom>();
         this.keySource = keySource;
-        this.key = keySource.getKey(keyName);
+
         this.cipherFactory = cipherFactory;
         this.blockSize = cipherFactory.blockSize();
+        this.encryptionHeader = encryptionHeader;
 
-        byte[] keyNameBytes;
-        try {
-            keyNameBytes = keyName.getBytes(KEY_NAME_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            throw new CayenneCryptoException("Can't encode in " + KEY_NAME_CHARSET, e);
-        }
-
-        if (keyNameBytes.length == blockSize) {
-            this.keyName = keyNameBytes;
-        } else if (keyNameBytes.length < blockSize) {
-            this.keyName = new byte[blockSize];
-            System.arraycopy(keyNameBytes, 0, this.keyName, 0, keyNameBytes.length);
-        } else {
-            throw new CayenneCryptoException("Key name '" + keyName + "' is too long. Its byte form should not exceed "
-                    + blockSize + " bytes");
-        }
+        String keyName = keySource.getDefaultKeyAlias();
+        this.key = keySource.getKey(keyName);
     }
 
     protected byte[] generateSeedIv() {
@@ -107,11 +88,8 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
     @Override
     public BytesEncryptor encryptor() {
         Cipher cipher = cipherFactory.cipher();
-
         BytesEncryptor cbcEncryptor = new CbcEncryptor(cipher, key, generateSeedIv());
-
-        // TODO: make adding key name for versioning an optional property
-        return new HeaderEncryptor(cbcEncryptor, keyName, blockSize);
+        return new HeaderEncryptor(cbcEncryptor, encryptionHeader);
     }
 
     @Override
