@@ -88,8 +88,13 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
     @Override
     public BytesEncryptor encryptor() {
         Cipher cipher = cipherFactory.cipher();
-        BytesEncryptor cbcEncryptor = new CbcEncryptor(cipher, key, generateSeedIv());
-        return new HeaderEncryptor(cbcEncryptor, encryptionHeader);
+        BytesEncryptor delegate = new CbcEncryptor(cipher, key, generateSeedIv());
+
+        if (encryptionHeader.isCompressed()) {
+            delegate = new GzipEncryptor(delegate, encryptionHeader);
+        }
+
+        return new HeaderEncryptor(delegate, encryptionHeader);
     }
 
     @Override
