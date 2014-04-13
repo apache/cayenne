@@ -29,24 +29,26 @@ class HeaderDecryptor implements BytesDecryptor {
 
     private KeySource keySource;
     private BytesDecryptor delegate;
+    private BytesDecryptor decompressDelegate;
 
-    public HeaderDecryptor(BytesDecryptor delegate, KeySource keySource) {
+    HeaderDecryptor(BytesDecryptor delegate, BytesDecryptor decompressDelegate, KeySource keySource) {
         this.delegate = delegate;
         this.keySource = keySource;
+        this.decompressDelegate = decompressDelegate;
     }
 
     @Override
     public byte[] decrypt(byte[] input, int inputOffset, Key key) {
 
+        Header header = Header.create(input, inputOffset);
+
         // ignoring the parameter key... using the key from the first block
-
-        Header header = header(input, inputOffset);
         Key inRecordKey = keySource.getKey(header.getKeyName());
-        return delegate.decrypt(input, inputOffset + header.size(), inRecordKey);
-    }
 
-    Header header(byte[] input, int inputOffset) {
-        return Header.create(input, inputOffset);
-    }
+        // if compression was used to create a record, filter through
+        // GzipDecryptor...
+        BytesDecryptor worker = header.isCompressed() ? decompressDelegate : delegate;
 
+        return worker.decrypt(input, inputOffset + header.size(), inRecordKey);
+    }
 }

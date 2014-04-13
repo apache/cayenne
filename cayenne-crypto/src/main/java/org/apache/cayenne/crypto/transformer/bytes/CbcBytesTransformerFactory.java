@@ -101,9 +101,8 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
     public BytesDecryptor decryptor() {
         Cipher cipher = cipherFactory.cipher();
         BytesDecryptor cbcDecryptor = new CbcDecryptor(cipher);
-
-        // TODO: make checking for key name an optional property
-        return new HeaderDecryptor(cbcDecryptor, keySource);
+        BytesDecryptor gzipDecryptor = new GzipDecryptor(cbcDecryptor);
+        return new HeaderDecryptor(cbcDecryptor, gzipDecryptor, keySource);
     }
 
 }
