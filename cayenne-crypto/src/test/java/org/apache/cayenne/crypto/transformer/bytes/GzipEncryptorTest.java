@@ -47,7 +47,6 @@ public class GzipEncryptorTest {
     @Test
     public void testEncrypt() throws UnsupportedEncodingException {
 
-        final Header header = Header.create("kk", true);
         BytesEncryptor delegate = mock(BytesEncryptor.class);
         when(delegate.encrypt(any(byte[].class), anyInt())).thenAnswer(new Answer<byte[]>() {
             @Override
@@ -57,17 +56,17 @@ public class GzipEncryptorTest {
                 byte[] answer = (byte[]) args[0];
                 int offset = (Integer) args[1];
                 
-                assertEquals(header.size(), offset);
+                assertEquals(1, offset);
                 
                 return answer;
             }
         });
 
      
-        GzipEncryptor e = new GzipEncryptor(delegate, header);
+        GzipEncryptor e = new GzipEncryptor(delegate);
 
         byte[] input1 = "Hello Hello Hello".getBytes("UTF8");
-        byte[] output1 = e.encrypt(input1, 0);
+        byte[] output1 = e.encrypt(input1, 1);
         byte[] expectedOutput1 = CryptoUnitUtils.hexToBytes("1f8b0800000000000000f348cdc9c957f0409000a91a078c11000000");
 
         assertArrayEquals(expectedOutput1, output1);

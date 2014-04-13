@@ -30,11 +30,9 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
 class GzipEncryptor implements BytesEncryptor {
 
     private BytesEncryptor delegate;
-    private Header header;
 
-    public GzipEncryptor(BytesEncryptor delegate, Header header) {
+    public GzipEncryptor(BytesEncryptor delegate) {
         this.delegate = delegate;
-        this.header = header;
     }
 
     @Override
@@ -51,7 +49,7 @@ class GzipEncryptor implements BytesEncryptor {
             throw new CayenneCryptoException("Error compressing input", e);
         }
 
-        return delegate.encrypt(compressedIn, outputOffset + header.size());
+        return delegate.encrypt(compressedIn, outputOffset);
     }
 
     static byte[] gzip(byte[] input) throws IOException {

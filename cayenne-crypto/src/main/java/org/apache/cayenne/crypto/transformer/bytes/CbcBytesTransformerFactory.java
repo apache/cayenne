@@ -91,7 +91,7 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
         BytesEncryptor delegate = new CbcEncryptor(cipher, key, generateSeedIv());
 
         if (encryptionHeader.isCompressed()) {
-            delegate = new GzipEncryptor(delegate, encryptionHeader);
+            delegate = new GzipEncryptor(delegate);
         }
 
         return new HeaderEncryptor(delegate, encryptionHeader);

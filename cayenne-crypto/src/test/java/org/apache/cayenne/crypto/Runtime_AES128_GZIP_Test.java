@@ -34,11 +34,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Runtime_AES128_Test extends Runtime_AES128_Base {
+public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(false);
+        super.setUp(true);
     }
 
     @Test
@@ -54,7 +54,8 @@ public class Runtime_AES128_Test extends Runtime_AES128_Base {
 
         Object[] data = table2.select();
         assertArrayEquals("plain_1".getBytes(), (byte[]) data[1]);
-        assertArrayEquals("crypto_1".getBytes(), CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[2], runtime));
+        assertArrayEquals("crypto_1".getBytes(),
+                CryptoUnitUtils.gunzip(CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[2], runtime)));
     }
 
     @Test
@@ -84,8 +85,10 @@ public class Runtime_AES128_Test extends Runtime_AES128_Base {
             cipherByPlain.put(new String((byte[]) r[1]), (byte[]) r[2]);
         }
 
-        assertArrayEquals("crypto_1".getBytes(), CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("a"), runtime));
-        assertArrayEquals("crypto_2".getBytes(), CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("b"), runtime));
+        assertArrayEquals("crypto_1".getBytes(),
+                CryptoUnitUtils.gunzip(CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("a"), runtime)));
+        assertArrayEquals("crypto_2".getBytes(),
+                CryptoUnitUtils.gunzip(CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("b"), runtime)));
         assertNull(cipherByPlain.get("c"));
     }
 

@@ -18,9 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.unit;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.Key;
 import java.util.Arrays;
+import java.util.zip.GZIPInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -42,12 +46,33 @@ public class CryptoUnitUtils {
         }
     }
 
+    public static byte[] gunzip(byte[] source) {
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+
+            GZIPInputStream gunzip = new GZIPInputStream(new ByteArrayInputStream(source));
+
+            int read;
+            byte[] buffer = new byte[1024];
+            while ((read = gunzip.read(buffer)) > 0) {
+                out.write(buffer, 0, read);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return out.toByteArray();
+    }
+
     public static byte[] decrypt_AES_CBC(byte[] source, ServerRuntime runtime) {
 
         try {
 
             Cipher decCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            
+
             Header header = Header.create(source, 0);
 
             int blockSize = decCipher.getBlockSize();
