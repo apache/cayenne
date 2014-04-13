@@ -30,7 +30,7 @@ class HeaderEncryptor implements BytesEncryptor {
 
     @Override
     public byte[] encrypt(byte[] input, int outputOffset) {
-        byte[] output = delegate.encrypt(input, outputOffset + Header.HEADER_SIZE);
+        byte[] output = delegate.encrypt(input, outputOffset + header.size());
         header.store(output, outputOffset);
         return output;
     }

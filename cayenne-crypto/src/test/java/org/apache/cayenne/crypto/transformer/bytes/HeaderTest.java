@@ -33,15 +33,23 @@ public class HeaderTest {
         assertEquals("b", Header.create("b").getKeyName());
     }
 
+    @Test(expected = CayenneCryptoException.class)
+    public void testCreate_WithKeyName_TooLong() {
+
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < Byte.MAX_VALUE + 1; i++) {
+            buf.append("a");
+        }
+
+        Header.create(buf.toString());
+    }
+
     @Test
     public void testCreate_WithData() {
-        byte[] input1 = { 0, 0, 0, 0, 0, 0, 0, 0, 'a', 'b', 'c', 'd', 'e', 0, 0, 0, 0 };
-        assertEquals("bcde", Header.create(input1, 1).getKeyName());
+        byte[] input1 = { 'C', 'C', '1', 9, 0, 'a', 'b', 'c', 'd', 'e' };
+        assertEquals("abcd", Header.create(input1, 0).getKeyName());
+        
+        byte[] input2 = { 0, 'C', 'C', '1', 9, 0, 'a', 'b', 'c', 'd', 'e' };
+        assertEquals("abcd", Header.create(input2, 1).getKeyName());
     }
-
-    @Test(expected = CayenneCryptoException.class)
-    public void testCreate_WithData_WrongLength() {
-        Header.create(new byte[] { 'a', 'b', 0, 0, 'e' }, 0);
-    }
-
 }

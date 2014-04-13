@@ -47,15 +47,14 @@ public class CryptoUnitUtils {
         try {
 
             Cipher decCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            
+            Header header = Header.create(source, 0);
 
             int blockSize = decCipher.getBlockSize();
-            byte[] keyNameBytes = Arrays.copyOfRange(source, 0, Header.HEADER_SIZE);
-            byte[] ivBytes = Arrays.copyOfRange(source, Header.HEADER_SIZE, Header.HEADER_SIZE + blockSize);
-            byte[] cipherText = Arrays.copyOfRange(source, Header.HEADER_SIZE + blockSize, source.length);
+            byte[] ivBytes = Arrays.copyOfRange(source, header.size(), header.size() + blockSize);
+            byte[] cipherText = Arrays.copyOfRange(source, header.size() + blockSize, source.length);
 
-            // 'trim' is to get rid of 0 padding
-            String keyName = new String(keyNameBytes, Header.KEY_NAME_OFFSET, Header.KEY_NAME_SIZE, "UTF-8").trim();
-            Key key = runtime.getInjector().getInstance(KeySource.class).getKey(keyName);
+            Key key = runtime.getInjector().getInstance(KeySource.class).getKey(header.getKeyName());
 
             decCipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(ivBytes));
 

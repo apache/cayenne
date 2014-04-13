@@ -39,9 +39,11 @@ public class HeaderEncryptorTest {
         // intentionally non-standard block size..
         HeaderEncryptor encryptor = new HeaderEncryptor(delegate, encryptionHeader);
 
-        byte[] output = encryptor.encrypt(input, 1);
-        assertArrayEquals(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 'm', 'y', 'k', 'e', 'y', 0, 0, 0, 8, 7, 6, 5, 4, 3,
-                2, 1 }, output);
+        byte[] output1 = encryptor.encrypt(input, 0);
+        assertArrayEquals(new byte[] { 'C', 'C', '1', 10, 0, 'm', 'y', 'k', 'e', 'y', 8, 7, 6, 5, 4, 3, 2, 1 }, output1);
+        
+        byte[] output2 = encryptor.encrypt(input, 1);
+        assertArrayEquals(new byte[] { 0, 'C', 'C', '1', 10, 0, 'm', 'y', 'k', 'e', 'y', 8, 7, 6, 5, 4, 3, 2, 1 }, output2);
     }
 
 }

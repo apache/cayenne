@@ -42,7 +42,7 @@ class HeaderDecryptor implements BytesDecryptor {
 
         Header header = header(input, inputOffset);
         Key inRecordKey = keySource.getKey(header.getKeyName());
-        return delegate.decrypt(input, inputOffset + Header.HEADER_SIZE, inRecordKey);
+        return delegate.decrypt(input, inputOffset + header.size(), inRecordKey);
     }
 
     Header header(byte[] input, int inputOffset) {

@@ -24,7 +24,16 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
 
 /**
  * Represents a header with metadata about the encrypted data. A header is
- * prependend to each encrypted value, and itself is not encrypted.
+ * prependend to each encrypted value, and itself is not encrypted. Header
+ * format is the following:
+ * <ul>
+ * <li>byte 0..2: "magic" number identifying the format as Cayenne-crypto
+ * encrypted sequence.
+ * <li>byte 3: header length N, i.e. how many bytes the header contains,
+ * including magic number and the length indicator. N can be 0..127.
+ * <li>byte 4: a bit String representing various flags, such as compression.
+ * <li>byte 5..N: UTF8-encoded symbolic name of the encryption key.
+ * </ul>
  * 
  * @since 3.2
  */
@@ -32,25 +41,33 @@ public class Header {
 
     private static final String KEY_NAME_CHARSET = "UTF-8";
 
-    /**
-     * The size of a header byte[] block.
-     */
-    public static final int HEADER_SIZE = 16;
-
-    /**
-     * The size of a key name within the header block.
-     */
-    public static final int KEY_NAME_SIZE = 8;
-
-    /**
-     * Position of the key name within the header block.
-     */
-    public static final int KEY_NAME_OFFSET = 8;
+    // "CC1" is a "magic number" identifying Cayenne-crypto version 1 value
+    private static final byte[] MAGIC_NUMBER = { 'C', 'C', '1' };
 
     /**
      * Position of the "flags" byte in the header.
      */
-    public static final int FLAGS_OFFSET = 0;
+    private static final int MAGIC_NUMBER_POSITION = 0;
+
+    /**
+     * Position of the header size byte in the header.
+     */
+    private static final int SIZE_POSITION = 3;
+
+    /**
+     * Position of the "flags" byte in the header.
+     */
+    private static final int FLAGS_POSITION = 4;
+
+    /**
+     * Position of the key name within the header block.
+     */
+    private static final int KEY_NAME_OFFSET = 5;
+
+    /**
+     * Max size of a key name within a header.
+     */
+    private static final int KEY_NAME_MAX_SIZE = Byte.MAX_VALUE - KEY_NAME_OFFSET;
 
     private byte[] data;
     private int offset;
@@ -63,25 +80,29 @@ public class Header {
             throw new CayenneCryptoException("Can't encode in " + KEY_NAME_CHARSET, e);
         }
 
-        byte[] data = new byte[HEADER_SIZE];
-
-        if (keyNameBytes.length <= KEY_NAME_SIZE) {
-            System.arraycopy(keyNameBytes, 0, data, KEY_NAME_OFFSET, keyNameBytes.length);
-        } else {
+        if (keyNameBytes.length > KEY_NAME_MAX_SIZE) {
             throw new CayenneCryptoException("Key name '" + keyName
-                    + "' is too long. Its UTF8-encoded form should not exceed " + KEY_NAME_SIZE + " bytes");
+                    + "' is too long. Its UTF8-encoded form should not exceed " + KEY_NAME_MAX_SIZE + " bytes");
         }
+
+        int n = MAGIC_NUMBER.length + 1 + 1 + keyNameBytes.length;
+
+        byte[] data = new byte[n];
+        System.arraycopy(MAGIC_NUMBER, 0, data, MAGIC_NUMBER_POSITION, MAGIC_NUMBER.length);
+
+        // total header size
+        data[SIZE_POSITION] = (byte) n;
+
+        // flags
+        data[FLAGS_POSITION] = 0;
+
+        // key name
+        System.arraycopy(keyNameBytes, 0, data, KEY_NAME_OFFSET, keyNameBytes.length);
 
         return create(data, 0);
     }
 
     public static Header create(byte[] data, int offset) {
-
-        if (data.length - offset < HEADER_SIZE) {
-            throw new CayenneCryptoException("Unexpected header data size: " + data.length + ", expected size is "
-                    + HEADER_SIZE);
-        }
-
         return new Header(data, offset);
     }
 
@@ -91,14 +112,21 @@ public class Header {
         this.offset = offset;
     }
 
+    public int size() {
+        return data[offset + SIZE_POSITION];
+    }
+
+    /**
+     * Saves the header bytes in the provided buffer at specified offset.
+     */
     public void store(byte[] output, int outputOffset) {
-        System.arraycopy(data, offset, output, outputOffset, Header.HEADER_SIZE);
+        System.arraycopy(data, offset, output, outputOffset, size());
     }
 
     public String getKeyName() {
+
         try {
-            // 'trim' is to get rid of 0 padding
-            return new String(data, offset + KEY_NAME_OFFSET, KEY_NAME_SIZE, KEY_NAME_CHARSET).trim();
+            return new String(data, offset + KEY_NAME_OFFSET, size() - KEY_NAME_OFFSET, KEY_NAME_CHARSET);
         } catch (UnsupportedEncodingException e) {
             throw new CayenneCryptoException("Can't decode with " + KEY_NAME_CHARSET, e);
         }
