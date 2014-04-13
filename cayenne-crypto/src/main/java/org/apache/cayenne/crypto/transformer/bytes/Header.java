@@ -69,10 +69,15 @@ public class Header {
      */
     private static final int KEY_NAME_MAX_SIZE = Byte.MAX_VALUE - KEY_NAME_OFFSET;
 
+    /**
+     * A position of the compress bit.
+     */
+    private static final int COMPRESS_BIT = 0;
+
     private byte[] data;
     private int offset;
 
-    public static Header create(String keyName) {
+    public static Header create(String keyName, boolean compessed) {
         byte[] keyNameBytes;
         try {
             keyNameBytes = keyName.getBytes(KEY_NAME_CHARSET);
@@ -94,7 +99,9 @@ public class Header {
         data[SIZE_POSITION] = (byte) n;
 
         // flags
-        data[FLAGS_POSITION] = 0;
+        if (compessed) {
+            data[FLAGS_POSITION] = bitOn(data[FLAGS_POSITION], COMPRESS_BIT);
+        }
 
         // key name
         System.arraycopy(keyNameBytes, 0, data, KEY_NAME_OFFSET, keyNameBytes.length);
@@ -106,6 +113,14 @@ public class Header {
         return new Header(data, offset);
     }
 
+    private static byte bitOn(byte bits, int position) {
+        return (byte) (bits | (1 << position));
+    }
+
+    private static boolean isBitOn(byte bits, int position) {
+        return ((bits >> position) & 1) == 1;
+    }
+
     // private constructor... construction is done via factory methods...
     private Header(byte[] data, int offset) {
         this.data = data;
@@ -114,6 +129,10 @@ public class Header {
 
     public int size() {
         return data[offset + SIZE_POSITION];
+    }
+
+    public boolean isCompressed() {
+        return isBitOn(data[offset + FLAGS_POSITION], COMPRESS_BIT);
     }
 
     /**

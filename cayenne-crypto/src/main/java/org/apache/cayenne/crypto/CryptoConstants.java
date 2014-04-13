@@ -58,4 +58,10 @@ public interface CryptoConstants {
      */
     public static final String ENCRYPTION_KEY_ALIAS = "cayenne.crypto.key.enc.alias";
 
+    /**
+     * A property that defines whether compression is enabled. Should be "true"
+     * or "false". "False" is the default.
+     */
+    public static final String COMPRESSION = "cayenne.crypto.compression";
+
 }

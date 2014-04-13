@@ -36,8 +36,15 @@ public class DefaultBytesTransformerFactory implements BytesTransformerFactory {
 
     private BytesTransformerFactory delegate;
 
+    static Header createEncryptionHeader(Map<String, String> properties, KeySource keySource) {
+        boolean compressed = "true".equals(properties.get(CryptoConstants.COMPRESSION));
+        return Header.create(keySource.getDefaultKeyAlias(), compressed);
+    }
+
     public DefaultBytesTransformerFactory(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties,
             @Inject CipherFactory cipherFactory, @Inject KeySource keySource) {
+
+        Header encryptionHeader = createEncryptionHeader(properties, keySource);
 
         String mode = properties.get(CryptoConstants.CIPHER_MODE);
         if (mode == null) {
@@ -45,8 +52,7 @@ public class DefaultBytesTransformerFactory implements BytesTransformerFactory {
         }
 
         if ("CBC".equals(mode)) {
-            this.delegate = new CbcBytesTransformerFactory(cipherFactory, keySource, Header.create(keySource
-                    .getDefaultKeyAlias()));
+            this.delegate = new CbcBytesTransformerFactory(cipherFactory, keySource, encryptionHeader);
         }
         // TODO: ECB and other modes...
         else {
@@ -55,10 +61,12 @@ public class DefaultBytesTransformerFactory implements BytesTransformerFactory {
         }
     }
 
+    @Override
     public BytesEncryptor encryptor() {
         return delegate.encryptor();
     }
 
+    @Override
     public BytesDecryptor decryptor() {
         return delegate.decryptor();
     }

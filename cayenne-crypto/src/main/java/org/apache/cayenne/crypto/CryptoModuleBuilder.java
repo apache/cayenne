@@ -77,6 +77,8 @@ public class CryptoModuleBuilder {
     private String encryptionKeyAlias;
     private char[] keyPassword;
 
+    private boolean compress;
+
     public CryptoModuleBuilder() {
 
         // init some sensible defaults that work in JVM without extra
@@ -218,6 +220,11 @@ public class CryptoModuleBuilder {
         return this;
     }
 
+    public CryptoModuleBuilder compress() {
+        this.compress = true;
+        return this;
+    }
+
     /**
      * Produces a module that can be used to start Cayenne runtime.
      */
@@ -265,6 +272,10 @@ public class CryptoModuleBuilder {
 
                 if (encryptionKeyAlias != null) {
                     props.put(CryptoConstants.ENCRYPTION_KEY_ALIAS, encryptionKeyAlias);
+                }
+
+                if (compress) {
+                    props.put(CryptoConstants.COMPRESSION, "true");
                 }
 
                 // char[] credentials... stored as char[] to potentially allow

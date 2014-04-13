@@ -19,6 +19,8 @@
 package org.apache.cayenne.crypto.transformer.bytes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.cayenne.crypto.CayenneCryptoException;
 import org.junit.Test;
@@ -28,9 +30,18 @@ public class HeaderTest {
     @Test
     public void testCreate_WithKeyName() {
 
-        assertEquals("bcd", Header.create("bcd").getKeyName());
-        assertEquals("bc", Header.create("bc").getKeyName());
-        assertEquals("b", Header.create("b").getKeyName());
+        Header h1 = Header.create("bcd", false);
+        Header h2 = Header.create("bc", true);
+        Header h3 = Header.create("b", false);
+
+        assertEquals("bcd", h1.getKeyName());
+        assertFalse(h1.isCompressed());
+
+        assertEquals("bc", h2.getKeyName());
+        assertTrue(h2.isCompressed());
+
+        assertEquals("b", h3.getKeyName());
+        assertFalse(h3.isCompressed());
     }
 
     @Test(expected = CayenneCryptoException.class)
@@ -41,15 +52,19 @@ public class HeaderTest {
             buf.append("a");
         }
 
-        Header.create(buf.toString());
+        Header.create(buf.toString(), false);
     }
 
     @Test
     public void testCreate_WithData() {
         byte[] input1 = { 'C', 'C', '1', 9, 0, 'a', 'b', 'c', 'd', 'e' };
-        assertEquals("abcd", Header.create(input1, 0).getKeyName());
-        
-        byte[] input2 = { 0, 'C', 'C', '1', 9, 0, 'a', 'b', 'c', 'd', 'e' };
-        assertEquals("abcd", Header.create(input2, 1).getKeyName());
+        Header h1 = Header.create(input1, 0);
+        assertEquals("abcd", h1.getKeyName());
+        assertFalse(h1.isCompressed());
+
+        byte[] input2 = { 0, 'C', 'C', '1', 9, 1, 'a', 'b', 'c', 'd', 'e' };
+        Header h2 = Header.create(input2, 1);
+        assertEquals("abcd", h2.getKeyName());
+        assertTrue(h2.isCompressed());
     }
 }
