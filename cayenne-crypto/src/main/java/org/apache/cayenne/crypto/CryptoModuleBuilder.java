@@ -143,6 +143,16 @@ public class CryptoModuleBuilder {
     }
 
     /**
+     * @param encryptionKeyAlias
+     *            The name of the key in the keystore that should be used for
+     *            encryption by default.
+     */
+    public CryptoModuleBuilder encryptionKeyAlias(String encryptionKeyAlias) {
+        this.encryptionKeyAlias = encryptionKeyAlias;
+        return this;
+    }
+
+    /**
      * Configures keystore parameters. The KeyStore must be of "jceks" type and
      * contain all needed secret keys for the target database. Currently all
      * keys must be protected with the same password.
