@@ -20,15 +20,19 @@ package org.apache.cayenne.crypto;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.crypto.db.Table2;
+import org.apache.cayenne.crypto.transformer.bytes.Header;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.apache.cayenne.query.SelectQuery;
 import org.junit.Before;
@@ -36,9 +40,18 @@ import org.junit.Test;
 
 public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
 
+    private static final int GZIP_THRESHOLD = 150;
+
     @Before
     public void setUp() throws Exception {
         super.setUp(true);
+    }
+
+    byte[] bytesOfSize(int len) {
+        Random r = new Random();
+        byte[] b = new byte[len];
+        r.nextBytes(b);
+        return b;
     }
 
     @Test
@@ -46,16 +59,44 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
 
         ObjectContext context = runtime.newContext();
 
+        // make sure compression is on...
+        byte[] cryptoBytes = bytesOfSize(GZIP_THRESHOLD + 100);
+
         Table2 t1 = context.newObject(Table2.class);
         t1.setPlainBytes("plain_1".getBytes());
-        t1.setCryptoBytes("crypto_1".getBytes());
+        t1.setCryptoBytes(cryptoBytes);
 
         context.commitChanges();
 
         Object[] data = table2.select();
         assertArrayEquals("plain_1".getBytes(), (byte[]) data[1]);
-        assertArrayEquals("crypto_1".getBytes(),
+
+        Header h = Header.create((byte[]) data[2], 0);
+        assertTrue(h.isCompressed());
+        assertArrayEquals(cryptoBytes,
                 CryptoUnitUtils.gunzip(CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[2], runtime)));
+    }
+
+    @Test
+    public void testInsert_Small() throws SQLException {
+
+        ObjectContext context = runtime.newContext();
+
+        // make sure compression is on...
+        byte[] cryptoBytes = bytesOfSize(GZIP_THRESHOLD - 20);
+
+        Table2 t1 = context.newObject(Table2.class);
+        t1.setPlainBytes("plain_1".getBytes());
+        t1.setCryptoBytes(cryptoBytes);
+
+        context.commitChanges();
+
+        Object[] data = table2.select();
+        assertArrayEquals("plain_1".getBytes(), (byte[]) data[1]);
+
+        Header h = Header.create((byte[]) data[2], 0);
+        assertFalse(h.isCompressed());
+        assertArrayEquals(cryptoBytes, CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[2], runtime));
     }
 
     @Test
@@ -63,13 +104,17 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
 
         ObjectContext context = runtime.newContext();
 
+        // make sure compression is on...
+        byte[] cryptoBytes1 = bytesOfSize(GZIP_THRESHOLD + 101);
+        byte[] cryptoBytes2 = bytesOfSize(GZIP_THRESHOLD + 102);
+
         Table2 t1 = context.newObject(Table2.class);
         t1.setPlainBytes("a".getBytes());
-        t1.setCryptoBytes("crypto_1".getBytes());
+        t1.setCryptoBytes(cryptoBytes1);
 
         Table2 t2 = context.newObject(Table2.class);
         t2.setPlainBytes("b".getBytes());
-        t2.setCryptoBytes("crypto_2".getBytes());
+        t2.setCryptoBytes(cryptoBytes2);
 
         Table2 t3 = context.newObject(Table2.class);
         t3.setPlainBytes("c".getBytes());
@@ -85,9 +130,9 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
             cipherByPlain.put(new String((byte[]) r[1]), (byte[]) r[2]);
         }
 
-        assertArrayEquals("crypto_1".getBytes(),
+        assertArrayEquals(cryptoBytes1,
                 CryptoUnitUtils.gunzip(CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("a"), runtime)));
-        assertArrayEquals("crypto_2".getBytes(),
+        assertArrayEquals(cryptoBytes2,
                 CryptoUnitUtils.gunzip(CryptoUnitUtils.decrypt_AES_CBC(cipherByPlain.get("b"), runtime)));
         assertNull(cipherByPlain.get("c"));
     }
@@ -95,15 +140,19 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
     @Test
     public void test_SelectQuery() throws SQLException {
 
+        // make sure compression is on...
+        byte[] cryptoBytes1 = bytesOfSize(GZIP_THRESHOLD + 101);
+        byte[] cryptoBytes2 = bytesOfSize(GZIP_THRESHOLD + 102);
+
         ObjectContext context = runtime.newContext();
 
         Table2 t1 = context.newObject(Table2.class);
         t1.setPlainBytes("a".getBytes());
-        t1.setCryptoBytes("crypto_1".getBytes());
+        t1.setCryptoBytes(cryptoBytes1);
 
         Table2 t2 = context.newObject(Table2.class);
         t2.setPlainBytes("b".getBytes());
-        t2.setCryptoBytes("crypto_2".getBytes());
+        t2.setCryptoBytes(cryptoBytes2);
 
         Table2 t3 = context.newObject(Table2.class);
         t3.setPlainBytes("c".getBytes());
@@ -117,8 +166,8 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
         List<Table2> result = runtime.newContext().select(select);
 
         assertEquals(3, result.size());
-        assertArrayEquals("crypto_1".getBytes(), result.get(0).getCryptoBytes());
-        assertArrayEquals("crypto_2".getBytes(), result.get(1).getCryptoBytes());
+        assertArrayEquals(cryptoBytes1, result.get(0).getCryptoBytes());
+        assertArrayEquals(cryptoBytes2, result.get(1).getCryptoBytes());
         assertArrayEquals(null, result.get(2).getCryptoBytes());
     }
 
