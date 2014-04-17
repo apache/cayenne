@@ -31,7 +31,7 @@ public class SwapBytesTransformerTest {
         BytesEncryptor instance = SwapBytesTransformer.encryptor();
 
         byte[] input = { 1, 3, 5 };
-        byte[] output = instance.encrypt(input, 3);
+        byte[] output = instance.encrypt(input, 3, new byte[1]);
         assertArrayEquals(new byte[] { 0, 0, 0, 5, 3, 1 }, output);
     }
 
@@ -41,7 +41,7 @@ public class SwapBytesTransformerTest {
         BytesEncryptor instance = SwapBytesTransformer.encryptor();
 
         byte[] input = { 1, 3, 5, 8 };
-        byte[] output = instance.encrypt(input, 3);
+        byte[] output = instance.encrypt(input, 3, new byte[1]);
 
         assertArrayEquals(new byte[] { 0, 0, 0, 8, 5, 3, 1 }, output);
     }

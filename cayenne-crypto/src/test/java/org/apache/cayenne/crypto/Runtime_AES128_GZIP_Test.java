@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.crypto.db.Table2;
@@ -47,20 +46,13 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
         super.setUp(true);
     }
 
-    byte[] bytesOfSize(int len) {
-        Random r = new Random();
-        byte[] b = new byte[len];
-        r.nextBytes(b);
-        return b;
-    }
-
     @Test
     public void testInsert() throws SQLException {
 
         ObjectContext context = runtime.newContext();
 
         // make sure compression is on...
-        byte[] cryptoBytes = bytesOfSize(GZIP_THRESHOLD + 100);
+        byte[] cryptoBytes = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 100);
 
         Table2 t1 = context.newObject(Table2.class);
         t1.setPlainBytes("plain_1".getBytes());
@@ -83,7 +75,7 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
         ObjectContext context = runtime.newContext();
 
         // make sure compression is on...
-        byte[] cryptoBytes = bytesOfSize(GZIP_THRESHOLD - 20);
+        byte[] cryptoBytes = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD - 20);
 
         Table2 t1 = context.newObject(Table2.class);
         t1.setPlainBytes("plain_1".getBytes());
@@ -105,8 +97,8 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
         ObjectContext context = runtime.newContext();
 
         // make sure compression is on...
-        byte[] cryptoBytes1 = bytesOfSize(GZIP_THRESHOLD + 101);
-        byte[] cryptoBytes2 = bytesOfSize(GZIP_THRESHOLD + 102);
+        byte[] cryptoBytes1 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 101);
+        byte[] cryptoBytes2 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 102);
 
         Table2 t1 = context.newObject(Table2.class);
         t1.setPlainBytes("a".getBytes());
@@ -141,8 +133,8 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
     public void test_SelectQuery() throws SQLException {
 
         // make sure compression is on...
-        byte[] cryptoBytes1 = bytesOfSize(GZIP_THRESHOLD + 101);
-        byte[] cryptoBytes2 = bytesOfSize(GZIP_THRESHOLD + 102);
+        byte[] cryptoBytes1 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 101);
+        byte[] cryptoBytes2 = CryptoUnitUtils.bytesOfSize(GZIP_THRESHOLD + 102);
 
         ObjectContext context = runtime.newContext();
 

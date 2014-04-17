@@ -28,6 +28,15 @@ import org.junit.Test;
 public class HeaderTest {
 
     @Test
+    public void testSetCompressed() {
+        assertEquals(1, Header.setCompressed((byte) 0, true));
+        assertEquals(0, Header.setCompressed((byte) 0, false));
+
+        assertEquals(1, Header.setCompressed((byte) 1, true));
+        assertEquals(0, Header.setCompressed((byte) 1, false));
+    }
+
+    @Test
     public void testCreate_WithKeyName() {
 
         Header h1 = Header.create("bcd", false);

@@ -52,7 +52,7 @@ public class SwapBytesTransformer implements BytesEncryptor, BytesDecryptor {
     }
 
     @Override
-    public byte[] encrypt(byte[] input, int outputOffset) {
+    public byte[] encrypt(byte[] input, int outputOffset, byte[] flags) {
 
         byte[] output = new byte[input.length + outputOffset];
 

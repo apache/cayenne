@@ -71,7 +71,7 @@ public class CbcEncryptorTest {
         // copy ivBytes, as they are reset
         CbcEncryptor encryptor = new CbcEncryptor(cipher, key, ivBytes);
 
-        byte[] encrypted = encryptor.encrypt(plain, 0);
+        byte[] encrypted = encryptor.encrypt(plain, 0, new byte[1]);
 
         assertEquals(16 * 3, encrypted.length);
         assertArrayEquals(ivBytes, Arrays.copyOfRange(encrypted, 0, 16));

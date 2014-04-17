@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.Key;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.zip.GZIPInputStream;
 
 import javax.crypto.Cipher;
@@ -34,6 +35,13 @@ import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.transformer.bytes.Header;
 
 public class CryptoUnitUtils {
+
+    public static byte[] bytesOfSize(int len) {
+        Random r = new Random();
+        byte[] b = new byte[len];
+        r.nextBytes(b);
+        return b;
+    }
 
     public static byte[] hexToBytes(String hexString) {
         byte[] bytes = new BigInteger(hexString, 16).toByteArray();

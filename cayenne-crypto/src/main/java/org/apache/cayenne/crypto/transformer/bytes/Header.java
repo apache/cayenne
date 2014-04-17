@@ -113,8 +113,16 @@ public class Header {
         return new Header(data, offset);
     }
 
+    public static byte setCompressed(byte bits, boolean compressed) {
+        return compressed ? bitOn(bits, COMPRESS_BIT) : bitOff(bits, COMPRESS_BIT);
+    }
+
     private static byte bitOn(byte bits, int position) {
         return (byte) (bits | (1 << position));
+    }
+
+    private static byte bitOff(byte bits, int position) {
+        return (byte) (bits & ~(1 << position));
     }
 
     private static boolean isBitOn(byte bits, int position) {
@@ -132,14 +140,19 @@ public class Header {
     }
 
     public boolean isCompressed() {
-        return isBitOn(data[offset + FLAGS_POSITION], COMPRESS_BIT);
+        return isBitOn(getFlags(), COMPRESS_BIT);
+    }
+
+    public byte getFlags() {
+        return data[offset + FLAGS_POSITION];
     }
 
     /**
      * Saves the header bytes in the provided buffer at specified offset.
      */
-    public void store(byte[] output, int outputOffset) {
+    public void store(byte[] output, int outputOffset, byte flags) {
         System.arraycopy(data, offset, output, outputOffset, size());
+        output[outputOffset + FLAGS_POSITION] = flags;
     }
 
     public String getKeyName() {

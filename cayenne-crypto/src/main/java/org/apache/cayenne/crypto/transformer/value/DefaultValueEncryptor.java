@@ -50,7 +50,7 @@ class DefaultValueEncryptor implements ValueEncryptor {
         }
 
         byte[] bytes = preConverter.toBytes(value);
-        byte[] transformed = encryptor.encrypt(bytes, 0);
+        byte[] transformed = encryptor.encrypt(bytes, 0, new byte[1]);
         return postConverter.fromBytes(transformed);
     }
 

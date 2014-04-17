@@ -29,9 +29,12 @@ class HeaderEncryptor implements BytesEncryptor {
     }
 
     @Override
-    public byte[] encrypt(byte[] input, int outputOffset) {
-        byte[] output = delegate.encrypt(input, outputOffset + header.size());
-        header.store(output, outputOffset);
+    public byte[] encrypt(byte[] input, int outputOffset, byte[] flags) {
+
+        flags[0] = header.getFlags();
+
+        byte[] output = delegate.encrypt(input, outputOffset + header.size(), flags);
+        header.store(output, outputOffset, flags[0]);
         return output;
     }
 

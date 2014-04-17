@@ -65,7 +65,7 @@ class CbcEncryptor implements BytesEncryptor {
     }
 
     @Override
-    public byte[] encrypt(byte[] input, int outputOffset) {
+    public byte[] encrypt(byte[] input, int outputOffset, byte[] flags) {
 
         try {
             return doEncrypt(input, outputOffset);

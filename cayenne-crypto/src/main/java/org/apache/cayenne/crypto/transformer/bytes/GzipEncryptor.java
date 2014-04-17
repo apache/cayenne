@@ -29,7 +29,7 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
  */
 class GzipEncryptor implements BytesEncryptor {
 
-    private static final int GZIP_THRESHOLD = 150;
+    static final int GZIP_THRESHOLD = 150;
 
     private BytesEncryptor delegate;
 
@@ -38,11 +38,11 @@ class GzipEncryptor implements BytesEncryptor {
     }
 
     @Override
-    public byte[] encrypt(byte[] input, int outputOffset) {
+    public byte[] encrypt(byte[] input, int outputOffset, byte[] flags) {
 
-        boolean compress = input.length >= GZIP_THRESHOLD;
+        boolean compressed = input.length >= GZIP_THRESHOLD;
 
-        if (compress) {
+        if (compressed) {
             try {
                 input = gzip(input);
             } catch (IOException e) {
@@ -51,7 +51,8 @@ class GzipEncryptor implements BytesEncryptor {
             }
         }
 
-        return delegate.encrypt(input, outputOffset);
+        flags[0] = Header.setCompressed(flags[0], compressed);
+        return delegate.encrypt(input, outputOffset, flags);
     }
 
     static byte[] gzip(byte[] input) throws IOException {

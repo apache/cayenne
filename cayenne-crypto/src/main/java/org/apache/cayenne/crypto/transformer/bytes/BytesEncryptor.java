@@ -32,7 +32,10 @@ public interface BytesEncryptor {
      *            how much empty space to leave in the beginning of the returned
      *            output array. This would allow the caller to prepend extra
      *            data to the encrypted array.
+     * @param flags
+     *            a byte[1] that allows nested encryptors to manipulate header
+     *            flags.
      */
-    byte[] encrypt(byte[] input, int outputOffset);
+    byte[] encrypt(byte[] input, int outputOffset, byte[] flags);
 
 }
