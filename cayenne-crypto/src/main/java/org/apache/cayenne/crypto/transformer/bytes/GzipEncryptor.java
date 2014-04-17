@@ -29,6 +29,8 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
  */
 class GzipEncryptor implements BytesEncryptor {
 
+    private static final int GZIP_THRESHOLD = 150;
+
     private BytesEncryptor delegate;
 
     public GzipEncryptor(BytesEncryptor delegate) {
@@ -38,18 +40,18 @@ class GzipEncryptor implements BytesEncryptor {
     @Override
     public byte[] encrypt(byte[] input, int outputOffset) {
 
-        // TODO: skip compression of small inputs... somehow flip compression
-        // bit in the header back to off in that case.
+        boolean compress = input.length >= GZIP_THRESHOLD;
 
-        byte[] compressedIn;
-        try {
-            compressedIn = gzip(input);
-        } catch (IOException e) {
-            // really not expecting an error here...
-            throw new CayenneCryptoException("Error compressing input", e);
+        if (compress) {
+            try {
+                input = gzip(input);
+            } catch (IOException e) {
+                // really not expecting an error here...
+                throw new CayenneCryptoException("Error compressing input", e);
+            }
         }
 
-        return delegate.encrypt(compressedIn, outputOffset);
+        return delegate.encrypt(input, outputOffset);
     }
 
     static byte[] gzip(byte[] input) throws IOException {

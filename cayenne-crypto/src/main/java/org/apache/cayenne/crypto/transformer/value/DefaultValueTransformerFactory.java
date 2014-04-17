@@ -164,7 +164,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
                     + " for attribute " + a + " has no bytes-to-db conversion");
         }
 
-        return new DefaultEncryptor(toBytes, fromBytes);
+        return new DefaultValueEncryptor(toBytes, fromBytes);
     }
 
     protected ValueDecryptor createDecryptor(DbAttribute a) {
@@ -182,7 +182,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
                     + " has no bytes-to-object conversion");
         }
 
-        return new DefaultDecryptor(toBytes, fromBytes, defaultKey);
+        return new DefaultValueDecryptor(toBytes, fromBytes, defaultKey);
     }
 
     // TODO: calculating Java type of ObjAttribute may become unneeded per

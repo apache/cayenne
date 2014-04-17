@@ -53,7 +53,7 @@ public class DefaultEncryptorTest {
     @Test
     public void testEncrypt_BytesToBytes() throws IllegalBlockSizeException, BadPaddingException {
 
-        DefaultEncryptor e = new DefaultEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
+        DefaultValueEncryptor e = new DefaultValueEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
         byte[] b1 = new byte[] { 1, 2 };
         byte[] b2 = new byte[] { 2, 3 };
@@ -72,7 +72,7 @@ public class DefaultEncryptorTest {
     @Test
     public void testEncrypt_BytesToBytes_null() throws IllegalBlockSizeException, BadPaddingException {
 
-        DefaultEncryptor e = new DefaultEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
+        DefaultValueEncryptor e = new DefaultValueEncryptor(BytesToBytesConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
         assertNull(e.encrypt(encryptor, null));
     }
 
@@ -80,7 +80,7 @@ public class DefaultEncryptorTest {
     public void testEncrypt_StringToBytes() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
-        DefaultEncryptor e = new DefaultEncryptor(Utf8StringConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
+        DefaultValueEncryptor e = new DefaultValueEncryptor(Utf8StringConverter.INSTANCE, BytesToBytesConverter.INSTANCE);
 
         String s1 = "ab";
         String s2 = "cd";
@@ -100,7 +100,7 @@ public class DefaultEncryptorTest {
     public void testEncrypt_StringToString() throws UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException {
 
-        DefaultEncryptor e = new DefaultEncryptor(Utf8StringConverter.INSTANCE, Base64StringConverter.INSTANCE);
+        DefaultValueEncryptor e = new DefaultValueEncryptor(Utf8StringConverter.INSTANCE, Base64StringConverter.INSTANCE);
 
         String s1 = "ab";
 

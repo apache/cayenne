@@ -18,20 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import java.security.Key;
-
-import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
+import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 
 /**
  * @since 3.2
  */
-class DefaultDecryptor implements ValueDecryptor {
+class DefaultValueEncryptor implements ValueEncryptor {
 
-    private Key defaultKey;
     private BytesConverter preConverter;
     private BytesConverter postConverter;
 
-    public DefaultDecryptor(BytesConverter preConverter, BytesConverter postConverter, Key defaultKey) {
+    public DefaultValueEncryptor(BytesConverter preConverter, BytesConverter postConverter) {
         this.preConverter = preConverter;
         this.postConverter = postConverter;
     }
@@ -45,13 +42,15 @@ class DefaultDecryptor implements ValueDecryptor {
     }
 
     @Override
-    public Object decrypt(BytesDecryptor bytesDecryptor, Object value) {
+    public Object encrypt(BytesEncryptor encryptor, Object value) {
+
+        // TODO: should we encrypt nulls as well to hide NULL from attackers?
+        if (value == null) {
+            return null;
+        }
 
         byte[] bytes = preConverter.toBytes(value);
-
-        // 'defaultKey' is likely to be ignored by the BytesDecryptor, as the
-        // key name is obtained from the record itself
-        byte[] transformed = bytesDecryptor.decrypt(bytes, 0, defaultKey);
+        byte[] transformed = encryptor.encrypt(bytes, 0);
         return postConverter.fromBytes(transformed);
     }
 
