@@ -55,6 +55,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String template;
     protected String embeddabletemplate;
     protected String embeddablesupertemplate;
+    protected String querytemplate;
+    protected String querysupertemplate;
     protected boolean usepkgpath;
 
     public CayenneGeneratorTask() {
@@ -91,6 +93,8 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setTemplate(template);
         action.setEmbeddableSuperTemplate(embeddablesupertemplate);
         action.setEmbeddableTemplate(embeddabletemplate);
+        action.setQueryTemplate(querytemplate);
+        action.setQuerySuperTemplate(querysupertemplate);
         action.setUsePkgPath(usepkgpath);
 
         return action;
@@ -200,6 +204,20 @@ public class CayenneGeneratorTask extends CayenneTask {
      */
     public void setSupertemplate(String supertemplate) {
         this.supertemplate = supertemplate;
+    }
+
+    /**
+     * Sets <code>querytemplate</code> property.
+     */
+    public void setQueryTemplate(String querytemplate) {
+        this.querytemplate = querytemplate;
+    }
+
+    /**
+     * Sets <code>querysupertemplate</code> property.
+     */
+    public void setQuerySupertemplate(String querysupertemplate) {
+        this.querysupertemplate = querysupertemplate;
     }
 
     /**
