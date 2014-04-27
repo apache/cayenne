@@ -45,6 +45,7 @@ CAY-1916 cayenne-crypto module that enables data encryption for certain model at
 CAY-1918 Replace Oracle LOB hacks with JDBC 4.0 API
 CAY-1919 Split DataNode creation into a separate DataNodeFactory
 CAY-1920 DI: add support for decorators
+CAY-1921 Support for schema selection in 'Migrate Database Schema'
 CAY-1923 Optimize BatchTranslator - use fixed size array of BatchParameterBinding
 CAY-1925 cayenne-crypto: add optional compression to the encryption pipeline
 
