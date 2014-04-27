@@ -25,13 +25,13 @@ public class DbMigrateOptionsDialog extends CayenneDialog {
     public static final int SELECT = 1;
 
 	protected JLabel schemaLabel;
-    protected JComboBox<String> schemaSelector;
+    protected JComboBox schemaSelector;
     protected JButton selectButton;
     protected JButton cancelButton;
     protected int choice;
     
     public DbMigrateOptionsDialog(Collection<String> schemas, String dbUserName) {
-        super(Application.getFrame(), "Migrater DB Schema: Select Schema");
+        super(Application.getFrame(), "Migrate DB Schema: Select Schema");
         init();
         initController();
         initFromModel(schemas, dbUserName);
@@ -45,7 +45,7 @@ public class DbMigrateOptionsDialog extends CayenneDialog {
     protected void init() {
         selectButton = new JButton("Continue");
         cancelButton = new JButton("Cancel");
-        schemaSelector = new JComboBox<String>();
+        schemaSelector = new JComboBox();
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, fill:max(170dlu;pref):grow",
                 "");
@@ -96,7 +96,7 @@ public class DbMigrateOptionsDialog extends CayenneDialog {
 
         schemaSelector.setVisible(true);
         schemaLabel.setVisible(true);
-        schemaSelector.setModel(new DefaultComboBoxModel<String>(schemas.toArray(new String[] {})));
+        schemaSelector.setModel(new DefaultComboBoxModel(schemas.toArray(new String[] {})));
 
         // select schema belonging to the user
         if (dbUserName != null) {
