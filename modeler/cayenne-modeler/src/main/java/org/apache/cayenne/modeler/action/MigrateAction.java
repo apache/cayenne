@@ -20,10 +20,19 @@
 package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.sql.DataSource;
+import javax.swing.JOptionPane;
+
+import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.db.DbMigrateOptionsDialog;
 import org.apache.cayenne.modeler.dialog.db.MergerOptions;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
@@ -55,19 +64,47 @@ public class MigrateAction extends DBWizardAction {
             // canceled
             return;
         }
-
+        
         DataMap map = getProjectController().getCurrentDataMap();
-
+        //migarte options
+        
         // sanity check
         if (map == null) {
             throw new IllegalStateException("No current DataMap selected.");
         }
+        //showOptions dialog
+       String selectedSchema = null;
+       try {
+			List<String> schemas = getSchemas(connectWizard);
+	        if (schemas != null && !schemas.isEmpty()) {
+	        	DbMigrateOptionsDialog optionsDialog = new DbMigrateOptionsDialog(schemas, connectWizard.getConnectionInfo().getUserName());
+	        	optionsDialog.showDialog();
+	        	if (optionsDialog.getChoice() == DbMigrateOptionsDialog.SELECT) {
+	        		selectedSchema = optionsDialog.getSelectedSchema();
+	        	}
+	        }
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(
+	                Application.getFrame(),
+	                ex.getMessage(),
+	                "Error loading schemas dialog",
+	                JOptionPane.ERROR_MESSAGE);
+		}
+        
 
         // ... show dialog...
         new MergerOptions(
                 getProjectController(),
                 "Migrate DB Schema: Options",
                 connectWizard.getConnectionInfo(),
-                map).startupAction();
+                map, selectedSchema).startupAction();
+    }
+    
+    private List<String> getSchemas(DataSourceWizard connectWizard) throws Exception {
+    	DbAdapter dbAdapter = connectWizard.getConnectionInfo()
+    			.makeAdapter(getApplication().getClassLoadingService());
+    	DataSource dataSource = connectWizard.getConnectionInfo()
+    			.makeDataSource(getApplication().getClassLoadingService());
+    	return new DbLoader(dataSource.getConnection(), dbAdapter, null).getSchemas();
     }
 }

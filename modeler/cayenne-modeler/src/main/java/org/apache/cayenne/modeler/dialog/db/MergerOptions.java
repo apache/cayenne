@@ -79,15 +79,17 @@ public class MergerOptions extends CayenneController {
 
     protected DbMerger merger;
     protected MergerTokenSelectorController tokens;
-
+    protected String defaultSchema;
+    
     public MergerOptions(ProjectController parent, String title,
-            DBConnectionInfo connectionInfo, DataMap dataMap) {
+            DBConnectionInfo connectionInfo, DataMap dataMap, String defaultSchema) {
         super(parent);
 
         this.dataMap = dataMap;
         this.tokens = new MergerTokenSelectorController(parent);
         this.view = new MergerOptionsView(tokens.getView());
         this.connectionInfo = connectionInfo;
+        this.defaultSchema = defaultSchema;
         /*
          * TODO:? this.generatorDefaults = (DBGeneratorDefaults) parent
          * .getPreferenceDomainForProject() .getDetail("DbGenerator",
@@ -163,6 +165,7 @@ public class MergerOptions extends CayenneController {
                     .getClassLoadingService());
             tokens.setMergerFactory(adapter.mergerFactory());
             merger = new DbMerger();
+            merger.setSchema(defaultSchema);
             List<MergerToken> mergerTokens = merger.createMergeTokens(
                     adapter,
                     connectionInfo.makeDataSource(getApplication()

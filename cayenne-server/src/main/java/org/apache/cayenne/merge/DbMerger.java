@@ -60,8 +60,13 @@ public class DbMerger {
     private MergerFactory factory;
     
     private ValueForNullProvider valueForNull = new EmptyValueForNullProvider();
+    private String schema;
+    
+    public void setSchema(String schema) {
+		this.schema = schema;
+	}
 
-    /**
+	/**
      * Set a {@link ValueForNullProvider} that will be used to set value for null on not
      * null columns
      */
@@ -109,12 +114,8 @@ public class DbMerger {
                     return merger.includeTableName(tableName);
                 }
             };
-            
-            DataMap detectedDataMap = dbLoader.loadDataMapFromDB(
-                    null,
-                    null,
-                    new DataMap());
-            
+            DataMap detectedDataMap = new DataMap();
+            dbLoader.load(detectedDataMap, null, schema, null, (String[]) null);
             detectedDataMap.setQuotingSQLIdentifiers(dataMap.isQuotingSQLIdentifiers());
             
             Map<String, DbEntity> dbEntityToDropByName = new HashMap<String, DbEntity>(
