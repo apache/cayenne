@@ -146,4 +146,15 @@ public class PropertyTest extends TestCase {
     	assertTrue(INT_FIELD.hashCode() != LONG_FIELD.hashCode());
     }
     
+    public void testOuter() {
+        Property<String> inner = new Property<String>("xyz");
+        assertEquals("xyz+", inner.outer().getName());
+        
+        Property<String> inner1 = new Property<String>("xyz.xxx");
+        assertEquals("xyz.xxx+", inner1.outer().getName());
+        
+        Property<String> outer = new Property<String>("xyz+");
+        assertEquals("xyz+", outer.outer().getName());
+    }
+    
 }

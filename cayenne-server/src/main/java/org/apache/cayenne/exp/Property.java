@@ -66,16 +66,16 @@ public class Property<E> {
     public String getName() {
         return name;
     }
-    
-	@Override
-	public int hashCode() {
-		return getName().hashCode();
-	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof Property && ((Property<?>)obj).getName().equals(getName());
-	}
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Property && ((Property<?>) obj).getName().equals(getName());
+    }
 
     /**
      * @return Constructs a property path by appending the argument to the
@@ -91,6 +91,19 @@ public class Property<E> {
      */
     public <T> Property<T> dot(Property<T> property) {
         return new Property<T>(getName() + "." + property.getName());
+    }
+
+    /**
+     * Returns a version of this property that represents an OUTER join. It is
+     * up to caller to ensure that the property corresponds to a relationship,
+     * as "outer" attributes make no sense.
+     */
+    public Property<E> outer() {
+        return isOuter() ? this: new Property<E>(name + "+"); 
+    }
+    
+    private boolean isOuter() {
+        return name.endsWith("+");
     }
 
     /**
@@ -127,12 +140,13 @@ public class Property<E> {
     public Expression eq(E value) {
         return ExpressionFactory.matchExp(getName(), value);
     }
-    
+
     /**
-     * @return An expression representing equality between two attributes (columns).
+     * @return An expression representing equality between two attributes
+     *         (columns).
      */
     public Expression eq(Property<?> value) {
-    	return ExpressionFactory.matchExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.matchExp(getName(), new ASTObjPath(value.getName()));
     }
 
     /**
@@ -143,12 +157,13 @@ public class Property<E> {
     }
 
     /**
-     * @return An expression representing inequality between two attributes (columns).
+     * @return An expression representing inequality between two attributes
+     *         (columns).
      */
     public Expression ne(Property<?> value) {
         return ExpressionFactory.noMatchExp(getName(), new ASTObjPath(value.getName()));
     }
-    
+
     /**
      * @return An expression for a Database "Like" query.
      */
@@ -248,24 +263,26 @@ public class Property<E> {
     }
 
     /**
-     * @return Represents a greater than relationship between two attributes (columns).
+     * @return Represents a greater than relationship between two attributes
+     *         (columns).
      */
     public Expression gt(Property<?> value) {
-    	return ExpressionFactory.greaterExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.greaterExp(getName(), new ASTObjPath(value.getName()));
     }
-    
+
     /**
      * @return A greater than or equal to Expression.
      */
     public Expression gte(E value) {
         return ExpressionFactory.greaterOrEqualExp(getName(), value);
     }
-    
+
     /**
-     * @return Represents a greater than or equal relationship between two attributes (columns).
+     * @return Represents a greater than or equal relationship between two
+     *         attributes (columns).
      */
     public Expression gte(Property<?> value) {
-    	return ExpressionFactory.greaterOrEqualExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.greaterOrEqualExp(getName(), new ASTObjPath(value.getName()));
     }
 
     /**
@@ -274,12 +291,13 @@ public class Property<E> {
     public Expression lt(E value) {
         return ExpressionFactory.lessExp(getName(), value);
     }
-    
+
     /**
-     * @return Represents a less than relationship between two attributes (columns).
+     * @return Represents a less than relationship between two attributes
+     *         (columns).
      */
     public Expression lt(Property<?> value) {
-    	return ExpressionFactory.lessExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.lessExp(getName(), new ASTObjPath(value.getName()));
     }
 
     /**
@@ -288,12 +306,13 @@ public class Property<E> {
     public Expression lte(E value) {
         return ExpressionFactory.lessOrEqualExp(getName(), value);
     }
-    
+
     /**
-     * @return Represents a less than or equal relationship between two attributes (columns).
+     * @return Represents a less than or equal relationship between two
+     *         attributes (columns).
      */
     public Expression lte(Property<?> value) {
-    	return ExpressionFactory.lessOrEqualExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.lessOrEqualExp(getName(), new ASTObjPath(value.getName()));
     }
 
     /**
@@ -389,42 +408,45 @@ public class Property<E> {
     }
 
     /**
-     * Extracts property value from an object using JavaBean-compatible introspection with one addition -
-     * a property can be a dot-separated property name path.
+     * Extracts property value from an object using JavaBean-compatible
+     * introspection with one addition - a property can be a dot-separated
+     * property name path.
      */
     @SuppressWarnings("unchecked")
     public E getFrom(Object bean) {
-    	return (E)PropertyUtils.getProperty(bean, getName());
+        return (E) PropertyUtils.getProperty(bean, getName());
     }
 
     /**
-     * Extracts property value from a collection of objects using JavaBean-compatible introspection with one addition -
-     * a property can be a dot-separated property name path.
+     * Extracts property value from a collection of objects using
+     * JavaBean-compatible introspection with one addition - a property can be a
+     * dot-separated property name path.
      */
     public List<E> getFromAll(Collection<?> beans) {
-    	List<E> result = new ArrayList<E>(beans.size());
-    	for (Object bean : beans) {
-    		result.add(getFrom(bean));
-    	}
-    	return result;
-    }
-    
-    /**
-     * Sets a property value in 'obj' using JavaBean-compatible introspection with one addition -
-     * a property can be a dot-separated property name path.
-     */
-	public void setIn(Object bean, E value) {
-    	PropertyUtils.setProperty(bean, getName(), value);
+        List<E> result = new ArrayList<E>(beans.size());
+        for (Object bean : beans) {
+            result.add(getFrom(bean));
+        }
+        return result;
     }
 
     /**
-     * Sets a property value in a collection of objects using JavaBean-compatible introspection with one addition -
-     * a property can be a dot-separated property name path.
+     * Sets a property value in 'obj' using JavaBean-compatible introspection
+     * with one addition - a property can be a dot-separated property name path.
      */
-	public void setInAll(Collection<?> beans, E value) {
-    	for (Object bean : beans) {
-    		setIn(bean, value);
-    	}
+    public void setIn(Object bean, E value) {
+        PropertyUtils.setProperty(bean, getName(), value);
+    }
+
+    /**
+     * Sets a property value in a collection of objects using
+     * JavaBean-compatible introspection with one addition - a property can be a
+     * dot-separated property name path.
+     */
+    public void setInAll(Collection<?> beans, E value) {
+        for (Object bean : beans) {
+            setIn(bean, value);
+        }
     }
 
 }
