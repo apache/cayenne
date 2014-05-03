@@ -32,6 +32,7 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -68,13 +69,18 @@ public class DataContextPrefetchTest extends ServerCase {
     protected TableHelper tExhibit;
     protected TableHelper tGallery;
     protected TableHelper tArtistExhibit;
+    protected TableHelper tArtistGroup;
+    protected TableHelper tArtGroup;
 
+    
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTGROUP");
+
         dbHelper.deleteAll("ARTIST");
         dbHelper.deleteAll("EXHIBIT");
         dbHelper.deleteAll("GALLERY");
@@ -97,6 +103,12 @@ public class DataContextPrefetchTest extends ServerCase {
 
         tGallery = new TableHelper(dbHelper, "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        
+        tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP");
+        tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
+        
+        tArtGroup = new TableHelper(dbHelper, "ARTGROUP");
+        tArtGroup.setColumns("GROUP_ID", "NAME");
     }
 
     protected void createTwoArtistsAndTwoPaintingsDataSet() throws Exception {
@@ -515,6 +527,39 @@ public class DataContextPrefetchTest extends ServerCase {
 
                 // The parent must be fully fetched, not just HOLLOW (a fault)
                 assertEquals(PersistenceState.COMMITTED, painting.getToArtist().getPersistenceState());
+            }
+        });
+    }
+    
+    public void testPrefetch_ToOneWith_OuterJoinFlattenedQualifier() throws Exception {
+
+        tArtGroup.insert(1, "AG");
+        tArtist.insert(11, "artist2");
+        tArtist.insert(101, "artist3");
+        tPainting.insert(6, "p_artist3", 101, 1000);
+        tPainting.insert(7, "p_artist21", 11, 2000);
+        tPainting.insert(8, "p_artist22", 11, 3000);
+
+        // flattened join matches an object that is NOT the one we are looking
+        // for
+        tArtistGroup.insert(101, 1);
+
+        // OUTER join part intentionally doesn't match anything
+        Expression exp = new Property<String>("groupArray+.name").eq("XX").orExp(Artist.ARTIST_NAME.eq("artist2"));
+
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, exp);
+        q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
+
+        final List<Artist> results = context.select(q);
+
+        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+            public void execute() {
+                assertEquals(1, results.size());
+
+                Artist a = results.get(0);
+                assertEquals("artist2", a.getArtistName());
+                assertEquals(2, a.getPaintingArray().size());
             }
         });
     }
