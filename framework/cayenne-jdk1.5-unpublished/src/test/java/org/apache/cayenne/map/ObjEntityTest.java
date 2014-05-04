@@ -406,6 +406,14 @@ public class ObjEntityTest extends ServerCase {
         assertEquals("failure: " + translated, Expression
                 .fromString("db:toArtist.artistExhibitArray.toExhibit"), translated);
     }
+    
+    public void testTranslateToRelatedEntityOuterJoin_Flattened() throws Exception {
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
+
+        Expression e1 = Expression.fromString("groupArray+.name");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
+        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.artistGroupArray+.toGroup+.NAME"), translated);
+    }
 
     public void testTranslateToRelatedEntitySplitHalfWay() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(

@@ -1129,7 +1129,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                             + component);
                 }
 
-                boolean firstComponent = true;
                 while (dbSubpath.hasNext()) {
                     CayenneMapEntry subComponent = (CayenneMapEntry) dbSubpath.next();
                     if (buf.length() > 0) {
@@ -1137,10 +1136,11 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                     }
 
                     buf.append(subComponent.getName());
-                    if (firstComponent && component.getJoinType() == JoinType.LEFT_OUTER) {
+                    
+                    // use OUTER join for all components of the path is Obj path is OUTER
+                    if (component.getJoinType() == JoinType.LEFT_OUTER) {
                         buf.append(OUTER_JOIN_INDICATOR);
                     }
-                    firstComponent = false;
                 }
             }
 
