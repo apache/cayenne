@@ -16,6 +16,7 @@ Changes/New Features Since 3.1RC1:
 Bug Fixes Since 3.1RC1:
 
 CAY-1905 Multi-step prefetching NPE : 1..N..1 with absent N and root with no qualifier
+CAY-1928 Second INNER join generated for OUTER flattended relationships in disjoint prefetches
 
 ----------------------------------
 Release: 3.1RC1
