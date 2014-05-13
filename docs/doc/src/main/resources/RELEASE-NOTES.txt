@@ -49,7 +49,8 @@ CAY-1921 Support for schema selection in 'Migrate Database Schema'
 CAY-1923 Optimize BatchTranslator - use fixed size array of BatchParameterBinding
 CAY-1925 cayenne-crypto: add optional compression to the encryption pipeline
 CAY-1928 Second INNER join generated for OUTER flattended relationships in disjoint prefetches
-CAy-1929 Property.outer method to build OUTER join properties
+CAY-1929 Property.outer method to build OUTER join properties
+CAY-1932 Improved Handling for Scalar Parameters Converting Expressions to EJBQL
 
 Bug Fixes:
 
