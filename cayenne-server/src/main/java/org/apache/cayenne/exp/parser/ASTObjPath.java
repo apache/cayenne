@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
@@ -71,7 +72,7 @@ public class ASTObjPath extends ASTPath {
      * @since 3.2
      */
     @Override
-    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         out.append(rootId);
         out.append('.');
         out.append(path);

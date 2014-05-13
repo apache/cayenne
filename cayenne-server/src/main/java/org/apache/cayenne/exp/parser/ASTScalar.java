@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -77,7 +78,7 @@ public class ASTScalar extends SimpleNode {
      * @since 3.2
      */
     @Override
-    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         // TODO: see CAY-1111
         // Persistent processing is a hack for a rather special case of a single
         // column PK
@@ -93,7 +94,7 @@ public class ASTScalar extends SimpleNode {
             }
         }
 
-        SimpleNode.appendScalarAsString(out, scalar, '\'');
+        SimpleNode.encodeScalarAsEJBQL(parameterAccumulator, out, scalar);
     }
 
     public void setValue(Object value) {

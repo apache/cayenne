@@ -19,6 +19,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.cayenne.exp.ExpressionException;
 
@@ -35,11 +36,11 @@ abstract class IgnoreCaseNode extends PatternMatchNode {
     }
 
     @Override
-    protected void appendChildrenAsEJBQL(Appendable out, String rootId) throws IOException {
+    protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         // with like, first expression is always path, second is a literal,
         // which must be uppercased
         out.append("upper(");
-        ((SimpleNode) children[0]).appendAsEJBQL(out, rootId);
+        ((SimpleNode) children[0]).appendAsEJBQL(parameterAccumulator, out, rootId);
         out.append(") ");
         out.append(getEJBQLExpressionOperator(0));
         out.append(" ");
@@ -48,6 +49,6 @@ abstract class IgnoreCaseNode extends PatternMatchNode {
         if (!(literal instanceof String)) {
             throw new ExpressionException("Literal value should be a string");
         }
-        SimpleNode.appendScalarAsString(out, ((String) literal).toUpperCase(), '\'');
+        SimpleNode.encodeScalarAsEJBQL(parameterAccumulator, out, ((String) literal).toUpperCase());
     }
 }

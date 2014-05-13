@@ -19,6 +19,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
 
@@ -78,7 +79,7 @@ public class ASTTrue extends ConditionNode {
      * @since 3.2
      */
     @Override
-    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         out.append("true");
     }
 }

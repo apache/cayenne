@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
@@ -154,6 +155,43 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName.stuff = :name", ejbql);
     }
 
+    public void testEncodeAsEJBQL_Timestamp_ParameterCapture() throws IOException {
+        Date now = new Date();
+
+        Expression e = ExpressionFactory.greaterOrEqualExp("dateOfBirth", now);
+
+        StringBuilder buffer = new StringBuilder();
+        List<Object> parametersAccumulator = new ArrayList<Object>();
+
+        e.appendAsEJBQL(parametersAccumulator, buffer, "x");
+
+        String ejbql = buffer.toString();
+
+        assertEquals("x.dateOfBirth >= ?1", ejbql);
+        assertEquals(parametersAccumulator.size(), 1);
+        assertEquals(parametersAccumulator.get(0), now);
+
+    }
+
+    public void testEncodeAsEJBQL3_EncodeListOfParameters_ParameterCapture() throws IOException {
+
+        Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
+
+        StringBuilder buffer = new StringBuilder();
+        List<Object> parametersAccumulator = new ArrayList<Object>();
+
+        e.appendAsEJBQL(parametersAccumulator, buffer, "x");
+
+        String ejbql = buffer.toString();
+
+        assertEquals("x.artistName in (?1, ?2, ?3)", ejbql);
+        assertEquals(parametersAccumulator.size(), 3);
+        assertEquals(parametersAccumulator.get(0), "a");
+        assertEquals(parametersAccumulator.get(1), "b");
+        assertEquals(parametersAccumulator.get(2), "c");
+
+    }
+
     public void testEncodeAsEJBQL3_EncodeListOfParameters() throws IOException {
 
         Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
@@ -193,6 +231,19 @@ public class ExpressionTest extends ServerCase {
         String ejbql = buffer.toString();
 
         assertEquals("x.artistName <> 'bla'", ejbql);
+    }
+
+    public void testAppendAsEJBQLNotEquals_ParameterCapture() throws IOException {
+        Expression e = Expression.fromString("artistName != 'bla'");
+
+        StringBuilder buffer = new StringBuilder();
+        List<Object> parametersAccumulator = new ArrayList<Object>();
+        e.appendAsEJBQL(parametersAccumulator, buffer, "x");
+        String ejbql = buffer.toString();
+
+        assertEquals("x.artistName <> ?1", ejbql);
+        assertEquals(parametersAccumulator.size(), 1);
+        assertEquals(parametersAccumulator.get(0), "bla");
     }
 
     public void testEncodeAsEJBQL_Enum() throws IOException {

@@ -118,7 +118,7 @@ public class ASTList extends SimpleNode {
     }
 
     @Override
-    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
 
         if (parent != null) {
             out.append("(");
@@ -134,7 +134,7 @@ public class ASTList extends SimpleNode {
                 if (values[i] == null) {
                     out.append("null");
                 } else {
-                    SimpleNode.appendScalarAsString(out, values[i], '\'');
+                    SimpleNode.encodeScalarAsEJBQL(parameterAccumulator, out, values[i]);
                 }
             }
         }

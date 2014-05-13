@@ -21,6 +21,7 @@ package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
@@ -94,7 +95,7 @@ public class ASTNegate extends SimpleNode {
      * @since 3.2
      */
     @Override
-    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
 
         if ((children != null) && (children.length > 0)) {
             out.append("-");
@@ -107,7 +108,7 @@ public class ASTNegate extends SimpleNode {
                 out.append("(");
             }
 
-            child.appendAsEJBQL(out, rootId);
+            child.appendAsEJBQL(parameterAccumulator, out, rootId);
 
             if (useParen) {
                 out.append(')');

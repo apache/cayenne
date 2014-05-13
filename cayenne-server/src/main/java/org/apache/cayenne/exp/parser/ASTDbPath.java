@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
@@ -92,7 +93,7 @@ public class ASTDbPath extends ASTPath {
      * @since 3.2
      */
     @Override
-    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         // warning: non-standard EJBQL...
         out.append(DB_PREFIX);
         out.append(rootId);

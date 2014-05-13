@@ -703,7 +703,24 @@ public abstract class Expression implements Serializable, XMLSerializable {
      * @since 3.2
      * @throws IOException
      */
-    public abstract void appendAsEJBQL(Appendable out, String rootId) throws IOException;
+    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+        appendAsEJBQL(null,out,rootId);
+    }
+
+    /**
+     * Stores a String representation of Expression as EJBQL using a provided PrintWriter.
+     * DB path expressions produce non-standard EJBQL path expressions.  If the
+     * parameterAccumulator is supplied then as the EJBQL is output, it may load parameters
+     * into this list.  In this case, the EJBQL output will contain reference to positional
+     * parameters.  If no parameterAccumulator is supplied and a scalar type is encountered
+     * for which there is no EJBQL literal representation (such as dates) then this method
+     * will throw a runtime exception to indicate that it was not possible to generate a
+     * string-only representation of the Expression in EJBQL.
+     *
+     * @since 3.2
+     * @throws IOException
+     */
+    public abstract void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException;
 
     @Override
     public String toString() {
@@ -717,15 +734,34 @@ public abstract class Expression implements Serializable, XMLSerializable {
     }
 
     /**
-     * @since 3.0
+     * Produces an EJBQL string that represents this expression.  If the parameterAccumulator is
+     * supplied then, where appropriate, parameters to the EJBQL may be written into the
+     * parameterAccumulator.  If this method encounters a scalar type which is not able to be
+     * represented as an EJBQL literal then this method will throw a runtime exception to indicate
+     * that it was not possible to generate a string-only representation of the Expression as
+     * EJBQL.
+     *
+     * @since 3.1
      */
-    public String toEJBQL(String rootId) {
+    public String toEJBQL(List<Object> parameterAccumulator, String rootId) {
         StringBuilder out = new StringBuilder();
         try {
-            appendAsEJBQL(out, rootId);
+            appendAsEJBQL(parameterAccumulator, out, rootId);
         } catch (IOException e) {
             throw new CayenneRuntimeException("Unexpected IO exception appending to StringBuilder", e);
         }
         return out.toString();
     }
+
+    /**
+     * Produces an EJBQL string that represents this expression.  If this method encounters a scalar
+     * type which is not able to be represented as an EJBQL literal then this method will throw a
+     * runtime exception.
+     *
+     * @since 3.0
+     */
+    public String toEJBQL(String rootId) {
+        return toEJBQL(null, rootId);
+    }
+
 }

@@ -24,6 +24,7 @@ package org.apache.cayenne.exp.parser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -48,6 +49,70 @@ public abstract class SimpleNode extends Expression implements Node {
     protected Node parent;
     protected Node[] children;
     protected int id;
+
+    /**
+     * <p>This is a utility method that can represent the supplied scalar as either an EJBQL literal into the
+     * supplied {@link java.io.PrintWriter} or is able to add the scalar to the parameters and to instead
+     * write a positional parameter to the EJBQL written to the {@link java.io.PrintWriter}.  If the parameters
+     * are null and the scalar object is not able to be represented as an EJBQL literal then the method will
+     * throw a runtime exception to indicate that it has failed to produce valid EJBQL.</p>
+     */
+
+    protected static void encodeScalarAsEJBQL(
+            List<Object> parameterAccumulator,
+            Appendable out,
+            Object scalar) throws IOException {
+
+        if (null==scalar) {
+            out.append("null");
+            return;
+        }
+
+        if (scalar instanceof Boolean) {
+            if((Boolean) scalar) {
+                out.append("true");
+            }
+            else {
+                out.append("false");
+            }
+            return;
+        }
+
+        if(null!=parameterAccumulator) {
+            parameterAccumulator.add(scalar);
+            out.append('?');
+            out.append(Integer.toString(parameterAccumulator.size())); // parameters start at 1
+            return;
+        }
+
+        if (scalar instanceof Integer) {
+            out.append(scalar.toString());
+            return;
+        }
+
+        if (scalar instanceof Persistent) {
+            ObjectId id = ((Persistent) scalar).getObjectId();
+            Object encode = (id != null) ? id : scalar;
+            appendAsEscapedString(out, String.valueOf(encode));
+            return;
+        }
+
+        if (scalar instanceof Enum<?>) {
+            Enum<?> e = (Enum<?>) scalar;
+            out.append("enum:");
+            out.append(e.getClass().getName() + "." + e.name());
+            return;
+        }
+
+        if (scalar instanceof String) {
+            out.append('\'');
+            appendAsEscapedString(out, scalar.toString());
+            out.append('\'');
+            return;
+        }
+
+        throw new IllegalStateException("the scalar type '"+scalar.getClass().getSimpleName()+"' is not supported as a scalar type in EJBQL");
+    }
 
     /**
      * Utility method that encodes an object that is not an expression Node to
@@ -376,14 +441,24 @@ public abstract class SimpleNode extends Expression implements Node {
         }
     }
 
-    @Override
+    /**
+     * @since 3.2
+     */
     public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+         appendAsEJBQL(null,out,rootId);
+    }
+
+        /**
+         * @since 3.2
+         */
+    @Override
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         if (parent != null) {
             out.append("(");
         }
 
         if ((children != null) && (children.length > 0)) {
-            appendChildrenAsEJBQL(out, rootId);
+            appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
         }
 
         if (parent != null) {
@@ -394,7 +469,7 @@ public abstract class SimpleNode extends Expression implements Node {
     /**
      * Encodes child of this node with specified index to EJBQL
      */
-    protected void appendChildrenAsEJBQL(Appendable out, String rootId) throws IOException {
+    protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
         for (int i = 0; i < children.length; ++i) {
             if (i > 0) {
                 out.append(' ');
@@ -405,7 +480,7 @@ public abstract class SimpleNode extends Expression implements Node {
             if (children[i] == null) {
                 out.append("null");
             } else {
-                ((SimpleNode) children[i]).appendAsEJBQL(out, rootId);
+                ((SimpleNode) children[i]).appendAsEJBQL(parameterAccumulator, out, rootId);
             }
         }
     }
