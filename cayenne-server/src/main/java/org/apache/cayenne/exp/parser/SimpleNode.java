@@ -85,7 +85,11 @@ public abstract class SimpleNode extends Expression implements Node {
             return;
         }
 
-        if (scalar instanceof Integer) {
+        if (
+                scalar instanceof Integer
+                        || scalar instanceof Long
+                        || scalar instanceof Float
+                        || scalar instanceof Double) {
             out.append(scalar.toString());
             return;
         }

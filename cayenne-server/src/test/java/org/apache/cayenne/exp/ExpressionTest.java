@@ -155,6 +155,26 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName.stuff = :name", ejbql);
     }
 
+    public void testEncodeAsEJBQL_numericType_integer() throws IOException {
+        Expression e = ExpressionFactory.matchExp("consignment.parts", new Integer(123));
+        assertEquals("x.consignment.parts = 123", e.toEJBQL("x"));
+    }
+
+    public void testEncodeAsEJBQL_numericType_long() throws IOException {
+        Expression e = ExpressionFactory.matchExp("consignment.parts", new Long(1418342400));
+        assertEquals("x.consignment.parts = 1418342400", e.toEJBQL("x"));
+    }
+
+    public void testEncodeAsEJBQL_numericType_float() throws IOException {
+        Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Float("3.145"));
+        assertEquals("x.consignment.parts >= 3.145", e.toEJBQL("x"));
+    }
+
+    public void testEncodeAsEJBQL_numericType_double() throws IOException {
+        Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Double(3.14));
+        assertEquals("x.consignment.parts >= 3.14", e.toEJBQL("x"));
+    }
+
     public void testEncodeAsEJBQL_Timestamp_ParameterCapture() throws IOException {
         Date now = new Date();
 
