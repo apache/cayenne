@@ -51,6 +51,8 @@ CAY-1925 cayenne-crypto: add optional compression to the encryption pipeline
 CAY-1928 Second INNER join generated for OUTER flattended relationships in disjoint prefetches
 CAY-1929 Property.outer method to build OUTER join properties
 CAY-1932 Improved Handling for Scalar Parameters Converting Expressions to EJBQL
+CAY-1933 Problems in Evaluating EJBQL Statements with Integral Literals > Integer.MAX_VALUE
+CAY-1934 A problem exists where the escape character is not conveyed in the EJBQL when toEJBQL() is invoked on the expression.
 
 Bug Fixes:
 
