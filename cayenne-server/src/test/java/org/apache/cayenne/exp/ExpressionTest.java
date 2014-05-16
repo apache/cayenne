@@ -155,6 +155,11 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName.stuff = :name", ejbql);
     }
 
+    public void testEncodeAsEJBQL_likeEscape() throws IOException {
+        Expression e = ExpressionFactory.likeExp("mainName", "|%|%?|_title|%",'|');
+        assertEquals("x.mainName like '|%|%?|_title|%' escape '|'", e.toEJBQL("x"));
+    }
+
     public void testEncodeAsEJBQL_numericType_integer() throws IOException {
         Expression e = ExpressionFactory.matchExp("consignment.parts", new Integer(123));
         assertEquals("x.consignment.parts = 123", e.toEJBQL("x"));

@@ -19,9 +19,12 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ejbql.parser.EJBQLConstants;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -41,37 +44,39 @@ public abstract class PatternMatchNode extends ConditionNode {
         super(i);
         this.ignoringCase = ignoringCase;
     }
-    
+
     PatternMatchNode(int i, boolean ignoringCase, char escapeChar) {
         super(i);
         this.ignoringCase = ignoringCase;
         setEscapeChar(escapeChar);
     }
-    
+
     /**
      * <p>This method will return an escape character for the like
      * clause.  The escape character will eventually end up in the
      * query as <code>...(t0.foo LIKE ? {escape '|'})</code> where the
      * pipe symbol is the escape character.</p>
-     *
-     * <p>Note that having no escape character is represented as 
+     * <p/>
+     * <p>Note that having no escape character is represented as
      * the character 0.</p>
      */
-    
-    public char getEscapeChar() { return escapeChar; }
-    
+
+    public char getEscapeChar() {
+        return escapeChar;
+    }
+
     /**
      * <p>This method allows the setting of the escape character.
      * The escape character can be used in a LIKE clause.  The
      * character 0 signifies no escape character.  The escape
      * characyer '?' is disallowed.</p>
      */
-    
+
     public void setEscapeChar(char value) {
-        
-        if('?'==value)
+
+        if ('?' == value)
             throw new CayenneRuntimeException("the use of the '?' as an escape character in LIKE clauses is disallowed.");
-        
+
         escapeChar = value;
     }
 
@@ -124,4 +129,21 @@ public abstract class PatternMatchNode extends ConditionNode {
 
         super.jjtAddChild(n, i);
     }
+
+    @Override
+    protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+        super.appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
+
+        if(0 != getEscapeChar()) {
+
+            if('\'' == getEscapeChar()) {
+                throw new CayenneRuntimeException("unable to escape an EJBQL like clause with a single quote character");
+            }
+
+            out.append(" escape '");
+            out.append(getEscapeChar());
+            out.append("'");
+        }
+    }
+
 }

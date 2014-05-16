@@ -84,6 +84,7 @@ public class EJBQLQueryTest extends ServerCase {
         tArtist.insert(33002, "a1");
         tPainting.insert(33001, 33001, "title0");
         tPainting.insert(33002, 33002, "title1");
+        tPainting.insert(33003, 33002, "%%?_title%%_");
     }
 
     public void testParameters() {
@@ -233,7 +234,7 @@ public class EJBQLQueryTest extends ServerCase {
         List<?> result = context.performQuery(query);
 
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
 
         assertEquals(Artist.class, result.get(0).getClass());
 
@@ -243,7 +244,7 @@ public class EJBQLQueryTest extends ServerCase {
         List<?> result2 = context.performQuery(query2);
 
         assertNotNull(result2);
-        assertEquals(2, result2.size());
+        assertEquals(3, result2.size());
         assertEquals(2, ((Object[]) result2.get(0)).length);
 
         assertEquals(Artist.class, ((Object[]) result2.get(0))[0].getClass());
@@ -255,7 +256,7 @@ public class EJBQLQueryTest extends ServerCase {
         List<?> result3 = context.performQuery(query3);
 
         assertNotNull(result3);
-        assertEquals(2, result3.size());
+        assertEquals(3, result3.size());
         assertEquals(2, ((Object[]) result3.get(0)).length);
 
         assertEquals(Artist.class, ((Object[]) result3.get(0))[0].getClass());
@@ -319,6 +320,14 @@ public class EJBQLQueryTest extends ServerCase {
         query.setParameter("x", null);
         query.setParameter("b", "Y");
         context.performQuery(query);
+    }
+
+    public void testLikeWithExplicitEscape() throws Exception {
+        createPaintingsDataSet();
+        EJBQLQuery query = new EJBQLQuery("SELECT p FROM Painting p WHERE p.paintingTitle LIKE '|%|%?|_title|%|%|_' ESCAPE '|'");
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(1, paintings.size());
+        assertEquals("%%?_title%%_", paintings.get(0).getPaintingTitle());
     }
 
     public void testJoinToJoined() {
