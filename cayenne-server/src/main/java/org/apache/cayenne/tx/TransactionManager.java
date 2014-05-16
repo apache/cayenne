@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.configuration.CayenneRuntime;
-
 /**
  * An optional utility service that simplifies wrapping multiple operations in
  * transactions. Users only rarely need to invoke it directly, as all standard
