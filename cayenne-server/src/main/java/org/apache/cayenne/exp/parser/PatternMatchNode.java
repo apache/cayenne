@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ejbql.parser.EJBQLConstants;
 import org.apache.cayenne.util.Util;
 
 /**
