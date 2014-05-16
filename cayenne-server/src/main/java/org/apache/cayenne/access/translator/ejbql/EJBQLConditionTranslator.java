@@ -671,16 +671,22 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
                 }
             }
 
-            Object value;
+            Long longValue;
 
             try {
-                value = new Integer(text);
+                longValue = new Long(text);
             } catch (NumberFormatException nfex) {
                 throw new EJBQLException("Invalid integer: " + expression.getText());
             }
 
-            String var = context.bindParameter(value);
-            context.append(" #bind($").append(var).append(" 'INTEGER')");
+            if(longValue > Integer.MAX_VALUE) {
+                String var = context.bindParameter(longValue);
+                context.append(" #bind($").append(var).append(" 'BIGINT')");
+            }
+            else {
+                String var = context.bindParameter(longValue.intValue());
+                context.append(" #bind($").append(var).append(" 'INTEGER')");
+            }
         }
         return true;
     }
