@@ -19,8 +19,7 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.BaseTransaction;
+import org.apache.cayenne.configuration.server.TransactionFactory;
 import org.apache.cayenne.di.Inject;
 
 /**
@@ -28,12 +27,13 @@ import org.apache.cayenne.di.Inject;
  */
 public class DefaultTransactionManager implements TransactionManager {
 
-    private DataDomain dataDomain;
+    private TransactionFactory txFactory;
 
-    public DefaultTransactionManager(@Inject DataDomain dataDomain) {
-        this.dataDomain = dataDomain;
+    public DefaultTransactionManager(@Inject TransactionFactory txFactory) {
+        this.txFactory = txFactory;
     }
 
+    @Override
     public <T> T performInTransaction(TransactionalOperation<T> op) {
 
         // join existing tx if it is in progress... in such case do not try to
@@ -44,7 +44,7 @@ public class DefaultTransactionManager implements TransactionManager {
         }
 
         // start a new tx and manage it till the end
-        Transaction tx = dataDomain.createTransaction();
+        Transaction tx = txFactory.createTransaction();
         BaseTransaction.bindThreadTransaction(tx);
         try {
 

@@ -58,7 +58,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     protected TextAdapter name;
     protected TextAdapter cacheSize;
     protected JCheckBox objectValidation;
-    protected JCheckBox externalTransactions;
     protected JCheckBox sharedCache;
     protected JCheckBox remoteUpdates;
     protected JButton configRemoteUpdates;
@@ -91,7 +90,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         };
 
         this.objectValidation = new JCheckBox();
-        this.externalTransactions = new JCheckBox();
         this.sharedCache = new JCheckBox();
         this.remoteUpdates = new JCheckBox();
         this.configRemoteUpdates = new JButton("Configure...");
@@ -113,20 +111,17 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         builder.addLabel("Object Validation:", cc.xy(1, 5));
         builder.add(objectValidation, cc.xy(3, 5));
 
-        builder.addLabel("Container-Managed Transactions:", cc.xy(1, 7));
-        builder.add(externalTransactions, cc.xy(3, 7));
+        builder.addSeparator("Cache Configuration", cc.xywh(1, 7, 7, 1));
 
-        builder.addSeparator("Cache Configuration", cc.xywh(1, 9, 7, 1));
+        builder.addLabel("Size of Object Cache:", cc.xy(1, 9));
+        builder.add(cacheSize.getComponent(), cc.xy(3, 9));
 
-        builder.addLabel("Size of Object Cache:", cc.xy(1, 11));
-        builder.add(cacheSize.getComponent(), cc.xy(3, 11));
+        builder.addLabel("Use Shared Cache:", cc.xy(1, 11));
+        builder.add(sharedCache, cc.xy(3, 11));
 
-        builder.addLabel("Use Shared Cache:", cc.xy(1, 13));
-        builder.add(sharedCache, cc.xy(3, 13));
-
-        builder.addLabel("Remote Change Notifications:", cc.xy(1, 15));
-        builder.add(remoteUpdates, cc.xy(3, 15));
-        builder.add(configRemoteUpdates, cc.xy(7, 15));
+        builder.addLabel("Remote Change Notifications:", cc.xy(1, 13));
+        builder.add(remoteUpdates, cc.xy(3, 13));
+        builder.add(configRemoteUpdates, cc.xy(7, 13));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -144,17 +139,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
                         DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
                         value,
                         Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
-            }
-        });
-
-        externalTransactions.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                String value = externalTransactions.isSelected() ? "true" : "false";
-                setDomainProperty(
-                        DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY,
-                        value,
-                        Boolean.toString(DataDomain.USING_EXTERNAL_TRANSACTIONS_DEFAULT));
             }
         });
 
@@ -281,10 +265,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         objectValidation.setSelected(getDomainBooleanProperty(
                 DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
                 Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT)));
-
-        externalTransactions.setSelected(getDomainBooleanProperty(
-                DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY,
-                Boolean.toString(DataDomain.USING_EXTERNAL_TRANSACTIONS_DEFAULT)));
 
         sharedCache.setSelected(getDomainBooleanProperty(
                 DataDomain.SHARED_CACHE_ENABLED_PROPERTY,

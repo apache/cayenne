@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.BaseTransaction;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 
 /**

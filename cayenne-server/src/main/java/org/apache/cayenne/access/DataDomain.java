@@ -37,6 +37,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.TransactionFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
@@ -48,6 +49,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryChain;
+import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.commons.collections.Transformer;
@@ -66,7 +68,16 @@ public class DataDomain implements QueryEngine, DataChannel {
     public static final String VALIDATING_OBJECTS_ON_COMMIT_PROPERTY = "cayenne.DataDomain.validatingObjectsOnCommit";
     public static final boolean VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = true;
 
+    /**
+     * @deprecated since 3.2 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
+     */
+    @Deprecated
     public static final String USING_EXTERNAL_TRANSACTIONS_PROPERTY = "cayenne.DataDomain.usingExternalTransactions";
+    
+    /**
+     * @deprecated since 3.2 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
+     */
+    @Deprecated
     public static final boolean USING_EXTERNAL_TRANSACTIONS_DEFAULT = false;
 
     /**
@@ -74,6 +85,12 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
+    
+    /**
+     * @since 3.2
+     */
+    @Inject
+    protected TransactionFactory transactionFactory;
 
     /**
      * @since 3.1
@@ -92,14 +109,12 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
-    protected TransactionDelegate transactionDelegate;
     protected String name;
     protected QueryCache queryCache;
 
     // these are initialized from properties...
     protected boolean sharedCacheEnabled;
     protected boolean validatingObjectsOnCommit;
-    protected boolean usingExternalTransactions;
 
     /**
      * @since 1.2
@@ -186,7 +201,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
         validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-        usingExternalTransactions = USING_EXTERNAL_TRANSACTIONS_DEFAULT;
     }
 
     /**
@@ -203,15 +217,12 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         String sharedCacheEnabled = properties.get(SHARED_CACHE_ENABLED_PROPERTY);
         String validatingObjectsOnCommit = properties.get(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY);
-        String usingExternalTransactions = properties.get(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
 
         // init ivars from properties
         this.sharedCacheEnabled = (sharedCacheEnabled != null) ? "true".equalsIgnoreCase(sharedCacheEnabled)
                 : SHARED_CACHE_ENABLED_DEFAULT;
         this.validatingObjectsOnCommit = (validatingObjectsOnCommit != null) ? "true"
                 .equalsIgnoreCase(validatingObjectsOnCommit) : VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-        this.usingExternalTransactions = (usingExternalTransactions != null) ? "true"
-                .equalsIgnoreCase(usingExternalTransactions) : USING_EXTERNAL_TRANSACTIONS_DEFAULT;
 
         this.properties = properties;
     }
@@ -290,50 +301,11 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns whether this DataDomain should internally commit all
-     * transactions, or let container do that.
-     * 
-     * @since 1.1
-     */
-    public boolean isUsingExternalTransactions() {
-        return usingExternalTransactions;
-    }
-
-    /**
-     * Sets a property defining whether this DataDomain should internally commit
-     * all transactions, or let container do that.
-     * 
-     * @since 1.1
-     */
-    public void setUsingExternalTransactions(boolean flag) {
-        this.usingExternalTransactions = flag;
-    }
-
-    /**
      * @since 1.1
      * @return a Map of properties for this DataDomain.
      */
     public Map<String, String> getProperties() {
         return properties;
-    }
-
-    /**
-     * @since 1.1
-     * @return TransactionDelegate associated with this DataDomain, or null if
-     *         no delegate exist.
-     */
-    public TransactionDelegate getTransactionDelegate() {
-        return transactionDelegate;
-    }
-
-    /**
-     * Initializes TransactionDelegate used by all DataContexts associated with
-     * this DataDomain.
-     * 
-     * @since 1.1
-     */
-    public void setTransactionDelegate(TransactionDelegate transactionDelegate) {
-        this.transactionDelegate = transactionDelegate;
     }
 
     /**
@@ -464,29 +436,6 @@ public class DataDomain implements QueryEngine, DataChannel {
         for (DataMap map : node.getDataMaps()) {
             addDataMap(map);
             nodesByDataMapName.put(map.getName(), node);
-        }
-    }
-
-    /**
-     * Creates and returns a new inactive transaction. Returned transaction is
-     * bound to the current execution thread.
-     * <p>
-     * If there is a TransactionDelegate, adds the delegate to the newly created
-     * Transaction. Behavior of the returned Transaction depends on
-     * "usingInternalTransactions" property setting.
-     * </p>
-     * 
-     * @since 1.1
-     */
-    public Transaction createTransaction() {
-        if (isUsingExternalTransactions()) {
-            BaseTransaction transaction = BaseTransaction.externalTransaction(getTransactionDelegate());
-            transaction.setJdbcEventLogger(jdbcEventLogger);
-            return transaction;
-        } else {
-            BaseTransaction transaction = BaseTransaction.internalTransaction(getTransactionDelegate());
-            transaction.setJdbcEventLogger(jdbcEventLogger);
-            return transaction;
         }
     }
 
@@ -713,7 +662,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         // Cayenne-managed transaction
 
-        Transaction transaction = createTransaction();
+        Transaction transaction = transactionFactory.createTransaction();
         BaseTransaction.bindThreadTransaction(transaction);
 
         try {

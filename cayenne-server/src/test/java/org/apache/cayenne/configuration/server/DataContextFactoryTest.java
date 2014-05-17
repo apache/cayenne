@@ -62,6 +62,7 @@ public class DataContextFactoryTest extends TestCase {
                 binder.bind(ObjectMapRetainStrategy.class).to(
                         DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
+                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
             }
         };
 
@@ -96,6 +97,7 @@ public class DataContextFactoryTest extends TestCase {
                 binder.bind(ObjectMapRetainStrategy.class).to(
                         DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
+                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
             }
         };
 

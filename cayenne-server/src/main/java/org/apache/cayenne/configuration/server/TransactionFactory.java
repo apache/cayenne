@@ -16,32 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.tx;
+package org.apache.cayenne.configuration.server;
 
-import java.sql.Connection;
+import org.apache.cayenne.tx.Transaction;
 
 /**
- * A Cayenne Transaction interface.
- * 
  * @since 3.2
  */
-public interface Transaction {
+public interface TransactionFactory {
 
-    /**
-     * Starts a Transaction. If Transaction is not started explicitly, it will
-     * be started when the first connection is added.
-     */
-    void begin();
-
-    void commit();
-
-    void rollback();
-
-    void setRollbackOnly();
-
-    boolean isRollbackOnly();
-
-    Connection getConnection(String name);
-
-    void addConnection(String name, Connection connection);
+    Transaction createTransaction();
 }

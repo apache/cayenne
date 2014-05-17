@@ -28,6 +28,14 @@ UPGRADING TO 3.2M2
   longer limited to DataRows and can fetch objects just as easy, it no longer requires catching checked exceptions). 
   Also check ObjectContext.iterate(..) method.
 
+* Transaction management was refactored significantly:
+
+* External transactions are no longer configured in the Modeler. Instead they are provided as a DI property
+  defined in Constants.SERVER_EXTERNAL_TX_PROPERTY.
+* TransactionDelegate is no longer present. Similar functionality can be achieved by writing a decorator for 
+  Transaction interface and using a custom TransactionFactory to decorate standard transactions.
+
+
 UPGRADING TO 3.1B1
 
 * In an attempt to better organize DI configuration and ultimately make it easier to understand, 

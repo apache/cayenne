@@ -218,6 +218,8 @@ public class ServerModule implements Module {
 
         binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
         
+        binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+        
         // a service to load project XML descriptors
         binder.bind(DataChannelDescriptorLoader.class).to(
                 XMLDataChannelDescriptorLoader.class);

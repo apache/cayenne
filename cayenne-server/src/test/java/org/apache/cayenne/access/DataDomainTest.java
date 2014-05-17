@@ -38,7 +38,6 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.annotations.Tag1;
-import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -192,28 +191,6 @@ public class DataDomainTest extends ServerCase {
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isValidatingObjectsOnCommit());
-    }
-
-    public void testDataDomainInternalTransactions() throws Exception {
-        Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, Boolean.FALSE.toString());
-
-        DataDomain domain = new DataDomain("d1", properties);
-        assertFalse(domain.isUsingExternalTransactions());
-
-        Transaction transaction = domain.createTransaction();
-        assertTrue(transaction instanceof InternalTransaction);
-    }
-
-    public void testDataDomainExternalTransactions() throws Exception {
-        Map<Object, Object> properties = new HashMap<Object, Object>();
-        properties.put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, Boolean.TRUE.toString());
-
-        DataDomain domain = new DataDomain("d1", properties);
-        assertTrue(domain.isUsingExternalTransactions());
-
-        Transaction transaction = domain.createTransaction();
-        assertTrue(transaction instanceof ExternalTransaction);
     }
 
     public void testShutdownCache() {

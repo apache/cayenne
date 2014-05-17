@@ -40,6 +40,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.tx.BaseTransaction;
 
 /**
  * A stateful commit handler used by DataContext to perform commit operation.

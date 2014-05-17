@@ -16,32 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.tx;
+package org.apache.cayenne.access;
 
-import java.sql.Connection;
+import org.apache.cayenne.tx.BaseTransaction;
 
 /**
- * A Cayenne Transaction interface.
- * 
- * @since 3.2
+ * @deprecated since 3.2 use {@link BaseTransaction} static methods. Note that
+ *             since 3.2 {@link org.apache.cayenne.tx.Transaction} is an
+ *             interface located in a different package.
  */
-public interface Transaction {
+@Deprecated
+public abstract class Transaction {
 
     /**
-     * Starts a Transaction. If Transaction is not started explicitly, it will
-     * be started when the first connection is added.
+     * Binds a Transaction to the current thread.
+     * 
+     * @since 1.2
      */
-    void begin();
+    @Deprecated
+    public static void bindThreadTransaction(org.apache.cayenne.tx.Transaction transaction) {
+        BaseTransaction.bindThreadTransaction(transaction);
+    }
 
-    void commit();
+    /**
+     * Returns a Transaction associated with the current thread, or null if
+     * there is no such Transaction.
+     * 
+     * @since 1.2
+     */
+    @Deprecated
+    public static org.apache.cayenne.tx.Transaction getThreadTransaction() {
+        return BaseTransaction.getThreadTransaction();
+    }
 
-    void rollback();
-
-    void setRollbackOnly();
-
-    boolean isRollbackOnly();
-
-    Connection getConnection(String name);
-
-    void addConnection(String name, Connection connection);
 }

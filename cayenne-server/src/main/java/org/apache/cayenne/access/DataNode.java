@@ -49,6 +49,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
 

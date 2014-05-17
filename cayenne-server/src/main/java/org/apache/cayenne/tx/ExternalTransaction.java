@@ -16,32 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.tx;
 
-import java.sql.Connection;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
- * A Cayenne Transaction interface.
+ * Represents a container-managed transaction.
  * 
  * @since 3.2
  */
-public interface Transaction {
+public class ExternalTransaction extends BaseTransaction {
 
-    /**
-     * Starts a Transaction. If Transaction is not started explicitly, it will
-     * be started when the first connection is added.
-     */
-    void begin();
+    protected JdbcEventLogger logger;
 
-    void commit();
+    public ExternalTransaction(JdbcEventLogger jdbcEventLogger) {
+        this.logger = jdbcEventLogger;
+    }
 
-    void rollback();
+    @Override
+    protected void processCommit() {
+        logger.logCommitTransaction("no commit - transaction controlled externally.");
+    }
 
-    void setRollbackOnly();
-
-    boolean isRollbackOnly();
-
-    Connection getConnection(String name);
-
-    void addConnection(String name, Connection connection);
+    protected void processRollback() {
+        logger.logRollbackTransaction("no rollback - transaction controlled externally.");
+    }
 }

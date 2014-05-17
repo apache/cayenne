@@ -30,8 +30,6 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.BaseTransaction;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
@@ -41,6 +39,7 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.TransactionalOperation;
 
 public class ServerRuntimeTest extends TestCase {
@@ -48,13 +47,13 @@ public class ServerRuntimeTest extends TestCase {
     public void testPerformInTransaction() {
 
         final BaseTransaction tx = mock(BaseTransaction.class);
-        final DataDomain domain = mock(DataDomain.class);
-        when(domain.createTransaction()).thenReturn(tx);
+        final TransactionFactory txFactory = mock(TransactionFactory.class);
+        when(txFactory.createTransaction()).thenReturn(tx);
 
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(DataDomain.class).toInstance(domain);
+                binder.bind(TransactionFactory.class).toInstance(txFactory);
             }
         };
 

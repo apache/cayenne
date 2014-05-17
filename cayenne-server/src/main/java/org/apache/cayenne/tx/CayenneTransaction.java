@@ -17,49 +17,62 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
+package org.apache.cayenne.tx;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * Represents a Cayenne-managed local Transaction.
  * 
- * @since 1.2 moved to a top-level class.
+ * @since 3.2
  */
-class InternalTransaction extends ExternalTransaction {
+public class CayenneTransaction extends BaseTransaction {
 
-    InternalTransaction(TransactionDelegate delegate) {
-        super(delegate);
+    protected JdbcEventLogger logger;
+
+    public CayenneTransaction(JdbcEventLogger logger) {
+        this.logger = logger;
     }
 
     @Override
     public void begin() {
         super.begin();
-        jdbcEventLogger.logBeginTransaction("transaction started.");
+        logger.logBeginTransaction("transaction started.");
     }
 
     @Override
+    protected void connectionAdded(Connection connection) {
+        super.connectionAdded(connection);
+
+        try {
+            fixConnectionState(connection);
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Exception changing connection state", e);
+        }
+    }
+
     void fixConnectionState(Connection connection) throws SQLException {
         if (connection.getAutoCommit()) {
-            // some DBs are very particular about that, (e.g. Informix SE 7.0 per
+            // some DBs are very particular about that, (e.g. Informix SE 7.0
+            // per
             // CAY-179), so do a try-catch and ignore exception
 
             // TODO: maybe allow adapter to provide transaction instance?
             try {
                 connection.setAutoCommit(false);
-            }
-            catch (SQLException cay179Ex) {
+            } catch (SQLException cay179Ex) {
                 // Can't set autocommit, ignoring...
             }
         }
     }
 
     @Override
-    void processCommit() throws SQLException, CayenneException {
+    protected void processCommit() {
         status = BaseTransaction.STATUS_COMMITTING;
 
         if (connections != null && connections.size() > 0) {
@@ -71,16 +84,14 @@ class InternalTransaction extends ExternalTransaction {
 
                     if (deferredException == null) {
                         connection.commit();
-                    }
-                    else {
+                    } else {
                         // we must do a partial rollback if only to cleanup
                         // uncommitted
                         // connections.
                         connection.rollback();
                     }
 
-                }
-                catch (Throwable th) {
+                } catch (Throwable th) {
                     // there is no such thing as "partial" rollback in real
                     // transactions, so we can't set any meaningful status.
                     // status = ?;
@@ -93,22 +104,16 @@ class InternalTransaction extends ExternalTransaction {
             }
 
             if (deferredException != null) {
-                jdbcEventLogger.logRollbackTransaction("transaction rolledback.");
-                if (deferredException instanceof SQLException) {
-                    throw (SQLException) deferredException;
-                }
-                else {
-                    throw new CayenneException(deferredException);
-                }
-            }
-            else {
-                jdbcEventLogger.logCommitTransaction("transaction committed.");
+                logger.logRollbackTransaction("transaction rolledback.");
+                throw new CayenneRuntimeException(deferredException);
+            } else {
+                logger.logCommitTransaction("transaction committed.");
             }
         }
     }
 
     @Override
-    void processRollback() throws SQLException, CayenneException {
+    protected void processRollback() {
         status = BaseTransaction.STATUS_ROLLING_BACK;
 
         if (connections != null && connections.size() > 0) {
@@ -119,10 +124,10 @@ class InternalTransaction extends ExternalTransaction {
                 Connection connection = (Connection) it.next();
 
                 try {
-                    // continue with rollback even if an exception was thrown before
+                    // continue with rollback even if an exception was thrown
+                    // before
                     connection.rollback();
-                }
-                catch (Throwable th) {
+                } catch (Throwable th) {
                     // stores last exception
                     // TODO: chain exceptions...
                     deferredException = th;
@@ -130,12 +135,7 @@ class InternalTransaction extends ExternalTransaction {
             }
 
             if (deferredException != null) {
-                if (deferredException instanceof SQLException) {
-                    throw (SQLException) deferredException;
-                }
-                else {
-                    throw new CayenneException(deferredException);
-                }
+                throw new CayenneRuntimeException(deferredException);
             }
         }
     }

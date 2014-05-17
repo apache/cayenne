@@ -51,6 +51,9 @@ public class DataContextFactory implements ObjectContextFactory {
     
     @Inject
     protected QueryCache queryCache;
+    
+    @Inject
+    protected TransactionFactory transactionFactory;
 
     @Override
     public ObjectContext createContext() {
@@ -115,6 +118,7 @@ public class DataContextFactory implements ObjectContextFactory {
                 parent, objectStoreFactory.createObjectStore(snapshotCache));
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
         context.setQueryCache(new NestedQueryCache(queryCache));
+        context.setTransactionFactory(transactionFactory);
         return context;
     }
     

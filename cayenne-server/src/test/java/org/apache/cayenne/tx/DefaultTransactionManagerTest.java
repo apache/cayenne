@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.BaseTransaction;
+import org.apache.cayenne.configuration.server.TransactionFactory;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -32,10 +32,10 @@ public class DefaultTransactionManagerTest extends ServerCase {
     public void testPerformInTransaction_NoTx() {
         
         final BaseTransaction tx = mock(BaseTransaction.class);
-        final DataDomain domain = mock(DataDomain.class);
-        when(domain.createTransaction()).thenReturn(tx);
+        TransactionFactory txFactory = mock(TransactionFactory.class);
+        when(txFactory.createTransaction()).thenReturn(tx);
         
-        DefaultTransactionManager txManager = new DefaultTransactionManager(domain);
+        DefaultTransactionManager txManager = new DefaultTransactionManager(txFactory);
 
         final Object expectedResult = new Object();
         Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
@@ -51,10 +51,10 @@ public class DefaultTransactionManagerTest extends ServerCase {
     public void testPerformInTransaction_ExistingTx() {
         
         final BaseTransaction tx1 = mock(BaseTransaction.class);
-        final DataDomain domain = mock(DataDomain.class);
-        when(domain.createTransaction()).thenReturn(tx1);
+        TransactionFactory txFactory = mock(TransactionFactory.class);
+        when(txFactory.createTransaction()).thenReturn(tx1);
         
-        DefaultTransactionManager txManager = new DefaultTransactionManager(domain);
+        DefaultTransactionManager txManager = new DefaultTransactionManager(txFactory);
 
         final BaseTransaction tx2 = mock(BaseTransaction.class);
         BaseTransaction.bindThreadTransaction(tx2);
