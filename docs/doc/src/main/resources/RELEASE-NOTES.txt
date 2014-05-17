@@ -54,6 +54,7 @@ CAY-1932 Improved Handling for Scalar Parameters Converting Expressions to EJBQL
 CAY-1933 Problems in Evaluating EJBQL Statements with Integral Literals > Integer.MAX_VALUE
 CAY-1934 A problem exists where the escape character is not conveyed in the EJBQL when toEJBQL() is invoked on the expression.
 CAY-1936 ServerRuntime.getDataSource() returning DataSource of a default DataNode
+CAY-1937 Make Transaction an interface
 
 Bug Fixes:
 
