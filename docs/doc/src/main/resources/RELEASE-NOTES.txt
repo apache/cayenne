@@ -55,6 +55,7 @@ CAY-1933 Problems in Evaluating EJBQL Statements with Integral Literals > Intege
 CAY-1934 A problem exists where the escape character is not conveyed in the EJBQL when toEJBQL() is invoked on the expression.
 CAY-1936 ServerRuntime.getDataSource() returning DataSource of a default DataNode
 CAY-1937 Make Transaction an interface
+CAY-1938 Create a DI factory for transactions, get rid of TransactionDelegate and modeler config for tx policies
 
 Bug Fixes:
 

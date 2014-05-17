@@ -18,12 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.tx.BaseTransaction;
 
 /**
- * @deprecated since 3.2 use {@link BaseTransaction} static methods. Note that
- *             since 3.2 {@link org.apache.cayenne.tx.Transaction} is an
- *             interface located in a different package.
+ * @deprecated since 3.2. For manual transaction management use
+ *             {@link BaseTransaction} static methods or better -
+ *             {@link ServerRuntime#performInTransaction(org.apache.cayenne.tx.TransactionalOperation)}
+ *             . Also note that since 3.2 an actual Transaction is an interface
+ *             located in a different package:
+ *             {@link org.apache.cayenne.tx.Transaction}
  */
 @Deprecated
 public abstract class Transaction {
