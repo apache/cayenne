@@ -94,7 +94,9 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
+import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
 
 /**

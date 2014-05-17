@@ -16,15 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.tx;
 
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.tx.ExternalTransaction;
-import org.apache.cayenne.tx.CayenneTransaction;
-import org.apache.cayenne.tx.Transaction;
 
 /**
  * @since 3.2

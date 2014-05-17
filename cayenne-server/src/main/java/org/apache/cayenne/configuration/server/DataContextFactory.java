@@ -31,6 +31,7 @@ import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.tx.TransactionFactory;
 
 /**
  * @since 3.1

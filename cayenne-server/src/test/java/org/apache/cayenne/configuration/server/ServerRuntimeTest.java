@@ -40,6 +40,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
 
 public class ServerRuntimeTest extends TestCase {

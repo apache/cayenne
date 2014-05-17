@@ -19,7 +19,6 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.server.TransactionFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 

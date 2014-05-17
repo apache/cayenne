@@ -21,7 +21,6 @@ package org.apache.cayenne.tx;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.cayenne.configuration.server.TransactionFactory;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
