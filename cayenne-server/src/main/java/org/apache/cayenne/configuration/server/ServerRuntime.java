@@ -90,6 +90,29 @@ public class ServerRuntime extends CayenneRuntime {
     public DataDomain getDataDomain() {
         return injector.getInstance(DataDomain.class);
     }
+    
+    /**
+     * Returns a default DataSource for this runtime. If no default DataSource
+     * exists, an exception is thrown.
+     * 
+     * @since 3.2
+     */
+    public DataSource getDataSource() {
+        DataDomain domain = getDataDomain();
+        DataNode defaultNode = domain.getDefaultNode();
+        if (defaultNode == null) {
+
+            int s = domain.getDataNodes().size();
+            if (s == 0) {
+                throw new IllegalStateException("No DataSources configured");
+            } else {
+                throw new IllegalArgumentException(
+                        "No default DataSource configured. You can get explicitly named DataSource by using 'getDataSource(String)'");
+            }
+        }
+
+        return defaultNode.getDataSource();
+    }
 
     /**
      * Provides access to the JDBC DataSource assigned to a given DataNode. A
@@ -102,24 +125,15 @@ public class ServerRuntime extends CayenneRuntime {
     public DataSource getDataSource(String dataNodeName) {
         DataDomain domain = getDataDomain();
 
-        if (dataNodeName != null) {
-            DataNode node = domain.getDataNode(dataNodeName);
-            if (node == null) {
-                throw new IllegalArgumentException("Unknown DataNode name: " + dataNodeName);
-            }
-
-            return node.getDataSource();
+        if (dataNodeName == null) {
+            return getDataSource();
         }
 
-        else {
-            Collection<DataNode> nodes = domain.getDataNodes();
-            if (nodes.size() != 1) {
-                throw new IllegalArgumentException(
-                        "If DataNode name is not specified, DataDomain must have exactly 1 DataNode. Actual node count: "
-                                + nodes.size());
-            }
-
-            return nodes.iterator().next().getDataSource();
+        DataNode node = domain.getDataNode(dataNodeName);
+        if (node == null) {
+            throw new IllegalArgumentException("Unknown DataNode name: " + dataNodeName);
         }
+
+        return node.getDataSource();
     }
 }
