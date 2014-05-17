@@ -37,7 +37,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.server.TransactionFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
@@ -51,8 +50,9 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.TransactionManager;
+import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.commons.collections.Transformer;
 
 /**
  * DataDomain performs query routing functions in Cayenne. DataDomain creates
@@ -73,7 +73,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     @Deprecated
     public static final String USING_EXTERNAL_TRANSACTIONS_PROPERTY = "cayenne.DataDomain.usingExternalTransactions";
-    
+
     /**
      * @deprecated since 3.2 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
      */
@@ -85,12 +85,12 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
-    
+
     /**
      * @since 3.2
      */
     @Inject
-    protected TransactionFactory transactionFactory;
+    protected TransactionManager transactionManager;
 
     /**
      * @since 3.1
@@ -529,9 +529,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public void performQueries(final Collection<? extends Query> queries, final OperationObserver callback) {
 
-        runInTransaction(new Transformer() {
-
-            public Object transform(Object input) {
+        transactionManager.performInTransaction(new TransactionalOperation<Object>() {
+            @Override
+            public Object perform() {
                 new DataDomainLegacyQueryAction(DataDomain.this, new QueryChain(queries), callback).execute();
                 return null;
             }
@@ -602,13 +602,13 @@ public class DataDomain implements QueryEngine, DataChannel {
         // including transaction handling logic
         case DataChannel.FLUSH_NOCASCADE_SYNC:
         case DataChannel.FLUSH_CASCADE_SYNC:
-            result = (GraphDiff) runInTransaction(new Transformer() {
-
+            result = transactionManager.performInTransaction(new TransactionalOperation<GraphDiff>() {
                 @Override
-                public Object transform(Object input) {
+                public GraphDiff perform() {
                     return onSyncFlush(originatingContext, changes);
                 }
             });
+
             break;
         default:
             throw new CayenneRuntimeException("Invalid synchronization type: " + syncType);
@@ -641,59 +641,6 @@ public class DataDomain implements QueryEngine, DataChannel {
         action.setJdbcEventLogger(jdbcEventLogger);
 
         return action.flush((DataContext) originatingContext, childChanges);
-    }
-
-    /**
-     * Executes Transformer.transform() method in a transaction. Transaction
-     * policy is to check for the thread transaction, and use it if one exists.
-     * If it doesn't, a new transaction is created, with a scope limited to this
-     * method.
-     */
-    // WARNING: (andrus) if we ever decide to make this method protected or
-    // public, we
-    // need to change the signature to avoid API dependency on
-    // commons-collections
-    Object runInTransaction(Transformer operation) {
-
-        // user or container-managed or nested transaction
-        if (BaseTransaction.getThreadTransaction() != null) {
-            return operation.transform(null);
-        }
-
-        // Cayenne-managed transaction
-
-        Transaction transaction = transactionFactory.createTransaction();
-        BaseTransaction.bindThreadTransaction(transaction);
-
-        try {
-            // implicit begin..
-            Object result = operation.transform(null);
-            transaction.commit();
-            return result;
-        } catch (Exception ex) {
-            transaction.setRollbackOnly();
-
-            // must rethrow
-            if (ex instanceof CayenneRuntimeException) {
-                throw (CayenneRuntimeException) ex;
-            } else {
-                throw new CayenneRuntimeException(ex);
-            }
-        } finally {
-            BaseTransaction.bindThreadTransaction(null);
-            if (transaction.isRollbackOnly()) {
-                try {
-                    transaction.rollback();
-                } catch (Exception rollbackEx) {
-                    // although we don't expect an exception here, print the
-                    // stack, as
-                    // there have been some Cayenne bugs already (CAY-557) that
-                    // were
-                    // masked by this 'catch' clause.
-                    jdbcEventLogger.logQueryError(rollbackEx);
-                }
-            }
-        }
     }
 
     @Override
@@ -859,5 +806,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public void setMaxIdQualifierSize(int maxIdQualifierSize) {
         this.maxIdQualifierSize = maxIdQualifierSize;
+    }
+
+    TransactionManager getTransactionManager() {
+        return transactionManager;
     }
 }

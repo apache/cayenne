@@ -56,10 +56,10 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.collections.Transformer;
 
 /**
  * Performs query routing and execution. During execution phase intercepts
@@ -292,9 +292,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                             Collections.EMPTY_MAP, Collections.EMPTY_LIST, ids, Collections.EMPTY_LIST);
                 } else {
                     // remove snapshots from local ObjectStore only
-                    context.getObjectStore().getDataRowCache().processSnapshotChanges(context.getObjectStore(),
-                            Collections.EMPTY_MAP, Collections.EMPTY_LIST, ids, Collections.EMPTY_LIST);
-		}
+                    context.getObjectStore()
+                            .getDataRowCache()
+                            .processSnapshotChanges(context.getObjectStore(), Collections.EMPTY_MAP,
+                                    Collections.EMPTY_LIST, ids, Collections.EMPTY_LIST);
+                }
 
                 GenericResponse response = new GenericResponse();
                 response.addUpdateCount(1);
@@ -404,10 +406,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
      */
     void runQueryInTransaction() {
 
-        domain.runInTransaction(new Transformer() {
-
+        domain.getTransactionManager().performInTransaction(new TransactionalOperation<Object>() {
             @Override
-            public Object transform(Object input) {
+            public Object perform() {
                 runQuery();
                 return null;
             }
@@ -514,7 +515,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         return node;
     }
-    
+
     /**
      * @since 3.2
      */

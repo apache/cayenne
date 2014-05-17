@@ -21,6 +21,7 @@ package org.apache.cayenne.tx;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.server.TransactionFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * @since 3.2
@@ -28,9 +29,11 @@ import org.apache.cayenne.di.Inject;
 public class DefaultTransactionManager implements TransactionManager {
 
     private TransactionFactory txFactory;
+    private JdbcEventLogger jdbcEventLogger;
 
-    public DefaultTransactionManager(@Inject TransactionFactory txFactory) {
+    public DefaultTransactionManager(@Inject TransactionFactory txFactory, @Inject JdbcEventLogger jdbcEventLogger) {
         this.txFactory = txFactory;
+        this.jdbcEventLogger = jdbcEventLogger;
     }
 
     @Override
@@ -54,6 +57,9 @@ public class DefaultTransactionManager implements TransactionManager {
 
             return result;
 
+        } catch (CayenneRuntimeException ex) {
+            tx.setRollbackOnly();
+            throw ex;
         } catch (Exception ex) {
             tx.setRollbackOnly();
             throw new CayenneRuntimeException(ex);
@@ -64,6 +70,10 @@ public class DefaultTransactionManager implements TransactionManager {
                 try {
                     tx.rollback();
                 } catch (Exception e) {
+                    // although we don't expect an exception here, print the
+                    // stack, as there have been some Cayenne bugs already
+                    // (CAY-557) that were masked by this 'catch' clause.
+                    jdbcEventLogger.logQueryError(e);
                 }
             }
         }

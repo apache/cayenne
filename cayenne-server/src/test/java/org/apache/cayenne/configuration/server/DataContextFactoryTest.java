@@ -40,6 +40,8 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.tx.DefaultTransactionManager;
+import org.apache.cayenne.tx.TransactionManager;
 
 public class DataContextFactoryTest extends TestCase {
 
@@ -63,6 +65,7 @@ public class DataContextFactoryTest extends TestCase {
                         DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
             }
         };
 
@@ -98,6 +101,7 @@ public class DataContextFactoryTest extends TestCase {
                         DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
             }
         };
 
