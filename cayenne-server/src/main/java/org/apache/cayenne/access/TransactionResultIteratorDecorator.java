@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.tx.Transaction;
 
 /**
  * Decorates ResultIterator to close active transaction when the iterator is
@@ -64,8 +65,8 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
 
             throw new CayenneRuntimeException(e);
         } finally {
-            if (Transaction.getThreadTransaction() == tx) {
-                Transaction.bindThreadTransaction(null);
+            if (BaseTransaction.getThreadTransaction() == tx) {
+                BaseTransaction.bindThreadTransaction(null);
             }
         }
     }

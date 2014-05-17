@@ -27,13 +27,14 @@ import java.util.Map;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
+import org.apache.cayenne.tx.Transaction;
 
 /**
  * A Cayenne transaction. Currently supports managing JDBC connections.
  * 
  * @since 1.1
  */
-public abstract class Transaction {
+public abstract class BaseTransaction implements Transaction {
 
     /**
      * A ThreadLocal that stores current thread transaction.
@@ -42,7 +43,7 @@ public abstract class Transaction {
      */
     static final ThreadLocal<Transaction> currentTransaction = new InheritableThreadLocal<Transaction>();
 
-    private static final Transaction NO_TRANSACTION = new Transaction() {
+    private static final BaseTransaction NO_TRANSACTION = new BaseTransaction() {
 
         @Override
         public void begin() {
@@ -71,27 +72,27 @@ public abstract class Transaction {
     protected Map<String, Connection> connections;
     protected int status;
     protected TransactionDelegate delegate;
-    
+
     protected JdbcEventLogger jdbcEventLogger;
 
     static String decodeStatus(int status) {
         switch (status) {
-            case STATUS_ACTIVE:
-                return "STATUS_ACTIVE";
-            case STATUS_COMMITTING:
-                return "STATUS_COMMITTING";
-            case STATUS_COMMITTED:
-                return "STATUS_COMMITTED";
-            case STATUS_ROLLEDBACK:
-                return "STATUS_ROLLEDBACK";
-            case STATUS_ROLLING_BACK:
-                return "STATUS_ROLLING_BACK";
-            case STATUS_NO_TRANSACTION:
-                return "STATUS_NO_TRANSACTION";
-            case STATUS_MARKED_ROLLEDBACK:
-                return "STATUS_MARKED_ROLLEDBACK";
-            default:
-                return "Unknown Status - " + status;
+        case STATUS_ACTIVE:
+            return "STATUS_ACTIVE";
+        case STATUS_COMMITTING:
+            return "STATUS_COMMITTING";
+        case STATUS_COMMITTED:
+            return "STATUS_COMMITTED";
+        case STATUS_ROLLEDBACK:
+            return "STATUS_ROLLEDBACK";
+        case STATUS_ROLLING_BACK:
+            return "STATUS_ROLLING_BACK";
+        case STATUS_NO_TRANSACTION:
+            return "STATUS_NO_TRANSACTION";
+        case STATUS_MARKED_ROLLEDBACK:
+            return "STATUS_MARKED_ROLLEDBACK";
+        default:
+            return "Unknown Status - " + status;
         }
     }
 
@@ -105,8 +106,8 @@ public abstract class Transaction {
     }
 
     /**
-     * Returns a Transaction associated with the current thread, or null if there is no
-     * such Transaction.
+     * Returns a Transaction associated with the current thread, or null if
+     * there is no such Transaction.
      * 
      * @since 1.2
      */
@@ -116,26 +117,26 @@ public abstract class Transaction {
 
     /**
      * Factory method returning a new transaction instance that would propagate
-     * commit/rollback to participating connections. Connections will be closed when
-     * commit or rollback is called.
+     * commit/rollback to participating connections. Connections will be closed
+     * when commit or rollback is called.
      */
-    public static Transaction internalTransaction(TransactionDelegate delegate) {
+    public static BaseTransaction internalTransaction(TransactionDelegate delegate) {
         return new InternalTransaction(delegate);
     }
 
     /**
-     * Factory method returning a new transaction instance that would NOT propagate
-     * commit/rollback to participating connections. Connections will still be closed when
-     * commit or rollback is called.
+     * Factory method returning a new transaction instance that would NOT
+     * propagate commit/rollback to participating connections. Connections will
+     * still be closed when commit or rollback is called.
      */
-    public static Transaction externalTransaction(TransactionDelegate delegate) {
+    public static BaseTransaction externalTransaction(TransactionDelegate delegate) {
         return new ExternalTransaction(delegate);
     }
 
     /**
-     * Factory method returning a transaction instance that does not alter the state of
-     * participating connections in any way. Commit and rollback methods do not do
-     * anything.
+     * Factory method returning a transaction instance that does not alter the
+     * state of participating connections in any way. Commit and rollback
+     * methods do not do anything.
      */
     public static Transaction noTransaction() {
         return NO_TRANSACTION;
@@ -144,7 +145,7 @@ public abstract class Transaction {
     /**
      * Creates new inactive transaction.
      */
-    protected Transaction() {
+    protected BaseTransaction() {
         status = STATUS_NO_TRANSACTION;
         jdbcEventLogger = NoopJdbcEventLogger.getInstance();
     }
@@ -156,18 +157,18 @@ public abstract class Transaction {
     public void setDelegate(TransactionDelegate delegate) {
         this.delegate = delegate;
     }
-
+    
     public int getStatus() {
         return status;
     }
-    
+
     /**
      * @since 3.1
      */
     public void setJdbcEventLogger(JdbcEventLogger jdbcEventLogger) {
         this.jdbcEventLogger = jdbcEventLogger;
     }
-    
+
     /**
      * @since 3.1
      */
@@ -175,14 +176,22 @@ public abstract class Transaction {
         return this.jdbcEventLogger;
     }
 
+    @Override
     public synchronized void setRollbackOnly() {
         setStatus(STATUS_MARKED_ROLLEDBACK);
     }
+    
+    /**
+     * @since 3.2
+     */
+    @Override
+    public boolean isRollbackOnly() {
+        // TODO Auto-generated method stub
+        return getStatus() == STATUS_MARKED_ROLLEDBACK;
+    }
 
     public synchronized void setStatus(int status) {
-        if (delegate != null
-                && status == STATUS_MARKED_ROLLEDBACK
-                && !delegate.willMarkAsRollbackOnly(this)) {
+        if (delegate != null && status == STATUS_MARKED_ROLLEDBACK && !delegate.willMarkAsRollbackOnly(this)) {
             return;
         }
 
@@ -190,20 +199,22 @@ public abstract class Transaction {
     }
 
     /**
-     * Starts a Transaction. If Transaction is not started explicitly, it will be started
-     * when the first connection is added.
+     * Starts a Transaction. If Transaction is not started explicitly, it will
+     * be started when the first connection is added.
      */
+    @Override
     public abstract void begin();
 
-    public abstract void commit() throws IllegalStateException, SQLException,
-            CayenneException;
+    @Override
+    public abstract void commit() throws IllegalStateException, SQLException, CayenneException;
 
-    public abstract void rollback() throws IllegalStateException, SQLException,
-            CayenneException;
+    @Override
+    public abstract void rollback() throws IllegalStateException, SQLException, CayenneException;
 
     /**
      * @since 1.2
      */
+    @Override
     public Connection getConnection(String name) {
         return (connections != null) ? connections.get(name) : null;
     }
@@ -211,7 +222,8 @@ public abstract class Transaction {
     /**
      * @since 1.2
      */
-    public boolean addConnection(String name, Connection connection) throws SQLException {
+    @Override
+    public boolean addConnection(String name, Connection connection) {
         if (delegate != null && !delegate.willAddConnection(this, connection)) {
             return false;
         }

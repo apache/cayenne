@@ -55,10 +55,10 @@ public class TransactionThreadTest extends ServerCase {
     public void testThreadConnectionReuseOnSelect() throws Exception {
 
         Delegate delegate = new Delegate();
-        Transaction t = Transaction.internalTransaction(delegate);
+        BaseTransaction t = BaseTransaction.internalTransaction(delegate);
         t.setJdbcEventLogger(logger);
 
-        Transaction.bindThreadTransaction(t);
+        BaseTransaction.bindThreadTransaction(t);
 
         try {
 
@@ -72,7 +72,7 @@ public class TransactionThreadTest extends ServerCase {
 
         }
         finally {
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
             t.commit();
         }
     }
@@ -85,7 +85,7 @@ public class TransactionThreadTest extends ServerCase {
         Delegate delegate = new Delegate() {
 
             @Override
-            public boolean willCommit(Transaction transaction) {
+            public boolean willCommit(BaseTransaction transaction) {
 
                 // insert another artist directly
                 SQLTemplate template = new SQLTemplate(
@@ -113,7 +113,7 @@ public class TransactionThreadTest extends ServerCase {
 
         int connectionCount;
 
-        public boolean willAddConnection(Transaction transaction, Connection connection) {
+        public boolean willAddConnection(BaseTransaction transaction, Connection connection) {
             if (connectionCount++ > 0) {
                 fail("Invalid attempt to add connection");
             }
@@ -121,21 +121,21 @@ public class TransactionThreadTest extends ServerCase {
             return true;
         }
 
-        public void didCommit(Transaction transaction) {
+        public void didCommit(BaseTransaction transaction) {
         }
 
-        public void didRollback(Transaction transaction) {
+        public void didRollback(BaseTransaction transaction) {
         }
 
-        public boolean willCommit(Transaction transaction) {
+        public boolean willCommit(BaseTransaction transaction) {
             return true;
         }
 
-        public boolean willMarkAsRollbackOnly(Transaction transaction) {
+        public boolean willMarkAsRollbackOnly(BaseTransaction transaction) {
             return true;
         }
 
-        public boolean willRollback(Transaction transaction) {
+        public boolean willRollback(BaseTransaction transaction) {
             return true;
         }
     }

@@ -83,13 +83,13 @@ public class DataContextProcedureQueryTest extends ServerCase {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        Transaction t = Transaction.externalTransaction(null);
-        Transaction.bindThreadTransaction(t);
+        BaseTransaction t = BaseTransaction.externalTransaction(null);
+        BaseTransaction.bindThreadTransaction(t);
 
         try {
             context.performGenericQuery(q);
         } finally {
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
             t.commit();
         }
 
@@ -118,13 +118,13 @@ public class DataContextProcedureQueryTest extends ServerCase {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        Transaction t = Transaction.externalTransaction(null);
-        Transaction.bindThreadTransaction(t);
+        BaseTransaction t = BaseTransaction.externalTransaction(null);
+        BaseTransaction.bindThreadTransaction(t);
 
         try {
             context.performGenericQuery(q);
         } finally {
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
             t.commit();
         }
 

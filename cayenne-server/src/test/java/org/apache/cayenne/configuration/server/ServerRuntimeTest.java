@@ -31,7 +31,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.Transaction;
+import org.apache.cayenne.access.BaseTransaction;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
@@ -47,7 +47,7 @@ public class ServerRuntimeTest extends TestCase {
 
     public void testPerformInTransaction() {
 
-        final Transaction tx = mock(Transaction.class);
+        final BaseTransaction tx = mock(BaseTransaction.class);
         final DataDomain domain = mock(DataDomain.class);
         when(domain.createTransaction()).thenReturn(tx);
 
@@ -64,7 +64,7 @@ public class ServerRuntimeTest extends TestCase {
             final Object expectedResult = new Object();
             Object result = runtime.performInTransaction(new TransactionalOperation<Object>() {
                 public Object perform() {
-                    assertSame(tx, Transaction.getThreadTransaction());
+                    assertSame(tx, BaseTransaction.getThreadTransaction());
                     return expectedResult;
                 }
             });

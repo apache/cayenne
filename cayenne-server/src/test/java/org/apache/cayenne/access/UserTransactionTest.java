@@ -51,13 +51,13 @@ public class UserTransactionTest extends ServerCase {
         a.setArtistName("AAA");
 
         TransactionDelegate delegate = mock(TransactionDelegate.class);
-        Transaction t = Transaction.internalTransaction(delegate);
+        BaseTransaction t = BaseTransaction.internalTransaction(delegate);
         t.setJdbcEventLogger(logger);
 
         when(delegate.willAddConnection(eq(t), any(Connection.class))).thenReturn(true);
         when(delegate.willCommit(t)).thenReturn(true);
 
-        Transaction.bindThreadTransaction(t);
+        BaseTransaction.bindThreadTransaction(t);
 
         try {
             context.commitChanges();
@@ -74,7 +74,7 @@ public class UserTransactionTest extends ServerCase {
             catch (Throwable th) {
                 // ignore
             }
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
         }
     }
 }

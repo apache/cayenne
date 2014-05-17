@@ -61,6 +61,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ResultIteratorIterator;
@@ -860,7 +861,7 @@ public class DataContext extends BaseContext {
     @SuppressWarnings({ "rawtypes" })
     public ResultIterator performIteratedQuery(Query query) {
         // TODO: use 3.2 TransactionManager
-        if (Transaction.getThreadTransaction() != null) {
+        if (BaseTransaction.getThreadTransaction() != null) {
             return internalPerformIteratedQuery(query);
         } else {
 
@@ -868,13 +869,13 @@ public class DataContext extends BaseContext {
             // could close
             // it when it is done.
             Transaction tx = getParentDataDomain().createTransaction();
-            Transaction.bindThreadTransaction(tx);
+            BaseTransaction.bindThreadTransaction(tx);
 
             ResultIterator result;
             try {
                 result = internalPerformIteratedQuery(query);
             } catch (Exception e) {
-                Transaction.bindThreadTransaction(null);
+                BaseTransaction.bindThreadTransaction(null);
                 tx.setRollbackOnly();
                 throw new CayenneRuntimeException(e);
             } finally {
@@ -884,7 +885,7 @@ public class DataContext extends BaseContext {
                 // here would
                 // result in some strangeness, at least on Ingres
 
-                if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
+                if (tx.isRollbackOnly()) {
                     try {
                         tx.rollback();
                     } catch (Exception rollbackEx) {

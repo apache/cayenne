@@ -69,7 +69,7 @@ public class MockQueryEngine implements QueryEngine {
     public void performQueries(
             Collection queries,
             OperationObserver resultConsumer,
-            Transaction transaction) {
+            BaseTransaction transaction) {
         initWithPresetResults(queries, resultConsumer);
     }
 

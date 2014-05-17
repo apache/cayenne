@@ -24,13 +24,14 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * Represents a container-managed transaction.
  * 
  * @since 1.2 moved to a top-level class.
  */
-class ExternalTransaction extends Transaction {
+class ExternalTransaction extends BaseTransaction {
 
     ExternalTransaction() {
     }
@@ -41,33 +42,37 @@ class ExternalTransaction extends Transaction {
 
     @Override
     public synchronized void begin() {
-        if (status != Transaction.STATUS_NO_TRANSACTION) {
+        if (status != BaseTransaction.STATUS_NO_TRANSACTION) {
             throw new IllegalStateException(
                     "Transaction must have 'STATUS_NO_TRANSACTION' to begin. "
                             + "Current status: "
-                            + Transaction.decodeStatus(status));
+                            + BaseTransaction.decodeStatus(status));
         }
 
-        status = Transaction.STATUS_ACTIVE;
+        status = BaseTransaction.STATUS_ACTIVE;
     }
 
     @Override
-    public boolean addConnection(String name, Connection connection) throws SQLException {
+    public boolean addConnection(String name, Connection connection) {
         if (super.addConnection(name, connection)) {
 
             // implicitly begin transaction
-            if (status == Transaction.STATUS_NO_TRANSACTION) {
+            if (status == BaseTransaction.STATUS_NO_TRANSACTION) {
                 begin();
             }
 
-            if (status != Transaction.STATUS_ACTIVE) {
+            if (status != BaseTransaction.STATUS_ACTIVE) {
                 throw new IllegalStateException(
                         "Transaction must have 'STATUS_ACTIVE' to add a connection. "
                                 + "Current status: "
-                                + Transaction.decodeStatus(status));
+                                + BaseTransaction.decodeStatus(status));
             }
 
-            fixConnectionState(connection);
+            try {
+                fixConnectionState(connection);
+            } catch (SQLException e) {
+                throw new CayenneRuntimeException("Exception changing connection state", e);
+            }
             return true;
         }
         else {
@@ -79,7 +84,7 @@ class ExternalTransaction extends Transaction {
     @Override
     public void commit() throws IllegalStateException, SQLException, CayenneException {
 
-        if (status == Transaction.STATUS_NO_TRANSACTION) {
+        if (status == BaseTransaction.STATUS_NO_TRANSACTION) {
             return;
         }
 
@@ -87,16 +92,16 @@ class ExternalTransaction extends Transaction {
             return;
         }
 
-        if (status != Transaction.STATUS_ACTIVE) {
+        if (status != BaseTransaction.STATUS_ACTIVE) {
             throw new IllegalStateException(
                     "Transaction must have 'STATUS_ACTIVE' to be committed. "
                             + "Current status: "
-                            + Transaction.decodeStatus(status));
+                            + BaseTransaction.decodeStatus(status));
         }
 
         processCommit();
 
-        status = Transaction.STATUS_COMMITTED;
+        status = BaseTransaction.STATUS_COMMITTED;
 
         if (delegate != null) {
             delegate.didCommit(this);
@@ -109,9 +114,9 @@ class ExternalTransaction extends Transaction {
     public void rollback() throws IllegalStateException, SQLException, CayenneException {
 
         try {
-            if (status == Transaction.STATUS_NO_TRANSACTION
-                    || status == Transaction.STATUS_ROLLEDBACK
-                    || status == Transaction.STATUS_ROLLING_BACK) {
+            if (status == BaseTransaction.STATUS_NO_TRANSACTION
+                    || status == BaseTransaction.STATUS_ROLLEDBACK
+                    || status == BaseTransaction.STATUS_ROLLING_BACK) {
                 return;
             }
 
@@ -119,17 +124,17 @@ class ExternalTransaction extends Transaction {
                 return;
             }
 
-            if (status != Transaction.STATUS_ACTIVE
-                    && status != Transaction.STATUS_MARKED_ROLLEDBACK) {
+            if (status != BaseTransaction.STATUS_ACTIVE
+                    && status != BaseTransaction.STATUS_MARKED_ROLLEDBACK) {
                 throw new IllegalStateException(
                         "Transaction must have 'STATUS_ACTIVE' or 'STATUS_MARKED_ROLLEDBACK' to be rolled back. "
                                 + "Current status: "
-                                + Transaction.decodeStatus(status));
+                                + BaseTransaction.decodeStatus(status));
             }
 
             processRollback();
 
-            status = Transaction.STATUS_ROLLEDBACK;
+            status = BaseTransaction.STATUS_ROLLEDBACK;
             if (delegate != null) {
                 delegate.didRollback(this);
             }

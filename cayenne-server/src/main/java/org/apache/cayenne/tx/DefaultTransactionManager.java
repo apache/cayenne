@@ -20,7 +20,7 @@ package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.Transaction;
+import org.apache.cayenne.access.BaseTransaction;
 import org.apache.cayenne.di.Inject;
 
 /**
@@ -38,14 +38,14 @@ public class DefaultTransactionManager implements TransactionManager {
 
         // join existing tx if it is in progress... in such case do not try to
         // commit or roll it back
-        Transaction currentTx = Transaction.getThreadTransaction();
+        Transaction currentTx = BaseTransaction.getThreadTransaction();
         if (currentTx != null) {
             return op.perform();
         }
 
         // start a new tx and manage it till the end
         Transaction tx = dataDomain.createTransaction();
-        Transaction.bindThreadTransaction(tx);
+        BaseTransaction.bindThreadTransaction(tx);
         try {
 
             T result = op.perform();
@@ -58,9 +58,9 @@ public class DefaultTransactionManager implements TransactionManager {
             tx.setRollbackOnly();
             throw new CayenneRuntimeException(ex);
         } finally {
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
 
-            if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
+            if (tx.isRollbackOnly()) {
                 try {
                     tx.rollback();
                 } catch (Exception e) {

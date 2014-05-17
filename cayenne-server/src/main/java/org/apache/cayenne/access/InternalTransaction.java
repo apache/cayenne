@@ -60,7 +60,7 @@ class InternalTransaction extends ExternalTransaction {
 
     @Override
     void processCommit() throws SQLException, CayenneException {
-        status = Transaction.STATUS_COMMITTING;
+        status = BaseTransaction.STATUS_COMMITTING;
 
         if (connections != null && connections.size() > 0) {
             Throwable deferredException = null;
@@ -109,7 +109,7 @@ class InternalTransaction extends ExternalTransaction {
 
     @Override
     void processRollback() throws SQLException, CayenneException {
-        status = Transaction.STATUS_ROLLING_BACK;
+        status = BaseTransaction.STATUS_ROLLING_BACK;
 
         if (connections != null && connections.size() > 0) {
             Throwable deferredException = null;

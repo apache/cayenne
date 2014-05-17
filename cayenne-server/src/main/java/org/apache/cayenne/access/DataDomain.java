@@ -48,6 +48,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryChain;
+import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.commons.collections.Transformer;
 
@@ -479,11 +480,11 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public Transaction createTransaction() {
         if (isUsingExternalTransactions()) {
-            Transaction transaction = Transaction.externalTransaction(getTransactionDelegate());
+            BaseTransaction transaction = BaseTransaction.externalTransaction(getTransactionDelegate());
             transaction.setJdbcEventLogger(jdbcEventLogger);
             return transaction;
         } else {
-            Transaction transaction = Transaction.internalTransaction(getTransactionDelegate());
+            BaseTransaction transaction = BaseTransaction.internalTransaction(getTransactionDelegate());
             transaction.setJdbcEventLogger(jdbcEventLogger);
             return transaction;
         }
@@ -671,7 +672,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     GraphDiff onSyncRollback(ObjectContext originatingContext) {
         // if there is a transaction in progress, roll it back
 
-        Transaction transaction = Transaction.getThreadTransaction();
+        Transaction transaction = BaseTransaction.getThreadTransaction();
         if (transaction != null) {
             transaction.setRollbackOnly();
         }
@@ -706,14 +707,14 @@ public class DataDomain implements QueryEngine, DataChannel {
     Object runInTransaction(Transformer operation) {
 
         // user or container-managed or nested transaction
-        if (Transaction.getThreadTransaction() != null) {
+        if (BaseTransaction.getThreadTransaction() != null) {
             return operation.transform(null);
         }
 
         // Cayenne-managed transaction
 
         Transaction transaction = createTransaction();
-        Transaction.bindThreadTransaction(transaction);
+        BaseTransaction.bindThreadTransaction(transaction);
 
         try {
             // implicit begin..
@@ -730,8 +731,8 @@ public class DataDomain implements QueryEngine, DataChannel {
                 throw new CayenneRuntimeException(ex);
             }
         } finally {
-            Transaction.bindThreadTransaction(null);
-            if (transaction.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
+            BaseTransaction.bindThreadTransaction(null);
+            if (transaction.isRollbackOnly()) {
                 try {
                     transaction.rollback();
                 } catch (Exception rollbackEx) {

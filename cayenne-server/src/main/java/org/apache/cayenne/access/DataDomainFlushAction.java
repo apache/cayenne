@@ -233,7 +233,7 @@ class DataDomainFlushAction {
             lastNode.performQueries(queries.subList(rangeStart, len), observer);
         }
         catch (Throwable th) {
-            Transaction.getThreadTransaction().setRollbackOnly();
+            BaseTransaction.getThreadTransaction().setRollbackOnly();
             throw new CayenneRuntimeException("Transaction was rolledback.", th);
         }
     }

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.Transaction;
+import org.apache.cayenne.access.BaseTransaction;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -31,7 +31,7 @@ public class DefaultTransactionManagerTest extends ServerCase {
 
     public void testPerformInTransaction_NoTx() {
         
-        final Transaction tx = mock(Transaction.class);
+        final BaseTransaction tx = mock(BaseTransaction.class);
         final DataDomain domain = mock(DataDomain.class);
         when(domain.createTransaction()).thenReturn(tx);
         
@@ -40,7 +40,7 @@ public class DefaultTransactionManagerTest extends ServerCase {
         final Object expectedResult = new Object();
         Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
             public Object perform() {
-                assertNotNull(Transaction.getThreadTransaction());
+                assertNotNull(BaseTransaction.getThreadTransaction());
                 return expectedResult;
             }
         });
@@ -50,27 +50,27 @@ public class DefaultTransactionManagerTest extends ServerCase {
 
     public void testPerformInTransaction_ExistingTx() {
         
-        final Transaction tx1 = mock(Transaction.class);
+        final BaseTransaction tx1 = mock(BaseTransaction.class);
         final DataDomain domain = mock(DataDomain.class);
         when(domain.createTransaction()).thenReturn(tx1);
         
         DefaultTransactionManager txManager = new DefaultTransactionManager(domain);
 
-        final Transaction tx2 = mock(Transaction.class);
-        Transaction.bindThreadTransaction(tx2);
+        final BaseTransaction tx2 = mock(BaseTransaction.class);
+        BaseTransaction.bindThreadTransaction(tx2);
         try {
 
             final Object expectedResult = new Object();
             Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
                 public Object perform() {
-                    assertSame(tx2, Transaction.getThreadTransaction());
+                    assertSame(tx2, BaseTransaction.getThreadTransaction());
                     return expectedResult;
                 }
             });
 
             assertSame(expectedResult, result);
         } finally {
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
         }
     }
 }
