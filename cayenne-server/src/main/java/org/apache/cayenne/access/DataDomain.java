@@ -48,8 +48,11 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryChain;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.TransactionManager;
+import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.commons.collections.Transformer;
 
 /**
  * DataDomain performs query routing functions in Cayenne. DataDomain creates
@@ -65,7 +68,16 @@ public class DataDomain implements QueryEngine, DataChannel {
     public static final String VALIDATING_OBJECTS_ON_COMMIT_PROPERTY = "cayenne.DataDomain.validatingObjectsOnCommit";
     public static final boolean VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = true;
 
+    /**
+     * @deprecated since 3.2 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
+     */
+    @Deprecated
     public static final String USING_EXTERNAL_TRANSACTIONS_PROPERTY = "cayenne.DataDomain.usingExternalTransactions";
+
+    /**
+     * @deprecated since 3.2 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
+     */
+    @Deprecated
     public static final boolean USING_EXTERNAL_TRANSACTIONS_DEFAULT = false;
 
     /**
@@ -73,6 +85,12 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
+
+    /**
+     * @since 3.2
+     */
+    @Inject
+    protected TransactionManager transactionManager;
 
     /**
      * @since 3.1
@@ -91,14 +109,12 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
-    protected TransactionDelegate transactionDelegate;
     protected String name;
     protected QueryCache queryCache;
 
     // these are initialized from properties...
     protected boolean sharedCacheEnabled;
     protected boolean validatingObjectsOnCommit;
-    protected boolean usingExternalTransactions;
 
     /**
      * @since 1.2
@@ -185,7 +201,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
         validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-        usingExternalTransactions = USING_EXTERNAL_TRANSACTIONS_DEFAULT;
     }
 
     /**
@@ -202,15 +217,12 @@ public class DataDomain implements QueryEngine, DataChannel {
 
         String sharedCacheEnabled = properties.get(SHARED_CACHE_ENABLED_PROPERTY);
         String validatingObjectsOnCommit = properties.get(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY);
-        String usingExternalTransactions = properties.get(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
 
         // init ivars from properties
         this.sharedCacheEnabled = (sharedCacheEnabled != null) ? "true".equalsIgnoreCase(sharedCacheEnabled)
                 : SHARED_CACHE_ENABLED_DEFAULT;
         this.validatingObjectsOnCommit = (validatingObjectsOnCommit != null) ? "true"
                 .equalsIgnoreCase(validatingObjectsOnCommit) : VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
-        this.usingExternalTransactions = (usingExternalTransactions != null) ? "true"
-                .equalsIgnoreCase(usingExternalTransactions) : USING_EXTERNAL_TRANSACTIONS_DEFAULT;
 
         this.properties = properties;
     }
@@ -289,50 +301,11 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Returns whether this DataDomain should internally commit all
-     * transactions, or let container do that.
-     * 
-     * @since 1.1
-     */
-    public boolean isUsingExternalTransactions() {
-        return usingExternalTransactions;
-    }
-
-    /**
-     * Sets a property defining whether this DataDomain should internally commit
-     * all transactions, or let container do that.
-     * 
-     * @since 1.1
-     */
-    public void setUsingExternalTransactions(boolean flag) {
-        this.usingExternalTransactions = flag;
-    }
-
-    /**
      * @since 1.1
      * @return a Map of properties for this DataDomain.
      */
     public Map<String, String> getProperties() {
         return properties;
-    }
-
-    /**
-     * @since 1.1
-     * @return TransactionDelegate associated with this DataDomain, or null if
-     *         no delegate exist.
-     */
-    public TransactionDelegate getTransactionDelegate() {
-        return transactionDelegate;
-    }
-
-    /**
-     * Initializes TransactionDelegate used by all DataContexts associated with
-     * this DataDomain.
-     * 
-     * @since 1.1
-     */
-    public void setTransactionDelegate(TransactionDelegate transactionDelegate) {
-        this.transactionDelegate = transactionDelegate;
     }
 
     /**
@@ -467,29 +440,6 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Creates and returns a new inactive transaction. Returned transaction is
-     * bound to the current execution thread.
-     * <p>
-     * If there is a TransactionDelegate, adds the delegate to the newly created
-     * Transaction. Behavior of the returned Transaction depends on
-     * "usingInternalTransactions" property setting.
-     * </p>
-     * 
-     * @since 1.1
-     */
-    public Transaction createTransaction() {
-        if (isUsingExternalTransactions()) {
-            Transaction transaction = Transaction.externalTransaction(getTransactionDelegate());
-            transaction.setJdbcEventLogger(jdbcEventLogger);
-            return transaction;
-        } else {
-            Transaction transaction = Transaction.internalTransaction(getTransactionDelegate());
-            transaction.setJdbcEventLogger(jdbcEventLogger);
-            return transaction;
-        }
-    }
-
-    /**
      * Returns registered DataNode whose name matches <code>name</code>
      * parameter.
      * 
@@ -579,9 +529,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public void performQueries(final Collection<? extends Query> queries, final OperationObserver callback) {
 
-        runInTransaction(new Transformer() {
-
-            public Object transform(Object input) {
+        transactionManager.performInTransaction(new TransactionalOperation<Object>() {
+            @Override
+            public Object perform() {
                 new DataDomainLegacyQueryAction(DataDomain.this, new QueryChain(queries), callback).execute();
                 return null;
             }
@@ -652,13 +602,13 @@ public class DataDomain implements QueryEngine, DataChannel {
         // including transaction handling logic
         case DataChannel.FLUSH_NOCASCADE_SYNC:
         case DataChannel.FLUSH_CASCADE_SYNC:
-            result = (GraphDiff) runInTransaction(new Transformer() {
-
+            result = transactionManager.performInTransaction(new TransactionalOperation<GraphDiff>() {
                 @Override
-                public Object transform(Object input) {
+                public GraphDiff perform() {
                     return onSyncFlush(originatingContext, changes);
                 }
             });
+
             break;
         default:
             throw new CayenneRuntimeException("Invalid synchronization type: " + syncType);
@@ -671,7 +621,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     GraphDiff onSyncRollback(ObjectContext originatingContext) {
         // if there is a transaction in progress, roll it back
 
-        Transaction transaction = Transaction.getThreadTransaction();
+        Transaction transaction = BaseTransaction.getThreadTransaction();
         if (transaction != null) {
             transaction.setRollbackOnly();
         }
@@ -691,59 +641,6 @@ public class DataDomain implements QueryEngine, DataChannel {
         action.setJdbcEventLogger(jdbcEventLogger);
 
         return action.flush((DataContext) originatingContext, childChanges);
-    }
-
-    /**
-     * Executes Transformer.transform() method in a transaction. Transaction
-     * policy is to check for the thread transaction, and use it if one exists.
-     * If it doesn't, a new transaction is created, with a scope limited to this
-     * method.
-     */
-    // WARNING: (andrus) if we ever decide to make this method protected or
-    // public, we
-    // need to change the signature to avoid API dependency on
-    // commons-collections
-    Object runInTransaction(Transformer operation) {
-
-        // user or container-managed or nested transaction
-        if (Transaction.getThreadTransaction() != null) {
-            return operation.transform(null);
-        }
-
-        // Cayenne-managed transaction
-
-        Transaction transaction = createTransaction();
-        Transaction.bindThreadTransaction(transaction);
-
-        try {
-            // implicit begin..
-            Object result = operation.transform(null);
-            transaction.commit();
-            return result;
-        } catch (Exception ex) {
-            transaction.setRollbackOnly();
-
-            // must rethrow
-            if (ex instanceof CayenneRuntimeException) {
-                throw (CayenneRuntimeException) ex;
-            } else {
-                throw new CayenneRuntimeException(ex);
-            }
-        } finally {
-            Transaction.bindThreadTransaction(null);
-            if (transaction.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
-                try {
-                    transaction.rollback();
-                } catch (Exception rollbackEx) {
-                    // although we don't expect an exception here, print the
-                    // stack, as
-                    // there have been some Cayenne bugs already (CAY-557) that
-                    // were
-                    // masked by this 'catch' clause.
-                    jdbcEventLogger.logQueryError(rollbackEx);
-                }
-            }
-        }
     }
 
     @Override
@@ -909,5 +806,9 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     public void setMaxIdQualifierSize(int maxIdQualifierSize) {
         this.maxIdQualifierSize = maxIdQualifierSize;
+    }
+
+    TransactionManager getTransactionManager() {
+        return transactionManager;
     }
 }

@@ -18,19 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
+
 /**
- * An optional utility service that simplifies wrapping multiple operations in
- * transactions. Users only rarely need to invoke it directly, as all standard
- * Cayenne operations are managing their own transactions internally.
- * 
  * @since 3.2
  */
-public interface TransactionManager {
+public class DefaultTransactionFactory implements TransactionFactory {
 
-    /**
-     * Starts a new transaction (or joins an existing one) calling
-     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then
-     * committing or rolling back the transaction. Frees the user
-     */
-    <T> T performInTransaction(TransactionalOperation<T> op);
+    protected boolean externalTransactions;
+
+    protected JdbcEventLogger jdbcEventLogger;
+
+    public DefaultTransactionFactory(@Inject RuntimeProperties properties, @Inject JdbcEventLogger jdbcEventLogger) {
+        this.externalTransactions = properties.getBoolean(Constants.SERVER_EXTERNAL_TX_PROPERTY, false);
+        this.jdbcEventLogger = jdbcEventLogger;
+    }
+
+    @Override
+    public Transaction createTransaction() {
+        return externalTransactions ? new ExternalTransaction(jdbcEventLogger) : new CayenneTransaction(
+                jdbcEventLogger);
+    }
+
 }

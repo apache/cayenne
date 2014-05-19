@@ -18,19 +18,30 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
+import java.sql.Connection;
+
 /**
- * An optional utility service that simplifies wrapping multiple operations in
- * transactions. Users only rarely need to invoke it directly, as all standard
- * Cayenne operations are managing their own transactions internally.
+ * A Cayenne Transaction interface.
  * 
  * @since 3.2
  */
-public interface TransactionManager {
+public interface Transaction {
 
     /**
-     * Starts a new transaction (or joins an existing one) calling
-     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then
-     * committing or rolling back the transaction. Frees the user
+     * Starts a Transaction. If Transaction is not started explicitly, it will
+     * be started when the first connection is added.
      */
-    <T> T performInTransaction(TransactionalOperation<T> op);
+    void begin();
+
+    void commit();
+
+    void rollback();
+
+    void setRollbackOnly();
+
+    boolean isRollbackOnly();
+
+    Connection getConnection(String name);
+
+    void addConnection(String name, Connection connection);
 }

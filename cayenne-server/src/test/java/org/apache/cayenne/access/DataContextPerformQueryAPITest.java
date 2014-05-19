@@ -28,11 +28,15 @@ import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.ExternalTransaction;
+import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
@@ -56,6 +60,9 @@ public class DataContextPerformQueryAPITest extends ServerCase {
 
     @Inject
     private DataChannelInterceptor queryInterceptor;
+    
+    @Inject
+    private JdbcEventLogger jdbcEventLogger;
 
     private TableHelper tArtist;
     private TableHelper tPainting;
@@ -74,15 +81,8 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
         tPainting = new TableHelper(dbHelper, "PAINTING");
-        tPainting.setColumns(
-                "PAINTING_ID",
-                "ARTIST_ID",
-                "PAINTING_TITLE",
-                "ESTIMATED_PRICE").setColumnTypes(
-                Types.INTEGER,
-                Types.BIGINT,
-                Types.VARCHAR,
-                Types.DECIMAL);
+        tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
+                Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
     }
 
     private void createTwoArtists() throws Exception {
@@ -133,29 +133,22 @@ public class DataContextPerformQueryAPITest extends ServerCase {
 
         List<?> artists;
 
-        // Sybase blows whenever a transaction wraps a SP, so turn of transactions
-        boolean transactionsFlag = context
-                .getParentDataDomain()
-                .isUsingExternalTransactions();
-
-        context.getParentDataDomain().setUsingExternalTransactions(true);
+        // Sybase blows whenever a transaction wraps a SP, so turn of
+        // transactions
+        Transaction t = new ExternalTransaction(jdbcEventLogger);
+        BaseTransaction.bindThreadTransaction(t);
         try {
             artists = context.performQuery("ProcedureQuery", parameters, true);
-        }
-        finally {
-            context.getParentDataDomain().setUsingExternalTransactions(transactionsFlag);
+        } finally {
+            BaseTransaction.bindThreadTransaction(null);
+            t.commit();
         }
 
         assertNotNull(artists);
         assertEquals(1, artists.size());
 
         Artist artist = (Artist) artists.get(0);
-        assertEquals(
-                11,
-                ((Number) artist
-                        .getObjectId()
-                        .getIdSnapshot()
-                        .get(Artist.ARTIST_ID_PK_COLUMN)).intValue());
+        assertEquals(11, ((Number) artist.getObjectId().getIdSnapshot().get(Artist.ARTIST_ID_PK_COLUMN)).intValue());
     }
 
     public void testNonSelectingQueryString() throws Exception {
@@ -177,9 +170,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         parameters.put("title", "Go Figure");
         parameters.put("price", new BigDecimal("22.01"));
 
-        int[] counts = context.performNonSelectingQuery(
-                "ParameterizedNonSelectingQuery",
-                parameters);
+        int[] counts = context.performNonSelectingQuery("ParameterizedNonSelectingQuery", parameters);
 
         assertNotNull(counts);
         assertEquals(1, counts.length);
@@ -197,7 +188,8 @@ public class DataContextPerformQueryAPITest extends ServerCase {
 
         SQLTemplate q = new SQLTemplate(Artist.class, "DELETE FROM ARTIST");
 
-        // this way of executing a query makes no sense, but it shouldn't blow either...
+        // this way of executing a query makes no sense, but it shouldn't blow
+        // either...
         List<?> result = context.performQuery(q);
 
         assertNotNull(result);

@@ -94,7 +94,9 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
+import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
 
 /**
@@ -217,6 +219,8 @@ public class ServerModule implements Module {
         binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
 
         binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
+        
+        binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
         
         // a service to load project XML descriptors
         binder.bind(DataChannelDescriptorLoader.class).to(

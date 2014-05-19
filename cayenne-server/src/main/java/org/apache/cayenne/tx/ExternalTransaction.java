@@ -16,21 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.tx;
 
+import org.apache.cayenne.log.JdbcEventLogger;
+
 /**
- * An optional utility service that simplifies wrapping multiple operations in
- * transactions. Users only rarely need to invoke it directly, as all standard
- * Cayenne operations are managing their own transactions internally.
+ * Represents a container-managed transaction.
  * 
  * @since 3.2
  */
-public interface TransactionManager {
+public class ExternalTransaction extends BaseTransaction {
 
-    /**
-     * Starts a new transaction (or joins an existing one) calling
-     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then
-     * committing or rolling back the transaction. Frees the user
-     */
-    <T> T performInTransaction(TransactionalOperation<T> op);
+    protected JdbcEventLogger logger;
+
+    public ExternalTransaction(JdbcEventLogger jdbcEventLogger) {
+        this.logger = jdbcEventLogger;
+    }
+
+    @Override
+    protected void processCommit() {
+        logger.logCommitTransaction("no commit - transaction controlled externally.");
+    }
+
+    protected void processRollback() {
+        logger.logRollbackTransaction("no rollback - transaction controlled externally.");
+    }
 }

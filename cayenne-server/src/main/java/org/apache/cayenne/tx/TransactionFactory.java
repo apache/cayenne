@@ -18,19 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
+
 /**
- * An optional utility service that simplifies wrapping multiple operations in
- * transactions. Users only rarely need to invoke it directly, as all standard
- * Cayenne operations are managing their own transactions internally.
- * 
  * @since 3.2
  */
-public interface TransactionManager {
+public interface TransactionFactory {
 
-    /**
-     * Starts a new transaction (or joins an existing one) calling
-     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then
-     * committing or rolling back the transaction. Frees the user
-     */
-    <T> T performInTransaction(TransactionalOperation<T> op);
+    Transaction createTransaction();
 }

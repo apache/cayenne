@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -35,6 +36,8 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -55,6 +58,9 @@ public class DataContextProcedureQueryTest extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
+
+    @Inject
+    private JdbcEventLogger jdbcEventLogger;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -83,13 +89,13 @@ public class DataContextProcedureQueryTest extends ServerCase {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        Transaction t = Transaction.externalTransaction(null);
-        Transaction.bindThreadTransaction(t);
+        BaseTransaction t = new ExternalTransaction(jdbcEventLogger);
+        BaseTransaction.bindThreadTransaction(t);
 
         try {
             context.performGenericQuery(q);
         } finally {
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
             t.commit();
         }
 
@@ -118,13 +124,13 @@ public class DataContextProcedureQueryTest extends ServerCase {
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        Transaction t = Transaction.externalTransaction(null);
-        Transaction.bindThreadTransaction(t);
+        BaseTransaction t = new ExternalTransaction(jdbcEventLogger);
+        BaseTransaction.bindThreadTransaction(t);
 
         try {
             context.performGenericQuery(q);
         } finally {
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
             t.commit();
         }
 
@@ -381,16 +387,16 @@ public class DataContextProcedureQueryTest extends ServerCase {
         // TODO: it is quite the opposite with PostgreSQL. If an SP returns an
         // open refcursor, it actually expects a TX in progress, so while we
         // don't have refcursor unit tests, this is something to keep in mind
-        // e.g. http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
+        // e.g.
+        // http://stackoverflow.com/questions/16921942/porting-apache-cayenne-from-oracle-to-postgresql
 
-        boolean transactionsFlag = context.getParentDataDomain().isUsingExternalTransactions();
-
-        context.getParentDataDomain().setUsingExternalTransactions(true);
+        BaseTransaction t = new ExternalTransaction(jdbcEventLogger);
+        BaseTransaction.bindThreadTransaction(t);
 
         try {
             return context.performQuery(q);
         } finally {
-            context.getParentDataDomain().setUsingExternalTransactions(transactionsFlag);
+            BaseTransaction.bindThreadTransaction(null);
         }
     }
 

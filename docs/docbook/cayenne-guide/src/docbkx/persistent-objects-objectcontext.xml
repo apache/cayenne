@@ -256,45 +256,28 @@ generic.writeProperty("name", "New Name");</programlisting>This
         <para>Two cases where transactions need to be taken into consideration are container-managed
             and application-managed transactions. </para>
         <para>If you are using an EJB container (or some other JTA environment), you'll likely need
-            to switch Cayenne runtime into "external transactions mode".  This is either done in the
-            Modeler (check DataDomain > 'Container-Managed Transactions' checkbox), or in the
-            code:<programlisting language="java">runtime.getDataDomain().setUsingExternalTransactions(true);</programlisting>In
-            this case Cayenne assumes that JDBC Connections obtained by runtime whenever that might
-            happen are all coming from a transactional DataSource managed by the container. In this
-            case Cayenne does not attempt to commit or rollback the connections, leaving it up to
-            the container to do that when appropriate.</para>
+            to switch Cayenne runtime into "external transactions mode". This is done by setting DI
+            configuration property defined in <code>Constants.SERVER_EXTERNAL_TX_PROPERTY</code>
+            (see Appendix A). If this property is set to "true", Cayenne assumes that JDBC
+            Connections obtained by runtime whenever that might happen are all coming from a
+            transactional DataSource managed by the container. In this case Cayenne does not attempt
+            to commit or rollback the connections, leaving it up to the container to do that when
+            appropriate.</para>
         <para>In the second scenario, an application might need to define its own transaction scope
             that spans more than one Cayenne operation. E.g. two sequential commits that need to be
-            rolled back together in case of failure. This can be done with an explicit thread-bound
-            transaction that surrounds a set of operations. Application is responsible for
-            committing or rolling it
-            back:<programlisting language="java">Transaction tx = runtime.getDataDomain().createTransaction();
-Transaction.bindThreadTransaction(tx);
-
-try {
+            rolled back together in case of failure. This can be done via
+                <code>ServerRuntime.performInTransaction</code>
+            method:<programlisting>Integer result = runtime.performInTransaction(new TransactionalOperation&lt;Integer>() {
     // commit one or more contexts
     context1.commitChanges();
     context2.commitChanges();
     ....
     // after changing some objects in context1, commit again
-    context1.commitChnages();
+    context1.commitChanges();
     ....
-    // if no failures, commit
-    tx.commit();
-}
-catch (Exception ex) {
-    tx.setRollbackOnly();
-}
-finally {
-    Transaction.bindThreadTransaction(null);
- 
-    if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
-        try {
-           tx.rollback();
-        }
-        catch (Exception rollbackEx) {
-        }
-    }
-} </programlisting></para>
+
+    // return an arbitrary result or null if we don't care about the result
+    return 5;
+});</programlisting></para>
     </section>
 </chapter>

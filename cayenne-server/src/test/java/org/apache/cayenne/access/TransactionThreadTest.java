@@ -22,12 +22,13 @@ package org.apache.cayenne.access;
 import java.sql.Connection;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.CayenneTransaction;
+import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -39,7 +40,7 @@ public class TransactionThreadTest extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
-    
+
     @Inject
     private JdbcEventLogger logger;
 
@@ -54,89 +55,64 @@ public class TransactionThreadTest extends ServerCase {
 
     public void testThreadConnectionReuseOnSelect() throws Exception {
 
-        Delegate delegate = new Delegate();
-        Transaction t = Transaction.internalTransaction(delegate);
-        t.setJdbcEventLogger(logger);
-
-        Transaction.bindThreadTransaction(t);
+        ConnectionCounterTx t = new ConnectionCounterTx(new CayenneTransaction(logger));
+        BaseTransaction.bindThreadTransaction(t);
 
         try {
 
             SelectQuery q1 = new SelectQuery(Artist.class);
             context.performQuery(q1);
-            assertEquals(1, delegate.connectionCount);
+            assertEquals(1, t.connectionCount);
 
             // delegate will fail if the second query opens a new connection
             SelectQuery q2 = new SelectQuery(Artist.class);
             context.performQuery(q2);
 
-        }
-        finally {
-            Transaction.bindThreadTransaction(null);
+        } finally {
+            BaseTransaction.bindThreadTransaction(null);
             t.commit();
         }
     }
 
-    public void testThreadConnectionReuseOnQueryFromWillCommit() throws Exception {
+    class ConnectionCounterTx implements Transaction {
 
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("aaa");
-
-        Delegate delegate = new Delegate() {
-
-            @Override
-            public boolean willCommit(Transaction transaction) {
-
-                // insert another artist directly
-                SQLTemplate template = new SQLTemplate(
-                        Artist.class,
-                        "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'bbb')");
-                context.performNonSelectingQuery(template);
-
-                return true;
-            }
-        };
-
-        context.getParentDataDomain().setTransactionDelegate(delegate);
-
-        try {
-            a.getObjectContext().commitChanges();
-        }
-        finally {
-            context.getParentDataDomain().setTransactionDelegate(null);
-        }
-
-        assertEquals(2, context.performQuery(new SelectQuery(Artist.class)).size());
-    }
-
-    class Delegate implements TransactionDelegate {
-
+        private Transaction delegate;
         int connectionCount;
 
-        public boolean willAddConnection(Transaction transaction, Connection connection) {
+        ConnectionCounterTx(Transaction delegate) {
+            this.delegate = delegate;
+        }
+
+        public void begin() {
+            delegate.begin();
+        }
+
+        public void commit() {
+            delegate.commit();
+        }
+
+        public void rollback() {
+            delegate.rollback();
+        }
+
+        public void setRollbackOnly() {
+            delegate.setRollbackOnly();
+        }
+
+        public boolean isRollbackOnly() {
+            return delegate.isRollbackOnly();
+        }
+
+        public Connection getConnection(String name) {
+            return delegate.getConnection(name);
+        }
+
+        public void addConnection(String name, Connection connection) {
             if (connectionCount++ > 0) {
                 fail("Invalid attempt to add connection");
             }
 
-            return true;
-        }
-
-        public void didCommit(Transaction transaction) {
-        }
-
-        public void didRollback(Transaction transaction) {
-        }
-
-        public boolean willCommit(Transaction transaction) {
-            return true;
-        }
-
-        public boolean willMarkAsRollbackOnly(Transaction transaction) {
-            return true;
-        }
-
-        public boolean willRollback(Transaction transaction) {
-            return true;
+            delegate.addConnection(name, connection);
         }
     }
 }

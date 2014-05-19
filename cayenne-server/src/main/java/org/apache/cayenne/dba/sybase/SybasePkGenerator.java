@@ -27,10 +27,11 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.Transaction;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.Transaction;
 
 /**
  * Primary key generator implementation for Sybase. Uses a lookup table named
@@ -161,8 +162,8 @@ public class SybasePkGenerator extends JdbcPkGenerator {
         // connection is grabbed for commit... So maybe promote this to other adapters in
         // 3.0?
 
-        Transaction transaction = Transaction.getThreadTransaction();
-        Transaction.bindThreadTransaction(null);
+        Transaction transaction = BaseTransaction.getThreadTransaction();
+        BaseTransaction.bindThreadTransaction(null);
 
         try {
 
@@ -210,7 +211,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
             }
         }
         finally {
-            Transaction.bindThreadTransaction(transaction);
+            BaseTransaction.bindThreadTransaction(transaction);
         }
     }
 

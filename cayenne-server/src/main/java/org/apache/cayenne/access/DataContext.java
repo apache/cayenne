@@ -42,6 +42,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -61,6 +62,9 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ResultIteratorIterator;
@@ -77,6 +81,13 @@ public class DataContext extends BaseContext {
     private DataContextDelegate delegate;
     protected boolean usingSharedSnaphsotCache;
     protected ObjectStore objectStore;
+
+    /**
+     * @deprecated since 3.2 used in a method that itself should be deprecated,
+     *             so this is a temp code
+     */
+    @Deprecated
+    protected transient TransactionFactory transactionFactory;
 
     protected transient DataContextMergeHandler mergeHandler;
 
@@ -109,6 +120,12 @@ public class DataContext extends BaseContext {
             this.usingSharedSnaphsotCache = domain != null
                     && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
         }
+    }
+
+    @Override
+    protected void attachToRuntime(Injector injector) {
+        super.attachToRuntime(injector);
+        this.transactionFactory = injector.getInstance(TransactionFactory.class);
     }
 
     /**
@@ -860,21 +877,21 @@ public class DataContext extends BaseContext {
     @SuppressWarnings({ "rawtypes" })
     public ResultIterator performIteratedQuery(Query query) {
         // TODO: use 3.2 TransactionManager
-        if (Transaction.getThreadTransaction() != null) {
+        if (BaseTransaction.getThreadTransaction() != null) {
             return internalPerformIteratedQuery(query);
         } else {
 
             // manually manage a transaction, so that a ResultIterator wrapper
             // could close
             // it when it is done.
-            Transaction tx = getParentDataDomain().createTransaction();
-            Transaction.bindThreadTransaction(tx);
+            Transaction tx = getTransactionFactory().createTransaction();
+            BaseTransaction.bindThreadTransaction(tx);
 
             ResultIterator result;
             try {
                 result = internalPerformIteratedQuery(query);
             } catch (Exception e) {
-                Transaction.bindThreadTransaction(null);
+                BaseTransaction.bindThreadTransaction(null);
                 tx.setRollbackOnly();
                 throw new CayenneRuntimeException(e);
             } finally {
@@ -884,7 +901,7 @@ public class DataContext extends BaseContext {
                 // here would
                 // result in some strangeness, at least on Ingres
 
-                if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
+                if (tx.isRollbackOnly()) {
                     try {
                         tx.rollback();
                     } catch (Exception rollbackEx) {
@@ -1181,4 +1198,20 @@ public class DataContext extends BaseContext {
     protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
         super.fireDataChannelChanged(postedBy, changes);
     }
+
+    private TransactionFactory getTransactionFactory() {
+        attachToRuntimeIfNeeded();
+        return transactionFactory;
+    }
+
+    /**
+     * @since 3.2
+     * @deprecated since 3.2 avoid using thsi directly. Transaction management
+     *             at this level will be eventually removed
+     */
+    @Deprecated
+    public void setTransactionFactory(TransactionFactory transactionFactory) {
+        this.transactionFactory = transactionFactory;
+    }
+
 }

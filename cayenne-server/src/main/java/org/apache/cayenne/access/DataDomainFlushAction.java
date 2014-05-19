@@ -40,6 +40,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.tx.BaseTransaction;
 
 /**
  * A stateful commit handler used by DataContext to perform commit operation.
@@ -233,7 +234,7 @@ class DataDomainFlushAction {
             lastNode.performQueries(queries.subList(rangeStart, len), observer);
         }
         catch (Throwable th) {
-            Transaction.getThreadTransaction().setRollbackOnly();
+            BaseTransaction.getThreadTransaction().setRollbackOnly();
             throw new CayenneRuntimeException("Transaction was rolledback.", th);
         }
     }

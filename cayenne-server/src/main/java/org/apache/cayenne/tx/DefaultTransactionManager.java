@@ -19,33 +19,35 @@
 package org.apache.cayenne.tx;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.Transaction;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * @since 3.2
  */
 public class DefaultTransactionManager implements TransactionManager {
 
-    private DataDomain dataDomain;
+    private TransactionFactory txFactory;
+    private JdbcEventLogger jdbcEventLogger;
 
-    public DefaultTransactionManager(@Inject DataDomain dataDomain) {
-        this.dataDomain = dataDomain;
+    public DefaultTransactionManager(@Inject TransactionFactory txFactory, @Inject JdbcEventLogger jdbcEventLogger) {
+        this.txFactory = txFactory;
+        this.jdbcEventLogger = jdbcEventLogger;
     }
 
+    @Override
     public <T> T performInTransaction(TransactionalOperation<T> op) {
 
         // join existing tx if it is in progress... in such case do not try to
         // commit or roll it back
-        Transaction currentTx = Transaction.getThreadTransaction();
+        Transaction currentTx = BaseTransaction.getThreadTransaction();
         if (currentTx != null) {
             return op.perform();
         }
 
         // start a new tx and manage it till the end
-        Transaction tx = dataDomain.createTransaction();
-        Transaction.bindThreadTransaction(tx);
+        Transaction tx = txFactory.createTransaction();
+        BaseTransaction.bindThreadTransaction(tx);
         try {
 
             T result = op.perform();
@@ -54,16 +56,23 @@ public class DefaultTransactionManager implements TransactionManager {
 
             return result;
 
+        } catch (CayenneRuntimeException ex) {
+            tx.setRollbackOnly();
+            throw ex;
         } catch (Exception ex) {
             tx.setRollbackOnly();
             throw new CayenneRuntimeException(ex);
         } finally {
-            Transaction.bindThreadTransaction(null);
+            BaseTransaction.bindThreadTransaction(null);
 
-            if (tx.getStatus() == Transaction.STATUS_MARKED_ROLLEDBACK) {
+            if (tx.isRollbackOnly()) {
                 try {
                     tx.rollback();
                 } catch (Exception e) {
+                    // although we don't expect an exception here, print the
+                    // stack, as there have been some Cayenne bugs already
+                    // (CAY-557) that were masked by this 'catch' clause.
+                    jdbcEventLogger.logQueryError(e);
                 }
             }
         }

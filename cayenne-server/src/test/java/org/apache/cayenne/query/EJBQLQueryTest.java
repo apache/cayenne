@@ -34,6 +34,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.BigIntegerEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
@@ -58,17 +59,22 @@ public class EJBQLQueryTest extends ServerCase {
 
     private TableHelper tArtist;
     private TableHelper tPainting;
+    private TableHelper tBigIntegerEntity;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("BIGINTEGER_ENTITY");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
+
+        tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
+        tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }
 
     protected void createArtistsDataSet() throws Exception {
@@ -84,6 +90,28 @@ public class EJBQLQueryTest extends ServerCase {
         tArtist.insert(33002, "a1");
         tPainting.insert(33001, 33001, "title0");
         tPainting.insert(33002, 33002, "title1");
+        tPainting.insert(33003, 33002, "%%?_title%%_");
+    }
+
+    protected void createBigIntegerEntitiesDataSet() throws Exception {
+        tBigIntegerEntity.insert(44001, new Long(744073709551715l));
+    }
+
+    public void testLongParameter() throws Exception {
+        createBigIntegerEntitiesDataSet();
+        String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > ?1";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        query.setParameter(1,744073709551615l);
+        List<BigIntegerEntity> result = context.performQuery(query);
+        assertEquals(1, result.size());
+    }
+
+    public void testLongLiteral() throws Exception {
+        createBigIntegerEntitiesDataSet();
+        String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > 744073709551615";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+        List<BigIntegerEntity> result = context.performQuery(query);
+        assertEquals(1, result.size());
     }
 
     public void testParameters() {
@@ -233,7 +261,7 @@ public class EJBQLQueryTest extends ServerCase {
         List<?> result = context.performQuery(query);
 
         assertNotNull(result);
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
 
         assertEquals(Artist.class, result.get(0).getClass());
 
@@ -243,7 +271,7 @@ public class EJBQLQueryTest extends ServerCase {
         List<?> result2 = context.performQuery(query2);
 
         assertNotNull(result2);
-        assertEquals(2, result2.size());
+        assertEquals(3, result2.size());
         assertEquals(2, ((Object[]) result2.get(0)).length);
 
         assertEquals(Artist.class, ((Object[]) result2.get(0))[0].getClass());
@@ -255,7 +283,7 @@ public class EJBQLQueryTest extends ServerCase {
         List<?> result3 = context.performQuery(query3);
 
         assertNotNull(result3);
-        assertEquals(2, result3.size());
+        assertEquals(3, result3.size());
         assertEquals(2, ((Object[]) result3.get(0)).length);
 
         assertEquals(Artist.class, ((Object[]) result3.get(0))[0].getClass());
@@ -319,6 +347,14 @@ public class EJBQLQueryTest extends ServerCase {
         query.setParameter("x", null);
         query.setParameter("b", "Y");
         context.performQuery(query);
+    }
+
+    public void testLikeWithExplicitEscape() throws Exception {
+        createPaintingsDataSet();
+        EJBQLQuery query = new EJBQLQuery("SELECT p FROM Painting p WHERE p.paintingTitle LIKE '|%|%?|_title|%|%|_' ESCAPE '|'");
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(1, paintings.size());
+        assertEquals("%%?_title%%_", paintings.get(0).getPaintingTitle());
     }
 
     public void testJoinToJoined() {

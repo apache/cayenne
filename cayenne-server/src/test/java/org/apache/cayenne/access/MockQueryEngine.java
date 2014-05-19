@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.tx.BaseTransaction;
 
 /**
  * A query engine used for unit testing. Returns canned results instead of doing the
@@ -69,7 +70,7 @@ public class MockQueryEngine implements QueryEngine {
     public void performQueries(
             Collection queries,
             OperationObserver resultConsumer,
-            Transaction transaction) {
+            BaseTransaction transaction) {
         initWithPresetResults(queries, resultConsumer);
     }
 

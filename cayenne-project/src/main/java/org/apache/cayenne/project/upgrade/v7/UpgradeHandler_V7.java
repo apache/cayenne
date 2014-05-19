@@ -43,13 +43,17 @@ class UpgradeHandler_V7 extends BaseUpgradeHandler {
 
     static final String TO_VERSION = "7";
     static final String MIN_SUPPORTED_VERSION = "3.0.0.1";
-    
+
+    // this will be removed from DataDomain soon. So caching this property name
+    // in the upgrade handler
+    static final String USING_EXTERNAL_TRANSACTIONS_PROPERTY = "cayenne.DataDomain.usingExternalTransactions";
+
     @Inject
     protected Injector injector;
-    
+
     @Inject
     private ProjectSaver projectSaver;
-    
+
     public UpgradeHandler_V7(Resource source) {
         super(source);
     }
@@ -62,22 +66,30 @@ class UpgradeHandler_V7 extends BaseUpgradeHandler {
             UpgradeHandler handlerV6 = upgraderV6.getUpgradeHandler(projectSource);
             projectSource = handlerV6.performUpgrade();
         }
-        
+
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
         ConfigurationTree<DataChannelDescriptor> tree = loader.load(projectSource);
         Project project = new Project(tree);
-        
+
         attachToNamespace((DataChannelDescriptor) project.getRootNode());
         
+        removeExternalTxProperty(project);
+
         // remove "shadow" attributes per CAY-1795
         removeShadowAttributes(project);
-        
-        // load and safe cycle removes objects no longer supported, specifically listeners
-        projectSaver.save(project); 
+
+        // load and safe cycle removes objects no longer supported, specifically
+        // listeners
+        projectSaver.save(project);
         return project.getConfigurationResource();
     }
-    
+
+    private void removeExternalTxProperty(Project project) {
+        DataChannelDescriptor rootNode = (DataChannelDescriptor) project.getRootNode();
+        rootNode.getProperties().remove(USING_EXTERNAL_TRANSACTIONS_PROPERTY);
+    }
+
     private void removeShadowAttributes(Project project) {
         DataChannelDescriptor rootNode = (DataChannelDescriptor) project.getRootNode();
 
@@ -128,18 +140,15 @@ class UpgradeHandler_V7 extends BaseUpgradeHandler {
 
         int c1 = compareVersions(version, MIN_SUPPORTED_VERSION);
         int c2 = compareVersions(TO_VERSION, version);
-        
+
         if (c1 < 0) {
             metadata.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION);
             metadata.setUpgradeType(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED);
-        }
-        else if (c2 < 0) {
+        } else if (c2 < 0) {
             metadata.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
-        }
-        else if (c2 == 0) {
+        } else if (c2 == 0) {
             metadata.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
-        }
-        else {
+        } else {
             metadata.setUpgradeType(UpgradeType.UPGRADE_NEEDED);
         }
 

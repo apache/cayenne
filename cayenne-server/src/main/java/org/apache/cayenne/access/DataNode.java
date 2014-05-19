@@ -49,6 +49,8 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
@@ -274,7 +276,7 @@ public class DataNode implements QueryEngine {
         } catch (Exception globalEx) {
             jdbcEventLogger.logQueryError(globalEx);
 
-            Transaction transaction = Transaction.getThreadTransaction();
+            Transaction transaction = BaseTransaction.getThreadTransaction();
             if (transaction != null) {
                 transaction.setRollbackOnly();
             }
@@ -298,7 +300,7 @@ public class DataNode implements QueryEngine {
                     // stop running further queries
                     callback.nextQueryException(nextQuery, queryEx);
 
-                    Transaction transaction = Transaction.getThreadTransaction();
+                    Transaction transaction = BaseTransaction.getThreadTransaction();
                     if (transaction != null) {
                         transaction.setRollbackOnly();
                     }
@@ -349,7 +351,7 @@ public class DataNode implements QueryEngine {
             if (schemaUpdateStrategy != null) {
                 schemaUpdateStrategy.updateSchema(DataNode.this);
             }
-            Transaction t = Transaction.getThreadTransaction();
+            Transaction t = BaseTransaction.getThreadTransaction();
 
             if (t != null) {
                 String key = CONNECTION_RESOURCE_PREFIX + name;
@@ -375,7 +377,7 @@ public class DataNode implements QueryEngine {
             if (schemaUpdateStrategy != null) {
                 schemaUpdateStrategy.updateSchema(DataNode.this);
             }
-            Transaction t = Transaction.getThreadTransaction();
+            Transaction t = BaseTransaction.getThreadTransaction();
             if (t != null) {
                 String key = CONNECTION_RESOURCE_PREFIX + name;
                 Connection c = t.getConnection(key);
