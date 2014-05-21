@@ -1,4 +1,5 @@
-== About
+About
+========
 
 Apache Cayenne is an open source persistence framework licensed under the Apache License, providing object-relational mapping (ORM) and remoting services. With a wealth of unique and powerful features, Cayenne can address a wide range of persistence needs. Cayenne seamlessly binds one or more database schemas directly to Java objects, managing atomic commit and rollbacks, SQL generation, joins, sequences, and more. With Cayenne's Remote Object Persistence, those Java objects can even be persisted out to clients via Web Services.
 
@@ -6,10 +7,12 @@ Cayenne is designed to be easy to use, without sacrificing flexibility or design
 
 Cayenne supports numerous other features, including caching, a complete object query syntax, relationship pre-fetching, on-demand object and relationship faulting, object inheritance, database auto-detection, and generic persisted objects. Most importantly, Cayenne can scale up or down to virtually any project size. With a mature, 100% open source framework, an energetic user community, and a track record of solid performance in high-volume environments, Cayenne is an exceptional choice for persistence services.
 
-== License
+License
+=========
 
 Cayenne is available as free and open source under the Apache License, Version 2.0.
 
-== Documentation
+Documentation
+=============
 
-Full documentation in both pdf and html formats, tutorials, mailing lists and much more are available from our website at http://cayenne.apache.org/
+Full documentation in both pdf and html formats, tutorials, mailing lists and much more are available from our website at http://cayenne.apache.org/ . E.g. here is 3.1 [Cayenne Guide](http://cayenne.apache.org/docs/3.1/cayenne-guide/index.html).
