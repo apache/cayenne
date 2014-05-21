@@ -32,7 +32,6 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -508,12 +507,12 @@ public class DataContextPrefetchTest extends ServerCase {
         tArtistGroup.insert(101, 1);
 
         // OUTER join part intentionally doesn't match anything
-        Expression exp = new Property<String>("groupArray+.name").eq("XX").orExp(Artist.ARTIST_NAME.eq("artist2"));
+        Expression exp = Expression.fromString("groupArray+.name = 'XX' or artistName = 'artist2'");
 
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, exp);
-        q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
+        SelectQuery q = new SelectQuery(Artist.class, exp);
+        q.addPrefetch("paintingArray");
 
-        final List<Artist> results = context.select(q);
+        final List<Artist> results = context.performQuery(q);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 

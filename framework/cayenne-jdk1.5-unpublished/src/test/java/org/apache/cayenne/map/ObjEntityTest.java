@@ -408,7 +408,7 @@ public class ObjEntityTest extends ServerCase {
     }
     
     public void testTranslateToRelatedEntityOuterJoin_Flattened() throws Exception {
-        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
+        ObjEntity artistE = runtime.getDataDomain().getEntityResolver().lookupObjEntity(Artist.class);
 
         Expression e1 = Expression.fromString("groupArray+.name");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
