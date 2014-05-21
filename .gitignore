@@ -1,1 +1,9 @@
 target
+.classpath
+.project
+.settings/
+.externalToolBuilders
+.DS_Store
+derby.log
+.metadata
+bin/
