@@ -8,11 +8,11 @@ Cayenne is designed to be easy to use, without sacrificing flexibility or design
 Cayenne supports numerous other features, including caching, a complete object query syntax, relationship pre-fetching, on-demand object and relationship faulting, object inheritance, database auto-detection, and generic persisted objects. Most importantly, Cayenne can scale up or down to virtually any project size. With a mature, 100% open source framework, an energetic user community, and a track record of solid performance in high-volume environments, Cayenne is an exceptional choice for persistence services.
 
 License
-=========
+---------
 
 Cayenne is available as free and open source under the Apache License, Version 2.0.
 
 Documentation
-=============
+--------------
 
 Full documentation in both pdf and html formats, tutorials, mailing lists and much more are available from our website at http://cayenne.apache.org/ . E.g. here is 3.1 [Cayenne Guide](http://cayenne.apache.org/docs/3.1/cayenne-guide/index.html).
