@@ -101,12 +101,6 @@
                                 generation. E.g.
                                     <code>${project.basedir}/src/main/resources/my.map.xml</code></td>
                         </tr>
-                        <tr>
-                            <td><code>destDir</code></td>
-                            <td>File</td>
-                            <td>Root destination directory for Java classes (ignoring their package
-                                names).</td>
-                        </tr>
                     </tbody>
                 </table>
                 <table frame="void">
@@ -135,6 +129,15 @@
                             <td>boolean</td>
                             <td>Whether we are generating classes for the client tier in a Remote
                                 Object Persistence application. "False" by default.</td>
+                        </tr>
+                        <tr>
+                            <td><code>destDir</code></td>
+                            <td>File</td>
+                            <td>Root destination directory for Java classes (ignoring their package
+                                names). The default is "src/main/java".</td>
+                            <td/>
+                            <td/>
+                            <td/>
                         </tr>
                         <tr>
                             <td><code>embeddableTemplate</code></td>
