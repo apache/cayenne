@@ -197,11 +197,10 @@
                         <tr>
                             <td><code>superPkg</code></td>
                             <td>String</td>
-                            <td>Java package name of generated superclasses. Only has effect if
-                                "makepairs" and "usePkgPath" are set to "true" (both are true by
-                                default). Defines a common package for all generated Java classes.
-                                If omitted, each superclass will be placed in the same package as
-                                subclass.</td>
+                            <td>Java package name of all generated superclasses. If omitted, each
+                                superclass will be placed in the subpackage of its subclass called
+                                "auto". Doesn't have any effect if either "makepairs" or
+                                "usePkgPath" are false (both are true by default). </td>
                         </tr>
                         <tr>
                             <td><code>superTemplate</code></td>
