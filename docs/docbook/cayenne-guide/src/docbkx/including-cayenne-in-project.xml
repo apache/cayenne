@@ -227,23 +227,15 @@
                                 package.</td>
                         </tr>
                     </tbody>
-                </table>
-                Example - a typical class generation scenario, where pairs of classes are
-                generated, and superclasses are placed in a separate package:
-                <programlisting>&lt;plugin>
+                </table> Example - a typical class generation scenario, where pairs of classes are
+                generated with default Maven source destination and superclass
+                package:<programlisting>&lt;plugin>
     &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
     &lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
     &lt;version>X.Y.Z&lt;/version>
 
-    &lt;!--
-    There's an intermittent problem when using Maven/cgen in Eclipse with  m2eclipse plugin that
-    requires placing "configuration" section at the plugin level, instead of execution
-    level.
-    -->
     &lt;configuration>
         &lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
-        &lt;destDir>${project.basedir}/src/main/java&lt;/destDir>
-        &lt;superPkg>org.example.model.auto&lt;/superPkg>
     &lt;/configuration>
 
     &lt;executions>
