@@ -19,6 +19,7 @@
 package org.apache.cayenne.configuration.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.Filter;
@@ -70,13 +71,23 @@ public class CayenneFilter implements Filter {
 
         String configurationLocation = configAdapter.getConfigurationLocation();
         Collection<Module> modules = configAdapter.createModules(new WebModule());
-
+        modules.addAll(getAdditionalModules());
+        
         ServerRuntime runtime = new ServerRuntime(
                 configurationLocation,
                 modules.toArray(new Module[modules.size()]));
 
         WebUtil.setCayenneRuntime(config.getServletContext(), runtime);
     }
+
+    /**
+     * Subclasses may override this to specify additional modules that should be included when creating the CayenneRuntime (in addition to those specified in the web.xml file).
+     * 
+     * @since 3.2
+     */
+    protected Collection<Module> getAdditionalModules() {
+		return new ArrayList<Module>();
+	}
 
     protected void checkAlreadyConfigured(ServletContext context) throws ServletException {
         // sanity check
