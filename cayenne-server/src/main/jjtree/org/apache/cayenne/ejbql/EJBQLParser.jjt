@@ -676,9 +676,9 @@ void between_expression() #Between : { }
 void in_expression() #In : { }
 {
 	path() [ LOOKAHEAD(1) <NOT> { jjtThis.not = true; }] <IN>
-		"(" (literal_or_param()
+		("(" (literal_or_param()
 			(<COMMA> (literal_or_param()))* | subquery())
-		")" 
+		")"|input_parameter())
 }
 
 

@@ -22,10 +22,7 @@ package org.apache.cayenne.exp;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -178,6 +175,14 @@ public class ExpressionTest extends ServerCase {
     public void testEncodeAsEJBQL_numericType_double() throws IOException {
         Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Double(3.14));
         assertEquals("x.consignment.parts >= 3.14", e.toEJBQL("x"));
+    }
+
+    public void testEncodeAsEJBQL_in() throws IOException {
+        List<Integer> valuesIn = new ArrayList<Integer>();
+        valuesIn.add(91);
+        valuesIn.add(23);
+        Expression e = ExpressionFactory.inExp("consignment.parts", valuesIn);
+        assertEquals("x.consignment.parts in (91, 23)", e.toEJBQL("x"));
     }
 
     public void testEncodeAsEJBQL_Timestamp_ParameterCapture() throws IOException {

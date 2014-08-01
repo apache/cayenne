@@ -38,4 +38,25 @@ public class EJBQLExpressionTest extends TestCase {
                 .parse("select p from Painting p WHERE p.toArtist.ARTIST_NAME = enum:org.apache.cayenne.ejbql.EJBQLEnum1.X");
         assertNotNull(select);
     }
+
+    /**
+     * <p>This should not parse because there are multiple non-bracketed parameters.</p>
+     */
+
+    public void testInWithMultipleStringPositionalParameter_withoutBrackets() {
+        EJBQLParser parser = EJBQLParserFactory.getParser();
+
+        try {
+            EJBQLExpression select = parser
+                    .parse("select p from Painting p WHERE p.toArtist IN ?1, ?2");
+            fail("a test in clause with multiple unbracketed parameters parsed; should not be possible");
+        }
+        catch(EJBQLException ejbqlE) {
+            //expected; should not have parsed
+        }
+        catch(Throwable th) {
+            fail("expected an instance of " + EJBQLException.class.getSimpleName()+" to be thrown, but; " + th.getClass().getSimpleName() + " was thrown");
+        }
+
+    }
 }

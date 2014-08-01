@@ -438,6 +438,25 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     }
 
     @Override
+    public boolean visitNamedInputParameterForIn(EJBQLExpression expression) {
+        List<String> parameters = context.bindNamedParameterFlatteningCollection(expression.getText());
+
+        if(0==parameters.size()) {
+            throw new IllegalStateException("it is not possible for a named parameter to not be bound");
+        }
+
+        for(int i=0;i<parameters.size();i++) {
+            if(0!=i) {
+                context.append(',');
+            }
+
+            processParameter(parameters.get(i), expression);
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean visitNamedInputParameter(EJBQLExpression expression) {
         String parameter = context.bindNamedParameter(expression.getText());
         processParameter(parameter, expression);
@@ -732,6 +751,25 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
     public boolean visitIsNull(EJBQLExpression expression, int finishedChildIndex) {
         if (finishedChildIndex == 0) {
             context.append(expression.isNegated() ? " IS NOT NULL" : " IS NULL");
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean visitPositionalInputParameterForIn(EJBQLPositionalInputParameter expression) {
+        List<String> parameters = context.bindPositionalParameterFlatteningCollection(expression.getPosition());
+
+        if(0==parameters.size()) {
+            throw new IllegalStateException("it is not possible for a positional parameter to not be bound");
+        }
+
+        for(int i=0;i<parameters.size();i++) {
+            if(0!=i) {
+                context.append(',');
+            }
+
+            processParameter(parameters.get(i), expression);
         }
 
         return true;

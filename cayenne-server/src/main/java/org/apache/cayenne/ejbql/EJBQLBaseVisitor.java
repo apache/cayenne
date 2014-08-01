@@ -259,6 +259,10 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
         return continueFlag;
     }
 
+    public boolean visitNamedInputParameterForIn(EJBQLExpression expression) {
+        return continueFlag;
+    }
+
     public boolean visitNamedInputParameter(EJBQLExpression expression) {
         return continueFlag;
     }
@@ -300,6 +304,10 @@ public class EJBQLBaseVisitor implements EJBQLExpressionVisitor {
     }
 
     public boolean visitPatternValue(EJBQLExpression expression) {
+        return continueFlag;
+    }
+
+    public boolean visitPositionalInputParameterForIn(EJBQLPositionalInputParameter expression) {
         return continueFlag;
     }
 

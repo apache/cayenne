@@ -18,12 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -314,8 +311,51 @@ public class EJBQLTranslationContext {
         return bindParameter(positionalParameters.get(position));
     }
 
+    /**
+     * <p>This is used in the processing of parameters into lists for the IN clause and
+     * is able to return a list of values that can be used to represent the bound
+     * parameter.</p>
+     */
+
+    List<String> bindPositionalParameterFlatteningCollection(int position) {
+        return bindParameters(positionalParameters.get(position));
+    }
+
     String bindNamedParameter(String name) {
         return bindParameter(namedParameters.get(name));
+    }
+
+    /**
+     * <p>This is used in the processing of parameters into lists for the IN clause and
+     * is able to return a list of values that can be used to represent the bound
+     * parameter.</p>
+     */
+
+    List<String> bindNamedParameterFlatteningCollection(String name) {
+        return bindParameters(namedParameters.get(name));
+    }
+
+    /**
+     * <p>This method takes a value object which may be a collection or a non-collection.  If it
+     * is a collection then it will bind all of the values in the collection.  If it is a non-
+     * collection then it will bind that single object.</p>
+     * @param value
+     * @return
+     */
+
+    List<String> bindParameters(Object value) {
+        if(Collection.class.isAssignableFrom(value.getClass())) {
+            Iterator<?> parameterValueIterator = ((Collection<?>) value).iterator();
+            List<String> result = new ArrayList<String>();
+
+            while(parameterValueIterator.hasNext()) {
+                result.add(bindParameter(parameterValueIterator.next()));
+            }
+
+            return result;
+        }
+
+        return Collections.singletonList(bindParameter(value));
     }
 
     /**

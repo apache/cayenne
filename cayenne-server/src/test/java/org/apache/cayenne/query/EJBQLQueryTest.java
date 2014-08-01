@@ -323,6 +323,56 @@ public class EJBQLQueryTest extends ServerCase {
         assertEquals(w.getBuffer().toString(), s.toString());
     }
 
+    public void testInWithMultipleStringPositionalParameters_withBrackets() throws Exception {
+        createPaintingsDataSet();
+        EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.paintingTitle in (?1,?2,?3)");
+        query.setParameter(1,"title0");
+        query.setParameter(2,"title1");
+        query.setParameter(3,"title2");
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(2, paintings.size());
+    }
+
+    public void testInWithSingleStringPositionalParameter_withoutBrackets() throws Exception {
+        createPaintingsDataSet();
+        EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.paintingTitle in ?1");
+        query.setParameter(1,"title0");
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(1, paintings.size());
+    }
+
+    public void testInWithSingleCollectionNamedParameter_withoutBrackets() throws Exception {
+        createPaintingsDataSet();
+        EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in :artists");
+        query.setParameter("artists", context.performQuery(new SelectQuery<Artist>(Artist.class)));
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(3, paintings.size());
+    }
+
+    public void testInWithSingleCollectionPositionalParameter_withoutBrackets() throws Exception {
+        createPaintingsDataSet();
+        EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in ?1");
+        query.setParameter(1,context.performQuery(new SelectQuery<Artist>(Artist.class)));
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(3, paintings.size());
+    }
+
+    public void testInWithSingleCollectionNamedParameter_withBrackets() throws Exception {
+        createPaintingsDataSet();
+        EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in (:artists)");
+        query.setParameter("artists", context.performQuery(new SelectQuery<Artist>(Artist.class)));
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(3, paintings.size());
+    }
+
+    public void testInWithSingleCollectionPositionalParameter_withBrackets() throws Exception {
+        createPaintingsDataSet();
+        EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in (?1)");
+        query.setParameter(1,context.performQuery(new SelectQuery<Artist>(Artist.class)));
+        List<Painting> paintings = context.performQuery(query);
+        assertEquals(3, paintings.size());
+    }
+
     public void testNullParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=:x");
         query.setParameter("x", null);

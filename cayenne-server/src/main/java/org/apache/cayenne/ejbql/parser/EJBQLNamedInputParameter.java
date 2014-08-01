@@ -31,6 +31,21 @@ public class EJBQLNamedInputParameter extends SimpleNode {
 
     @Override
     protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+
+        // this special handling caters for the fact that if a named parameter is used
+        // in an IN clause and it is the only parameter and it is a collection of objects
+        // then it should be bound as a number of objects rather than as that collection.
+
+        if(null!=parent && EJBQLIn.class.isAssignableFrom(parent.getClass())) {
+            EJBQLIn parentIn = (EJBQLIn) parent;
+
+            // the count here is two; 0 is the expression to the thing that should IN the
+            // list and 1... is the list itself.
+            if(2==parentIn.getChildrenCount() && this==parentIn.getChild(1)) {
+                return visitor.visitNamedInputParameterForIn(this);
+            }
+        }
+
         return visitor.visitNamedInputParameter(this);
     }
 }

@@ -231,6 +231,16 @@ public interface EJBQLExpressionVisitor {
      */
     boolean visitMultiply(EJBQLExpression expression, int finishedChildIndex);
 
+    /**
+     * <p>This method is invoked from the processing of the
+     * {@link org.apache.cayenne.ejbql.parser.EJBQLIn} in order to handle a query such
+     * as;</p>
+     *
+     * <div><code>p.toArtist IN (:artists)</code></div>
+     */
+
+    boolean visitNamedInputParameterForIn(EJBQLExpression expression);
+
     boolean visitNamedInputParameter(EJBQLExpression expression);
 
     boolean visitNegative(EJBQLExpression expression);
@@ -279,6 +289,16 @@ public interface EJBQLExpressionVisitor {
     boolean visitDbPath(EJBQLExpression expression, int finishedChildIndex);
 
     boolean visitPatternValue(EJBQLExpression expression);
+
+    /**
+     * <p>This method is invoked from the processing of the
+     * {@link org.apache.cayenne.ejbql.parser.EJBQLIn} in order to handle a query such
+     * as;</p>
+     *
+     * <div><code>p.toArtist IN (?1)</code></div>
+     */
+
+    boolean visitPositionalInputParameterForIn(EJBQLPositionalInputParameter expression);
 
     boolean visitPositionalInputParameter(EJBQLPositionalInputParameter expression);
 
