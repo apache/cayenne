@@ -20,6 +20,7 @@ package org.apache.cayenne.dba;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 
 import org.apache.cayenne.access.DataNode;
@@ -80,6 +81,8 @@ public interface DbAdapter {
      */
     boolean supportsBatchUpdates();
 
+    boolean typeSupportsLength(int type);
+    
     /**
      * Returns a collection of SQL statements needed to drop a database table.
      * 

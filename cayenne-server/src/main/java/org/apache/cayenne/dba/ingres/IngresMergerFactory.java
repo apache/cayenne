@@ -156,7 +156,7 @@ public class IngresMergerFactory extends MergerFactory {
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
 
-                if (TypesMapping.supportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
+                if (adapter.typeSupportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
                     sqlBuffer.append("(");
                     sqlBuffer.append(getColumn().getMaxLength());
                     sqlBuffer.append(")");
@@ -185,7 +185,7 @@ public class IngresMergerFactory extends MergerFactory {
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
 
-                if (TypesMapping.supportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
+                if (adapter.typeSupportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
                     sqlBuffer.append("(");
                     sqlBuffer.append(getColumn().getMaxLength());
                     sqlBuffer.append(")");

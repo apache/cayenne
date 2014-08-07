@@ -97,7 +97,7 @@ public class FirebirdAdapter extends JdbcAdapter {
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s
-        if (TypesMapping.supportsLength(column.getType())) {
+        if (typeSupportsLength(column.getType())) {
             int len = column.getMaxLength();
 
             int scale = (TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT) ? column

@@ -69,7 +69,7 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         sqlBuffer.append(type);
 
         // append size and precision (if applicable)
-        if (TypesMapping.supportsLength(getColumn().getType())) {
+        if (adapter.typeSupportsLength(getColumn().getType())) {
             int len = getColumn().getMaxLength();
             int scale = TypesMapping.isDecimal(getColumn().getType()) ? getColumn()
                     .getScale() : -1;

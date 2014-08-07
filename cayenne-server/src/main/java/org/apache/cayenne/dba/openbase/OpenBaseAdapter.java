@@ -205,7 +205,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
             buf.append(quotingStrategy.quotedName(at)).append(' ').append(type);
 
             // append size and precision (if applicable)
-            if (TypesMapping.supportsLength(at.getType())) {
+            if (typeSupportsLength(at.getType())) {
                 int len = at.getMaxLength();
                 int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
 

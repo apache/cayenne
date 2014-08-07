@@ -217,19 +217,13 @@ public class TypesMapping {
     }
 
     /**
+     * @deprecated
+     * 
      * Returns true if supplied type can have a length attribute as a part of column
      * definition.
      */
     public static boolean supportsLength(int type) {
-        return type == Types.BINARY
-                || type == Types.CHAR
-                || type == Types.DECIMAL
-                || type == Types.DOUBLE
-                || type == Types.FLOAT
-                || type == Types.NUMERIC
-                || type == Types.REAL
-                || type == Types.VARBINARY
-                || type == Types.VARCHAR;
+        return JdbcAdapter.supportsLength(type);
     }
 
     /**

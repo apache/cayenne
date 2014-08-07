@@ -77,7 +77,7 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         sqlBuffer.append(type);
 
         // append size and precision (if applicable)
-        if (TypesMapping.supportsLength(columnNew.getType())) {
+        if (adapter.typeSupportsLength(columnNew.getType())) {
             int len = columnNew.getMaxLength();
             int scale = TypesMapping.isDecimal(columnNew.getType()) ? columnNew.getScale() : -1;
 

@@ -124,6 +124,11 @@ public class AutoAdapter implements DbAdapter {
         return getAdapter().supportsBatchUpdates();
     }
 
+	@Override
+    public boolean typeSupportsLength(int type) {
+    	return getAdapter().typeSupportsLength(type);
+    }
+    
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
         return getAdapter().dropTableStatements(table);

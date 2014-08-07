@@ -89,7 +89,7 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
             }
 
             out.append(types[0]);
-            if (len > 0 && TypesMapping.supportsLength(jdbcType)) {
+            if (len > 0 && queryAssembler.getAdapter().typeSupportsLength(jdbcType)) {
                 out.append("(");
                 out.append(String.valueOf(len));
                 out.append(")");

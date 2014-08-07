@@ -176,14 +176,15 @@ public class DerbyAdapter extends JdbcAdapter {
         }
     }
 
-    private boolean typeSupportsLength(int type) {
+    @Override
+    public boolean typeSupportsLength(int type) {
         // "BLOB" and "CLOB" type support length. default length is 1M.
         switch (type) {
             case Types.BLOB:
             case Types.CLOB:
                 return true;
             default:
-                return TypesMapping.supportsLength(type);
+                return super.typeSupportsLength(type);
         }
     }
 

@@ -160,7 +160,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
                 len *= 8;
                 buf.append("(").append(len).append(")");
             }
-            else if (TypesMapping.supportsLength(at.getType())) {
+            else if (typeSupportsLength(at.getType())) {
                 int len = at.getMaxLength();
                 int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
 

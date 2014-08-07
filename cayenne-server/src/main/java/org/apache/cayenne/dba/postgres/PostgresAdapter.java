@@ -213,7 +213,8 @@ public class PostgresAdapter extends JdbcAdapter {
         return buf.toString();
     }
 
-    private boolean typeSupportsLength(int type) {
+    @Override
+    public boolean typeSupportsLength(int type) {
         // "bytea" type does not support length
         String[] externalTypes = externalTypesForJdbcType(type);
         if (externalTypes != null && externalTypes.length > 0) {
@@ -224,7 +225,7 @@ public class PostgresAdapter extends JdbcAdapter {
             }
         }
 
-        return TypesMapping.supportsLength(type);
+        return super.typeSupportsLength(type);
     }
 
     /**

@@ -141,7 +141,7 @@ public class DB2Adapter extends JdbcAdapter {
             buf.append(context.quotedName(at)).append(' ').append(type);
 
             // append size and precision (if applicable)
-            if (TypesMapping.supportsLength(at.getType())) {
+            if (typeSupportsLength(at.getType())) {
                 int len = at.getMaxLength();
                 int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
 

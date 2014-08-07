@@ -241,6 +241,37 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
+     * Returns true if supplied type can have a length attribute as a part of column
+     * definition
+     * 
+     * @since 3.2
+     */
+	public boolean typeSupportsLength(int type) {
+	    return JdbcAdapter.supportsLength(type);
+    }
+    
+    /**
+     * Returns true if supplied type can have a length attribute as a part of column
+     * definition
+     * 
+     * TODO: this is a static method only to support the deprecated method {@link TypesMapping#supportsLength(int)}
+     * When the deprecated method is removed this body should be moved in to {@link #typeSupportsLength(int)}
+     * 
+     * @deprecated
+     */
+    static boolean supportsLength(int type) {
+        return type == Types.BINARY
+                || type == Types.CHAR
+                || type == Types.DECIMAL
+                || type == Types.DOUBLE
+                || type == Types.FLOAT
+                || type == Types.NUMERIC
+                || type == Types.REAL
+                || type == Types.VARBINARY
+                || type == Types.VARCHAR;
+    }
+    
+    /**
      * @since 3.0
      */
     @Override
@@ -338,7 +369,7 @@ public class JdbcAdapter implements DbAdapter {
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s
-        if (TypesMapping.supportsLength(column.getType())) {
+        if (typeSupportsLength(column.getType())) {
             int len = column.getMaxLength();
 
             int scale = (TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT) ? column
