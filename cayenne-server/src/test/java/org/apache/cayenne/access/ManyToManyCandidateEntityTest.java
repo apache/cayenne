@@ -38,6 +38,7 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.naming.BasicNameGenerator;
 import org.apache.cayenne.resource.URLResource;
 
 import java.net.URL;
@@ -76,19 +77,19 @@ public class ManyToManyCandidateEntityTest extends TestCase {
     public void testMatchingForManyToManyEntity() throws Exception {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
-        assertEquals(true, new ManyToManyCandidateEntity(manyToManyEntity).isRepresentManyToManyTable());
+        assertNotNull(ManyToManyCandidateEntity.build(manyToManyEntity));
     }
 
     public void testMatchingForNotManyToManyEntity() throws Exception {
         ObjEntity entity = map.getObjEntity("Table1");
 
-        assertEquals(false, new ManyToManyCandidateEntity(entity).isRepresentManyToManyTable());
+        assertNull(ManyToManyCandidateEntity.build(entity));
     }
 
     public void testOptimisationForManyToManyEntity() {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
-        new ManyToManyCandidateEntity(manyToManyEntity).optimizeRelationships();
+        ManyToManyCandidateEntity.build(manyToManyEntity).optimizeRelationships(new BasicNameGenerator());
 
         ObjEntity table1Entity = map.getObjEntity("Table1");
         ObjEntity table2Entity = map.getObjEntity("Table2");

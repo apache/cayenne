@@ -42,13 +42,14 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -174,7 +175,7 @@ public class DbLoaderHelper {
         this.procedureNamePattern = dialog.getProcedureNamePattern();
         this.addedObjEntities = new ArrayList<ObjEntity>();
 
-        this.loader.setNamingStrategy(dialog.getNamingStrategy());
+        this.loader.setNameGenerator(dialog.getNamingStrategy());
 
         // load DataMap...
         LongRunningTask loadDataMapTask = new LoadDataMapTask(Application.getFrame(), "Reengineering DB");
@@ -344,9 +345,8 @@ public class DbLoaderHelper {
             DbLoaderHelper.this.existingMap = dataMap != null;
 
             if (!existingMap) {
-                dataMap = (DataMap) NamedObjectFactory.createObject(DataMap.class, null);
-                dataMap.setName(NamedObjectFactory.createName(DataMap.class, (DataChannelDescriptor) mediator
-                        .getProject().getRootNode()));
+                dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap));
+                dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, mediator.getProject().getRootNode()));
                 dataMap.setDefaultSchema(schemaName);
             }
 

@@ -43,16 +43,14 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.map.naming.ExportedKey;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.EntityTreeFilter;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.util.*;
 import org.apache.cayenne.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 
 public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
@@ -334,7 +332,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     protected void createRelationship() {
 
         DbRelationship dbRel = getLastRelationship();
-        DbEntity source = dbRel != null ? (DbEntity) dbRel.getTargetEntity() : null;
+        DbEntity source = dbRel != null ? dbRel.getTargetEntity() : null;
 
         DbRelationshipTarget targetModel = new DbRelationshipTarget(mediator, getStartEntity(), source);
         targetModel.startupAction();
@@ -343,8 +341,18 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             return;
         }
 
-        DbRelationship dbRelationship = (DbRelationship) NamedObjectFactory.createRelationship(targetModel.getSource(),
-                targetModel.getTarget(), targetModel.isToMany());
+        DbRelationship dbRelationship = new DbRelationship();
+        dbRelationship.setName(createNamingStrategy(NameGeneratorPreferences
+                .getInstance()
+                .getLastUsedStrategies()
+                .get(0)).createDbRelationshipName(
+                new ExportedKey(targetModel.getSource().getName(),
+                                null,
+                                null,
+                                targetModel.getTarget().getName(),
+                                null,
+                                null),
+                targetModel.isToMany()));
 
         // note: NamedObjectFactory doesn't set source or target, just the name
         dbRelationship.setSourceEntity(targetModel.getSource());
@@ -353,8 +361,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         targetModel.getSource().addRelationship(dbRelationship);
 
         // TODO: creating relationship outside of ResolveDbRelationshipDialog
-        // confuses it
-        // to send incorrect event - CHANGE instead of ADD
+        // confuses it to send incorrect event - CHANGE instead of ADD
         ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(dbRelationship);
 
         dialog.setVisible(true);
@@ -382,6 +389,22 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         }
 
         dialog.dispose();
+    }
+
+    public ObjectNameGenerator createNamingStrategy(String strategyClass) {
+        try {
+            ClassLoadingService classLoader = application.getClassLoadingService();
+
+            return classLoader.loadClass(ObjectNameGenerator.class, strategyClass).newInstance();
+        }
+        catch (Throwable th) {
+            JOptionPane.showMessageDialog(
+                    view,
+                    "Naming Strategy Initialization Error: " + th.getMessage(),
+                    "Naming Strategy Initialization Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
     }
 
     /**

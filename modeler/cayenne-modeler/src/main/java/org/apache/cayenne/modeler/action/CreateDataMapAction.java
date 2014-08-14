@@ -25,12 +25,13 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  * Action that creates new DataMap in the project.
@@ -63,9 +64,7 @@ public class CreateDataMapAction extends CayenneAction {
                 .getProject()
                 .getRootNode();
 
-        DataMap map = (DataMap) NamedObjectFactory.createObject(
-                DataMap.class,
-                currentDomain);
+        DataMap map = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, currentDomain));
 
         // set configuration source for new dataMap
         Resource baseResource = currentDomain.getConfigurationSource();

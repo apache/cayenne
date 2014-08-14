@@ -29,7 +29,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
@@ -37,7 +37,7 @@ import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.NamingStrategyPreferences;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,11 +53,11 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
 
     protected InferRelationshipsTabController entitySelector;
 
-    protected NamingStrategy strategy;
+    protected ObjectNameGenerator strategy;
 
     public InferRelationshipsController(CayenneController parent, DataMap dataMap) {
         super(parent, dataMap);
-        strategy = createNamingStrategy(NamingStrategyPreferences
+        strategy = createNamingStrategy(NameGeneratorPreferences
                 .getInstance()
                 .getLastUsedStrategies()
                 .get(0));
@@ -66,13 +66,11 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         this.entitySelector = new InferRelationshipsTabController(this);
     }
 
-    public NamingStrategy createNamingStrategy(String strategyClass) {
+    public ObjectNameGenerator createNamingStrategy(String strategyClass) {
         try {
-            ClassLoadingService classLoader = Application
-                    .getInstance()
-                    .getClassLoadingService();
+            ClassLoadingService classLoader = application.getClassLoadingService();
 
-            return classLoader.loadClass(NamingStrategy.class, strategyClass).newInstance();
+            return classLoader.loadClass(ObjectNameGenerator.class, strategyClass).newInstance();
         }
         catch (Throwable th) {
             logObj.error("Error in " + getClass().getName(), th);
@@ -147,11 +145,11 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             if (strategy == null) {
                 return;
             }
-            NamingStrategyPreferences
+            NameGeneratorPreferences
                     .getInstance()
                     .addToLastUsedStrategies(strategyClass);
             view.getStrategyCombo().setModel(
-                    new DefaultComboBoxModel(NamingStrategyPreferences
+                    new DefaultComboBoxModel(NameGeneratorPreferences
                             .getInstance()
                             .getLastUsedStrategies()));
 
@@ -168,7 +166,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
 
     }
 
-    public NamingStrategy getNamingStrategy() {
+    public ObjectNameGenerator getNamingStrategy() {
         return strategy;
     }
 

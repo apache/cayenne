@@ -20,6 +20,7 @@
 package org.apache.cayenne.util;
 
 import junit.framework.TestCase;
+import org.apache.cayenne.map.naming.NameConverter;
 
 public class NameConverterTest extends TestCase {
 

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.util;
+package org.apache.cayenne.map.naming;
 
 import java.util.HashMap;
 import java.util.Map;

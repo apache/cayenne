@@ -27,12 +27,13 @@ import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateProcedureUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  * Action class to create a new stored procedure mapping.
@@ -52,9 +53,7 @@ public class CreateProcedureAction extends CayenneAction {
         ProjectController mediator = getProjectController();
         DataMap map = mediator.getCurrentDataMap();
 
-        Procedure procedure = (Procedure) NamedObjectFactory.createObject(
-                Procedure.class,
-                map);
+        Procedure procedure = new Procedure(DefaultUniqueNameGenerator.generate(NameCheckers.Procedure, map));
 
         createProcedure(map, procedure);
 

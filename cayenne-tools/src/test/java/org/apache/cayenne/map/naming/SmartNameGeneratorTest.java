@@ -23,11 +23,10 @@ import junit.framework.TestCase;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.naming.ExportedKey;
 
-public class SmartNamingStrategyTest extends TestCase {
+public class SmartNameGeneratorTest extends TestCase {
     public void testStrategy() throws Exception {
-        SmartNamingStrategy strategy = new SmartNamingStrategy();
+        SmartNameGenerator strategy = new SmartNameGenerator();
         
         ExportedKey key = new ExportedKey("ARTIST", "ARTIST_ID", null,
                 "PAINTING", "ARTIST_ID", null);

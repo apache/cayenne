@@ -490,7 +490,7 @@
 							<td>String</td>
 							<td>The naming strategy used for mapping database names to object entity
 								names. Default is
-									<code>org.apache.cayenne.map.naming.SmartNamingStrategy</code>.
+									<code>org.apache.cayenne.map.naming.SmartNameGenerator</code>.
 							</td>
 						</tr>
 						<tr>

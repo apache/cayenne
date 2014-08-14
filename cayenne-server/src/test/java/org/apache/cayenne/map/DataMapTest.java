@@ -33,7 +33,6 @@ import junit.framework.TestCase;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.MockAbstractQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.xml.sax.InputSource;
@@ -313,21 +312,21 @@ public class DataMapTest extends TestCase {
         DataMap map = new DataMap();
 
         // create a twisty maze of intermingled relationships.
-        DbEntity e1 = NamedObjectFactory.createObject(DbEntity.class, map);
+        DbEntity e1 = new DbEntity();
         e1.setName("e1");
 
-        DbEntity e2 = NamedObjectFactory.createObject(DbEntity.class, map);
+        DbEntity e2 = new DbEntity();
         e2.setName("e2");
 
-        DbRelationship r1 = NamedObjectFactory.createObject(DbRelationship.class, e1);
+        DbRelationship r1 = new DbRelationship();
         r1.setName("r1");
         r1.setTargetEntity(e2);
 
-        DbRelationship r2 = NamedObjectFactory.createObject(DbRelationship.class, e2);
+        DbRelationship r2 = new DbRelationship();
         r2.setName("r2");
         r2.setTargetEntity(e1);
 
-        DbRelationship r3 = NamedObjectFactory.createObject(DbRelationship.class, e1);
+        DbRelationship r3 = new DbRelationship();
         r3.setName("r3");
         r3.setTargetEntity(e2);
 

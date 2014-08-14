@@ -28,7 +28,7 @@ import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.util.NameConverter;
+import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.velocity.VelocityContext;
 
 /**

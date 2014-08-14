@@ -23,7 +23,7 @@ import java.io.File;
 
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.map.naming.SmartNamingStrategy;
+import org.apache.cayenne.map.naming.SmartNameGenerator;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportModule;
@@ -53,7 +53,7 @@ public class DbImporterTask extends Task {
         parameters.setOverwrite(true);
         parameters.setImportProcedures(false);
         parameters.setUsePrimitives(true);
-        parameters.setNamingStrategy(SmartNamingStrategy.class.getName());
+        parameters.setNamingStrategy(SmartNameGenerator.class.getName());
     }
 
     @Override

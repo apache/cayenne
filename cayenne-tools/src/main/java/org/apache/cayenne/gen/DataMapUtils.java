@@ -34,7 +34,7 @@ import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.NameConverter;
+import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.commons.collections.set.ListOrderedSet;
 
 import java.util.Collection;

@@ -20,7 +20,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.project.validation.NameValidationHelper;
-import org.apache.cayenne.util.NameConverter;
+import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.cayenne.util.Util;
 
 /**
