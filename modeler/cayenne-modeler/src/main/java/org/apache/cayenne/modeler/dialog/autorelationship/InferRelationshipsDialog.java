@@ -32,7 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.NamingStrategyPreferences;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 
 public class InferRelationshipsDialog extends JDialog {
     public static final int SELECT = 1;
@@ -80,7 +80,7 @@ public class InferRelationshipsDialog extends JDialog {
         this.choice = CANCEL;
 
         strategyCombo.setModel(new DefaultComboBoxModel(
-                NamingStrategyPreferences.getInstance().getLastUsedStrategies()));
+                NameGeneratorPreferences.getInstance().getLastUsedStrategies()));
 
         setTitle("Infer Relationships");
     }

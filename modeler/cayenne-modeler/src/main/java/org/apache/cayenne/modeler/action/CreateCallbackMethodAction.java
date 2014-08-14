@@ -23,12 +23,14 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.CreateCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.util.NameConverter;
+import org.apache.cayenne.map.naming.NameConverter;
 
 /**
  * Action class for creating callback methods on ObjEntity
@@ -76,26 +78,7 @@ public class CreateCallbackMethodAction extends CayenneAction {
 
         // generate methodName
         String methodNamePrefix = toMethodName(callbackType.getType());
-        String methodName;
-        // now that we're generating the method names based on the callback type, check to
-        // see if the
-        // raw prefix, no numbers, is taken.
-        if (!getCallbackMap()
-                .getCallbackDescriptor(callbackType.getType())
-                .getCallbackMethods()
-                .contains(methodNamePrefix)) {
-            methodName = methodNamePrefix;
-        }
-        else {
-            int counter = 1;
-            do {
-                methodName = methodNamePrefix + counter;
-                counter++;
-            } while (getCallbackMap()
-                    .getCallbackDescriptor(callbackType.getType())
-                    .getCallbackMethods()
-                    .contains(methodName));
-        }
+        String methodName = DefaultUniqueNameGenerator.generate(NameCheckers.ObjCallbackMethod, getProjectController().getCurrentObjEntity(), methodNamePrefix);
 
         createCallbackMethod(callbackType, methodName);
         application.getUndoManager().addEdit(

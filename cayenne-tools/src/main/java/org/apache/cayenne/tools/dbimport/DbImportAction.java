@@ -40,7 +40,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
@@ -168,7 +168,7 @@ public class DbImportAction {
 
             @Override
             protected EntityMergeSupport createEntityMerger(DataMap map) {
-                EntityMergeSupport emSupport = new EntityMergeSupport(map, namingStrategy, true) {
+                EntityMergeSupport emSupport = new EntityMergeSupport(map, nameGenerator, true) {
 
                     @Override
                     protected boolean removePK(DbEntity dbEntity) {
@@ -184,8 +184,8 @@ public class DbImportAction {
         // TODO: load via DI AdhocObjectFactory
         String namingStrategy = parameters.getNamingStrategy();
         if (namingStrategy != null) {
-            NamingStrategy namingStrategyInst = (NamingStrategy) Class.forName(namingStrategy).newInstance();
-            loader.setNamingStrategy(namingStrategyInst);
+            ObjectNameGenerator nameGeneratorInst = (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
+            loader.setNameGenerator(nameGeneratorInst);
         }
 
         return loader;

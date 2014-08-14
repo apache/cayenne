@@ -28,6 +28,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateQueryUndoableEdit;
@@ -38,7 +40,6 @@ import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 
 public class QueryType extends CayenneController{
@@ -140,7 +141,7 @@ public class QueryType extends CayenneController{
         }
 
         // update query...
-        String queryName = NamedObjectFactory.createName(Query.class, dataMap);
+        String queryName = DefaultUniqueNameGenerator.generate(NameCheckers.SelectQuery, dataMap);
         if (query instanceof EJBQLQuery) {
             ((EJBQLQuery) query).setName(queryName);
             ((EJBQLQuery) query).setDataMap(dataMap);

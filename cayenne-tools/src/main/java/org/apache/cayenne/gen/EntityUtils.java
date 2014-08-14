@@ -68,12 +68,7 @@ public class EntityUtils {
         this.primaryDataMap = dataMap;
 
         this.objEntity = objEntity;
-
-        this.callbackNames = new LinkedHashSet<String>();
-        for (CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
-            callbackNames.addAll(cb.getCallbackMethods());
-        }
-
+        this.callbackNames = objEntity.getCallbackMethods();
     }
 
     EntityUtils(DataMap dataMap, ObjEntity objEntity, String baseClassName, String basePackageName,
@@ -89,11 +84,7 @@ public class EntityUtils {
         this.primaryDataMap = dataMap;
 
         this.objEntity = objEntity;
-
-        this.callbackNames = new LinkedHashSet<String>();
-        for (CallbackDescriptor cb : objEntity.getCallbackMap().getCallbacks()) {
-            callbackNames.addAll(cb.getCallbackMethods());
-        }
+        this.callbackNames = objEntity.getCallbackMethods();
     }
 
     /**
@@ -124,10 +115,7 @@ public class EntityUtils {
      * Returns true if current ObjEntity is defined as abstract.
      */
     public boolean isAbstract(ObjEntity anObjEntity) {
-        if (anObjEntity == null)
-            return false;
-
-        return objEntity.isAbstract();
+        return anObjEntity != null && anObjEntity.isAbstract();
     }
 
     /**
@@ -202,7 +190,7 @@ public class EntityUtils {
         }
 
         for (Relationship r : anObjEntity.getRelationships()) {
-            if (false == r.isToMany()) {
+            if (!r.isToMany()) {
                 return true;
             }
         }

@@ -31,7 +31,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.naming.ExportedKey;
-import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.commons.collections.Predicate;
 
@@ -46,7 +46,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
     protected List<DbEntity> entities;
     protected Set<InferredRelationship> selectedEntities;
     protected int index = 0;
-    protected NamingStrategy strategy;
+    protected ObjectNameGenerator strategy;
 
     protected transient InferredRelationship currentEntity;
     protected transient Integer entityNumber;
@@ -201,24 +201,21 @@ public class InferRelationshipsControllerBase extends CayenneController {
         ExportedKey key = null;
         for (InferredRelationship myir : inferredRelationships) {
             if (myir.getJoinSource().isPrimaryKey()) {
-                key = getExportedKey(myir.getSource().getName(), myir
-                        .getJoinSource()
-                        .getName(), myir.getTarget().getName(), myir
-                        .getJoinTarget()
-                        .getName());
-            }
-            else {
-                key = getExportedKey(myir.getTarget().getName(), myir
-                        .getJoinTarget()
-                        .getName(), myir.getSource().getName(), myir
-                        .getJoinSource()
-                        .getName());
+                key = getExportedKey(myir.getSource().getName(),
+                                     myir.getJoinSource().getName(),
+                                     myir.getTarget().getName(),
+                                     myir.getJoinTarget().getName());
+            } else {
+                key = getExportedKey(myir.getTarget().getName(),
+                                     myir.getJoinTarget().getName(),
+                                     myir.getSource().getName(),
+                                     myir.getJoinSource().getName());
             }
             myir.setName(strategy.createDbRelationshipName(key, myir.isToMany()));
         }
     }
 
-    public ExportedKey getExportedKey(
+    protected ExportedKey getExportedKey(
             String pkTable,
             String pkColumn,
             String fkTable,
@@ -310,7 +307,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
         return null;
     }
 
-    public void setNamingStrategy(NamingStrategy namestr) {
+    public void setNamingStrategy(ObjectNameGenerator namestr) {
         strategy = namestr;
     }
 

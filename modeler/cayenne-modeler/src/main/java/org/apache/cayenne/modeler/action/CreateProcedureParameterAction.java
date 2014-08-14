@@ -27,11 +27,12 @@ import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */
@@ -44,7 +45,6 @@ public class CreateProcedureParameterAction extends CayenneAction {
     /**
      * Constructor for CreateProcedureParameterAction.
      * 
-     * @param name
      */
     public CreateProcedureParameterAction(Application application) {
         super(getActionName(), application);
@@ -66,9 +66,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
     public void createProcedureParameter() {
         Procedure procedure = getProjectController().getCurrentProcedure();
 
-        ProcedureParameter parameter = (ProcedureParameter) NamedObjectFactory
-                .createObject(ProcedureParameter.class, procedure);
-
+        ProcedureParameter parameter = new ProcedureParameter(DefaultUniqueNameGenerator.generate(NameCheckers.ProcedureParameter, procedure));
         procedure.addCallParameter(parameter);
 
         ProjectController mediator = getProjectController();

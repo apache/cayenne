@@ -21,32 +21,32 @@ package org.apache.cayenne.map.naming;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.util.NameConverter;
 
 /**
- * BasicNamingStrategy is an naming strategy that creates names in Cayenne's
- * old-fashioned manner, i.e. the same way Cayenne did before 3.0
+ * NamingStrategy is a strategy for creating names for entities, attributes, relationships
+ * during reverse engineering.
  * 
  * @since 3.0
  */
-public class BasicNamingStrategy implements NamingStrategy {
-    public String createDbRelationshipName(
-            ExportedKey key,
-            boolean toMany) {
-        
-        String uglyName = (toMany) ? key.getFKTableName() + "_ARRAY" : "to_" + key.getPKTableName();
-        return NameConverter.underscoredToJava(uglyName, false);
-    }
+public interface ObjectNameGenerator {
 
-    public String createObjEntityName(DbEntity dbEntity) {
-        return NameConverter.underscoredToJava(dbEntity.getName(), true);
-    }
+    /**
+     * Creates new name for Obj Entity
+     */
+    String createObjEntityName(DbEntity entity);
 
-    public String createObjAttributeName(DbAttribute attr) {
-        return NameConverter.underscoredToJava(attr.getName(), false);
-    }
+    /**
+     * Creates new name for Obj Attribute
+     */
+    String createObjAttributeName(DbAttribute attr);
 
-    public String createObjRelationshipName(DbRelationship dbRel) {
-        return NameConverter.underscoredToJava(dbRel.getName(), false);
-    }
+    /**
+     * Creates new name for Db Relationship
+     */
+    String createDbRelationshipName(ExportedKey key, boolean toMany);
+
+    /**
+     * Creates new name for Obj Relationship
+     */
+    String createObjRelationshipName(DbRelationship dbRel);
 }

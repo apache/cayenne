@@ -22,27 +22,29 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
+import org.apache.cayenne.map.naming.BasicNameGenerator;
+import org.apache.cayenne.map.naming.SmartNameGenerator;
 import org.apache.cayenne.modeler.Application;
 
 /**
  * Helper class to store/read information about naming strategies have been used
  */
-public class NamingStrategyPreferences {
+public class NameGeneratorPreferences {
 
-    private static final String STRATEGIES_PREFERENCE = "recent.strategies";
+    private static final String STRATEGIES_PREFERENCE = "recent.name.generators";
 
     /**
      * Naming strategies to appear in combobox by default
      */
     private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
     static {
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.BasicNamingStrategy");
-        PREDEFINED_STRATEGIES.add("org.apache.cayenne.map.naming.SmartNamingStrategy");
-    };
+        PREDEFINED_STRATEGIES.add(BasicNameGenerator.class.getCanonicalName());
+        PREDEFINED_STRATEGIES.add(SmartNameGenerator.class.getCanonicalName());
+    }
 
-    static final NamingStrategyPreferences instance = new NamingStrategyPreferences();
+    static final NameGeneratorPreferences instance = new NameGeneratorPreferences();
 
-    public static NamingStrategyPreferences getInstance() {
+    public static NameGeneratorPreferences getInstance() {
         return instance;
     }
 

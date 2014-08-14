@@ -48,6 +48,8 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -67,7 +69,7 @@ import org.apache.cayenne.query.Query;
  */
 public class PasteAction extends CayenneAction implements FlavorListener {
 
-    private static final String COPY_PREFIX = "Copy of ";
+    private static final String COPY_PATTERN = "Copy of %s (%d)";
 
     public static String getActionName() {
         return "Paste";
@@ -171,9 +173,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             // paste DataMap to DataDomain or DataNode
             DataMap dataMap = ((DataMap) content);
 
-            dataMap
-                    .setName(getFreeName(new DataMapNameChecker(domain), dataMap
-                            .getName()));
+            dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, COPY_PATTERN, domain, dataMap.getName()));
 
             /**
              * Update all names in the new DataMap, so that they would not conflict with
@@ -189,8 +189,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String oldName = dbEntity.getName();
-                dbEntity.setName(getFreeName(new DbEntityNameChecker(domain), dbEntity
-                        .getName()));
+                dbEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DbEntity, COPY_PATTERN, domain, dbEntity.getName()));
 
                 if (!oldName.equals(dbEntity.getName())) {
                     renamedDbEntities.put(oldName, dbEntity.getName());
@@ -198,8 +197,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
             for (ObjEntity objEntity : dataMap.getObjEntities()) {
                 String oldName = objEntity.getName();
-                objEntity.setName(getFreeName(new ObjEntityNameChecker(domain), objEntity
-                        .getName()));
+                objEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjEntity, COPY_PATTERN, domain, objEntity.getName()));
 
                 if (!oldName.equals(objEntity.getName())) {
                     renamedObjEntities.put(oldName, objEntity.getName());
@@ -208,9 +206,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             for (Embeddable embeddable : dataMap.getEmbeddables()) {
                 String oldName = embeddable.getClassName();
-                embeddable.setClassName(getFreeName(
-                        new EmbeddableNameChecker(domain),
-                        embeddable.getClassName()));
+                embeddable.setClassName(DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, COPY_PATTERN, domain, embeddable.getClassName()));
 
                 if (!oldName.equals(embeddable.getClassName())) {
                     renamedEmbeddables.put(oldName, embeddable.getClassName());
@@ -218,13 +214,10 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
 
             for (Procedure procedure : dataMap.getProcedures()) {
-                procedure.setName(getFreeName(new ProcedureNameChecker(domain), procedure
-                        .getName()));
+                procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Procedure, COPY_PATTERN, domain, procedure.getName()));
             }
             for (Query query : dataMap.getQueries()) {
-                ((AbstractQuery) query).setName(getFreeName(
-                        new QueryNameChecker(domain),
-                        query.getName()));
+                ((AbstractQuery) query).setName(DefaultUniqueNameGenerator.generate(NameCheckers.SelectQuery, COPY_PATTERN, domain, query.getName()));
             }
 
             // if an entity was renamed, we rename all links to it too
@@ -266,8 +259,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             if (content instanceof DbEntity) {
                 DbEntity dbEntity = (DbEntity) content;
-                dbEntity.setName(getFreeName(new DbEntityNameChecker(domain), dbEntity
-                        .getName()));
+                dbEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DbEntity, COPY_PATTERN, domain, dbEntity.getName()));
 
                 dataMap.addDbEntity(dbEntity);
                 CreateDbEntityAction.fireDbEntityEvent(this, mediator, dbEntity);
@@ -275,8 +267,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof ObjEntity) {
                 // paste ObjEntity to DataMap
                 ObjEntity objEntity = (ObjEntity) content;
-                objEntity.setName(getFreeName(new ObjEntityNameChecker(domain), objEntity
-                        .getName()));
+                objEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjEntity, COPY_PATTERN, domain, objEntity.getName()));
 
                 dataMap.addObjEntity(objEntity);
                 CreateObjEntityAction.fireObjEntityEvent(
@@ -288,9 +279,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof Embeddable) {
                 // paste Embeddable to DataMap
                 Embeddable embeddable = (Embeddable) content;
-                embeddable.setClassName(getFreeName(
-                        new EmbeddableNameChecker(domain),
-                        embeddable.getClassName()));
+                embeddable.setClassName(DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, COPY_PATTERN, domain, embeddable.getClassName()));
 
                 dataMap.addEmbeddable(embeddable);
                 CreateEmbeddableAction.fireEmbeddableEvent(
@@ -302,7 +291,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof EJBQLQuery) {
                 EJBQLQuery query = (EJBQLQuery) content;
 
-                query.setName(getFreeName(new QueryNameChecker(domain), query.getName()));
+                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.SelectQuery, COPY_PATTERN, domain, query.getName()));
                 query.setDataMap(dataMap);
 
                 dataMap.addQuery(query);
@@ -312,7 +301,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 // paste Query to DataMap
                 AbstractQuery query = (AbstractQuery) content;
 
-                query.setName(getFreeName(new QueryNameChecker(domain), query.getName()));
+                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.SelectQuery, COPY_PATTERN, domain, query.getName()));
                 query.setDataMap(dataMap);
 
                 dataMap.addQuery(query);
@@ -321,8 +310,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof Procedure) {
                 // paste Procedure to DataMap
                 Procedure procedure = (Procedure) content;
-                procedure.setName(getFreeName(new ProcedureNameChecker(domain), procedure
-                        .getName()));
+                procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Procedure, COPY_PATTERN, domain, procedure.getName()));
 
                 dataMap.addProcedure(procedure);
                 CreateProcedureAction.fireProcedureEvent(
@@ -335,18 +323,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
         else if (where instanceof DbEntity) {
             final DbEntity dbEntity = (DbEntity) where;
 
-            // attrs and rels must be unique in entity namespace
-            FreeNameChecker checker = new FreeNameChecker() {
-
-                public boolean isNameFree(String name) {
-                    return dbEntity.getAttribute(name) == null
-                            && dbEntity.getRelationship(name) == null;
-                }
-            };
-
             if (content instanceof DbAttribute) {
                 DbAttribute attr = (DbAttribute) content;
-                attr.setName(getFreeName(checker, attr.getName()));
+                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DbAttribute, COPY_PATTERN, dbEntity, attr.getName()));
 
                 dbEntity.addAttribute(attr);
                 CreateAttributeAction.fireDbAttributeEvent(this, mediator, mediator
@@ -354,7 +333,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
             else if (content instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) content;
-                rel.setName(getFreeName(checker, rel.getName()));
+                rel.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, COPY_PATTERN, dbEntity, rel.getName()));
 
                 dbEntity.addRelationship(rel);
                 CreateRelationshipAction.fireDbRelationshipEvent(
@@ -367,22 +346,10 @@ public class PasteAction extends CayenneAction implements FlavorListener {
         else if (where instanceof ObjEntity) {
             final ObjEntity objEntity = (ObjEntity) where;
 
-            // attrs and rels must be unique in entity namespace
-            FreeNameChecker checker = new FreeNameChecker() {
-
-                public boolean isNameFree(String name) {
-                    return objEntity.getAttribute(name) == null
-                            && objEntity.getRelationship(name) == null
-                            // uninitialized mediator.currentCallbackType should not affect a copying of rels or attrs
-                            && (mediator.getCurrentCallbackType() == null ? true : 
-                            	!objEntity.getCallbackMap().getCallbackDescriptor(mediator.getCurrentCallbackType().getType())
-                            		.getCallbackMethods().contains(name));
-                }
-            };
 
             if (content instanceof ObjAttribute) {
                 ObjAttribute attr = (ObjAttribute) content;
-                attr.setName(getFreeName(checker, attr.getName()));
+                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, COPY_PATTERN, objEntity, attr.getName()));
 
                 objEntity.addAttribute(attr);
                 CreateAttributeAction.fireObjAttributeEvent(this, mediator, mediator
@@ -390,7 +357,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
             else if (content instanceof ObjRelationship) {
                 ObjRelationship rel = (ObjRelationship) content;
-                rel.setName(getFreeName(checker, rel.getName()));
+                rel.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, COPY_PATTERN, objEntity, rel.getName()));
 
                 objEntity.addRelationship(rel);
                 CreateRelationshipAction.fireObjRelationshipEvent(
@@ -400,8 +367,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         rel);
             }
             else if(content instanceof ObjCallbackMethod) {
-            	ObjCallbackMethod method = (ObjCallbackMethod) content;
-            	method.setName(getFreeName(checker, method.getName()));
+                ObjCallbackMethod method = (ObjCallbackMethod) content;
+
+                method.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjCallbackMethod, COPY_PATTERN, objEntity, method.getName()));
                 
                 objEntity.getCallbackMap().getCallbackDescriptor(mediator.getCurrentCallbackType().getType()).addCallbackMethod(method.getName());
 
@@ -418,17 +386,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
         else if (where instanceof Embeddable) {
             final Embeddable embeddable = (Embeddable) where;
 
-            // attrs and rels must be unique in entity namespace
-            FreeNameChecker checker = new FreeNameChecker() {
-
-                public boolean isNameFree(String name) {
-                    return embeddable.getAttribute(name) == null;
-                }
-            };
-
             if (content instanceof EmbeddableAttribute) {
                 EmbeddableAttribute attr = (EmbeddableAttribute) content;
-                attr.setName(getFreeName(checker, attr.getName()));
+                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.EmbeddableAttribute, COPY_PATTERN, embeddable, attr.getName()));
 
                 embeddable.addAttribute(attr);
                 CreateAttributeAction.fireEmbeddableAttributeEvent(
@@ -447,19 +407,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             if (content instanceof ProcedureParameter) {
                 ProcedureParameter param = (ProcedureParameter) content;
 
-                param.setName(getFreeName(new FreeNameChecker() {
-
-                    public boolean isNameFree(String name) {
-                        for (ProcedureParameter existingParam : procedure
-                                .getCallParameters()) {
-                            if (name.equals(existingParam.getName())) {
-                                return false;
-                            }
-                        }
-
-                        return true;
-                    }
-                }, param.getName()));
+                param.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ProcedureParameter, COPY_PATTERN, procedure, param.getName()));
 
                 procedure.addCallParameter(param);
                 CreateProcedureParameterAction.fireProcedureParameterEvent(
@@ -477,20 +425,6 @@ public class PasteAction extends CayenneAction implements FlavorListener {
         if (ns instanceof EntityResolver) {
             ((EntityResolver) ns).refreshMappingCache();
         }
-    }
-
-    /**
-     * Finds avaliable name for an object
-     */
-    private String getFreeName(FreeNameChecker checker, String defName) {
-        String name = defName;
-
-        for (int i = 0; !checker.isNameFree(name); name = COPY_PREFIX
-                + defName
-                + (i == 0 ? "" : " (" + i + ")"), i++)
-            ;
-
-        return name;
     }
 
     /**
@@ -574,157 +508,5 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
     public void flavorsChanged(FlavorEvent e) {
         updateState();
-    }
-
-    /**
-     * Interface for checking that specified name is free in superior DataMap, Entity etc.
-     * and therefore can be used for new object
-     */
-    interface FreeNameChecker {
-
-        boolean isNameFree(String name);
-    }
-
-    /**
-     * FreeNameChecker implementation for choosing DataMap names
-     */
-    class DataMapNameChecker implements FreeNameChecker {
-
-        DataChannelDescriptor domain;
-
-        public DataMapNameChecker(DataChannelDescriptor domain) {
-            this.domain = domain;
-        }
-
-        public boolean isNameFree(String name) {
-            return domain.getDataMap(name) == null;
-        }
-    }
-
-    /**
-     * FreeNameChecker implementation for choosing DbEntity names
-     */
-    class DbEntityNameChecker implements FreeNameChecker {
-
-        DataChannelDescriptor domain;
-
-        public DbEntityNameChecker(DataChannelDescriptor domain) {
-            this.domain = domain;
-        }
-
-        public boolean isNameFree(String name) {
-            /**
-             * Name mast be unique through all DataDomain, for EntityResolver to work
-             * correctlys
-             */
-            for (DataMap map : domain.getDataMaps()) {
-                if (map.getDbEntity(name) != null) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    /**
-     * FreeNameChecker implementation for choosing ObjEntity names
-     */
-    class ObjEntityNameChecker implements FreeNameChecker {
-
-        DataChannelDescriptor domain;
-
-        public ObjEntityNameChecker(DataChannelDescriptor domain) {
-            this.domain = domain;
-        }
-
-        public boolean isNameFree(String name) {
-            /**
-             * Name mast be unique through all DataDomain, for EntityResolver to work
-             * correctly
-             */
-            for (DataMap map : domain.getDataMaps()) {
-                if (map.getObjEntity(name) != null) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    class EmbeddableNameChecker implements FreeNameChecker {
-
-        DataChannelDescriptor domain;
-
-        public EmbeddableNameChecker(DataChannelDescriptor domain) {
-            this.domain = domain;
-        }
-
-        public boolean isNameFree(String name) {
-            /**
-             * Name mast be unique through all DataDomain, for EntityResolver to work
-             * correctly
-             */
-            for (DataMap map : domain.getDataMaps()) {
-                if (map.getEmbeddable(name) != null) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    /**
-     * FreeNameChecker implementation for choosing Procedure names
-     */
-    class ProcedureNameChecker implements FreeNameChecker {
-
-        DataChannelDescriptor domain;
-
-        public ProcedureNameChecker(DataChannelDescriptor domain) {
-            this.domain = domain;
-        }
-
-        public boolean isNameFree(String name) {
-            /**
-             * Name mast be unique through all DataDomain, for EntityResolver to work
-             * correctly
-             */
-            for (DataMap map : domain.getDataMaps()) {
-                if (map.getNamespace().getProcedure(name) != null) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    /**
-     * FreeNameChecker implementation for choosing Query names
-     */
-    class QueryNameChecker implements FreeNameChecker {
-
-        DataChannelDescriptor domain;
-
-        public QueryNameChecker(DataChannelDescriptor domain) {
-            this.domain = domain;
-        }
-
-        public boolean isNameFree(String name) {
-            /**
-             * Name mast be unique through all DataDomain, for EntityResolver to work
-             * correctly
-             */
-            for (DataMap map : domain.getDataMaps()) {
-                if (map.getNamespace().getQuery(name) != null) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
     }
 }

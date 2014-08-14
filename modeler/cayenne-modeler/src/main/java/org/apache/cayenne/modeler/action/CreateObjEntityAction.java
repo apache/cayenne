@@ -28,6 +28,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
@@ -35,8 +37,7 @@ import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.EntityMergeSupport;
-import org.apache.cayenne.util.NameConverter;
-import org.apache.cayenne.util.NamedObjectFactory;
+import org.apache.cayenne.map.naming.NameConverter;
 
 /**
  */
@@ -70,9 +71,7 @@ public class CreateObjEntityAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         DataMap dataMap = mediator.getCurrentDataMap();
-        ObjEntity entity = (ObjEntity) NamedObjectFactory.createObject(
-                ObjEntity.class,
-                mediator.getCurrentDataMap());
+        ObjEntity entity = new ObjEntity(DefaultUniqueNameGenerator.generate(NameCheckers.ObjEntity, dataMap));
 
         // init defaults
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
@@ -82,9 +81,7 @@ public class CreateObjEntityAction extends CayenneAction {
         if (dbEntity != null) {
             entity.setDbEntity(dbEntity);
             String baseName = NameConverter.underscoredToJava(dbEntity.getName(), true);
-            String entityName = NamedObjectFactory.createName(ObjEntity.class, dbEntity
-                    .getDataMap(), baseName);
-            entity.setName(entityName);
+            entity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjEntity, dbEntity.getDataMap(), baseName));
         }
 
         String pkg = dataMap.getDefaultPackage();
