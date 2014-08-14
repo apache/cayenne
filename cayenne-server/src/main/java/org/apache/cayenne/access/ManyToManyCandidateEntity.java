@@ -24,88 +24,87 @@ import java.util.List;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.util.NamedObjectFactory;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.ExportedKey;
+import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 
 /**
  * Class represent ObjEntity that may be optimized using flattened relationships
  * as many to many table
  */
 class ManyToManyCandidateEntity {
-    private ObjEntity entity;
+    private final ObjEntity joinEntity;
 
-    public ManyToManyCandidateEntity(ObjEntity entityValue) {
-        entity = entityValue;
-    }
+    private final DbRelationship dbRel1;
+    private final DbRelationship dbRel2;
 
-    public ObjEntity getEntity() {
-        return entity;
-    }
+    private final ObjEntity entity1;
+    private final ObjEntity entity2;
 
-    private boolean isTargetEntitiesDifferent() {
-        return !getTargetEntity1().equals(getTargetEntity2());
-    }
+    private final DbRelationship reverseRelationship1;
+    private final DbRelationship reverseRelationship2;
 
-    private boolean isRelationshipsHasDependentPK() {
-        boolean isRelationship1HasDepPK = getDbRelationship1().getReverseRelationship().isToDependentPK();
-        boolean isRelationship2HasDepPK = getDbRelationship2().getReverseRelationship().isToDependentPK();
+    private ManyToManyCandidateEntity(ObjEntity entityValue, List<ObjRelationship> relationships) {
+        joinEntity = entityValue;
 
-        return isRelationship1HasDepPK && isRelationship2HasDepPK;
-    }
+        ObjRelationship rel1 = relationships.get(0);
+        ObjRelationship rel2 = relationships.get(1);
 
-    private ObjRelationship getRelationship1() {
-        List<ObjRelationship> relationships = new ArrayList<ObjRelationship>(entity.getRelationships());
-        return relationships.get(0);
-    }
+        dbRel1 = rel1.getDbRelationships().get(0);
+        dbRel2 = rel2.getDbRelationships().get(0);
 
-    private ObjRelationship getRelationship2() {
-        List<ObjRelationship> relationships = new ArrayList<ObjRelationship>(entity.getRelationships());
-        return relationships.get(1);
-    }
+        reverseRelationship1 = dbRel1.getReverseRelationship();
+        reverseRelationship2 = dbRel2.getReverseRelationship();
 
-    private ObjEntity getTargetEntity1() {
-        return (ObjEntity) getRelationship1().getTargetEntity();
-    }
-
-    private ObjEntity getTargetEntity2() {
-        return (ObjEntity) getRelationship2().getTargetEntity();
-    }
-
-    private DbRelationship getDbRelationship1() {
-        return getRelationship1().getDbRelationships().get(0);
-    }
-
-    private DbRelationship getDbRelationship2() {
-        return getRelationship2().getDbRelationships().get(0);
+        entity1 = rel1.getTargetEntity();
+        entity2 = rel2.getTargetEntity();
     }
 
     /**
      * Method check - if current entity represent many to many temporary table
      * @return true if current entity is represent many to many table; otherwise returns false
      */
-    public boolean isRepresentManyToManyTable() {
-        boolean hasTwoRelationships = entity.getRelationships().size() == 2;
-        boolean isNotHaveAttributes = entity.getAttributes().size() == 0;
+    public static ManyToManyCandidateEntity build(ObjEntity joinEntity) {
+        ArrayList<ObjRelationship> relationships = new ArrayList<ObjRelationship>(joinEntity.getRelationships());
+        if (relationships.size() != 2) {
+            return null;
+        }
 
-        return hasTwoRelationships && isNotHaveAttributes && isRelationshipsHasDependentPK()
-                && isTargetEntitiesDifferent();
+        ManyToManyCandidateEntity candidateEntity = new ManyToManyCandidateEntity(joinEntity, relationships);
+        if (candidateEntity.isManyToMany()) {
+            return candidateEntity;
+        }
+
+        return null;
     }
 
-    private void removeRelationshipsFromTargetEntities() {
-        getTargetEntity1().removeRelationship(getRelationship1().getReverseRelationship().getName());
-        getTargetEntity2().removeRelationship(getRelationship2().getReverseRelationship().getName());
+    private boolean isManyToMany() {
+        boolean isNotHaveAttributes = joinEntity.getAttributes().size() == 0;
+
+        return isNotHaveAttributes && reverseRelationship1.isToDependentPK() && reverseRelationship2.isToDependentPK()
+                && !entity1.equals(entity2);
     }
 
-    private void addFlattenedRelationship(ObjEntity srcEntity, ObjEntity dstEntity,
-                                          DbRelationship... relationshipPath) {
-        ObjRelationship newRelationship = (ObjRelationship) NamedObjectFactory.createRelationship(srcEntity, dstEntity,
-                true);
+    private void addFlattenedRelationship(ObjectNameGenerator nameGenerator, ObjEntity srcEntity, ObjEntity dstEntity,
+                                          DbRelationship rel1, DbRelationship rel2) {
+
+        ExportedKey key = new ExportedKey(rel1.getSourceEntity().getName(),
+                rel1.getSourceAttributes().iterator().next().getName(),
+                null,
+                rel2.getTargetEntity().getName(),
+                rel2.getTargetAttributes().iterator().next().getName(),
+                null);
+
+        ObjRelationship newRelationship = new ObjRelationship();
+        newRelationship.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, srcEntity,
+                nameGenerator.createDbRelationshipName(key, true)));
 
         newRelationship.setSourceEntity(srcEntity);
         newRelationship.setTargetEntity(dstEntity);
 
-        for (DbRelationship curRelationship : relationshipPath) {
-            newRelationship.addDbRelationship(curRelationship);
-        }
+        newRelationship.addDbRelationship(rel1);
+        newRelationship.addDbRelationship(rel2);
 
         srcEntity.addRelationship(newRelationship);
     }
@@ -113,18 +112,15 @@ class ManyToManyCandidateEntity {
     /**
      * Method make direct relationships between 2 entities and remove relationships to
      * many to many entity
+     *
+     * @param nameGenerator
      */
-    public void optimizeRelationships() {
-        removeRelationshipsFromTargetEntities();
+    public void optimizeRelationships(ObjectNameGenerator nameGenerator) {
+        entity1.removeRelationship(reverseRelationship1.getName());
+        entity2.removeRelationship(reverseRelationship2.getName());
 
-        DbRelationship dbRelationship1 = getRelationship1().getDbRelationships().get(0);
-        DbRelationship dbRelationship2 = getRelationship2().getDbRelationships().get(0);
-
-        addFlattenedRelationship(getTargetEntity1(), getTargetEntity2(), dbRelationship1.getReverseRelationship(),
-                dbRelationship2);
-
-        addFlattenedRelationship(getTargetEntity2(), getTargetEntity1(), dbRelationship2.getReverseRelationship(),
-                dbRelationship1);
+        addFlattenedRelationship(nameGenerator, entity1, entity2, reverseRelationship1, dbRel2);
+        addFlattenedRelationship(nameGenerator, entity2, entity1, reverseRelationship2, dbRel1);
     }
 
 }

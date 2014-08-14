@@ -39,11 +39,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.NamingStrategyPreferences;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -75,7 +75,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
      */
     protected JComboBox strategyCombo;
 
-    protected NamingStrategy strategy;
+    protected ObjectNameGenerator strategy;
 
     protected int choice;
 
@@ -169,7 +169,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         this.procNamePatternField.setEnabled(shouldLoadProcedures);
         this.procedureLabel.setEnabled(shouldLoadProcedures);
 
-        Vector<String> arr = NamingStrategyPreferences
+        Vector<String> arr = NameGeneratorPreferences
                 .getInstance()
                 .getLastUsedStrategies();
         strategyCombo.setModel(new DefaultComboBoxModel(arr));
@@ -206,13 +206,13 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
             String strategyClass = (String) strategyCombo.getSelectedItem();
 
             this.strategy = classLoader
-                    .loadClass(NamingStrategy.class, strategyClass)
+                    .loadClass(ObjectNameGenerator.class, strategyClass)
                     .newInstance();
 
             /**
              * Be user-friendly and update preferences with specified strategy
              */
-            NamingStrategyPreferences
+            NameGeneratorPreferences
                     .getInstance()
                     .addToLastUsedStrategies(strategyClass);
         }
@@ -272,7 +272,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     /**
      * Returns configured naming strategy
      */
-    public NamingStrategy getNamingStrategy() {
+    public ObjectNameGenerator getNamingStrategy() {
         return strategy;
     }
 }

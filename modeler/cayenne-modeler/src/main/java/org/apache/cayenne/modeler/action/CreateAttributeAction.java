@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -35,6 +36,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
@@ -42,7 +45,6 @@ import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.CreateEmbAttributeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */
@@ -74,8 +76,8 @@ public class CreateAttributeAction extends CayenneAction {
         if (getProjectController().getCurrentEmbeddable() != null) {
             Embeddable embeddable = mediator.getCurrentEmbeddable();
 
-            EmbeddableAttribute attr = (EmbeddableAttribute) NamedObjectFactory.createObject(EmbeddableAttribute.class,
-                    embeddable);
+            EmbeddableAttribute attr = new EmbeddableAttribute();
+            attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.EmbeddableAttribute, embeddable));
 
             createEmbAttribute(embeddable, attr);
 
@@ -87,7 +89,7 @@ public class CreateAttributeAction extends CayenneAction {
 
             ObjEntity objEntity = mediator.getCurrentObjEntity();
 
-            ObjAttribute attr = NamedObjectFactory.createObject(ObjAttribute.class, objEntity);
+            ObjAttribute attr = new ObjAttribute(DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, objEntity), null, objEntity);
 
             createObjAttribute(mediator.getCurrentDataMap(), objEntity, attr);
 
@@ -97,7 +99,8 @@ public class CreateAttributeAction extends CayenneAction {
         } else if (getProjectController().getCurrentDbEntity() != null) {
             DbEntity dbEntity = getProjectController().getCurrentDbEntity();
 
-            DbAttribute attr = NamedObjectFactory.createObject(DbAttribute.class, dbEntity);
+            DbAttribute attr = new DbAttribute(DefaultUniqueNameGenerator.generate(NameCheckers.DbAttribute, dbEntity),
+                    TypesMapping.NOT_DEFINED, dbEntity);
 
             createDbAttribute(mediator.getCurrentDataMap(), dbEntity, attr);
 

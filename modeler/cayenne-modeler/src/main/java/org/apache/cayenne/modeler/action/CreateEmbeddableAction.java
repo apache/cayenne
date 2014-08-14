@@ -27,12 +27,13 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 public class CreateEmbeddableAction extends CayenneAction {
 
@@ -55,10 +56,7 @@ public class CreateEmbeddableAction extends CayenneAction {
 
         DataMap dataMap = mediator.getCurrentDataMap();
 
-        Embeddable embeddable = (Embeddable) NamedObjectFactory.createObject(
-                Embeddable.class,
-                mediator.getCurrentDataMap());
-
+        Embeddable embeddable = new Embeddable(DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, mediator.getCurrentDataMap()));
         createEmbeddable(dataMap, embeddable);
 
         application.getUndoManager().addEdit(

@@ -39,9 +39,10 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.wocompat.parser.Parser;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -627,8 +628,7 @@ public class EOModelProcessor {
             if (relationship.getReverseRelationship() == null) {
                 DbRelationship reverse = relationship.createReverseRelationship();
 
-                String name = NamedObjectFactory.createName(DbRelationship.class, reverse.getSourceEntity(),
-                        relationship.getName() + "Reverse");
+                String name = DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, reverse.getSourceEntity(), relationship.getName() + "Reverse");
                 reverse.setName(name);
                 relationship.getTargetEntity().addRelationship(reverse);
             }

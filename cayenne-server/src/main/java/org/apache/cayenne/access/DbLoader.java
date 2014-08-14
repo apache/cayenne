@@ -47,9 +47,9 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.naming.BasicNamingStrategy;
+import org.apache.cayenne.map.naming.BasicNameGenerator;
 import org.apache.cayenne.map.naming.ExportedKey;
-import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.EntityMergeSupport;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
@@ -106,13 +106,13 @@ public class DbLoader {
     /**
      * Strategy for choosing names for entities, attributes and relationships
      */
-    protected NamingStrategy namingStrategy;
+    protected ObjectNameGenerator nameGenerator;
 
     /**
      * Creates new DbLoader.
      */
     public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate) {
-        this(connection, adapter, delegate, new BasicNamingStrategy());
+        this(connection, adapter, delegate, new BasicNameGenerator());
     }
 
     /**
@@ -120,12 +120,12 @@ public class DbLoader {
      * 
      * @since 3.0
      */
-    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, NamingStrategy strategy) {
+    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, ObjectNameGenerator strategy) {
         this.adapter = adapter;
         this.connection = connection;
         this.delegate = delegate;
 
-        setNamingStrategy(strategy);
+        setNameGenerator(strategy);
     }
 
     /**
@@ -526,7 +526,7 @@ public class DbLoader {
                 continue;
             }
 
-            String objEntityName = namingStrategy.createObjEntityName(dbEntity);
+            String objEntityName = nameGenerator.createObjEntityName(dbEntity);
             // this loop will terminate even if no valid name is found
             // to prevent loader from looping forever (though such case is very
             // unlikely)
@@ -553,7 +553,7 @@ public class DbLoader {
      * @since 3.2
      */
     protected EntityMergeSupport createEntityMerger(DataMap map) {
-        return new EntityMergeSupport(map, namingStrategy, !creatingMeaningfulPK);
+        return new EntityMergeSupport(map, nameGenerator, !creatingMeaningfulPK);
     }
 
     /** Loads database relationships into a DataMap. */
@@ -621,14 +621,14 @@ public class DbLoader {
                         continue;
                     } else {
                         // init relationship
-                        String forwardPreferredName = namingStrategy.createDbRelationshipName(key, true);
+                        String forwardPreferredName = nameGenerator.createDbRelationshipName(key, true);
                         forwardRelationship = new DbRelationship(uniqueRelName(pkEntity, forwardPreferredName));
 
                         forwardRelationship.setSourceEntity(pkEntity);
                         forwardRelationship.setTargetEntity(fkEntity);
                         pkEntity.addRelationship(forwardRelationship);
 
-                        String reversePreferredName = namingStrategy.createDbRelationshipName(key, false);
+                        String reversePreferredName = nameGenerator.createDbRelationshipName(key, false);
                         reverseRelationship = new DbRelationshipDetected(uniqueRelName(fkEntity, reversePreferredName));
                         reverseRelationship.setFkName(fkName);
                         reverseRelationship.setToMany(false);
@@ -706,7 +706,7 @@ public class DbLoader {
         if (!toMany) {
             Entity source = relationship.getSourceEntity();
             source.removeRelationship(relationship.getName());
-            relationship.setName(DbLoader.uniqueRelName(source, namingStrategy.createDbRelationshipName(key, false)));
+            relationship.setName(DbLoader.uniqueRelName(source, nameGenerator.createDbRelationshipName(key, false)));
             source.addRelationship(relationship);
         }
 
@@ -721,10 +721,10 @@ public class DbLoader {
         List<ObjEntity> entitiesForDelete = new ArrayList<ObjEntity>();
 
         for (ObjEntity curEntity : map.getObjEntities()) {
-            ManyToManyCandidateEntity entity = new ManyToManyCandidateEntity(curEntity);
+            ManyToManyCandidateEntity entity = ManyToManyCandidateEntity.build(curEntity);
 
-            if (entity.isRepresentManyToManyTable()) {
-                entity.optimizeRelationships();
+            if (entity != null) {
+                entity.optimizeRelationships(getNameGenerator());
                 entitiesForDelete.add(curEntity);
             }
         }
@@ -1009,20 +1009,20 @@ public class DbLoader {
      * 
      * @since 3.0
      */
-    public void setNamingStrategy(NamingStrategy strategy) {
+    public void setNameGenerator(ObjectNameGenerator strategy) {
         // null values are not allowed
         if (strategy == null) {
             throw new NullPointerException("Null strategy not allowed");
         }
 
-        this.namingStrategy = strategy;
+        this.nameGenerator = strategy;
     }
 
     /**
      * @return naming strategy for reverse engineering
      * @since 3.0
      */
-    public NamingStrategy getNamingStrategy() {
-        return namingStrategy;
+    public ObjectNameGenerator getNameGenerator() {
+        return nameGenerator;
     }
 }

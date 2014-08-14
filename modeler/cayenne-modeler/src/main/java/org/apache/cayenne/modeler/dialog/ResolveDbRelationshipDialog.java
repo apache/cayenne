@@ -46,6 +46,8 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
@@ -54,7 +56,6 @@ import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
-import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -291,9 +292,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }
 
         if (sourceEntityName == null) {
-            sourceEntityName = NamedObjectFactory.createName(
-                    DbRelationship.class,
-                    relationship.getSourceEntity());
+            sourceEntityName = DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, relationship.getSourceEntity());
         }
 
         if (!validateName(relationship.getSourceEntity(), relationship, sourceEntityName)) {
@@ -306,9 +305,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }
 
         if (targetEntityName == null) {
-            targetEntityName = NamedObjectFactory.createName(
-                    DbRelationship.class,
-                    relationship.getTargetEntity());
+            targetEntityName = DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, relationship.getTargetEntity());
         }
 
         // check if reverse name is valid

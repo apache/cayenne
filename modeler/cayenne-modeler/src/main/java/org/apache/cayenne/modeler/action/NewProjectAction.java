@@ -27,11 +27,12 @@ import javax.swing.KeyStroke;
 
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */
@@ -67,9 +68,7 @@ public class NewProjectAction extends ProjectAction {
 
         DataChannelDescriptor domain = new DataChannelDescriptor();
 
-        String name = NamedObjectFactory.createName(DataChannelDescriptor.class, domain);
-
-        domain.setName(name);
+        domain.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataChannelDescriptor, domain));
 
         Project project = new Project(
                 new ConfigurationTree<DataChannelDescriptor>(domain));

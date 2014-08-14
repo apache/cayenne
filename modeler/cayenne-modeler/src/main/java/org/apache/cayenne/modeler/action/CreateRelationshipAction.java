@@ -31,13 +31,14 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */
@@ -67,8 +68,7 @@ public class CreateRelationshipAction extends CayenneAction {
         ObjEntity objEnt = getProjectController().getCurrentObjEntity();
         if (objEnt != null) {
 
-            ObjRelationship rel = (ObjRelationship) NamedObjectFactory.createObject(ObjRelationship.class, objEnt);
-
+            ObjRelationship rel = new ObjRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, objEnt));
             createObjRelationship(objEnt, rel);
 
             application.getUndoManager().addEdit(
@@ -77,8 +77,7 @@ public class CreateRelationshipAction extends CayenneAction {
             DbEntity dbEnt = getProjectController().getCurrentDbEntity();
             if (dbEnt != null) {
 
-                DbRelationship rel = NamedObjectFactory.createObject(DbRelationship.class, dbEnt);
-
+                DbRelationship rel = new DbRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, dbEnt));
                 createDbRelationship(dbEnt, rel);
 
                 application.getUndoManager().addEdit(

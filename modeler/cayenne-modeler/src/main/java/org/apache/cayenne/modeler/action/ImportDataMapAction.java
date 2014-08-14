@@ -32,12 +32,13 @@ import javax.swing.JOptionPane;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
@@ -95,13 +96,10 @@ public class ImportDataMapAction extends CayenneAction {
                     .getRootNode();
 
             if (newMap.getName() != null) {
-                newMap.setName(NamedObjectFactory.createName(
-                        DataMap.class,
-                        domain,
-                        newMap.getName()));
+                newMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, domain, newMap.getName()));
             }
             else {
-                newMap.setName(NamedObjectFactory.createName(DataMap.class, domain));
+                newMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, domain));
             }
             
             Resource baseResource = domain.getConfigurationSource();

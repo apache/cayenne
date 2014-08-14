@@ -23,12 +23,10 @@ import junit.framework.TestCase;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.naming.BasicNamingStrategy;
-import org.apache.cayenne.map.naming.ExportedKey;
 
-public class BasicNamingStrategyTest extends TestCase {
+public class BasicNameGeneratorTest extends TestCase {
     public void testStrategy() throws Exception {
-        BasicNamingStrategy strategy = new BasicNamingStrategy();
+        BasicNameGenerator strategy = new BasicNameGenerator();
         
         ExportedKey key = new ExportedKey("ARTIST", "ARTIST_ID", null,
                 "PAINTING", "ARTIST_ID", null);

@@ -36,8 +36,10 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.naming.BasicNamingStrategy;
-import org.apache.cayenne.map.naming.NamingStrategy;
+import org.apache.cayenne.map.naming.BasicNameGenerator;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 
 /**
  * Implements methods for entity merging.
@@ -65,7 +67,7 @@ public class EntityMergeSupport {
     /**
      * Strategy for choosing names for entities, attributes and relationships
      */
-    protected NamingStrategy namingStrategy;
+    protected ObjectNameGenerator nameGenerator;
 
     /**
      * Listeners of merge process.
@@ -73,18 +75,18 @@ public class EntityMergeSupport {
     protected List<EntityMergeListener> listeners;
 
     public EntityMergeSupport(DataMap map) {
-        this(map, new BasicNamingStrategy(), true);
+        this(map, new BasicNameGenerator(), true);
     }
 
     /**
      * @since 3.0
      */
-    public EntityMergeSupport(DataMap map, NamingStrategy namingStrategy, boolean removeMeaningfulPKs) {
+    public EntityMergeSupport(DataMap map, ObjectNameGenerator nameGenerator, boolean removeMeaningfulPKs) {
         this.map = map;
         this.removeMeaningfulFKs = true;
         this.listeners = new ArrayList<EntityMergeListener>();
         this.removeMeaningfulPKs = removeMeaningfulPKs;
-        this.namingStrategy = namingStrategy;
+        this.nameGenerator = nameGenerator;
 
         /**
          * Adding a listener, so that all created ObjRelationships would have
@@ -168,9 +170,9 @@ public class EntityMergeSupport {
             // add missing attributes
             for (DbAttribute da : getAttributesToAdd(entity)) {
 
-                String attrName = namingStrategy.createObjAttributeName(da);
+                String attrName = nameGenerator.createObjAttributeName(da);
                 // avoid duplicate names
-                attrName = NamedObjectFactory.createName(ObjAttribute.class, entity, attrName);
+                attrName = DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, entity, attrName);
 
                 String type = TypesMapping.getJavaBySqlType(da.getType());
 
@@ -195,8 +197,8 @@ public class EntityMergeSupport {
                 for (Entity mappedTarget : map.getMappedEntities(targetEntity)) {
 
                     // avoid duplicate names
-                    String relationshipName = namingStrategy.createObjRelationshipName(dr);
-                    relationshipName = NamedObjectFactory.createName(ObjRelationship.class, entity, relationshipName);
+                    String relationshipName = nameGenerator.createObjRelationshipName(dr);
+                    relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, entity, relationshipName);
 
                     ObjRelationship or = new ObjRelationship(relationshipName);
                     or.addDbRelationship(dr);
@@ -406,15 +408,15 @@ public class EntityMergeSupport {
     /**
      * Sets new naming strategy for reverse engineering
      */
-    public void setNamingStrategy(NamingStrategy strategy) {
-        this.namingStrategy = strategy;
+    public void setNameGenerator(ObjectNameGenerator strategy) {
+        this.nameGenerator = strategy;
     }
 
     /**
      * @return naming strategy for reverse engineering
      */
-    public NamingStrategy getNamingStrategy() {
-        return namingStrategy;
+    public ObjectNameGenerator getNameGenerator() {
+        return nameGenerator;
     }
 
     /**

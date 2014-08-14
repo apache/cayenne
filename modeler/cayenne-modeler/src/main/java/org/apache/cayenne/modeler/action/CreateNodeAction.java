@@ -29,12 +29,13 @@ import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.util.NamedObjectFactory;
 
 /**
  */
@@ -47,7 +48,7 @@ public class CreateNodeAction extends CayenneAction {
     /**
      * Constructor for CreateNodeAction.
      * 
-     * @param location
+     * @param application
      */
     public CreateNodeAction(Application application) {
         super(getActionName(), application);
@@ -82,11 +83,8 @@ public class CreateNodeAction extends CayenneAction {
      * Returns <code>true</code> if path contains a DataDomain object.
      */
     public boolean enableForPath(ConfigurationNode object) {
-        if (object == null) {
-            return false;
-        }
+        return object != null && ((DataNodeDescriptor) object).getDataChannelDescriptor() != null;
 
-        return ((DataNodeDescriptor) object).getDataChannelDescriptor() != null;
     }
 
     /**
@@ -114,11 +112,7 @@ public class CreateNodeAction extends CayenneAction {
      * A factory method that makes a new DataNode.
      */
     DataNodeDescriptor buildDataNode(DataChannelDescriptor domain) {
-        String name = NamedObjectFactory.createName(
-                DataNodeDescriptor.class,
-                domain);
-
-        DataNodeDescriptor node = new DataNodeDescriptor(name);
+        DataNodeDescriptor node = new DataNodeDescriptor(DefaultUniqueNameGenerator.generate(NameCheckers.DataNodeDescriptor, domain));
         node.setDataChannelDescriptor(domain);
 
         return node;
