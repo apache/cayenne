@@ -19,7 +19,18 @@
 
 package org.apache.cayenne.map;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
@@ -31,8 +42,8 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.map.naming.NameConverter;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.Transformer;
@@ -1106,6 +1117,9 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                                                                                                // here?
     }
 
+    /**
+     * @since 3.2
+     */
     public Set<String> getCallbackMethods() {
         Set<String> res = new LinkedHashSet<String>();
         for (CallbackDescriptor descriptor : getCallbackMap().getCallbacks()) {

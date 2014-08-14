@@ -217,7 +217,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Procedure, COPY_PATTERN, domain, procedure.getName()));
             }
             for (Query query : dataMap.getQueries()) {
-                ((AbstractQuery) query).setName(DefaultUniqueNameGenerator.generate(NameCheckers.SelectQuery, COPY_PATTERN, domain, query.getName()));
+                ((AbstractQuery) query).setName(DefaultUniqueNameGenerator.generate(NameCheckers.Query, COPY_PATTERN, domain, query.getName()));
             }
 
             // if an entity was renamed, we rename all links to it too
@@ -291,7 +291,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof EJBQLQuery) {
                 EJBQLQuery query = (EJBQLQuery) content;
 
-                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.SelectQuery, COPY_PATTERN, domain, query.getName()));
+                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Query, COPY_PATTERN, domain, query.getName()));
                 query.setDataMap(dataMap);
 
                 dataMap.addQuery(query);
@@ -301,7 +301,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 // paste Query to DataMap
                 AbstractQuery query = (AbstractQuery) content;
 
-                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.SelectQuery, COPY_PATTERN, domain, query.getName()));
+                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Query, COPY_PATTERN, domain, query.getName()));
                 query.setDataMap(dataMap);
 
                 dataMap.addQuery(query);

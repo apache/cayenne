@@ -23,30 +23,30 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
 /**
- * NamingStrategy is a strategy for creating names for entities, attributes, relationships
- * during reverse engineering.
+ * ObjectNameGenerator is a strategy for creating names for entities,
+ * attributes, relationships from DB metadata.
  * 
- * @since 3.0
+ * @since 3.2
  */
 public interface ObjectNameGenerator {
 
-    /**
-     * Creates new name for Obj Entity
-     */
-    String createObjEntityName(DbEntity entity);
+	/**
+	 * Creates new name for ObjEntity
+	 */
+	String createObjEntityName(DbEntity entity);
 
-    /**
-     * Creates new name for Obj Attribute
-     */
-    String createObjAttributeName(DbAttribute attr);
+	/**
+	 * Creates new name for ObjAttribute
+	 */
+	String createObjAttributeName(DbAttribute attr);
 
-    /**
-     * Creates new name for Db Relationship
-     */
-    String createDbRelationshipName(ExportedKey key, boolean toMany);
+	/**
+	 * Creates new name for DbRelationship
+	 */
+	String createDbRelationshipName(ExportedKey key, boolean toMany);
 
-    /**
-     * Creates new name for Obj Relationship
-     */
-    String createObjRelationshipName(DbRelationship dbRel);
+	/**
+	 * Creates new name for ObjRelationship
+	 */
+	String createObjRelationshipName(DbRelationship dbRel);
 }

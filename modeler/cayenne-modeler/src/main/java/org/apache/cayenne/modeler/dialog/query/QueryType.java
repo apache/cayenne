@@ -141,7 +141,7 @@ public class QueryType extends CayenneController{
         }
 
         // update query...
-        String queryName = DefaultUniqueNameGenerator.generate(NameCheckers.SelectQuery, dataMap);
+        String queryName = DefaultUniqueNameGenerator.generate(NameCheckers.Query, dataMap);
         if (query instanceof EJBQLQuery) {
             ((EJBQLQuery) query).setName(queryName);
             ((EJBQLQuery) query).setDataMap(dataMap);

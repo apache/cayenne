@@ -26,70 +26,71 @@ import org.apache.cayenne.map.DbRelationship;
 import org.jvnet.inflector.Noun;
 
 /**
- * SmartNameGenerator is a new strategy for generating names of
- * entities, attributes etc.
+ * SmartNameGenerator is a strategy for generating names of entities, attributes
+ * etc.
  * 
- * Advantages of this strategy are:
- * -Using of FK names at generating relationship names
- * -Dropping 'to' prefix for obj relationships and therefore for generated class methods' names
- * -Using pluralized form instead-of "ARRAY" suffix for to-many relationships (i.e. 'adresses' 
- *   instead-of 'addressArray')
- * 
- * @since 3.0
+ * @since 3.2
  */
 public class SmartNameGenerator implements ObjectNameGenerator {
 
-    @Override
-    public String createDbRelationshipName(ExportedKey key, boolean toMany) {
-        
-        String name;
+	@Override
+	public String createDbRelationshipName(ExportedKey key, boolean toMany) {
 
-        if (toMany) {
-            try {
-                /**
-                 * by default we use english language rules here.
-                 * uppercase is required for NameConverter to work properly
-                 */
-                name = Noun.pluralOf(key.getFKTableName().toLowerCase(), Locale.ENGLISH).toUpperCase();
-            } catch (Exception inflectorError) {
-                /**
-                 * seems that Inflector cannot be trusted. For instance, it throws an exception
-                 * when invoked for word "ADDRESS" (although lower case works fine). To feel safe, we
-                 * use superclass' behavior if something's gone wrong
-                 */
-                return key.getFKTableName().toLowerCase();
-            }
-        } else {
-            String fkColName = key.getFKColumnName();
+		String name;
 
-            //trim "ID" in the end
-            if (fkColName == null) {
-                name = key.getPKTableName();
-            } else if (fkColName.toUpperCase().endsWith("_ID") && fkColName.length() > 3) {
-                name = fkColName.substring(0, fkColName.length() - 3);
-            } else if (fkColName.toUpperCase().endsWith("ID") && fkColName.length() > 2) {
-                name = fkColName.substring(0, fkColName.length() - 2);
-            } else {
-                /**
-                 * We don't want relationship to conflict with attribute, so we'd better return
-                 * superior value with 'to'
-                 */
-                name = key.getPKTableName();
-            }
-        }
+		if (toMany) {
+			try {
+				/**
+				 * by default we use english language rules here. uppercase is
+				 * required for NameConverter to work properly
+				 */
+				name = Noun.pluralOf(key.getFKTableName().toLowerCase(),
+						Locale.ENGLISH).toUpperCase();
+			} catch (Exception inflectorError) {
+				/**
+				 * seems that Inflector cannot be trusted. For instance, it
+				 * throws an exception when invoked for word "ADDRESS" (although
+				 * lower case works fine). To feel safe, we use superclass'
+				 * behavior if something's gone wrong
+				 */
+				return key.getFKTableName().toLowerCase();
+			}
+		} else {
+			String fkColName = key.getFKColumnName();
 
-        return NameConverter.underscoredToJava(name, false);
-    }
+			// trim "ID" in the end
+			if (fkColName == null) {
+				name = key.getPKTableName();
+			} else if (fkColName.toUpperCase().endsWith("_ID")
+					&& fkColName.length() > 3) {
+				name = fkColName.substring(0, fkColName.length() - 3);
+			} else if (fkColName.toUpperCase().endsWith("ID")
+					&& fkColName.length() > 2) {
+				name = fkColName.substring(0, fkColName.length() - 2);
+			} else {
+				/**
+				 * We don't want relationship to conflict with attribute, so
+				 * we'd better return superior value with 'to'
+				 */
+				name = key.getPKTableName();
+			}
+		}
 
-    public String createObjEntityName(DbEntity dbEntity) {
-        return NameConverter.underscoredToJava(dbEntity.getName(), true);
-    }
+		return NameConverter.underscoredToJava(name, false);
+	}
 
-    public String createObjAttributeName(DbAttribute attr) {
-        return NameConverter.underscoredToJava(attr.getName(), false);
-    }
+	@Override
+	public String createObjEntityName(DbEntity dbEntity) {
+		return NameConverter.underscoredToJava(dbEntity.getName(), true);
+	}
 
-    public String createObjRelationshipName(DbRelationship dbRel) {
-        return NameConverter.underscoredToJava(dbRel.getName(), false);
-    }
+	@Override
+	public String createObjAttributeName(DbAttribute attr) {
+		return NameConverter.underscoredToJava(attr.getName(), false);
+	}
+
+	@Override
+	public String createObjRelationshipName(DbRelationship dbRel) {
+		return NameConverter.underscoredToJava(dbRel.getName(), false);
+	}
 }

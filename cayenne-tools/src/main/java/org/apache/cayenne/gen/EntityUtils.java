@@ -20,11 +20,9 @@
 package org.apache.cayenne.gen;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MappingNamespace;
