@@ -24,24 +24,19 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
-public class SmartNameGeneratorTest extends TestCase {
+public class LegacyNameGeneratorTest extends TestCase {
     public void testStrategy() throws Exception {
-        SmartNameGenerator strategy = new SmartNameGenerator();
+        LegacyNameGenerator strategy = new LegacyNameGenerator();
         
         ExportedKey key = new ExportedKey("ARTIST", "ARTIST_ID", null,
                 "PAINTING", "ARTIST_ID", null);
-        assertEquals(strategy.createDbRelationshipName(key, false), "artist"); 
-        assertEquals(strategy.createDbRelationshipName(key, true), "paintings");
+        assertEquals(strategy.createDbRelationshipName(key, false), "toArtist"); 
+        assertEquals(strategy.createDbRelationshipName(key, true), "paintingArray");
         
         key = new ExportedKey("PERSON", "PERSON_ID", null,
                 "PERSON", "MOTHER_ID", null);
-        assertEquals(strategy.createDbRelationshipName(key, false), "mother"); 
-        assertEquals(strategy.createDbRelationshipName(key, true), "people");
-        
-        key = new ExportedKey("PERSON", "PERSON_ID", null,
-                "ADDRESS", "SHIPPING_ADDRESS_ID", null);
-        assertEquals(strategy.createDbRelationshipName(key, false), "shippingAddress"); 
-        assertEquals(strategy.createDbRelationshipName(key, true), "addresses");
+        assertEquals(strategy.createDbRelationshipName(key, false), "toPerson"); 
+        assertEquals(strategy.createDbRelationshipName(key, true), "personArray");
         
         assertEquals(strategy.createObjEntityName(new DbEntity("ARTIST")), "Artist");
         assertEquals(strategy.createObjEntityName(new DbEntity("ARTIST_WORK")), "ArtistWork");
@@ -49,7 +44,7 @@ public class SmartNameGeneratorTest extends TestCase {
         assertEquals(strategy.createObjAttributeName(new DbAttribute("NAME")), "name");
         assertEquals(strategy.createObjAttributeName(new DbAttribute("ARTIST_NAME")), "artistName");
         
-        assertEquals(strategy.createObjRelationshipName(new DbRelationship("mother")), "mother");
-        assertEquals(strategy.createObjRelationshipName(new DbRelationship("persons")), "persons");
+        assertEquals(strategy.createObjRelationshipName(new DbRelationship("toArtist")), "toArtist");
+        assertEquals(strategy.createObjRelationshipName(new DbRelationship("paintingArray")), "paintingArray");
     }
 }

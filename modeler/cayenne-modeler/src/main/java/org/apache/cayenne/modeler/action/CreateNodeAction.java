@@ -112,7 +112,7 @@ public class CreateNodeAction extends CayenneAction {
      * A factory method that makes a new DataNode.
      */
     DataNodeDescriptor buildDataNode(DataChannelDescriptor domain) {
-        DataNodeDescriptor node = new DataNodeDescriptor(DefaultUniqueNameGenerator.generate(NameCheckers.DataNodeDescriptor, domain));
+        DataNodeDescriptor node = new DataNodeDescriptor(DefaultUniqueNameGenerator.generate(NameCheckers.dataNodeDescriptor, domain));
         node.setDataChannelDescriptor(domain);
 
         return node;

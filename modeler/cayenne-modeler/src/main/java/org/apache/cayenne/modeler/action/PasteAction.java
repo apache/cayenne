@@ -173,7 +173,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             // paste DataMap to DataDomain or DataNode
             DataMap dataMap = ((DataMap) content);
 
-            dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, COPY_PATTERN, domain, dataMap.getName()));
+            dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, COPY_PATTERN, domain, dataMap.getName()));
 
             /**
              * Update all names in the new DataMap, so that they would not conflict with
@@ -189,7 +189,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String oldName = dbEntity.getName();
-                dbEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DbEntity, COPY_PATTERN, domain, dbEntity.getName()));
+                dbEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dbEntity, COPY_PATTERN, domain, dbEntity.getName()));
 
                 if (!oldName.equals(dbEntity.getName())) {
                     renamedDbEntities.put(oldName, dbEntity.getName());
@@ -197,7 +197,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
             for (ObjEntity objEntity : dataMap.getObjEntities()) {
                 String oldName = objEntity.getName();
-                objEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjEntity, COPY_PATTERN, domain, objEntity.getName()));
+                objEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, COPY_PATTERN, domain, objEntity.getName()));
 
                 if (!oldName.equals(objEntity.getName())) {
                     renamedObjEntities.put(oldName, objEntity.getName());
@@ -206,7 +206,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             for (Embeddable embeddable : dataMap.getEmbeddables()) {
                 String oldName = embeddable.getClassName();
-                embeddable.setClassName(DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, COPY_PATTERN, domain, embeddable.getClassName()));
+                embeddable.setClassName(DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, COPY_PATTERN, domain, embeddable.getClassName()));
 
                 if (!oldName.equals(embeddable.getClassName())) {
                     renamedEmbeddables.put(oldName, embeddable.getClassName());
@@ -214,10 +214,10 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
 
             for (Procedure procedure : dataMap.getProcedures()) {
-                procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Procedure, COPY_PATTERN, domain, procedure.getName()));
+                procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.procedure, COPY_PATTERN, domain, procedure.getName()));
             }
             for (Query query : dataMap.getQueries()) {
-                ((AbstractQuery) query).setName(DefaultUniqueNameGenerator.generate(NameCheckers.Query, COPY_PATTERN, domain, query.getName()));
+                ((AbstractQuery) query).setName(DefaultUniqueNameGenerator.generate(NameCheckers.query, COPY_PATTERN, domain, query.getName()));
             }
 
             // if an entity was renamed, we rename all links to it too
@@ -259,7 +259,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             if (content instanceof DbEntity) {
                 DbEntity dbEntity = (DbEntity) content;
-                dbEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DbEntity, COPY_PATTERN, domain, dbEntity.getName()));
+                dbEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dbEntity, COPY_PATTERN, domain, dbEntity.getName()));
 
                 dataMap.addDbEntity(dbEntity);
                 CreateDbEntityAction.fireDbEntityEvent(this, mediator, dbEntity);
@@ -267,7 +267,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof ObjEntity) {
                 // paste ObjEntity to DataMap
                 ObjEntity objEntity = (ObjEntity) content;
-                objEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjEntity, COPY_PATTERN, domain, objEntity.getName()));
+                objEntity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, COPY_PATTERN, domain, objEntity.getName()));
 
                 dataMap.addObjEntity(objEntity);
                 CreateObjEntityAction.fireObjEntityEvent(
@@ -279,7 +279,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof Embeddable) {
                 // paste Embeddable to DataMap
                 Embeddable embeddable = (Embeddable) content;
-                embeddable.setClassName(DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, COPY_PATTERN, domain, embeddable.getClassName()));
+                embeddable.setClassName(DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, COPY_PATTERN, domain, embeddable.getClassName()));
 
                 dataMap.addEmbeddable(embeddable);
                 CreateEmbeddableAction.fireEmbeddableEvent(
@@ -291,7 +291,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof EJBQLQuery) {
                 EJBQLQuery query = (EJBQLQuery) content;
 
-                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Query, COPY_PATTERN, domain, query.getName()));
+                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.query, COPY_PATTERN, domain, query.getName()));
                 query.setDataMap(dataMap);
 
                 dataMap.addQuery(query);
@@ -301,7 +301,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 // paste Query to DataMap
                 AbstractQuery query = (AbstractQuery) content;
 
-                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Query, COPY_PATTERN, domain, query.getName()));
+                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.query, COPY_PATTERN, domain, query.getName()));
                 query.setDataMap(dataMap);
 
                 dataMap.addQuery(query);
@@ -310,7 +310,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if (content instanceof Procedure) {
                 // paste Procedure to DataMap
                 Procedure procedure = (Procedure) content;
-                procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.Procedure, COPY_PATTERN, domain, procedure.getName()));
+                procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.procedure, COPY_PATTERN, domain, procedure.getName()));
 
                 dataMap.addProcedure(procedure);
                 CreateProcedureAction.fireProcedureEvent(
@@ -325,7 +325,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             if (content instanceof DbAttribute) {
                 DbAttribute attr = (DbAttribute) content;
-                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DbAttribute, COPY_PATTERN, dbEntity, attr.getName()));
+                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dbAttribute, COPY_PATTERN, dbEntity, attr.getName()));
 
                 dbEntity.addAttribute(attr);
                 CreateAttributeAction.fireDbAttributeEvent(this, mediator, mediator
@@ -333,7 +333,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
             else if (content instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) content;
-                rel.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, COPY_PATTERN, dbEntity, rel.getName()));
+                rel.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dbRelationship, COPY_PATTERN, dbEntity, rel.getName()));
 
                 dbEntity.addRelationship(rel);
                 CreateRelationshipAction.fireDbRelationshipEvent(
@@ -349,7 +349,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             if (content instanceof ObjAttribute) {
                 ObjAttribute attr = (ObjAttribute) content;
-                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, COPY_PATTERN, objEntity, attr.getName()));
+                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, COPY_PATTERN, objEntity, attr.getName()));
 
                 objEntity.addAttribute(attr);
                 CreateAttributeAction.fireObjAttributeEvent(this, mediator, mediator
@@ -357,7 +357,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
             else if (content instanceof ObjRelationship) {
                 ObjRelationship rel = (ObjRelationship) content;
-                rel.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, COPY_PATTERN, objEntity, rel.getName()));
+                rel.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, COPY_PATTERN, objEntity, rel.getName()));
 
                 objEntity.addRelationship(rel);
                 CreateRelationshipAction.fireObjRelationshipEvent(
@@ -369,7 +369,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             else if(content instanceof ObjCallbackMethod) {
                 ObjCallbackMethod method = (ObjCallbackMethod) content;
 
-                method.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjCallbackMethod, COPY_PATTERN, objEntity, method.getName()));
+                method.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objCallbackMethod, COPY_PATTERN, objEntity, method.getName()));
                 
                 objEntity.getCallbackMap().getCallbackDescriptor(mediator.getCurrentCallbackType().getType()).addCallbackMethod(method.getName());
 
@@ -388,7 +388,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             if (content instanceof EmbeddableAttribute) {
                 EmbeddableAttribute attr = (EmbeddableAttribute) content;
-                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.EmbeddableAttribute, COPY_PATTERN, embeddable, attr.getName()));
+                attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.embeddableAttribute, COPY_PATTERN, embeddable, attr.getName()));
 
                 embeddable.addAttribute(attr);
                 CreateAttributeAction.fireEmbeddableAttributeEvent(
@@ -407,7 +407,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             if (content instanceof ProcedureParameter) {
                 ProcedureParameter param = (ProcedureParameter) content;
 
-                param.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ProcedureParameter, COPY_PATTERN, procedure, param.getName()));
+                param.setName(DefaultUniqueNameGenerator.generate(NameCheckers.procedureParameter, COPY_PATTERN, procedure, param.getName()));
 
                 procedure.addCallParameter(param);
                 CreateProcedureParameterAction.fireProcedureParameterEvent(

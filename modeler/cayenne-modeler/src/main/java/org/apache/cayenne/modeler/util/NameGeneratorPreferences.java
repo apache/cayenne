@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.map.naming.BasicNameGenerator;
-import org.apache.cayenne.map.naming.SmartNameGenerator;
+import org.apache.cayenne.map.naming.LegacyNameGenerator;
+import org.apache.cayenne.map.naming.DefaultNameGenerator;
 import org.apache.cayenne.modeler.Application;
 
 /**
@@ -31,15 +31,15 @@ import org.apache.cayenne.modeler.Application;
  */
 public class NameGeneratorPreferences {
 
-    private static final String STRATEGIES_PREFERENCE = "recent.name.generators";
+    private static final String STRATEGIES_PREFERENCE = "name.generators.recent";
 
     /**
      * Naming strategies to appear in combobox by default
      */
     private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
     static {
-        PREDEFINED_STRATEGIES.add(BasicNameGenerator.class.getCanonicalName());
-        PREDEFINED_STRATEGIES.add(SmartNameGenerator.class.getCanonicalName());
+        PREDEFINED_STRATEGIES.add(DefaultNameGenerator.class.getCanonicalName());
+        PREDEFINED_STRATEGIES.add(LegacyNameGenerator.class.getCanonicalName());
     }
 
     static final NameGeneratorPreferences instance = new NameGeneratorPreferences();

@@ -65,7 +65,7 @@ public class CreateDbEntityAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         DataMap map = mediator.getCurrentDataMap();
-        DbEntity entity = new DbEntity(DefaultUniqueNameGenerator.generate(NameCheckers.DbEntity, map));
+        DbEntity entity = new DbEntity(DefaultUniqueNameGenerator.generate(NameCheckers.dbEntity, map));
 
         createEntity(map, entity);
 

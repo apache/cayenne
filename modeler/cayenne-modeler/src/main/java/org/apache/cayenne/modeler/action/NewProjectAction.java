@@ -68,7 +68,7 @@ public class NewProjectAction extends ProjectAction {
 
         DataChannelDescriptor domain = new DataChannelDescriptor();
 
-        domain.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataChannelDescriptor, domain));
+        domain.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataChannelDescriptor, domain));
 
         Project project = new Project(
                 new ConfigurationTree<DataChannelDescriptor>(domain));

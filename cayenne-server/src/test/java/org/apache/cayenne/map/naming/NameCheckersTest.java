@@ -43,7 +43,7 @@ public class NameCheckersTest {
 
     @Test
     public void testObjEntityAttributes() throws Exception {
-        NameCheckers maker = NameCheckers.ObjAttribute;
+        NameCheckers maker = NameCheckers.objAttribute;
         ObjEntity namingContainer = new ObjEntity();
 
         String baseName = maker.baseName();
@@ -63,7 +63,7 @@ public class NameCheckersTest {
         assertEquals(baseName + "3", name);
         namingContainer.addAttribute(new ObjAttribute(name));
 
-        maker = NameCheckers.ObjRelationship;
+        maker = NameCheckers.objRelationship;
         baseName = maker.baseName();
         name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName, name);
@@ -73,7 +73,7 @@ public class NameCheckersTest {
         assertEquals(baseName + "1", name);
         namingContainer.addRelationship(new ObjRelationship(name));
 
-        maker = NameCheckers.ObjCallbackMethod;
+        maker = NameCheckers.objCallbackMethod;
         baseName = maker.baseName();
         name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName, name);
@@ -85,23 +85,23 @@ public class NameCheckersTest {
         DataMap map = new DataMap();
 
         map.addDbEntity(new DbEntity("name"));
-        checkNameAndOther(map, NameCheckers.DbEntity, "name");
+        checkNameAndOther(map, NameCheckers.dbEntity, "name");
 
         map.addObjEntity(new ObjEntity("name"));
-        checkNameAndOther(map, NameCheckers.ObjEntity, "name");
+        checkNameAndOther(map, NameCheckers.objEntity, "name");
 
         map.addProcedure(new Procedure("name"));
-        checkNameAndOther(map, NameCheckers.Procedure, "name");
+        checkNameAndOther(map, NameCheckers.procedure, "name");
 
         SelectQuery query = new SelectQuery("name");
         query.setName("name");
         map.addQuery(query);
-        checkNameAndOther(map, NameCheckers.Query, "name");
+        checkNameAndOther(map, NameCheckers.query, "name");
     }
 
     @Test
     public void testProject() throws Exception {
-        assertFalse(NameCheckers.DataChannelDescriptor.isNameInUse(null, null));
+        assertFalse(NameCheckers.dataChannelDescriptor.isNameInUse(null, null));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class NameCheckersTest {
         DbEntity dbEntity = new DbEntity();
 
         dbEntity.addRelationship(new DbRelationship("name"));
-        checkNameAndOther(dbEntity, NameCheckers.DbRelationship, "name");
+        checkNameAndOther(dbEntity, NameCheckers.dbRelationship, "name");
     }
 
     @Test
@@ -117,7 +117,7 @@ public class NameCheckersTest {
         Procedure procedure = new Procedure();
 
         procedure.addCallParameter(new ProcedureParameter("name"));
-        checkNameAndOther(procedure, NameCheckers.ProcedureParameter, "name");
+        checkNameAndOther(procedure, NameCheckers.procedureParameter, "name");
     }
 
     @Test
@@ -125,7 +125,7 @@ public class NameCheckersTest {
         Embeddable embeddable = new Embeddable();
 
         embeddable.addAttribute(new EmbeddableAttribute("name"));
-        checkNameAndOther(embeddable, NameCheckers.EmbeddableAttribute, "name");
+        checkNameAndOther(embeddable, NameCheckers.embeddableAttribute, "name");
     }
 
     @Test
@@ -133,10 +133,10 @@ public class NameCheckersTest {
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
 
         descriptor.getDataMaps().add(new DataMap("name"));
-        checkNameAndOther(descriptor, NameCheckers.DataMap, "name");
+        checkNameAndOther(descriptor, NameCheckers.dataMap, "name");
 
         descriptor.getNodeDescriptors().add(new DataNodeDescriptor("name"));
-        checkNameAndOther(descriptor, NameCheckers.DataNodeDescriptor, "name");
+        checkNameAndOther(descriptor, NameCheckers.dataNodeDescriptor, "name");
     }
 
     @Test
@@ -144,10 +144,10 @@ public class NameCheckersTest {
         DataDomain dataDomain = new DataDomain("name");
 
         dataDomain.addDataMap(new DataMap("name"));
-        checkNameAndOther(dataDomain, NameCheckers.DataMap, "name");
+        checkNameAndOther(dataDomain, NameCheckers.dataMap, "name");
 
-        assertFalse(NameCheckers.DataMap.isNameInUse(null, "name"));
-        assertFalse(NameCheckers.DataMap.isNameInUse(1, "name"));
+        assertFalse(NameCheckers.dataMap.isNameInUse(null, "name"));
+        assertFalse(NameCheckers.dataMap.isNameInUse(1, "name"));
     }
 
     private void checkNameAndOther(Object namingContainer, NameCheckers maker, String newName) {
@@ -161,13 +161,13 @@ public class NameCheckersTest {
         ObjEntity namingContainer = new ObjEntity();
 
         namingContainer.addAttribute(new ObjAttribute("myName"));
-        Assert.assertEquals("getMyName1", DefaultUniqueNameGenerator.generate(NameCheckers.ObjCallbackMethod, namingContainer, "getMyName"));
+        Assert.assertEquals("getMyName1", DefaultUniqueNameGenerator.generate(NameCheckers.objCallbackMethod, namingContainer, "getMyName"));
 
         namingContainer.getCallbackMap().getPostAdd().addCallbackMethod("getSecondName");
-        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, namingContainer, "SecondName"));
-        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, namingContainer, "secondName"));
-        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, namingContainer, "SecondName"));
-        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, namingContainer, "secondName"));
+        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "SecondName"));
+        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "secondName"));
+        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, namingContainer, "SecondName"));
+        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, namingContainer, "secondName"));
     }
 
     @Test
@@ -175,12 +175,12 @@ public class NameCheckersTest {
         ObjEntity namingContainer = new ObjEntity();
 
         namingContainer.addAttribute(new ObjAttribute("myName"));
-        Assert.assertTrue(NameCheckers.ObjAttribute.isNameInUse(namingContainer, "myName"));
-        Assert.assertFalse(NameCheckers.ObjAttribute.isNameInUse(namingContainer, "MyName"));
+        Assert.assertTrue(NameCheckers.objAttribute.isNameInUse(namingContainer, "myName"));
+        Assert.assertFalse(NameCheckers.objAttribute.isNameInUse(namingContainer, "MyName"));
 
         namingContainer.getCallbackMap().getPostAdd().addCallbackMethod("getSecondName");
-        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, namingContainer, "SecondName"));
-        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, namingContainer, "secondName"));
+        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "SecondName"));
+        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "secondName"));
     }
 
     @Test
@@ -188,17 +188,17 @@ public class NameCheckersTest {
         DataMap map = new DataMap();
 
         map.addEmbeddable(new Embeddable("name"));
-        Assert.assertTrue(NameCheckers.Embeddable.isNameInUse(map, "name"));
-        Assert.assertEquals("name1", DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, map, "name"));
-        Assert.assertFalse(NameCheckers.Embeddable.isNameInUse(map, "other-name"));
+        Assert.assertTrue(NameCheckers.embeddable.isNameInUse(map, "name"));
+        Assert.assertEquals("name1", DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
+        Assert.assertFalse(NameCheckers.embeddable.isNameInUse(map, "other-name"));
 
         map.setDefaultPackage("package");
-        Assert.assertFalse(NameCheckers.Embeddable.isNameInUse(map, "name"));
-        Assert.assertEquals("package.name", DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, map, "name"));
+        Assert.assertFalse(NameCheckers.embeddable.isNameInUse(map, "name"));
+        Assert.assertEquals("package.name", DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
         map.addEmbeddable(new Embeddable("package.name"));
 
-        Assert.assertTrue(NameCheckers.Embeddable.isNameInUse(map, "name"));
-        Assert.assertEquals("package.name1", DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, map, "name"));
-        Assert.assertFalse(NameCheckers.Embeddable.isNameInUse(map, "other-name"));
+        Assert.assertTrue(NameCheckers.embeddable.isNameInUse(map, "name"));
+        Assert.assertEquals("package.name1", DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
+        Assert.assertFalse(NameCheckers.embeddable.isNameInUse(map, "other-name"));
     }
 }

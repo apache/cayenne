@@ -71,7 +71,7 @@ public class CreateObjEntityAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         DataMap dataMap = mediator.getCurrentDataMap();
-        ObjEntity entity = new ObjEntity(DefaultUniqueNameGenerator.generate(NameCheckers.ObjEntity, dataMap));
+        ObjEntity entity = new ObjEntity(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, dataMap));
 
         // init defaults
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
@@ -81,7 +81,7 @@ public class CreateObjEntityAction extends CayenneAction {
         if (dbEntity != null) {
             entity.setDbEntity(dbEntity);
             String baseName = NameConverter.underscoredToJava(dbEntity.getName(), true);
-            entity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjEntity, dbEntity.getDataMap(), baseName));
+            entity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, dbEntity.getDataMap(), baseName));
         }
 
         String pkg = dataMap.getDefaultPackage();

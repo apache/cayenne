@@ -34,14 +34,14 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum NameCheckers implements NameChecker {
 
-	DataChannelDescriptor("project") {
+	dataChannelDescriptor("project") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			return false;
 		}
 	},
 
-	DataMap("datamap") {
+	dataMap("datamap") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			// null context is a situation when DataMap is a
@@ -63,7 +63,7 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	ObjEntity("ObjEntity") {
+	objEntity("ObjEntity") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataMap map = (DataMap) namingContext;
@@ -71,7 +71,7 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	Embeddable("Embeddable") {
+	embeddable("Embeddable") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataMap map = (DataMap) namingContext;
@@ -83,7 +83,7 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	EmbeddableAttribute("untitledAttr") {
+	embeddableAttribute("untitledAttr") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			Embeddable emb = (Embeddable) namingContext;
@@ -91,7 +91,7 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	DbEntity("db_entity") {
+	dbEntity("db_entity") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataMap map = (DataMap) namingContext;
@@ -99,7 +99,7 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	ProcedureParameter("UntitledProcedureParameter") {
+	procedureParameter("UntitledProcedureParameter") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 
@@ -118,7 +118,7 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	Procedure("procedure") {
+	procedure("procedure") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataMap map = (DataMap) namingContext;
@@ -126,7 +126,7 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	Query("query") {
+	query("query") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataMap map = (DataMap) namingContext;
@@ -134,14 +134,14 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	ObjAttribute("untitledAttr") {
+	objAttribute("untitledAttr") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
-			return ObjRelationship.isNameInUse(namingContext, name);
+			return objRelationship.isNameInUse(namingContext, name);
 		}
 	},
 
-	DbAttribute("untitledAttr") {
+	dbAttribute("untitledAttr") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			Entity ent = (Entity) namingContext;
@@ -150,7 +150,7 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	DataNodeDescriptor("datanode") {
+	dataNodeDescriptor("datanode") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataChannelDescriptor domain = (DataChannelDescriptor) namingContext;
@@ -164,30 +164,30 @@ public enum NameCheckers implements NameChecker {
 		}
 	},
 
-	ObjRelationship("untitledRel") {
+	objRelationship("untitledRel") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			ObjEntity ent = (ObjEntity) namingContext;
-			return DbAttribute.isNameInUse(namingContext, name)
+			return dbAttribute.isNameInUse(namingContext, name)
 					|| ent.getCallbackMethods().contains(
 							"get" + StringUtils.capitalize(name));
 		}
 	},
 
-	DbRelationship("untitledRel") {
+	dbRelationship("untitledRel") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
-			return DbAttribute.isNameInUse(namingContext, name);
+			return dbAttribute.isNameInUse(namingContext, name);
 		}
 	},
 
-	ObjCallbackMethod("ObjCallbackMethod") {
+	objCallbackMethod("ObjCallbackMethod") {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			ObjEntity ent = (ObjEntity) namingContext;
 
 			return name.startsWith("get")
-					&& DbAttribute.isNameInUse(namingContext,
+					&& dbAttribute.isNameInUse(namingContext,
 							StringUtils.uncapitalize(name.substring(3)))
 					|| ent.getCallbackMethods().contains(name);
 		}

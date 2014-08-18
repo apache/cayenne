@@ -53,7 +53,7 @@ public class CreateProcedureAction extends CayenneAction {
         ProjectController mediator = getProjectController();
         DataMap map = mediator.getCurrentDataMap();
 
-        Procedure procedure = new Procedure(DefaultUniqueNameGenerator.generate(NameCheckers.Procedure, map));
+        Procedure procedure = new Procedure(DefaultUniqueNameGenerator.generate(NameCheckers.procedure, map));
 
         createProcedure(map, procedure);
 

@@ -628,7 +628,7 @@ public class EOModelProcessor {
             if (relationship.getReverseRelationship() == null) {
                 DbRelationship reverse = relationship.createReverseRelationship();
 
-                String name = DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, reverse.getSourceEntity(), relationship.getName() + "Reverse");
+                String name = DefaultUniqueNameGenerator.generate(NameCheckers.dbRelationship, reverse.getSourceEntity(), relationship.getName() + "Reverse");
                 reverse.setName(name);
                 relationship.getTargetEntity().addRelationship(reverse);
             }

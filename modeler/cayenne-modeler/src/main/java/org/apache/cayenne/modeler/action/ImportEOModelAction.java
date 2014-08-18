@@ -302,7 +302,7 @@ public class ImportEOModelAction extends CayenneAction {
         else {
             // fix DataMap name, as there maybe a map with the same name already
             DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-            map.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, domain, map.getName()));
+            map.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, domain, map.getName()));
 
             // side effect of this operation is that if a node was created, this DataMap
             // will be linked with it...

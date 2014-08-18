@@ -64,7 +64,7 @@ public class CreateDataMapAction extends CayenneAction {
                 .getProject()
                 .getRootNode();
 
-        DataMap map = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, currentDomain));
+        DataMap map = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, currentDomain));
 
         // set configuration source for new dataMap
         Resource baseResource = currentDomain.getConfigurationSource();

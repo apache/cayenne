@@ -96,10 +96,10 @@ public class ImportDataMapAction extends CayenneAction {
                     .getRootNode();
 
             if (newMap.getName() != null) {
-                newMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, domain, newMap.getName()));
+                newMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, domain, newMap.getName()));
             }
             else {
-                newMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, domain));
+                newMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, domain));
             }
             
             Resource baseResource = domain.getConfigurationSource();

@@ -345,8 +345,8 @@ public class DbLoaderHelper {
             DbLoaderHelper.this.existingMap = dataMap != null;
 
             if (!existingMap) {
-                dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap));
-                dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.DataMap, mediator.getProject().getRootNode()));
+                dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap));
+                dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, mediator.getProject().getRootNode()));
                 dataMap.setDefaultSchema(schemaName);
             }
 

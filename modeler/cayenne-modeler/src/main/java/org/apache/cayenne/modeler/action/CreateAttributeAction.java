@@ -77,7 +77,7 @@ public class CreateAttributeAction extends CayenneAction {
             Embeddable embeddable = mediator.getCurrentEmbeddable();
 
             EmbeddableAttribute attr = new EmbeddableAttribute();
-            attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.EmbeddableAttribute, embeddable));
+            attr.setName(DefaultUniqueNameGenerator.generate(NameCheckers.embeddableAttribute, embeddable));
 
             createEmbAttribute(embeddable, attr);
 
@@ -89,7 +89,7 @@ public class CreateAttributeAction extends CayenneAction {
 
             ObjEntity objEntity = mediator.getCurrentObjEntity();
 
-            ObjAttribute attr = new ObjAttribute(DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, objEntity), null, objEntity);
+            ObjAttribute attr = new ObjAttribute(DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, objEntity), null, objEntity);
 
             createObjAttribute(mediator.getCurrentDataMap(), objEntity, attr);
 
@@ -99,7 +99,7 @@ public class CreateAttributeAction extends CayenneAction {
         } else if (getProjectController().getCurrentDbEntity() != null) {
             DbEntity dbEntity = getProjectController().getCurrentDbEntity();
 
-            DbAttribute attr = new DbAttribute(DefaultUniqueNameGenerator.generate(NameCheckers.DbAttribute, dbEntity),
+            DbAttribute attr = new DbAttribute(DefaultUniqueNameGenerator.generate(NameCheckers.dbAttribute, dbEntity),
                     TypesMapping.NOT_DEFINED, dbEntity);
 
             createDbAttribute(mediator.getCurrentDataMap(), dbEntity, attr);
