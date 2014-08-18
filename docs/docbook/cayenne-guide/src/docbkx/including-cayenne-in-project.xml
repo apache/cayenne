@@ -135,9 +135,6 @@
                             <td>File</td>
                             <td>Root destination directory for Java classes (ignoring their package
                                 names). The default is "src/main/java".</td>
-                            <td/>
-                            <td/>
-                            <td/>
                         </tr>
                         <tr>
                             <td><code>embeddableTemplate</code></td>
