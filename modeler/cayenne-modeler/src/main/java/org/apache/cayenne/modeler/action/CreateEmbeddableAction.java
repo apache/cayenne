@@ -56,7 +56,7 @@ public class CreateEmbeddableAction extends CayenneAction {
 
         DataMap dataMap = mediator.getCurrentDataMap();
 
-        Embeddable embeddable = new Embeddable(DefaultUniqueNameGenerator.generate(NameCheckers.Embeddable, mediator.getCurrentDataMap()));
+        Embeddable embeddable = new Embeddable(DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, mediator.getCurrentDataMap()));
         createEmbeddable(dataMap, embeddable);
 
         application.getUndoManager().addEdit(

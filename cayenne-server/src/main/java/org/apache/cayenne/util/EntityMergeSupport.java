@@ -36,7 +36,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.naming.BasicNameGenerator;
+import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
@@ -75,7 +75,7 @@ public class EntityMergeSupport {
     protected List<EntityMergeListener> listeners;
 
     public EntityMergeSupport(DataMap map) {
-        this(map, new BasicNameGenerator(), true);
+        this(map, new LegacyNameGenerator(), true);
     }
 
     /**
@@ -172,7 +172,7 @@ public class EntityMergeSupport {
 
                 String attrName = nameGenerator.createObjAttributeName(da);
                 // avoid duplicate names
-                attrName = DefaultUniqueNameGenerator.generate(NameCheckers.ObjAttribute, entity, attrName);
+                attrName = DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, entity, attrName);
 
                 String type = TypesMapping.getJavaBySqlType(da.getType());
 
@@ -198,7 +198,7 @@ public class EntityMergeSupport {
 
                     // avoid duplicate names
                     String relationshipName = nameGenerator.createObjRelationshipName(dr);
-                    relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, entity, relationshipName);
+                    relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, entity, relationshipName);
 
                     ObjRelationship or = new ObjRelationship(relationshipName);
                     or.addDbRelationship(dr);

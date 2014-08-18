@@ -68,7 +68,7 @@ public class CreateRelationshipAction extends CayenneAction {
         ObjEntity objEnt = getProjectController().getCurrentObjEntity();
         if (objEnt != null) {
 
-            ObjRelationship rel = new ObjRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, objEnt));
+            ObjRelationship rel = new ObjRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, objEnt));
             createObjRelationship(objEnt, rel);
 
             application.getUndoManager().addEdit(
@@ -77,7 +77,7 @@ public class CreateRelationshipAction extends CayenneAction {
             DbEntity dbEnt = getProjectController().getCurrentDbEntity();
             if (dbEnt != null) {
 
-                DbRelationship rel = new DbRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, dbEnt));
+                DbRelationship rel = new DbRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.dbRelationship, dbEnt));
                 createDbRelationship(dbEnt, rel);
 
                 application.getUndoManager().addEdit(

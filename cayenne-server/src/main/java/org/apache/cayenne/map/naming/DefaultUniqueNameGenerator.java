@@ -45,8 +45,8 @@ public class DefaultUniqueNameGenerator implements UniqueNameGenerator {
 
     public static String generate(NameChecker checker, String pattern, Object context, String baseName) {
         DefaultUniqueNameGenerator generator;
-        if (checker == NameCheckers.Embeddable) {
-            generator = new DefaultUniqueNameGenerator(NameCheckers.Embeddable, pattern) {
+        if (checker == NameCheckers.embeddable) {
+            generator = new DefaultUniqueNameGenerator(NameCheckers.embeddable, pattern) {
                 @Override
                 public String generate(Object namingContext, String nameBase) {
                     String name = super.generate(namingContext, nameBase);

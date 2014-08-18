@@ -78,7 +78,7 @@ public class CreateCallbackMethodAction extends CayenneAction {
 
         // generate methodName
         String methodNamePrefix = toMethodName(callbackType.getType());
-        String methodName = DefaultUniqueNameGenerator.generate(NameCheckers.ObjCallbackMethod, getProjectController().getCurrentObjEntity(), methodNamePrefix);
+        String methodName = DefaultUniqueNameGenerator.generate(NameCheckers.objCallbackMethod, getProjectController().getCurrentObjEntity(), methodNamePrefix);
 
         createCallbackMethod(callbackType, methodName);
         application.getUndoManager().addEdit(

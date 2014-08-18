@@ -292,7 +292,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }
 
         if (sourceEntityName == null) {
-            sourceEntityName = DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, relationship.getSourceEntity());
+            sourceEntityName = DefaultUniqueNameGenerator.generate(NameCheckers.dbRelationship, relationship.getSourceEntity());
         }
 
         if (!validateName(relationship.getSourceEntity(), relationship, sourceEntityName)) {
@@ -305,7 +305,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }
 
         if (targetEntityName == null) {
-            targetEntityName = DefaultUniqueNameGenerator.generate(NameCheckers.DbRelationship, relationship.getTargetEntity());
+            targetEntityName = DefaultUniqueNameGenerator.generate(NameCheckers.dbRelationship, relationship.getTargetEntity());
         }
 
         // check if reverse name is valid

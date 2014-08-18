@@ -97,7 +97,7 @@ class ManyToManyCandidateEntity {
                 null);
 
         ObjRelationship newRelationship = new ObjRelationship();
-        newRelationship.setName(DefaultUniqueNameGenerator.generate(NameCheckers.ObjRelationship, srcEntity,
+        newRelationship.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, srcEntity,
                 nameGenerator.createDbRelationshipName(key, true)));
 
         newRelationship.setSourceEntity(srcEntity);

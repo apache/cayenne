@@ -31,7 +31,7 @@ import org.jvnet.inflector.Noun;
  * 
  * @since 3.2
  */
-public class SmartNameGenerator implements ObjectNameGenerator {
+public class DefaultNameGenerator implements ObjectNameGenerator {
 
 	@Override
 	public String createDbRelationshipName(ExportedKey key, boolean toMany) {

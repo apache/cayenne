@@ -66,7 +66,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
     public void createProcedureParameter() {
         Procedure procedure = getProjectController().getCurrentProcedure();
 
-        ProcedureParameter parameter = new ProcedureParameter(DefaultUniqueNameGenerator.generate(NameCheckers.ProcedureParameter, procedure));
+        ProcedureParameter parameter = new ProcedureParameter(DefaultUniqueNameGenerator.generate(NameCheckers.procedureParameter, procedure));
         procedure.addCallParameter(parameter);
 
         ProjectController mediator = getProjectController();

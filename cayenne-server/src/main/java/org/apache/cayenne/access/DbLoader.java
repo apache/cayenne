@@ -47,7 +47,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.naming.BasicNameGenerator;
+import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.ExportedKey;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.EntityMergeSupport;
@@ -112,7 +112,7 @@ public class DbLoader {
      * Creates new DbLoader.
      */
     public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate) {
-        this(connection, adapter, delegate, new BasicNameGenerator());
+        this(connection, adapter, delegate, new LegacyNameGenerator());
     }
 
     /**
