@@ -18,18 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
@@ -38,6 +26,13 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A ProjectSaver saving project configuration to the file system.
@@ -280,6 +275,8 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     private void clearOldFiles(Collection<SaveUnit> units) throws IOException {
+        List<File> dataMapFiles = new ArrayList<File>(units.size());
+
         for (SaveUnit unit : units) {
 
             if (unit.sourceConfiguration == null) {
@@ -290,6 +287,7 @@ public class FileProjectSaver implements ProjectSaver {
             File sourceFile;
             try {
                 sourceFile = Util.toFile(sourceUrl);
+                dataMapFiles.add(unit.targetFile);
             }
             catch (IllegalArgumentException e) {
                 // ignore non-file configurations...
@@ -316,6 +314,10 @@ public class FileProjectSaver implements ProjectSaver {
                 }
             }
         }
+
+        if (dataMapFiles != null && dataMapFiles.size()>0) {
+            clearUnusedDataMapFiles(dataMapFiles);
+        }
     }
 
     private boolean isFilesEquals(File firstFile, File secondFile) throws IOException {
@@ -326,6 +328,24 @@ public class FileProjectSaver implements ProjectSaver {
         String secondFilePath = secondFile.getCanonicalPath();
 
         return isFirstFileExists && isSecondFileExists && firstFilePath.equals(secondFilePath);
+    }
+
+    private void clearUnusedDataMapFiles(List<File> dataMapFiles) throws IOException {
+        File dir = dataMapFiles.get(0).getParentFile();
+
+        File[] dirFiles = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String filename) {
+                return filename.endsWith(".map.xml");
+            }
+        });
+
+        for (File file : dirFiles) {
+            if (file.isFile() && !dataMapFiles.contains(file)) {
+                if (!file.delete()) {
+                    throw new CayenneRuntimeException("Could not delete file '%s'", file.getCanonicalPath());
+                }
+            }
+        }
     }
 
     class SaveUnit {

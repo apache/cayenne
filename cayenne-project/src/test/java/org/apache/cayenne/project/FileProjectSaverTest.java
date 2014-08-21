@@ -18,30 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import java.io.File;
-import java.net.URL;
-import java.util.Arrays;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.configuration.*;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.FileProjectSaver;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.URLResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.io.File;
+import java.net.URL;
+import java.util.Arrays;
 
 public class FileProjectSaverTest extends Project2Case {
 
@@ -152,6 +145,47 @@ public class FileProjectSaverTest extends Project2Case {
 
         File target = new File(testFolder.getParentFile(), mapFileName + ".map.xml");
         assertTrue(target.isFile());
+    }
+
+    public void testSaveWithDeleteUnusedDataMap() throws Exception {
+        File testFolder = setupTestDirectory("testSaveWithDeleteUnusedDataMap");
+
+        DataChannelDescriptor rootNode = new DataChannelDescriptor();
+        rootNode.setName("test");
+
+        rootNode.getDataMaps().add(new DataMap("testSave"));
+        rootNode.getDataMaps().add(new DataMap("testDelete"));
+
+        DataNodeDescriptor[] nodes = new DataNodeDescriptor[2];
+        nodes[0] = new DataNodeDescriptor("testSave");
+        nodes[1] = new DataNodeDescriptor("testDelete");
+
+        nodes[0].getDataMapNames().add("testSave");
+        nodes[1].getDataMapNames().add("testDelete");
+
+        rootNode.getNodeDescriptors().addAll(Arrays.asList(nodes));
+
+        Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(
+                rootNode));
+
+        saver.saveAs(project, new URLResource(testFolder.toURL()));
+
+        File target = new File(testFolder, "cayenne-test.xml");
+        File testSave = new File(testFolder, "testSave.map.xml");
+        File testDelete = new File(testFolder, "testDelete.map.xml");
+        assertTrue(target.isFile());
+        assertTrue(testSave.isFile());
+        assertTrue(testDelete.isFile());
+
+        rootNode.getNodeDescriptors().remove(nodes[1]);
+        rootNode.getDataMaps().remove(rootNode.getDataMap("testDelete"));
+
+        saver.save(project);
+
+        assertTrue(target.isFile());
+        assertTrue(testSave.isFile());
+        assertFalse(testDelete.isFile());
+
     }
 
 }
