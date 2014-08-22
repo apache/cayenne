@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -35,6 +27,13 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.Query;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 
 /**
@@ -169,18 +168,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
     
     
     public void setFiltered(HashMap<String,Boolean> filterMap) {
-    	
     	filter.setFilterMap(filterMap);
-        Object[] path = {root};
-        int[] childIndices  = new int[root.getChildCount()];      
-        Object[] children  = new Object[root.getChildCount()];
-       
-        for (int i = 0; i < root.getChildCount(); i++) {
-        	childIndices[i] = i;
-        	children[i] = root.getChildAt(i);
-        }
-        
-        fireTreeStructureChanged(this,path,childIndices, children);	
     }
     
     
@@ -236,5 +224,5 @@ public class ProjectTreeModel extends DefaultTreeModel {
     	  public boolean isFiltered() { 
     		  return pass; 
     	  }
-    	}   
+    	}
 }
