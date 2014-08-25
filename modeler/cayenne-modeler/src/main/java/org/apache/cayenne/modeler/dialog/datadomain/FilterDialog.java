@@ -149,7 +149,7 @@ public class FilterDialog extends JPopupMenu {
 				all.setEnabled(false);
 
                 filterController.getTreeModel().setFiltered(filterController.getFilterMap());
-                filterController.treeExpOrCollPath("expand");
+                filterController.getTree().updateUI();
             }
 		});
 	}
@@ -189,8 +189,8 @@ public class FilterDialog extends JPopupMenu {
 		public void actionPerformed(ActionEvent e) {
 			filterController.getFilterMap().put(key, ((JCheckBoxMenuItem)e.getSource()).isSelected());
 			filterController.getTreeModel().setFiltered(filterController.getFilterMap());
-			filterController.treeExpOrCollPath("expand");
-			checkAllStates();
+            filterController.getTree().updateUI();
+            checkAllStates();
 		}
 	}
 	
