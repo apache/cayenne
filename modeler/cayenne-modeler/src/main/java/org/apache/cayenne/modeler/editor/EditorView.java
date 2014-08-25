@@ -19,20 +19,6 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
@@ -67,6 +53,21 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+
 /**
  * Main display area split into the project navigation tree on the left and selected
  * object editor on the right.
@@ -91,6 +92,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
     protected ProjectController eventController;
     protected JSplitPane splitPane;
+    protected JPanel leftPanel;
     protected Container detailPanel;
     protected CardLayout detailLayout;
     private ProjectTreeView treePanel;
@@ -177,30 +179,30 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 	private void initView() {
 
         // init widgets
-        treePanel = new ProjectTreeView(eventController);            
-        JToolBar bar = new JToolBar();
-        
-        bar.setPreferredSize(new Dimension(100,30));
-        
-        bar.add(Box.createHorizontalGlue());
-        bar.add(getAction(CollapseTreeAction.class).buildButton());
-        bar.add(getAction(FilterAction.class).buildButton());
+        JButton collapseButton = getAction(CollapseTreeAction.class).buildButton();
+        collapseButton.setPreferredSize(new Dimension(35, 30));
+        JButton filterButton = getAction(FilterAction.class).buildButton();
+        filterButton.setPreferredSize(new Dimension(35, 30));
         actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);
         actionManager.getAction(FilterAction.class).setAlwaysOn(true);
-        
-        JPanel treeNavigatePanel = new JPanel();      
-        treeNavigatePanel.setMinimumSize(new Dimension(50,200));
+
+        JPanel barPanel = new JPanel(true);
+        barPanel.setMinimumSize(new Dimension(75, 33));
+        barPanel.setLayout(new FlowLayout(FlowLayout.TRAILING, 1, 0));
+        barPanel.add(collapseButton);
+        barPanel.add(filterButton);
+        barPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+
+        treePanel = new ProjectTreeView(eventController);
+        treePanel.setMinimumSize(new Dimension(75, 180));
+        JPanel treeNavigatePanel = new JPanel();
+        treeNavigatePanel.setMinimumSize(new Dimension(75, 220));
         treeNavigatePanel.setLayout(new BorderLayout());
-        treeNavigatePanel.add(bar, BorderLayout.NORTH);       
         treeNavigatePanel.add(treePanel, BorderLayout.CENTER);
 
-        
-        
-        treePanel.setMinimumSize(new Dimension(50, 180));
-                 
         this.detailPanel = new JPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
-
+        this.leftPanel = new JPanel(new BorderLayout());
         // assemble...
 
         this.detailLayout = new CardLayout();
@@ -247,7 +249,9 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         dbDetailView = new DbEntityTabbedView(eventController);
         detailPanel.add(dbDetailView, DB_VIEW);
 
-        splitPane.setLeftComponent(new JScrollPane(treeNavigatePanel));
+        leftPanel.add(barPanel, BorderLayout.NORTH);
+        leftPanel.add(new JScrollPane(treeNavigatePanel), BorderLayout.CENTER);
+        splitPane.setLeftComponent(leftPanel);
         splitPane.setRightComponent(detailPanel);
 
         setLayout(new BorderLayout());
