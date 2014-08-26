@@ -19,16 +19,7 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.KeyStroke;
-import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoableEdit;
-
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -73,6 +64,18 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.util.Util;
+
+import javax.swing.KeyStroke;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Removes currently selected object from the project. This can be Domain, DataNode,
@@ -443,8 +446,19 @@ public class RemoveAction extends CayenneAction {
                 .getRootNode();
         DataMapEvent e = new DataMapEvent(Application.getFrame(), map, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
-
         domain.getDataMaps().remove(map);
+
+        /**
+         * Removes DataMap *.map.xml file
+         */
+        URL mapUrl = map.getConfigurationSource().getURL();
+        File mapFile = Util.toFile(mapUrl);
+        if (mapFile.exists()) {
+            if (!mapFile.delete()) {
+                throw new CayenneRuntimeException("Could not delete file '%s'", map.getConfigurationSource().getURL());
+            }
+            getProjectController().getFileChangeTracker().removeFile(mapFile.getAbsolutePath());
+        }
         
         Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();
         while(iterator.hasNext()){
