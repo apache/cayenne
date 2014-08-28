@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneException;
@@ -24,24 +23,32 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * DbLoaderDelegate defines API that allows to control the behavior of DbLoader
- * during the database reverse-engineering. Delegate is also notified of the
- * progress of reverse-engineering.
+ * @since 3.2.
  */
-public interface DbLoaderDelegate {
+public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
 
-    /**
-     * Returns true to tell DbLoader that it is OK to overwrite DbEntity that
-     * already exists in the model. If loading process should be stopped
-     * immediately, an exception is thrown.
-     */
-    boolean overwriteDbEntity(DbEntity entity) throws CayenneException;
+    @Override
+    public boolean overwriteDbEntity(DbEntity entity) throws CayenneException {
+        return false;
+    }
 
-    void dbEntityAdded(DbEntity entity);
+    @Override
+    public void dbEntityAdded(DbEntity entity) {
 
-    void dbEntityRemoved(DbEntity entity);
+    }
 
-    void objEntityAdded(ObjEntity entity);
+    @Override
+    public void dbEntityRemoved(DbEntity entity) {
 
-    void objEntityRemoved(ObjEntity entity);
+    }
+
+    @Override
+    public void objEntityAdded(ObjEntity entity) {
+
+    }
+
+    @Override
+    public void objEntityRemoved(ObjEntity entity) {
+
+    }
 }

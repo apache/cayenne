@@ -701,7 +701,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
             if (existingEntity == entity) {
                 return;
             } else {
-                throw new IllegalArgumentException("An attempt to override entity '" + entity.getName());
+                throw new IllegalArgumentException("An attempt to override db entity '" + entity.getName()
+                        + "' in DataMap '" + getName() + "'");
             }
         }
 
@@ -1341,5 +1342,14 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         } else {
             return getObjEntity(object.getClass());
         }
+    }
+
+    public void clear() {
+        clearDbEntities();
+        clearEmbeddables();
+        clearObjEntities();
+        clearProcedures();
+        clearQueries();
+        clearResultSets();
     }
 }
