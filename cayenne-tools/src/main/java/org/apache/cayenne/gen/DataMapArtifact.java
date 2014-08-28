@@ -137,4 +137,8 @@ public class DataMapArtifact implements Artifact {
     public Collection<String> getQueryNames() {
         return queryNames;
     }
+
+    public DataMap getDataMap() {
+    	return dataMap;
+    }
 }

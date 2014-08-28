@@ -18,20 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.datadomain;
 
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.swing.BindingBuilder;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
-
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.MenuSelectionManager;
-import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.basic.BasicCheckBoxMenuItemUI;
-
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.swing.BindingBuilder;
 
 public class FilterDialog extends JPopupMenu {
 	
@@ -110,21 +103,14 @@ public class FilterDialog extends JPopupMenu {
 	public void initView(){
 		
 		all = new JCheckBoxMenuItem(SHOW_ALL);
-		dbEntity = new JCheckBoxMenuItem("DbEntity");	
+		dbEntity = new JCheckBoxMenuItem("DbEntity");
 		objEntity = new JCheckBoxMenuItem("ObjEntity");
 		embeddable = new JCheckBoxMenuItem("Embeddable");
 		procedure = new JCheckBoxMenuItem("Procedure");
 		query = new JCheckBoxMenuItem("Query");
 		
-		all.setUI(new StayOpenCheckBoxMenuItemUI());
-		dbEntity.setUI(new StayOpenCheckBoxMenuItemUI());
-		objEntity.setUI(new StayOpenCheckBoxMenuItemUI());
-		embeddable.setUI(new StayOpenCheckBoxMenuItemUI());
-		procedure.setUI(new StayOpenCheckBoxMenuItemUI());
-		query.setUI(new StayOpenCheckBoxMenuItemUI());
-		
 		add(all);
-		add(new JSeparator());
+		addSeparator();
 		add(dbEntity);
 		add(objEntity);
 		add(embeddable);
@@ -136,7 +122,7 @@ public class FilterDialog extends JPopupMenu {
 		BindingBuilder builder = new BindingBuilder(
 			  eventController.getApplication().getBindingFactory(),
 			  this);
-	
+
 		builder.bindToStateChange(dbEntity, "dbEntityFilter").updateView();
 		builder.bindToStateChange(objEntity, "objEntityFilter").updateView();
 		builder.bindToStateChange(embeddable, "embeddableFilter").updateView();
@@ -149,31 +135,33 @@ public class FilterDialog extends JPopupMenu {
 		embeddable.addActionListener(new CheckListener("embeddable"));
 		procedure.addActionListener(new CheckListener("procedure"));
 		query.addActionListener(new CheckListener("query"));
-	  
+
+        all.setEnabled(false);
 		all.addActionListener(new ActionListener() {
-		
-			public void actionPerformed(ActionEvent e) {
-				dbEntity.setState(true);
-				objEntity.setState(true);
-				embeddable.setState(true);
-				procedure.setState(true);
-				query.setState(true);
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+				dbEntity.setSelected(true);
+				objEntity.setSelected(true);
+				embeddable.setSelected(true);
+				procedure.setSelected(true);
+				query.setSelected(true);
 				all.setEnabled(false);
 
-				filterController.getTreeModel().setFiltered(filterController.getFilterMap());	
-				filterController.treeExpOrCollPath("expand");
-			}
+                filterController.getTreeModel().setFiltered(filterController.getFilterMap());
+                filterController.getTree().updateUI();
+            }
 		});
-	}	
+	}
 
 	void checkAllStates() {
 		if(!isAll()) {
-			all.setState(false);
+			all.setSelected(false);
 			all.setEnabled(true);
 		}
 		else {
-			all.setState(true);
-			all.setEnabled(false);		
+			all.setSelected(true);
+			all.setEnabled(false);
 		}
 	}
 	
@@ -188,34 +176,22 @@ public class FilterDialog extends JPopupMenu {
 
 		return true;
 	}
-	
-	
+
 	private class CheckListener implements ActionListener {
 
 		String key;
-		
+
 		public CheckListener(String key) {
 			this.key = key;
 		}
-		
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			filterController.getFilterMap().put(key, ((JCheckBoxMenuItem)e.getSource()).getState());
+			filterController.getFilterMap().put(key, ((JCheckBoxMenuItem)e.getSource()).isSelected());
 			filterController.getTreeModel().setFiltered(filterController.getFilterMap());
-			filterController.treeExpOrCollPath("expand");
-			checkAllStates();
+            filterController.getTree().updateUI();
+            checkAllStates();
 		}
 	}
 	
-	public static class StayOpenCheckBoxMenuItemUI extends BasicCheckBoxMenuItemUI {  
-		  
-		   @Override  
-		   protected void doClick(MenuSelectionManager msm) {  
-		      menuItem.doClick();  
-		   }  
-		  
-		   public static ComponentUI createUI(JComponent c) {  
-		      return new StayOpenCheckBoxMenuItemUI();  
-		   }  
-		}  
 }
