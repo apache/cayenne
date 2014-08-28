@@ -18,24 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.dialog.FileDeletedDialog;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,36 +52,15 @@ public class ProjectFileChangeTracker extends Thread {
      * The names of the files to observe for changes.
      */
     protected Map<String, FileInfo> files;
-    protected Collection<URL> filesToDelete;
     protected boolean paused;
     protected ProjectController mediator;
 
     public ProjectFileChangeTracker(ProjectController mediator) {
 
         this.files = new ConcurrentHashMap<String, FileInfo>();
-        this.filesToDelete = new ArrayList<URL>();
         this.mediator = mediator;
 
         setName("cayenne-modeler-file-change-tracker");
-    }
-
-    public void addFileToDelete(URL url) {
-        filesToDelete.add(url);
-    }
-
-    public void removeFileFromDelete(URL url) {
-        filesToDelete.remove(url);
-    }
-
-    public void deleteUnusedFiles() throws IOException {
-        for (URL fileUrl : filesToDelete) {
-            File file = Util.toFile(fileUrl);
-            if (file.exists()) {
-                if (!file.delete()) {
-                    throw new CayenneRuntimeException("Could not delete file '%s'", file.getCanonicalPath());
-                }
-            }
-        }
     }
 
     /**
@@ -199,7 +172,6 @@ public class ProjectFileChangeTracker extends Thread {
      */
     public void removeAllFiles() {
         files.clear();
-        filesToDelete.clear();
     }
 
     protected void check() {

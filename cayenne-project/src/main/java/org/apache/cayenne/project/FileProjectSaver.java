@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.util.Util;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,15 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.util.Util;
 
 /**
  * A ProjectSaver saving project configuration to the file system.
@@ -52,10 +52,12 @@ public class FileProjectSaver implements ProjectSaver {
     protected ConfigurationNodeVisitor<Resource> resourceGetter;
     protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> saveableNodesGetter;
     protected String fileEncoding;
+    protected Collection<URL> filesToDelete;
 
     public FileProjectSaver() {
         resourceGetter = new ConfigurationSourceGetter();
         saveableNodesGetter = new SaveableNodesGetter();
+        filesToDelete = new ArrayList<URL>();
 
         // this is not configurable yet... probably doesn't have to be
         fileEncoding = "UTF-8";
@@ -316,6 +318,8 @@ public class FileProjectSaver implements ProjectSaver {
                 }
             }
         }
+
+        deleteUnusedFiles();
     }
 
     private boolean isFilesEquals(File firstFile, File secondFile) throws IOException {
@@ -326,6 +330,26 @@ public class FileProjectSaver implements ProjectSaver {
         String secondFilePath = secondFile.getCanonicalPath();
 
         return isFirstFileExists && isSecondFileExists && firstFilePath.equals(secondFilePath);
+    }
+
+    public void addFileToDelete(URL url) {
+        filesToDelete.add(url);
+    }
+
+    public void removeFileFromDelete(URL url) {
+        filesToDelete.remove(url);
+    }
+
+    public void deleteUnusedFiles() throws IOException {
+        for (URL fileUrl : filesToDelete) {
+            File file = Util.toFile(fileUrl);
+            if (file.exists()) {
+                if (!file.delete()) {
+                    throw new CayenneRuntimeException("Could not delete file '%s'", file.getCanonicalPath());
+                }
+            }
+        }
+        filesToDelete.clear();
     }
 
     class SaveUnit {

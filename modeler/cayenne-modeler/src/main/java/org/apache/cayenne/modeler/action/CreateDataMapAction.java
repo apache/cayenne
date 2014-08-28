@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
 
 import java.awt.event.ActionEvent;
@@ -66,7 +67,8 @@ public class CreateDataMapAction extends CayenneAction {
                 e.printStackTrace();
             }
         }
-        mediator.getFileChangeTracker().removeFileFromDelete(mapUrl);
+        ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
+        saver.removeFileFromDelete(mapUrl);
     }
 
     public void performAction(ActionEvent e) {

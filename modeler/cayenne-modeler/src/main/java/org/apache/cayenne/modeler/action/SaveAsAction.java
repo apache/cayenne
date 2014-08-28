@@ -141,8 +141,6 @@ public class SaveAsAction extends CayenneAction {
 
         Application.getFrame().fireRecentFileListChanged();
 
-        getProjectController().getFileChangeTracker().deleteUnusedFiles();
-
         /**
          * Reset the watcher now
          */

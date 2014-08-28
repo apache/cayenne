@@ -88,8 +88,6 @@ public class SaveAction extends SaveAsAction {
                     p.getConfigurationResource().getURL().getPath());
             Application.getFrame().fireRecentFileListChanged();
 
-            getProjectController().getFileChangeTracker().deleteUnusedFiles();
-
             /**
              * Reset the watcher now
              */

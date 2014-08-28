@@ -44,7 +44,6 @@ import org.apache.cayenne.query.Query;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -311,8 +310,6 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 CreateDataMapAction action = actionManager
                         .getAction(CreateDataMapAction.class);
                 action.createDataMap(map);
-                URL mapUrl = map.getConfigurationSource().getURL();
-                action.getProjectController().getFileChangeTracker().removeFileFromDelete(mapUrl);
                 break;
             }
             case NODE: {

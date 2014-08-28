@@ -61,6 +61,7 @@ import org.apache.cayenne.modeler.undo.RemoveRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
 
@@ -446,7 +447,8 @@ public class RemoveAction extends CayenneAction {
         domain.getDataMaps().remove(map);
 
         URL mapUrl = map.getConfigurationSource().getURL();
-        getProjectController().getFileChangeTracker().addFileToDelete(mapUrl);
+        ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
+        saver.addFileToDelete(mapUrl);
 
         Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();
         while(iterator.hasNext()){
