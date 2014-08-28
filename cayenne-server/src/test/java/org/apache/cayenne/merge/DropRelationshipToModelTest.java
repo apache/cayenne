@@ -143,10 +143,10 @@ public class DropRelationshipToModelTest extends MergeCase {
         // order
         MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
         MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
-        assertTrue(token0 instanceof DropColumnToModel);
-        assertTrue(token1 instanceof DropRelationshipToModel);
-        execute(token1);
+        assertTrue(token0 instanceof DropRelationshipToModel);
+        assertTrue(token1 instanceof DropColumnToModel);
         execute(token0);
+        execute(token1);
 
         // check after merging
         assertNull(dbEntity2.getAttribute(e2col2.getName()));
@@ -173,5 +173,4 @@ public class DropRelationshipToModelTest extends MergeCase {
         assertTokensAndExecute(2, 0);
         assertTokensAndExecute(0, 0);
     }
-
 }

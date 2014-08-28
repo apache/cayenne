@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjRelationship;
  * A default implementation of {@link ModelMergeDelegate} that does nothing by
  * itself.
  */
-class DefaultModelMergeDelegate implements ModelMergeDelegate {
+public class DefaultModelMergeDelegate implements ModelMergeDelegate {
 
     public void dbAttributeAdded(DbAttribute att) {
     }

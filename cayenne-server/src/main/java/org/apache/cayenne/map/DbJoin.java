@@ -138,7 +138,7 @@ public class DbJoin implements XMLSerializable, Serializable {
         targetName = string;
     }
 
-    private final DbRelationship getNonNullRelationship() {
+    private DbRelationship getNonNullRelationship() {
         if (relationship == null) {
             throw new CayenneRuntimeException("Join has no parent Relationship.");
         }

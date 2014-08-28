@@ -41,6 +41,7 @@ import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
@@ -131,6 +132,10 @@ public class DataNode implements QueryEngine {
      * @since 3.1
      */
     public JdbcEventLogger getJdbcEventLogger() {
+        if (jdbcEventLogger == null && adapter instanceof JdbcAdapter) {
+            jdbcEventLogger = ((JdbcAdapter) adapter).getJdbcEventLogger();
+        }
+
         return jdbcEventLogger;
     }
 
@@ -274,7 +279,7 @@ public class DataNode implements QueryEngine {
         try {
             connection = this.getDataSource().getConnection();
         } catch (Exception globalEx) {
-            jdbcEventLogger.logQueryError(globalEx);
+            getJdbcEventLogger().logQueryError(globalEx);
 
             Transaction transaction = BaseTransaction.getThreadTransaction();
             if (transaction != null) {
@@ -294,7 +299,7 @@ public class DataNode implements QueryEngine {
                 try {
                     queryRunner.runQuery(connection, nextQuery);
                 } catch (Exception queryEx) {
-                    jdbcEventLogger.logQueryError(queryEx);
+                    getJdbcEventLogger().logQueryError(queryEx);
 
                     // notify consumer of the exception,
                     // stop running further queries

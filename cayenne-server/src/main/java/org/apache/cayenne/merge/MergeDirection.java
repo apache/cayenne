@@ -24,7 +24,15 @@ package org.apache.cayenne.merge;
  */
 public enum MergeDirection {
 
-    TO_DB("To DB"), TO_MODEL("To Model");
+    /**
+     * TO_DB Token means that changes was made in object model and should be reflected at DB
+     */
+    TO_DB("To DB"),
+
+    /**
+     * TO_MODEL Token represent database changes that should be allayed to object model
+     */
+    TO_MODEL("To Model");
 
     private String name;
 
@@ -46,7 +54,6 @@ public enum MergeDirection {
 
     @Override
     public String toString() {
-        super.toString();
         return getName();
     }
     

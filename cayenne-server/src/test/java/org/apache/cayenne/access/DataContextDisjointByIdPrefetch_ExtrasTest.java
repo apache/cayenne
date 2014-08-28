@@ -44,8 +44,10 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Ignore;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@Ignore
 public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
 
     @Inject

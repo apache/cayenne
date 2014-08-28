@@ -35,7 +35,7 @@ import org.apache.cayenne.map.ObjEntity;
 public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
     public DropColumnToModel(DbEntity entity, DbAttribute column) {
-        super(entity, column);
+        super("Drop Column", entity, column);
     }
 
     public MergerToken createReverse(MergerFactory factory) {
@@ -51,13 +51,13 @@ public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
         for (DbRelationship dbRelationship : dbRelationships) {
             for (DbJoin join : dbRelationship.getJoins()) {
                 if (join.getSource() == getColumn() || join.getTarget() == getColumn()) {
-                    remove(mergerContext, dbRelationship, true);
+                    remove(mergerContext.getModelMergeDelegate(), dbRelationship, true);
                 }
             }
         }
 
         // remove ObjAttribute mapped to same column
-        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(getEntity())) {
+        for (ObjEntity objEntity : getEntity().mappedObjEntities()) {
             ObjAttribute objAttribute = objEntity.getAttributeForDbAttribute(getColumn());
             if (objAttribute != null) {
                 objEntity.removeAttribute(objAttribute.getName());
@@ -71,9 +71,4 @@ public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
         mergerContext.getModelMergeDelegate().dbAttributeRemoved(getColumn());
     }
-
-    public String getTokenName() {
-        return "Drop Column";
-    }
-
 }

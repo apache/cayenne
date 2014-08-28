@@ -60,15 +60,8 @@ public class H2MergerFactory extends MergerFactory {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                StringBuilder sqlBuffer = new StringBuilder();
-
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(getEntity().getFullyQualifiedName());
-                sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(getColumn().getName());
-                sqlBuffer.append(" SET NULL");
-
-                return Collections.singletonList(sqlBuffer.toString());
+                return Collections.singletonList("ALTER TABLE " + getEntity().getFullyQualifiedName()
+                        + " ALTER COLUMN " + getColumn().getName() + " SET NULL");
             }
 
         };
