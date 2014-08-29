@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DbEntity;
 public class SetNotNullToModel extends AbstractToModelToken.EntityAndColumn {
 
     public SetNotNullToModel(DbEntity entity, DbAttribute column) {
-        super(entity, column);
+        super("Set Not Null", entity, column);
     }
     
     public MergerToken createReverse(MergerFactory factory) {
@@ -39,9 +39,4 @@ public class SetNotNullToModel extends AbstractToModelToken.EntityAndColumn {
         getColumn().setMandatory(true);
         mergerContext.getModelMergeDelegate().dbAttributeModified(getColumn());
     }
-
-    public String getTokenName() {
-        return "Set Not Null";
-    }
-
 }

@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjEntity;
 public class DropTableToModel extends AbstractToModelToken.Entity {
 
     public DropTableToModel(DbEntity entity) {
-        super(entity);
+        super("Drop Table", entity);
     }
 
     public MergerToken createReverse(MergerFactory factory) {
@@ -38,16 +38,11 @@ public class DropTableToModel extends AbstractToModelToken.Entity {
     }
 
     public void execute(MergerContext mergerContext) {
-        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(getEntity())) {
+        for (ObjEntity objEntity : getEntity().mappedObjEntities()) {
             objEntity.getDataMap().removeObjEntity(objEntity.getName(), true);
             mergerContext.getModelMergeDelegate().objEntityRemoved(objEntity);
         }
         getEntity().getDataMap().removeDbEntity(getEntity().getName(), true);
         mergerContext.getModelMergeDelegate().dbEntityRemoved(getEntity());
     }
-
-    public String getTokenName() {
-        return "Drop Table";
-    }
-
 }

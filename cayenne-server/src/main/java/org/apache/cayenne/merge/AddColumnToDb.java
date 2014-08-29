@@ -31,7 +31,7 @@ import org.apache.cayenne.map.DbEntity;
 public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
 
     public AddColumnToDb(DbEntity entity, DbAttribute column) {
-        super(entity, column);
+        super("Add Column", entity, column);
     }
 
     /**
@@ -55,14 +55,10 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         // copied from JdbcAdapter.createTableAppendColumn
         String[] types = adapter.externalTypesForJdbcType(getColumn().getType());
         if (types == null || types.length == 0) {
-            String entityName = getColumn().getEntity() != null ? ((DbEntity) getColumn()
-                    .getEntity()).getFullyQualifiedName() : "<null>";
+            String entityName = getColumn().getEntity() != null ? getColumn()
+                    .getEntity().getFullyQualifiedName() : "<null>";
             throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + entityName
-                    + "."
-                    + getColumn().getName()
-                    + "': "
-                    + getColumn().getType());
+                    + entityName + "." + getColumn().getName() + "': " + getColumn().getType());
         }
 
         String type = types[0];
@@ -71,8 +67,7 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         // append size and precision (if applicable)
         if (adapter.typeSupportsLength(getColumn().getType())) {
             int len = getColumn().getMaxLength();
-            int scale = TypesMapping.isDecimal(getColumn().getType()) ? getColumn()
-                    .getScale() : -1;
+            int scale = TypesMapping.isDecimal(getColumn().getType()) ? getColumn().getScale() : -1;
 
             // sanity check
             if (scale > len) {
@@ -94,10 +89,6 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         // sqlBuffer.append(" NULL");
 
         return Collections.singletonList(sqlBuffer.toString());
-    }
-
-    public String getTokenName() {
-        return "Add Column";
     }
 
     public MergerToken createReverse(MergerFactory factory) {

@@ -37,7 +37,7 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
     private DbAttribute columnNew;
 
     public SetColumnTypeToDb(DbEntity entity, DbAttribute columnOriginal, DbAttribute columnNew) {
-        super(entity);
+        super("Set Column Type", entity);
         this.columnOriginal = columnOriginal;
         this.columnNew = columnNew;
     }
@@ -63,14 +63,10 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         // copied from JdbcAdapter.createTableAppendColumn
         String[] types = adapter.externalTypesForJdbcType(columnNew.getType());
         if (types == null || types.length == 0) {
-            String entityName = columnNew.getEntity() != null ? ((DbEntity) columnNew
-                    .getEntity()).getFullyQualifiedName() : "<null>";
+            String entityName = columnNew.getEntity() != null ? columnNew
+                    .getEntity().getFullyQualifiedName() : "<null>";
             throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + entityName
-                    + "."
-                    + columnNew.getName()
-                    + "': "
-                    + columnNew.getType());
+                    + entityName + "." + columnNew.getName() + "': " + columnNew.getType());
         }
 
         String type = types[0];
@@ -100,10 +96,6 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         return Collections.singletonList(sqlBuffer.toString());
     }
 
-    public String getTokenName() {
-        return "Set Column Type";
-    }
-    
     @Override
     public String getTokenValue() {
         StringBuilder sb = new StringBuilder();

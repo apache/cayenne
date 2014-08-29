@@ -31,7 +31,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     private DbRelationship rel;
 
     public AddRelationshipToDb(DbEntity entity, DbRelationship rel) {
-        super(entity);
+        super("Add Relationship", entity);
         this.rel = rel;
     }
 
@@ -42,7 +42,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     public List<String> createSql(DbAdapter adapter) {
         // TODO: skip FK to a different DB
 
-        if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
+        if (this.shouldGenerateFkConstraint()) {
             String fksql = adapter.createFkConstraint(rel);
             if (fksql != null) {
                 return Collections.singletonList(fksql);
@@ -51,21 +51,19 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
         return Collections.emptyList();
     }
 
+    public boolean shouldGenerateFkConstraint() {
+        return !rel.isToMany()
+                && rel.isToPK() // TODO it is not necessary primary key it can be unique index
+                && !rel.isToDependentPK();
+    }
+
     public MergerToken createReverse(MergerFactory factory) {
         return factory.createDropRelationshipToModel(getEntity(), rel);
     }
 
-    public String getTokenName() {
-        return "Add Relationship";
-    }
-
     @Override
     public String getTokenValue() {
-        StringBuilder s = new StringBuilder();
-        s.append(rel.getSourceEntity().getName());
-        s.append("->");
-        s.append(rel.getTargetEntityName());
-        return s.toString();
+        return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
     }
     
     public DbRelationship getRelationship() {

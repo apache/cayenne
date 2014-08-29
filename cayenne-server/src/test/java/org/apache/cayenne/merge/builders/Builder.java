@@ -16,27 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.merge;
-
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+package org.apache.cayenne.merge.builders;
 
 /**
- * A {@link MergerToken} to set the mandatory field of a {@link DbAttribute} to false
- * 
+ * Base interface for all domain builders
+ *
+ * @since 3.2.
  */
-public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
+public interface Builder<T> {
 
-    public SetAllowNullToModel(DbEntity entity, DbAttribute column) {
-        super("Set Allow Null", entity, column);
-    }
+    /**
+     * Build valid object. If some required data omitted it will be filled with random data.
+     * */
+    T build();
 
-    public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetNotNullToDb(getEntity(), getColumn());
-    }
+    /**
+     * Build valid object and add some optional fields randomly.
+     * */
+    T random();
 
-    public void execute(MergerContext mergerContext) {
-        getColumn().setMandatory(false);
-        mergerContext.getModelMergeDelegate().dbAttributeModified(getColumn());
-    }
 }

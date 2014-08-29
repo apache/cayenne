@@ -18,14 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.util.EntityMergeSupport;
@@ -36,33 +31,29 @@ import org.apache.cayenne.util.EntityMergeSupport;
  * 
  */
 public abstract class AbstractToModelToken implements MergerToken {
-    
+
+    private final String tokenName;
+
+    protected AbstractToModelToken(String tokenName) {
+        this.tokenName = tokenName;
+    }
+
+    @Override
+    public final String getTokenName() {
+        return tokenName;
+    }
+
     public final MergeDirection getDirection() {
         return MergeDirection.TO_MODEL;
     }
 
-    protected void synchronizeWithObjEntity(MergerContext mergerContext, DbEntity entity) {
-        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(entity)) {
-            new EntityMergeSupport(objEntity.getDataMap())
-                    .synchronizeWithDbEntity(objEntity);
+    protected void synchronizeWithObjEntity(DbEntity entity) {
+        for (ObjEntity objEntity : entity.mappedObjEntities()) {
+            new EntityMergeSupport(objEntity.getDataMap()).synchronizeWithDbEntity(objEntity);
         }
     }
 
-    protected Collection<ObjEntity> objEntitiesMappedToDbEntity(DbEntity entity) {
-        Set<ObjEntity> objEntities = new HashSet<ObjEntity>();
-        MappingNamespace mns = entity.getDataMap().getNamespace();
-        for (ObjEntity objEntity : mns.getObjEntities()) {
-            if (objEntity.getDbEntity() == null) {
-                continue;
-            }
-            if (objEntity.getDbEntity().equals(entity)) {
-                objEntities.add(objEntity);
-            }
-        }
-        return objEntities;
-    }
-    
-    protected void remove(MergerContext mergerContext, DbRelationship rel, boolean reverse) {
+    protected static void remove(ModelMergeDelegate mergerContext, DbRelationship rel, boolean reverse) {
         if (rel == null) {
             return;
         }
@@ -70,16 +61,16 @@ public abstract class AbstractToModelToken implements MergerToken {
             remove(mergerContext, rel.getReverseRelationship(), false);
         }
 
-        DbEntity dbEntity = (DbEntity) rel.getSourceEntity();
-        for (ObjEntity objEntity : objEntitiesMappedToDbEntity(dbEntity)) {
+        DbEntity dbEntity = rel.getSourceEntity();
+        for (ObjEntity objEntity : dbEntity.mappedObjEntities()) {
             remove(mergerContext, objEntity.getRelationshipForDbRelationship(rel), true);
         }
         
         rel.getSourceEntity().removeRelationship(rel.getName());
-        mergerContext.getModelMergeDelegate().dbRelationshipRemoved(rel);
+        mergerContext.dbRelationshipRemoved(rel);
     }
 
-    protected void remove(MergerContext mergerContext, ObjRelationship rel, boolean reverse) {
+    protected static void remove(ModelMergeDelegate mergerContext, ObjRelationship rel, boolean reverse) {
         if (rel == null) {
             return;
         }
@@ -87,25 +78,20 @@ public abstract class AbstractToModelToken implements MergerToken {
             remove(mergerContext, rel.getReverseRelationship(), false);
         }
         rel.getSourceEntity().removeRelationship(rel.getName());
-        mergerContext.getModelMergeDelegate().objRelationshipRemoved(rel);
+        mergerContext.objRelationshipRemoved(rel);
     }
 
     @Override
     public String toString() {
-        StringBuilder ts = new StringBuilder();
-        ts.append(getTokenName());
-        ts.append(' ');
-        ts.append(getTokenValue());
-        ts.append(' ');
-        ts.append(getDirection());
-        return ts.toString();
+        return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
     }
     
     abstract static class Entity extends AbstractToModelToken {
         
-        private DbEntity entity;
+        private final DbEntity entity;
 
-        public Entity(DbEntity entity) {
+        protected Entity(String tokenName, DbEntity entity) {
+            super(tokenName);
             this.entity = entity;
         }
 
@@ -121,10 +107,10 @@ public abstract class AbstractToModelToken implements MergerToken {
     
     abstract static class EntityAndColumn extends Entity {
         
-        private DbAttribute column;
+        private final DbAttribute column;
         
-        public EntityAndColumn(DbEntity entity, DbAttribute column) {
-            super(entity);
+        protected EntityAndColumn(String tokenName, DbEntity entity, DbAttribute column) {
+            super(tokenName, entity);
             this.column = column;
         }
 

@@ -18,27 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.sql.DataSource;
-
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.access.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
@@ -47,7 +31,18 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DetectedDbEntity;
-import org.apache.cayenne.map.ObjEntity;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Traverse a {@link DataNode} and a {@link DataMap} and create a group of
@@ -57,21 +52,24 @@ import org.apache.cayenne.map.ObjEntity;
  */
 public class DbMerger {
 
-    private MergerFactory factory;
+    private final MergerFactory factory;
     
-    private ValueForNullProvider valueForNull = new EmptyValueForNullProvider();
-    private String schema;
-    
-    public void setSchema(String schema) {
-		this.schema = schema;
-	}
+    private final ValueForNullProvider valueForNull;
 
-	/**
-     * Set a {@link ValueForNullProvider} that will be used to set value for null on not
-     * null columns
-     */
-    public void setValueForNullProvider(ValueForNullProvider valueProvider) {
-        valueForNull = valueProvider;
+    private final String schema;
+
+    public DbMerger(MergerFactory factory) {
+        this(factory, null);
+    }
+
+    public DbMerger(MergerFactory factory, String schema) {
+        this(factory,  null, schema);
+    }
+
+    public DbMerger(MergerFactory factory, ValueForNullProvider valueForNull, String schema) {
+        this.factory = factory;
+        this.valueForNull = valueForNull == null ? new EmptyValueForNullProvider() : valueForNull;
+        this.schema = schema;
     }
 
     /**
@@ -86,106 +84,43 @@ public class DbMerger {
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataNode dataNode, DataMap dataMap) {
-        return createMergeTokens(dataNode.getAdapter(), dataNode.getDataSource(), dataMap);
+    public List<MergerToken> createMergeTokens(DataNode dataNode, DataMap existing) {
+        return createMergeTokens(dataNode.getDataSource(), dataNode.getAdapter(), existing);
     }
 
     /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(
-            DbAdapter adapter,
-            DataSource dataSource,
-            DataMap dataMap) {
-        factory = adapter.mergerFactory();
+    public List<MergerToken> createMergeTokens(DbLoader dbLoader, DataMap existing) {
+        return createMergeTokens(existing, loadDataMapFromDb(dbLoader));
+    }
 
-        List<MergerToken> tokens = new ArrayList<MergerToken>();
-        Connection conn = null;
-        ResultSet rs = null;
-        try {
-            conn = dataSource.getConnection();
+    /**
+     * Create and return a {@link List} of {@link MergerToken}s to alter the given
+     * {@link DataNode} to match the given {@link DataMap}
+     */
+    public List<MergerToken> createMergeTokens(DataSource dataSource, DbAdapter adapter, DataMap existingDataMap) {
+        return createMergeTokens(existingDataMap, loadDataMapFromDb(dataSource, adapter));
+    }
 
-            final DbMerger merger = this;
-            DbLoader dbLoader = new DbLoader(conn, adapter, new LoaderDelegate()) {
+    /**
+     * Create and return a {@link List} of {@link MergerToken}s to alter the given
+     * {@link DataNode} to match the given {@link DataMap}
+     */
+    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb) {
 
-                @Override
-                public boolean includeTableName(String tableName) {
-                    return merger.includeTableName(tableName);
-                }
-            };
-            DataMap detectedDataMap = new DataMap();
-            dbLoader.load(detectedDataMap, null, schema, null, (String[]) null);
-            detectedDataMap.setQuotingSQLIdentifiers(dataMap.isQuotingSQLIdentifiers());
-            
-            Map<String, DbEntity> dbEntityToDropByName = new HashMap<String, DbEntity>(
-                    detectedDataMap.getDbEntityMap());
+        loadedFomDb.setQuotingSQLIdentifiers(existing.isQuotingSQLIdentifiers());
 
-            for (DbEntity dbEntity : dataMap.getDbEntities()) {
-                String tableName = dbEntity.getName();
-                
-                if (!includeTableName(tableName)) {
-                    continue;
-                }
-                
-                // look for table
-                DbEntity detectedEntity = findDbEntity(detectedDataMap, tableName);
-                if (detectedEntity == null) {
-                    tokens.add(factory.createCreateTableToDb(dbEntity));
-                    // TODO: does this work properly with createReverse?
-                    for (DbRelationship rel : dbEntity.getRelationships()) {
-                        tokens.add(factory.createAddRelationshipToDb(dbEntity, rel));
-                    }
-                    continue;
-                }
-                
-                dbEntityToDropByName.remove(detectedEntity.getName());
+        List<MergerToken> tokens = createMergeTokens(existing.getDbEntities(), loadedFomDb.getDbEntities());
 
-                checkRelationshipsToDrop(adapter, tokens, dbEntity, detectedEntity);
-                checkRows(tokens, dbEntity, detectedEntity);
-                checkPrimaryKeyChange(adapter, tokens, dbEntity, detectedEntity);
-                checkRelationshipsToAdd(adapter, tokens, dbEntity, detectedEntity);
-            }
 
-            // drop table
-            // TODO: support drop table. currently, too many tables are marked for drop
-            for (DbEntity e : dbEntityToDropByName.values()) {
-                
-                if (!includeTableName(e.getName())) {
-                    continue;
-                }
-                
-                tokens.add(factory.createDropTableToDb(e));
-            }
-
-        }
-        catch (SQLException e) {
-            throw new CayenneRuntimeException("", e);
-        }
-        finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                }
-                catch (SQLException e) {
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                }
-                catch (SQLException e) {
-                }
-            }
-        }
-        
-        // sort. use a custom Comparator since only toDb tokens
-        // are comparable by now
+        // sort. use a custom Comparator since only toDb tokens are comparable by now
         Collections.sort(tokens, new Comparator<MergerToken>() {
 
             public int compare(MergerToken o1, MergerToken o2) {
-                if ((o1 instanceof AbstractToDbToken)
-                        && (o2 instanceof AbstractToDbToken)) {
+                if (o1 instanceof AbstractToDbToken
+                        && o2 instanceof AbstractToDbToken) {
                     AbstractToDbToken d1 = (AbstractToDbToken) o1;
                     AbstractToDbToken d2 = (AbstractToDbToken) o2;
                     return d1.compareTo(d2);
@@ -197,34 +132,127 @@ public class DbMerger {
         return tokens;
     }
 
-    private void checkRows(
-            List<MergerToken> tokens,
-            DbEntity dbEntity,
-            DbEntity detectedEntity) {
+    private DataMap loadDataMapFromDb(DataSource dataSource, DbAdapter adapter) {
+        Connection conn = null;
+        try {
+            conn = dataSource.getConnection();
+
+            final DbMerger merger = this;
+
+            // TODO pass naming strategy
+            DbLoader dbLoader = new DbLoader(conn, adapter, new DefaultDbLoaderDelegate()) {
+
+                @Override
+                public boolean includeTableName(String tableName) {
+                    return merger.includeTableName(tableName);
+                }
+            };
+
+            return loadDataMapFromDb(dbLoader);
+        }
+        catch (SQLException e) {
+            throw new CayenneRuntimeException("Can't load dataMap from db.", e);
+        }
+        finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                }
+                catch (SQLException e) {
+                    // Do nothing.
+                }
+            }
+        }
+    }
+
+    private DataMap loadDataMapFromDb(DbLoader dbLoader) {
+        DataMap detectedDataMap = new DataMap();
+        try {
+            dbLoader.load(detectedDataMap, null, schema, null, (String[]) null);
+        } catch (SQLException e) {
+            // TODO log
+        }
+
+        return detectedDataMap;
+    }
+
+    /**
+     *
+     *
+     * @param existing
+     * @param loadedFromDb
+     * @return
+     */
+    public List<MergerToken> createMergeTokens(Collection<DbEntity> existing, Collection<DbEntity> loadedFromDb) {
+        Collection<DbEntity> dbEntitiesToDrop = new LinkedList<DbEntity>(loadedFromDb);
+
+        List<MergerToken> tokens = new LinkedList<MergerToken>();
+        for (DbEntity dbEntity : existing) {
+            String tableName = dbEntity.getName();
+
+            if (!includeTableName(tableName)) {
+                continue;
+            }
+
+            // look for table
+            DbEntity detectedEntity = findDbEntity(loadedFromDb, tableName);
+            if (detectedEntity == null) {
+                tokens.add(factory.createCreateTableToDb(dbEntity));
+                // TODO: does this work properly with createReverse?
+                for (DbRelationship rel : dbEntity.getRelationships()) {
+                    tokens.add(factory.createAddRelationshipToDb(dbEntity, rel));
+                }
+                continue;
+            }
+
+            dbEntitiesToDrop.remove(detectedEntity);
+
+            tokens.addAll(checkRelationshipsToDrop(dbEntity, detectedEntity));
+            tokens.addAll(checkRelationshipsToAdd(dbEntity, detectedEntity));
+            tokens.addAll(checkRows(dbEntity, detectedEntity));
+
+            MergerToken token = checkPrimaryKeyChange(dbEntity, detectedEntity);
+            if (token != null) {
+                tokens.add(token);
+            }
+        }
+
+        // drop table
+        // TODO: support drop table. currently, too many tables are marked for drop
+        for (DbEntity e : dbEntitiesToDrop) {
+            if (!includeTableName(e.getName())) {
+                continue;
+            }
+
+            tokens.add(factory.createDropTableToDb(e));
+        }
+
+        return tokens;
+    }
+
+    private List<MergerToken> checkRows(DbEntity existing, DbEntity loadedFromDb) {
+        List<MergerToken> tokens = new LinkedList<MergerToken>();
 
         // columns to drop
-        for (DbAttribute detected : detectedEntity.getAttributes()) {
-            if (findDbAttribute(dbEntity, detected.getName()) == null) {
-                tokens.add(factory.createDropColumnToDb(dbEntity, detected));
+        for (DbAttribute detected : loadedFromDb.getAttributes()) {
+            if (findDbAttribute(existing, detected.getName()) == null) {
+                tokens.add(factory.createDropColumnToDb(existing, detected));
             }
         }
 
         // columns to add or modify
-        for (DbAttribute attr : dbEntity.getAttributes()) {
+        for (DbAttribute attr : existing.getAttributes()) {
             String columnName = attr.getName().toUpperCase();
 
-            DbAttribute detected = findDbAttribute(detectedEntity, columnName);
+            DbAttribute detected = findDbAttribute(loadedFromDb, columnName);
 
             if (detected == null) {
-                tokens.add(factory.createAddColumnToDb(dbEntity, attr));
+                tokens.add(factory.createAddColumnToDb(existing, attr));
                 if (attr.isMandatory()) {
-                    if (valueForNull.hasValueFor(dbEntity, attr)) {
-                        tokens.add(factory.createSetValueForNullToDb(
-                                dbEntity,
-                                attr,
-                                valueForNull));
+                    if (valueForNull.hasValueFor(existing, attr)) {
+                        tokens.add(factory.createSetValueForNullToDb(existing, attr, valueForNull));
                     }
-                    tokens.add(factory.createSetNotNullToDb(dbEntity, attr));
+                    tokens.add(factory.createSetNotNullToDb(existing, attr));
                 }
                 continue;
             }
@@ -232,16 +260,13 @@ public class DbMerger {
             // check for not null
             if (attr.isMandatory() != detected.isMandatory()) {
                 if (attr.isMandatory()) {
-                    if (valueForNull.hasValueFor(dbEntity, attr)) {
-                        tokens.add(factory.createSetValueForNullToDb(
-                                dbEntity,
-                                attr,
-                                valueForNull));
+                    if (valueForNull.hasValueFor(existing, attr)) {
+                        tokens.add(factory.createSetValueForNullToDb(existing, attr, valueForNull));
                     }
-                    tokens.add(factory.createSetNotNullToDb(dbEntity, attr));
+                    tokens.add(factory.createSetNotNullToDb(existing, attr));
                 }
                 else {
-                    tokens.add(factory.createSetAllowNullToDb(dbEntity, attr));
+                    tokens.add(factory.createSetAllowNullToDb(existing, attr));
                 }
             }
 
@@ -251,21 +276,17 @@ public class DbMerger {
                 case Types.VARCHAR:
                 case Types.CHAR:
                     if (attr.getMaxLength() != detected.getMaxLength()) {
-                        tokens.add(factory.createSetColumnTypeToDb(
-                                dbEntity,
-                                detected,
-                                attr));
+                        tokens.add(factory.createSetColumnTypeToDb(existing, detected, attr));
                     }
                     break;
             }
         }
+
+        return tokens;
     }
 
-    private void checkRelationshipsToDrop(
-            DbAdapter adapter,
-            List<MergerToken> tokens,
-            DbEntity dbEntity,
-            DbEntity detectedEntity) {
+    private List<MergerToken> checkRelationshipsToDrop(DbEntity dbEntity, DbEntity detectedEntity) {
+        List<MergerToken> tokens = new LinkedList<MergerToken>();
 
         // relationships to drop
         for (DbRelationship detected : detectedEntity.getRelationships()) {
@@ -274,8 +295,7 @@ public class DbMerger {
                 // alter detected relationship to match entity and attribute names.
                 // (case sensitively)
 
-                DbEntity targetEntity = findDbEntity(dbEntity.getDataMap(), detected
-                        .getTargetEntityName());
+                DbEntity targetEntity = findDbEntity(dbEntity.getDataMap().getDbEntities(), detected.getTargetEntityName());
                 if (targetEntity == null) {
                     continue;
                 }
@@ -289,15 +309,13 @@ public class DbMerger {
                     if (sattr != null) {
                         join.setSourceName(sattr.getName());
                     }
-                    DbAttribute tattr = findDbAttribute(targetEntity, join
-                            .getTargetName());
+                    DbAttribute tattr = findDbAttribute(targetEntity, join.getTargetName());
                     if (tattr != null) {
                         join.setTargetName(tattr.getName());
                     }
                 }
 
-                MergerToken token = factory
-                        .createDropRelationshipToDb(dbEntity, detected);
+                MergerToken token = factory.createDropRelationshipToDb(dbEntity, detected);
                 if (detected.isToMany()) {
                     // default toModel as we can not do drop a toMany in the db. only
                     // toOne are represented using foreign key
@@ -306,35 +324,36 @@ public class DbMerger {
                 tokens.add(token);
             }
         }
+
+        return tokens;
     }
 
-    private void checkRelationshipsToAdd(
-            DbAdapter adapter,
-            List<MergerToken> tokens,
-            DbEntity dbEntity,
-            DbEntity detectedEntity) {
-        
-        // relationships to add
+    private List<MergerToken> checkRelationshipsToAdd(DbEntity dbEntity, DbEntity detectedEntity) {
+
+        List<MergerToken> tokens = new LinkedList<MergerToken>();
+
         for (DbRelationship rel : dbEntity.getRelationships()) {
-            
             if (!includeTableName(rel.getTargetEntityName())) {
                 continue;
             }
             
             if (findDbRelationship(detectedEntity, rel) == null) {
-                // TODO: very ugly. perhaps MergerToken should have a .isNoOp()?
-                AbstractToDbToken t = (AbstractToDbToken) factory
-                        .createAddRelationshipToDb(dbEntity, rel);
-                if (!t.createSql(adapter).isEmpty()) {
-                    tokens.add(factory.createAddRelationshipToDb(dbEntity, rel));
+                AddRelationshipToDb token = (AddRelationshipToDb)
+                        factory.createAddRelationshipToDb(dbEntity, rel);
+
+                if (token.shouldGenerateFkConstraint()) {
+                    // TODO I guess we should add relationship always; in order to have ability
+                    // TODO generate reverse relationship. If it doesn't have anything to execute it will be passed
+                    // TODO through execution without any affect on db
+                    tokens.add(token);
                 }
             }
         }
+
+        return tokens;
     }
     
-    private void checkPrimaryKeyChange(
-            DbAdapter adapter,
-            List<MergerToken> tokens,
+    private MergerToken checkPrimaryKeyChange(
             DbEntity dbEntity,
             DbEntity detectedEntity) {
         Collection<DbAttribute> primaryKeyOriginal = detectedEntity.getPrimaryKeys();
@@ -347,14 +366,14 @@ public class DbMerger {
 
         if (upperCaseEntityNames(primaryKeyOriginal).equals(
                 upperCaseEntityNames(primaryKeyNew))) {
-            return;
+            return null;
         }
 
-        tokens.add(factory.createSetPrimaryKeyToDb(
+        return factory.createSetPrimaryKeyToDb(
                 dbEntity,
                 primaryKeyOriginal,
                 primaryKeyNew,
-                primaryKeyName));
+                primaryKeyName);
     }
     
     private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attrs) {
@@ -368,9 +387,9 @@ public class DbMerger {
     /**
      * case insensitive search for a {@link DbEntity} in a {@link DataMap} by name
      */
-    private DbEntity findDbEntity(DataMap map, String caseInsensitiveName) {
+    private DbEntity findDbEntity(Collection<DbEntity> dbEntities, String caseInsensitiveName) {
         // TODO: create a Map with upper case keys?
-        for (DbEntity e : map.getDbEntities()) {
+        for (DbEntity e : dbEntities) {
             if (e.getName().equalsIgnoreCase(caseInsensitiveName)) {
                 return e;
             }
@@ -405,52 +424,16 @@ public class DbMerger {
     /**
      * Return true if the two unordered {@link Collection}s of {@link DbJoin}s are
      * equal. Entity and Attribute names are compared case insensitively.
+     *
+     * TODO complexity n^2; sort both collection and go through them to compare = 2*n*log(n) + n
      */
-    private static boolean equalDbJoinCollections(
-            Collection<DbJoin> j1s,
-            Collection<DbJoin> j2s) {
+    private static boolean equalDbJoinCollections(Collection<DbJoin> j1s, Collection<DbJoin> j2s) {
         if (j1s.size() != j2s.size()) {
             return false;
         }
 
         for (DbJoin j1 : j1s) {
-            boolean foundPair = false;
-            for (DbJoin j2 : j2s) {
-                if ((j1.getSource() == null) || (j1.getSource().getEntity() == null)) {
-                    continue;
-                }
-                if ((j1.getTarget() == null) || (j1.getTarget().getEntity() == null)) {
-                    continue;
-                }
-                if ((j2.getSource() == null) || (j2.getSource().getEntity() == null)) {
-                    continue;
-                }
-                if ((j2.getTarget() == null) || (j2.getTarget().getEntity() == null)) {
-                    continue;
-                }
-
-                // check entity name
-                if (!j1.getSource().getEntity().getName().equalsIgnoreCase(
-                        j2.getSource().getEntity().getName())) {
-                    continue;
-                }
-                if (!j1.getTarget().getEntity().getName().equalsIgnoreCase(
-                        j2.getTarget().getEntity().getName())) {
-                    continue;
-                }
-                // check attribute name
-                if (!j1.getSourceName().equalsIgnoreCase(j2.getSourceName())) {
-                    continue;
-                }
-                if (!j1.getTargetName().equalsIgnoreCase(j2.getTargetName())) {
-                    continue;
-                }
-
-                foundPair = true;
-                break;
-            }
-
-            if (!foundPair) {
+            if (!havePair(j2s, j1)) {
                 return false;
             }
         }
@@ -458,23 +441,22 @@ public class DbMerger {
         return true;
     }
 
-    private static final class LoaderDelegate implements DbLoaderDelegate {
+    private static boolean havePair(Collection<DbJoin> j2s, DbJoin j1) {
+        for (DbJoin j2 : j2s) {
+            if (!isNull(j1.getSource()) && !isNull(j1.getTarget()) &&
+                !isNull(j2.getSource()) && !isNull(j2.getTarget()) &&
+                j1.getSource().getEntity().getName().equalsIgnoreCase(j2.getSource().getEntity().getName()) &&
+                j1.getTarget().getEntity().getName().equalsIgnoreCase(j2.getTarget().getEntity().getName()) &&
+                j1.getSourceName().equalsIgnoreCase(j2.getSourceName()) &&
+                j1.getTargetName().equalsIgnoreCase(j2.getTargetName())) {
 
-        public void dbEntityAdded(DbEntity ent) {
+                return true;
+            }
         }
+        return false;
+    }
 
-        public void dbEntityRemoved(DbEntity ent) {
-        }
-
-        public void objEntityAdded(ObjEntity ent) {
-        }
-
-        public void objEntityRemoved(ObjEntity ent) {
-        }
-
-        public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
-            return false;
-        }
-
+    private static boolean isNull(DbAttribute attribute) {
+        return attribute == null || attribute.getEntity() == null;
     }
 }

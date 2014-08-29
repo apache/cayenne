@@ -102,10 +102,8 @@ public class ValueForNullTest extends MergeCase {
     }
 
     @Override
-    protected DbMerger createMerger() {
-        DbMerger merger = super.createMerger();
-
-        merger.setValueForNullProvider(new DefaultValueForNullProvider() {
+    protected DbMerger createMerger(MergerFactory mergerFactory, final ValueForNullProvider valueForNullProvider) {
+        return super.createMerger(mergerFactory, new DefaultValueForNullProvider() {
 
             @Override
             protected ParameterBinding get(DbEntity entity, DbAttribute column) {
@@ -124,8 +122,6 @@ public class ValueForNullTest extends MergeCase {
             }
 
         });
-
-        return merger;
     }
 
 }

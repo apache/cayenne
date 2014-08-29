@@ -45,7 +45,6 @@ public class ExecutingMergerContext implements MergerContext {
         // create a fake DataNode as lots of DbAdapter/PkGenerator methods
         // take a DataNode instead of just a DataSource
         this.node = new DataNode();
-        this.node.setJdbcEventLogger(adapter.getJdbcEventLogger());
         this.node.setDataSource(dataSource);
         this.node.setAdapter(adapter);
         this.delegate = delegate;

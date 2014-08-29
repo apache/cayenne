@@ -47,17 +47,8 @@ public class DefaultValueForNullProvider implements ValueForNullProvider {
         }
 
         // TODO: change things so it is possible to use prepared statements here
-        StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE ");
-        sql.append(entity.getFullyQualifiedName());
-        sql.append(" SET ");
-        sql.append(column.getName());
-        sql.append("='");
-        sql.append(value.getValue());
-        sql.append("' WHERE ");
-        sql.append(column.getName());
-        sql.append(" IS NULL");
-        return Collections.singletonList(sql.toString());
+        return Collections.singletonList("UPDATE " + entity.getFullyQualifiedName()
+                + " SET " + column.getName() + "='" + value.getValue() + "' WHERE " + column.getName() + " IS NULL");
     }
 
     public boolean hasValueFor(DbEntity entity, DbAttribute column) {
