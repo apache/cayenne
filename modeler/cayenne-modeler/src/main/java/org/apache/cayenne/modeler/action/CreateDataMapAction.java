@@ -29,12 +29,9 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
 
 import java.awt.event.ActionEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Action that creates new DataMap in the project.
@@ -59,16 +56,13 @@ public class CreateDataMapAction extends CayenneAction {
         ProjectController mediator = getProjectController();
         mediator.addDataMap(this, map);
 
-        URL mapUrl = map.getConfigurationSource().getURL();
-        if (!mapUrl.toString().endsWith(".map.xml")) {
-            try {
-                mapUrl = new URL(mapUrl.toString() + ".map.xml");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
+        DataMap dataMap = domain.getDeletedDataMap(map.getName());
+        if(dataMap != null) {
+            domain.getDeletedDataMaps().remove(dataMap);
         }
-        ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
-        saver.removeFileFromDelete(mapUrl);
     }
 
     public void performAction(ActionEvent e) {

@@ -20,8 +20,6 @@ package org.apache.cayenne.project;
 
 import org.apache.cayenne.resource.Resource;
 
-import java.net.URL;
-
 /**
  * Defines API of a project saver.
  * 
@@ -48,8 +46,4 @@ public interface ProjectSaver {
      * all project objects to the new Resources.
      */
     void saveAs(Project project, Resource baseDirectory);
-
-    void addFileToDelete(URL url);
-
-    void removeFileFromDelete(URL url);
 }

@@ -51,13 +51,13 @@ public class FileProjectSaver implements ProjectSaver {
 
     protected ConfigurationNodeVisitor<Resource> resourceGetter;
     protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> saveableNodesGetter;
+    protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> deletableNodesGetter;
     protected String fileEncoding;
-    protected Collection<URL> filesToDelete;
 
     public FileProjectSaver() {
         resourceGetter = new ConfigurationSourceGetter();
         saveableNodesGetter = new SaveableNodesGetter();
-        filesToDelete = new ArrayList<URL>();
+        deletableNodesGetter = new DeletableNodesGetter();
 
         // this is not configurable yet... probably doesn't have to be
         fileEncoding = "UTF-8";
@@ -69,15 +69,31 @@ public class FileProjectSaver implements ProjectSaver {
 
     public void save(Project project) {
 
-        Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(
+        Collection<ConfigurationNode> saveNodes = project.getRootNode().acceptVisitor(
                 saveableNodesGetter);
-        Collection<SaveUnit> saveUnits = new ArrayList<SaveUnit>(nodes.size());
+        Collection<Unit> saveUnits = new ArrayList<Unit>(saveNodes.size());
 
-        for (ConfigurationNode node : nodes) {
-            saveUnits.add(createSaveUnit(node, null));
+        for (ConfigurationNode node : saveNodes) {
+            saveUnits.add(createUnit(node, null));
         }
 
         save(saveUnits, true);
+
+        Collection<ConfigurationNode> deleteNodes = project.getRootNode().acceptVisitor(
+                deletableNodesGetter);
+        Collection<Unit> deleteUnits = new ArrayList<Unit>(deleteNodes.size());
+
+        for (ConfigurationNode node : deleteNodes) {
+            deleteUnits.add(createUnit(node, null));
+        }
+
+        try {
+            deleteUnusedFiles(deleteUnits);
+        }
+        catch (IOException ex) {
+            throw new CayenneRuntimeException(ex);
+        }
+
     }
 
     public void saveAs(Project project, Resource baseDirectory) {
@@ -88,16 +104,16 @@ public class FileProjectSaver implements ProjectSaver {
 
         Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(
                 saveableNodesGetter);
-        Collection<SaveUnit> saveUnits = new ArrayList<SaveUnit>(nodes.size());
+        Collection<Unit> saveUnits = new ArrayList<Unit>(nodes.size());
 
         for (ConfigurationNode node : nodes) {
-            saveUnits.add(createSaveUnit(node, baseDirectory));
+            saveUnits.add(createUnit(node, baseDirectory));
         }
 
         save(saveUnits, false);
     }
 
-    void save(Collection<SaveUnit> units, boolean deleteOldResources) {
+    void save(Collection<Unit> units, boolean deleteOldResources) {
         checkAccess(units);
 
         try {
@@ -118,9 +134,9 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    SaveUnit createSaveUnit(ConfigurationNode node, Resource baseResource) {
+    Unit createUnit(ConfigurationNode node, Resource baseResource) {
 
-        SaveUnit unit = new SaveUnit();
+        Unit unit = new Unit();
         unit.node = node;
         unit.sourceConfiguration = node.acceptVisitor(resourceGetter);
 
@@ -151,8 +167,8 @@ public class FileProjectSaver implements ProjectSaver {
         return unit;
     }
 
-    void checkAccess(Collection<SaveUnit> units) {
-        for (SaveUnit unit : units) {
+    void checkAccess(Collection<Unit> units) {
+        for (Unit unit : units) {
 
             File targetFile = unit.targetFile;
 
@@ -179,9 +195,9 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    void saveToTempFiles(Collection<SaveUnit> units) {
+    void saveToTempFiles(Collection<Unit> units) {
 
-        for (SaveUnit unit : units) {
+        for (Unit unit : units) {
 
             String name = unit.targetFile.getName();
             if (name == null || name.length() < 3) {
@@ -232,14 +248,14 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
+    void saveToTempFile(Unit unit, PrintWriter printWriter) {
         unit.node
                 .acceptVisitor(new ConfigurationSaver(printWriter, getSupportedVersion()));
     }
 
-    void saveCommit(Collection<SaveUnit> units) {
+    void saveCommit(Collection<Unit> units) {
 
-        for (SaveUnit unit : units) {
+        for (Unit unit : units) {
 
             File targetFile = unit.targetFile;
 
@@ -271,8 +287,8 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    void clearTempFiles(Collection<SaveUnit> units) {
-        for (SaveUnit unit : units) {
+    void clearTempFiles(Collection<Unit> units) {
+        for (Unit unit : units) {
 
             if (unit.targetTempFile != null && unit.targetTempFile.exists()) {
                 unit.targetTempFile.delete();
@@ -281,8 +297,23 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    private void clearOldFiles(Collection<SaveUnit> units) throws IOException {
-        for (SaveUnit unit : units) {
+    private void deleteUnusedFiles(Collection<Unit> units) throws IOException {
+        for (Unit unit : units) {
+            File targetFile = unit.targetFile;
+
+            if (!targetFile.exists()) {
+                continue;
+            }
+
+            if (!targetFile.delete()) {
+                throw new CayenneRuntimeException("Could not delete file '%s'", targetFile.getCanonicalPath());
+            }
+
+        }
+    }
+
+    private void clearOldFiles(Collection<Unit> units) throws IOException {
+        for (Unit unit : units) {
 
             if (unit.sourceConfiguration == null) {
                 continue;
@@ -305,7 +336,7 @@ public class FileProjectSaver implements ProjectSaver {
             // compare against ALL unit target files, not just the current unit... if the
             // target matches, skip this file
             boolean isTarget = false;
-            for (SaveUnit xunit : units) {
+            for (Unit xunit : units) {
                 if (isFilesEquals(sourceFile, xunit.targetFile)) {
                     isTarget = true;
                     break;
@@ -319,7 +350,6 @@ public class FileProjectSaver implements ProjectSaver {
             }
         }
 
-        deleteUnusedFiles();
     }
 
     private boolean isFilesEquals(File firstFile, File secondFile) throws IOException {
@@ -332,27 +362,7 @@ public class FileProjectSaver implements ProjectSaver {
         return isFirstFileExists && isSecondFileExists && firstFilePath.equals(secondFilePath);
     }
 
-    public void addFileToDelete(URL url) {
-        filesToDelete.add(url);
-    }
-
-    public void removeFileFromDelete(URL url) {
-        filesToDelete.remove(url);
-    }
-
-    public void deleteUnusedFiles() throws IOException {
-        for (URL fileUrl : filesToDelete) {
-            File file = Util.toFile(fileUrl);
-            if (file.exists()) {
-                if (!file.delete()) {
-                    throw new CayenneRuntimeException("Could not delete file '%s'", file.getCanonicalPath());
-                }
-            }
-        }
-        filesToDelete.clear();
-    }
-
-    class SaveUnit {
+    class Unit {
 
         private ConfigurationNode node;
 
@@ -362,4 +372,5 @@ public class FileProjectSaver implements ProjectSaver {
         private File targetTempFile;
 
     }
+
 }
