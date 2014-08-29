@@ -32,24 +32,15 @@ import org.apache.cayenne.map.DbEntity;
 public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
 
     public SetNotNullToDb(DbEntity entity, DbAttribute column) {
-        super(entity, column);
+        super("Set Not Null", entity, column);
     }
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
-        StringBuilder sqlBuffer = new StringBuilder();
         QuotingStrategy context = adapter.getQuotingStrategy();
-        sqlBuffer.append("ALTER TABLE ");
-        sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
-        sqlBuffer.append(" ALTER COLUMN ");
-        sqlBuffer.append(context.quotedName(getColumn()));
-        sqlBuffer.append(" SET NOT NULL");
 
-        return Collections.singletonList(sqlBuffer.toString());
-    }
-
-    public String getTokenName() {
-        return "Set Not Null";
+        return Collections.singletonList("ALTER TABLE " + context.quotedFullyQualifiedName(getEntity())
+                + " ALTER COLUMN " + context.quotedName(getColumn()) + " SET NOT NULL");
     }
 
     public MergerToken createReverse(MergerFactory factory) {

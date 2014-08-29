@@ -79,7 +79,7 @@ public class DbImportDbLoaderDelegateTest extends TestCase {
     public void testObjEntityAdded() {
         delegate.objEntityAdded(objEntity);
 
-        final List<ObjEntity> entities = Arrays.asList(objEntity);
+        List<ObjEntity> entities = Arrays.asList(objEntity);
 
         assertEquals(1, dataMap.getObjEntities().size());
         assertTrue(dataMap.getObjEntities().containsAll(entities));

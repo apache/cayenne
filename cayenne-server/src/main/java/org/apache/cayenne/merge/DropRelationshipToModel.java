@@ -23,10 +23,10 @@ import org.apache.cayenne.map.DbRelationship;
 
 public class DropRelationshipToModel extends AbstractToModelToken.Entity {
 
-    private DbRelationship rel;
+    private final DbRelationship rel;
 
     public DropRelationshipToModel(DbEntity entity, DbRelationship rel) {
-        super(entity);
+        super("Drop Relationship", entity);
         this.rel = rel;
     }
 
@@ -35,20 +35,12 @@ public class DropRelationshipToModel extends AbstractToModelToken.Entity {
     }
 
     public void execute(MergerContext mergerContext) {
-        remove(mergerContext, rel, true);
-    }
-
-    public String getTokenName() {
-        return "Drop Relationship";
+        remove(mergerContext.getModelMergeDelegate(), rel, true);
     }
 
     @Override
     public String getTokenValue() {
-        StringBuilder s = new StringBuilder();
-        s.append(rel.getSourceEntity().getName());
-        s.append("->");
-        s.append(rel.getTargetEntityName());
-        return s.toString();
+        return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
     }
     
     public DbRelationship getRelationship() {

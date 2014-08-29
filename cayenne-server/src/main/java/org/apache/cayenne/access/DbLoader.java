@@ -132,8 +132,9 @@ public class DbLoader {
      * Returns DatabaseMetaData object associated with this DbLoader.
      */
     public DatabaseMetaData getMetaData() throws SQLException {
-        if (null == metaData)
+        if (metaData == null) {
             metaData = connection.getMetaData();
+        }
         return metaData;
     }
 
@@ -284,8 +285,6 @@ public class DbLoader {
     public List<DbEntity> getTables(String catalogPattern, String schemaPattern, String tableNamePattern, String[] types)
             throws SQLException {
 
-        List<DbEntity> tables = new ArrayList<DbEntity>();
-
         if (logger.isDebugEnabled()) {
             logger.debug("Read tables: catalog=" + catalogPattern + ", schema=" + schemaPattern + ", tableNames="
                     + tableNamePattern);
@@ -299,34 +298,23 @@ public class DbLoader {
 
         ResultSet rs = getMetaData().getTables(catalogPattern, schemaPattern, tableNamePattern, types);
 
+        List<DbEntity> tables = new ArrayList<DbEntity>();
         try {
             while (rs.next()) {
-                String catalog = rs.getString("TABLE_CAT");
-                String schema = rs.getString("TABLE_SCHEM");
-                String name = rs.getString("TABLE_NAME");
-
-                // Oracle 9i and newer has a nifty recycle bin feature... but we
-                // don't
-                // want dropped tables to be included here; in fact they may
-                // even result
-                // in errors on reverse engineering as their names have special
-                // chars like
+                // Oracle 9i and newer has a nifty recycle bin feature... but we don't
+                // want dropped tables to be included here; in fact they may even result
+                // in errors on reverse engineering as their names have special chars like
                 // "/", etc. So skip them all together
 
-                // TODO: Andrus, 10/29/2005 - this type of filtering should be
-                // delegated
-                // to adapter
-                if (name == null || name.startsWith("BIN$")) {
-                    continue;
-                }
-
-                if (!includeTableName(name)) {
+                // TODO: Andrus, 10/29/2005 - this type of filtering should be delegated to adapter
+                String name = rs.getString("TABLE_NAME");
+                if (name == null || name.startsWith("BIN$") || !includeTableName(name)) {
                     continue;
                 }
 
                 DbEntity table = new DetectedDbEntity(name);
-                table.setCatalog(catalog);
-                table.setSchema(schema);
+                table.setCatalog(rs.getString("TABLE_CAT"));
+                table.setSchema(rs.getString("TABLE_SCHEM"));
                 tables.add(table);
             }
         } finally {
@@ -455,7 +443,7 @@ public class DbLoader {
         }
 
         // get primary keys for each table and store it in dbEntity
-        for (final DbEntity dbEntity : map.getDbEntities()) {
+        for (DbEntity dbEntity : map.getDbEntities()) {
             if (tables.contains(dbEntity)) {
                 String tableName = dbEntity.getName();
                 ResultSet rs = metaData.getPrimaryKeys(dbEntity.getCatalog(), dbEntity.getSchema(), tableName);
@@ -487,7 +475,7 @@ public class DbLoader {
         }
 
         // cay-479 - iterate skipped DbEntities to populate exported keys
-        for (final DbEntity skippedEntity : skippedEntities) {
+        for (DbEntity skippedEntity : skippedEntities) {
             loadDbRelationships(skippedEntity, map);
         }
 
@@ -558,7 +546,7 @@ public class DbLoader {
 
     /** Loads database relationships into a DataMap. */
     public void loadDbRelationships(DataMap map) throws SQLException {
-        for (final DbEntity pkEntity : dbEntityList) {
+        for (DbEntity pkEntity : dbEntityList) {
             loadDbRelationships(pkEntity, map);
         }
     }
@@ -579,8 +567,9 @@ public class DbLoader {
         }
 
         try {
-            if (!rs.next())
+            if (!rs.next()) {
                 return;
+            }
 
             // these will be initailzed every time a new target entity
             // is found in the result set (which should be ordered by table name
@@ -684,7 +673,7 @@ public class DbLoader {
         boolean toPK = true;
         List<DbJoin> joins = relationship.getJoins();
 
-        for (final DbJoin join : joins) {
+        for (DbJoin join : joins) {
             if (!join.getTarget().isPrimaryKey()) {
                 toPK = false;
                 break;
@@ -697,7 +686,7 @@ public class DbLoader {
 
         if (toPK) {
             toDependentPK = true;
-            if (((DbEntity) relationship.getTargetEntity()).getPrimaryKeys().size() == joins.size()) {
+            if (relationship.getTargetEntity().getPrimaryKeys().size() == joins.size()) {
                 toMany = false;
             }
         }
@@ -775,6 +764,7 @@ public class DbLoader {
      *             {@link #load(DataMap, String, String, String, String...)}
      *             method that supports catalogs.
      */
+    @Deprecated
     public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, DataMap dataMap) throws SQLException {
 
         String[] types = getDefaultTableTypes();
@@ -795,21 +785,13 @@ public class DbLoader {
      *             {@link #load(DataMap, String, String, String, String...)}
      *             method that supports catalogs.
      */
+    @Deprecated
     public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, String[] tableTypes, DataMap dataMap)
             throws SQLException {
-        clearDataMap(dataMap);
+        dataMap.clear();
 
         load(dataMap, null, schemaPattern, tablePattern, tableTypes);
         return dataMap;
-    }
-
-    private void clearDataMap(DataMap dataMap) {
-        dataMap.clearDbEntities();
-        dataMap.clearEmbeddables();
-        dataMap.clearObjEntities();
-        dataMap.clearProcedures();
-        dataMap.clearQueries();
-        dataMap.clearResultSets();
     }
 
     /**

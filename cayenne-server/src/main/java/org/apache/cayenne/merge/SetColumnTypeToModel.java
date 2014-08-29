@@ -35,7 +35,7 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
 
     public SetColumnTypeToModel(DbEntity entity, DbAttribute columnOriginal,
             DbAttribute columnNew) {
-        super(entity);
+        super("Set Column Type", entity);
         this.columnOriginal = columnOriginal;
         this.columnNew = columnNew;
     }
@@ -50,10 +50,6 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
         columnOriginal.setAttributePrecision(columnNew.getAttributePrecision());
         columnOriginal.setScale(columnNew.getScale());
         mergerContext.getModelMergeDelegate().dbAttributeModified(columnOriginal);
-    }
-
-    public String getTokenName() {
-        return "Set Column Type";
     }
 
     @Override

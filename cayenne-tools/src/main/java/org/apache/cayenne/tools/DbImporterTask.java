@@ -26,8 +26,8 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.naming.DefaultNameGenerator;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.DbImportModule;
-import org.apache.cayenne.tools.dbimport.DbImportParameters;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
@@ -36,20 +36,22 @@ import org.apache.tools.ant.Task;
 
 public class DbImporterTask extends Task {
 
-    private DbImportParameters parameters;
+    private final DbImportConfiguration parameters;
 
     /**
      * @deprecated since 3.2 in favor of "schema"
      */
+    @Deprecated
     private String schemaName;
 
     /**
      * @deprecated since 3.2 in favor of "meaningfulPkTable"
      */
+    @Deprecated
     private boolean meaningfulPk;
 
     public DbImporterTask() {
-        parameters = new DbImportParameters();
+        parameters = new DbImportConfiguration();
         parameters.setOverwrite(true);
         parameters.setImportProcedures(false);
         parameters.setUsePrimitives(true);
@@ -65,12 +67,13 @@ public class DbImporterTask extends Task {
         validateAttributes();
 
         Log logger = new AntLogger(this);
+        parameters.setLogger(logger);
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
         try {
             injector.getInstance(DbImportAction.class).execute(parameters);
-        } catch (final Exception ex) {
-            final Throwable th = Util.unwindException(ex);
+        } catch (Exception ex) {
+            Throwable th = Util.unwindException(ex);
 
             String message = "Error importing database schema";
 

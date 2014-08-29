@@ -33,10 +33,10 @@ import org.apache.cayenne.map.ObjEntity;
  */
 class DbImportDbLoaderDelegate implements DbLoaderDelegate {
 
-    private List<DbEntity> addedDbEntities;
-    private List<DbEntity> removedDbEntities;
-    private List<ObjEntity> addedObjEntities;
-    private List<ObjEntity> removedObjEntities;
+    private final List<DbEntity> addedDbEntities;
+    private final List<DbEntity> removedDbEntities;
+    private final List<ObjEntity> addedObjEntities;
+    private final List<ObjEntity> removedObjEntities;
 
     DbImportDbLoaderDelegate() {
         addedDbEntities = new ArrayList<DbEntity>();
@@ -45,26 +45,26 @@ class DbImportDbLoaderDelegate implements DbLoaderDelegate {
         removedObjEntities = new ArrayList<ObjEntity>();
     }
 
-    public boolean overwriteDbEntity(final DbEntity ent) throws CayenneException {
+    public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
         return false;
     }
 
-    public void dbEntityAdded(final DbEntity ent) {
+    public void dbEntityAdded(DbEntity ent) {
         ent.getDataMap().addDbEntity(ent);
         addedDbEntities.add(ent);
     }
 
-    public void dbEntityRemoved(final DbEntity ent) {
+    public void dbEntityRemoved(DbEntity ent) {
         ent.getDataMap().removeDbEntity(ent.getName());
         removedDbEntities.add(ent);
     }
 
-    public void objEntityAdded(final ObjEntity ent) {
+    public void objEntityAdded(ObjEntity ent) {
         ent.getDataMap().addObjEntity(ent);
         addedObjEntities.add(ent);
     }
 
-    public void objEntityRemoved(final ObjEntity ent) {
+    public void objEntityRemoved(ObjEntity ent) {
         ent.getDataMap().removeObjEntity(ent.getName());
         removedObjEntities.add(ent);
     }
