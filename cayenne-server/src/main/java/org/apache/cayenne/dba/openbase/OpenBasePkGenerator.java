@@ -129,16 +129,14 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * @since 1.2
      */
     protected String newIDString(DbEntity ent) {
-        if ((null == ent.getPrimaryKeys()) || (1 != ent.getPrimaryKeys().size())) {
+        if (ent.getPrimaryKeys() == null || ent.getPrimaryKeys().size() != 1) {
             throw new CayenneRuntimeException("Error generating pk for DbEntity "
                     + ent.getName()
                     + ": pk must be single attribute");
         }
         DbAttribute primaryKeyAttribute = ent.getPrimaryKeys().iterator().next();
 
-        StringBuilder buf = new StringBuilder("NEWID FOR ");
-        buf.append(ent.getName()).append(' ').append(primaryKeyAttribute.getName());
-        return buf.toString();
+        return "NEWID FOR " + ent.getName() + ' ' + primaryKeyAttribute.getName();
     }
 
     @Override

@@ -136,10 +136,11 @@ public class PostgresAdapter extends JdbcAdapter {
         Iterator<DbAttribute> it = ent.getAttributes().iterator();
         boolean first = true;
         while (it.hasNext()) {
-            if (first)
+            if (first) {
                 first = false;
-            else
+            } else {
                 buf.append(", ");
+            }
 
             DbAttribute at = it.next();
 
@@ -191,18 +192,20 @@ public class PostgresAdapter extends JdbcAdapter {
         // primary key clause
         Iterator<DbAttribute> pkit = ent.getPrimaryKeys().iterator();
         if (pkit.hasNext()) {
-            if (first)
+            if (first) {
                 first = false;
-            else
+            } else {
                 buf.append(", ");
+            }
 
             buf.append("PRIMARY KEY (");
             boolean firstPk = true;
             while (pkit.hasNext()) {
-                if (firstPk)
+                if (firstPk) {
                     firstPk = false;
-                else
+                } else {
                     buf.append(", ");
+                }
 
                 DbAttribute at = pkit.next();
                 buf.append(context.quotedName(at));
@@ -234,10 +237,7 @@ public class PostgresAdapter extends JdbcAdapter {
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
         QuotingStrategy context = getQuotingStrategy();
-        StringBuffer buf = new StringBuffer("DROP TABLE ");
-        buf.append(context.quotedFullyQualifiedName(table));
-        buf.append(" CASCADE");
-        return Collections.singleton(buf.toString());
+        return Collections.singleton("DROP TABLE " + context.quotedFullyQualifiedName(table) + " CASCADE");
     }
 
     /**

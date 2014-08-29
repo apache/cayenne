@@ -104,7 +104,7 @@ public class SQLiteAdapter extends JdbcAdapter {
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
         super.createTableAppendColumn(sqlBuffer, column);
-        DbEntity entity = (DbEntity) column.getEntity();
+        DbEntity entity = column.getEntity();
         if (column.isGenerated()
                 && column.isPrimaryKey()
                 && entity.getPrimaryKeys().size() == 1) {

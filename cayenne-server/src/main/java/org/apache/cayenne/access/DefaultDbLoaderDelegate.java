@@ -16,34 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.access;
 
-package org.apache.cayenne.dba.ingres;
-
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
-import org.apache.cayenne.configuration.server.DbAdapterDetector;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
- * Detects Ingres database from JDBC metadata.
- * 
- * @since 1.2
+ * @since 3.2.
  */
-public class IngresSniffer implements DbAdapterDetector {
+public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
 
-    protected AdhocObjectFactory objectFactory;
-
-    public IngresSniffer(@Inject AdhocObjectFactory objectFactory) {
-        this.objectFactory = objectFactory;
+    @Override
+    public boolean overwriteDbEntity(DbEntity entity) throws CayenneException {
+        return false;
     }
 
     @Override
-    public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().contains("INGRES")
-                ? objectFactory.newInstance(DbAdapter.class, IngresAdapter.class.getName()) : null;
+    public void dbEntityAdded(DbEntity entity) {
+
+    }
+
+    @Override
+    public void dbEntityRemoved(DbEntity entity) {
+
+    }
+
+    @Override
+    public void objEntityAdded(ObjEntity entity) {
+
+    }
+
+    @Override
+    public void objEntityRemoved(ObjEntity entity) {
+
     }
 }

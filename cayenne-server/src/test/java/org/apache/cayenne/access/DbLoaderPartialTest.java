@@ -47,29 +47,12 @@ public class DbLoaderPartialTest extends ServerCase {
         loader = new DbLoader(
                 dataSourceFactory.getSharedDataSource().getConnection(),
                 adapter,
-                new DbLoaderDelegate() {
+                new DefaultDbLoaderDelegate() {
 
-                    public boolean overwriteDbEntity(DbEntity ent)
-                            throws CayenneException {
-                        if (ent.getName().equalsIgnoreCase("ARTIST")
-                                || ent.getName().equalsIgnoreCase("PAINTING")) {
-                            return false;
-                        }
-                        return true;
+                    public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
+                        return !(ent.getName().equalsIgnoreCase("ARTIST")
+                                || ent.getName().equalsIgnoreCase("PAINTING"));
                     }
-
-                    public void dbEntityAdded(DbEntity ent) {
-                    }
-
-                    public void dbEntityRemoved(DbEntity ent) {
-                    }
-
-                    public void objEntityAdded(ObjEntity ent) {
-                    }
-
-                    public void objEntityRemoved(ObjEntity ent) {
-                    }
-
                 });
     }
 
