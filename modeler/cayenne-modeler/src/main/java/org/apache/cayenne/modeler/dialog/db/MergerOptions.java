@@ -181,12 +181,14 @@ public class MergerOptions extends CayenneController {
      */
     protected void createSQL() {
         // convert them to string representation for display
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
 
         Iterator<MergerToken> it = tokens.getSelectedTokens().iterator();
         String batchTerminator = adapter.getBatchTerminator();
 
-        String lineEnd = batchTerminator == null ? "\n\n" : "\n" + batchTerminator + "\n\n";
+        final String lineEnd = (batchTerminator != null) ? "\n"
+                + batchTerminator
+                + "\n\n" : "\n\n";
 
         while (it.hasNext()) {
             MergerToken token = it.next();
