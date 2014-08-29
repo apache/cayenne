@@ -21,6 +21,7 @@ package org.apache.cayenne.merge;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.access.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.Attribute;

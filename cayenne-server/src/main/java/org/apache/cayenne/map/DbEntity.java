@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -353,7 +354,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      * @since 1.2
      */
     public void dbEntityChanged(EntityEvent e) {
-        if ((e == null) || (e.getEntity() != this)) {
+        if (e == null || e.getEntity() != this) {
             // not our concern
             return;
         }
@@ -409,14 +410,14 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
     }
 
     private void handleAttributeUpdate(AttributeEvent e) {
-        if ((e == null) || (e.getEntity() != this)) {
+        if (e == null || e.getEntity() != this) {
             // not our concern
             return;
         }
 
         // catch clearing (event with null ('any') DbAttribute)
         Attribute attribute = e.getAttribute();
-        if ((attribute == null) && (this.attributes.isEmpty())) {
+        if (attribute == null && this.attributes.isEmpty()) {
             this.primaryKey.clear();
             this.generatedAttributes.clear();
             return;
@@ -519,7 +520,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      * Relationship property changed.
      */
     public void dbRelationshipChanged(RelationshipEvent e) {
-        if ((e == null) || (e.getEntity() != this)) {
+        if (e == null || e.getEntity() != this) {
             // not our concern
             return;
         }
@@ -828,5 +829,16 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
             finalPath.addLast(name);
         }
+    }
+
+    public Collection<ObjEntity> mappedObjEntities() {
+        Collection<ObjEntity> objEntities = new HashSet<ObjEntity>();
+        MappingNamespace mns = getDataMap().getNamespace();
+        for (ObjEntity objEntity : mns.getObjEntities()) {
+            if (equals(objEntity.getDbEntity())) {
+                objEntities.add(objEntity);
+            }
+        }
+        return objEntities;
     }
 }
