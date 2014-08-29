@@ -75,11 +75,13 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
                     appendObjectMatch();
                 }
                 
-                if(PatternMatchNode.class.isAssignableFrom(node.getClass()))
+                if(PatternMatchNode.class.isAssignableFrom(node.getClass())) {
                     appendLikeEscapeCharacter((PatternMatchNode) node);
+                }
 
-                if (parenthesisNeeded(node, parentNode))
+                if (parenthesisNeeded(node, parentNode)) {
                     out.append(')');
+                }
 
                 // super implementation has special handling
                 // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
@@ -123,7 +125,7 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
 
     private void finishedChildNodeAppendExpression(Expression node, String operation)
             throws IOException {
-        Appendable buf = (matchingObject) ? new StringBuilder() : this.out;
+        Appendable buf = matchingObject ? new StringBuilder() : this.out;
         buf.append(operation);
         if (matchingObject) {
             objectMatchTranslator.setOperation(buf.toString());

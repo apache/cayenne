@@ -142,8 +142,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
-        String srcName = getTableName((DbEntity) rel.getSourceEntity());
-        String dstName = getTableName((DbEntity) rel.getTargetEntity());
+        String srcName = getTableName(rel.getSourceEntity());
+        String dstName = getTableName(rel.getTargetEntity());
 
         buf.append("ALTER TABLE ");
         buf.append(srcName);
@@ -154,7 +154,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
         String name = "U_" + rel.getSourceEntity().getName() + "_"
                 + (long) (System.currentTimeMillis() / (Math.random() * 100000));
 
-        DbEntity sourceEntity = (DbEntity) rel.getSourceEntity();
+        DbEntity sourceEntity = rel.getSourceEntity();
 
         buf.append(quotingStrategy.quotedIdentifier(sourceEntity, sourceEntity.getSchema(), name));
         buf.append(" FOREIGN KEY (");
@@ -164,8 +164,9 @@ public class HSQLDBAdapter extends JdbcAdapter {
             if (!first) {
                 buf.append(", ");
                 refBuf.append(", ");
-            } else
+            } else {
                 first = false;
+            }
 
             buf.append(quotingStrategy.quotedSourceName(join));
             refBuf.append(quotingStrategy.quotedTargetName(join));

@@ -52,10 +52,11 @@ public class IngresPkGenerator extends OraclePkGenerator {
         String pkGeneratingSequenceName;
         if (pkGenerator != null
                 && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null)
+                && pkGenerator.getGeneratorName() != null) {
             pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        else
+        } else {
             pkGeneratingSequenceName = sequenceName(entity);
+        }
 
         Connection con = node.getDataSource().getConnection();
         try {

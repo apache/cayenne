@@ -86,8 +86,7 @@ public class FirebirdAdapter extends JdbcAdapter {
 
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
-                    : "<null>";
+            String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
             throw new CayenneRuntimeException("Undefined type for attribute '" + entityName + "." + column.getName()
                     + "': " + column.getType());
         }
@@ -100,7 +99,7 @@ public class FirebirdAdapter extends JdbcAdapter {
         if (typeSupportsLength(column.getType())) {
             int len = column.getMaxLength();
 
-            int scale = (TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT) ? column
+            int scale = TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT ? column
                     .getScale() : -1;
 
             // sanity check
@@ -124,8 +123,7 @@ public class FirebirdAdapter extends JdbcAdapter {
     
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        QualifierTranslator translator = new FirebirdQualifierTranslator(queryAssembler);
-        return translator;
+        return new FirebirdQualifierTranslator(queryAssembler);
     }
 
 

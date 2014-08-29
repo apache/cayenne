@@ -64,16 +64,13 @@ public class OpenBaseMergerFactory extends MergerFactory {
             @Override
             public List<String> createSql(DbAdapter adapter) {
 
-                StringBuilder buf = new StringBuilder();
-
-                buf.append("delete from _SYS_RELATIONSHIP where ");
 
                 // FK_NAME form jdbc metadata seem to be wrong. It contain a column name
                 // and not the 'relationshipName'
                 // TODO: tell openbase developer mail list
 
                 DbEntity source = getEntity();
-                DbEntity dest = (DbEntity) rel.getTargetEntity();
+                DbEntity dest = rel.getTargetEntity();
 
                 // only use the first. See adapter
                 // TODO: can we be sure this is the first and same as used by the adapter?
@@ -81,23 +78,11 @@ public class OpenBaseMergerFactory extends MergerFactory {
 
                 // see comment in adapter for why source and dest is switched around..
 
-                buf.append(" source_table = '");
-                buf.append(dest.getFullyQualifiedName());
-                buf.append("'");
-
-                buf.append(" and source_column = '");
-                buf.append(join.getTargetName());
-                buf.append("'");
-
-                buf.append(" and dest_table = '");
-                buf.append(source.getFullyQualifiedName());
-                buf.append("'");
-
-                buf.append(" and dest_column = '");
-                buf.append(join.getSourceName());
-                buf.append("'");
-
-                return Collections.singletonList(buf.toString());
+                return Collections.singletonList("delete from _SYS_RELATIONSHIP where "
+                        + " source_table = '" + dest.getFullyQualifiedName() + "'"
+                        + " and source_column = '" + join.getTargetName() + "'"
+                        + " and dest_table = '" + source.getFullyQualifiedName() + "'"
+                        + " and dest_column = '" + join.getSourceName() + "'");
             }
 
         };
@@ -135,15 +120,9 @@ public class OpenBaseMergerFactory extends MergerFactory {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                StringBuilder sqlBuffer = new StringBuilder();
 
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(getEntity().getFullyQualifiedName());
-                sqlBuffer.append(" COLUMN ");
-                sqlBuffer.append(getColumn().getName());
-                sqlBuffer.append(" SET NOT NULL");
-
-                return Collections.singletonList(sqlBuffer.toString());
+                return Collections.singletonList("ALTER TABLE " + getEntity().getFullyQualifiedName()
+                        + " COLUMN " + getColumn().getName() + " SET NOT NULL");
             }
 
         };
@@ -155,15 +134,9 @@ public class OpenBaseMergerFactory extends MergerFactory {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                StringBuilder sqlBuffer = new StringBuilder();
 
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(getEntity().getFullyQualifiedName());
-                sqlBuffer.append(" COLUMN ");
-                sqlBuffer.append(getColumn().getName());
-                sqlBuffer.append(" SET NULL");
-
-                return Collections.singletonList(sqlBuffer.toString());
+                return Collections.singletonList("ALTER TABLE " + getEntity().getFullyQualifiedName()
+                        + " COLUMN " + getColumn().getName() + " SET NULL");
             }
 
         };

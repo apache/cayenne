@@ -135,10 +135,10 @@ class Oracle8LOBBatchQueryWrapper {
 
         if (value instanceof char[]) {
             char[] chars = (char[]) value;
-            return (chars.length == 0) ? null : chars;
+            return chars.length == 0 ? null : chars;
         } else {
             String strValue = value.toString();
-            return (strValue.length() == 0) ? null : strValue;
+            return strValue.length() == 0 ? null : strValue;
         }
     }
 
