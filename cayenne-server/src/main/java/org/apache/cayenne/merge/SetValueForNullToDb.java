@@ -30,7 +30,7 @@ public class SetValueForNullToDb extends AbstractToDbToken.EntityAndColumn {
     private ValueForNullProvider valueForNullProvider;
 
     public SetValueForNullToDb(DbEntity entity, DbAttribute column, ValueForNullProvider valueForNullProvider) {
-        super(entity, column);
+        super("Set value for null", entity, column);
         this.valueForNullProvider = valueForNullProvider;
     }
     
@@ -41,10 +41,6 @@ public class SetValueForNullToDb extends AbstractToDbToken.EntityAndColumn {
 
     public MergerToken createReverse(MergerFactory factory) {
         return new DummyReverseToken(this);
-    }
-    
-    public String getTokenName() {
-        return "Set value for null";
     }
     
 }

@@ -26,7 +26,7 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     private DbRelationship rel;
 
     public AddRelationshipToModel(DbEntity entity, DbRelationship rel) {
-        super(entity);
+        super("Add Relationship", entity);
         this.rel = rel;
     }
 
@@ -37,21 +37,13 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     public void execute(MergerContext mergerContext) {
         getEntity().addRelationship(rel);
         // TODO: add reverse relationship as well if it does not exist
-        synchronizeWithObjEntity(mergerContext, getEntity());
+        synchronizeWithObjEntity(getEntity());
         mergerContext.getModelMergeDelegate().dbRelationshipAdded(rel);
-    }
-
-    public String getTokenName() {
-        return "Add Relationship";
     }
 
     @Override
     public String getTokenValue() {
-        StringBuilder s = new StringBuilder();
-        s.append(rel.getSourceEntity().getName());
-        s.append("->");
-        s.append(rel.getTargetEntityName());
-        return s.toString();
+        return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
     }
     
     public DbRelationship getRelationship() {

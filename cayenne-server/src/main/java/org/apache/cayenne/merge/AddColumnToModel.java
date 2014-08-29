@@ -31,7 +31,7 @@ import org.apache.cayenne.util.EntityMergeSupport;
 public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
     public AddColumnToModel(DbEntity entity, DbAttribute column) {
-        super(entity, column);
+        super("Add Column", entity, column);
     }
 
     public MergerToken createReverse(MergerFactory factory) {
@@ -40,12 +40,8 @@ public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
     public void execute(MergerContext mergerContext) {
         getEntity().addAttribute(getColumn());
-        synchronizeWithObjEntity(mergerContext, getEntity());
+        synchronizeWithObjEntity(getEntity());
         mergerContext.getModelMergeDelegate().dbAttributeAdded(getColumn());
-    }
-
-    public String getTokenName() {
-        return "Add Column";
     }
 
 }

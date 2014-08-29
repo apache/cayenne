@@ -16,27 +16,52 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.merge;
+package org.apache.cayenne.merge.builders;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
 
 /**
- * A {@link MergerToken} to set the mandatory field of a {@link DbAttribute} to false
- * 
+ * @since 3.2.
  */
-public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
+public class ObjAttributeBuilder extends DefaultBuilder<ObjAttribute> {
 
-    public SetAllowNullToModel(DbEntity entity, DbAttribute column) {
-        super("Set Allow Null", entity, column);
+    public ObjAttributeBuilder() {
+        super(new ObjAttribute());
     }
 
-    public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetNotNullToDb(getEntity(), getColumn());
+    public ObjAttributeBuilder name() {
+        return name(getRandomJavaName());
     }
 
-    public void execute(MergerContext mergerContext) {
-        getColumn().setMandatory(false);
-        mergerContext.getModelMergeDelegate().dbAttributeModified(getColumn());
+    public ObjAttributeBuilder name(String name) {
+        obj.setName(name);
+
+        return this;
+    }
+
+    public ObjAttributeBuilder type(Class type) {
+        obj.setType(type.getCanonicalName());
+
+        return this;
+    }
+
+    public ObjAttributeBuilder dbPath(String path) {
+        obj.setDbAttributePath(path);
+
+        return this;
+    }
+
+    @Override
+    public ObjAttribute build() {
+        if (obj.getName() == null) {
+            name();
+        }
+
+        return obj;
+    }
+
+    @Override
+    public ObjAttribute random() {
+        return build();
     }
 }
