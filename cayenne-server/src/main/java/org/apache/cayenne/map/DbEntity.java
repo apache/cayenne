@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -841,16 +840,5 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
             finalPath.addLast(name);
         }
-    }
-
-    public Collection<ObjEntity> mappedObjEntities() {
-        Collection<ObjEntity> objEntities = new HashSet<ObjEntity>();
-        MappingNamespace mns = getDataMap().getNamespace();
-        for (ObjEntity objEntity : mns.getObjEntities()) {
-            if (equals(objEntity.getDbEntity())) {
-                objEntities.add(objEntity);
-            }
-        }
-        return objEntities;
     }
 }
