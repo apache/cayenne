@@ -34,7 +34,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DropRelationshipToModelTest extends MergeCase {
 
-    public void testForreignKey() throws Exception {
+    public void testForeignKey() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         dropTableIfPresent("NEW_TABLE2");
 
