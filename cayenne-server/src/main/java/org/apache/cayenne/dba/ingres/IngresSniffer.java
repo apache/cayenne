@@ -44,6 +44,6 @@ public class IngresSniffer implements DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("INGRES")
-                ? objectFactory.newInstance(DbAdapter.class, IngresAdapter.class.getName()) : null;
+                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, IngresAdapter.class.getName()) : null;
     }
 }

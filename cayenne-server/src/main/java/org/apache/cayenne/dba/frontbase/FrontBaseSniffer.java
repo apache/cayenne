@@ -42,6 +42,6 @@ public class FrontBaseSniffer implements DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("FRONTBASE")
-                ? objectFactory.newInstance(DbAdapter.class, FrontBaseAdapter.class.getName()) : null;
+                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, FrontBaseAdapter.class.getName()) : null;
     }
 }

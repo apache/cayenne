@@ -51,7 +51,7 @@ public class HSQLDBSniffer implements DbAdapterDetector {
                 || md.getDriverMajorVersion() == 1 && md.getDriverMinorVersion() <= 8;
 
         return supportsSchema
-                    ? objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
-                    : objectFactory.newInstance(DbAdapter.class, HSQLDBNoSchemaAdapter.class.getName());
+                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
+                    : (DbAdapter) objectFactory.newInstance(DbAdapter.class, HSQLDBNoSchemaAdapter.class.getName());
     }
 }

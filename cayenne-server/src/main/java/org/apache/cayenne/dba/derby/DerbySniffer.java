@@ -44,6 +44,6 @@ public class DerbySniffer implements DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("APACHE DERBY")
-                ? objectFactory.newInstance(DbAdapter.class, DerbyAdapter.class.getName()) : null;
+                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, DerbyAdapter.class.getName()) : null;
     }
 }
