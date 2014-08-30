@@ -38,7 +38,7 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
     private String objEntityClassName = null; //CayenneDataObject.class.getName();
 
     public CreateTableToModel(DbEntity entity) {
-        super(entity);
+        super("Create Table", entity);
     }
 
     /**
@@ -101,14 +101,10 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         
         map.addObjEntity(objEntity);
 
-        synchronizeWithObjEntity(mergerContext, getEntity());
+        synchronizeWithObjEntity(getEntity());
         
         mergerContext.getModelMergeDelegate().dbEntityAdded(getEntity());
         mergerContext.getModelMergeDelegate().objEntityAdded(objEntity);
-    }
-
-    public String getTokenName() {
-        return "Create Table";
     }
 
     public MergerToken createReverse(MergerFactory factory) {

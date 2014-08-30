@@ -16,27 +16,42 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.merge;
+package org.apache.cayenne.merge.builders;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.commons.lang.StringUtils;
+import org.fluttercode.datafactory.impl.DataFactory;
 
 /**
- * A {@link MergerToken} to set the mandatory field of a {@link DbAttribute} to false
- * 
+ * @since 3.2.
  */
-public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
+public abstract class DefaultBuilder<T> implements Builder<T> {
 
-    public SetAllowNullToModel(DbEntity entity, DbAttribute column) {
-        super("Set Allow Null", entity, column);
+    protected final DataFactory dataFactory;
+    protected final T obj;
+
+
+    protected DefaultBuilder(T obj) {
+        this.dataFactory = new DataFactory();
+        this.obj = obj;
     }
 
-    public MergerToken createReverse(MergerFactory factory) {
-        return factory.createSetNotNullToDb(getEntity(), getColumn());
+    public String getRandomJavaName() {
+        int count = dataFactory.getNumberBetween(1, 5);
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            res.append(StringUtils.capitalize(dataFactory.getRandomWord()));
+        }
+
+        return StringUtils.uncapitalize(res.toString());
     }
 
-    public void execute(MergerContext mergerContext) {
-        getColumn().setMandatory(false);
-        mergerContext.getModelMergeDelegate().dbAttributeModified(getColumn());
+    @Override
+    public T build() {
+        return obj;
+    }
+
+    @Override
+    public T random() {
+        return build();
     }
 }
