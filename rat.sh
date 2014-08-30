@@ -23,7 +23,6 @@
 #  ./rat.sh /path/to/apache-rat.jar > report.txt
 #
 
-
 DIR=`dirname "$0"`
 
 RAT="$@"
