@@ -39,10 +39,8 @@ public class FirebirdMergerFactory extends MergerFactory {
         return new DropColumnToDb(entity, column) {
             public List<String> createSql(DbAdapter adapter) {
                 QuotingStrategy quoting = adapter.getQuotingStrategy();
-                StringBuilder builder = new StringBuilder("ALTER TABLE ");
-                builder.append(quoting.quotedFullyQualifiedName(getEntity()));
-                builder.append(" DROP ").append(quoting.quotedName(getColumn()));
-                return Collections.singletonList(builder.toString());
+                return Collections.singletonList("ALTER TABLE " + quoting.quotedFullyQualifiedName(getEntity())
+                        + " DROP " + quoting.quotedName(getColumn()));
             }
         };
     }

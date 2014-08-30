@@ -123,14 +123,9 @@ public class MySQLMergerFactory extends MergerFactory {
                     return Collections.emptyList();
                 }
                 QuotingStrategy context = adapter.getQuotingStrategy();
-                StringBuilder buf = new StringBuilder();
-                // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
-                buf.append("ALTER TABLE ");
-                buf.append(context.quotedFullyQualifiedName(entity));
-                buf.append(" DROP FOREIGN KEY ");
-                buf.append(fkName);
 
-                return Collections.singletonList(buf.toString());
+                // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
+                return Collections.singletonList("ALTER TABLE " + context.quotedFullyQualifiedName(entity) + " DROP FOREIGN KEY " + fkName);
             }
         };
     }

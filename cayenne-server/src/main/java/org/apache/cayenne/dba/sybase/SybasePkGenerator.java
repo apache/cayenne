@@ -46,15 +46,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 
     @Override
     protected String pkTableCreateString() {
-        StringBuilder buf = new StringBuilder();
-        buf
-                .append("CREATE TABLE AUTO_PK_SUPPORT (")
-                .append("  TABLE_NAME CHAR(100) NOT NULL,")
-                .append("  NEXT_ID DECIMAL(19,0) NOT NULL,")
-                .append("  PRIMARY KEY(TABLE_NAME)")
-                .append(")");
-
-        return buf.toString();
+        return "CREATE TABLE AUTO_PK_SUPPORT (  TABLE_NAME CHAR(100) NOT NULL, NEXT_ID DECIMAL(19,0) NOT NULL, PRIMARY KEY(TABLE_NAME))";
     }
 
     /**
@@ -228,29 +220,13 @@ public class SybasePkGenerator extends JdbcPkGenerator {
     }
 
     private String unsafePkProcCreate() {
-        StringBuilder buf = new StringBuilder();
-        buf
-                .append(
-                        " CREATE PROCEDURE auto_pk_for_table @tname VARCHAR(32), @pkbatchsize INT AS")
-                .append(" BEGIN")
-                .append(" BEGIN TRANSACTION")
-                .append(" UPDATE AUTO_PK_SUPPORT set NEXT_ID = NEXT_ID + @pkbatchsize")
-                .append(" WHERE TABLE_NAME = @tname")
-                .append(" SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = @tname")
-                .append(" COMMIT")
-                .append(" END");
-        return buf.toString();
+        return " CREATE PROCEDURE auto_pk_for_table @tname VARCHAR(32), @pkbatchsize INT AS BEGIN BEGIN TRANSACTION"
+                + " UPDATE AUTO_PK_SUPPORT set NEXT_ID = NEXT_ID + @pkbatchsize WHERE TABLE_NAME = @tname"
+                + " SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = @tname COMMIT END";
     }
 
     private String safePkProcDrop() {
-        StringBuilder buf = new StringBuilder();
-        buf
-                .append(
-                        "if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')")
-                .append(" BEGIN")
-                .append(" DROP PROCEDURE auto_pk_for_table")
-                .append(" END");
-        return buf.toString();
+        return "if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table') BEGIN DROP PROCEDURE auto_pk_for_table END";
     }
 
 }

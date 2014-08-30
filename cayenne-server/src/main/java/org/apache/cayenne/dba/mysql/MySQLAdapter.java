@@ -78,9 +78,9 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class MySQLAdapter extends JdbcAdapter {
 
-    final static String DEFAULT_STORAGE_ENGINE = "InnoDB";
-    final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "`";
-    final static String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
+    static final String DEFAULT_STORAGE_ENGINE = "InnoDB";
+    static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "`";
+    static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
 
     protected String storageEngine;
     protected boolean supportsFkConstraints;
@@ -135,7 +135,7 @@ public class MySQLAdapter extends JdbcAdapter {
         // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK
         // checks
         // statement
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         QuotingStrategy context = getQuotingStrategy();
         buf.append(context.quotedFullyQualifiedName(table));
 

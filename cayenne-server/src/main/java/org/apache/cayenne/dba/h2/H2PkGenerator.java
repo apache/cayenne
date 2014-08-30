@@ -47,11 +47,8 @@ public class H2PkGenerator extends OraclePkGenerator {
 
     @Override
     protected String createSequenceString(DbEntity ent) {
-        StringBuilder buf = new StringBuilder();
-        buf.append("CREATE SEQUENCE ").append(sequenceName(ent))
-        	.append(" START WITH ").append(pkStartValue)
-        	.append(" INCREMENT BY ").append(pkCacheSize(ent)).append(" CACHE 1");
-        return buf.toString();
+        return "CREATE SEQUENCE " + sequenceName(ent) + " START WITH " + pkStartValue
+                + " INCREMENT BY " + pkCacheSize(ent) + " CACHE 1";
     }
 
     @Override
@@ -60,10 +57,11 @@ public class H2PkGenerator extends OraclePkGenerator {
         DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
         String pkGeneratingSequenceName;
         if (pkGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null)
+                && pkGenerator.getGeneratorName() != null) {
             pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        else
+        } else {
             pkGeneratingSequenceName = sequenceName(entity);
+        }
 
         Connection con = node.getDataSource().getConnection();
         try {

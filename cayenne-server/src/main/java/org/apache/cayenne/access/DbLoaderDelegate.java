@@ -35,13 +35,13 @@ public interface DbLoaderDelegate {
      * already exists in the model. If loading process should be stopped
      * immediately, an exception is thrown.
      */
-    public boolean overwriteDbEntity(DbEntity entity) throws CayenneException;
+    boolean overwriteDbEntity(DbEntity entity) throws CayenneException;
 
-    public void dbEntityAdded(DbEntity entity);
+    void dbEntityAdded(DbEntity entity);
 
-    public void dbEntityRemoved(DbEntity entity);
+    void dbEntityRemoved(DbEntity entity);
 
-    public void objEntityAdded(ObjEntity entity);
+    void objEntityAdded(ObjEntity entity);
 
-    public void objEntityRemoved(ObjEntity entity);
+    void objEntityRemoved(ObjEntity entity);
 }
