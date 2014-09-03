@@ -23,6 +23,10 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.resource.Resource;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A model of a Cayenne mapping project. A project consists of descriptors for
  * DataChannel, DataNodes and DataMaps and associated filesystem files they are loaded
@@ -39,10 +43,12 @@ public class Project {
 
     protected ConfigurationTree<?> configurationTree;
     private ConfigurationNodeVisitor<Resource> configurationSourceGetter;
+    private List<URL> unusedResources;
 
     public Project(ConfigurationTree<?> configurationTree) {
         this.configurationTree = configurationTree;
         this.configurationSourceGetter = new ConfigurationSourceGetter();
+        this.unusedResources = new ArrayList<URL>();
     }
 
     public ConfigurationTree<?> getConfigurationTree() {
@@ -73,5 +79,9 @@ public class Project {
 
     public Resource getConfigurationResource() {
         return configurationTree.getRootNode().acceptVisitor(configurationSourceGetter);
+    }
+
+    public List<URL> getUnusedResources() {
+        return unusedResources;
     }
 }
