@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -32,6 +30,8 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.resource.Resource;
+
+import java.awt.event.ActionEvent;
 
 /**
  * Action that creates new DataMap in the project.
@@ -55,6 +55,14 @@ public class CreateDataMapAction extends CayenneAction {
     public void createDataMap(DataMap map) {
         ProjectController mediator = getProjectController();
         mediator.addDataMap(this, map);
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
+                .getProject()
+                .getRootNode();
+        DataMap dataMap = domain.getDeletedDataMap(map.getName());
+        if(dataMap != null) {
+            domain.getDeletedDataMaps().remove(dataMap);
+        }
     }
 
     public void performAction(ActionEvent e) {

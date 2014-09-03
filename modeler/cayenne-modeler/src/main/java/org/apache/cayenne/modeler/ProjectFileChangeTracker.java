@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
@@ -35,10 +27,17 @@ import org.apache.cayenne.project.Project;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.io.File;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * ProjectWatchdog class is responsible for tracking changes in cayenne.xml and
  * other Cayenne project files
- * 
+ *
  */
 public class ProjectFileChangeTracker extends Thread {
 
@@ -146,7 +145,7 @@ public class ProjectFileChangeTracker extends Thread {
 
     /**
      * Adds a new file to watch
-     * 
+     *
      * @param location
      *            path of file
      */
@@ -160,7 +159,7 @@ public class ProjectFileChangeTracker extends Thread {
 
     /**
      * Turns off watching for a specified file
-     * 
+     *
      * @param location
      *            path of file
      */

@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.KeyStroke;
-import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoableEdit;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -74,6 +64,15 @@ import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
 
+import javax.swing.KeyStroke;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * Removes currently selected object from the project. This can be Domain, DataNode,
  * Entity, Attribute or Relationship.
@@ -106,7 +105,7 @@ public class RemoveAction extends CayenneAction {
 
     /**
      * Creates and returns dialog for delete prompt
-     * 
+     *
      * @param allowAsking If false, no question will be asked no matter what settings are
      */
     public ConfirmRemoveDialog getConfirmDeleteDialog(boolean allowAsking) {
@@ -120,7 +119,7 @@ public class RemoveAction extends CayenneAction {
 
     /**
      * Performs delete action
-     * 
+     *
      * @param allowAsking If false, no question will be asked no matter what settings are
      */
     public void performAction(ActionEvent e, boolean allowAsking) {
@@ -272,7 +271,7 @@ public class RemoveAction extends CayenneAction {
             mediator.fireProcedureParameterEvent(e);
         }
     }
-    
+
     private void removeEmbAttributes(ProjectController mediator,
 			ConfirmRemoveDialog dialog,
 			EmbeddableAttribute[] embAttrs) {
@@ -366,7 +365,7 @@ public class RemoveAction extends CayenneAction {
         	}
     	}
     }
-    
+
     private void removeDBRelationships(ProjectController mediator,
 			ConfirmRemoveDialog dialog,
 			DbRelationship[] dbRels) {
@@ -376,7 +375,7 @@ public class RemoveAction extends CayenneAction {
 					|| (dbRels.length > 1 && dialog
 							.shouldDelete("selected DbRelationships"))) {
 				DbEntity entity = mediator.getCurrentDbEntity();
-				
+
 				for (DbRelationship rel : dbRels) {
 					entity.removeRelationship(rel.getName());
 
@@ -386,7 +385,7 @@ public class RemoveAction extends CayenneAction {
 				}
 
 				ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
-				
+
 				Application.getInstance().getUndoManager().addEdit(
 						new RemoveRelationshipUndoableEdit(entity, dbRels));
 			}
@@ -409,7 +408,7 @@ public class RemoveAction extends CayenneAction {
 			}
 			Application.getInstance().getUndoManager().addEdit(
 					new RemoveRelationshipUndoableEdit(entity, rels));
-		}		
+		}
 	}
 
 	private void removeMethods(ProjectController mediator,
@@ -421,19 +420,19 @@ public class RemoveAction extends CayenneAction {
         	|| (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
             for (ObjCallbackMethod callbackMethod : methods) {
             	callbackMap.getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethod.getName());
-                    
+
                 CallbackMethodEvent ce = new CallbackMethodEvent(
                         this,
                         null,
                         callbackMethod.getName(),
                         MapEvent.REMOVE);
-                    
+
                 mediator.fireCallbackMethodEvent(ce);
             }
-            
-            Application.getInstance().getUndoManager().addEdit( 
+
+            Application.getInstance().getUndoManager().addEdit(
             		new RemoveCallbackMethodUndoableEdit(callbackType, methods));
-        }		
+        }
 	}
 
 	public void removeDataMap(DataMap map) {
@@ -445,7 +444,8 @@ public class RemoveAction extends CayenneAction {
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         domain.getDataMaps().remove(map);
-        
+        domain.getDeletedDataMaps().add(map);
+
         Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();
         while(iterator.hasNext()){
             DataNodeDescriptor node = iterator.next();

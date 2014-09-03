@@ -18,16 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
@@ -51,6 +41,15 @@ import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
 import org.apache.cayenne.query.Query;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
@@ -311,7 +310,6 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 CreateDataMapAction action = actionManager
                         .getAction(CreateDataMapAction.class);
                 action.createDataMap(map);
-
                 break;
             }
             case NODE: {

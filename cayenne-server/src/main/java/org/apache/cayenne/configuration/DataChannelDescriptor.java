@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,11 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A descriptor of a DataChannel normally loaded from XML configuration.
@@ -42,6 +42,7 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable,
     protected String name;
     protected Map<String, String> properties;
     protected Collection<DataMap> dataMaps;
+    protected Collection<DataMap> deletedDataMaps;
     protected Collection<DataNodeDescriptor> nodeDescriptors;
     protected Resource configurationSource;
     protected String defaultNodeName;
@@ -49,6 +50,7 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable,
     public DataChannelDescriptor() {
         properties = new HashMap<String, String>();
         dataMaps = new ArrayList<DataMap>(5);
+        deletedDataMaps = new ArrayList<DataMap>(5);
         nodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
     }
 
@@ -131,6 +133,19 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable,
 
     public DataMap getDataMap(String name) {
         for (DataMap map : dataMaps) {
+            if (name.equals(map.getName())) {
+                return map;
+            }
+        }
+        return null;
+    }
+
+    public Collection<DataMap> getDeletedDataMaps() {
+        return deletedDataMaps;
+    }
+
+    public DataMap getDeletedDataMap(String name) {
+        for (DataMap map : deletedDataMaps) {
             if (name.equals(map.getName())) {
                 return map;
             }
