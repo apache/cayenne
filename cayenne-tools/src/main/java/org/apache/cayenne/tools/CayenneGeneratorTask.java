@@ -20,6 +20,7 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 
+import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
@@ -115,10 +116,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
         CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
         filterAction.setClient(client);
-        filterAction.setNameFilter(new NamePatternMatcher(
-                logger,
-                includeEntitiesPattern,
-                excludeEntitiesPattern));
+        filterAction.setNameFilter(NamePatternMatcher.build(logger, includeEntitiesPattern, excludeEntitiesPattern));
 
         try {
 

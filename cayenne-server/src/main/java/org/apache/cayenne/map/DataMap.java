@@ -1131,6 +1131,19 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     }
 
     /**
+     *
+     * @param name
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public String getNameWithDefaultClientPackage(String name) {
+        return getNameWithPackage(defaultClientPackage, name);
+    }
+
+
+
+    /**
      * @since 1.2
      */
     public void setDefaultClientPackage(String defaultClientPackage) {
@@ -1158,6 +1171,30 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      */
     public String getDefaultPackage() {
         return defaultPackage;
+    }
+
+    /**
+     *
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public String getNameWithDefaultPackage(String name) {
+        return getNameWithPackage(defaultPackage, name);
+    }
+
+    /**
+     *
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public static String getNameWithPackage(String pack, String name) {
+        if (Util.isEmptyString(pack)) {
+            return name;
+        } else {
+            return pack + (pack.endsWith(".") ? ""  : ".") + name;
+        }
     }
 
     /**

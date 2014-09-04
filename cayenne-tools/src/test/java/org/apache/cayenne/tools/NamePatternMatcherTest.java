@@ -21,7 +21,10 @@ package org.apache.cayenne.tools;
 
 import junit.framework.TestCase;
 
+import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.tools.ant.Task;
+
+import static org.apache.cayenne.access.loader.NamePatternMatcher.replaceWildcardInStringWithString;
 
 public class NamePatternMatcherTest extends TestCase {
 
@@ -29,32 +32,14 @@ public class NamePatternMatcherTest extends TestCase {
      * Test pattern expansion.
      */
     public void testReplaceWildcardInStringWithString() throws Exception {
-        assertEquals(null, NamePatternMatcher.replaceWildcardInStringWithString(
-                "*",
-                null,
-                "Entity"));
-        assertEquals("*.java", NamePatternMatcher.replaceWildcardInStringWithString(
-                null,
-                "*.java",
-                "Entity"));
-        assertEquals("Entity.java", NamePatternMatcher.replaceWildcardInStringWithString(
-                "*",
-                "*.java",
-                "Entity"));
-        assertEquals("java.Entity", NamePatternMatcher.replaceWildcardInStringWithString(
-                "*",
-                "java.*",
-                "Entity"));
-        assertEquals("Entity.Entity", NamePatternMatcher
-                .replaceWildcardInStringWithString("*", "*.*", "Entity"));
-        assertEquals("EntityEntity", NamePatternMatcher
-                .replaceWildcardInStringWithString("*", "**", "Entity"));
-        assertEquals("EditEntityReport.vm", NamePatternMatcher
-                .replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
-        assertEquals("Entity", NamePatternMatcher.replaceWildcardInStringWithString(
-                "*",
-                "*",
-                "Entity"));
+        assertEquals(null, replaceWildcardInStringWithString("*", null, "Entity"));
+        assertEquals("*.java", replaceWildcardInStringWithString(null, "*.java", "Entity"));
+        assertEquals("Entity.java", replaceWildcardInStringWithString("*", "*.java", "Entity"));
+        assertEquals("java.Entity", replaceWildcardInStringWithString("*", "java.*", "Entity"));
+        assertEquals("Entity.Entity", replaceWildcardInStringWithString("*", "*.*", "Entity"));
+        assertEquals("EntityEntity", replaceWildcardInStringWithString("*", "**", "Entity"));
+        assertEquals("EditEntityReport.vm", replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
+        assertEquals("Entity", replaceWildcardInStringWithString("*", "*", "Entity"));
     }
 
     /**
@@ -71,10 +56,8 @@ public class NamePatternMatcherTest extends TestCase {
 
         String includePattern = "billing_*,user?";
         String excludePattern = null;
-        NamePatternMatcher namePatternMatcher = new NamePatternMatcher(
-                new AntLogger(parentTask),
-                includePattern,
-                excludePattern);
+        NamePatternMatcher namePatternMatcher = NamePatternMatcher.build(
+                new AntLogger(parentTask), includePattern, excludePattern);
 
         String[] nullFilters = namePatternMatcher.tokenizePattern(null);
         assertEquals(0, nullFilters.length);
@@ -99,10 +82,8 @@ public class NamePatternMatcherTest extends TestCase {
 
         String includePattern = "Organization,SecGroup,SecIndividual";
         String excludePattern = null;
-        NamePatternMatcher namePatternMatcher = new NamePatternMatcher(
-                new AntLogger(parentTask),
-                includePattern,
-                excludePattern);
+        NamePatternMatcher namePatternMatcher = NamePatternMatcher.build(
+                new AntLogger(parentTask), includePattern, excludePattern);
 
         String[] filters = namePatternMatcher.tokenizePattern(includePattern);
         assertEquals(3, filters.length);

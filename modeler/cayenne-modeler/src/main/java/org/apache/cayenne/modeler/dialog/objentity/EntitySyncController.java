@@ -27,14 +27,17 @@ import java.util.Collections;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.naming.DefaultNameGenerator;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.util.EntityMergeSupport;
 
 public class EntitySyncController extends CayenneController {
 
-    protected DbEntity dbEntity;
-    protected ObjEntity objEntity;
-    protected EntitySyncDialog view;
+    private final DbEntity dbEntity;
+    private ObjEntity objEntity;
+    private EntitySyncDialog view;
 
     /**
      * Creates a controller for synchronizing all ObjEntities mapped to a given DbEntity.
@@ -58,18 +61,26 @@ public class EntitySyncController extends CayenneController {
             return null;
         }
 
-        final EntityMergeSupport merger = new EntityMergeSupport(dbEntity.getDataMap());
+
+        ObjectNameGenerator namingStrategy;
+        try {
+            namingStrategy = NameGeneratorPreferences.getInstance().createNamingStrategy(application);
+        } catch (Throwable e) {
+            namingStrategy = NameGeneratorPreferences.defaultNameGenerator();
+
+            // TODO log exception
+        }
+
+        EntityMergeSupport merger = new EntityMergeSupport(dbEntity.getDataMap(), namingStrategy, true);
 
         // see if we need to remove meaningful attributes...
-        boolean showDialog = false;
         for (ObjEntity entity : entities) {
             if (!merger.getMeaningfulFKs(entity).isEmpty()) {
-                showDialog = true;
-                break;
+                return configureMerger(merger);
             }
         }
 
-        return (showDialog) ? configureMerger(merger) : merger;
+        return merger;
     }
 
     /**
@@ -113,9 +124,8 @@ public class EntitySyncController extends CayenneController {
     }
 
     protected Collection<ObjEntity> getObjEntities() {
-        return (objEntity != null) ? Collections.singleton(objEntity) : dbEntity
-                .getDataMap()
-                .getMappedEntities(dbEntity);
+        return objEntity == null ? dbEntity.getDataMap().getMappedEntities(dbEntity)
+                    : Collections.singleton(objEntity);
     }
 
 }
