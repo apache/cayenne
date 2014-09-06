@@ -182,6 +182,11 @@ public abstract class BaseContext implements ObjectContext {
 
     @Override
     public abstract void commitChangesToParent();
+    
+    @Override
+    public void deleteObject(Object object) throws DeleteDenyException {
+    	deleteObjects(object);
+    }
 
     @Override
     public abstract Collection<?> deletedObjects();

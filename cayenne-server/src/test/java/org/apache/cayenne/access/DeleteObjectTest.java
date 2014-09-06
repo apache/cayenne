@@ -89,7 +89,7 @@ public class DeleteObjectTest extends ServerCase {
 
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
-        context.deleteObjects(artist);
+        context.deleteObject(artist);
         assertEquals(PersistenceState.DELETED, artist.getPersistenceState());
         context.commitChanges();
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
