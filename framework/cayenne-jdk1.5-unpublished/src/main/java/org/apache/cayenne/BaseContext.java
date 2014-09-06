@@ -678,10 +678,7 @@ public abstract class BaseContext implements ObjectContext, DataChannel {
      * @throws DeleteDenyException if a DENY delete rule is applicable for object
      *             deletion.
      * @throws NullPointerException if object is null.
-     * @deprecated since 3.1 use {@link #deleteObjects(Object...)} method instead. This
-     *             method is redundant.
      */
-    @Deprecated
     public void deleteObject(Object object) {
         deleteObjects(object);
     }

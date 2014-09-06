@@ -98,10 +98,6 @@ public class MockObjectContext implements ObjectContext {
 
     }
 
-    /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
     public void deleteObject(Object object) {
     }
 

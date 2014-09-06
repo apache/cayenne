@@ -116,10 +116,7 @@ public interface ObjectContext extends Serializable {
      * 
      * @throws DeleteDenyException if a {@link org.apache.cayenne.map.DeleteRule#DENY}
      *             delete rule is applicable for object deletion.
-     * @deprecated since 3.1 use {@link #deleteObjects(Object...)} method instead. This
-     *             method is redundant.
      */
-    @Deprecated
     void deleteObject(Object object) throws DeleteDenyException;
 
     /**
