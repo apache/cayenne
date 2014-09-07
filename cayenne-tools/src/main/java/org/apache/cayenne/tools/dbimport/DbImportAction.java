@@ -18,37 +18,40 @@
  ****************************************************************/
 package org.apache.cayenne.tools.dbimport;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Connection;
-
-import javax.sql.DataSource;
-
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.merge.DbMerger;
+import org.apache.cayenne.merge.ExecutingMergerContext;
+import org.apache.cayenne.merge.MergerContext;
+import org.apache.cayenne.merge.MergerFactory;
+import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.merge.ModelMergeDelegate;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.tools.NamePatternMatcher;
-import org.apache.cayenne.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.EntityMergeSupport;
+import org.apache.cayenne.validation.SimpleValidationFailure;
+import org.apache.cayenne.validation.ValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.logging.Log;
 import org.xml.sax.InputSource;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A thin wrapper around {@link DbLoader} that encapsulates DB import logic for
@@ -58,22 +61,24 @@ import org.xml.sax.InputSource;
  */
 public class DbImportAction {
 
-    private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
+    private final ProjectSaver projectSaver;
+    private final Log logger;
+    private final DataSourceFactory dataSourceFactory;
+    private final DbAdapterFactory adapterFactory;
+    private final MapLoader mapLoader;
 
-    private ProjectSaver projectSaver;
-    private DataSourceFactory dataSourceFactory;
-    private DbAdapterFactory adapterFactory;
-    private Log logger;
-
-    public DbImportAction(@Inject Log logger, @Inject DbAdapterFactory adapterFactory,
-            @Inject DataSourceFactory dataSourceFactory, @Inject ProjectSaver projectSaver) {
+    public DbImportAction(@Inject Log logger, @Inject ProjectSaver projectSaver,
+                          @Inject DataSourceFactory dataSourceFactory,
+                          @Inject DbAdapterFactory adapterFactory,
+                          @Inject MapLoader mapLoader) {
         this.logger = logger;
-        this.adapterFactory = adapterFactory;
-        this.dataSourceFactory = dataSourceFactory;
         this.projectSaver = projectSaver;
+        this.dataSourceFactory = dataSourceFactory;
+        this.adapterFactory = adapterFactory;
+        this.mapLoader = mapLoader;
     }
 
-    public void execute(DbImportParameters parameters) throws Exception {
+    public void execute(DbImportConfiguration parameters) throws Exception {
 
         if (logger.isInfoEnabled()) {
             logger.debug(String.format("DB connection - [driver: %s, url: %s, username: %s, password: %s]",
@@ -81,174 +86,120 @@ public class DbImportAction {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Importer options - map: " + parameters.getDataMapFile());
-            logger.debug("Importer options - overwrite: " + parameters.isOverwrite());
-            logger.debug("Importer options - adapter: " + parameters.getAdapter());
-            logger.debug("Importer options - catalog: " + parameters.getCatalog());
-            logger.debug("Importer options - schema: " + parameters.getSchema());
-            logger.debug("Importer options - defaultPackage: " + parameters.getDefaultPackage());
-            logger.debug("Importer options - tablePattern: " + parameters.getTablePattern());
-            logger.debug("Importer options - importProcedures: " + parameters.isImportProcedures());
-            logger.debug("Importer options - procedurePattern: " + parameters.getProcedurePattern());
-            logger.debug("Importer options - meaningfulPkTables: " + parameters.getMeaningfulPkTables());
-            logger.debug("Importer options - namingStrategy: " + parameters.getNamingStrategy());
-            logger.debug("Importer options - includeTables: " + parameters.getIncludeTables());
-            logger.debug("Importer options - excludeTables: " + parameters.getExcludeTables());
+            parameters.log();
         }
 
-        DataSourceInfo dataSourceInfo = new DataSourceInfo();
-        dataSourceInfo.setDataSourceUrl(parameters.getUrl());
-        dataSourceInfo.setJdbcDriver(parameters.getDriver());
-        dataSourceInfo.setUserName(parameters.getUsername());
-        dataSourceInfo.setPassword(parameters.getPassword());
+        DataNodeDescriptor dataNodeDescriptor = parameters.createDataNodeDescriptor();
+        DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
+        DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
 
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setAdapterType(parameters.getAdapter());
-        nodeDescriptor.setDataSourceDescriptor(dataSourceInfo);
+        DataMap loadedFomDb = load(parameters, adapter, dataSource.getConnection());
+        if (loadedFomDb == null) {
+            logger.info("Nothing was loaded from db.");
+            return;
+        }
 
-        DataMap dataMap = load(parameters, nodeDescriptor);
+        DataMap existing = loadExistingDataMap(parameters.getDataMapFile());
+        if (existing == null) {
+            saveLoaded(loadedFomDb);
+        } else {
+            MergerFactory mergerFactory = adapter.mergerFactory();
 
-        saveLoaded(dataMap, parameters.getDataMapFile());
-    }
-
-    void saveLoaded(DataMap dataMap, File dataMapFile) throws FileNotFoundException {
-
-        ConfigurationTree<DataMap> projectRoot = new ConfigurationTree<DataMap>(dataMap);
-        Project project = new Project(projectRoot);
-        projectSaver.save(project);
-    }
-
-    DataMap load(DbImportParameters parameters, DataNodeDescriptor nodeDescriptor) throws Exception {
-        DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
-        DbAdapter adapter = adapterFactory.createAdapter(nodeDescriptor, dataSource);
-
-        DataMap dataMap = createDataMap(parameters);
-
-        DbImportDbLoaderDelegate loaderDelegate = new DbImportDbLoaderDelegate();
-
-        Connection connection = dataSource.getConnection();
-
-        try {
-            DbLoader loader = createLoader(parameters, adapter, connection, loaderDelegate);
-
-            String[] types = loader.getDefaultTableTypes();
-            loader.load(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getTablePattern(), types);
-
-            for (ObjEntity addedObjEntity : loaderDelegate.getAddedObjEntities()) {
-                DeleteRuleUpdater.updateObjEntity(addedObjEntity);
+            List<MergerToken> mergeTokens = new DbMerger(mergerFactory).createMergeTokens(existing, loadedFomDb);
+            if (mergeTokens.isEmpty()) {
+                logger.info("No changes to import.");
+                return;
             }
 
-            if (parameters.isImportProcedures()) {
-                loader.loadProcedures(dataMap, parameters.getCatalog(), parameters.getSchema(),
-                        parameters.getProcedurePattern());
+            saveLoaded(execute(parameters.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens))));
+        }
+    }
+
+    private Collection<MergerToken> log(List<MergerToken> tokens) {
+        logger.info("Detected changes: ");
+        for (MergerToken token : tokens) {
+            logger.info(String.format("    %-20s %s", token.getTokenName(), token.getTokenValue()));
+        }
+        logger.info("");
+
+        return tokens;
+    }
+
+    private DataMap loadExistingDataMap(File dataMapFile) throws IOException {
+        if (dataMapFile != null && dataMapFile.exists() && dataMapFile.canRead()) {
+            DataMap dataMap = mapLoader.loadDataMap(new InputSource(dataMapFile.getCanonicalPath()));
+            dataMap.setNamespace(new EntityResolver(Collections.singleton(dataMap)));
+            dataMap.setConfigurationSource(new URLResource(dataMapFile.toURI().toURL()));
+
+            return dataMap;
+        }
+
+        return null;
+    }
+
+    private List<MergerToken> reverse(MergerFactory mergerFactory, Iterable<MergerToken> mergeTokens) throws IOException {
+        List<MergerToken> tokens = new LinkedList<MergerToken>();
+        for (MergerToken token : mergeTokens) {
+            tokens.add(token.createReverse(mergerFactory));
+        }
+        return tokens;
+    }
+
+    /**
+     * Performs configured schema operations via DbGenerator.
+     */
+    public DataMap execute(ModelMergeDelegate mergeDelegate, DataMap dataMap, Collection<MergerToken> tokens) {
+        MergerContext mergerContext = new ExecutingMergerContext(
+                dataMap, null, null, mergeDelegate);
+
+        for (MergerToken tok : tokens) {
+            try {
+                tok.execute(mergerContext);
+            } catch (Throwable th) {
+                String message = "Migration Error. Can't apply changes from token: " + tok.getTokenName()
+                        + " (" + tok.getTokenValue() + ")";
+
+                logger.error(message, th);
+                mergerContext.getValidationResult().addFailure(new SimpleValidationFailure(th, message));
             }
-        } finally {
-            connection.close();
+        }
+
+        ValidationResult failures = mergerContext.getValidationResult();
+        if (failures == null || !failures.hasFailures()) {
+            logger.info("Migration Complete Successfully.");
+        } else {
+            logger.info("Migration Complete.");
+            logger.warn("Migration finished. The following problem(s) were ignored.");
+            for (ValidationFailure failure : failures.getFailures()) {
+                logger.warn(failure.toString());
+            }
         }
 
         return dataMap;
     }
 
-    DbLoader createLoader(final DbImportParameters parameters, DbAdapter adapter, Connection connection,
-            DbLoaderDelegate loaderDelegate) throws InstantiationException, IllegalAccessException,
-            ClassNotFoundException {
-
-        final NamePatternMatcher nameFilter = new NamePatternMatcher(logger, parameters.getIncludeTables(),
-                parameters.getExcludeTables());
-
-        String meangfulPkExclude = parameters.getMeaningfulPkTables() != null ? null : "*";
-        final NamePatternMatcher meaningfulPkFilter = new NamePatternMatcher(logger,
-                parameters.getMeaningfulPkTables(), meangfulPkExclude);
-
-        DbLoader loader = new DbLoader(connection, adapter, loaderDelegate) {
-            @Override
-            public boolean includeTableName(String tableName) {
-                return nameFilter.isIncluded(tableName);
-            }
-
-            @Override
-            protected EntityMergeSupport createEntityMerger(DataMap map) {
-                EntityMergeSupport emSupport = new EntityMergeSupport(map, nameGenerator, true) {
-
-                    @Override
-                    protected boolean removePK(DbEntity dbEntity) {
-                        return !meaningfulPkFilter.isIncluded(dbEntity.getName());
-                    }
-                };
-
-                emSupport.setUsePrimitives(parameters.isUsePrimitives());
-                return emSupport;
-            }
-        };
-
-        // TODO: load via DI AdhocObjectFactory
-        String namingStrategy = parameters.getNamingStrategy();
-        if (namingStrategy != null) {
-            ObjectNameGenerator nameGeneratorInst = (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
-            loader.setNameGenerator(nameGeneratorInst);
-        }
-
-        return loader;
+    void saveLoaded(DataMap dataMap) throws FileNotFoundException {
+        ConfigurationTree<DataMap> projectRoot = new ConfigurationTree<DataMap>(dataMap);
+        Project project = new Project(projectRoot);
+        projectSaver.save(project);
     }
 
-    DataMap createDataMap(DbImportParameters parameters) throws IOException {
+    private DataMap load(DbImportConfiguration parameters, DbAdapter adapter, Connection connection) throws Exception {
+        DataMap dataMap = parameters.createDataMap();
 
-        File dataMapFile = parameters.getDataMapFile();
-        if (dataMapFile == null) {
-            throw new NullPointerException("Null DataMap File.");
-        }
+        try {
+            DbLoader loader = parameters.createLoader(adapter, connection, parameters.createLoaderDelegate());
 
-        String name = dataMapFile.getName();
-        if (!name.endsWith(DATA_MAP_LOCATION_SUFFIX)) {
-            throw new CayenneRuntimeException("DataMap file name must end with '%s': '%s'", DATA_MAP_LOCATION_SUFFIX,
-                    name);
-        }
+            String[] types = loader.getDefaultTableTypes();
+            loader.load(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getTablePattern(), types);
 
-        DataMap dataMap;
-
-        if (dataMapFile.exists()) {
-            InputSource in = new InputSource(dataMapFile.getCanonicalPath());
-            dataMap = new MapLoader().loadDataMap(in);
-
-            if (parameters.isOverwrite()) {
-                dataMap.clearObjEntities();
-                dataMap.clearEmbeddables();
-                dataMap.clearProcedures();
-                dataMap.clearDbEntities();
-                dataMap.clearQueries();
-                dataMap.clearResultSets();
+            if (parameters.isImportProcedures()) {
+                loader.loadProcedures(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getProcedurePattern());
             }
-        } else {
-            String dataMapName = name.substring(0, name.length() - DATA_MAP_LOCATION_SUFFIX.length());
-            dataMap = new DataMap(dataMapName);
-        }
-
-        URL dataMapUrl = dataMapFile.toURI().toURL();
-        dataMap.setConfigurationSource(new URLResource(dataMapUrl));
-
-        // update map defaults
-
-        // do not override default package of existing DataMap unless it is
-        // explicitly requested by the plugin caller
-        String defaultPackage = parameters.getDefaultPackage();
-        if (defaultPackage != null && defaultPackage.length() > 0) {
-            dataMap.setDefaultPackage(defaultPackage);
-        }
-
-        // do not override default catalog of existing DataMap unless it is
-        // explicitly requested by the plugin caller, and the provided catalog is
-        // not a pattern
-        String catalog = parameters.getCatalog();
-        if (catalog != null && catalog.length() > 0 && catalog.indexOf('%') < 0) {
-            dataMap.setDefaultCatalog(catalog);
-        }
-        
-        // do not override default schema of existing DataMap unless it is
-        // explicitly requested by the plugin caller, and the provided schema is
-        // not a pattern
-        String schema = parameters.getSchema();
-        if (schema != null && schema.length() > 0 && schema.indexOf('%') < 0) {
-            dataMap.setDefaultSchema(schema);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
 
         return dataMap;
