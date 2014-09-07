@@ -162,11 +162,11 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
         statement.execute(lockString);
 
         // select
-        long pk = -1;
 
         String selectString = super.pkSelectString(entityName);
         adapter.getJdbcEventLogger().logQuery(selectString, Collections.EMPTY_LIST);
         ResultSet rs = statement.executeQuery(selectString);
+        long pk = -1;
         try {
             if (!rs.next()) {
                 throw new SQLException("No rows for '" + entityName + "'");

@@ -164,12 +164,10 @@ public class MergerOptions extends CayenneController {
             adapter = (JdbcAdapter) connectionInfo.makeAdapter(getApplication()
                     .getClassLoadingService());
             tokens.setMergerFactory(adapter.mergerFactory());
-            merger = new DbMerger();
-            merger.setSchema(defaultSchema);
+            merger = new DbMerger(adapter.mergerFactory(), defaultSchema);
             List<MergerToken> mergerTokens = merger.createMergeTokens(
-                    adapter,
                     connectionInfo.makeDataSource(getApplication()
-                            .getClassLoadingService()),
+                            .getClassLoadingService()), adapter,
                     dataMap);
             tokens.setTokens(mergerTokens);
         }
@@ -183,7 +181,7 @@ public class MergerOptions extends CayenneController {
      */
     protected void createSQL() {
         // convert them to string representation for display
-        final StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
 
         Iterator<MergerToken> it = tokens.getSelectedTokens().iterator();
         String batchTerminator = adapter.getBatchTerminator();
@@ -417,10 +415,8 @@ public class MergerOptions extends CayenneController {
             // generator.runGenerator(dataSource);
 
             MergerContext mergerContext = new ExecutingMergerContext(
-                    dataMap,
-                    dataSource,
-                    adapter,
-                    delegate);
+                    dataMap, dataSource, adapter, delegate);
+
             boolean modelChanged = false;
             for (MergerToken tok : tokensToMigrate) {
                 int numOfFailuresBefore = mergerContext

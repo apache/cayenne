@@ -29,7 +29,7 @@ import org.apache.cayenne.map.DbEntity;
 public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
 
     public DropColumnToDb(DbEntity entity, DbAttribute column) {
-        super(entity, column);
+        super("Drop Column", entity, column);
     }
 
     @Override
@@ -42,10 +42,6 @@ public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
         sqlBuffer.append(context.quotedName(getColumn()));
 
         return Collections.singletonList(sqlBuffer.toString());
-    }
-
-    public String getTokenName() {
-        return "Drop Column";
     }
 
     public MergerToken createReverse(MergerFactory factory) {

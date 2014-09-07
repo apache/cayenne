@@ -50,10 +50,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
         // however 7.3 doesn't like BY and WITH, so using older more neutral
         // syntax
         // that works with all tested versions.
-        StringBuilder buf = new StringBuilder();
-        buf.append("CREATE SEQUENCE ").append(sequenceName(ent)).append(" INCREMENT ").append(pkCacheSize(ent))
-                .append(" START ").append(pkStartValue);
-        return buf.toString();
+        return "CREATE SEQUENCE " + sequenceName(ent) + " INCREMENT " + pkCacheSize(ent) + " START " + pkStartValue;
     }
 
     /**
@@ -65,10 +62,11 @@ public class PostgresPkGenerator extends OraclePkGenerator {
         DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
         String pkGeneratingSequenceName;
         if (pkGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null)
+                && pkGenerator.getGeneratorName() != null) {
             pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        else
+        } else {
             pkGeneratingSequenceName = sequenceName(entity);
+        }
 
         Connection con = node.getDataSource().getConnection();
         try {

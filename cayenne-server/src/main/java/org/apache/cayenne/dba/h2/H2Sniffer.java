@@ -42,10 +42,7 @@ public class H2Sniffer implements DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("H2")
-                ? (DbAdapter) objectFactory.newInstance(
-                        DbAdapter.class,
-                        H2Adapter.class.getName())
-                : null;
+                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, H2Adapter.class.getName()) : null;
     }
 
 }

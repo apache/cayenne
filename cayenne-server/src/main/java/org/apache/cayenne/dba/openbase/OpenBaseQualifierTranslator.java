@@ -76,11 +76,13 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
                     appendObjectMatch();
                 }
 
-                if(PatternMatchNode.class.isAssignableFrom(node.getClass()))
+                if(PatternMatchNode.class.isAssignableFrom(node.getClass())) {
                     appendLikeEscapeCharacter((PatternMatchNode) node);
+                }
                 
-                if (parenthesisNeeded(node, parentNode))
+                if (parenthesisNeeded(node, parentNode)) {
                     out.append(')');
+                }
 
                 // super implementation has special handling
                 // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
@@ -162,7 +164,7 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
 
     private void finishedChildNodeAppendExpression(Expression node, String operation)
             throws IOException {
-        Appendable out = (matchingObject) ? new StringBuilder() : this.out;
+        Appendable out = matchingObject ? new StringBuilder() : this.out;
         out.append(operation);
         if (matchingObject) {
             objectMatchTranslator.setOperation(out.toString());

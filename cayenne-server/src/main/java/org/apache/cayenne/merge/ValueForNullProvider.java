@@ -23,6 +23,10 @@ import java.util.List;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
+/**
+ * Class that will be used to set value for null on not
+ * null columns
+ */
 public interface ValueForNullProvider {
     
     /**

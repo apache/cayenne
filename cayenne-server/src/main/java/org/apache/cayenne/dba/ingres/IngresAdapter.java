@@ -120,7 +120,7 @@ public class IngresAdapter extends JdbcAdapter {
         String[] types = externalTypesForJdbcType(at.getType());
         if (types == null || types.length == 0) {
             throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + ((DbEntity) at.getEntity()).getFullyQualifiedName() + "." + at.getName() + "': " + at.getType());
+                    + at.getEntity().getFullyQualifiedName() + "." + at.getName() + "': " + at.getType());
         }
 
         String type = types[0];

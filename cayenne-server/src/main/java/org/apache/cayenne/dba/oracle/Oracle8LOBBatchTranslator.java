@@ -150,7 +150,7 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
     }
 
     protected boolean isUpdateableColumn(Object value, int type) {
-        return value == null || (type != Types.BLOB && type != Types.CLOB);
+        return value == null || type != Types.BLOB && type != Types.CLOB;
     }
 
     void setNewBlobFunction(String string) {

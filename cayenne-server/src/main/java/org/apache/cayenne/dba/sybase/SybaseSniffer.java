@@ -47,16 +47,12 @@ public class SybaseSniffer implements DbAdapterDetector {
         if (driver != null && driver.toLowerCase().startsWith("jtds")) {
             String url = md.getURL();
             return url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
-                    ? (DbAdapter) objectFactory.newInstance(
-                            DbAdapter.class,
-                            SybaseAdapter.class.getName()) : null;
+                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
         }
         else {
             String dbName = md.getDatabaseProductName();
             return dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
-                    ? (DbAdapter) objectFactory.newInstance(
-                            DbAdapter.class,
-                            SybaseAdapter.class.getName()) : null;
+                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
         }
     }
 }

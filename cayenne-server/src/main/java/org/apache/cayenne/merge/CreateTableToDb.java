@@ -30,7 +30,7 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 public class CreateTableToDb extends AbstractToDbToken.Entity {
 
     public CreateTableToDb(DbEntity entity) {
-        super(entity);
+        super("Create Table", entity);
     }
 
     @Override
@@ -56,10 +56,6 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
             mergerContext.getValidationResult().addFailure(
                     new SimpleValidationFailure(this, e.getMessage()));
         }
-    }
-
-    public String getTokenName() {
-        return "Create Table";
     }
 
     public MergerToken createReverse(MergerFactory factory) {

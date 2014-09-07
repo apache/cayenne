@@ -38,8 +38,6 @@ public class FirebirdSniffer implements DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
         return dbName != null && dbName.toUpperCase().contains("FIREBIRD")
-                ? (DbAdapter) objectFactory.newInstance(
-                        DbAdapter.class,
-                        FirebirdAdapter.class.getName()) : null;
+                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, FirebirdAdapter.class.getName()) : null;
     }
 }

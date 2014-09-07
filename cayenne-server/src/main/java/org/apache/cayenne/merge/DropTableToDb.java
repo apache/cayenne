@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DbEntity;
 public class DropTableToDb extends AbstractToDbToken.Entity {
 
     public DropTableToDb(DbEntity entity) {
-        super(entity);
+        super("Drop Table", entity);
     }
 
     @Override
@@ -40,10 +40,6 @@ public class DropTableToDb extends AbstractToDbToken.Entity {
          */
         sqls.addAll(adapter.dropTableStatements(getEntity()));
         return sqls;
-    }
-
-    public String getTokenName() {
-        return "Drop Table";
     }
 
     public MergerToken createReverse(MergerFactory factory) {

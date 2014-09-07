@@ -36,7 +36,7 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
 
     public SetPrimaryKeyToDb(DbEntity entity, Collection<DbAttribute> primaryKeyOriginal,
             Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
-        super(entity);
+        super("Set Primary Key", entity);
 
         this.primaryKeyOriginal = primaryKeyOriginal;
         this.primaryKeyNew = primaryKeyNew;
@@ -82,9 +82,4 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
         return factory.createSetPrimaryKeyToModel(getEntity(), primaryKeyNew, primaryKeyOriginal,
                 detectedPrimaryKeyName);
     }
-
-    public String getTokenName() {
-        return "Set Primary Key";
-    }
-
 }

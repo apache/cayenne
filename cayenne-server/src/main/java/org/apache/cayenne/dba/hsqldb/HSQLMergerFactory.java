@@ -57,15 +57,10 @@ public class HSQLMergerFactory extends MergerFactory {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                StringBuilder sqlBuffer = new StringBuilder();
                 QuotingStrategy context = adapter.getQuotingStrategy();
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
-                sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(getColumn()));
-                sqlBuffer.append(" NULL");
 
-                return Collections.singletonList(sqlBuffer.toString());
+                return Collections.singletonList("ALTER TABLE " + context.quotedFullyQualifiedName(getEntity())
+                        + " ALTER COLUMN " + context.quotedName(getColumn()) + " NULL");
             }
 
         };

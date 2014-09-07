@@ -42,7 +42,7 @@ class SQLiteBigDecimalType implements ExtendedType {
         // throws an NPE on 'getDouble' if the value is null, and also there are rounding
         // errors. So will read it as a String...
         String string = rs.getString(index);
-        return (string == null) ? null : new BigDecimal(string);
+        return string == null ? null : new BigDecimal(string);
     }
 
     @Override
@@ -51,7 +51,7 @@ class SQLiteBigDecimalType implements ExtendedType {
         // throws an NPE on 'getDouble' if the value is null, and also there are rounding
         // errors. So will read it as a String...
         String string = rs.getString(index);
-        return (string == null) ? null : new BigDecimal(string);
+        return string == null ? null : new BigDecimal(string);
     }
 
     @Override

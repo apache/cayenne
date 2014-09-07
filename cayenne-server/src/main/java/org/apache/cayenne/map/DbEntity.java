@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -353,7 +354,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      * @since 1.2
      */
     public void dbEntityChanged(EntityEvent e) {
-        if ((e == null) || (e.getEntity() != this)) {
+        if (e == null || e.getEntity() != this) {
             // not our concern
             return;
         }
@@ -409,14 +410,14 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
     }
 
     private void handleAttributeUpdate(AttributeEvent e) {
-        if ((e == null) || (e.getEntity() != this)) {
+        if (e == null || e.getEntity() != this) {
             // not our concern
             return;
         }
 
         // catch clearing (event with null ('any') DbAttribute)
         Attribute attribute = e.getAttribute();
-        if ((attribute == null) && (this.attributes.isEmpty())) {
+        if (attribute == null && this.attributes.isEmpty()) {
             this.primaryKey.clear();
             this.generatedAttributes.clear();
             return;
@@ -438,8 +439,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             if (map != null) {
                 for (DbEntity ent : map.getDbEntities()) {
 
-                    // handle all of the dependent object entity attribute
-                    // changes
+                    // handle all of the dependent object entity attribute changes
                     for (ObjEntity oe : map.getMappedEntities(ent)) {
                         for (ObjAttribute attr : oe.getAttributes()) {
                             if (attr.getDbAttribute() == dbAttribute) {
@@ -519,7 +519,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      * Relationship property changed.
      */
     public void dbRelationshipChanged(RelationshipEvent e) {
-        if ((e == null) || (e.getEntity() != this)) {
+        if (e == null || e.getEntity() != this) {
             // not our concern
             return;
         }
@@ -540,7 +540,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             if (map != null) {
 
                 // updating dbAttributePaths for attributes of all ObjEntities
-                for (ObjEntity objEntity : getDataMap().getObjEntities()) {
+                for (ObjEntity objEntity : map.getObjEntities()) {
 
                     for (ObjAttribute attribute : objEntity.getAttributes()) {
                         attribute.updateDbAttributePath();
@@ -607,6 +607,18 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
         return true;
     }
+
+    public Collection<ObjEntity> mappedObjEntities() {
+        Collection<ObjEntity> objEntities = new HashSet<ObjEntity>();
+        MappingNamespace mns = getDataMap().getNamespace();
+        for (ObjEntity objEntity : mns.getObjEntities()) {
+            if (equals(objEntity.getDbEntity())) {
+                objEntities.add(objEntity);
+            }
+        }
+        return objEntities;
+    }
+
 
     /**
      * Transforms Expression rooted in this entity to an analogous expression

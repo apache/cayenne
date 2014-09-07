@@ -40,7 +40,7 @@ class SQLiteFloatType implements ExtendedType {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
         // an object.
         Number n = (Number) rs.getObject(index);
-        return (n == null) ? null : new Float(n.floatValue());
+        return n == null ? null : new Float(n.floatValue());
     }
 
     @Override
@@ -48,7 +48,7 @@ class SQLiteFloatType implements ExtendedType {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
         // an object.
         Number n = (Number) rs.getObject(index);
-        return (n == null) ? null : new Float(n.floatValue());
+        return n == null ? null : new Float(n.floatValue());
     }
     
     @Override

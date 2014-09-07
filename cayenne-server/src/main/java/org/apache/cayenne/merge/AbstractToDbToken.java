@@ -35,6 +35,17 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
  */
 public abstract class AbstractToDbToken implements MergerToken, Comparable<MergerToken> {
 
+    private final String tokenName;
+
+    protected AbstractToDbToken(String tokenName) {
+        this.tokenName = tokenName;
+    }
+
+    @Override
+    public final String getTokenName() {
+        return tokenName;
+    }
+
     public final MergeDirection getDirection() {
         return MergeDirection.TO_DB;
     }
@@ -80,13 +91,7 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 
     @Override
     public String toString() {
-        StringBuilder ts = new StringBuilder();
-        ts.append(getTokenName());
-        ts.append(' ');
-        ts.append(getTokenValue());
-        ts.append(' ');
-        ts.append(getDirection());
-        return ts.toString();
+        return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
     }
 
     public abstract List<String> createSql(DbAdapter adapter);
@@ -95,7 +100,8 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 
         private DbEntity entity;
 
-        public Entity(DbEntity entity) {
+        public Entity(String tokenName, DbEntity entity) {
+            super(tokenName);
             this.entity = entity;
         }
 
@@ -118,8 +124,8 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 
         private DbAttribute column;
 
-        public EntityAndColumn(DbEntity entity, DbAttribute column) {
-            super(entity);
+        public EntityAndColumn(String tokenName, DbEntity entity, DbAttribute column) {
+            super(tokenName, entity);
             this.column = column;
         }
 

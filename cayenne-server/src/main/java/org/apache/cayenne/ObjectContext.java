@@ -97,6 +97,15 @@ public interface ObjectContext extends DataChannel, Serializable {
      */
     void registerNewObject(Object object);
 
+	/**
+	 * Schedules deletion of a persistent object.
+	 * 
+	 * @throws DeleteDenyException
+	 *             if a {@link org.apache.cayenne.map.DeleteRule#DENY} delete
+	 *             rule is applicable for object deletion.
+	 */
+	void deleteObject(Object object) throws DeleteDenyException;
+    
     /**
      * Schedules deletion of a collection of persistent objects.
      * 

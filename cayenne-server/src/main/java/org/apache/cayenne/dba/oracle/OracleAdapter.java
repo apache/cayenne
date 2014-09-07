@@ -352,7 +352,7 @@ public class OracleAdapter extends JdbcAdapter {
             // Oracle does not support Types.BOOLEAN, so we have to override user mapping
             // unconditionally
             int i = rs.getInt(index);
-            return (rs.wasNull()) ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
+            return rs.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
         }
 
         @Override
@@ -362,7 +362,7 @@ public class OracleAdapter extends JdbcAdapter {
             // Oracle does not support Types.BOOLEAN, so we have to override user mapping
             // unconditionally
             int i = st.getInt(index);
-            return (st.wasNull()) ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
+            return st.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
         }
     }
 

@@ -33,7 +33,7 @@ import org.apache.cayenne.map.DbEntity;
 public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
 
     public SetAllowNullToDb(DbEntity entity, DbAttribute column) {
-        super(entity, column);
+        super("Set Allow Null", entity, column);
     }
 
     @Override
@@ -47,10 +47,6 @@ public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
         sqlBuffer.append(" DROP NOT NULL");
 
         return Collections.singletonList(sqlBuffer.toString());
-    }
-
-    public String getTokenName() {
-        return "Set Allow Null";
     }
 
     public MergerToken createReverse(MergerFactory factory) {

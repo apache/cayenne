@@ -32,7 +32,7 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
     private DbRelationship rel;
 
     public DropRelationshipToDb(DbEntity entity, DbRelationship rel) {
-        super(entity);
+        super("Drop Relationship", entity);
         this.rel = rel;
     }
     
@@ -46,35 +46,22 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
     @Override
     public List<String> createSql(DbAdapter adapter) {
         String fkName = getFkName();
-        
         if (fkName == null) {
             return Collections.emptyList();
         }
-        QuotingStrategy context = adapter.getQuotingStrategy();
-        StringBuilder buf = new StringBuilder();
-        buf.append("ALTER TABLE ");
-        buf.append(context.quotedFullyQualifiedName(getEntity()));
-        buf.append(" DROP CONSTRAINT ");
-        buf.append(fkName);
 
-        return Collections.singletonList(buf.toString());
+        QuotingStrategy context = adapter.getQuotingStrategy();
+        return Collections.singletonList(
+                "ALTER TABLE " + context.quotedFullyQualifiedName(getEntity()) + " DROP CONSTRAINT " + fkName);
     }
 
     public MergerToken createReverse(MergerFactory factory) {
         return factory.createAddRelationshipToModel(getEntity(), rel);
     }
 
-    public String getTokenName() {
-        return "Drop Relationship";
-    }
-
     @Override
     public String getTokenValue() {
-        StringBuilder s = new StringBuilder();
-        s.append(rel.getSourceEntity().getName());
-        s.append("->");
-        s.append(rel.getTargetEntityName());
-        return s.toString();
+        return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
     }
     
     public DbRelationship getRelationship() {

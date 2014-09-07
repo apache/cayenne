@@ -47,26 +47,11 @@ public class HSQLDBSniffer implements DbAdapterDetector {
             return null;
         }
 
-        boolean supportsSchema = false;
-        if (md.getDriverMajorVersion() < 1) {
-            supportsSchema = true;
-        }
-        else if (md.getDriverMajorVersion() == 1) {
-            if (md.getDriverMinorVersion() <= 8) {
-                supportsSchema = true;
-            }
-            else {
-                supportsSchema = false;
-            }
-        }
-        else {
-            supportsSchema = false;
-        }
+        boolean supportsSchema = md.getDriverMajorVersion() < 1
+                || md.getDriverMajorVersion() == 1 && md.getDriverMinorVersion() <= 8;
 
-        return supportsSchema ? (DbAdapter) objectFactory.newInstance(
-                DbAdapter.class,
-                HSQLDBAdapter.class.getName()) : (DbAdapter) objectFactory.newInstance(
-                DbAdapter.class,
-                HSQLDBNoSchemaAdapter.class.getName());
+        return supportsSchema
+                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
+                    : (DbAdapter) objectFactory.newInstance(DbAdapter.class, HSQLDBNoSchemaAdapter.class.getName());
     }
 }

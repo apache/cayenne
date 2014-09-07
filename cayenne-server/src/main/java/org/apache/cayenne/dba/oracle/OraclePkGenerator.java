@@ -124,10 +124,8 @@ public class OraclePkGenerator extends JdbcPkGenerator {
     }
 
     protected String createSequenceString(DbEntity ent) {
-        StringBuilder buf = new StringBuilder();
-        buf.append("CREATE SEQUENCE ").append(sequenceName(ent)).append(" START WITH ").append(pkStartValue).append(" INCREMENT BY ")
-                .append(pkCacheSize(ent));
-        return buf.toString();
+        return "CREATE SEQUENCE " + sequenceName(ent) + " START WITH " + pkStartValue
+                + " INCREMENT BY " + pkCacheSize(ent);
     }
 
     /**
@@ -136,9 +134,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
      */
     protected String dropSequenceString(DbEntity ent) {
 
-        StringBuilder buf = new StringBuilder();
-        buf.append("DROP SEQUENCE ").append(sequenceName(ent));
-        return buf.toString();
+        return "DROP SEQUENCE " + sequenceName(ent);
     }
 
     /**
@@ -157,10 +153,11 @@ public class OraclePkGenerator extends JdbcPkGenerator {
         DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
         String pkGeneratingSequenceName;
         if (pkGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null)
+                && pkGenerator.getGeneratorName() != null) {
             pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        else
+        } else {
             pkGeneratingSequenceName = sequenceName(entity);
+        }
 
         Connection con = node.getDataSource().getConnection();
         try {
@@ -220,7 +217,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
     protected String stripSchemaName(String sequenceName) {
         int ind = sequenceName.indexOf('.');
-        return (ind >= 0) ? sequenceName.substring(ind + 1) : sequenceName;
+        return ind >= 0 ? sequenceName.substring(ind + 1) : sequenceName;
     }
 
     /**
