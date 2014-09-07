@@ -139,12 +139,13 @@ public class DropRelationshipToModelTest extends MergeCase {
         // try do use the merger to remove the relationship in the model
         tokens = createMergeTokens();
         assertTokens(tokens, 2, 0);
-        // TODO: reversing the following two tokens should also reverse the
-        // order
+        // TODO: reversing the following two tokens should also reverse the order
         MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
         MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
-        assertTrue(token0 instanceof DropRelationshipToModel);
-        assertTrue(token1 instanceof DropColumnToModel);
+        if (!(token0 instanceof DropRelationshipToModel && token1 instanceof DropColumnToModel
+            || token1 instanceof DropRelationshipToModel && token0 instanceof DropColumnToModel)) {
+            fail();
+        }
         execute(token0);
         execute(token1);
 

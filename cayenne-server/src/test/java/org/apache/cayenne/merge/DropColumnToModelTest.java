@@ -186,10 +186,16 @@ public class DropColumnToModelTest extends MergeCase {
         // TODO: reversing the following two tokens should also reverse the order
         MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
         MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
-        assertTrue(token1.getClass().getName(), token1 instanceof DropColumnToModel);
-        assertTrue(token0.getClass().getName(), token0 instanceof DropRelationshipToModel);
+        if (!(token0 instanceof DropRelationshipToModel && token1 instanceof DropColumnToModel
+                || token1 instanceof DropRelationshipToModel && token0 instanceof DropColumnToModel)) {
+            fail();
+        }
         // do not execute DropRelationshipToModel, only DropColumnToModel.
-        execute(token1);
+        if (token1 instanceof DropColumnToModel) {
+            execute(token1);
+        } else {
+            execute(token0);
+        }
 
         // check after merging
         assertNull(dbEntity2.getAttribute(e2col2.getName()));
