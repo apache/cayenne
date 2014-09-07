@@ -91,13 +91,12 @@
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>10.7.1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
-            <version>1.5</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
