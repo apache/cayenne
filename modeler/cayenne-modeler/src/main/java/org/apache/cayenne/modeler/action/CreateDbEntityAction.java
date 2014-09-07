@@ -92,6 +92,7 @@ public class CreateDbEntityAction extends CayenneAction {
      */
     public void createEntity(DataMap map, DbEntity entity) {
         ProjectController mediator = getProjectController();
+        entity.setCatalog(map.getDefaultCatalog());
         entity.setSchema(map.getDefaultSchema());
         map.addDbEntity(entity);
         fireDbEntityEvent(this, mediator, entity);
