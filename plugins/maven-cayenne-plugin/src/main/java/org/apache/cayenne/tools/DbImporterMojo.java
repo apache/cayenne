@@ -25,8 +25,8 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.DbImportModule;
-import org.apache.cayenne.tools.dbimport.DbImportParameters;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
@@ -219,7 +219,7 @@ public class DbImporterMojo extends AbstractMojo {
 
         Log logger = new MavenLogger(this);
 
-        DbImportParameters parameters = toParameters();
+        DbImportConfiguration parameters = toParameters();
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
         try {
@@ -238,8 +238,8 @@ public class DbImporterMojo extends AbstractMojo {
         }
     }
 
-    DbImportParameters toParameters() {
-        DbImportParameters parameters = new DbImportParameters();
+    DbImportConfiguration toParameters() {
+        DbImportConfiguration parameters = new DbImportConfiguration();
         parameters.setAdapter(adapter);
         parameters.setCatalog(catalog);
         parameters.setDefaultPackage(defaultPackage);
@@ -281,4 +281,27 @@ public class DbImporterMojo extends AbstractMojo {
         return meaningfulPk ? "*" : null;
     }
 
+    public File getMap() {
+        return map;
+    }
+
+    public void setMap(File map) {
+        this.map = map;
+    }
+
+    public String getDriver() {
+        return driver;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }
