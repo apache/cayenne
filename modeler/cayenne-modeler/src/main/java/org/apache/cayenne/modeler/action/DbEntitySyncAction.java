@@ -35,79 +35,73 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.EntityMergeSupport;
 
 /**
- * Action that synchronizes all ObjEntities with the current state of the selected
- * DbEntity.
- * 
+ * Action that synchronizes all ObjEntities with the current state of the
+ * selected DbEntity.
  */
 public class DbEntitySyncAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Sync Dependent ObjEntities with DbEntity";
-    }
+	public static String getActionName() {
+		return "Sync Dependent ObjEntities with DbEntity";
+	}
 
-    public DbEntitySyncAction(Application application) {
-        super(getActionName(), application);
-    }
+	public DbEntitySyncAction(Application application) {
+		super(getActionName(), application);
+	}
 
-    public String getIconName() {
-        return "icon-sync.gif";
-    }
+	public String getIconName() {
+		return "icon-sync.gif";
+	}
 
-    /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-     */
-    public void performAction(ActionEvent e) {
-        synchDbEntity();
-    }
+	/**
+	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+	 */
+	public void performAction(ActionEvent e) {
+		synchDbEntity();
+	}
 
-    protected void synchDbEntity() {
-        ProjectController mediator = getProjectController();
+	protected void synchDbEntity() {
+		ProjectController mediator = getProjectController();
 
-        DbEntity dbEntity = mediator.getCurrentDbEntity();
+		DbEntity dbEntity = mediator.getCurrentDbEntity();
 
-        if (dbEntity != null) {
+		if (dbEntity != null) {
 
-            Iterator it = dbEntity.getDataMap().getMappedEntities(dbEntity).iterator();
-            if (!it.hasNext()) {
-                return;
-            }
+			Iterator it = dbEntity.getDataMap().getMappedEntities(dbEntity).iterator();
+			if (!it.hasNext()) {
+				return;
+			}
 
-            EntityMergeSupport merger = new EntitySyncController(Application
-                    .getInstance()
-                    .getFrameController(), dbEntity).createMerger();
+			EntityMergeSupport merger = new EntitySyncController(Application.getInstance().getFrameController(),
+					dbEntity).createMerger();
 
-            if (merger == null) {
-                return;
-            }
+			if (merger == null) {
+				return;
+			}
 
-            DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor)mediator.getProject().getRootNode()
-                    , mediator.getCurrentDataMap());
+			DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor) mediator
+					.getProject().getRootNode(), mediator.getCurrentDataMap());
 
-            while (it.hasNext()) {
-                ObjEntity entity = (ObjEntity) it.next();
+			while (it.hasNext()) {
+				ObjEntity entity = (ObjEntity) it.next();
 
-                DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(
-                        entity);
+				DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(
+						entity);
 
-                merger.addEntityMergeListener(listener);
+				merger.addEntityMergeListener(listener);
 
-                if (merger.isRemoveMeaningfulFKs()) {
-                    undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(
-                            entity,
-                            merger.getMeaningfulFKs(entity)));
-                }
+				if (merger.isRemoveMeaningfulFKs()) {
+					undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(entity, merger
+							.getMeaningfulFKs(entity)));
+				}
 
-                if (merger.synchronizeWithDbEntity(entity)) {
-                    mediator.fireObjEntityEvent(new EntityEvent(
-                            this,
-                            entity,
-                            MapEvent.CHANGE));
-                }
+				if (merger.synchronizeWithDbEntity(entity)) {
+					mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
+				}
 
-                merger.removeEntityMergeListener(listener);
-            }
+				merger.removeEntityMergeListener(listener);
+			}
 
-            application.getUndoManager().addEdit(undoableEdit);
-        }
-    }
+			application.getUndoManager().addEdit(undoableEdit);
+		}
+	}
 }

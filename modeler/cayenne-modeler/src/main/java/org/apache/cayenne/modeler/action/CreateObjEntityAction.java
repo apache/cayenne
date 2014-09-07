@@ -30,6 +30,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
@@ -37,127 +38,114 @@ import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.EntityMergeSupport;
-import org.apache.cayenne.map.naming.NameConverter;
 
-/**
- */
 public class CreateObjEntityAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Create ObjEntity";
-    }
+	public static String getActionName() {
+		return "Create ObjEntity";
+	}
 
-    /**
-     * Constructor for CreateObjEntityAction.
-     */
-    public CreateObjEntityAction(Application application) {
-        super(getActionName(), application);
-    }
+	/**
+	 * Constructor for CreateObjEntityAction.
+	 */
+	public CreateObjEntityAction(Application application) {
+		super(getActionName(), application);
+	}
 
-    @Override
-    public String getIconName() {
-        return "icon-new_objentity.gif";
-    }
+	@Override
+	public String getIconName() {
+		return "icon-new_objentity.gif";
+	}
 
-    /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-     */
-    @Override
-    public void performAction(ActionEvent e) {
-        createObjEntity();
-    }
+	/**
+	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+	 */
+	@Override
+	public void performAction(ActionEvent e) {
+		createObjEntity();
+	}
 
-    protected void createObjEntity() {
-        ProjectController mediator = getProjectController();
+	protected void createObjEntity() {
+		ProjectController mediator = getProjectController();
 
-        DataMap dataMap = mediator.getCurrentDataMap();
-        ObjEntity entity = new ObjEntity(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, dataMap));
+		DataMap dataMap = mediator.getCurrentDataMap();
+		ObjEntity entity = new ObjEntity(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, dataMap));
 
-        // init defaults
-        entity.setSuperClassName(dataMap.getDefaultSuperclass());
-        entity.setDeclaredLockType(dataMap.getDefaultLockType());
+		// init defaults
+		entity.setSuperClassName(dataMap.getDefaultSuperclass());
+		entity.setDeclaredLockType(dataMap.getDefaultLockType());
 
-        DbEntity dbEntity = mediator.getCurrentDbEntity();
-        if (dbEntity != null) {
-            entity.setDbEntity(dbEntity);
-            String baseName = NameConverter.underscoredToJava(dbEntity.getName(), true);
-            entity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, dbEntity.getDataMap(), baseName));
-        }
+		DbEntity dbEntity = mediator.getCurrentDbEntity();
+		if (dbEntity != null) {
+			entity.setDbEntity(dbEntity);
+			String baseName = NameConverter.underscoredToJava(dbEntity.getName(), true);
+			entity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, dbEntity.getDataMap(), baseName));
+		}
 
-        String pkg = dataMap.getDefaultPackage();
-        if (pkg != null) {
-            if (!pkg.endsWith(".")) {
-                pkg = pkg + ".";
-            }
+		String pkg = dataMap.getDefaultPackage();
+		if (pkg != null) {
+			if (!pkg.endsWith(".")) {
+				pkg = pkg + ".";
+			}
 
-            entity.setClassName(pkg + entity.getName());
-        }
+			entity.setClassName(pkg + entity.getName());
+		}
 
-        if (dataMap.isClientSupported()) {
-            String clientPkg = dataMap.getDefaultClientPackage();
-            if (clientPkg != null) {
-                if (!clientPkg.endsWith(".")) {
-                    clientPkg = clientPkg + ".";
-                }
+		if (dataMap.isClientSupported()) {
+			String clientPkg = dataMap.getDefaultClientPackage();
+			if (clientPkg != null) {
+				if (!clientPkg.endsWith(".")) {
+					clientPkg = clientPkg + ".";
+				}
 
-                entity.setClientClassName(clientPkg + entity.getName());
-            }
+				entity.setClientClassName(clientPkg + entity.getName());
+			}
 
-            entity.setClientSuperClassName(dataMap.getDefaultClientSuperclass());
-        }
+			entity.setClientSuperClassName(dataMap.getDefaultClientSuperclass());
+		}
 
-        dataMap.addObjEntity(entity);
+		dataMap.addObjEntity(entity);
 
-        // perform the merge
-        EntityMergeSupport merger = new EntityMergeSupport(dataMap);
-        merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
-        merger.synchronizeWithDbEntity(entity);
+		// perform the merge
+		EntityMergeSupport merger = new EntityMergeSupport(dataMap);
+		merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
+		merger.synchronizeWithDbEntity(entity);
 
-        fireObjEntityEvent(this, mediator, dataMap, entity);
+		fireObjEntityEvent(this, mediator, dataMap, entity);
 
-        application.getUndoManager().addEdit(
-                new CreateObjEntityUndoableEdit(dataMap, entity));
-    }
+		application.getUndoManager().addEdit(new CreateObjEntityUndoableEdit(dataMap, entity));
+	}
 
-    public void createObjEntity(DataMap dataMap, ObjEntity entity) {
-        ProjectController mediator = getProjectController();
-        dataMap.addObjEntity(entity);
-        fireObjEntityEvent(this, mediator, dataMap, entity);
-    }
+	public void createObjEntity(DataMap dataMap, ObjEntity entity) {
+		ProjectController mediator = getProjectController();
+		dataMap.addObjEntity(entity);
+		fireObjEntityEvent(this, mediator, dataMap, entity);
+	}
 
-    /**
-     * Fires events when a obj entity was added
-     */
-    static void fireObjEntityEvent(
-            Object src,
-            ProjectController mediator,
-            DataMap dataMap,
-            ObjEntity entity) {
-        mediator.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
-        EntityDisplayEvent displayEvent = new EntityDisplayEvent(
-                src,
-                entity,
-                dataMap,
-                mediator.getCurrentDataNode(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
-        displayEvent.setMainTabFocus(true);
-        mediator.fireObjEntityDisplayEvent(displayEvent);
-    }
+	/**
+	 * Fires events when a obj entity was added
+	 */
+	static void fireObjEntityEvent(Object src, ProjectController mediator, DataMap dataMap, ObjEntity entity) {
+		mediator.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
+		EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, dataMap, mediator.getCurrentDataNode(),
+				(DataChannelDescriptor) mediator.getProject().getRootNode());
+		displayEvent.setMainTabFocus(true);
+		mediator.fireObjEntityDisplayEvent(displayEvent);
+	}
 
-    /**
-     * Returns <code>true</code> if path contains a DataMap object.
-     */
-    @Override
-    public boolean enableForPath(ConfigurationNode object) {
-        if (object == null) {
-            return false;
-        }
+	/**
+	 * Returns <code>true</code> if path contains a DataMap object.
+	 */
+	@Override
+	public boolean enableForPath(ConfigurationNode object) {
+		if (object == null) {
+			return false;
+		}
 
-        if (object instanceof ObjEntity) {
-            return ((ObjEntity) object).getParent() != null
-                    && ((ObjEntity) object).getParent() instanceof DataMap;
-        }
+		if (object instanceof ObjEntity) {
+			return ((ObjEntity) object).getParent() != null && ((ObjEntity) object).getParent() instanceof DataMap;
+		}
 
-        return false;
-    }
+		return false;
+	}
 }
