@@ -76,6 +76,14 @@ public class FileProjectSaver implements ProjectSaver {
         }
 
         save(saveUnits, true);
+
+        Collection<URL> unusedResources = project.getUnusedResources();
+        try {
+            deleteUnusedFiles(unusedResources);
+        } catch (IOException ex) {
+            throw new CayenneRuntimeException(ex);
+        }
+
     }
 
     public void saveAs(Project project, Resource baseDirectory) {
@@ -108,7 +116,7 @@ public class FileProjectSaver implements ProjectSaver {
 
         try {
             if (deleteOldResources) {
-                clearOldFiles(units);
+                clearRenamedFiles(units);
             }
         }
         catch (IOException ex) {
@@ -269,7 +277,7 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    void clearTempFiles(Collection<SaveUnit> units) {
+    private void clearTempFiles(Collection<SaveUnit> units) {
         for (SaveUnit unit : units) {
 
             if (unit.targetTempFile != null && unit.targetTempFile.exists()) {
@@ -279,7 +287,7 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    private void clearOldFiles(Collection<SaveUnit> units) throws IOException {
+    private void clearRenamedFiles(Collection<SaveUnit> units) throws IOException {
         for (SaveUnit unit : units) {
 
             if (unit.sourceConfiguration == null) {
@@ -326,6 +334,29 @@ public class FileProjectSaver implements ProjectSaver {
         String secondFilePath = secondFile.getCanonicalPath();
 
         return isFirstFileExists && isSecondFileExists && firstFilePath.equals(secondFilePath);
+    }
+
+    private void deleteUnusedFiles(Collection<URL> unusedResources) throws IOException {
+        for (URL unusedResource : unusedResources) {
+
+            File unusedFile;
+            try {
+                unusedFile = Util.toFile(unusedResource);
+            }
+            catch (IllegalArgumentException e) {
+                // ignore non-file configurations...
+                continue;
+            }
+
+            if (!unusedFile.exists()) {
+                continue;
+            }
+
+            if (!unusedFile.delete()) {
+                throw new CayenneRuntimeException("Could not delete file '%s'", unusedFile.getCanonicalPath());
+            }
+
+        }
     }
 
     class SaveUnit {
