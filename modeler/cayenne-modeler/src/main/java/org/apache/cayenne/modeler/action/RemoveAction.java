@@ -445,8 +445,10 @@ public class RemoveAction extends CayenneAction {
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         domain.getDataMaps().remove(map);
-        URL mapURL = map.getConfigurationSource().getURL();
-        getCurrentProject().getUnusedResources().add(mapURL);
+        if (map.getConfigurationSource() != null) {
+            URL mapURL = map.getConfigurationSource().getURL();
+            getCurrentProject().getUnusedResources().add(mapURL);
+        }
         
         Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();
         while(iterator.hasNext()){

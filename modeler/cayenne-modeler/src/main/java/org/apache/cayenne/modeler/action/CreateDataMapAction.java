@@ -57,15 +57,17 @@ public class CreateDataMapAction extends CayenneAction {
     public void createDataMap(DataMap map) {
         ProjectController mediator = getProjectController();
         mediator.addDataMap(this, map);
-        URL mapURL = map.getConfigurationSource().getURL();
-        if(!mapURL.toString().endsWith(".map.xml")) {
-            try {
-                mapURL = new URL(mapURL.toString() + ".map.xml");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+        if (map.getConfigurationSource() != null) {
+            URL mapURL = map.getConfigurationSource().getURL();
+            if (!mapURL.toString().endsWith(".map.xml")) {
+                try {
+                    mapURL = new URL(mapURL.toString() + ".map.xml");
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
             }
+            getCurrentProject().getUnusedResources().remove(mapURL);
         }
-        getCurrentProject().getUnusedResources().remove(mapURL);
     }
 
     public void performAction(ActionEvent e) {
