@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-1841 Filters for Left-hand project navigator
 CAY-1842 Remove Listeners support from the Modeler 
 CAY-1843 DataMap v7: Stop saving listeners in DataMap, add upgrade handler
 CAY-1845 Upgrade javadoc plugin to 2.9.1 
@@ -58,7 +59,8 @@ CAY-1936 ServerRuntime.getDataSource() returning DataSource of a default DataNod
 CAY-1937 Make Transaction an interface
 CAY-1938 Create a DI factory for transactions, get rid of TransactionDelegate and modeler config for tx policies
 CAY-1939 DataDomain must use injectable TransactionManager
-CAY-1841 Filters for Left-hand project navigator
+CAY-1949 Search in configuration fields (Catalog, Schema) in DbEntity
+CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
 
 Bug Fixes:
 

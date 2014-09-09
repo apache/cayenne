@@ -36,75 +36,71 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateDbEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-/**
- */
 public class CreateDbEntityAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Create DbEntity";
-    }
+	public static String getActionName() {
+		return "Create DbEntity";
+	}
 
-    /**
-     * Constructor for CreateDbEntityAction.
-     */
-    public CreateDbEntityAction(Application application) {
-        super(getActionName(), application);
-    }
+	/**
+	 * Constructor for CreateDbEntityAction.
+	 */
+	public CreateDbEntityAction(Application application) {
+		super(getActionName(), application);
+	}
 
-    public String getIconName() {
-        return "icon-dbentity.gif";
-    }
+	public String getIconName() {
+		return "icon-dbentity.gif";
+	}
 
-    /**
-     * Creates new DbEntity, adds it to the current DataMap, fires DbEntityEvent and
-     * DbEntityDisplayEvent.
-     * 
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-     */
-    public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
+	/**
+	 * Creates new DbEntity, adds it to the current DataMap, fires DbEntityEvent
+	 * and DbEntityDisplayEvent.
+	 * 
+	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+	 */
+	public void performAction(ActionEvent e) {
+		ProjectController mediator = getProjectController();
 
-        DataMap map = mediator.getCurrentDataMap();
-        DbEntity entity = new DbEntity(DefaultUniqueNameGenerator.generate(NameCheckers.dbEntity, map));
+		DataMap map = mediator.getCurrentDataMap();
+		DbEntity entity = new DbEntity(DefaultUniqueNameGenerator.generate(NameCheckers.dbEntity, map));
 
-        createEntity(map, entity);
+		createEntity(map, entity);
 
-        application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(map, entity));
-    }
+		application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(map, entity));
+	}
 
-    /**
-     * Fires events when a db entity was added
-     */
-    static void fireDbEntityEvent(Object src, ProjectController mediator, DbEntity entity) {
-        mediator.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
-        EntityDisplayEvent displayEvent = new EntityDisplayEvent(
-                src,
-                entity,
-                mediator.getCurrentDataMap(),
-                mediator.getCurrentDataNode(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
-        displayEvent.setMainTabFocus(true);
-        mediator.fireDbEntityDisplayEvent(displayEvent);
-    }
+	/**
+	 * Fires events when a db entity was added
+	 */
+	static void fireDbEntityEvent(Object src, ProjectController mediator, DbEntity entity) {
+		mediator.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
+		EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, mediator.getCurrentDataMap(),
+				mediator.getCurrentDataNode(), (DataChannelDescriptor) mediator.getProject().getRootNode());
+		displayEvent.setMainTabFocus(true);
+		mediator.fireDbEntityDisplayEvent(displayEvent);
+	}
 
-    /**
-     * Constructs and returns a new DbEntity. Entity returned is added to the DataMap.
-     */
-    public void createEntity(DataMap map, DbEntity entity) {
-        ProjectController mediator = getProjectController();
-        entity.setSchema(map.getDefaultSchema());
-        map.addDbEntity(entity);
-        fireDbEntityEvent(this, mediator, entity);
-    }
+	/**
+	 * Constructs and returns a new DbEntity. Entity returned is added to the
+	 * DataMap.
+	 */
+	public void createEntity(DataMap map, DbEntity entity) {
+		ProjectController mediator = getProjectController();
+		entity.setCatalog(map.getDefaultCatalog());
+		entity.setSchema(map.getDefaultSchema());
+		map.addDbEntity(entity);
+		fireDbEntityEvent(this, mediator, entity);
+	}
 
-    /**
-     * Returns <code>true</code> if path contains a DataMap object.
-     */
-    public boolean enableForPath(ConfigurationNode object) {
-        if (object == null) {
-            return false;
-        }
+	/**
+	 * Returns <code>true</code> if path contains a DataMap object.
+	 */
+	public boolean enableForPath(ConfigurationNode object) {
+		if (object == null) {
+			return false;
+		}
 
-        return ((Entity) object).getDataMap() != null;
-    }
+		return ((Entity) object).getDataMap() != null;
+	}
 }

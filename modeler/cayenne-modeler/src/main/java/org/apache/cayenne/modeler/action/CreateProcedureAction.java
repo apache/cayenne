@@ -37,65 +37,56 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * Action class to create a new stored procedure mapping.
- * 
  */
 public class CreateProcedureAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Create Stored Procedure";
-    }
+	public static String getActionName() {
+		return "Create Stored Procedure";
+	}
 
-    public CreateProcedureAction(Application application) {
-        super(getActionName(), application);
-    }
+	public CreateProcedureAction(Application application) {
+		super(getActionName(), application);
+	}
 
-    public void performAction(ActionEvent e) {
-        ProjectController mediator = getProjectController();
-        DataMap map = mediator.getCurrentDataMap();
+	public void performAction(ActionEvent e) {
+		ProjectController mediator = getProjectController();
+		DataMap map = mediator.getCurrentDataMap();
 
-        Procedure procedure = new Procedure(DefaultUniqueNameGenerator.generate(NameCheckers.procedure, map));
+		Procedure procedure = new Procedure(DefaultUniqueNameGenerator.generate(NameCheckers.procedure, map));
 
-        createProcedure(map, procedure);
+		createProcedure(map, procedure);
 
-        application.getUndoManager().addEdit(
-                new CreateProcedureUndoableEdit(map, procedure));
-    }
+		application.getUndoManager().addEdit(new CreateProcedureUndoableEdit(map, procedure));
+	}
 
-    /**
-     * Fires events when a procedure was added
-     */
-    static void fireProcedureEvent(
-            Object src,
-            ProjectController mediator,
-            DataMap dataMap,
-            Procedure procedure) {
-        mediator.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
-        mediator.fireProcedureDisplayEvent(new ProcedureDisplayEvent(
-                src,
-                procedure,
-                mediator.getCurrentDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode()));
-    }
+	/**
+	 * Fires events when a procedure was added
+	 */
+	static void fireProcedureEvent(Object src, ProjectController mediator, DataMap dataMap, Procedure procedure) {
+		mediator.fireProcedureEvent(new ProcedureEvent(src, procedure, MapEvent.ADD));
+		mediator.fireProcedureDisplayEvent(new ProcedureDisplayEvent(src, procedure, mediator.getCurrentDataMap(),
+				(DataChannelDescriptor) mediator.getProject().getRootNode()));
+	}
 
-    public void createProcedure(DataMap map, Procedure procedure) {
-        ProjectController mediator = getProjectController();
-        procedure.setSchema(map.getDefaultSchema());
-        map.addProcedure(procedure);
-        fireProcedureEvent(this, mediator, map, procedure);
-    }
+	public void createProcedure(DataMap map, Procedure procedure) {
+		ProjectController mediator = getProjectController();
+		procedure.setSchema(map.getDefaultSchema());
+		map.addProcedure(procedure);
+		fireProcedureEvent(this, mediator, map, procedure);
+	}
 
-    /**
-     * Returns <code>true</code> if path contains a DataMap object.
-     */
-    public boolean enableForPath(ConfigurationNode object) {
-        if (object == null) {
-            return false;
-        }
+	/**
+	 * Returns <code>true</code> if path contains a DataMap object.
+	 */
+	public boolean enableForPath(ConfigurationNode object) {
+		if (object == null) {
+			return false;
+		}
 
-        return ((Procedure) object).getDataMap() != null;
-    }
+		return ((Procedure) object).getDataMap() != null;
+	}
 
-    public String getIconName() {
-        return "icon-stored-procedure.gif";
-    }
+	public String getIconName() {
+		return "icon-stored-procedure.gif";
+	}
 }

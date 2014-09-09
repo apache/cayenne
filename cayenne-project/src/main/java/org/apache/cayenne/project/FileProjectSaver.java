@@ -18,15 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.util.Util;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,7 +29,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.util.Util;
 
 /**
  * A ProjectSaver saving project configuration to the file system.
@@ -52,13 +51,11 @@ public class FileProjectSaver implements ProjectSaver {
 
     protected ConfigurationNodeVisitor<Resource> resourceGetter;
     protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> saveableNodesGetter;
-    protected List<URL> unusedResources;
     protected String fileEncoding;
 
     public FileProjectSaver() {
         resourceGetter = new ConfigurationSourceGetter();
         saveableNodesGetter = new SaveableNodesGetter();
-        unusedResources = new ArrayList<URL>();
 
         // this is not configurable yet... probably doesn't have to be
         fileEncoding = "UTF-8";
@@ -80,7 +77,7 @@ public class FileProjectSaver implements ProjectSaver {
 
         save(saveUnits, true);
 
-        unusedResources = project.getUnusedResources();
+        Collection<URL> unusedResources = project.getUnusedResources();
         try {
             deleteUnusedFiles(unusedResources);
         } catch (IOException ex) {
@@ -119,7 +116,7 @@ public class FileProjectSaver implements ProjectSaver {
 
         try {
             if (deleteOldResources) {
-                clearOldFiles(units);
+                clearRenamedFiles(units);
             }
         }
         catch (IOException ex) {
@@ -280,7 +277,7 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    void clearTempFiles(Collection<SaveUnit> units) {
+    private void clearTempFiles(Collection<SaveUnit> units) {
         for (SaveUnit unit : units) {
 
             if (unit.targetTempFile != null && unit.targetTempFile.exists()) {
@@ -290,7 +287,7 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    private void clearOldFiles(Collection<SaveUnit> units) throws IOException {
+    private void clearRenamedFiles(Collection<SaveUnit> units) throws IOException {
         for (SaveUnit unit : units) {
 
             if (unit.sourceConfiguration == null) {
@@ -339,7 +336,7 @@ public class FileProjectSaver implements ProjectSaver {
         return isFirstFileExists && isSecondFileExists && firstFilePath.equals(secondFilePath);
     }
 
-    private void deleteUnusedFiles(List<URL> unusedResources) throws IOException {
+    private void deleteUnusedFiles(Collection<URL> unusedResources) throws IOException {
         for (URL unusedResource : unusedResources) {
 
             File unusedFile;
@@ -360,8 +357,6 @@ public class FileProjectSaver implements ProjectSaver {
             }
 
         }
-
-        unusedResources.clear();
     }
 
     class SaveUnit {

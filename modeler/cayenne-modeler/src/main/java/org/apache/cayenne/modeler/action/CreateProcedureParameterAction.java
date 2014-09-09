@@ -34,74 +34,63 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-/**
- */
 public class CreateProcedureParameterAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Create Parameter";
-    }
+	public static String getActionName() {
+		return "Create Parameter";
+	}
 
-    /**
-     * Constructor for CreateProcedureParameterAction.
-     * 
-     */
-    public CreateProcedureParameterAction(Application application) {
-        super(getActionName(), application);
-    }
+	/**
+	 * Constructor for CreateProcedureParameterAction.
+	 * 
+	 */
+	public CreateProcedureParameterAction(Application application) {
+		super(getActionName(), application);
+	}
 
-    public String getIconName() {
-        return "icon-plus.gif";
-    }
+	public String getIconName() {
+		return "icon-plus.gif";
+	}
 
-    /**
-     * Creates ProcedureParameter depending on context.
-     */
-    public void performAction(ActionEvent e) {
-        if (getProjectController().getCurrentProcedure() != null) {
-            createProcedureParameter();
-        }
-    }
+	/**
+	 * Creates ProcedureParameter depending on context.
+	 */
+	public void performAction(ActionEvent e) {
+		if (getProjectController().getCurrentProcedure() != null) {
+			createProcedureParameter();
+		}
+	}
 
-    public void createProcedureParameter() {
-        Procedure procedure = getProjectController().getCurrentProcedure();
+	public void createProcedureParameter() {
+		Procedure procedure = getProjectController().getCurrentProcedure();
 
-        ProcedureParameter parameter = new ProcedureParameter(DefaultUniqueNameGenerator.generate(NameCheckers.procedureParameter, procedure));
-        procedure.addCallParameter(parameter);
+		ProcedureParameter parameter = new ProcedureParameter(DefaultUniqueNameGenerator.generate(
+				NameCheckers.procedureParameter, procedure));
+		procedure.addCallParameter(parameter);
 
-        ProjectController mediator = getProjectController();
-        fireProcedureParameterEvent(this, mediator, procedure, parameter);
-    }
+		ProjectController mediator = getProjectController();
+		fireProcedureParameterEvent(this, mediator, procedure, parameter);
+	}
 
-    /**
-     * Fires events when an proc parameter was added
-     */
-    static void fireProcedureParameterEvent(
-            Object src,
-            ProjectController mediator,
-            Procedure procedure,
-            ProcedureParameter parameter) {
-        mediator.fireProcedureParameterEvent(new ProcedureParameterEvent(
-                src,
-                parameter,
-                MapEvent.ADD));
+	/**
+	 * Fires events when an proc parameter was added
+	 */
+	static void fireProcedureParameterEvent(Object src, ProjectController mediator, Procedure procedure,
+			ProcedureParameter parameter) {
+		mediator.fireProcedureParameterEvent(new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
 
-        mediator.fireProcedureParameterDisplayEvent(new ProcedureParameterDisplayEvent(
-                src,
-                parameter,
-                procedure,
-                mediator.getCurrentDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode()));
-    }
+		mediator.fireProcedureParameterDisplayEvent(new ProcedureParameterDisplayEvent(src, parameter, procedure,
+				mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode()));
+	}
 
-    /**
-     * Returns <code>true</code> if path contains a Procedure object.
-     */
-    public boolean enableForPath(ConfigurationNode object) {
-        if (object == null) {
-            return false;
-        }
+	/**
+	 * Returns <code>true</code> if path contains a Procedure object.
+	 */
+	public boolean enableForPath(ConfigurationNode object) {
+		if (object == null) {
+			return false;
+		}
 
-        return ((ProcedureParameter) object).getProcedure() != null;
-    }
+		return ((ProcedureParameter) object).getProcedure() != null;
+	}
 }
