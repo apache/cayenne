@@ -330,7 +330,9 @@ public abstract class BaseContext implements ObjectContext {
     public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
         ResultIterator<T> it = iterator(query);
         try {
-            callback.iterate(it);
+        	for(T t : it) {
+        		callback.next(t);
+        	}
         } finally {
             it.close();
         }
