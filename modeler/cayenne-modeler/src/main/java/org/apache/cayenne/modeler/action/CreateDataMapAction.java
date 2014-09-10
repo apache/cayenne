@@ -29,11 +29,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.resource.Resource;
 
 import java.awt.event.ActionEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Action that creates new DataMap in the project.
@@ -57,17 +54,6 @@ public class CreateDataMapAction extends CayenneAction {
     public void createDataMap(DataMap map) {
         ProjectController mediator = getProjectController();
         mediator.addDataMap(this, map);
-        if (map.getConfigurationSource() != null) {
-            URL mapURL = map.getConfigurationSource().getURL();
-            if (!mapURL.toString().endsWith(".map.xml")) {
-                try {
-                    mapURL = new URL(mapURL.toString() + ".map.xml");
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            }
-            getCurrentProject().getUnusedResources().remove(mapURL);
-        }
     }
 
     public void performAction(ActionEvent e) {
@@ -78,15 +64,6 @@ public class CreateDataMapAction extends CayenneAction {
                 .getRootNode();
 
         DataMap map = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, currentDomain));
-
-        // set configuration source for new dataMap
-        Resource baseResource = currentDomain.getConfigurationSource();
-
-        if (baseResource != null) {
-            Resource dataMapResource = baseResource.getRelativeResource(map.getName());
-
-            map.setConfigurationSource(dataMapResource);
-        }
 
         createDataMap(map);
 
