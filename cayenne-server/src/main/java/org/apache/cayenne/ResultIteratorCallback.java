@@ -19,12 +19,12 @@
 package org.apache.cayenne;
 
 /**
- * A callback interface that allows to scan through a {@link ResultIterator}
- * without the need to close it explicitly.
+ * A callback interface invoked on each row when iterating over
+ * {@link ResultIterator}. This simplifies iterator management.
  * 
  * @since 3.2
  */
 public interface ResultIteratorCallback<T> {
 
-    void iterate(ResultIterator<T> iterator);
+	void next(T object);
 }

@@ -61,6 +61,8 @@ CAY-1938 Create a DI factory for transactions, get rid of TransactionDelegate an
 CAY-1939 DataDomain must use injectable TransactionManager
 CAY-1949 Search in configuration fields (Catalog, Schema) in DbEntity
 CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
+CAY-1953 Redo ResultIteratorCallback to handle single row callback instead of iterator
+CAY-1954 Make Cayenne class constructor protected
 
 Bug Fixes:
 
@@ -86,6 +88,7 @@ CAY-1880 objectStore snapshots never cleared from RefreshQuery when "use shared 
 CAY-1881 CayenneModeler (Mac version) doesn't work with Java 7
 CAY-1885 Null value in subclass's field.
 CAY-1905 Multi-step prefetching NPE : 1..N..1 with absent N and root with no qualifier
+CAY-1943 XML file not deleted when a DataMap is deleted from the project
 
 ----------------------------------
 Release: 3.2M1

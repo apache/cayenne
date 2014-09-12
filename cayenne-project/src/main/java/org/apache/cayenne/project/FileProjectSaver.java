@@ -109,6 +109,10 @@ public class FileProjectSaver implements ProjectSaver {
         catch (IOException ex) {
             throw new CayenneRuntimeException(ex);
         }
+        
+    	// I guess we should reset projects state regardless of the value of
+		// 'deleteOldResources'
+		project.getUnusedResources().clear();
     }
 
     SaveUnit createSaveUnit(ConfigurationNode node, Resource baseResource) {
