@@ -62,6 +62,7 @@ CAY-1939 DataDomain must use injectable TransactionManager
 CAY-1949 Search in configuration fields (Catalog, Schema) in DbEntity
 CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
 CAY-1953 Redo ResultIteratorCallback to handle single row callback instead of iterator
+CAY-1954 Make Cayenne class constructor protected
 
 Bug Fixes:
 

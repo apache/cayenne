@@ -352,7 +352,8 @@ public class Cayenne {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, int pk) {
+    @SuppressWarnings("unchecked")
+	public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, int pk) {
         return (T) objectForPK(context, buildId(context, dataObjectClass, Integer.valueOf(pk)));
     }
 
@@ -367,8 +368,8 @@ public class Cayenne {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Object pk) {
-
+    @SuppressWarnings("unchecked")
+	public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Object pk) {
         return (T) objectForPK(context, buildId(context, dataObjectClass, pk));
     }
 
@@ -383,7 +384,8 @@ public class Cayenne {
      * 
      * @see #objectForPK(ObjectContext, ObjectId)
      */
-    public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Map<String, ?> pk) {
+    @SuppressWarnings("unchecked")
+	public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Map<String, ?> pk) {
 
         ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
         if (entity == null) {
@@ -519,6 +521,6 @@ public class Cayenne {
         return new ObjectId(entity.getName(), attr, pk);
     }
 
-    private Cayenne() {
+    protected Cayenne() {
     }
 }
