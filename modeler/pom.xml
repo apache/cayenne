@@ -35,6 +35,12 @@
 	<modules>
 		<module>cayenne-modeler</module>
 		<module>maven-cayenne-modeler-plugin</module>
+		<module>cayenne-modeler-generic</module>
+		<module>cayenne-modeler-generic-ext</module>
+		<module>cayenne-modeler-mac-ext</module>
+		<module>cayenne-modeler-mac</module>
+		<module>cayenne-modeler-mac-legacy</module>
+		<module>cayenne-modeler-win</module>
 	</modules>
 
 	<build>
@@ -48,28 +54,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>generic</id>
-			<modules>
-				<module>cayenne-modeler-generic-ext</module>
-				<module>cayenne-modeler-generic</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>mac</id>
-			<modules>
-				<module>cayenne-modeler-mac-ext</module>
-				<module>cayenne-modeler-mac</module>
-				<module>cayenne-modeler-mac-legacy</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>windows</id>
-			<modules>
-				<module>cayenne-modeler-generic-ext</module>
-				<module>cayenne-modeler-win</module>
-			</modules>
-		</profile>
-	</profiles>
 </project>

@@ -76,25 +76,6 @@
 
 		<plugins>
 			<plugin>
-				<groupId>org.objectstyle.japp</groupId>
-				<artifactId>japp-maven-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<destDir>target/modeler</destDir>
-					<name>CayenneModeler</name>
-					<mainClass>org.apache.cayenne.modeler.generic.GenericMain</mainClass>
-					<os>java</os>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>japp</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<configuration>
@@ -103,6 +84,35 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>generic</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.objectstyle.japp</groupId>
+						<artifactId>japp-maven-plugin</artifactId>
+						<version>3.0</version>
+						<configuration>
+							<destDir>target/modeler</destDir>
+							<name>CayenneModeler</name>
+							<mainClass>org.apache.cayenne.modeler.generic.GenericMain</mainClass>
+							<os>java</os>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>japp</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<pluginRepositories>
 		<pluginRepository>

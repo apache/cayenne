@@ -38,6 +38,7 @@
 		<module>modeler</module>
 		<module>tutorials</module>
 		<module>docs</module>
+		<module>assembly</module>
 	</modules>
 	<issueManagement>
 		<system>jira</system>
@@ -737,14 +738,6 @@
 		</plugins>
 	</reporting>
 	<profiles>
-
-		<!-- Profile that generates assemblies after the build -->
-		<profile>
-			<id>assembly</id>
-			<modules>
-				<module>assembly</module>
-			</modules>
-		</profile>
 
 		<!-- Optional profile used to sign artifacts -->
 		<profile>
