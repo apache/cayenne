@@ -214,13 +214,10 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>
-			scm:svn:http://svn.apache.org/repos/asf/cayenne/main/trunk
-		</connection>
-		<developerConnection>
-			scm:svn:https://svn.apache.org/repos/asf/cayenne/main/trunk
-		</developerConnection>
-		<url>http://svn.apache.org/viewvc/cayenne/main/trunk</url>
+		<connection>scm:git:https://git-wip-us.apache.org/repos/asf/cayenne.git</connection>
+		<developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/cayenne.git</developerConnection>
+		<url>https://github.com/apache/cayenne</url>
+		<tag>HEAD</tag>
 	</scm>
 	<organization>
 		<name>Apache Cayenne</name>
