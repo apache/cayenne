@@ -21,7 +21,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
-	<version>3.1.1-SNAPSHOT</version>
+	<version>3.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -585,7 +585,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore></ignore>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
