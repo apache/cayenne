@@ -19,19 +19,58 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.dba.TypesMapping;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-
-import org.apache.cayenne.dba.TypesMapping;
+import java.util.List;
 
 /**
  * Maps <code>java.util.Date</code> to any of the three database date/time types: TIME,
  * DATE, TIMESTAMP.
  */
 public class UtilDateType implements ExtendedType {
+
+    private static List<SimpleDateFormat>
+            dateFormats = new ArrayList<SimpleDateFormat>() {{
+        add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+        add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
+    }
+    };
+
+    /**
+     * Convert String with various formats into java.util.Date
+     *
+     * @param value
+     *            Date as a string
+     * @return java.util.Date object if input string is parsed
+     *          successfully else returns null
+     */
+    public static Date convertToDate(String value) {
+        Date date = null;
+        if(null == value) {
+            return null;
+        }
+        for (SimpleDateFormat format : dateFormats) {
+            try {
+                format.setLenient(false);
+                date = format.parse(value);
+            } catch (ParseException e) {
+                //try other formats
+            }
+            if (date != null) {
+                break;
+            }
+        }
+
+        return date;
+    }
 
     /**
      * Returns "java.util.Date".

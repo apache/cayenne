@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.CayenneException;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -28,8 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
-import org.apache.cayenne.CayenneException;
+import java.util.Date;
 
 /**
  * Handles <code>java.lang.String</code>, mapping it as either of JDBC types - CLOB or
@@ -127,16 +128,47 @@ public class CharType implements ExtendedType {
             int type,
             int scale) throws Exception {
 
-        // if this is a CLOB column, set the value as "String"
-        // instead. This should work with most drivers
-        if (type == Types.CLOB) {
-            st.setString(pos, (String) value);
-        }
-        else if (scale != -1) {
+        if (scale != -1) {
             st.setObject(pos, value, type, scale);
         }
         else {
-            st.setObject(pos, value, type);
+            switch (type) {
+                // if this is a CLOB column, set the value as "String"
+                // instead. This should work with most drivers
+                case Types.CLOB:
+                    st.setString(pos, (String) value);
+                    break;
+                case Types.DATE: {
+                    Date dateValue = UtilDateType.convertToDate(value.toString());
+                    if (dateValue != null) {
+                        st.setDate(pos, new java.sql.Date(dateValue.getTime()));
+                    } else {
+                        st.setObject(pos, value, type);
+                    }
+                    break;
+                }
+                case Types.TIME: {
+                    Date dateValue = UtilDateType.convertToDate(value.toString());
+                    if (dateValue != null) {
+                        st.setTime(pos, new java.sql.Time(dateValue.getTime()));
+                    } else {
+                        st.setObject(pos, value, type);
+                    }
+                    break;
+                }
+                case Types.TIMESTAMP: {
+                    Date dateValue = UtilDateType.convertToDate(value.toString());
+                    if (dateValue != null) {
+                        st.setTimestamp(pos, new java.sql.Timestamp(dateValue.getTime()));
+                    } else {
+                        st.setObject(pos, value, type);
+                    }
+                    break;
+                }
+                default:
+                    st.setObject(pos, value, type);
+                    break;
+            }
         }
     }
 

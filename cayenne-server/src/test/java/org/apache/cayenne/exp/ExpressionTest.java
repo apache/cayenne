@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataContext;
@@ -35,6 +30,12 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ExpressionTest extends ServerCase {
@@ -66,6 +67,27 @@ public class ExpressionTest extends ServerCase {
     public void testFromStringLong() {
         Expression e = Expression.fromString("216201000180L");
         assertEquals(new Long(216201000180L), e.evaluate(new Object()));
+    }
+
+    public void testFromStringDate() {
+        Artist picasso = context.newObject(Artist.class);
+        picasso.setArtistName("Pablo Picasso");
+        picasso.setDateOfBirth(java.sql.Date.valueOf("1880-04-11"));
+        context.commitChanges();
+
+        //It's parsed by the driver: PreparedStatement.setObject()
+        Expression qualifier = Expression.fromString("dateOfBirth < '" + "1980-09-14" + "'");
+        SelectQuery select = new SelectQuery(Artist.class, qualifier);
+        List artist = context.performQuery(select);
+        assertEquals(picasso, artist.get(0));
+
+        //It's parsed by the UtilDateType.convertToDate() method and then set as Date to PreparedStatement.setDate() method
+        qualifier = Expression.fromString("dateOfBirth < '" + "2001-07-04T12:08:56.235-07:00" + "'");
+        select = new SelectQuery(Artist.class, qualifier);
+        artist = context.performQuery(select);
+        assertEquals(picasso, artist.get(0));
+
+        context.deleteObject(picasso);
     }
 
     public void testFromStringPath() {
