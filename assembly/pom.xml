@@ -70,21 +70,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-remote-resources-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.directory}/legal</outputDirectory>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.directory}</outputDirectory>
-					<appendAssemblyId>false</appendAssemblyId>
-					<tarLongFileMode>gnu</tarLongFileMode>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<configuration>
@@ -95,8 +80,8 @@
 	</build>
 
 	<profiles>
+		<!-- SOURCE assembly - the base assembly of a release build -->
 		<profile>
-			<!-- SOURCE assembly - the base assembly of a release build -->
 			<id>src</id>
 			<build>
 				<plugins>
@@ -117,6 +102,29 @@
 								</configuration>
 							</execution>
 						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- REGULAR assembly ... combined with platform-specific ones -->
+		<profile>
+			<id>assembly</id>
+			<build>
+				<plugins>
+					<plugin>
+                       <artifactId>maven-remote-resources-plugin</artifactId>
+                       <configuration>
+                               <outputDirectory>${project.build.directory}/legal</outputDirectory>
+                       </configuration>
+	                </plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<appendAssemblyId>false</appendAssemblyId>
+							<tarLongFileMode>gnu</tarLongFileMode>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

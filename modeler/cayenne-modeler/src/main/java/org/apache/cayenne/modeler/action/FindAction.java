@@ -18,15 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.JTextField;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -41,6 +32,14 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.FindDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.query.Query;
+
+import javax.swing.JTextField;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FindAction extends CayenneAction {
     private java.util.List<Object> paths;
@@ -59,10 +58,16 @@ public class FindAction extends CayenneAction {
      */
     public void performAction(ActionEvent e) {
         JTextField source = (JTextField) e.getSource();
+        String sourceStr = source.getText().trim();
 
         paths = new ArrayList<Object>();
-        if (!source.getText().trim().equals("")) {
-            Pattern pattern = Pattern.compile(source.getText().trim(), Pattern.CASE_INSENSITIVE);
+        if (sourceStr != null && !sourceStr.isEmpty()) {
+
+            if (sourceStr.startsWith("*")) {
+                sourceStr = sourceStr.substring(1);
+            }
+
+            Pattern pattern = Pattern.compile(sourceStr, Pattern.CASE_INSENSITIVE);
 
             Iterator<DataMap> it = ((DataChannelDescriptor)getProjectController().getProject().getRootNode()).getDataMaps().iterator();
             
@@ -123,6 +128,21 @@ public class FindAction extends CayenneAction {
                               paths.add(rel);
                           }
                       }
+
+                      String catalog = ent.getCatalog();
+                      if (catalog != null && !catalog.isEmpty()) {
+                          if(matchFound(catalog, pattern) && !paths.contains(ent)){
+                              paths.add(ent);
+                          }
+                      }
+
+                      String schema = ent.getSchema();
+                      if (schema != null && !schema.isEmpty()) {
+                          if(matchFound(schema, pattern) && !paths.contains(ent)){
+                              paths.add(ent);
+                          }
+                      }
+
                   }
                   
                   Iterator<ObjEntity> entIterator = dm.getObjEntities().iterator();
@@ -161,7 +181,6 @@ public class FindAction extends CayenneAction {
         } else {
            
             Iterator it = paths.iterator();
-            int index = 0;
             if (it.hasNext()) {
                 Object path = it.next();
                 FindDialog.jumpToResult(path);

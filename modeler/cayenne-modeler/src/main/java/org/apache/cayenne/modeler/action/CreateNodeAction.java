@@ -37,84 +37,77 @@ import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateNodeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-/**
- */
 public class CreateNodeAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Create DataNode";
-    }
+	public static String getActionName() {
+		return "Create DataNode";
+	}
 
-    /**
-     * Constructor for CreateNodeAction.
-     * 
-     * @param application
-     */
-    public CreateNodeAction(Application application) {
-        super(getActionName(), application);
-    }
+	/**
+	 * Constructor for CreateNodeAction.
+	 * 
+	 * @param application
+	 */
+	public CreateNodeAction(Application application) {
+		super(getActionName(), application);
+	}
 
-    public String getIconName() {
-        return "icon-node.gif";
-    }
+	public String getIconName() {
+		return "icon-node.gif";
+	}
 
-    /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-     */
-    public void performAction(ActionEvent e) {
-        DataNodeDescriptor node = buildDataNode();
-        createDataNode(node);
-        application.getUndoManager().addEdit(
-                new CreateNodeUndoableEdit(application, node));
-    }
+	/**
+	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+	 */
+	public void performAction(ActionEvent e) {
+		DataNodeDescriptor node = buildDataNode();
+		createDataNode(node);
+		application.getUndoManager().addEdit(new CreateNodeUndoableEdit(application, node));
+	}
 
-    public void createDataNode(DataNodeDescriptor node) {
-        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
-                .getProject()
-                .getRootNode();
-        domain.getNodeDescriptors().add(node);
-        getProjectController().fireDataNodeEvent(
-                new DataNodeEvent(this, node, MapEvent.ADD));
-        getProjectController().fireDataNodeDisplayEvent(
-                new DataNodeDisplayEvent(this, domain, node));
-    }
+	public void createDataNode(DataNodeDescriptor node) {
+		DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
+		domain.getNodeDescriptors().add(node);
+		getProjectController().fireDataNodeEvent(new DataNodeEvent(this, node, MapEvent.ADD));
+		getProjectController().fireDataNodeDisplayEvent(new DataNodeDisplayEvent(this, domain, node));
+	}
 
-    /**
-     * Returns <code>true</code> if path contains a DataDomain object.
-     */
-    public boolean enableForPath(ConfigurationNode object) {
-        return object != null && ((DataNodeDescriptor) object).getDataChannelDescriptor() != null;
+	/**
+	 * Returns <code>true</code> if path contains a DataDomain object.
+	 */
+	public boolean enableForPath(ConfigurationNode object) {
+		return object != null && ((DataNodeDescriptor) object).getDataChannelDescriptor() != null;
 
-    }
+	}
 
-    /**
-     * Creates a new DataNode, adding to the current domain, but doesn't send any events.
-     */
-    public DataNodeDescriptor buildDataNode() {
-        ProjectController mediator = getProjectController();
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
-                .getProject()
-                .getRootNode();
+	/**
+	 * Creates a new DataNode, adding to the current domain, but doesn't send
+	 * any events.
+	 */
+	public DataNodeDescriptor buildDataNode() {
+		ProjectController mediator = getProjectController();
+		DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
 
-        DataNodeDescriptor node = buildDataNode(domain);
+		DataNodeDescriptor node = buildDataNode(domain);
 
-        DataSourceInfo src = new DataSourceInfo();
-        node.setDataSourceDescriptor(src);
+		DataSourceInfo src = new DataSourceInfo();
+		node.setDataSourceDescriptor(src);
 
-        // by default create JDBC Node
-        node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
-        node.setSchemaUpdateStrategyType(SkipSchemaUpdateStrategy.class.getName());
+		// by default create JDBC Node
+		node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
+		node.setSchemaUpdateStrategyType(SkipSchemaUpdateStrategy.class.getName());
 
-        return node;
-    }
+		return node;
+	}
 
-    /**
-     * A factory method that makes a new DataNode.
-     */
-    DataNodeDescriptor buildDataNode(DataChannelDescriptor domain) {
-        DataNodeDescriptor node = new DataNodeDescriptor(DefaultUniqueNameGenerator.generate(NameCheckers.dataNodeDescriptor, domain));
-        node.setDataChannelDescriptor(domain);
+	/**
+	 * A factory method that makes a new DataNode.
+	 */
+	DataNodeDescriptor buildDataNode(DataChannelDescriptor domain) {
+		DataNodeDescriptor node = new DataNodeDescriptor(DefaultUniqueNameGenerator.generate(
+				NameCheckers.dataNodeDescriptor, domain));
+		node.setDataChannelDescriptor(domain);
 
-        return node;
-    }
+		return node;
+	}
 }

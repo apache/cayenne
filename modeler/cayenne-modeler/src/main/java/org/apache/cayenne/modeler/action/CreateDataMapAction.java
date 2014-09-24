@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -31,7 +29,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.resource.Resource;
+
+import java.awt.event.ActionEvent;
 
 /**
  * Action that creates new DataMap in the project.
@@ -65,15 +64,6 @@ public class CreateDataMapAction extends CayenneAction {
                 .getRootNode();
 
         DataMap map = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, currentDomain));
-
-        // set configuration source for new dataMap
-        Resource baseResource = currentDomain.getConfigurationSource();
-
-        if (baseResource != null) {
-            Resource dataMapResource = baseResource.getRelativeResource(map.getName());
-
-            map.setConfigurationSource(dataMapResource);
-        }
 
         createDataMap(map);
 

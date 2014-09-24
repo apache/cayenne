@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.util.Util;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,15 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.util.Util;
 
 /**
  * A ProjectSaver saving project configuration to the file system.
@@ -66,36 +66,25 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     public void save(Project project) {
-
-        Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(
-                saveableNodesGetter);
-        Collection<SaveUnit> saveUnits = new ArrayList<SaveUnit>(nodes.size());
-
-        for (ConfigurationNode node : nodes) {
-            saveUnits.add(createSaveUnit(node, null));
-        }
-
-        save(saveUnits, true);
+        save(project, project.getConfigurationResource(), true);
     }
 
     public void saveAs(Project project, Resource baseDirectory) {
-
         if (baseDirectory == null) {
             throw new NullPointerException("Null 'baseDirectory'");
         }
-
-        Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(
-                saveableNodesGetter);
-        Collection<SaveUnit> saveUnits = new ArrayList<SaveUnit>(nodes.size());
-
-        for (ConfigurationNode node : nodes) {
-            saveUnits.add(createSaveUnit(node, baseDirectory));
-        }
-
-        save(saveUnits, false);
+        save(project, baseDirectory, false);
     }
 
-    void save(Collection<SaveUnit> units, boolean deleteOldResources) {
+    void save(Project project, Resource baseResource, boolean deleteOldResources) {
+        Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(
+                saveableNodesGetter);
+        Collection<SaveUnit> units = new ArrayList<SaveUnit>(nodes.size());
+
+        for (ConfigurationNode node : nodes) {
+            units.add(createSaveUnit(node, baseResource));
+        }
+
         checkAccess(units);
 
         try {
@@ -108,12 +97,22 @@ public class FileProjectSaver implements ProjectSaver {
 
         try {
             if (deleteOldResources) {
-                clearOldFiles(units);
+                clearRenamedFiles(units);
+
+                Collection<URL> unusedResources = project.getUnusedResources();
+                for (SaveUnit unit : units) {
+                    unusedResources.remove(unit.sourceConfiguration.getURL());
+                }
+                deleteUnusedFiles(unusedResources);
             }
         }
         catch (IOException ex) {
             throw new CayenneRuntimeException(ex);
         }
+        
+    	// I guess we should reset projects state regardless of the value of
+		// 'deleteOldResources'
+		project.getUnusedResources().clear();
     }
 
     SaveUnit createSaveUnit(ConfigurationNode node, Resource baseResource) {
@@ -122,12 +121,12 @@ public class FileProjectSaver implements ProjectSaver {
         unit.node = node;
         unit.sourceConfiguration = node.acceptVisitor(resourceGetter);
 
-        if (baseResource == null) {
-            baseResource = unit.sourceConfiguration;
-        }
-
         String targetLocation = nameMapper.configurationLocation(node);
         Resource targetResource = baseResource.getRelativeResource(targetLocation);
+
+        if (unit.sourceConfiguration == null) {
+            unit.sourceConfiguration = targetResource;
+        }
 
         // attempt to convert targetResource to a File... if that fails,
         // FileProjectSaver is not appropriate for handling a given project..
@@ -269,7 +268,7 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    void clearTempFiles(Collection<SaveUnit> units) {
+    private void clearTempFiles(Collection<SaveUnit> units) {
         for (SaveUnit unit : units) {
 
             if (unit.targetTempFile != null && unit.targetTempFile.exists()) {
@@ -279,7 +278,7 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    private void clearOldFiles(Collection<SaveUnit> units) throws IOException {
+    private void clearRenamedFiles(Collection<SaveUnit> units) throws IOException {
         for (SaveUnit unit : units) {
 
             if (unit.sourceConfiguration == null) {
@@ -326,6 +325,29 @@ public class FileProjectSaver implements ProjectSaver {
         String secondFilePath = secondFile.getCanonicalPath();
 
         return isFirstFileExists && isSecondFileExists && firstFilePath.equals(secondFilePath);
+    }
+
+    private void deleteUnusedFiles(Collection<URL> unusedResources) throws IOException {
+        for (URL unusedResource : unusedResources) {
+
+            File unusedFile;
+            try {
+                unusedFile = Util.toFile(unusedResource);
+            }
+            catch (IllegalArgumentException e) {
+                // ignore non-file configurations...
+                continue;
+            }
+
+            if (!unusedFile.exists()) {
+                continue;
+            }
+
+            if (!unusedFile.delete()) {
+                throw new CayenneRuntimeException("Could not delete file '%s'", unusedFile.getCanonicalPath());
+            }
+
+        }
     }
 
     class SaveUnit {

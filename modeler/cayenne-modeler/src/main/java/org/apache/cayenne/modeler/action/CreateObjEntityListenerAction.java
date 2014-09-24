@@ -32,90 +32,87 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * Action class for creating entity listeners on an ObjEntity
- * 
- * @version 1.0 Oct 30, 2007
  */
 public class CreateObjEntityListenerAction extends CayenneAction {
 
-    /**
-     * unique action name
-     */
-    private static final String CREATE_ENTITY_LISTENER = "Create objentity entity listener";
+	/**
+	 * unique action name
+	 */
+	private static final String CREATE_ENTITY_LISTENER = "Create objentity entity listener";
 
-    /**
-     * Constructor.
-     * 
-     * @param application Application instance
-     */
-    public CreateObjEntityListenerAction(Application application) {
-        super(getActionName(), application);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param application
+	 *            Application instance
+	 */
+	public CreateObjEntityListenerAction(Application application) {
+		super(getActionName(), application);
+	}
 
-    /**
-     * Constructor for extending classes.
-     * 
-     * @param actionName unique action name
-     * @param application Application instance
-     */
-    protected CreateObjEntityListenerAction(String actionName, Application application) {
-        super(actionName, application);
-    }
+	/**
+	 * Constructor for extending classes.
+	 * 
+	 * @param actionName
+	 *            unique action name
+	 * @param application
+	 *            Application instance
+	 */
+	protected CreateObjEntityListenerAction(String actionName, Application application) {
+		super(actionName, application);
+	}
 
-    /**
-     * @return unique action name
-     */
-    public static String getActionName() {
-        return CREATE_ENTITY_LISTENER;
-    }
+	/**
+	 * @return unique action name
+	 */
+	public static String getActionName() {
+		return CREATE_ENTITY_LISTENER;
+	}
 
-    /**
-     * @return icon file name for button
-     */
-    public String getIconName() {
-        return "icon-create-listener.gif";
-    }
+	/**
+	 * @return icon file name for button
+	 */
+	public String getIconName() {
+		return "icon-create-listener.gif";
+	}
 
-    /**
-     * checks whether the new name of listener class already exists
-     * 
-     * @param className entered class name
-     * @return true or false
-     */
-    protected boolean isListenerClassAlreadyExists(String className) {
-        return getProjectController().getCurrentObjEntity().getEntityListener(className) != null;
-    }
+	/**
+	 * checks whether the new name of listener class already exists
+	 * 
+	 * @param className
+	 *            entered class name
+	 * @return true or false
+	 */
+	protected boolean isListenerClassAlreadyExists(String className) {
+		return getProjectController().getCurrentObjEntity().getEntityListener(className) != null;
+	}
 
-    /**
-     * base entity listenre creation logic
-     * 
-     * @param e event
-     */
-    public void performAction(ActionEvent e) {
-        String listenerClass = JOptionPane
-                .showInputDialog("Please enter listener class:");
-        if (listenerClass != null && listenerClass.trim().length() > 0) {
-            if (isListenerClassAlreadyExists(listenerClass)) {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Listener class already exists.",
-                        "Error creating entity listener",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-            else {
-                ObjEntity objEntity = getProjectController().getCurrentObjEntity();
-                EntityListener listener = new EntityListener(listenerClass);
-                createEntityListener(objEntity, listener);
-                application.getUndoManager().addEdit(
-                        new CreateEntityListenerUndoableEdit(objEntity, listener));
-            }
-        }
-    }
+	/**
+	 * base entity listenre creation logic
+	 * 
+	 * @param e
+	 *            event
+	 */
+	public void performAction(ActionEvent e) {
+		String listenerClass = JOptionPane.showInputDialog("Please enter listener class:");
+		if (listenerClass != null && listenerClass.trim().length() > 0) {
+			if (isListenerClassAlreadyExists(listenerClass)) {
+				JOptionPane.showMessageDialog(null, "Listener class already exists.", "Error creating entity listener",
+						JOptionPane.ERROR_MESSAGE);
+			} else {
+				ObjEntity objEntity = getProjectController().getCurrentObjEntity();
+				EntityListener listener = new EntityListener(listenerClass);
+				createEntityListener(objEntity, listener);
+				application.getUndoManager().addEdit(new CreateEntityListenerUndoableEdit(objEntity, listener));
+			}
+		}
+	}
 
-    public void createEntityListener(ObjEntity objEntity, EntityListener listener) {
-        objEntity.addEntityListener(listener);
+	public void createEntityListener(ObjEntity objEntity, EntityListener listener) {
+		objEntity.addEntityListener(listener);
 
-        getProjectController().fireEntityListenerEvent(
-                new EntityListenerEvent(CreateObjEntityListenerAction.this, listener
-                        .getClassName(), listener.getClassName(), MapEvent.ADD));
-    }
+		getProjectController().fireEntityListenerEvent(
+				new EntityListenerEvent(CreateObjEntityListenerAction.this, listener.getClassName(), listener
+						.getClassName(), MapEvent.ADD));
+	}
 }

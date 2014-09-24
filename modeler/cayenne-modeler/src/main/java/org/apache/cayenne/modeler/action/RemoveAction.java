@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.KeyStroke;
-import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoableEdit;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -73,6 +63,16 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.Query;
+
+import javax.swing.KeyStroke;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Removes currently selected object from the project. This can be Domain, DataNode,
@@ -445,6 +445,10 @@ public class RemoveAction extends CayenneAction {
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         domain.getDataMaps().remove(map);
+        if (map.getConfigurationSource() != null) {
+            URL mapURL = map.getConfigurationSource().getURL();
+            getCurrentProject().getUnusedResources().add(mapURL);
+        }
         
         Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();
         while(iterator.hasNext()){

@@ -40,111 +40,111 @@ import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
-/**
- */
 public class CreateRelationshipAction extends CayenneAction {
 
-    public static String getActionName() {
-        return "Create Relationship";
-    }
+	public static String getActionName() {
+		return "Create Relationship";
+	}
 
-    /**
-     * Constructor for CreateRelationshipAction.
-     */
-    public CreateRelationshipAction(Application application) {
-        super(getActionName(), application);
-    }
+	/**
+	 * Constructor for CreateRelationshipAction.
+	 */
+	public CreateRelationshipAction(Application application) {
+		super(getActionName(), application);
+	}
 
-    @Override
-    public String getIconName() {
-        return "icon-relationship.gif";
-    }
+	@Override
+	public String getIconName() {
+		return "icon-relationship.gif";
+	}
 
-    /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-     */
-    @Override
-    public void performAction(ActionEvent e) {
-        ObjEntity objEnt = getProjectController().getCurrentObjEntity();
-        if (objEnt != null) {
+	/**
+	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+	 */
+	@Override
+	public void performAction(ActionEvent e) {
+		ObjEntity objEnt = getProjectController().getCurrentObjEntity();
+		if (objEnt != null) {
 
-            ObjRelationship rel = new ObjRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, objEnt));
-            createObjRelationship(objEnt, rel);
+			ObjRelationship rel = new ObjRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship,
+					objEnt));
+			createObjRelationship(objEnt, rel);
 
-            application.getUndoManager().addEdit(
-                    new CreateRelationshipUndoableEdit(objEnt, new ObjRelationship[] { rel }));
-        } else {
-            DbEntity dbEnt = getProjectController().getCurrentDbEntity();
-            if (dbEnt != null) {
+			application.getUndoManager().addEdit(
+					new CreateRelationshipUndoableEdit(objEnt, new ObjRelationship[] { rel }));
+		} else {
+			DbEntity dbEnt = getProjectController().getCurrentDbEntity();
+			if (dbEnt != null) {
 
-                DbRelationship rel = new DbRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.dbRelationship, dbEnt));
-                createDbRelationship(dbEnt, rel);
+				DbRelationship rel = new DbRelationship(DefaultUniqueNameGenerator.generate(
+						NameCheckers.dbRelationship, dbEnt));
+				createDbRelationship(dbEnt, rel);
 
-                application.getUndoManager().addEdit(
-                        new CreateRelationshipUndoableEdit(dbEnt, new DbRelationship[] { rel }));
-            }
-        }
-    }
+				application.getUndoManager().addEdit(
+						new CreateRelationshipUndoableEdit(dbEnt, new DbRelationship[] { rel }));
+			}
+		}
+	}
 
-    public void createObjRelationship(ObjEntity objEntity, ObjRelationship rel) {
-        ProjectController mediator = getProjectController();
+	public void createObjRelationship(ObjEntity objEntity, ObjRelationship rel) {
+		ProjectController mediator = getProjectController();
 
-        rel.setSourceEntity(objEntity);
-        DeleteRuleUpdater.updateObjRelationship(rel);
+		rel.setSourceEntity(objEntity);
+		DeleteRuleUpdater.updateObjRelationship(rel);
 
-        objEntity.addRelationship(rel);
-        fireObjRelationshipEvent(this, mediator, objEntity, rel);
-    }
+		objEntity.addRelationship(rel);
+		fireObjRelationshipEvent(this, mediator, objEntity, rel);
+	}
 
-    /**
-     * Fires events when a obj rel was added
-     */
-    static void fireObjRelationshipEvent(Object src, ProjectController mediator, ObjEntity objEntity,
-            ObjRelationship rel) {
+	/**
+	 * Fires events when a obj rel was added
+	 */
+	static void fireObjRelationshipEvent(Object src, ProjectController mediator, ObjEntity objEntity,
+			ObjRelationship rel) {
 
-        mediator.fireObjRelationshipEvent(new RelationshipEvent(src, rel, objEntity, MapEvent.ADD));
+		mediator.fireObjRelationshipEvent(new RelationshipEvent(src, rel, objEntity, MapEvent.ADD));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getCurrentDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
+		RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getCurrentDataMap(),
+				(DataChannelDescriptor) mediator.getProject().getRootNode());
 
-        mediator.fireObjRelationshipDisplayEvent(rde);
-    }
+		mediator.fireObjRelationshipDisplayEvent(rde);
+	}
 
-    public void createDbRelationship(DbEntity dbEntity, DbRelationship rel) {
-        ProjectController mediator = getProjectController();
+	public void createDbRelationship(DbEntity dbEntity, DbRelationship rel) {
+		ProjectController mediator = getProjectController();
 
-        rel.setSourceEntity(dbEntity);
-        dbEntity.addRelationship(rel);
+		rel.setSourceEntity(dbEntity);
+		dbEntity.addRelationship(rel);
 
-        fireDbRelationshipEvent(this, mediator, dbEntity, rel);
-    }
+		fireDbRelationshipEvent(this, mediator, dbEntity, rel);
+	}
 
-    /**
-     * Fires events when a db rel was added
-     */
-    static void fireDbRelationshipEvent(Object src, ProjectController mediator, DbEntity dbEntity, DbRelationship rel) {
+	/**
+	 * Fires events when a db rel was added
+	 */
+	static void fireDbRelationshipEvent(Object src, ProjectController mediator, DbEntity dbEntity, DbRelationship rel) {
 
-        mediator.fireDbRelationshipEvent(new RelationshipEvent(src, rel, dbEntity, MapEvent.ADD));
+		mediator.fireDbRelationshipEvent(new RelationshipEvent(src, rel, dbEntity, MapEvent.ADD));
 
-        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getCurrentDataMap(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
+		RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getCurrentDataMap(),
+				(DataChannelDescriptor) mediator.getProject().getRootNode());
 
-        mediator.fireDbRelationshipDisplayEvent(rde);
-    }
+		mediator.fireDbRelationshipDisplayEvent(rde);
+	}
 
-    /**
-     * Returns <code>true</code> if path contains an Entity object.
-     */
-    @Override
-    public boolean enableForPath(ConfigurationNode object) {
-        if (object == null) {
-            return false;
-        }
+	/**
+	 * Returns <code>true</code> if path contains an Entity object.
+	 */
+	@Override
+	public boolean enableForPath(ConfigurationNode object) {
+		if (object == null) {
+			return false;
+		}
 
-        if (object instanceof Relationship) {
-            return ((Relationship) object).getParent() != null && ((Relationship) object).getParent() instanceof Entity;
-        }
+		if (object instanceof Relationship) {
+			return ((Relationship) object).getParent() != null && ((Relationship) object).getParent() instanceof Entity;
+		}
 
-        return false;
-    }
+		return false;
+	}
 }
