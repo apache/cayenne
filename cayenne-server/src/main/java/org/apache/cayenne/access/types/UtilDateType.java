@@ -39,6 +39,7 @@ public class UtilDateType implements ExtendedType {
 
     private static List<SimpleDateFormat>
             dateFormats = new ArrayList<SimpleDateFormat>() {{
+        add(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S"));
         add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
         add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
     }

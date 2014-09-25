@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.access.types.CharType;
+
 import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.Types;
-
-import org.apache.cayenne.access.types.CharType;
 
 /**
  * Oracle specific CHAR type handling. 
@@ -62,7 +62,7 @@ public class OracleCharType extends CharType {
             // setting connection property "fixedString" to true doesn't help
             // with .setString(parameterIndex, x)
             // nether with .setObject(parameterIndex, x, targetSqlType)
-            st.setObject(pos, val);
+            super.setJdbcObject(st, val, pos, type, precision);
         }
     }
 }
