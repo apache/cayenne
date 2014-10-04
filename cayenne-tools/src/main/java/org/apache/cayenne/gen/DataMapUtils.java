@@ -19,6 +19,17 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionParameter;
@@ -26,27 +37,15 @@ import org.apache.cayenne.exp.parser.ASTList;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.commons.collections.set.ListOrderedSet;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 /**
  * Attributes and Methods for working with Queries.
@@ -74,7 +73,7 @@ public class DataMapUtils {
      * @param query
      * @return Parameter names.
      */
-    public Collection getParameterNames(QualifiedQuery query) {
+    public Collection getParameterNames(SelectQuery<?> query) {
         
         if(query.getQualifier() == null) {
             return Collections.EMPTY_SET;
@@ -90,7 +89,7 @@ public class DataMapUtils {
         return parseQualifier(query.getQualifier().toString());
     }
 
-    public Boolean isValidParameterNames(QualifiedQuery query) {
+    public Boolean isValidParameterNames(SelectQuery<?> query) {
         
         if(query.getQualifier() == null) {
             return true;
@@ -144,7 +143,7 @@ public class DataMapUtils {
         return result;
     }
 
-    public boolean hasParameters(QualifiedQuery query) {
+    public boolean hasParameters(SelectQuery<?> query) {
         Map queryParameters = queriesMap.get(query.getName());
 
         if (queryParameters == null) {
@@ -162,7 +161,7 @@ public class DataMapUtils {
      * @param name
      * @return Parameter type.
      */
-    public String getParameterType(QualifiedQuery query, String name) {
+    public String getParameterType(SelectQuery<?> query, String name) {
             return queriesMap.get(query.getName()).get(name);
     }
 
