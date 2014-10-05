@@ -139,7 +139,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return cacheStrategy;
 	}
 
-	public SelectById<T> cacheStrategy(QueryCacheStrategy strategy) {
+	private SelectById<T> cacheStrategy(QueryCacheStrategy strategy) {
 		if (this.cacheStrategy != strategy) {
 			this.cacheStrategy = strategy;
 			this.replacementQuery = null;
@@ -152,7 +152,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return cacheGroups;
 	}
 
-	public SelectById<T> cacheGroups(String... cacheGroups) {
+	private SelectById<T> cacheGroups(String... cacheGroups) {
 		this.cacheGroups = cacheGroups;
 		this.replacementQuery = null;
 		return this;
