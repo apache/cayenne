@@ -18,32 +18,37 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collections;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class SQLTemplateTest extends TestCase {
+public class SQLTemplateTest {
 
-    public void testSerializabilityWithHessian() throws Exception {
-        SQLTemplate o = new SQLTemplate("Test", "DO SQL");
-        Object clone = HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
+	@Test
+	public void testSerializabilityWithHessian() throws Exception {
+		SQLTemplate o = new SQLTemplate("Test", "DO SQL");
+		Object clone = HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
 
-        assertTrue(clone instanceof SQLTemplate);
-        SQLTemplate c1 = (SQLTemplate) clone;
+		assertTrue(clone instanceof SQLTemplate);
+		SQLTemplate c1 = (SQLTemplate) clone;
 
-        assertNotSame(o, c1);
-        assertEquals(o.getRoot(), c1.getRoot());
-        assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
+		assertNotSame(o, c1);
+		assertEquals(o.getRoot(), c1.getRoot());
+		assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
 
-        // set immutable parameters ... query must recast them to mutable
-        // version
-        Map<String, Object>[] parameters = new Map[] { Collections.EMPTY_MAP };
-        o.setParameters(parameters);
+		// set immutable parameters ... query must recast them to mutable
+		// version
+		@SuppressWarnings("unchecked")
+		Map<String, Object>[] parameters = new Map[] { Collections.EMPTY_MAP };
+		o.setParameters(parameters);
 
-        HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
-    }
+		HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
+	}
 }
