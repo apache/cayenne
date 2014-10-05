@@ -13,7 +13,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class IdSelectTest extends ServerCase {
+public class SelectByIdTest extends ServerCase {
 
 	@Inject
 	protected DBHelper dbHelper;
@@ -46,11 +46,11 @@ public class IdSelectTest extends ServerCase {
 	public void testIntPk() throws Exception {
 		createTwoArtists();
 
-		Artist a3 = IdSelect.query(Artist.class, 3).selectOne(context);
+		Artist a3 = SelectById.query(Artist.class, 3).selectOne(context);
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
-		Artist a2 = IdSelect.query(Artist.class, 2).selectOne(context);
+		Artist a2 = SelectById.query(Artist.class, 2).selectOne(context);
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
@@ -58,11 +58,11 @@ public class IdSelectTest extends ServerCase {
 	public void testMapPk() throws Exception {
 		createTwoArtists();
 
-		Artist a3 = IdSelect.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(context);
+		Artist a3 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(context);
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
-		Artist a2 = IdSelect.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2)).selectOne(context);
+		Artist a2 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2)).selectOne(context);
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
@@ -71,24 +71,24 @@ public class IdSelectTest extends ServerCase {
 		createTwoArtists();
 
 		ObjectId oid3 = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
-		Artist a3 = IdSelect.query(Artist.class, oid3).selectOne(context);
+		Artist a3 = SelectById.query(Artist.class, oid3).selectOne(context);
 		assertNotNull(a3);
 		assertEquals("artist3", a3.getArtistName());
 
 		ObjectId oid2 = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
-		Artist a2 = IdSelect.query(Artist.class, oid2).selectOne(context);
+		Artist a2 = SelectById.query(Artist.class, oid2).selectOne(context);
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
-	
+
 	public void testDataRowIntPk() throws Exception {
 		createTwoArtists();
 
-		DataRow a3 = IdSelect.dataRowQuery(Artist.class, 3).selectOne(context);
+		DataRow a3 = SelectById.dataRowQuery(Artist.class, 3).selectOne(context);
 		assertNotNull(a3);
 		assertEquals("artist3", a3.get("ARTIST_NAME"));
 
-		DataRow a2 = IdSelect.dataRowQuery(Artist.class, 2).selectOne(context);
+		DataRow a2 = SelectById.dataRowQuery(Artist.class, 2).selectOne(context);
 		assertNotNull(a2);
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}

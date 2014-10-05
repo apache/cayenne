@@ -19,25 +19,25 @@ import org.apache.cayenne.map.ObjEntity;
  * 
  * @since 3.2
  */
-public class IdSelect<T> extends IndirectQuery implements Select<T> {
+public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	private static final long serialVersionUID = -6589464349051607583L;
 
 	// type is not same as T, as T maybe be DataRow or scalar
 	// either type or entity name is specified, but not both
-	private Class<?> entityType;
-	private String entityName;
+	Class<?> entityType;
+	String entityName;
 
 	// only one of the two id forms is provided, but not both
-	private Object singleId;
-	private Map<String, ?> mapId;
+	Object singleId;
+	Map<String, ?> mapId;
 
-	private boolean fetchingDataRows;
-	private QueryCacheStrategy cacheStrategy;
-	private String[] cacheGroups;
+	boolean fetchingDataRows;
+	QueryCacheStrategy cacheStrategy;
+	String[] cacheGroups;
 
-	public static <T> IdSelect<T> query(Class<T> entityType, Object id) {
-		IdSelect<T> q = new IdSelect<T>();
+	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
+		SelectById<T> q = new SelectById<T>();
 
 		q.entityType = entityType;
 		q.singleId = id;
@@ -46,8 +46,8 @@ public class IdSelect<T> extends IndirectQuery implements Select<T> {
 		return q;
 	}
 
-	public static <T> IdSelect<T> query(Class<T> entityType, Map<String, ?> id) {
-		IdSelect<T> q = new IdSelect<T>();
+	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> id) {
+		SelectById<T> q = new SelectById<T>();
 
 		q.entityType = entityType;
 		q.mapId = id;
@@ -56,10 +56,10 @@ public class IdSelect<T> extends IndirectQuery implements Select<T> {
 		return q;
 	}
 
-	public static <T> IdSelect<T> query(Class<T> entityType, ObjectId id) {
+	public static <T> SelectById<T> query(Class<T> entityType, ObjectId id) {
 		checkObjectId(id);
 
-		IdSelect<T> q = new IdSelect<T>();
+		SelectById<T> q = new SelectById<T>();
 
 		q.entityName = id.getEntityName();
 		q.mapId = id.getIdSnapshot();
@@ -68,8 +68,8 @@ public class IdSelect<T> extends IndirectQuery implements Select<T> {
 		return q;
 	}
 
-	public static IdSelect<DataRow> dataRowQuery(Class<?> entityType, Object id) {
-		IdSelect<DataRow> q = new IdSelect<DataRow>();
+	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object id) {
+		SelectById<DataRow> q = new SelectById<DataRow>();
 
 		q.entityType = entityType;
 		q.singleId = id;
@@ -78,8 +78,8 @@ public class IdSelect<T> extends IndirectQuery implements Select<T> {
 		return q;
 	}
 
-	public static IdSelect<DataRow> dataRowQuery(Class<?> entityType, Map<String, Object> id) {
-		IdSelect<DataRow> q = new IdSelect<DataRow>();
+	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, Object> id) {
+		SelectById<DataRow> q = new SelectById<DataRow>();
 
 		q.entityType = entityType;
 		q.mapId = id;
@@ -88,10 +88,10 @@ public class IdSelect<T> extends IndirectQuery implements Select<T> {
 		return q;
 	}
 
-	public static IdSelect<DataRow> dataRowQuery(ObjectId id) {
+	public static SelectById<DataRow> dataRowQuery(ObjectId id) {
 		checkObjectId(id);
 
-		IdSelect<DataRow> q = new IdSelect<DataRow>();
+		SelectById<DataRow> q = new SelectById<DataRow>();
 
 		q.entityName = id.getEntityName();
 		q.mapId = id.getIdSnapshot();
@@ -125,13 +125,13 @@ public class IdSelect<T> extends IndirectQuery implements Select<T> {
 	 * 
 	 * @since 3.2
 	 */
-	public IdSelect<T> useLocalCache(String... cacheGroups) {
+	public SelectById<T> useLocalCache(String... cacheGroups) {
 		cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 		cacheGroups(cacheGroups);
 		return this;
 	}
 
-	public IdSelect<T> useSharedCache(String... cacheGroups) {
+	public SelectById<T> useSharedCache(String... cacheGroups) {
 		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE).cacheGroups(cacheGroups);
 	}
 
@@ -139,7 +139,7 @@ public class IdSelect<T> extends IndirectQuery implements Select<T> {
 		return cacheStrategy;
 	}
 
-	public IdSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
+	public SelectById<T> cacheStrategy(QueryCacheStrategy strategy) {
 		if (this.cacheStrategy != strategy) {
 			this.cacheStrategy = strategy;
 			this.replacementQuery = null;
@@ -152,7 +152,7 @@ public class IdSelect<T> extends IndirectQuery implements Select<T> {
 		return cacheGroups;
 	}
 
-	public IdSelect<T> cacheGroups(String... cacheGroups) {
+	public SelectById<T> cacheGroups(String... cacheGroups) {
 		this.cacheGroups = cacheGroups;
 		this.replacementQuery = null;
 		return this;
