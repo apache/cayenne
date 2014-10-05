@@ -29,6 +29,7 @@ import junit.framework.TestCase;
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -39,131 +40,134 @@ import org.apache.cayenne.remote.MockClientConnection;
 
 public class ClientRuntimeTest extends TestCase {
 
-    public void testDefaultConstructor() {
-        ClientRuntime runtime = new ClientRuntime(Collections.EMPTY_MAP);
-        assertEquals(1, runtime.getModules().length);
+	public void testDefaultConstructor() {
+		ClientRuntime runtime = new ClientRuntime(Collections.<String, String> emptyMap());
 
-        Module m0 = runtime.getModules()[0];
-        assertTrue(m0 instanceof ClientModule);
-    }
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(1, modules.size());
+		Object[] marray = modules.toArray();
 
-    public void testConstructor_Modules() {
+		assertTrue(marray[0] instanceof ClientModule);
+	}
 
-        final boolean[] configured = new boolean[2];
+	public void testConstructor_Modules() {
 
-        Module m1 = new Module() {
+		final boolean[] configured = new boolean[2];
 
-            public void configure(Binder binder) {
-                configured[0] = true;
-            }
-        };
+		Module m1 = new Module() {
 
-        Module m2 = new Module() {
+			public void configure(Binder binder) {
+				configured[0] = true;
+			}
+		};
 
-            public void configure(Binder binder) {
-                configured[1] = true;
-            }
-        };
+		Module m2 = new Module() {
 
-        Map<String, String> properties = new HashMap<String, String>();
+			public void configure(Binder binder) {
+				configured[1] = true;
+			}
+		};
 
-        ClientRuntime runtime = new ClientRuntime(properties, m1, m2);
-        assertEquals(3, runtime.getModules().length);
+		Map<String, String> properties = new HashMap<String, String>();
 
-        assertTrue(configured[0]);
-        assertTrue(configured[1]);
-    }
+		ClientRuntime runtime = new ClientRuntime(properties, m1, m2);
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(3, modules.size());
 
-    public void testConstructor_ModulesCollection() {
+		assertTrue(configured[0]);
+		assertTrue(configured[1]);
+	}
 
-        final boolean[] configured = new boolean[2];
+	public void testConstructor_ModulesCollection() {
 
-        Collection<Module> modules = new ArrayList<Module>();
+		final boolean[] configured = new boolean[2];
 
-        modules.add(new Module() {
+		Collection<Module> modules = new ArrayList<Module>();
 
-            public void configure(Binder binder) {
-                configured[0] = true;
-            }
-        });
+		modules.add(new Module() {
 
-        modules.add(new Module() {
+			public void configure(Binder binder) {
+				configured[0] = true;
+			}
+		});
 
-            public void configure(Binder binder) {
-                configured[1] = true;
-            }
-        });
+		modules.add(new Module() {
 
-        Map<String, String> properties = new HashMap<String, String>();
+			public void configure(Binder binder) {
+				configured[1] = true;
+			}
+		});
 
-        ClientRuntime runtime = new ClientRuntime(properties, modules);
-        assertEquals(3, runtime.getModules().length);
+		Map<String, String> properties = new HashMap<String, String>();
 
-        assertTrue(configured[0]);
-        assertTrue(configured[1]);
-    }
+		ClientRuntime runtime = new ClientRuntime(properties, modules);
+		Collection<Module> cmodules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(3, cmodules.size());
 
-    public void testGetObjectContext() {
+		assertTrue(configured[0]);
+		assertTrue(configured[1]);
+	}
 
-        Map<String, String> properties = new HashMap<String, String>();
-        ClientModule extraModule = new ClientModule(properties) {
+	public void testGetObjectContext() {
 
-            @Override
-            public void configure(Binder binder) {
-                super.configure(binder);
+		Map<String, String> properties = new HashMap<String, String>();
+		ClientModule extraModule = new ClientModule(properties) {
 
-                // use a noop connection to prevent startup errors...
-                binder.bind(ClientConnection.class).to(MockClientConnection.class);
-            }
-        };
+			@Override
+			public void configure(Binder binder) {
+				super.configure(binder);
 
-        ClientRuntime runtime = new ClientRuntime(properties, extraModule);
+				// use a noop connection to prevent startup errors...
+				binder.bind(ClientConnection.class).to(MockClientConnection.class);
+			}
+		};
 
-        ObjectContext context = runtime.newContext();
-        assertNotNull(context);
-        assertTrue(context instanceof CayenneContext);
-        assertNotSame("ObjectContext must not be a singleton", context, runtime
-                .newContext());
+		ClientRuntime runtime = new ClientRuntime(properties, extraModule);
 
-        CayenneContext clientContext = (CayenneContext) context;
-        assertNotNull(clientContext.getChannel());
-        assertSame(runtime.getChannel(), clientContext.getChannel());
-    }
+		ObjectContext context = runtime.newContext();
+		assertNotNull(context);
+		assertTrue(context instanceof CayenneContext);
+		assertNotSame("ObjectContext must not be a singleton", context, runtime.newContext());
 
-    public void testGetDataChannel() {
+		CayenneContext clientContext = (CayenneContext) context;
+		assertNotNull(clientContext.getChannel());
+		assertSame(runtime.getChannel(), clientContext.getChannel());
+	}
 
-        Map<String, String> properties = new HashMap<String, String>();
+	public void testGetDataChannel() {
 
-        Module extraModule = new Module() {
+		Map<String, String> properties = new HashMap<String, String>();
 
-            public void configure(Binder binder) {
+		Module extraModule = new Module() {
 
-                // use a noop connection to prevent hessian startup errors...
-                binder.bind(ClientConnection.class).to(MockClientConnection.class);
-            }
-        };
+			public void configure(Binder binder) {
 
-        ClientRuntime runtime = new ClientRuntime(properties, extraModule);
+				// use a noop connection to prevent hessian startup errors...
+				binder.bind(ClientConnection.class).to(MockClientConnection.class);
+			}
+		};
 
-        DataChannel channel = runtime.getChannel();
-        assertNotNull(channel);
-        assertTrue(channel instanceof ClientChannel);
-    }
+		ClientRuntime runtime = new ClientRuntime(properties, extraModule);
 
-    public void testShutdown() throws Exception {
+		DataChannel channel = runtime.getChannel();
+		assertNotNull(channel);
+		assertTrue(channel instanceof ClientChannel);
+	}
 
-        Map<String, String> properties = new HashMap<String, String>();
-        ClientRuntime runtime = new ClientRuntime(properties);
+	public void testShutdown() throws Exception {
 
-        // make sure objects to be shut down are resolved
+		Map<String, String> properties = new HashMap<String, String>();
+		ClientRuntime runtime = new ClientRuntime(properties);
 
-        EventManager em = runtime.getInjector().getInstance(EventManager.class);
-        assertNotNull(em);
-        assertTrue(em instanceof DefaultEventManager);
-        assertFalse(((DefaultEventManager) em).isStopped());
+		// make sure objects to be shut down are resolved
 
-        runtime.getInjector().shutdown();
+		EventManager em = runtime.getInjector().getInstance(EventManager.class);
+		assertNotNull(em);
+		assertTrue(em instanceof DefaultEventManager);
+		assertFalse(((DefaultEventManager) em).isStopped());
 
-        assertTrue(((DefaultEventManager) em).isStopped());
-    }
+		runtime.getInjector().shutdown();
+
+		assertTrue(((DefaultEventManager) em).isStopped());
+	}
 }

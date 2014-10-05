@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
 
@@ -32,34 +33,36 @@ import org.apache.cayenne.remote.ClientConnection;
  */
 public class ClientRuntime extends CayenneRuntime {
 
-    private static Module mainModule(Map<String, String> properties) {
-        return new ClientModule(properties);
-    }
+	private static ModuleCollection mainModule(Map<String, String> properties) {
+		return new ModuleCollection(new ClientModule(properties));
+	}
 
-    /**
-     * Creates a client runtime configuring it with a standard set of services contained
-     * in {@link ClientModule}. CayenneClientModule is created based on a set of
-     * properties that contain things like connection information, etc. Recognized
-     * property keys are defined in {@link ClientModule}. An optional array of
-     * extra modules may contain service overrides and/or user services.
-     */
-    public ClientRuntime(Map<String, String> properties, Collection<Module> extraModules) {
-        super(mergeModules(mainModule(properties), extraModules));
-    }
+	/**
+	 * Creates a client runtime configuring it with a standard set of services
+	 * contained in {@link ClientModule}. CayenneClientModule is created based
+	 * on a set of properties that contain things like connection information,
+	 * etc. Recognized property keys are defined in {@link ClientModule}. An
+	 * optional array of extra modules may contain service overrides and/or user
+	 * services.
+	 */
+	public ClientRuntime(Map<String, String> properties, Collection<Module> extraModules) {
+		super(mainModule(properties).add(extraModules));
+	}
 
-    /**
-     * Creates a client runtime configuring it with a standard set of services contained
-     * in {@link ClientModule}. CayenneClientModule is created based on a set of
-     * properties that contain things like connection information, etc. Recognized
-     * property keys are defined in {@link ClientModule}. An optional collection of
-     * extra modules may contain service overrides and/or user services.
-     */
-    public ClientRuntime(Map<String, String> properties, Module... extraModules) {
-        super(mergeModules(mainModule(properties), extraModules));
-    }
+	/**
+	 * Creates a client runtime configuring it with a standard set of services
+	 * contained in {@link ClientModule}. CayenneClientModule is created based
+	 * on a set of properties that contain things like connection information,
+	 * etc. Recognized property keys are defined in {@link ClientModule}. An
+	 * optional collection of extra modules may contain service overrides and/or
+	 * user services.
+	 */
+	public ClientRuntime(Map<String, String> properties, Module... extraModules) {
+		super(mainModule(properties).add(extraModules));
+	}
 
-    public ClientConnection getConnection() {
-        return injector.getInstance(ClientConnection.class);
-    }
+	public ClientConnection getConnection() {
+		return injector.getInstance(ClientConnection.class);
+	}
 
 }

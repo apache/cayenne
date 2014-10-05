@@ -18,75 +18,86 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
+import org.junit.Test;
 
-public class ServerRuntimeBuilderTest extends TestCase {
+public class ServerRuntimeBuilderTest {
 
-    public void test_NoLocation() {
+	@Test
+	public void test_NoLocation() {
 
-        // this is meaningless (no DataSource), but should work...
-        ServerRuntime runtime = new ServerRuntimeBuilder().build();
+		// this is meaningless (no DataSource), but should work...
+		ServerRuntime runtime = new ServerRuntimeBuilder().build();
 
-        List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<?> locations = runtime.getInjector().getInstance(
+				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-        assertEquals(Arrays.asList(), locations);
+		assertEquals(Arrays.asList(), locations);
+		assertTrue(runtime.getModule() instanceof ModuleCollection);
 
-        assertEquals(1, runtime.getModules().length);
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(1, modules.size());
+		assertTrue(modules.iterator().next() instanceof ServerModule);
+	}
 
-        Module m0 = runtime.getModules()[0];
-        assertTrue(m0 instanceof ServerModule);
-    }
+	@Test
+	public void test_SingleLocation() {
 
-    public void test_SingleLocation() {
+		ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").build();
 
-        ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").build();
+		List<?> locations = runtime.getInjector().getInstance(
+				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-        List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		assertEquals(Arrays.asList("xxxx"), locations);
 
-        assertEquals(Arrays.asList("xxxx"), locations);
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(1, modules.size());
+		assertTrue(modules.iterator().next() instanceof ServerModule);
 
-        assertEquals(1, runtime.getModules().length);
+	}
 
-        Module m0 = runtime.getModules()[0];
-        assertTrue(m0 instanceof ServerModule);
-    }
+	@Test
+	public void test_MultipleLocations() {
 
-    public void test_MultipleLocations() {
+		ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").addConfig("yyyy").build();
 
-        ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").addConfig("yyyy").build();
+		List<?> locations = runtime.getInjector().getInstance(
+				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-        List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 
-        assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(1, modules.size());
+		assertTrue(modules.iterator().next() instanceof ServerModule);
+	}
 
-        assertEquals(1, runtime.getModules().length);
+	@Test
+	public void test_ExtraModules() {
 
-        Module m0 = runtime.getModules()[0];
-        assertTrue(m0 instanceof ServerModule);
-    }
+		Module m = mock(Module.class);
 
-    public void test_ExtraModules() {
+		ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").addModule(m).build();
 
-        Module m = mock(Module.class);
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(2, modules.size());
 
-        ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").addModule(m).build();
+		Iterator<Module> it = modules.iterator();
 
-        assertEquals(2, runtime.getModules().length);
-
-        assertTrue(runtime.getModules()[0] instanceof ServerModule);
-        assertSame(m, runtime.getModules()[1]);
-    }
+		assertTrue(it.next() instanceof ServerModule);
+		assertSame(m, it.next());
+	}
 
 }

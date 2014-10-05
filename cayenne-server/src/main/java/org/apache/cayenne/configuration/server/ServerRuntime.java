@@ -18,13 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.Collection;
-
 import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.tx.TransactionalOperation;
@@ -41,99 +40,99 @@ import org.apache.cayenne.tx.TransactionalOperation;
  */
 public class ServerRuntime extends CayenneRuntime {
 
-    private static Module mainModule(String... configurationLocations) {
-        return new ServerModule(configurationLocations);
-    }
+	private static ModuleCollection mainModule(String... configurationLocations) {
+		return new ModuleCollection(new ServerModule(configurationLocations));
+	}
 
-    /**
-     * Creates a server runtime configuring it with a standard set of services
-     * contained in {@link ServerModule}. CayenneServerModule is created with
-     * provided 'configurationLocation'. An optional array of extra modules may
-     * contain service overrides and/or user services.
-     */
-    public ServerRuntime(String configurationLocation, Module... extraModules) {
-        super(mergeModules(mainModule(configurationLocation), extraModules));
-    }
+	/**
+	 * Creates a server runtime configuring it with a standard set of services
+	 * contained in {@link ServerModule}. CayenneServerModule is created with
+	 * provided 'configurationLocation'. An optional array of extra modules may
+	 * contain service overrides and/or user services.
+	 */
+	public ServerRuntime(String configurationLocation, Module... extraModules) {
+		super(mainModule(configurationLocation).add(extraModules));
+	}
 
-    /**
-     * Creates a server runtime configuring it with a standard set of services
-     * contained in {@link ServerModule}. CayenneServerModule is created with
-     * one or more 'configurationLocations'. An optional array of extra modules
-     * may contain service overrides and/or user services.
-     */
-    public ServerRuntime(String[] configurationLocations, Module... extraModules) {
-        super(mergeModules(mainModule(configurationLocations), extraModules));
-    }
+	/**
+	 * Creates a server runtime configuring it with a standard set of services
+	 * contained in {@link ServerModule}. CayenneServerModule is created with
+	 * one or more 'configurationLocations'. An optional array of extra modules
+	 * may contain service overrides and/or user services.
+	 */
+	public ServerRuntime(String[] configurationLocations, Module... extraModules) {
+		super(mainModule(configurationLocations).add(extraModules));
+	}
 
-    /**
-     * Runs provided operation wrapped in a single transaction. Transaction
-     * handling delegated to the internal {@link TransactionManager}. Nested
-     * calls to 'performInTransaction' are safe and attached to the same
-     * in-progress transaction. TransactionalOperation can be some arbitrary
-     * user code, which most often than not will consist of multiple Cayenne
-     * operations.
-     * 
-     * @since 3.2
-     */
-    public <T> T performInTransaction(TransactionalOperation<T> op) {
-        TransactionManager tm = injector.getInstance(TransactionManager.class);
-        return tm.performInTransaction(op);
-    }
+	/**
+	 * Runs provided operation wrapped in a single transaction. Transaction
+	 * handling delegated to the internal {@link TransactionManager}. Nested
+	 * calls to 'performInTransaction' are safe and attached to the same
+	 * in-progress transaction. TransactionalOperation can be some arbitrary
+	 * user code, which most often than not will consist of multiple Cayenne
+	 * operations.
+	 * 
+	 * @since 3.2
+	 */
+	public <T> T performInTransaction(TransactionalOperation<T> op) {
+		TransactionManager tm = injector.getInstance(TransactionManager.class);
+		return tm.performInTransaction(op);
+	}
 
-    /**
-     * Returns the main runtime DataDomain. Note that by default the returned
-     * DataDomain is the same as the main DataChannel returned by
-     * {@link #getChannel()}. Although users may redefine DataChannel provider
-     * in the DI registry, for instance to decorate this DataDomain with a
-     * custom wrapper.
-     */
-    public DataDomain getDataDomain() {
-        return injector.getInstance(DataDomain.class);
-    }
-    
-    /**
-     * Returns a default DataSource for this runtime. If no default DataSource
-     * exists, an exception is thrown.
-     * 
-     * @since 3.2
-     */
-    public DataSource getDataSource() {
-        DataDomain domain = getDataDomain();
-        DataNode defaultNode = domain.getDefaultNode();
-        if (defaultNode == null) {
+	/**
+	 * Returns the main runtime DataDomain. Note that by default the returned
+	 * DataDomain is the same as the main DataChannel returned by
+	 * {@link #getChannel()}. Although users may redefine DataChannel provider
+	 * in the DI registry, for instance to decorate this DataDomain with a
+	 * custom wrapper.
+	 */
+	public DataDomain getDataDomain() {
+		return injector.getInstance(DataDomain.class);
+	}
 
-            int s = domain.getDataNodes().size();
-            if (s == 0) {
-                throw new IllegalStateException("No DataSources configured");
-            } else {
-                throw new IllegalArgumentException(
-                        "No default DataSource configured. You can get explicitly named DataSource by using 'getDataSource(String)'");
-            }
-        }
+	/**
+	 * Returns a default DataSource for this runtime. If no default DataSource
+	 * exists, an exception is thrown.
+	 * 
+	 * @since 3.2
+	 */
+	public DataSource getDataSource() {
+		DataDomain domain = getDataDomain();
+		DataNode defaultNode = domain.getDefaultNode();
+		if (defaultNode == null) {
 
-        return defaultNode.getDataSource();
-    }
+			int s = domain.getDataNodes().size();
+			if (s == 0) {
+				throw new IllegalStateException("No DataSources configured");
+			} else {
+				throw new IllegalArgumentException(
+						"No default DataSource configured. You can get explicitly named DataSource by using 'getDataSource(String)'");
+			}
+		}
 
-    /**
-     * Provides access to the JDBC DataSource assigned to a given DataNode. A
-     * null argument will work if there's only one DataNode configured.
-     * <p>
-     * Normally Cayenne applications don't need to access DataSource or any
-     * other JDBC code directly, however in some unusual conditions it may be
-     * needed, and this method provides a shortcut to raw JDBC.
-     */
-    public DataSource getDataSource(String dataNodeName) {
-        DataDomain domain = getDataDomain();
+		return defaultNode.getDataSource();
+	}
 
-        if (dataNodeName == null) {
-            return getDataSource();
-        }
+	/**
+	 * Provides access to the JDBC DataSource assigned to a given DataNode. A
+	 * null argument will work if there's only one DataNode configured.
+	 * <p>
+	 * Normally Cayenne applications don't need to access DataSource or any
+	 * other JDBC code directly, however in some unusual conditions it may be
+	 * needed, and this method provides a shortcut to raw JDBC.
+	 */
+	public DataSource getDataSource(String dataNodeName) {
+		DataDomain domain = getDataDomain();
 
-        DataNode node = domain.getDataNode(dataNodeName);
-        if (node == null) {
-            throw new IllegalArgumentException("Unknown DataNode name: " + dataNodeName);
-        }
+		if (dataNodeName == null) {
+			return getDataSource();
+		}
 
-        return node.getDataSource();
-    }
+		DataNode node = domain.getDataNode(dataNodeName);
+		if (node == null) {
+			throw new IllegalArgumentException("Unknown DataNode name: " + dataNodeName);
+		}
+
+		return node.getDataSource();
+	}
 }
