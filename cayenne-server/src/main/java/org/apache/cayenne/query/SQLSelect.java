@@ -36,6 +36,8 @@ import org.apache.cayenne.map.SQLResult;
  */
 public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
+	private static final long serialVersionUID = -7074293371883740872L;
+
 	/**
 	 * Creates a query that selects DataRows and uses default routing.
 	 */
