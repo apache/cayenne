@@ -19,23 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.Action;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -69,6 +52,7 @@ import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CutAction;
+import org.apache.cayenne.modeler.action.LinkDataMapsAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
@@ -99,6 +83,23 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.Action;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.dnd.DnDConstants;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * Panel displaying Cayenne project as a tree.
  */
@@ -114,6 +115,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     protected ProjectController mediator;
     protected TreeSelectionListener treeSelectionListener;
     protected JPopupMenu popup;
+    private TreeDragSource tds;
 
     public ProjectTreeView(ProjectController mediator) {
         super();
@@ -122,6 +124,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         initView();
         initController();
         initFromModel(Application.getInstance().getProject());
+        this.tds = new TreeDragSource(this, DnDConstants.ACTION_COPY, mediator);
     }
 
     private void initView() {
@@ -490,7 +493,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 }
                 // DataMap was unlinked
                 else if (mapCount < node.getChildCount()) {
-                    for (int j = 0; j < node.getChildCount(); j++) {
+                    int j = 0;
+                    while (j < node.getChildCount()) {
                         boolean found = false;
                         DefaultMutableTreeNode child;
                         child = (DefaultMutableTreeNode) node.getChildAt(j);
@@ -498,12 +502,11 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                         for (int i = 0; i < mapCount; i++) {
                             if (domain.getDataMap(mapsName[i].toString()) == obj) {
                                 found = true;
-                                break;
+                                j++;
                             }
                         }
                         if (!found) {
                             removeNode(child);
-                            break;
                         }
                     }
                 }
@@ -941,6 +944,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         popup.addSeparator();
         popup.add(buildMenu(ObjEntitySyncAction.class));
         popup.addSeparator();
+        popup.add(buildMenu(LinkDataMapsAction.class));
+        popup.addSeparator();
         popup.add(buildMenu(RemoveAction.class));
         popup.addSeparator();
         popup.add(buildMenu(CutAction.class));
@@ -1052,4 +1057,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         });
 
     }
+
+    public TreeDragSource getTds() {
+        return tds;
+    }
+
 }
