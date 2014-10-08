@@ -120,6 +120,42 @@ public class SelectQueryTest extends ServerCase {
         tNumerics.insert(4, 3);
         tNumerics.insert(5, 4);
     }
+    
+    public void testSetQualifier() {
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+        assertNull(query.getQualifier());
+
+        Expression qual = ExpressionFactory.expressionOfType(Expression.AND);
+        query.setQualifier(qual);
+        assertNotNull(query.getQualifier());
+        assertSame(qual, query.getQualifier());
+    }
+
+    public void testAndQualifier() {
+    	SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+        assertNull(query.getQualifier());
+
+        Expression e1 = ExpressionFactory.expressionOfType(Expression.EQUAL_TO);
+        query.andQualifier(e1);
+        assertSame(e1, query.getQualifier());
+
+        Expression e2 = ExpressionFactory.expressionOfType(Expression.NOT_EQUAL_TO);
+        query.andQualifier(e2);
+        assertEquals(Expression.AND, query.getQualifier().getType());
+    }
+
+    public void testOrQualifier() {
+    	SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+        assertNull(query.getQualifier());
+
+        Expression e1 = ExpressionFactory.expressionOfType(Expression.EQUAL_TO);
+        query.orQualifier(e1);
+        assertSame(e1, query.getQualifier());
+
+        Expression e2 = ExpressionFactory.expressionOfType(Expression.NOT_EQUAL_TO);
+        query.orQualifier(e2);
+        assertEquals(Expression.OR, query.getQualifier().getType());
+    }
 
     public void testFetchLimit() throws Exception {
         createArtistsDataSet();

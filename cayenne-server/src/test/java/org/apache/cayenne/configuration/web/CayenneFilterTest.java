@@ -19,14 +19,17 @@
 package org.apache.cayenne.configuration.web;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.Module;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockFilterConfig;
@@ -36,136 +39,132 @@ import com.mockrunner.mock.web.MockServletContext;
 
 public class CayenneFilterTest extends TestCase {
 
-    public void testInitWithFilterName() throws Exception {
+	public void testInitWithFilterName() throws Exception {
 
-        MockFilterConfig config = new MockFilterConfig();
-        config.setFilterName("abc");
+		MockFilterConfig config = new MockFilterConfig();
+		config.setFilterName("abc");
 
-        MockServletContext context = new MockServletContext();
-        config.setupServletContext(context);
+		MockServletContext context = new MockServletContext();
+		config.setupServletContext(context);
 
-        CayenneFilter filter = new CayenneFilter();
+		CayenneFilter filter = new CayenneFilter();
 
-        assertNull(WebUtil.getCayenneRuntime(context));
-        filter.init(config);
+		assertNull(WebUtil.getCayenneRuntime(context));
+		filter.init(config);
 
-        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
-        assertNotNull(runtime);
+		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		assertNotNull(runtime);
 
-        List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<?> locations = runtime.getInjector().getInstance(
+				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-        assertEquals(Arrays.asList("abc.xml"), locations);
-    }
+		assertEquals(Arrays.asList("abc.xml"), locations);
+	}
 
-    public void testInitWithLocation() throws Exception {
+	public void testInitWithLocation() throws Exception {
 
-        MockFilterConfig config = new MockFilterConfig();
-        config.setFilterName("abc");
-        config.setInitParameter(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER, "xyz");
+		MockFilterConfig config = new MockFilterConfig();
+		config.setFilterName("abc");
+		config.setInitParameter(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER, "xyz");
 
-        MockServletContext context = new MockServletContext();
-        config.setupServletContext(context);
+		MockServletContext context = new MockServletContext();
+		config.setupServletContext(context);
 
-        CayenneFilter filter = new CayenneFilter();
-        filter.init(config);
+		CayenneFilter filter = new CayenneFilter();
+		filter.init(config);
 
-        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
-        assertNotNull(runtime);
-        List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		assertNotNull(runtime);
+		List<?> locations = runtime.getInjector().getInstance(
+				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-        assertEquals(Arrays.asList("xyz"), locations);
-    }
+		assertEquals(Arrays.asList("xyz"), locations);
+	}
 
-    public void testInitWithStandardModules() throws Exception {
+	public void testInitWithStandardModules() throws Exception {
 
-        MockFilterConfig config = new MockFilterConfig();
-        config.setFilterName("cayenne-abc");
+		MockFilterConfig config = new MockFilterConfig();
+		config.setFilterName("cayenne-abc");
 
-        MockServletContext context = new MockServletContext();
-        config.setupServletContext(context);
+		MockServletContext context = new MockServletContext();
+		config.setupServletContext(context);
 
-        CayenneFilter filter = new CayenneFilter();
+		CayenneFilter filter = new CayenneFilter();
 
-        assertNull(WebUtil.getCayenneRuntime(context));
-        filter.init(config);
+		assertNull(WebUtil.getCayenneRuntime(context));
+		filter.init(config);
 
-        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
-        assertNotNull(runtime);
-        List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		assertNotNull(runtime);
+		List<?> locations = runtime.getInjector().getInstance(
+				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-        assertEquals(Arrays.asList("cayenne-abc.xml"), locations);
-        assertEquals(2, runtime.getModules().length);
-        assertTrue(runtime.getModules()[0] instanceof ServerModule);
-        assertTrue(runtime.getModules()[1] instanceof WebModule);
+		assertEquals(Arrays.asList("cayenne-abc.xml"), locations);
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(2, modules.size());
 
-        RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
-        assertTrue(handler instanceof SessionContextRequestHandler);
-    }
+		Object[] marray = modules.toArray();
 
-    public void testInitWithExtraModules() throws Exception {
+		assertTrue(marray[0] instanceof ServerModule);
+		assertTrue(marray[1] instanceof WebModule);
 
-        MockFilterConfig config = new MockFilterConfig();
-        config.setFilterName("abc");
-        config.setInitParameter(
-                WebConfiguration.EXTRA_MODULES_PARAMETER,
-                MockModule1.class.getName() + "," + MockModule2.class.getName());
+		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
+		assertTrue(handler instanceof SessionContextRequestHandler);
+	}
 
-        MockServletContext context = new MockServletContext();
-        config.setupServletContext(context);
+	public void testInitWithExtraModules() throws Exception {
 
-        CayenneFilter filter = new CayenneFilter();
-        filter.init(config);
+		MockFilterConfig config = new MockFilterConfig();
+		config.setFilterName("abc");
+		config.setInitParameter(WebConfiguration.EXTRA_MODULES_PARAMETER, MockModule1.class.getName() + ","
+				+ MockModule2.class.getName());
 
-        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
-        assertNotNull(runtime);
+		MockServletContext context = new MockServletContext();
+		config.setupServletContext(context);
 
-        assertEquals(4, runtime.getModules().length);
+		CayenneFilter filter = new CayenneFilter();
+		filter.init(config);
 
-        assertTrue(runtime.getModules()[0] instanceof ServerModule);
-        assertTrue(runtime.getModules()[1] instanceof WebModule);
-        assertTrue(runtime.getModules()[2] instanceof MockModule1);
-        assertTrue(runtime.getModules()[3] instanceof MockModule2);
+		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		assertNotNull(runtime);
 
-        RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
-        assertTrue(handler instanceof MockRequestHandler);
-    }
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(4, modules.size());
 
-    public void testDoFilter() throws Exception {
-        MockFilterConfig config = new MockFilterConfig();
-        config.setFilterName("abc");
-        config.setInitParameter(
-                WebConfiguration.EXTRA_MODULES_PARAMETER,
-                CayenneFilter_DispatchModule.class.getName());
+		Object[] marray = modules.toArray();
+		assertTrue(marray[0] instanceof ServerModule);
+		assertTrue(marray[1] instanceof WebModule);
+		assertTrue(marray[2] instanceof MockModule1);
+		assertTrue(marray[3] instanceof MockModule2);
 
-        MockServletContext context = new MockServletContext();
-        config.setupServletContext(context);
+		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
+		assertTrue(handler instanceof MockRequestHandler);
+	}
 
-        CayenneFilter filter = new CayenneFilter();
-        filter.init(config);
+	public void testDoFilter() throws Exception {
+		MockFilterConfig config = new MockFilterConfig();
+		config.setFilterName("abc");
+		config.setInitParameter(WebConfiguration.EXTRA_MODULES_PARAMETER, CayenneFilter_DispatchModule.class.getName());
 
-        CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
-        CayenneFilter_DispatchRequestHandler handler = (CayenneFilter_DispatchRequestHandler) runtime
-                .getInjector()
-                .getInstance(RequestHandler.class);
+		MockServletContext context = new MockServletContext();
+		config.setupServletContext(context);
 
-        assertEquals(0, handler.getStarted());
-        assertEquals(0, handler.getEnded());
+		CayenneFilter filter = new CayenneFilter();
+		filter.init(config);
 
-        filter.doFilter(
-                new MockHttpServletRequest(),
-                new MockHttpServletResponse(),
-                new MockFilterChain());
-        assertEquals(1, handler.getStarted());
-        assertEquals(1, handler.getEnded());
+		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		CayenneFilter_DispatchRequestHandler handler = (CayenneFilter_DispatchRequestHandler) runtime.getInjector()
+				.getInstance(RequestHandler.class);
 
-        filter.doFilter(
-                new MockHttpServletRequest(),
-                new MockHttpServletResponse(),
-                new MockFilterChain());
-        assertEquals(2, handler.getStarted());
-        assertEquals(2, handler.getEnded());
-    }
+		assertEquals(0, handler.getStarted());
+		assertEquals(0, handler.getEnded());
+
+		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
+		assertEquals(1, handler.getStarted());
+		assertEquals(1, handler.getEnded());
+
+		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
+		assertEquals(2, handler.getStarted());
+		assertEquals(2, handler.getEnded());
+	}
 }

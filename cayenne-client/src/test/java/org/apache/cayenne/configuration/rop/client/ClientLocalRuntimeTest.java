@@ -20,6 +20,7 @@ package org.apache.cayenne.configuration.rop.client;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import junit.framework.TestCase;
@@ -28,6 +29,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -37,56 +39,52 @@ import org.apache.cayenne.remote.service.LocalConnection;
 
 public class ClientLocalRuntimeTest extends TestCase {
 
-    public void testDefaultConstructor() {
+	public void testDefaultConstructor() {
 
-        Module serverModule = new Module() {
+		Module serverModule = new Module() {
 
-            public void configure(Binder binder) {
-            }
-        };
+			public void configure(Binder binder) {
+			}
+		};
 
-        ClientLocalRuntime runtime = new ClientLocalRuntime(
-                DIBootstrap.createInjector(serverModule),
-                Collections.EMPTY_MAP);
-        assertEquals(2, runtime.getModules().length);
+		ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
+				Collections.<String, String> emptyMap());
+		Collection<Module> cmodules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(2, cmodules.size());
 
-        Module m0 = runtime.getModules()[0];
-        assertTrue(m0 instanceof ClientModule);
-    }
+		assertTrue(cmodules.toArray()[0] instanceof ClientModule);
+	}
 
-    public void testGetConnection() {
+	public void testGetConnection() {
 
-        final DataContext serverContext = mock(DataContext.class);
+		final DataContext serverContext = mock(DataContext.class);
 
-        Module serverModule = new Module() {
+		Module serverModule = new Module() {
 
-            public void configure(Binder binder) {
-                binder.bind(ObjectContextFactory.class).toInstance(
-                        new ObjectContextFactory() {
+			public void configure(Binder binder) {
+				binder.bind(ObjectContextFactory.class).toInstance(new ObjectContextFactory() {
 
-                            public ObjectContext createContext(DataChannel parent) {
-                                return null;
-                            }
+					public ObjectContext createContext(DataChannel parent) {
+						return null;
+					}
 
-                            public ObjectContext createContext() {
-                                return serverContext;
-                            }
-                        });
-            }
-        };
+					public ObjectContext createContext() {
+						return serverContext;
+					}
+				});
+			}
+		};
 
-        ClientLocalRuntime runtime = new ClientLocalRuntime(
-                DIBootstrap.createInjector(serverModule),
-                Collections.EMPTY_MAP);
+		ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
+				Collections.EMPTY_MAP);
 
-        ClientConnection connection = runtime.getConnection();
-        assertNotNull(connection);
-        assertTrue(connection instanceof LocalConnection);
+		ClientConnection connection = runtime.getConnection();
+		assertNotNull(connection);
+		assertTrue(connection instanceof LocalConnection);
 
-        LocalConnection localConnection = (LocalConnection) connection;
-        assertTrue(localConnection.getChannel() instanceof ClientServerChannel);
-        ClientServerChannel clientServerChannel = (ClientServerChannel) localConnection
-                .getChannel();
-        assertSame(serverContext, clientServerChannel.getParentChannel());
-    }
+		LocalConnection localConnection = (LocalConnection) connection;
+		assertTrue(localConnection.getChannel() instanceof ClientServerChannel);
+		ClientServerChannel clientServerChannel = (ClientServerChannel) localConnection.getChannel();
+		assertSame(serverContext, clientServerChannel.getParentChannel());
+	}
 }

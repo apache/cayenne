@@ -63,6 +63,7 @@ CAY-1949 Search in configuration fields (Catalog, Schema) in DbEntity
 CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
 CAY-1953 Redo ResultIteratorCallback to handle single row callback instead of iterator
 CAY-1954 Make Cayenne class constructor protected
+CAY-1958 SelectById - a new full-featured select query to get objects by id
 
 Bug Fixes:
 

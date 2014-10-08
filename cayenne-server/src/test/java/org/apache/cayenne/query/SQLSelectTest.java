@@ -111,7 +111,7 @@ public class SQLSelectTest extends ServerCase {
 
         SQLSelect<Artist> q1 = SQLSelect.query(Artist.class,
                 "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a) OR ARTIST_NAME = #bind($b)");
-        q1.bind("a", "artist3").bind("b", "artist4");
+        q1.params("a", "artist3").params("b", "artist4");
 
         List<Artist> result = context.select(q1);
         assertEquals(2, result.size());
@@ -155,7 +155,7 @@ public class SQLSelectTest extends ServerCase {
         createArtistsDataSet();
 
         SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST")
-                .append(" WHERE ARTIST_NAME = #bind($a)").bind("a", "artist3");
+                .append(" WHERE ARTIST_NAME = #bind($a)").params("a", "artist3");
 
         List<Artist> result = context.select(q1);
         assertEquals(1, result.size());
@@ -166,7 +166,7 @@ public class SQLSelectTest extends ServerCase {
         createArtistsDataSet();
 
         List<Artist> result = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-                .bind("a", "artist3").select(context);
+                .params("a", "artist3").select(context);
 
         assertEquals(1, result.size());
     }
@@ -176,7 +176,7 @@ public class SQLSelectTest extends ServerCase {
         createArtistsDataSet();
 
         Artist a = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-                .bind("a", "artist3").selectOne(context);
+                .params("a", "artist3").selectOne(context);
 
         assertEquals("artist3", a.getArtistName());
     }
@@ -186,7 +186,7 @@ public class SQLSelectTest extends ServerCase {
         createArtistsDataSet();
 
         long id = SQLSelect.scalarQuery(Long.class, "SELECT ARTIST_ID FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-                .bind("a", "artist3").selectOne(context);
+                .params("a", "artist3").selectOne(context);
 
         assertEquals(3l, id);
     }
