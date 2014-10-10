@@ -19,27 +19,16 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.LinkDataMapAction;
 import org.apache.cayenne.modeler.dialog.datamap.CatalogUpdateController;
 import org.apache.cayenne.modeler.dialog.datamap.LockingUpdateController;
 import org.apache.cayenne.modeler.dialog.datamap.PackageUpdateController;
@@ -55,8 +44,17 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 /**
  * Panel for editing a DataMap.
@@ -576,35 +574,8 @@ public class DataMapView extends JPanel {
     void setDataNode() {
         DataNodeDescriptor node = (DataNodeDescriptor) nodeSelector.getSelectedItem();
         DataMap map = eventController.getCurrentDataMap();
-
-        // no change?
-        if (node != null && node.getDataMapNames().contains(map.getName())) {
-            return;
-        }
-
-        // unlink map from any nodes
-
-        for (DataNodeDescriptor nextNode : ((DataChannelDescriptor) eventController
-                .getProject()
-                .getRootNode()).getNodeDescriptors()) {
-
-            // Theoretically only one node may contain a datamap at each given time.
-            // Being paranoid, we will still scan through all.
-            if (nextNode != node && nextNode.getDataMapNames().contains(map.getName())) {
-                nextNode.getDataMapNames().remove(map.getName());
-
-                // announce DataNode change
-                eventController.fireDataNodeEvent(new DataNodeEvent(this, nextNode));
-            }
-        }
-
-        // link to a selected node
-        if (node != null) {
-            node.getDataMapNames().add(map.getName());
-
-            // announce DataNode change
-            eventController.fireDataNodeEvent(new DataNodeEvent(this, node));
-        }
+        LinkDataMapAction action = eventController.getApplication().getActionManager().getAction(LinkDataMapAction.class);
+        action.linkDataMap(map, node);
     }
     
     void updateDefaultCatalog() {
