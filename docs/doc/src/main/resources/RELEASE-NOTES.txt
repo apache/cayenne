@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-1839 Allow to link DataMaps to DataNodes from DataNode editor.
 CAY-1841 Filters for Left-hand project navigator
 CAY-1842 Remove Listeners support from the Modeler 
 CAY-1843 DataMap v7: Stop saving listeners in DataMap, add upgrade handler
