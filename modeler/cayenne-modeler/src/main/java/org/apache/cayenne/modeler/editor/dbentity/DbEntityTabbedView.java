@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.dbentity;
 
-import java.awt.Component;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -37,13 +30,18 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.editor.ExistingSelectionProcessor;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.DbAttributeDisplayListener;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.DbRelationshipDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.Component;
 
 public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         DbEntityDisplayListener, DbRelationshipDisplayListener,
@@ -52,16 +50,17 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
     protected ProjectController projectController;
 
     protected Component entityPanel;
-    protected DbEntityAttributeTab attributesPanel;
-    protected DbEntityRelationshipTab relationshipsPanel;
+    protected DbEntityAttributeRelationshipTab attributeRelationshipTab;
 
     public DbEntityTabbedView(ProjectController projectController) {
         super();
         this.projectController = projectController;
-        projectController.addDbEntityDisplayListener(this);
-        projectController.addDbAttributeDisplayListener(this);
-        projectController.addDbRelationshipDisplayListener(this);
 
+        initView();
+        initController();
+    }
+
+    private void initView() {
         setTabPlacement(JTabbedPane.TOP);
 
         // add panels to tabs
@@ -70,10 +69,16 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
 
         entityPanel = new JScrollPane(new DbEntityTab(projectController));
         addTab("Entity", entityPanel);
-        attributesPanel = new DbEntityAttributeTab(projectController);
-        addTab("Attributes", attributesPanel);
-        relationshipsPanel = new DbEntityRelationshipTab(projectController);
-        addTab("Relationships", relationshipsPanel);
+
+        attributeRelationshipTab = new DbEntityAttributeRelationshipTab(projectController);
+        addTab("Attributes&Relationships", attributeRelationshipTab);
+
+    }
+
+    private void initController() {
+        projectController.addDbEntityDisplayListener(this);
+        projectController.addDbAttributeDisplayListener(this);
+        projectController.addDbRelationshipDisplayListener(this);
 
         addChangeListener(this);
     }
@@ -89,22 +94,13 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
     /** Handle focus when tab changes. */
     public void stateChanged(ChangeEvent e) {
         resetRemoveButtons();
-
         projectController.setEntityTabSelection(getSelectedIndex());
-
-        // find source view
-        Component selected = getSelectedComponent();
-        while (selected instanceof JScrollPane) {
-            selected = ((JScrollPane) selected).getViewport().getView();
-        }
-
-        ExistingSelectionProcessor proc = (ExistingSelectionProcessor) selected;
-        proc.processExistingSelection(e);
     }
 
     /** If entity is null hides it's contents, otherwise makes it visible. */
     public void currentDbEntityChanged(EntityDisplayEvent e) {
         Entity entity = e.getEntity();
+
         if (e.isMainTabFocus() && entity instanceof DbEntity) {
             if (getSelectedComponent() != entityPanel) {
                 setSelectedComponent(entityPanel);
@@ -132,29 +128,35 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
         System.arraycopy(rels, 0, dbRels, 0, rels.length);
 
         // reset tab to relationship
-        if (getSelectedComponent() != relationshipsPanel && dbRels.length > 0) {
-            setSelectedComponent(relationshipsPanel);
-            relationshipsPanel.setVisible(true);
+        if (getSelectedComponent() != attributeRelationshipTab.getSplitPane().getComponent(1) && dbRels.length > 0) {
+            setSelectedComponent(attributeRelationshipTab);
+            attributeRelationshipTab.getSplitPane().getComponent(1).setVisible(true);
         }
 
-        relationshipsPanel.selectRelationships(dbRels);
+        ((DbEntityRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1)).selectRelationships(dbRels);
+        attributeRelationshipTab.updateActions(dbRels);
     }
 
     public void currentDbAttributeChanged(AttributeDisplayEvent e) {
         if (e.getEntity() == null)
             return;
 
-        // update relationship selection
+        // update attribute selection
         Attribute[] attrs = e.getAttributes();
         DbAttribute[] dbAttrs = new DbAttribute[attrs.length];
 
         System.arraycopy(attrs, 0, dbAttrs, 0, attrs.length);
 
-        if (getSelectedComponent() != attributesPanel && dbAttrs.length > 0) {
-            setSelectedComponent(attributesPanel);
-            attributesPanel.setVisible(true);
+        if (getSelectedComponent() != attributeRelationshipTab.getSplitPane().getComponent(0) && dbAttrs.length > 0) {
+            setSelectedComponent(attributeRelationshipTab);
+            attributeRelationshipTab.getSplitPane().getComponent(0).setVisible(true);
         }
 
-        attributesPanel.selectAttributes(dbAttrs);
+        ((DbEntityAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0)).selectAttributes(dbAttrs);
+        attributeRelationshipTab.updateActions(dbAttrs);
+    }
+
+    public DbEntityAttributeRelationshipTab getAttributeRelationshipTab() {
+        return attributeRelationshipTab;
     }
 }
