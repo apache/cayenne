@@ -19,11 +19,12 @@
 
 package org.apache.cayenne.exp;
 
+import static java.util.Collections.singletonMap;
+import static org.apache.cayenne.exp.ExpressionFactory.exp;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -32,10 +33,6 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.parser.ASTScalar;
-import org.apache.cayenne.exp.parser.ExpressionParser;
-import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
-import org.apache.cayenne.exp.parser.JavaCharStream;
-import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -152,8 +149,6 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public static final int BITWISE_RIGHT_SHIFT = 44;
 
-	private static final int PARSE_BUFFER_MAX_SIZE = 4096;
-
 	protected int type;
 
 	/**
@@ -161,38 +156,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * a semantically correct expression, an ExpressionException is thrown.
 	 * 
 	 * @since 1.1
+	 * @deprecated since 3.2 use {@link ExpressionFactory#exp(String)}
 	 */
-	// TODO: cache expression strings, since this operation is pretty slow
+	@Deprecated
 	public static Expression fromString(String expressionString) {
-		if (expressionString == null) {
-			throw new NullPointerException("Null expression string.");
-		}
-
-		// optimizing parser buffers per CAY-1667...
-		// adding 1 extra char to the buffer size above the String length, as
-		// otherwise
-		// resizing still occurs at the end of the stream
-		int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE ? PARSE_BUFFER_MAX_SIZE : expressionString
-				.length() + 1;
-		Reader reader = new StringReader(expressionString);
-		JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
-		ExpressionParserTokenManager tm = new ExpressionParserTokenManager(stream);
-		ExpressionParser parser = new ExpressionParser(tm);
-
-		try {
-			return parser.expression();
-		} catch (ParseException ex) {
-
-			// can be null
-			String message = ex.getMessage();
-			throw new ExpressionException(message != null ? message : "", ex);
-		} catch (Throwable th) {
-			// can be null
-			String message = th.getMessage();
-
-			// another common error is TokenManagerError
-			throw new ExpressionException(message != null ? message : "", th);
-		}
+		return exp(expressionString);
 	}
 
 	/**
@@ -290,8 +258,63 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	}
 
 	/**
-	 * A shortcut for <code>expWithParams(params, true)</code>.
+	 * Creates and returns a new Expression instance based on this expression,
+	 * but with named parameter substituted. Any subexpressions containing
+	 * parameters not matching the "name" argument will be pruned.
+	 * 
+	 * @since 3.2
 	 */
+	public Expression params(String name, Object value) {
+		return params(singletonMap(name, value));
+	}
+
+	/**
+	 * Creates and returns a new Expression instance based on this expression,
+	 * but with named parameters substituted with provided values. Any
+	 * subexpressions containing parameters not matching the "name" argument
+	 * will be pruned. Note that if you want matching against nulls to be
+	 * preserved, you must place NULL values for the corresponding keys in the
+	 * map.
+	 * 
+	 * @since 3.2
+	 */
+	public Expression params(Map<String, Object> parameters) {
+		return params(parameters, false);
+	}
+
+	/**
+	 * Creates and returns a new Expression instance based on this expression,
+	 * but with named parameter substituted. If any subexpressions containing
+	 * parameters not matching the "name" argument are found an Exception will
+	 * be thrown.
+	 * 
+	 * @since 3.2
+	 */
+	public Expression paramsNoPrune(String name, Object value) {
+		return paramsNoPrune(singletonMap(name, value));
+	}
+
+	/**
+	 * Creates and returns a new Expression instance based on this expression,
+	 * but with named parameters substituted with provided values.If any
+	 * subexpressions containing parameters not matching the "name" argument are
+	 * found an Exception will be thrown. Note that if you want matching against
+	 * nulls to be preserved, you must place NULL values for the corresponding
+	 * keys in the map.
+	 * 
+	 * @since 3.2
+	 */
+	public Expression paramsNoPrune(Map<String, Object> parameters) {
+		return params(parameters, true);
+	}
+
+	/**
+	 * A shortcut for <code>expWithParams(params, true)</code>.
+	 * 
+	 * @deprecated since 3.2 use {@link #params(Map)} or
+	 *             {@link #params(String, Object)}.
+	 */
+	@Deprecated
 	public Expression expWithParameters(Map<String, ?> parameters) {
 		return expWithParameters(parameters, true);
 	}
@@ -317,8 +340,18 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * @return Expression resulting from the substitution of parameters with
 	 *         real values, or null if the whole expression was pruned, due to
 	 *         the missing parameters.
+	 * 
+	 * @deprecated since 3.2 use {@link #params(Map)} or
+	 *             {@link #paramsNoPrune(Map)}.
 	 */
-	public Expression expWithParameters(final Map<String, ?> parameters, final boolean pruneMissing) {
+	@Deprecated
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Expression expWithParameters(Map<String, ?> parameters, final boolean pruneMissing) {
+		Map noGenerics = parameters;
+		return params(noGenerics, pruneMissing);
+	}
+
+	Expression params(final Map<String, Object> parameters, final boolean pruneMissing) {
 
 		// create transformer for named parameters
 		Transformer transformer = new Transformer() {

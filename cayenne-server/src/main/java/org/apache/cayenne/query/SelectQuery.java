@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
@@ -576,9 +577,20 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 	/**
 	 * @since 1.2
+	 * @deprecated since 3.2 use chainable
+	 *             {@link #prefetchTree(PrefetchTreeNode)}.
 	 */
+	@Deprecated
 	public void setPrefetchTree(PrefetchTreeNode prefetchTree) {
+		prefetch(prefetchTree);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public SelectQuery<T> prefetch(PrefetchTreeNode prefetchTree) {
 		metaData.setPrefetchTree(prefetchTree);
+		return this;
 	}
 
 	/**
@@ -654,9 +666,19 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 	/**
 	 * @since 3.0
+	 * @deprecated since 3.2 use {@link #cacheStrategy(QueryCacheStrategy)}.
 	 */
+	@Deprecated
 	public void setCacheStrategy(QueryCacheStrategy strategy) {
 		metaData.setCacheStrategy(strategy);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public SelectQuery<T> cacheStrategy(QueryCacheStrategy strategy) {
+		metaData.setCacheStrategy(strategy);
+		return this;
 	}
 
 	/**
@@ -668,9 +690,19 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 	/**
 	 * @since 3.0
+	 * @deprecated since 3.2 use {@link #cacheGroups(String...)}
 	 */
+	@Deprecated
 	public void setCacheGroups(String... cacheGroups) {
+		cacheGroups(cacheGroups);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public SelectQuery<T> cacheGroups(String... cacheGroups) {
 		this.metaData.setCacheGroups(cacheGroups);
+		return this;
 	}
 
 	/**
@@ -684,9 +716,8 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * 
 	 * @since 3.2
 	 */
-	public void useLocalCache(String... cacheGroups) {
-		setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-		setCacheGroups(cacheGroups);
+	public SelectQuery<T> useLocalCache(String... cacheGroups) {
+		return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE).cacheGroups(cacheGroups);
 	}
 
 	/**
@@ -700,9 +731,8 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * 
 	 * @since 3.2
 	 */
-	public void useSharedCache(String... cacheGroups) {
-		setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-		setCacheGroups(cacheGroups);
+	public SelectQuery<T> useSharedCache(String... cacheGroups) {
+		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE).cacheGroups(cacheGroups);
 	}
 
 	/**
@@ -723,16 +753,41 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 	/**
 	 * Sets the fetchLimit.
+	 * 
+	 * @deprecated since 3.2 use {@link #limit(int)}.
 	 */
+	@Deprecated
 	public void setFetchLimit(int fetchLimit) {
+		limit(fetchLimit);
+	}
+
+	/**
+	 * Sets the fetchLimit.
+	 * 
+	 * @since 3.2
+	 */
+	public SelectQuery<T> limit(int fetchLimit) {
 		this.metaData.setFetchLimit(fetchLimit);
+		return this;
 	}
 
 	/**
 	 * @since 3.0
+	 * @deprecated since 3.2 use {@link #offset(int)}.
 	 */
+	@Deprecated
 	public void setFetchOffset(int fetchOffset) {
 		this.metaData.setFetchOffset(fetchOffset);
+	}
+
+	/**
+	 * Sets the offset of the fetch result.
+	 * 
+	 * @since 3.2
+	 */
+	public SelectQuery<T> offset(int fetchOffset) {
+		this.metaData.setFetchOffset(fetchOffset);
+		return this;
 	}
 
 	/**
@@ -755,11 +810,31 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * anything special to access data in hollow objects. The first page is
 	 * always faulted into memory immediately.
 	 * 
-	 * @param pageSize
-	 *            The pageSize to set
+	 * @deprecated since 3.2 use chainable {@link #pageSize(int)}
 	 */
+	@Deprecated
 	public void setPageSize(int pageSize) {
+		pageSize(pageSize);
+	}
+
+	/**
+	 * Sets <code>pageSize</code> property.
+	 * 
+	 * By setting a page size, the Collection returned by performing a query
+	 * will return <i>hollow</i> DataObjects. This is considerably faster and
+	 * uses a tiny fraction of the memory compared to a non-paged query when
+	 * large numbers of objects are returned in the result. When a hollow
+	 * DataObject is accessed all DataObjects on the same page will be faulted
+	 * into memory. There will be a small delay when faulting objects while the
+	 * data is fetched from the data source, but otherwise you do not need to do
+	 * anything special to access data in hollow objects. The first page is
+	 * always faulted into memory immediately.
+	 * 
+	 * @since 3.2
+	 */
+	public SelectQuery<T> pageSize(int pageSize) {
 		metaData.setPageSize(pageSize);
+		return this;
 	}
 
 	/**
@@ -779,9 +854,19 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * Sets statement's fetch size (0 for default size)
 	 * 
 	 * @since 3.0
+	 * @deprecated since 3.2 use chainable {@link #statementFetchSize(int)}.
 	 */
+	@Deprecated
 	public void setStatementFetchSize(int size) {
+		statementFetchSize(size);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public SelectQuery<T> statementFetchSize(int size) {
 		metaData.setStatementFetchSize(size);
+		return this;
 	}
 
 	/**
@@ -794,9 +879,20 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 	/**
 	 * Sets new query qualifier.
+	 * 
+	 * @deprecated since 3.2 use chainable {@link #qualifier(Expression)}.
 	 */
+	@Deprecated
 	public void setQualifier(Expression qualifier) {
+		qualifier(qualifier);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public SelectQuery<T> qualifier(Expression qualifier) {
 		this.qualifier = qualifier;
+		return this;
 	}
 
 	/**
@@ -809,15 +905,58 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * Adds specified qualifier to the existing qualifier joining it using
 	 * "AND".
+	 * 
+	 * @since 3.2 use chainable {@link #and(Expression)}.
 	 */
+	@Deprecated
 	public void andQualifier(Expression e) {
 		qualifier = (qualifier != null) ? qualifier.andExp(e) : e;
 	}
 
 	/**
-	 * Adds specified qualifier to the existing qualifier joining it using "OR".
+	 * Adds specified qualifier to the existing qualifier joining it using
+	 * "AND".
+	 * 
+	 * @since 3.2
 	 */
+	public SelectQuery<T> and(Expression e) {
+		this.qualifier = (qualifier != null) ? qualifier.andExp(e) : e;
+		return this;
+	}
+
+	/**
+	 * Adds specified qualifier to the existing qualifier joining it using "OR".
+	 * 
+	 * @deprecated since 3.2 use chainable {@link #or(Expression)}.
+	 */
+	@Deprecated
 	public void orQualifier(Expression e) {
 		qualifier = (qualifier != null) ? qualifier.orExp(e) : e;
+	}
+
+	/**
+	 * Adds specified qualifier to the existing qualifier joining it using "OR".
+	 * 
+	 * @since 3.2
+	 */
+	public SelectQuery<T> or(Expression e) {
+		this.qualifier = (qualifier != null) ? qualifier.orExp(e) : e;
+		return this;
+	}
+
+	/**
+	 * Selects objects using provided context. Essentially the inversion of
+	 * "context.select(query)".
+	 */
+	public List<T> select(ObjectContext context) {
+		return context.select(this);
+	}
+
+	/**
+	 * Selects a single object using provided context. Essentially the inversion
+	 * of "Cayenne.objectForSelect(context, query)".
+	 */
+	public T selectOne(ObjectContext context) {
+		return context.selectOne(this);
 	}
 }

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,6 +62,10 @@ import org.apache.cayenne.exp.parser.ASTOr;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.exp.parser.ASTSubtract;
 import org.apache.cayenne.exp.parser.ASTTrue;
+import org.apache.cayenne.exp.parser.ExpressionParser;
+import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
+import org.apache.cayenne.exp.parser.JavaCharStream;
+import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.Entity;
 
@@ -80,6 +86,8 @@ public class ExpressionFactory {
 
 	private static Class<?>[] typeLookup;
 	private static volatile int autoAliasId;
+
+	private static final int PARSE_BUFFER_MAX_SIZE = 4096;
 
 	static {
 
@@ -274,8 +282,7 @@ public class ExpressionFactory {
 	 * @param values
 	 * @since 3.0
 	 */
-	@SuppressWarnings("unchecked")
-	public static Expression matchAllExp(String path, Collection values) {
+	public static Expression matchAllExp(String path, Collection<?> values) {
 
 		if (values == null) {
 			throw new NullPointerException("Null values collection");
@@ -804,19 +811,29 @@ public class ExpressionFactory {
 	 * expression would match any of the expressions.
 	 * </p>
 	 */
-	public static Expression joinExp(int type, List<Expression> expressions) {
+	public static Expression joinExp(int type, Collection<Expression> expressions) {
 		int len = expressions.size();
+		if (len == 0) {
+			return null;
+		}
+
+		return join(type, expressions.toArray(new Expression[len]));
+	}
+
+	private static Expression join(int type, Expression... expressions) {
+
+		int len = expressions != null ? expressions.length : 0;
 		if (len == 0)
 			return null;
 
-		Expression currentExp = expressions.get(0);
+		Expression currentExp = expressions[0];
 		if (len == 1) {
 			return currentExp;
 		}
 
 		Expression exp = expressionOfType(type);
 		for (int i = 0; i < len; i++) {
-			exp.setOperand(i, expressions.get(i));
+			exp.setOperand(i, expressions[i]);
 		}
 		return exp;
 	}
@@ -858,5 +875,86 @@ public class ExpressionFactory {
 		}
 
 		return joinExp(Expression.OR, pairs);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public static Expression and(Collection<Expression> expressions) {
+		return joinExp(Expression.AND, expressions);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public static Expression and(Expression... expressions) {
+		return join(Expression.AND, expressions);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public static Expression or(Collection<Expression> expressions) {
+		return joinExp(Expression.OR, expressions);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public static Expression or(Expression... expressions) {
+		return join(Expression.OR, expressions);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public static Expression exp(String expressionString, String name, Object value) {
+		return exp(expressionString).params(name, value);
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	public static Expression exp(String expressionString, Map<String, Object> parameters) {
+		return exp(expressionString).params(parameters);
+	}
+
+	/**
+	 * Parses string, converting it to Expression. If string does not represent
+	 * a semantically correct expression, an ExpressionException is thrown.
+	 * 
+	 * @since 3.2
+	 */
+	// TODO: cache expression strings, since this operation is pretty slow
+	public static Expression exp(String expressionString) {
+
+		if (expressionString == null) {
+			throw new NullPointerException("Null expression string.");
+		}
+
+		// optimizing parser buffers per CAY-1667...
+		// adding 1 extra char to the buffer size above the String length, as
+		// otherwise resizing still occurs at the end of the stream
+		int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE ? PARSE_BUFFER_MAX_SIZE : expressionString
+				.length() + 1;
+		Reader reader = new StringReader(expressionString);
+		JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
+		ExpressionParserTokenManager tm = new ExpressionParserTokenManager(stream);
+		ExpressionParser parser = new ExpressionParser(tm);
+
+		try {
+			return parser.expression();
+		} catch (ParseException ex) {
+
+			// can be null
+			String message = ex.getMessage();
+			throw new ExpressionException(message != null ? message : "", ex);
+		} catch (Throwable th) {
+			// can be null
+			String message = th.getMessage();
+
+			// another common error is TokenManagerError
+			throw new ExpressionException(message != null ? message : "", th);
+		}
 	}
 }
