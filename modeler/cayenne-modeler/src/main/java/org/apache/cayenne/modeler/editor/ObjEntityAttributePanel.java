@@ -280,9 +280,11 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             model.resetModel();
         }
 
-        model.removeRow(list.get(ind));
-        model.fireTableDataChanged();
-        table.select(ind);
+        if (ind >= 0) {
+            model.removeRow(list.get(ind));
+            model.fireTableDataChanged();
+            table.select(ind);
+        }
     }
 
     public void currentObjEntityChanged(EntityDisplayEvent e) {
