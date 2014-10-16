@@ -36,6 +36,7 @@
 	<modules>
 		<module>cayenne-legal</module>
 		<module>cayenne-test-utilities</module>
+        <module>cayenne-checkers</module>
 	</modules>
 
 	<build>

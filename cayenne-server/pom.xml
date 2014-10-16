@@ -242,6 +242,36 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/ExpressionParserTreeConstants.java</exclude>
+                        <exclude>**/JavaCharStream.java</exclude>
+                        <exclude>**/JJTExpressionParserState.java</exclude>
+                        <exclude>**/ParseException.java</exclude>
+                        <exclude>**/Token.java</exclude>
+                        <exclude>**/TokenMgrError.java</exclude>
+                        <exclude>**/ExpressionParser.java</exclude>
+                        <exclude>**/ExpressionParserConstants.java</exclude>
+                        <exclude>**/ExpressionParserTokenManager.java</exclude>
+                        <exclude>**/SimpleNode.java</exclude>
+                        <exclude>**/ParseException.java</exclude>
+                        <exclude>**/Parser.java.java</exclude>
+                        <exclude>**/ParserConstants.java</exclude>
+                        <exclude>**/ParserTokenManager.java</exclude>
+                        <exclude>**/SimpleCharStream.java</exclude>
+                        <exclude>**/TokenMgrError.java</exclude>
+                        <exclude>org/apache/cayenne/ejbql/parser/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 </project>
