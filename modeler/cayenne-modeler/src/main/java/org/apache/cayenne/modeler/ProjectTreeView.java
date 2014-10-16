@@ -87,9 +87,12 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -114,6 +117,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     protected ProjectController mediator;
     protected TreeSelectionListener treeSelectionListener;
+    protected TreeWillExpandListener treeWillExpandListener;
     protected JPopupMenu popup;
     private TreeDragSource tds;
 
@@ -139,15 +143,27 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
                 if (paths != null) {
                     if (paths.length > 1) {
+                        ConfigurationNode projectParentPath = null;
                         ConfigurationNode[] projectPaths = new ConfigurationNode[paths.length];
+                        boolean commonParentPath = true;
+
                         for (int i = 0; i < paths.length; i++) {
                             projectPaths[i] = createProjectPath(paths[i]);
+
+                            if(i>0 && paths[i].getParentPath() != paths[i-1].getParentPath()) {
+                                commonParentPath = false;
+                            }
+                        }
+
+                        if(commonParentPath) {
+                            TreePath parentPath = paths[0].getParentPath();
+                            projectParentPath = createProjectPath(parentPath);
                         }
 
                         mediator
                                 .fireMultipleObjectsDisplayEvent(new MultipleObjectsDisplayEvent(
                                         this,
-                                        projectPaths));
+                                        projectPaths, projectParentPath));
                     }
                     else if (paths.length == 1) {
                         processSelection(paths[0]);
@@ -167,7 +183,22 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             }
         };
 
+        treeWillExpandListener = new TreeWillExpandListener() {
+            @Override
+            public void treeWillExpand(TreeExpansionEvent e) throws ExpandVetoException {
+                TreePath path = e.getPath();
+                processSelection(path);
+            }
+
+            @Override
+            public void treeWillCollapse(TreeExpansionEvent e) throws ExpandVetoException {
+                TreePath path = e.getPath();
+                processSelection(path);
+            }
+        };
+
         addTreeSelectionListener(treeSelectionListener);
+        addTreeWillExpandListener(treeWillExpandListener);
 
         addMouseListener(new PopupHandler());
 

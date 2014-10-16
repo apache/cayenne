@@ -19,20 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.prefs.Preferences;
-
-import javax.swing.event.EventListenerList;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -126,6 +112,19 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
 
+import javax.swing.event.EventListenerList;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import java.util.prefs.Preferences;
+
 /**
  * A controller that works with the project tree, tracking selection and
  * dispatching project events.
@@ -162,6 +161,11 @@ public class ProjectController extends CayenneController {
          * Paths of multiple selection
          */
         private Object[] paths;
+
+        /**
+         * Parent path of multiple selection
+         */
+        private Object parentPath;
 
         /**
          * currently selecte entity listener class
@@ -536,6 +540,10 @@ public class ProjectController extends CayenneController {
 
     public Object[] getCurrentPaths() {
         return currentState.paths;
+    }
+
+    public Object getCurrentParentPath() {
+        return currentState.parentPath;
     }
 
     public void addDomainDisplayListener(DomainDisplayListener listener) {
@@ -1447,6 +1455,7 @@ public class ProjectController extends CayenneController {
     public void fireMultipleObjectsDisplayEvent(MultipleObjectsDisplayEvent e) {
         clearState();
         currentState.paths = e.getNodes();
+        currentState.parentPath = e.getParentNode();
 
         EventListener[] list = listenerList.getListeners(MultipleObjectsDisplayListener.class);
         for (EventListener listener : list) {
