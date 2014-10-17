@@ -19,7 +19,8 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.Component;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListSelectionModel;
@@ -33,9 +34,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
-
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import java.awt.Component;
 
 /**
  * Common superclass of tables used in Cayenne. Contains some common configuration
@@ -45,7 +44,7 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 public class CayenneTable extends JTable {
 
     private SortButtonRenderer renderer = new SortButtonRenderer();
-    protected TableHeaderSortingListener tableHeaderListener;
+    protected TableHeaderListener tableHeaderListener;
     private boolean isColumnWidthChanged;
 
     public CayenneTable() {
@@ -53,7 +52,7 @@ public class CayenneTable extends JTable {
         this.setRowHeight(25);
         this.setRowMargin(3);
         JTableHeader header = getTableHeader();
-        tableHeaderListener = new TableHeaderSortingListener(header, renderer);
+        tableHeaderListener = new TableHeaderListener(header, renderer);
         header.addMouseListener(tableHeaderListener);
         setSelectionModel(new CayenneListSelectionModel());
     }
