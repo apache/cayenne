@@ -163,6 +163,11 @@ public class ProjectController extends CayenneController {
         private Object[] paths;
 
         /**
+         * Parent path of multiple selection
+         */
+        private Object parentPath;
+
+        /**
          * currently selecte entity listener class
          */
         private String listenerClass;
@@ -535,6 +540,10 @@ public class ProjectController extends CayenneController {
 
     public Object[] getCurrentPaths() {
         return currentState.paths;
+    }
+
+    public Object getCurrentParentPath() {
+        return currentState.parentPath;
     }
 
     public void addDomainDisplayListener(DomainDisplayListener listener) {
@@ -1446,6 +1455,7 @@ public class ProjectController extends CayenneController {
     public void fireMultipleObjectsDisplayEvent(MultipleObjectsDisplayEvent e) {
         clearState();
         currentState.paths = e.getNodes();
+        currentState.parentPath = e.getParentNode();
 
         EventListener[] list = listenerList.getListeners(MultipleObjectsDisplayListener.class);
         for (EventListener listener : list) {
