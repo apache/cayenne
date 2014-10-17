@@ -81,6 +81,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new RemoveAttributeAction(application));
         registerAction(new CreateRelationshipAction(application));
         registerAction(new RemoveRelationshipAction(application));
+        registerAction(new RemoveAttributeRelationshipAction(application));
         // start callback-related actions
         registerAction(new CreateCallbackMethodAction(application)).setAlwaysOn(true);
         registerAction(new RemoveCallbackMethodAction(application));
@@ -113,11 +114,13 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new CutAction(application));
         registerAction(new CutAttributeAction(application));
         registerAction(new CutRelationshipAction(application));
+        registerAction(new CutAttributeRelationshipAction(application));
         registerAction(new CutProcedureParameterAction(application));
         registerAction(new CutCallbackMethodAction(application));
         registerAction(new CopyAction(application));
         registerAction(new CopyAttributeAction(application));
         registerAction(new CopyRelationshipAction(application));
+        registerAction(new CopyAttributeRelationshipAction(application));
         registerAction(new CopyCallbackMethodAction(application));
         registerAction(new CopyProcedureParameterAction(application));
         registerAction(new PasteAction(application));

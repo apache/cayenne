@@ -19,20 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.prefs.Preferences;
-
-import javax.swing.event.EventListenerList;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -125,6 +111,19 @@ import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
+
+import javax.swing.event.EventListenerList;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import java.util.prefs.Preferences;
 
 /**
  * A controller that works with the project tree, tracking selection and
@@ -1787,4 +1786,33 @@ public class ProjectController extends CayenneController {
         application.getActionManager().getAction(SaveAction.class).setEnabled(enable);
         application.getActionManager().getAction(SaveAsAction.class).setEnabled(enable);
     }
+
+    /**
+    * Set currently selected ObjAttributes
+    */
+    public void setCurrentObjAttributes(ObjAttribute[] attrs) {
+currentState.objAttrs = attrs;
+}
+
+    /**
+    * Set currently selected ObjRelationships
+    */
+    public void setCurrentObjRelationships(ObjRelationship[] rels) {
+currentState.objRels = rels;
+}
+
+    /**
+    * Set currently selected DbAttributes
+    */
+    public void setCurrentDbAttributes(DbAttribute[] attrs) {
+        currentState.dbAttrs = attrs;
+    }
+
+    /**
+    * Set currently selected DbRelationships
+    */
+    public void setCurrentDbRelationships(DbRelationship[] rels) {
+        currentState.dbRels = rels;
+    }
+
 }
