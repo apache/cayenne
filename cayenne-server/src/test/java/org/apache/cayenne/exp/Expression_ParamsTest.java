@@ -55,6 +55,13 @@ public class Expression_ParamsTest {
 		assertEquals("(a = \"A\") or ((x = 5) and (y = 6))", ep.toString());
 	}
 
+	@Test
+	public void testParams_Positional_InAsValues() throws Exception {
+		Expression inExp = ExpressionFactory.exp("k1 in ($ap, $bp)");
+		Expression transformed = inExp.paramsArray("a", "b");
+		assertEquals("k1 in (\"a\", \"b\")", transformed.toString());
+	}
+
 	@Test(expected = ExpressionException.class)
 	public void testParams_Positional_MoreParams() {
 		Expression e = ExpressionFactory.exp("a = $a or x = $x");

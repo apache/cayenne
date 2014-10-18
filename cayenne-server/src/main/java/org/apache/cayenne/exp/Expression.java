@@ -358,7 +358,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	@Deprecated
 	public Expression expWithParameters(Map<String, ?> parameters,
-			final boolean pruneMissing) {
+			boolean pruneMissing) {
 		return transform(new NamedParamTransformer(parameters, pruneMissing));
 	}
 
@@ -788,7 +788,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		public Object transform(Object object) {
 			if (!(object instanceof ExpressionParameter)) {
 
-				// mainly for the ASTList array child...
+				// normally Object[] is an ASTList child
 				if (object instanceof Object[]) {
 
 					Object[] source = (Object[]) object;
@@ -850,21 +850,34 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 			Object child = node.getOperand(childIndex);
 			if (child instanceof ExpressionParameter) {
-				if (i >= parameters.length) {
-					throw new ExpressionException(
-							"Too few parameters to bind expression: "
-									+ parameters.length);
-				}
-
-				Object p = parameters[i++];
-
-				// wrap lists (for now); also support null parameters
-				// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
-				// object values in ASTScalars?
-				Object value = (p != null) ? ExpressionFactory
-						.wrapPathOperand(p) : new ASTScalar(null);
-				node.setOperand(childIndex, value);
+				node.setOperand(childIndex, nextValue());
 			}
+			// normally Object[] is an ASTList child
+			else if (child instanceof Object[]) {
+				Object[] array = (Object[]) child;
+
+				for (int i = 0; i < array.length; i++) {
+					if (array[i] instanceof ExpressionParameter) {
+						array[i] = nextValue();
+					}
+				}
+			}
+		}
+
+		private Object nextValue() {
+			if (i >= parameters.length) {
+				throw new ExpressionException(
+						"Too few parameters to bind expression: "
+								+ parameters.length);
+			}
+
+			Object p = parameters[i++];
+
+			// wrap lists (for now); also support null parameters
+			// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
+			// object values in ASTScalars?
+			return (p != null) ? ExpressionFactory.wrapPathOperand(p)
+					: new ASTScalar(null);
 		}
 
 	}

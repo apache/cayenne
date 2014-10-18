@@ -233,4 +233,10 @@ public class ExpressionFactoryTest {
 	public void testExp_EnumInvalid2() {
 		ExpressionFactory.exp("a = enum:BOGUS");
 	}
+
+	@Test
+	public void testExp_Vararg_InAsValues() throws Exception {
+		Expression e = ExpressionFactory.exp("k1 in ($ap, $bp)", "a", "b");
+		assertEquals("k1 in (\"a\", \"b\")", e.toString());
+	}
 }
