@@ -935,26 +935,25 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * Parses string, converting it to Expression and binding named parameters
-	 * of the expression using a If string does not represent a semantically
+	 * Parses string, converting it to Expression and optionally binding
+	 * positional parameters. If a string does not represent a semantically
 	 * correct expression, an ExpressionException is thrown.
-	 * 
-	 * @since 3.2
-	 */
-	public static Expression exp(String expressionString,
-			Map<String, Object> parameters) {
-		return exp(expressionString).params(parameters);
-	}
-
-	/**
-	 * Parses string, converting it to Expression and binding named parameters
-	 * of the expression using a If string does not represent a semantically
-	 * correct expression, an ExpressionException is thrown.
+	 * <p>
+	 * Binding of parameters by name (as opposed to binding by position) can be
+	 * achieved by chaining this call with {@link Expression#params(Map)}.
 	 * 
 	 * @since 3.2
 	 */
 	public static Expression exp(String expressionString, Object... parameters) {
-		return exp(expressionString).paramsArray(parameters);
+		Expression e = fromString(expressionString);
+
+		if (parameters != null && parameters.length > 0) {
+			// apply parameters in-place... it is wasteful to clone the
+			// expression that hasn't been exposed to the callers
+			e.inPlaceParamsArray(parameters);
+		}
+
+		return e;
 	}
 
 	/**
@@ -963,8 +962,7 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.2
 	 */
-	// TODO: cache expression strings, since this operation is pretty slow
-	public static Expression exp(String expressionString) {
+	private static Expression fromString(String expressionString) {
 
 		if (expressionString == null) {
 			throw new NullPointerException("Null expression string.");

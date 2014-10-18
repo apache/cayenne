@@ -233,17 +233,4 @@ public class ExpressionFactoryTest {
 	public void testExp_EnumInvalid2() {
 		ExpressionFactory.exp("a = enum:BOGUS");
 	}
-
-	@Test
-	public void testExp_MapParams() {
-		@SuppressWarnings("serial")
-		Expression e = ExpressionFactory.exp("a < $a and b = $c",
-				new HashMap<String, Object>() {
-					{
-						put("a", 5);
-						put("c", "CC");
-					}
-				});
-		assertEquals("(a < 5) and (b = \"CC\")", e.toString());
-	}
 }

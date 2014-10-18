@@ -157,7 +157,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * a semantically correct expression, an ExpressionException is thrown.
 	 * 
 	 * @since 1.1
-	 * @deprecated since 3.2 use {@link ExpressionFactory#exp(String)}
+	 * @deprecated since 3.2 use
+	 *             {@link ExpressionFactory#exp(String, Object...)}
 	 */
 	@Deprecated
 	public static Expression fromString(String expressionString) {
@@ -272,12 +273,20 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * @since 3.2
 	 */
 	public Expression paramsArray(Object... parameters) {
+		Expression clone = deepCopy();
+		clone.inPlaceParamsArray(parameters);
+		return clone;
+	}
 
-		PositionalParamTransformer transformer = new PositionalParamTransformer(
+	/**
+	 * @since 3.2
+	 */
+	void inPlaceParamsArray(Object... parameters) {
+
+		InPlaceParamReplacer replacer = new InPlaceParamReplacer(
 				parameters == null ? new Object[0] : parameters);
-		Expression result = transform(transformer);
-		transformer.onFinish();
-		return result;
+		traverse(replacer);
+		replacer.onFinish();
 	}
 
 	/**
@@ -818,12 +827,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 	}
 
-	final class PositionalParamTransformer implements Transformer {
+	final class InPlaceParamReplacer extends TraversalHelper {
 
 		private Object[] parameters;
 		private int i;
 
-		PositionalParamTransformer(Object[] parameters) {
+		InPlaceParamReplacer(Object[] parameters) {
 			this.parameters = parameters;
 		}
 
@@ -836,39 +845,27 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		}
 
 		@Override
-		public Object transform(Object object) {
-			if (!(object instanceof ExpressionParameter)) {
+		public void finishedChild(Expression node, int childIndex,
+				boolean hasMoreChildren) {
 
-				// mainly for the ASTList array child...
-				if (object instanceof Object[]) {
-
-					Object[] source = (Object[]) object;
-					int len = source.length;
-					Object[] target = new Object[len];
-
-					for (int i = 0; i < len; i++) {
-						target[i] = transform(source[i]);
-					}
-
-					return target;
+			Object child = node.getOperand(childIndex);
+			if (child instanceof ExpressionParameter) {
+				if (i >= parameters.length) {
+					throw new ExpressionException(
+							"Too few parameters to bind expression: "
+									+ parameters.length);
 				}
 
-				return object;
+				Object p = parameters[i++];
+
+				// wrap lists (for now); also support null parameters
+				// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
+				// object values in ASTScalars?
+				Object value = (p != null) ? ExpressionFactory
+						.wrapPathOperand(p) : new ASTScalar(null);
+				node.setOperand(childIndex, value);
 			}
-
-			if (i >= parameters.length) {
-				throw new ExpressionException(
-						"Too few parameters to bind expression: "
-								+ parameters.length);
-			}
-
-			Object value = parameters[i++];
-
-			// wrap lists (for now); also support null parameters
-			// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
-			// object values in ASTScalars?
-			return (value != null) ? ExpressionFactory.wrapPathOperand(value)
-					: new ASTScalar(null);
 		}
+
 	}
 }
