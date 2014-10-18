@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-1826 Merge Entity Attributes and Relationships tabs together with one toolbar.
 CAY-1839 Allow to link DataMaps to DataNodes from DataNode editor.
 CAY-1841 Filters for Left-hand project navigator
 CAY-1842 Remove Listeners support from the Modeler 
