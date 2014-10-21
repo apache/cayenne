@@ -18,24 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
+
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.JComponent;
+import javax.swing.TransferHandler;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Stores a map of modeler actions, and deals with activating/deactivating those actions
@@ -46,6 +45,7 @@ public class DefaultActionManager implements ActionManager {
     private Collection<String> SPECIAL_ACTIONS;
     private Collection<String> PROJECT_ACTIONS;
     private Collection<String> DOMAIN_ACTIONS;
+    private Collection<String> DATA_NODE_ACTIONS;
     private Collection<String> DATA_MAP_ACTIONS;
     private Collection<String> OBJ_ENTITY_ACTIONS;
     private Collection<String> DB_ENTITY_ACTIONS;
@@ -81,6 +81,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new RemoveAttributeAction(application));
         registerAction(new CreateRelationshipAction(application));
         registerAction(new RemoveRelationshipAction(application));
+        registerAction(new RemoveAttributeRelationshipAction(application));
         // start callback-related actions
         registerAction(new CreateCallbackMethodAction(application)).setAlwaysOn(true);
         registerAction(new RemoveCallbackMethodAction(application));
@@ -113,11 +114,13 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new CutAction(application));
         registerAction(new CutAttributeAction(application));
         registerAction(new CutRelationshipAction(application));
+        registerAction(new CutAttributeRelationshipAction(application));
         registerAction(new CutProcedureParameterAction(application));
         registerAction(new CutCallbackMethodAction(application));
         registerAction(new CopyAction(application));
         registerAction(new CopyAttributeAction(application));
         registerAction(new CopyRelationshipAction(application));
+        registerAction(new CopyAttributeRelationshipAction(application));
         registerAction(new CopyCallbackMethodAction(application));
         registerAction(new CopyProcedureParameterAction(application));
         registerAction(new PasteAction(application));
@@ -135,6 +138,9 @@ public class DefaultActionManager implements ActionManager {
         
         registerAction(new CollapseTreeAction(application));
         registerAction(new FilterAction(application));
+
+        registerAction(new LinkDataMapAction(application));
+        registerAction(new LinkDataMapsAction(application));
     }
 
     private void initActions() {
@@ -162,6 +168,10 @@ public class DefaultActionManager implements ActionManager {
                 ImportDBAction.class.getName(),
                 ImportEOModelAction.class.getName(),
                 PasteAction.class.getName()));
+
+        DATA_NODE_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
+        DATA_NODE_ACTIONS.addAll(Arrays.asList(
+                LinkDataMapsAction.class.getName()));
 
         DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
         DATA_MAP_ACTIONS.addAll(Arrays.asList(
@@ -265,7 +275,7 @@ public class DefaultActionManager implements ActionManager {
     }
 
     public void dataNodeSelected() {
-        processActionsState(DOMAIN_ACTIONS);
+        processActionsState(DATA_NODE_ACTIONS);
         updateActions("DataNode");
     }
 

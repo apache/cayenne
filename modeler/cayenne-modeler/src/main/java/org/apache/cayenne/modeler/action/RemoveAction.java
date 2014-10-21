@@ -242,11 +242,12 @@ public class RemoveAction extends CayenneAction {
         else if (mediator.getCurrentPaths() != null) { // multiple deletion
             if (dialog.shouldDelete("selected objects")) {
                 Object[] paths = mediator.getCurrentPaths();
+                Object parentPath = mediator.getCurrentParentPath();
 
                 CompoundEdit compoundEdit = new RemoveCompoundUndoableEdit();
 
                 for (Object path : paths) {
-                    compoundEdit.addEdit(removeLastPathComponent(path));
+                    compoundEdit.addEdit(removeLastPathComponent(path, parentPath));
                 }
                 compoundEdit.end();
 
@@ -617,13 +618,19 @@ public class RemoveAction extends CayenneAction {
     /**
      * Removes an object, depending on its type
      */
-    private UndoableEdit removeLastPathComponent(Object object) {
+    private UndoableEdit removeLastPathComponent(Object object, Object parentObject) {
 
         UndoableEdit undo = null;
 
         if (object instanceof DataMap) {
-            undo = new RemoveUndoableEdit(application, (DataMap) object);
-            removeDataMap((DataMap) object);
+            if (parentObject != null && parentObject instanceof DataNodeDescriptor) {
+                undo = new RemoveUndoableEdit(application, (DataNodeDescriptor) parentObject, (DataMap) object);
+                removeDataMapFromDataNode((DataNodeDescriptor) parentObject, (DataMap) object);
+            } else {
+                // Not under Data Node, remove completely
+                undo = new RemoveUndoableEdit(application, (DataMap) object);
+                removeDataMap((DataMap) object);
+            }
         }
         else if (object instanceof DataNodeDescriptor) {
             undo = new RemoveUndoableEdit(application, (DataNodeDescriptor) object);

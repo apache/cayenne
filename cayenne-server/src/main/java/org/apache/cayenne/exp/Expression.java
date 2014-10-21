@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.exp;
 
+import static org.apache.cayenne.exp.ExpressionFactory.exp;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -32,10 +32,6 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.parser.ASTScalar;
-import org.apache.cayenne.exp.parser.ExpressionParser;
-import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
-import org.apache.cayenne.exp.parser.JavaCharStream;
-import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -46,6 +42,8 @@ import org.apache.commons.collections.Transformer;
  * Superclass of Cayenne expressions that defines basic API for expressions use.
  */
 public abstract class Expression implements Serializable, XMLSerializable {
+
+	private static final long serialVersionUID = 5268695167038124596L;
 
 	/**
 	 * A value that a Transformer might return to indicate that a node has to be
@@ -152,8 +150,6 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public static final int BITWISE_RIGHT_SHIFT = 44;
 
-	private static final int PARSE_BUFFER_MAX_SIZE = 4096;
-
 	protected int type;
 
 	/**
@@ -161,38 +157,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * a semantically correct expression, an ExpressionException is thrown.
 	 * 
 	 * @since 1.1
+	 * @deprecated since 3.2 use
+	 *             {@link ExpressionFactory#exp(String, Object...)}
 	 */
-	// TODO: cache expression strings, since this operation is pretty slow
+	@Deprecated
 	public static Expression fromString(String expressionString) {
-		if (expressionString == null) {
-			throw new NullPointerException("Null expression string.");
-		}
-
-		// optimizing parser buffers per CAY-1667...
-		// adding 1 extra char to the buffer size above the String length, as
-		// otherwise
-		// resizing still occurs at the end of the stream
-		int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE ? PARSE_BUFFER_MAX_SIZE : expressionString
-				.length() + 1;
-		Reader reader = new StringReader(expressionString);
-		JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
-		ExpressionParserTokenManager tm = new ExpressionParserTokenManager(stream);
-		ExpressionParser parser = new ExpressionParser(tm);
-
-		try {
-			return parser.expression();
-		} catch (ParseException ex) {
-
-			// can be null
-			String message = ex.getMessage();
-			throw new ExpressionException(message != null ? message : "", ex);
-		} catch (Throwable th) {
-			// can be null
-			String message = th.getMessage();
-
-			// another common error is TokenManagerError
-			throw new ExpressionException(message != null ? message : "", th);
-		}
+		return exp(expressionString);
 	}
 
 	/**
@@ -262,7 +232,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 		Expression e = (Expression) object;
 
-		if (e.getType() != getType() || e.getOperandCount() != getOperandCount()) {
+		if (e.getType() != getType()
+				|| e.getOperandCount() != getOperandCount()) {
 			return false;
 		}
 
@@ -290,8 +261,72 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	}
 
 	/**
-	 * A shortcut for <code>expWithParams(params, true)</code>.
+	 * Creates and returns a new Expression instance based on this expression,
+	 * but with named parameters substituted with provided values. This is a
+	 * positional style of binding. Names of variables in the expression are
+	 * ignored and parameters are bound in order they are found in the
+	 * expression. E.g. if the same name is mentioned twice, it can be bound to
+	 * two different values. Also positional style would not allow subexpression
+	 * pruning. If declared and provided parameters counts are mismatched, an
+	 * exception will be thrown.
+	 * 
+	 * @since 3.2
 	 */
+	public Expression paramsArray(Object... parameters) {
+		Expression clone = deepCopy();
+		clone.inPlaceParamsArray(parameters);
+		return clone;
+	}
+
+	/**
+	 * @since 3.2
+	 */
+	void inPlaceParamsArray(Object... parameters) {
+
+		InPlaceParamReplacer replacer = new InPlaceParamReplacer(
+				parameters == null ? new Object[0] : parameters);
+		traverse(replacer);
+		replacer.onFinish();
+	}
+
+	/**
+	 * Creates and returns a new Expression instance based on this expression,
+	 * but with named parameters substituted with provided values. Any
+	 * subexpressions containing parameters not matching the "name" argument
+	 * will be pruned.
+	 * <p>
+	 * Note that if you want matching against nulls to be preserved, you must
+	 * place NULL values for the corresponding keys in the map.
+	 * 
+	 * @since 3.2
+	 */
+	public Expression params(Map<String, ?> parameters) {
+		return transform(new NamedParamTransformer(parameters, true));
+	}
+
+	/**
+	 * Creates and returns a new Expression instance based on this expression,
+	 * but with named parameters substituted with provided values.If any
+	 * subexpressions containing parameters not matching the "name" argument are
+	 * found, the behavior depends on "pruneMissing" argument. If it is false an
+	 * Exception will be thrown, otherwise subexpressions with missing
+	 * parameters will be pruned from the resulting expression.
+	 * <p>
+	 * Note that if you want matching against nulls to be preserved, you must
+	 * place NULL values for the corresponding keys in the map.
+	 * 
+	 * @since 3.2
+	 */
+	public Expression params(Map<String, ?> parameters, boolean pruneMissing) {
+		return transform(new NamedParamTransformer(parameters, pruneMissing));
+	}
+
+	/**
+	 * A shortcut for <code>expWithParams(params, true)</code>.
+	 * 
+	 * @deprecated since 3.2 use {@link #params(Map)}
+	 */
+	@Deprecated
 	public Expression expWithParameters(Map<String, ?> parameters) {
 		return expWithParameters(parameters, true);
 	}
@@ -317,52 +352,14 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * @return Expression resulting from the substitution of parameters with
 	 *         real values, or null if the whole expression was pruned, due to
 	 *         the missing parameters.
+	 * 
+	 * @deprecated since 3.2 use {@link #params(Map)} or
+	 *             {@link #paramsNoPrune(Map)}.
 	 */
-	public Expression expWithParameters(final Map<String, ?> parameters, final boolean pruneMissing) {
-
-		// create transformer for named parameters
-		Transformer transformer = new Transformer() {
-
-			public Object transform(Object object) {
-				if (!(object instanceof ExpressionParameter)) {
-
-					// mainly for the ASTList array child...
-					if (object instanceof Object[]) {
-
-						Object[] source = (Object[]) object;
-						int len = source.length;
-						Object[] target = new Object[len];
-
-						for (int i = 0; i < len; i++) {
-							target[i] = transform(source[i]);
-						}
-
-						return target;
-					}
-
-					return object;
-				}
-
-				String name = ((ExpressionParameter) object).getName();
-				if (!parameters.containsKey(name)) {
-					if (pruneMissing) {
-						return PRUNED_NODE;
-					} else {
-						throw new ExpressionException("Missing required parameter: $" + name);
-					}
-				} else {
-					Object value = parameters.get(name);
-
-					// wrap lists (for now); also support null parameters
-					// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
-					// object
-					// values in ASTScalars?
-					return (value != null) ? ExpressionFactory.wrapPathOperand(value) : new ASTScalar(null);
-				}
-			}
-		};
-
-		return transform(transformer);
+	@Deprecated
+	public Expression expWithParameters(Map<String, ?> parameters,
+			boolean pruneMissing) {
+		return transform(new NamedParamTransformer(parameters, pruneMissing));
 	}
 
 	/**
@@ -381,7 +378,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * 
 	 * @since 3.2
 	 */
-	public Expression joinExp(int type, Expression exp, Expression... expressions) {
+	public Expression joinExp(int type, Expression exp,
+			Expression... expressions) {
 		Expression join = ExpressionFactory.expressionOfType(type);
 		join.setOperand(0, this);
 		join.setOperand(1, exp);
@@ -487,9 +485,10 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	/**
 	 * Returns a list of objects that match the expression.
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> List<T> filterObjects(Collection<T> objects) {
 		if (objects == null || objects.size() == 0) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		return (List<T>) filter(objects, new LinkedList<T>());
@@ -607,7 +606,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 			return (Expression) transformed;
 		}
 
-		throw new ExpressionException("Invalid transformed expression: " + transformed);
+		throw new ExpressionException("Invalid transformed expression: "
+				+ transformed);
 	}
 
 	/**
@@ -625,7 +625,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 			Object transformedChild;
 
 			if (operand instanceof Expression) {
-				transformedChild = ((Expression) operand).transformExpression(transformer);
+				transformedChild = ((Expression) operand)
+						.transformExpression(transformer);
 			} else if (transformer != null) {
 				transformedChild = transformer.transform(operand);
 			} else {
@@ -634,7 +635,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 			// prune null children only if there is a transformer and it
 			// indicated so
-			boolean prune = transformer != null && transformedChild == PRUNED_NODE;
+			boolean prune = transformer != null
+					&& transformedChild == PRUNED_NODE;
 
 			if (!prune) {
 				copy.setOperand(j, transformedChild);
@@ -648,7 +650,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		}
 
 		// all the children are processed, only now transform this copy
-		return (transformer != null) ? (Expression) transformer.transform(copy) : copy;
+		return (transformer != null) ? (Expression) transformer.transform(copy)
+				: copy;
 	}
 
 	/**
@@ -661,7 +664,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		try {
 			appendAsString(encoder.getPrintWriter());
 		} catch (IOException e) {
-			throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
+			throw new CayenneRuntimeException(
+					"Unexpected IO exception appending to PrintWriter", e);
 		}
 		encoder.print("]]>");
 	}
@@ -722,8 +726,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * @since 3.2
 	 * @throws IOException
 	 */
-	public abstract void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
-			throws IOException;
+	public abstract void appendAsEJBQL(List<Object> parameterAccumulator,
+			Appendable out, String rootId) throws IOException;
 
 	@Override
 	public String toString() {
@@ -731,7 +735,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		try {
 			appendAsString(out);
 		} catch (IOException e) {
-			throw new CayenneRuntimeException("Unexpected IO exception appending to StringBuilder", e);
+			throw new CayenneRuntimeException(
+					"Unexpected IO exception appending to StringBuilder", e);
 		}
 		return out.toString();
 	}
@@ -752,7 +757,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		try {
 			appendAsEJBQL(parameterAccumulator, out, rootId);
 		} catch (IOException e) {
-			throw new CayenneRuntimeException("Unexpected IO exception appending to StringBuilder", e);
+			throw new CayenneRuntimeException(
+					"Unexpected IO exception appending to StringBuilder", e);
 		}
 		return out.toString();
 	}
@@ -768,4 +774,111 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		return toEJBQL(null, rootId);
 	}
 
+	final class NamedParamTransformer implements Transformer {
+
+		private Map<String, ?> parameters;
+		private boolean pruneMissing;
+
+		NamedParamTransformer(Map<String, ?> parameters, boolean pruneMissing) {
+			this.parameters = parameters;
+			this.pruneMissing = pruneMissing;
+		}
+
+		@Override
+		public Object transform(Object object) {
+			if (!(object instanceof ExpressionParameter)) {
+
+				// normally Object[] is an ASTList child
+				if (object instanceof Object[]) {
+
+					Object[] source = (Object[]) object;
+					int len = source.length;
+					Object[] target = new Object[len];
+
+					for (int i = 0; i < len; i++) {
+						target[i] = transform(source[i]);
+					}
+
+					return target;
+				}
+
+				return object;
+			}
+
+			String name = ((ExpressionParameter) object).getName();
+			if (!parameters.containsKey(name)) {
+				if (pruneMissing) {
+					return PRUNED_NODE;
+				} else {
+					throw new ExpressionException(
+							"Missing required parameter: $" + name);
+				}
+			} else {
+				Object value = parameters.get(name);
+
+				// wrap lists (for now); also support null parameters
+				// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
+				// object
+				// values in ASTScalars?
+				return (value != null) ? ExpressionFactory
+						.wrapPathOperand(value) : new ASTScalar(null);
+			}
+		}
+
+	}
+
+	final class InPlaceParamReplacer extends TraversalHelper {
+
+		private Object[] parameters;
+		private int i;
+
+		InPlaceParamReplacer(Object[] parameters) {
+			this.parameters = parameters;
+		}
+
+		void onFinish() {
+			if (i < parameters.length) {
+				throw new ExpressionException(
+						"Too many parameters to bind expression. Expected: "
+								+ i + ", actual: " + parameters.length);
+			}
+		}
+
+		@Override
+		public void finishedChild(Expression node, int childIndex,
+				boolean hasMoreChildren) {
+
+			Object child = node.getOperand(childIndex);
+			if (child instanceof ExpressionParameter) {
+				node.setOperand(childIndex, nextValue());
+			}
+			// normally Object[] is an ASTList child
+			else if (child instanceof Object[]) {
+				Object[] array = (Object[]) child;
+
+				for (int i = 0; i < array.length; i++) {
+					if (array[i] instanceof ExpressionParameter) {
+						array[i] = nextValue();
+					}
+				}
+			}
+		}
+
+		private Object nextValue() {
+			if (i >= parameters.length) {
+				throw new ExpressionException(
+						"Too few parameters to bind expression: "
+								+ parameters.length);
+			}
+
+			Object p = parameters[i++];
+
+			// wrap lists (for now); also support null parameters
+			// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
+			// object values in ASTScalars?
+			return (p != null) ? ExpressionFactory.wrapPathOperand(p)
+					: new ASTScalar(null);
+		}
+
+	}
 }

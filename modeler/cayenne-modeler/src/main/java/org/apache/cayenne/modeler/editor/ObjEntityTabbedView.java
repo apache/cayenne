@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.Component;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
@@ -46,6 +38,12 @@ import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.event.ObjRelationshipDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.Component;
+
 /**
  * Tabbed ObjEntity editor panel.
  * 
@@ -56,14 +54,15 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
     protected ProjectController projectController;
 
     protected Component entityPanel;
-    protected ObjEntityRelationshipTab relationshipsPanel;
-    protected ObjEntityAttributeTab attributesPanel;
+    protected ObjEntityAttributeRelationshipTab attributeRelationshipTab;
+
     /**
      * callback methods on ObjEntity tab
      */
     protected AbstractCallbackMethodsTab callbacksPanel;
 
     public ObjEntityTabbedView(ProjectController projectController) {
+        super();
         this.projectController = projectController;
 
         initView();
@@ -80,11 +79,8 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         entityPanel = new JScrollPane(new ObjEntityTab(projectController));
         addTab("Entity", entityPanel);
 
-        attributesPanel = new ObjEntityAttributeTab(projectController);
-        addTab("Attributes", attributesPanel);
-
-        relationshipsPanel = new ObjEntityRelationshipTab(projectController);
-        addTab("Relationships", relationshipsPanel);
+        attributeRelationshipTab = new ObjEntityAttributeRelationshipTab(projectController);
+        addTab("Properties", attributeRelationshipTab);
 
         callbacksPanel = new ObjEntityCallbackMethodsTab(projectController);
         addTab("Callbacks", callbacksPanel);
@@ -137,7 +133,6 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         setVisible(e.getEntity() != null);
 
         if (getRootPane() != null) {
-           
             if (projectController.getEntityTabSelection() < getTabCount()) {
                 setSelectedIndex(projectController.getEntityTabSelection());
             }
@@ -155,29 +150,35 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
 
         System.arraycopy(rels, 0, objRels, 0, rels.length);
 
-        if (getSelectedComponent() != relationshipsPanel && objRels.length > 0) {
-            setSelectedComponent(relationshipsPanel);
-            relationshipsPanel.setVisible(true);
+        if (getSelectedComponent() != attributeRelationshipTab.getSplitPane().getComponent(1) && objRels.length > 0) {
+            setSelectedComponent(attributeRelationshipTab);
+            attributeRelationshipTab.getSplitPane().getComponent(1).setVisible(true);
         }
 
-        relationshipsPanel.selectRelationships(objRels);
+        ((ObjEntityRelationshipPanel) attributeRelationshipTab.getSplitPane().getComponent(1)).selectRelationships(objRels);
+        attributeRelationshipTab.updateActions(objRels);
     }
 
     public void currentObjAttributeChanged(AttributeDisplayEvent e) {
         if (e.getEntity() == null)
             return;
 
-        // update relationship selection
+        // update attribute selection
         Attribute[] attrs = e.getAttributes();
         ObjAttribute[] objAttrs = new ObjAttribute[attrs.length];
 
         System.arraycopy(attrs, 0, objAttrs, 0, attrs.length);
 
-        if (getSelectedComponent() != attributesPanel && objAttrs.length > 0) {
-            setSelectedComponent(attributesPanel);
-            attributesPanel.setVisible(true);
+        if (getSelectedComponent() != attributeRelationshipTab.getSplitPane().getComponent(0) && objAttrs.length > 0) {
+            setSelectedComponent(attributeRelationshipTab);
+            attributeRelationshipTab.getSplitPane().getComponent(0).setVisible(true);
         }
 
-        attributesPanel.selectAttributes(objAttrs);
+        ((ObjEntityAttributePanel) attributeRelationshipTab.getSplitPane().getComponent(0)).selectAttributes(objAttrs);
+        attributeRelationshipTab.updateActions(objAttrs);
+    }
+
+    public ObjEntityAttributeRelationshipTab getAttributeRelationshipTab() {
+        return attributeRelationshipTab;
     }
 }

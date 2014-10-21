@@ -19,6 +19,22 @@
 
 package org.apache.cayenne.modeler;
 
+import org.apache.cayenne.modeler.action.ExitAction;
+import org.apache.cayenne.modeler.action.OpenProjectAction;
+import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
+import org.apache.cayenne.modeler.editor.EditorView;
+import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.pref.ComponentGeometry;
+import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.FileFilters;
+import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.validation.ProjectValidator;
+import org.apache.cayenne.validation.ValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
+
+import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -34,23 +50,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileFilter;
-
-import org.apache.cayenne.modeler.action.ExitAction;
-import org.apache.cayenne.modeler.action.OpenProjectAction;
-import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
-import org.apache.cayenne.modeler.editor.EditorView;
-import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
-import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.validation.ProjectValidator;
-import org.apache.cayenne.validation.ValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * Controller of the main application frame.
@@ -133,20 +132,22 @@ public class CayenneModelerController extends CayenneController {
             return false;
         }
 
+        if (fileList != null) {
+
         File transferFile = fileList.get(0);
+            if (transferFile.isFile()) {
 
-        if (transferFile.isFile()) {
+                FileFilter filter = FileFilters.getApplicationFilter();
 
-            FileFilter filter = FileFilters.getApplicationFilter();
-
-            if (filter.accept(transferFile)) {
-                ActionEvent e = new ActionEvent(
-                        transferFile,
-                        ActionEvent.ACTION_PERFORMED,
-                        "OpenProject");
-                Application.getInstance().getActionManager().getAction(
-                        OpenProjectAction.class).actionPerformed(e);
-                return true;
+                if (filter.accept(transferFile)) {
+                    ActionEvent e = new ActionEvent(
+                            transferFile,
+                            ActionEvent.ACTION_PERFORMED,
+                            "OpenProject");
+                    Application.getInstance().getActionManager().getAction(
+                            OpenProjectAction.class).actionPerformed(e);
+                    return true;
+                }
             }
         }
 
