@@ -177,13 +177,11 @@ public class DefaultActionManager implements ActionManager {
 
         DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
         DATA_MAP_ACTIONS.addAll(Arrays.asList(
-                GenerateCodeAction.class.getName(),
                 CreateEmbeddableAction.class.getName(),
                 CreateObjEntityAction.class.getName(),
                 CreateDbEntityAction.class.getName(),
                 CreateQueryAction.class.getName(),
                 CreateProcedureAction.class.getName(),
-                GenerateDBAction.class.getName(),
                 MigrateAction.class.getName(),
                 InferRelationshipsAction.class.getName(),
                 CutAction.class.getName(),
