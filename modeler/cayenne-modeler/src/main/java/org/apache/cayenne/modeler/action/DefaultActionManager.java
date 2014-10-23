@@ -167,6 +167,8 @@ public class DefaultActionManager implements ActionManager {
                 CreateNodeAction.class.getName(),
                 ImportDBAction.class.getName(),
                 ImportEOModelAction.class.getName(),
+                GenerateCodeAction.class.getName(),
+                GenerateDBAction.class.getName(),
                 PasteAction.class.getName()));
 
         DATA_NODE_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);

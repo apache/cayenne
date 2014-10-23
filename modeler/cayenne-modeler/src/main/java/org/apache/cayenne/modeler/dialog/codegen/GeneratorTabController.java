@@ -19,16 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.Component;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayenneProjectPreferences;
 import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
+
+import java.awt.Component;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  */
@@ -116,7 +117,7 @@ public class GeneratorTabController extends CayenneController {
         return (GeneratorController) controllers.get(name);
     }
 
-    public ClassGenerationAction getGenerator() {
+    public Collection<ClassGenerationAction> getGenerator() {
         GeneratorController modeController = getGeneratorController();
         return (modeController != null) ? modeController.createGenerator() : null;
     }

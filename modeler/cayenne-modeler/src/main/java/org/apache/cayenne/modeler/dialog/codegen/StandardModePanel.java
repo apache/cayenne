@@ -19,30 +19,31 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.BorderLayout;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+
+import java.awt.BorderLayout;
 
 public class StandardModePanel extends GeneratorControllerPanel {
 
+    private DefaultFormBuilder builder;
+
     public StandardModePanel() {
+        FormLayout layout = new FormLayout(
+                "right:77dlu, 3dlu, fill:200:grow, 6dlu, fill:50dlu, 3dlu", "");
 
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "right:70dlu, 3dlu, fill:150dlu:grow, 3dlu, pref",
-                "p, 3dlu, p"));
-        builder.setDefaultDialogBorder();
-
-        CellConstraints cc = new CellConstraints();
-
-        builder.addLabel("Output Directory:", cc.xy(1, 1));
-        builder.add(outputFolder, cc.xy(3, 1));
-        builder.add(selectOutputFolder, cc.xy(5, 1));
-        builder.addLabel("Superclass Package:", cc.xy(1, 3));
-        builder.add(superclassPackage, cc.xy(3, 3));
+        builder = new DefaultFormBuilder(layout);
+        builder.append("Output Directory:", outputFolder, selectOutputFolder);
+        builder.nextLine();
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
     }
+
+    public void addDataMapLine(StandardPanelComponent dataMapLine) {
+        dataMapLines.add(dataMapLine);
+        builder.append(dataMapLine, 4);
+        builder.nextLine();
+    }
+
 }

@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.Component;
-
-import javax.swing.JOptionPane;
-
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -33,9 +29,12 @@ import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.JOptionPane;
+import java.awt.Component;
+import java.util.Collection;
+
 /**
  * A controller for the class generator dialog.
- * 
  */
 public class CodeGeneratorController extends CodeGeneratorControllerBase {
     /**
@@ -45,13 +44,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
 
     protected CodeGeneratorDialog view;
 
-    protected ClassesTabController clessSelector;
+    protected ClassesTabController classesSelector;
     protected GeneratorTabController generatorSelector;
 
-    public CodeGeneratorController(CayenneController parent, DataMap dataMap) {
-        super(parent, dataMap);
+    public CodeGeneratorController(CayenneController parent, Collection<DataMap> dataMaps) {
+        super(parent, dataMaps);
 
-        this.clessSelector = new ClassesTabController(this);
+        this.classesSelector = new ClassesTabController(this);
         this.generatorSelector = new GeneratorTabController(this);
     }
 
@@ -64,7 +63,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         // show dialog even on empty DataMap, as custom generation may still take
         // advantage of it
 
-        view = new CodeGeneratorDialog(generatorSelector.getView(), clessSelector
+        view = new CodeGeneratorDialog(generatorSelector.getView(), classesSelector
                 .getView());
         initBindings();
 
@@ -100,7 +99,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
                 : PredicateUtils.falsePredicate();
 
         updateSelection(predicate);
-        clessSelector.classSelectedAction();
+        classesSelector.classSelectedAction();
     }
 
     public void classesSelectedAction() {
@@ -139,11 +138,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     }
 
     public void generateAction() {
-        ClassGenerationAction generator = generatorSelector.getGenerator();
+        Collection<ClassGenerationAction> generators = generatorSelector.getGenerator();
 
-        if (generator != null) {
+        if (generators != null) {
             try {
-                generator.execute();
+                for (ClassGenerationAction generator : generators) {
+                    generator.execute();
+                }
                 JOptionPane.showMessageDialog(
                         this.getView(),
                         "Class generation finished");

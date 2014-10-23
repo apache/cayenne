@@ -19,16 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.DefaultComboBoxModel;
-
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -36,9 +28,20 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.DefaultComboBoxModel;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+
 /**
  * A controller for the custom generation mode.
- * 
  */
 public class CustomModeController extends GeneratorController {
 
@@ -52,6 +55,7 @@ public class CustomModeController extends GeneratorController {
     static final String ALL_MODE_LABEL = "Generate all";
 
     static final Map<String, String> modesByLabel = new HashMap<String, String>();
+
     static {
         modesByLabel.put(DATA_MAP_MODE_LABEL, MODE_DATAMAP);
         modesByLabel.put(ENTITY_MODE_LABEL, MODE_ENTITY);
@@ -64,6 +68,12 @@ public class CustomModeController extends GeneratorController {
     protected ObjectBinding superTemplate;
     protected ObjectBinding subTemplate;
 
+    private CustomPreferencesUpdater preferencesUpdater;
+
+    public CustomPreferencesUpdater getCustomPreferencesUpdater() {
+        return preferencesUpdater;
+    }
+
     public CustomModeController(CodeGeneratorControllerBase parent) {
         super(parent);
 
@@ -74,33 +84,37 @@ public class CustomModeController extends GeneratorController {
 
         // bind preferences and init defaults...
 
-        if (Util.isEmptyString(preferences.getSuperclassTemplate())) {
-            preferences
-                    .setSuperclassTemplate(CodeTemplateManager.STANDARD_SERVER_SUPERCLASS);
-        }
+        Set<Entry<DataMap, DataMapDefaults>> entities = getMapPreferences().entrySet();
 
-        if (Util.isEmptyString(preferences.getSubclassTemplate())) {
-            preferences.setSubclassTemplate(CodeTemplateManager.STANDARD_SERVER_SUBCLASS);
-        }
+        for (Entry<DataMap, DataMapDefaults> entry : entities) {
 
-        if (Util.isEmptyString(preferences.getProperty("mode"))) {
-            preferences.setProperty("mode", MODE_ENTITY);
-        }
+            if (Util.isEmptyString(entry.getValue().getSuperclassTemplate())) {
+                entry.getValue().setSuperclassTemplate(CodeTemplateManager.STANDARD_SERVER_SUPERCLASS);
+            }
 
-        if (Util.isEmptyString(preferences.getProperty("overwrite"))) {
-            preferences.setBooleanProperty("overwrite", false);
-        }
+            if (Util.isEmptyString(entry.getValue().getSubclassTemplate())) {
+                entry.getValue().setSubclassTemplate(CodeTemplateManager.STANDARD_SERVER_SUBCLASS);
+            }
 
-        if (Util.isEmptyString(preferences.getProperty("pairs"))) {
-            preferences.setBooleanProperty("pairs", true);
-        }
+            if (Util.isEmptyString(entry.getValue().getProperty("mode"))) {
+                entry.getValue().setProperty("mode", MODE_ENTITY);
+            }
 
-        if (Util.isEmptyString(preferences.getProperty("usePackagePath"))) {
-            preferences.setBooleanProperty("usePackagePath", true);
-        }
+            if (Util.isEmptyString(entry.getValue().getProperty("overwrite"))) {
+                entry.getValue().setBooleanProperty("overwrite", false);
+            }
 
-        if (Util.isEmptyString(preferences.getProperty("outputPattern"))) {
-            preferences.setProperty("outputPattern", "*.java");
+            if (Util.isEmptyString(entry.getValue().getProperty("pairs"))) {
+                entry.getValue().setBooleanProperty("pairs", true);
+            }
+
+            if (Util.isEmptyString(entry.getValue().getProperty("usePackagePath"))) {
+                entry.getValue().setBooleanProperty("usePackagePath", true);
+            }
+
+            if (Util.isEmptyString(entry.getValue().getProperty("outputPattern"))) {
+                entry.getValue().setProperty("outputPattern", "*.java");
+            }
         }
 
         BindingBuilder builder = new BindingBuilder(
@@ -109,52 +123,87 @@ public class CustomModeController extends GeneratorController {
 
         builder.bindToAction(view.getManageTemplatesLink(), "popPreferencesAction()");
 
-        builder.bindToTextField(
-                view.getSuperclassPackage(),
-                "preferences.superclassPackage").updateView();
-
         builder.bindToComboSelection(
                 view.getGenerationMode(),
-                "preferences.property['mode']").updateView();
+                "customPreferencesUpdater.mode").
+                updateView();
 
         builder.bindToStateChange(
                 view.getOverwrite(),
-                "preferences.booleanProperty['overwrite']").updateView();
-        builder
-                .bindToStateChange(
-                        view.getPairs(),
-                        "preferences.booleanProperty['pairs']")
-                .updateView();
+                "customPreferencesUpdater.overwrite").
+                updateView();
+
+        builder.bindToStateChange(
+                view.getPairs(),
+                "customPreferencesUpdater.pairs").
+                updateView();
 
         builder.bindToStateChange(
                 view.getUsePackagePath(),
-                "preferences.booleanProperty['usePackagePath']").updateView();
+                "customPreferencesUpdater.usePackagePath").
+                updateView();
 
         subTemplate = builder.bindToComboSelection(
                 view.getSubclassTemplate(),
-                "preferences.subclassTemplate");
+                "customPreferencesUpdater.subclassTemplate");
 
         superTemplate = builder.bindToComboSelection(
                 view.getSuperclassTemplate(),
-                "preferences.superclassTemplate");
+                "customPreferencesUpdater.superclassTemplate");
 
         builder.bindToTextField(
                 view.getOutputPattern(),
-                "preferences.property['outputPattern']").updateView();
+                "customPreferencesUpdater.outputPattern").
+                updateView();
 
         updateTemplates();
     }
 
-    protected DataMapDefaults createDefaults() {
-        Class obt = this.getClass();
-        DataMapDefaults prefs = getApplication()
-                .getFrameController()
-                .getProjectController()
-                .getDataMapPreferences(this.getClass().getName().replace(".", "/"));
+    protected void createDefaults() {
+        TreeMap<DataMap, DataMapDefaults> map = new TreeMap<DataMap, DataMapDefaults>();
+        Collection<DataMap> dataMaps = getParentController().getDataMaps();
+        for (DataMap dataMap : dataMaps) {
+            DataMapDefaults preferences;
+            preferences = getApplication()
+                    .getFrameController()
+                    .getProjectController()
+                    .getDataMapPreferences(this.getClass().getName().replace(".", "/"), dataMap);
+            preferences.setSuperclassPackage("");
+            preferences.updateSuperclassPackage(dataMap, false);
 
-        prefs.updateSuperclassPackage(getParentController().getDataMap(), false);
-        this.preferences = prefs;
-        return prefs;
+            map.put(dataMap, preferences);
+
+            if (getOutputPath() == null) {
+                setOutputPath(preferences.getOutputPath());
+            }
+        }
+
+        setMapPreferences(map);
+        preferencesUpdater = new CustomPreferencesUpdater(map);
+    }
+
+    protected GeneratorControllerPanel createView() {
+        this.view = new CustomModePanel();
+
+        Set<Entry<DataMap, DataMapDefaults>> entities = getMapPreferences().entrySet();
+        for (Entry<DataMap, DataMapDefaults> entry : entities) {
+            StandardPanelComponent dataMapLine = createDataMapLineBy(entry.getKey(), entry.getValue());
+            dataMapLine.getDataMapName().setText(dataMapLine.getDataMap().getName());
+            BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), dataMapLine);
+            builder.bindToTextField(
+                    dataMapLine.getSuperclassPackage(),
+                    "preferences.superclassPackage").updateView();
+            this.view.addDataMapLine(dataMapLine);
+        }
+        return view;
+    }
+
+    private StandardPanelComponent createDataMapLineBy(DataMap dataMap, DataMapDefaults preferences) {
+        StandardPanelComponent dataMapLine = new StandardPanelComponent();
+        dataMapLine.setDataMap(dataMap);
+        dataMapLine.setPreferences(preferences);
+
+        return dataMapLine;
     }
 
     protected void updateTemplates() {
@@ -184,48 +233,45 @@ public class CustomModeController extends GeneratorController {
         subTemplate.updateView();
     }
 
-    protected GeneratorControllerPanel createView() {
-        this.view = new CustomModePanel();
-        return view;
-    }
-
     public Component getView() {
         return view;
     }
 
-    @Override
-    protected ClassGenerationAction newGenerator() {
-        return new ClassGenerationAction();
-    }
-
-    public ClassGenerationAction createGenerator() {
+    public Collection<ClassGenerationAction> createGenerator() {
 
         mode = modesByLabel.get(view.getGenerationMode().getSelectedItem()).toString();
 
-        ClassGenerationAction generator = super.createGenerator();
+        Collection<ClassGenerationAction> generators = super.createGenerator();
 
         String superKey = view.getSuperclassTemplate().getSelectedItem().toString();
         String superTemplate = templateManager.getTemplatePath(superKey);
-        generator.setSuperTemplate(superTemplate);
 
         String subKey = view.getSubclassTemplate().getSelectedItem().toString();
         String subTemplate = templateManager.getTemplatePath(subKey);
-        generator.setTemplate(subTemplate);
 
-        generator.setOverwrite(view.getOverwrite().isSelected());
-        generator.setUsePkgPath(view.getUsePackagePath().isSelected());
-        generator.setMakePairs(view.getPairs().isSelected());
+        for (ClassGenerationAction generator : generators) {
+            generator.setSuperTemplate(superTemplate);
+            generator.setTemplate(subTemplate);
+            generator.setOverwrite(view.getOverwrite().isSelected());
+            generator.setUsePkgPath(view.getUsePackagePath().isSelected());
+            generator.setMakePairs(view.getPairs().isSelected());
 
-        if (!Util.isEmptyString(view.getOutputPattern().getText())) {
-            generator.setOutputPattern(view.getOutputPattern().getText());
+            if (!Util.isEmptyString(view.getOutputPattern().getText())) {
+                generator.setOutputPattern(view.getOutputPattern().getText());
+            }
         }
 
-        return generator;
+        return generators;
     }
 
     public void popPreferencesAction() {
         new PreferenceDialog(getApplication().getFrameController())
                 .startupAction(PreferenceDialog.TEMPLATES_KEY);
         updateTemplates();
+    }
+
+    @Override
+    protected ClassGenerationAction newGenerator() {
+        return new ClassGenerationAction();
     }
 }
