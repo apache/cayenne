@@ -21,11 +21,18 @@ package org.apache.cayenne.modeler.dialog.codegen;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
+import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.collections.Predicate;
+
+import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class ClientModeController extends StandardModeController {
 
@@ -54,21 +61,56 @@ public class ClientModeController extends StandardModeController {
                     entity.getName(),
                     "clientAllowed",
                     "Not a client entity"));
-        }
-        else {
+        } else {
             super.validateEntity(validationBuffer, entity, true);
         }
     }
 
-    protected DataMapDefaults createDefaults() {
-        DataMapDefaults prefs = getApplication()
-                .getFrameController()
-                .getProjectController()
-                .getDataMapPreferences(this.getClass().getName().replace(".", "/"));
+    protected void createDefaults() {
+        TreeMap<DataMap, DataMapDefaults> map = new TreeMap<DataMap, DataMapDefaults>();
+        ArrayList<DataMap> dataMaps = (ArrayList<DataMap>) getParentController().getDataMaps();
+        for (DataMap dataMap : dataMaps) {
+            DataMapDefaults preferences = getApplication()
+                    .getFrameController()
+                    .getProjectController()
+                    .getDataMapPreferences(this.getClass().getName().replace(".", "/"), dataMap);
 
-        prefs.updateSuperclassPackage(getParentController().getDataMap(), true);
-        this.preferences = prefs;
-        return prefs;
+            preferences.setSuperclassPackage("");
+            preferences.updateSuperclassPackage(dataMap, true);
+
+            map.put(dataMap, preferences);
+
+            if (getOutputPath() == null) {
+                setOutputPath(preferences.getOutputPath());
+            }
+        }
+
+        setMapPreferences(map);
+    }
+
+    protected GeneratorControllerPanel createView() {
+        this.view = new StandardModePanel();
+
+        Set<Entry<DataMap, DataMapDefaults>> entities = getMapPreferences().entrySet();
+        for (Entry<DataMap, DataMapDefaults> entry : entities) {
+            StandardPanelComponent dataMapLine = createDataMapLineBy(entry.getKey(), entry.getValue());
+            dataMapLine.getDataMapName().setText(dataMapLine.getDataMap().getName());
+            BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), dataMapLine);
+            builder.bindToTextField(
+                    dataMapLine.getSuperclassPackage(),
+                    "preferences.superclassPackage").updateView();
+            this.view.addDataMapLine(dataMapLine);
+        }
+
+        return view;
+    }
+
+    private StandardPanelComponent createDataMapLineBy(DataMap dataMap, DataMapDefaults preferences) {
+        StandardPanelComponent dataMapLine = new StandardPanelComponent();
+        dataMapLine.setDataMap(dataMap);
+        dataMapLine.setPreferences(preferences);
+
+        return dataMapLine;
     }
 
     @Override

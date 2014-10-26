@@ -20,12 +20,14 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import java.awt.Component;
-import javax.swing.WindowConstants;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+
+import javax.swing.WindowConstants;
+import java.awt.Component;
+import java.util.Collection;
 
 /**
  */
@@ -54,6 +56,28 @@ public class ValidationResultBrowser extends CayenneController {
 
     public void closeDialogAction() {
         view.dispose();
+    }
+
+    public void startupAction(
+            String title,
+            String message,
+            Collection<ValidationResult> failures) {
+
+        this.view.setTitle(title);
+        this.view.getMessageLabel().setText(message);
+
+        for (ValidationResult failure : failures) {
+            if (failure != null) {
+                this.view.getErrorsDisplay().append(buildValidationText(failure) + " ");
+            }
+        }
+
+        view.pack();
+        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        view.setModal(true);
+        makeCloseableOnEscape();
+        centerView();
+        view.setVisible(true);
     }
 
     public void startupAction(

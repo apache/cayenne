@@ -19,19 +19,9 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.prefs.Preferences;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -52,14 +42,27 @@ import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.collections.Predicate;
 
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.prefs.Preferences;
+
 /**
  * A mode-specific part of the code generation dialog.
  * 
  */
 public abstract class GeneratorController extends CayenneController {
 
-    protected DataMapDefaults preferences;
-    protected String mode = ArtifactsGenerationMode.ENTITY.getLabel();
+    protected String mode = ArtifactsGenerationMode.ALL.getLabel();
+    protected Map<DataMap, DataMapDefaults> mapPreferences;
+    private String outputPath;
 
     public GeneratorController(CodeGeneratorControllerBase parent) {
         super(parent);
@@ -70,11 +73,34 @@ public abstract class GeneratorController extends CayenneController {
     }
 
     public String getOutputPath() {
-        return preferences.getOutputPath();
+        return outputPath;
     }
 
     public void setOutputPath(String path) {
-        preferences.setOutputPath(path);
+        String old = this.outputPath;
+        this.outputPath = path;
+        if (this.outputPath != null && !this.outputPath.equals(old)) {
+            updatePreferences(path);
+        }
+    }
+
+    public void updatePreferences(String path) {
+        if (mapPreferences == null)
+            return;
+        Set<DataMap> keys = mapPreferences.keySet();
+        for (DataMap key : keys) {
+            mapPreferences
+                    .get(key)
+                    .setOutputPath(path);
+        }
+    }
+
+    public void setMapPreferences(Map<DataMap, DataMapDefaults> mapPreferences) {
+        this.mapPreferences = mapPreferences;
+    }
+
+    public Map<DataMap, DataMapDefaults> getMapPreferences() {
+        return this.mapPreferences;
     }
 
     protected void initBindings(BindingBuilder bindingBuilder) {
@@ -95,7 +121,7 @@ public abstract class GeneratorController extends CayenneController {
 
     protected abstract GeneratorControllerPanel createView();
 
-    protected abstract DataMapDefaults createDefaults();
+    protected abstract void createDefaults();
 
     /**
      * Creates an appropriate subclass of {@link ClassGenerationAction},
@@ -107,7 +133,7 @@ public abstract class GeneratorController extends CayenneController {
     /**
      * Creates a class generator for provided selections.
      */
-    public ClassGenerationAction createGenerator() {
+    public Collection<ClassGenerationAction> createGenerator() {
 
         File outputDir = getOutputDir();
 
@@ -139,28 +165,37 @@ public abstract class GeneratorController extends CayenneController {
             }
         }
 
-        ClassGenerationAction generator = newGenerator();
-        generator.setArtifactsGenerationMode(mode);
-        generator.setDataMap(getParentController().getDataMap());
-        generator.addEntities(entities);
-        generator.addEmbeddables(getParentController().getSelectedEmbeddables());
-        generator.addQueries(getParentController().getDataMap().getQueries());
+        Collection<ClassGenerationAction> generators = new ArrayList<ClassGenerationAction>();
+        Collection<StandardPanelComponent> dataMapLines = ((GeneratorControllerPanel) getView()).getDataMapLines();
+        for (DataMap map : getParentController().getDataMaps()) {
+            ClassGenerationAction generator = newGenerator();
+            generator.setArtifactsGenerationMode(mode);
+            generator.setDataMap(map);
+            generator.addEntities(entities);
+            generator.addEmbeddables(getParentController().getSelectedEmbeddables());
+            generator.addQueries(map.getQueries());
 
-        Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
+            Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
 
-        if (preferences != null) {
-            generator.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
+            if (preferences != null) {
+                generator.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
+
+            }
+
+            generator.setDestDir(outputDir);
+            generator.setMakePairs(true);
+
+            for (StandardPanelComponent dataMapLine : dataMapLines) {
+                if(dataMapLine.getDataMap() == map && !Util.isEmptyString(dataMapLine.getSuperclassPackage().getText())) {
+                    generator.setSuperPkg(dataMapLine.getSuperclassPackage().getText());
+                    break;
+                }
+            }
+
+            generators.add(generator);
         }
 
-        generator.setDestDir(outputDir);
-        generator.setMakePairs(true);
-
-        String superPackage = ((GeneratorControllerPanel) getView()).getSuperclassPackage().getText();
-        if (!Util.isEmptyString(superPackage)) {
-            generator.setSuperPkg(superPackage);
-        }
-
-        return generator;
+        return generators;
     }
 
     public void validateEmbeddable(ValidationResult validationBuffer, Embeddable embeddable) {
@@ -477,10 +512,6 @@ public abstract class GeneratorController extends CayenneController {
         return dir != null ? new File(dir) : new File(System.getProperty("user.dir"));
     }
 
-    public DataMapDefaults getPreferences() {
-        return preferences;
-    }
-
     /**
      * An action method that pops up a file chooser dialog to pick the
      * generation directory.
@@ -517,7 +548,7 @@ public abstract class GeneratorController extends CayenneController {
     private void initOutputFolder() {
 
         String path = null;
-        if (preferences.getOutputPath() == null) {
+        if (getOutputPath() == null) {
             if (System.getProperty("cayenne.cgen.destdir") != null) {
                 setOutputPath(System.getProperty("cayenne.cgen.destdir"));
             } else {

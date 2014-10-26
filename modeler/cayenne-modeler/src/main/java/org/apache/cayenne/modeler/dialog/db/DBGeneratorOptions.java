@@ -19,21 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.awt.Component;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Iterator;
-
-import javax.sql.DataSource;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -48,6 +33,22 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
 
+import javax.sql.DataSource;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.Component;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 /**
  */
 public class DBGeneratorOptions extends CayenneController {
@@ -58,17 +59,17 @@ public class DBGeneratorOptions extends CayenneController {
     protected ObjectBinding adapterBinding;
 
     protected DBConnectionInfo connectionInfo;
-    protected DataMap dataMap;
+    protected Collection<DataMap> dataMaps;
     protected DBGeneratorDefaults generatorDefaults;
-    protected DbGenerator generator;
+    protected Collection<DbGenerator> generators;
     protected String textForSQL;
 
     protected TableSelectorController tables;
 
-    public DBGeneratorOptions(ProjectController parent, String title, DataMap dataMap) {
+    public DBGeneratorOptions(ProjectController parent, String title, Collection<DataMap> dataMaps) {
         super(parent);
 
-        this.dataMap = dataMap;
+        this.dataMaps = dataMaps;
         this.tables = new TableSelectorController(parent);
         this.view = new DBGeneratorOptionsView(tables.getView());
         this.connectionInfo = new DBConnectionInfo();
@@ -80,9 +81,9 @@ public class DBGeneratorOptions extends CayenneController {
         initController();
         connectionInfo.setDbAdapter((String) view.getAdapters().getSelectedItem());
 
-        tables.updateTables(dataMap);
+        tables.updateTables(dataMaps);
         prepareGenerator();
-        generatorDefaults.configureGenerator(generator);
+        generatorDefaults.configureGenerator(generators);
         createSQL();
         refreshView();
     }
@@ -163,14 +164,16 @@ public class DBGeneratorOptions extends CayenneController {
         try {
             DbAdapter adapter = connectionInfo.makeAdapter(getApplication()
                     .getClassLoadingService());
-            this.generator = new DbGenerator(
-                    adapter,
-                    dataMap,
-                    tables.getExcludedTables(),
-                    null,
-                    NoopJdbcEventLogger.getInstance());
-        }
-        catch (Exception ex) {
+            generators = new ArrayList<DbGenerator>();
+            for (DataMap dataMap : dataMaps) {
+                this.generators.add(new DbGenerator(
+                        adapter,
+                        dataMap,
+                        tables.getExcludedTables(),
+                        null,
+                        NoopJdbcEventLogger.getInstance()));
+            }
+        } catch (Exception ex) {
             reportError("Error loading adapter", ex);
         }
     }
@@ -181,15 +184,17 @@ public class DBGeneratorOptions extends CayenneController {
     protected void createSQL() {
         // convert them to string representation for display
         StringBuffer buf = new StringBuffer();
-        Iterator<String> it = generator.configuredStatements().iterator();
-        String batchTerminator = generator.getAdapter().getBatchTerminator();
+        for (DbGenerator generator : generators) {
+            Iterator<String> it = generator.configuredStatements().iterator();
+            String batchTerminator = generator.getAdapter().getBatchTerminator();
 
-        String lineEnd = (batchTerminator != null)
-                ? "\n" + batchTerminator + "\n\n"
-                : "\n\n";
+            String lineEnd = (batchTerminator != null)
+                    ? "\n" + batchTerminator + "\n\n"
+                    : "\n\n";
 
-        while (it.hasNext()) {
-            buf.append(it.next()).append(lineEnd);
+            while (it.hasNext()) {
+                buf.append(it.next()).append(lineEnd);
+            }
         }
 
         textForSQL = buf.toString();
@@ -234,7 +239,7 @@ public class DBGeneratorOptions extends CayenneController {
         adapterBinding.updateView();
         connectionInfo.setDbAdapter((String) view.getAdapters().getSelectedItem());
         prepareGenerator();
-        generatorDefaults.configureGenerator(generator);
+        generatorDefaults.configureGenerator(generators);
         createSQL();
         sqlBinding.updateView();
     }
@@ -259,33 +264,34 @@ public class DBGeneratorOptions extends CayenneController {
 
         refreshGeneratorAction();
 
+        Collection<ValidationResult> failures = new ArrayList<ValidationResult>();
+
         // sanity check...
-        if (generator.isEmpty(true)) {
-            JOptionPane.showMessageDialog(getView(), "Nothing to generate.");
-            return;
-        }
-
-        try {
-
-            DataSource dataSource = connectionInfo.makeDataSource(getApplication()
-                    .getClassLoadingService());
-            generator.runGenerator(dataSource);
-
-            ValidationResult failures = generator.getFailures();
-
-            if (failures == null || !failures.hasFailures()) {
-                JOptionPane.showMessageDialog(getView(), "Schema Generation Complete.");
+        for (DbGenerator generator : generators) {
+            if (generator.isEmpty(true)) {
+                JOptionPane.showMessageDialog(getView(), "Nothing to generate.");
+                return;
             }
-            else {
-                new ValidationResultBrowser(this)
-                        .startupAction(
-                                "Schema Generation Complete",
-                                "Schema generation finished. The following problem(s) were ignored.",
-                                failures);
+
+            try {
+
+                DataSource dataSource = connectionInfo.makeDataSource(getApplication()
+                        .getClassLoadingService());
+                generator.runGenerator(dataSource);
+                failures.add(generator.getFailures());
+            } catch (Throwable th) {
+                reportError("Schema Generation Error", th);
             }
         }
-        catch (Throwable th) {
-            reportError("Schema Generation Error", th);
+
+        if (failures.size() == 0) {
+            JOptionPane.showMessageDialog(getView(), "Schema Generation Complete.");
+        } else {
+            new ValidationResultBrowser(this)
+                    .startupAction(
+                            "Schema Generation Complete",
+                            "Schema generation finished. The following problem(s) were ignored.",
+                            failures);
         }
     }
 

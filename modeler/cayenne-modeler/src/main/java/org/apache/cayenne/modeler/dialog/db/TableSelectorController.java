@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -39,6 +32,13 @@ import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  */
@@ -165,8 +165,12 @@ public class TableSelectorController extends CayenneController {
      * Performs validation of DbEntities in the current DataMap. Returns a collection of
      * ValidationInfo objects describing the problems.
      */
-    public void updateTables(DataMap dataMap) {
-        this.tables = new ArrayList<DbEntity>(dataMap.getDbEntities());
+    public void updateTables(Collection<DataMap> dataMaps) {
+        this.tables = new ArrayList<DbEntity>();
+
+        for (DataMap dataMap : dataMaps) {
+            this.tables.addAll(dataMap.getDbEntities());
+        }
 
         excludedTables.clear();
         validationMessages.clear();

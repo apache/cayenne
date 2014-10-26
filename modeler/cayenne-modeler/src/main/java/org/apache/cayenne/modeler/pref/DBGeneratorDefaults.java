@@ -18,10 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import java.util.prefs.Preferences;
-
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.pref.RenamedPreferences;
+
+import java.util.Collection;
+import java.util.prefs.Preferences;
 
 public class DBGeneratorDefaults extends RenamedPreferences {
 
@@ -96,17 +97,19 @@ public class DBGeneratorDefaults extends RenamedPreferences {
     /**
      * Updates DbGenerator settings, consulting its own state.
      */
-    public void configureGenerator(DbGenerator generator) {
+    public void configureGenerator(Collection<DbGenerator> generators) {
         setCreateFK(createFK);
         setCreatePK(createPK);
         setCreateTables(createTables);
         setDropPK(dropPK);
         setDropTables(dropTables);
-        generator.setShouldCreateFKConstraints(createFK);
-        generator.setShouldCreatePKSupport(createPK);
-        generator.setShouldCreateTables(createTables);
-        generator.setShouldDropPKSupport(dropPK);
-        generator.setShouldDropTables(dropTables);
+        for (DbGenerator generator : generators) {
+            generator.setShouldCreateFKConstraints(createFK);
+            generator.setShouldCreatePKSupport(createPK);
+            generator.setShouldCreateTables(createTables);
+            generator.setShouldDropPKSupport(dropPK);
+            generator.setShouldDropTables(dropTables);
+        }
     }
 
     /**

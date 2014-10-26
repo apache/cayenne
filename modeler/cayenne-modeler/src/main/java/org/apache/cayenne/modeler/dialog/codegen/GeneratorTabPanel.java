@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 
 /**
  */
@@ -52,10 +51,10 @@ public class GeneratorTabPanel extends JPanel {
         });
 
         // assemble
-        FormLayout layout = new FormLayout("right:70dlu, 3dlu, fill:150dlu", "");
+        FormLayout layout = new FormLayout("right:70dlu, 3dlu, fill:300, fill:100dlu:grow", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.append("Type:", generationMode);
+        builder.append("Type:", generationMode, 1);
         builder.appendSeparator();
 
         for (int i = 0; i < modeNames.length; i++) {

@@ -19,12 +19,16 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.codegen.CodeGeneratorController;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.project.Project;
+
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class GenerateCodeAction extends CayenneAction {
 
@@ -41,10 +45,32 @@ public class GenerateCodeAction extends CayenneAction {
     }
 
     public void performAction(ActionEvent e) {
+        Collection<DataMap> dataMaps;
         DataMap dataMap = getProjectController().getCurrentDataMap();
+
         if (dataMap != null) {
-            new CodeGeneratorController(getApplication().getFrameController(), dataMap)
-                    .startup();
+            dataMaps = new ArrayList<DataMap>();
+            dataMaps.add(dataMap);
+
+            new CodeGeneratorController(getApplication().getFrameController(), dataMaps).startup();
+        } else if (getProjectController().getCurrentDataNode() != null) {
+            Collection<String> nodeMaps = getProjectController().getCurrentDataNode().getDataMapNames();
+            Project project = getProjectController().getProject();
+            dataMaps = ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
+
+            Collection<DataMap> resultMaps = new ArrayList<DataMap>();
+            for (DataMap map : dataMaps) {
+                if (nodeMaps.contains(map.getName())) {
+                    resultMaps.add(map);
+                }
+            }
+
+            new CodeGeneratorController(getApplication().getFrameController(), resultMaps).startup();
+        } else {
+            Project project = getProjectController().getProject();
+            dataMaps = ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
+
+            new CodeGeneratorController(getApplication().getFrameController(), dataMaps).startup();
         }
     }
 }

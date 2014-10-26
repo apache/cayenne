@@ -357,6 +357,24 @@ public class ProjectController extends CayenneController {
                 DataMapDefaults.class, pref);
     }
 
+    public DataMapDefaults getDataMapPreferences(DataMap dataMap) {
+        Preferences pref;
+        pref = getPreferenceForDataDomain().node("DataMap").node(dataMap.getName());
+
+        return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
+    }
+
+    public DataMapDefaults getDataMapPreferences(String nameSuffix, DataMap map) {
+        Preferences pref;
+
+        if (nameSuffix == null || nameSuffix.length() == 0) {
+            pref = getPreferenceForDataDomain().node("DataMap").node(map.getName());
+        } else {
+            pref = getPreferenceForDataDomain().node("DataMap").node(map.getName()).node(nameSuffix);
+        }
+        return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
+    }
+
     /**
      * Returns preferences object for the current DataMap, throwing an exception
      * if no DataMap is selected.
