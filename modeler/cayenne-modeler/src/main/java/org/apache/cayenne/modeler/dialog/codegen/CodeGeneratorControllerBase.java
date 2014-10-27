@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -37,16 +28,25 @@ import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.collections.Predicate;
 
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * A base superclass of a top controller for the code generator. Defines all common model
  * parts used in class generation.
- * 
+ *
  */
 public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public static final String SELECTED_PROPERTY = "selected";
 
-    protected DataMap dataMap;
+    protected Collection<DataMap> dataMaps;
 
     protected ValidationResult validation;
 
@@ -57,12 +57,16 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     protected transient Object currentClass;
 
-    public CodeGeneratorControllerBase(CayenneController parent, DataMap dataMap) {
+    public CodeGeneratorControllerBase(CayenneController parent, Collection<DataMap> dataMaps) {
         super(parent);
 
-        this.dataMap = dataMap;
-        this.classes = new ArrayList(dataMap.getObjEntities());
-        this.classes.addAll(new ArrayList(dataMap.getEmbeddables()));
+        this.dataMaps = dataMaps;
+        this.classes = new ArrayList();
+
+        for(DataMap dataMap:dataMaps){
+            this.classes.addAll(new ArrayList(dataMap.getObjEntities()));
+            this.classes.addAll(new ArrayList(dataMap.getEmbeddables()));
+        }
         this.selectedEntities = new HashSet();
         this.selectedEmbeddables = new HashSet();
     }
@@ -251,8 +255,8 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         this.currentClass = currentClass;
     }
 
-    public DataMap getDataMap() {
-        return dataMap;
+    public Collection<DataMap> getDataMaps() {
+        return dataMaps;
     }
 
     public JLabel getItemName(Object obj) {

@@ -22,6 +22,8 @@ package org.apache.cayenne.modeler.dialog.codegen;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A generic panel that is a superclass of generator panels, defining common fields.
@@ -29,12 +31,12 @@ import javax.swing.JTextField;
  */
 public class GeneratorControllerPanel extends JPanel {
 
-    protected JTextField superclassPackage;
+    protected Collection<StandardPanelComponent> dataMapLines;
     protected JTextField outputFolder;
     protected JButton selectOutputFolder;
 
     public GeneratorControllerPanel() {
-        this.superclassPackage = new JTextField();
+        this.dataMapLines = new ArrayList<StandardPanelComponent>();
         this.outputFolder = new JTextField();
         this.selectOutputFolder = new JButton("Select");
     }
@@ -47,7 +49,7 @@ public class GeneratorControllerPanel extends JPanel {
         return selectOutputFolder;
     }
 
-    public JTextField getSuperclassPackage() {
-        return superclassPackage;
+    public Collection<StandardPanelComponent> getDataMapLines() {
+        return dataMapLines;
     }
 }

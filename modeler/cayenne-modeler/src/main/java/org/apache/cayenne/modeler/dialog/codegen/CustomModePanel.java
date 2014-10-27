@@ -19,8 +19,9 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.swing.control.ActionLink;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -28,12 +29,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import org.apache.cayenne.swing.control.ActionLink;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 public class CustomModePanel extends GeneratorControllerPanel {
 
@@ -44,6 +41,8 @@ public class CustomModePanel extends GeneratorControllerPanel {
     protected JCheckBox overwrite;
     protected JCheckBox usePackagePath;
     protected JTextField outputPattern;
+
+    private DefaultFormBuilder builder;
 
     protected ActionLink manageTemplatesLink;
 
@@ -68,48 +67,49 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
         // assemble
 
-        PanelBuilder builder = new PanelBuilder(
-                new FormLayout(
-                        "right:70dlu, 3dlu, fill:150dlu:grow, 3dlu, pref",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p"));
+        FormLayout layout = new FormLayout(
+                "right:77dlu, 3dlu, fill:200:grow, 6dlu, fill:50dlu, 3dlu", "");
+        builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        CellConstraints cc = new CellConstraints();
+        builder.append("Output Directory:", outputFolder, selectOutputFolder);
+        builder.nextLine();
 
-        builder.addLabel("Output Directory:", cc.xy(1, 1));
-        builder.add(outputFolder, cc.xy(3, 1));
-        builder.add(selectOutputFolder, cc.xy(5, 1));
+        builder.append("Generation Mode:", generationMode);
+        builder.nextLine();
 
-        builder.addLabel("Superclass Package:", cc.xy(1, 3));
-        builder.add(superclassPackage, cc.xy(3, 3));
+        builder.append("Subclass Template:", subclassTemplate);
+        builder.nextLine();
 
-        builder.addLabel("Generation Mode:", cc.xy(1, 5));
-        builder.add(generationMode, cc.xy(3, 5));
+        builder.append("Superclass Template:", superclassTemplate);
+        builder.nextLine();
 
-        builder.addLabel("Subclass Template:", cc.xy(1, 7));
-        builder.add(subclassTemplate, cc.xy(3, 7));
+        builder.append("Output Pattern:", outputPattern);
+        builder.nextLine();
 
-        builder.addLabel("Superclass Template:", cc.xy(1, 9));
-        builder.add(superclassTemplate, cc.xy(3, 9));
+        builder.append("Make Pairs:", pairs);
+        builder.nextLine();
 
-        builder.addLabel("Output Pattern:", cc.xy(1, 11));
-        builder.add(outputPattern, cc.xy(3, 11));
+        builder.append("Overwrite Subclasses:", overwrite);
+        builder.nextLine();
 
-        builder.addLabel("Make Pairs:", cc.xy(1, 13));
-        builder.add(pairs, cc.xy(3, 13));
-
-        builder.addLabel("Overwrite Subclasses:", cc.xy(1, 15));
-        builder.add(overwrite, cc.xy(3, 15));
-
-        builder.addLabel("Use Package Path:", cc.xy(1, 17));
-        builder.add(usePackagePath, cc.xy(3, 17));
-
-        JPanel links = new JPanel(new FlowLayout(FlowLayout.TRAILING));
-        links.add(manageTemplatesLink);
+        builder.append("Use Package Path:", usePackagePath);
+        builder.nextLine();
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
+
+        JPanel links = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+        links.add(manageTemplatesLink);
         add(links, BorderLayout.SOUTH);
+
+        add(builder.getPanel(), BorderLayout.CENTER);
+    }
+
+    public void addDataMapLine(StandardPanelComponent dataMapLine) {
+        dataMapLines.add(dataMapLine);
+        builder.append(dataMapLine, 4);
+        builder.nextLine();
     }
 
     public JComboBox getGenerationMode() {
@@ -143,4 +143,5 @@ public class CustomModePanel extends GeneratorControllerPanel {
     public JTextField getOutputPattern() {
         return outputPattern;
     }
+
 }
