@@ -1,21 +1,21 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 package org.apache.cayenne.tools;
 
 import java.io.File;
@@ -27,15 +27,20 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
 
+import org.apache.cayenne.tools.dbimport.config.Catalog;
+import org.apache.cayenne.tools.dbimport.config.IncludeTable;
+import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.util.FileUtils;
+import org.custommonkey.xmlunit.DetailedDiff;
+import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.xml.sax.SAXException;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertNotNull;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class DbImporterMojoTest extends AbstractMojoTestCase {
 
@@ -85,6 +90,18 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         test("testImportAddTableAndColumn");
     }
 
+    public void testSimpleFiltering() throws Exception {
+        test("testSimpleFiltering");
+    }
+
+    public void testFilteringWithSchema() throws Exception {
+        test("testFilteringWithSchema");
+    }
+
+    public void testSchemasAndTableExclude() throws Exception {
+        test("testSchemasAndTableExclude");
+    }
+
     private void test(String name) throws Exception {
         DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
         File mapFile = cdbImport.getMap();
@@ -114,14 +131,33 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
         ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
         while (tables.next()) {
-            System.out.println("DROP TABLE " + tables.getString("TABLE_NAME"));
-            stmt.execute("DROP TABLE " + tables.getString("TABLE_NAME"));
+            String schema = tables.getString("TABLE_SCHEM");
+            System.out.println("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
+            stmt.execute("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
+        }
+
+        ResultSet schemas = connection.getMetaData().getSchemas();
+        while (schemas.next()) {
+            String schem = schemas.getString("TABLE_SCHEM");
+            if (schem.startsWith("SCHEMA")) {
+                System.out.println("DROP SCHEMA " + schem);
+                stmt.execute("DROP SCHEMA " + schem + " RESTRICT");
+            }
         }
     }
 
     private void verifyResult(File map, File mapFileCopy) {
         try {
-            assertXMLEqual(new FileReader(map.getAbsolutePath() + "-result"), new FileReader(mapFileCopy));
+            FileReader control = new FileReader(map.getAbsolutePath() + "-result");
+            FileReader test = new FileReader(mapFileCopy);
+
+            DetailedDiff diff = new DetailedDiff(new Diff(control, test));
+            if (!diff.similar()) {
+                System.out.println(" >>>> " + map.getAbsolutePath() + "-result");
+                System.out.println(" >>>> " + mapFileCopy);
+                fail(diff.toString());
+            }
+
         } catch (SAXException e) {
             e.printStackTrace();
             fail();
@@ -129,6 +165,59 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
             e.printStackTrace();
             fail();
         }
+    }
+
+    public void testFilteringConfig() throws Exception {
+        DbImporterMojo cdbImport = getCdbImport("config/pom-01.xml");
+
+        assertEquals(2, cdbImport.getReverseEngineering().getCatalogs().size());
+        Iterator<Catalog> iterator = cdbImport.getReverseEngineering().getCatalogs().iterator();
+        assertEquals("catalog-name-01", iterator.next().getName());
+
+        Catalog catalog = iterator.next();
+        assertEquals("catalog-name-02", catalog.getName());
+        Iterator<Schema> schemaIterator = catalog.getSchemas().iterator();
+
+        assertEquals("schema-name-01", schemaIterator.next().getName());
+
+        Schema schema = schemaIterator.next();
+        assertEquals("schema-name-02", schema.getName());
+
+        Iterator<IncludeTable> includeTableIterator = schema.getIncludeTables().iterator();
+        assertEquals("incTable-01", includeTableIterator.next().getPattern());
+
+        IncludeTable includeTable = includeTableIterator.next();
+        assertEquals("incTable-02", includeTable.getPattern());
+        assertEquals("includeColumn-01", includeTable.getIncludeColumns().iterator().next().getPattern());
+        assertEquals("excludeColumn-01", includeTable.getExcludeColumns().iterator().next().getPattern());
+
+        assertEquals("includeColumn-02", schema.getIncludeColumns().iterator().next().getPattern());
+        assertEquals("excludeColumn-02", schema.getExcludeColumns().iterator().next().getPattern());
+
+        assertEquals("includeColumn-03", catalog.getIncludeColumns().iterator().next().getPattern());
+        assertEquals("excludeColumn-03", catalog.getExcludeColumns().iterator().next().getPattern());
+
+        schemaIterator = cdbImport.getReverseEngineering().getSchemas().iterator();
+        schema = schemaIterator.next();
+        assertEquals("schema-name-03", schema.getName());
+
+        schema = schemaIterator.next();
+        assertEquals("schema-name-04", schema.getName());
+
+        includeTableIterator = schema.getIncludeTables().iterator();
+        assertEquals("incTable-04", includeTableIterator.next().getPattern());
+        assertEquals("excTable-04", schema.getExcludeTables().iterator().next().getPattern());
+
+        includeTable = includeTableIterator.next();
+        assertEquals("incTable-05", includeTable.getPattern());
+        assertEquals("includeColumn-04", includeTable.getIncludeColumns().iterator().next().getPattern());
+        assertEquals("excludeColumn-04", includeTable.getExcludeColumns().iterator().next().getPattern());
+
+        assertEquals("includeColumn-04", schema.getIncludeColumns().iterator().next().getPattern());
+        assertEquals("excludeColumn-04", schema.getExcludeColumns().iterator().next().getPattern());
+
+        assertEquals("includeColumn-03", catalog.getIncludeColumns().iterator().next().getPattern());
+        assertEquals("excludeColumn-03", catalog.getExcludeColumns().iterator().next().getPattern());
     }
 
     private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException, URISyntaxException {

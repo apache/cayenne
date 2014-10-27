@@ -62,17 +62,8 @@ public class DataMapArtifact implements Artifact {
     }
 
     public String getQualifiedClassName() {
-        String pkg = dataMap.getDefaultPackage();
-        if (pkg == null) {
-            pkg = "";
-        }
-        else {
-            pkg = pkg + '.';
-        }
-
-        return pkg
-                + NameConverter.underscoredToJava(NameConverter
-                        .specialCharsToJava(dataMap.getName()), true);
+        return dataMap.getNameWithDefaultPackage(NameConverter
+                .underscoredToJava(NameConverter.specialCharsToJava(dataMap.getName()), true));
     }
 
     public Object getObject() {

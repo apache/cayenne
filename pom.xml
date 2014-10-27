@@ -231,9 +231,9 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>ant</groupId>
+				<groupId>org.apache.ant</groupId>
 				<artifactId>ant</artifactId>
-				<version>1.6.5</version>
+				<version>1.9.4</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -520,7 +520,7 @@
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
-    </pluginRepositories>
+	</pluginRepositories>
 	<build>
 		<defaultGoal>install</defaultGoal>
 
@@ -959,6 +959,14 @@
 					</excludes>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>clirr-maven-plugin</artifactId>
+                <version>2.6.1</version>
+                <configuration>
+                    <comparisonVersion>3.1RC1</comparisonVersion>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 	<distributionManagement>
@@ -1053,8 +1061,23 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>1.0.0</version>
+                    </plugin>
                 </plugins>
             </build>
+
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.version}</version>
+                    </plugin>
+                </plugins>
+            </reporting>
         </profile>
 
 		<!-- Optional profile used to sign artifacts -->
@@ -1339,6 +1362,21 @@
     <reporting>
         <plugins>
             <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+
+                    <!-- <docletPath>/path/to/UmlGraph.jar</docletPath> -->
+                    <docletArtifact>
+                        <groupId>org.umlgraph</groupId>
+                        <artifactId>doclet</artifactId>
+                        <version>5.1</version>
+                    </docletArtifact>
+                    <additionalparam>-views</additionalparam>
+                    <useStandardDocletOptions>true</useStandardDocletOptions>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>2.3</version>
@@ -1375,6 +1413,10 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>clirr-maven-plugin</artifactId>
+                <version>2.6.1</version>
+                <configuration>
+                    <comparisonVersion>3.1RC1</comparisonVersion>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>

@@ -24,6 +24,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.DefaultNameGenerator;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 
 /**
@@ -84,10 +85,21 @@ public class NameGeneratorPreferences {
         for (String str : strategies) {
             res.append(str).append(",");
         }
-        if (strategies.size() > 0) {
+        if (!strategies.isEmpty()) {
             res.deleteCharAt(res.length() - 1);
         }
 
         getPreference().put(STRATEGIES_PREFERENCE, res.toString());
+    }
+
+    public ObjectNameGenerator createNamingStrategy(Application application)
+            throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+
+        return application.getClassLoadingService()
+                .loadClass(ObjectNameGenerator.class, getLastUsedStrategies().get(0)).newInstance();
+    }
+
+    public static ObjectNameGenerator defaultNameGenerator() {
+        return new DefaultNameGenerator();
     }
 }

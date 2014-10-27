@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access;
+package org.apache.cayenne.access.loader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import org.apache.cayenne.map.naming.ObjectNameGenerator;
  * Class represent ObjEntity that may be optimized using flattened relationships
  * as many to many table
  */
-class ManyToManyCandidateEntity {
+public class ManyToManyCandidateEntity {
     private final ObjEntity joinEntity;
 
     private final DbRelationship dbRel1;

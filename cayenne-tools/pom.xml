@@ -56,9 +56,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>ant</groupId>
+			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-testutil</artifactId>
+            <version>1.9.4</version>
+            <scope>test</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -108,6 +114,18 @@
 			<groupId>net.java.dev.inflector</groupId>
 			<artifactId>inflector</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.7.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <version>1.5</version>
+            <scope>test</scope>
+        </dependency>
 
 	</dependencies>
 	
@@ -123,6 +141,16 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <!--<configuration>
