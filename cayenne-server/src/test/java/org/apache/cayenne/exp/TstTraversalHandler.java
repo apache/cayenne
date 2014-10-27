@@ -19,95 +19,97 @@
 
 package org.apache.cayenne.exp;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
-/** 
- * Class that collects statistics of expression traversal. 
+/**
+ * Class that collects statistics of expression traversal.
  */
 public class TstTraversalHandler implements TraversalHandler {
-    protected List treeFlatView = new ArrayList();
-    protected int children;
-    protected int nodes;
-    protected int nodesStarted;
-    protected int leafs;
+	protected List<Object> treeFlatView = new ArrayList<Object>();
+	protected int children;
+	protected int nodes;
+	protected int nodesStarted;
+	protected int leafs;
 
-    /**
-     * Performs independent traversal of two expressions,
-     * comparing the results. If expressions structure is different,
-     * throws an exception.
-     */
-    public static void compareExps(Expression exp1, Expression exp2) {
-        TstTraversalHandler handler1 = new TstTraversalHandler();
-        handler1.traverseExpression(exp1);
+	/**
+	 * Performs independent traversal of two expressions, comparing the results.
+	 * If expressions structure is different, throws an exception.
+	 */
+	public static void compareExps(Expression exp1, Expression exp2) {
+		TstTraversalHandler handler1 = new TstTraversalHandler();
+		handler1.traverseExpression(exp1);
 
-        TstTraversalHandler handler2 = new TstTraversalHandler();
-        handler2.traverseExpression(exp2);
+		TstTraversalHandler handler2 = new TstTraversalHandler();
+		handler2.traverseExpression(exp2);
 
-        Assert.assertEquals(handler1.nodes, handler2.nodes);
-    }
+		assertEquals(handler1.nodes, handler2.nodes);
+	}
 
-    public TstTraversalHandler() {
+	public TstTraversalHandler() {
 
-    }
+	}
 
-    public void assertConsistency() throws Exception {
-        Assert.assertEquals(nodesStarted, nodes);
-    }
+	public void assertConsistency() throws Exception {
+		Assert.assertEquals(nodesStarted, nodes);
+	}
 
-    public List getTreeFlatView() {
-        return treeFlatView;
-    }
+	public List<Object> getTreeFlatView() {
+		return treeFlatView;
+	}
 
-    public void traverseExpression(Expression exp) {
-        reset();
-        exp.traverse(this);
-    }
+	public void traverseExpression(Expression exp) {
+		reset();
+		exp.traverse(this);
+	}
 
-    public void reset() {
-        children = 0;
-        nodes = 0;
-        nodesStarted = 0;
-        leafs = 0;
-    }
+	public void reset() {
+		children = 0;
+		nodes = 0;
+		nodesStarted = 0;
+		leafs = 0;
+	}
 
-    public int getNodeCount() {
-        return nodes;
-    }
+	public int getNodeCount() {
+		return nodes;
+	}
 
-    public int getChildren() {
-        return children;
-    }
+	public int getChildren() {
+		return children;
+	}
 
-    public int getNodes() {
-        return nodes;
-    }
+	public int getNodes() {
+		return nodes;
+	}
 
-    public int getNodesStarted() {
-        return nodesStarted;
-    }
+	public int getNodesStarted() {
+		return nodesStarted;
+	}
 
-    public int getLeafs() {
-        return leafs;
-    }
+	public int getLeafs() {
+		return leafs;
+	}
 
-    public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
-        children++;
-    }
+	public void finishedChild(Expression node, int childIndex,
+			boolean hasMoreChildren) {
+		children++;
+	}
 
-    public void startNode(Expression node, Expression parentNode) {
-        treeFlatView.add(node);
-        nodesStarted++;
-    }
+	public void startNode(Expression node, Expression parentNode) {
+		treeFlatView.add(node);
+		nodesStarted++;
+	}
 
-    public void endNode(Expression node, Expression parentNode) {
-        nodes++;
-    }
+	public void endNode(Expression node, Expression parentNode) {
+		nodes++;
+	}
 
-    public void objectNode(Object leaf, Expression parentNode) {
-        treeFlatView.add(leaf);
-        leafs++;
-    }
+	public void objectNode(Object leaf, Expression parentNode) {
+		treeFlatView.add(leaf);
+		leafs++;
+	}
 }

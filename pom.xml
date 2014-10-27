@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Licensed to the Apache Software Foundation (ASF) under one
-  ~    or more contributor license agreements.  See the NOTICE file
-  ~    distributed with this work for additional information
-  ~    regarding copyright ownership.  The ASF licenses this file
-  ~    to you under the Apache License, Version 2.0 (the
-  ~    "License"); you may not use this file except in compliance
-  ~    with the License.  You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~    Unless required by applicable law or agreed to in writing,
-  ~    software distributed under the License is distributed on an
-  ~    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~    KIND, either express or implied.  See the License for the
-  ~    specific language governing permissions and limitations
-  ~    under the License.
-  -->
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.   
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -39,6 +39,10 @@
 		<maven.build.timestamp.format>MMM dd yyyy HH:mm:ss</maven.build.timestamp.format>
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
         <jacoco.version>0.7.1.201405082137</jacoco.version>
+
+        <pmd.skip>false</pmd.skip>
+        <checkstyle.skip>false</checkstyle.skip>
+        <findbugs.skip>false</findbugs.skip>
     </properties>
 
 	<url>http://cayenne.apache.org/</url>
@@ -227,9 +231,9 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.apache.ant</groupId>
+				<groupId>ant</groupId>
 				<artifactId>ant</artifactId>
-				<version>1.9.4</version>
+				<version>1.6.5</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -516,18 +520,6 @@
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
-		<pluginRepository>
-			<id>central</id>
-			<name>Maven Central</name>
-			<url>http://repo1.maven.org/maven2/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
 	</pluginRepositories>
 	<build>
 		<defaultGoal>install</defaultGoal>
@@ -669,6 +661,32 @@
 										<ignore />
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+                    					<artifactId>maven-checkstyle-plugin</artifactId>
+                    					<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+                    					<artifactId>maven-pmd-plugin</artifactId>
+                    					<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -775,7 +793,104 @@
 					<version>3.0</version>
 				</plugin>
 
-			</plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.9.1</version>
+                    <configuration>
+                        <skip>${checkstyle.skip}</skip>
+                        <consoleOutput>true</consoleOutput>
+                        <enableRulesSummary>false</enableRulesSummary>
+                        <failOnViolation>false</failOnViolation>
+                        <!-- TODO make it 'true' when we will be ready -->
+                        <violationSeverity>warning</violationSeverity>
+                        <configLocation>/cayenne-checkstyle.xml</configLocation>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.cayenne.build-tools</groupId>
+                            <artifactId>cayenne-checkers</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>3.2</version>
+                    <configuration>
+                        <skip>${pmd.skip}</skip>
+                        <sourceEncoding>utf-8</sourceEncoding>
+                        <targetJdk>1.6</targetJdk>
+                        <verbose>true</verbose>
+                        <failOnViolation>false</failOnViolation>
+                        <!-- TODO make it 'true' when we will be ready -->
+                        <failurePriority>2</failurePriority>
+                        <rulesets>
+                            <!-- go back on one dir to parent project -->
+                            <ruleset>/cayenne-pmd.xml</ruleset>
+                        </rulesets>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.cayenne.build-tools</groupId>
+                            <artifactId>cayenne-checkers</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>2.5</version>
+                    <configuration>
+                        <effort>Max</effort>
+                        <!-- do max effort at CI Server -->
+                        <threshold>Low</threshold>
+                        <!-- make it 'low' at CI Server -->
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>clirr-maven-plugin</artifactId>
+                    <version>2.6.1</version>
+                    <configuration>
+                        <comparisonVersion>3.1RC1</comparisonVersion>
+                        <minSeverity>info</minSeverity>
+                        <logResults>true</logResults>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>jdepend-maven-plugin</artifactId>
+                    <version>2.0</version>
+                </plugin>
+
+            </plugins>
 		</pluginManagement>
 
 		<plugins>
@@ -863,6 +978,16 @@
 	</distributionManagement>
 
 	<profiles>
+        <profile>
+            <id>fast-and-dirty</id>
+
+            <properties>
+                <pmd.skip>true</pmd.skip>
+                <maven.test.skip>true</maven.test.skip>
+                <checkstyle.skip>true</checkstyle.skip>
+                <findbugs.skip>true</findbugs.skip>
+            </properties>
+        </profile>
         <profile>
             <id>tests-development</id>
             <activation>
@@ -1236,15 +1361,6 @@
 
     <reporting>
         <plugins>
-<!--            <plugin>
-                <groupId>maven</groupId>
-                <artifactId>maven-jdiff-plugin</artifactId>
-                <version>1.5.1</version>
-
-                <configuration>
-                    <comparisonVersion>3.1RC1</comparisonVersion>
-                </configuration>
-            </plugin>-->
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
@@ -1262,13 +1378,37 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
                 <version>2.8</version>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jdepend-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -1277,10 +1417,6 @@
                 <configuration>
                     <comparisonVersion>3.1RC1</comparisonVersion>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>taglist-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>

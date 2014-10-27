@@ -36,8 +36,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.QualifiedQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
@@ -87,7 +87,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     protected Expression extractQualifier() {
         Query q = queryAssembler.getQuery();
 
-        Expression qualifier = ((QualifiedQuery) q).getQualifier();
+        Expression qualifier = ((SelectQuery<?>) q).getQualifier();
 
         // append Entity qualifiers, taking inheritance into account
         ObjEntity entity = getObjEntity();

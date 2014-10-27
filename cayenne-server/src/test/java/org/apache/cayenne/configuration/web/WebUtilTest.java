@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import static org.mockito.Mockito.mock;
+
 import org.apache.cayenne.configuration.CayenneRuntime;
 
 import com.mockrunner.mock.web.MockServletContext;
@@ -26,24 +28,22 @@ import junit.framework.TestCase;
 
 public class WebUtilTest extends TestCase {
 
-    public void testGetCayenneRuntime() {
-        MockServletContext context = new MockServletContext();
+	public void testGetCayenneRuntime() {
+		MockServletContext context = new MockServletContext();
 
-        assertNull(WebUtil.getCayenneRuntime(context));
+		assertNull(WebUtil.getCayenneRuntime(context));
 
-        CayenneRuntime runtime = new CayenneRuntime() {
-        };
+		CayenneRuntime runtime = mock(CayenneRuntime.class);
 
-        WebUtil.setCayenneRuntime(context, runtime);
-        assertSame(runtime, WebUtil.getCayenneRuntime(context));
+		WebUtil.setCayenneRuntime(context, runtime);
+		assertSame(runtime, WebUtil.getCayenneRuntime(context));
 
-        CayenneRuntime runtime1 = new CayenneRuntime() {
-        };
+		CayenneRuntime runtime1 = mock(CayenneRuntime.class);
 
-        WebUtil.setCayenneRuntime(context, runtime1);
-        assertSame(runtime1, WebUtil.getCayenneRuntime(context));
+		WebUtil.setCayenneRuntime(context, runtime1);
+		assertSame(runtime1, WebUtil.getCayenneRuntime(context));
 
-        WebUtil.setCayenneRuntime(context, null);
-        assertNull(WebUtil.getCayenneRuntime(context));
-    }
+		WebUtil.setCayenneRuntime(context, null);
+		assertNull(WebUtil.getCayenneRuntime(context));
+	}
 }

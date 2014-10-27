@@ -19,20 +19,22 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import org.apache.cayenne.modeler.Application;
 
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-
-import org.apache.cayenne.modeler.Application;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 /**
  */
@@ -46,16 +48,22 @@ public class CodeGeneratorDialog extends JDialog {
 
     public CodeGeneratorDialog(Component generatorPanel, Component entitySelectorPanel) {
         super(Application.getFrame());
-        
+
         this.tabs = new JTabbedPane(SwingConstants.TOP);
         this.generateButton = new JButton("Generate");
         this.cancelButton = new JButton("Cancel");
         this.classesCount = new JLabel("No classes selected");
         classesCount.setFont(classesCount.getFont().deriveFont(10f));
 
+        JScrollPane scrollPane = new JScrollPane(
+                generatorPanel,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(800, 400));
+
         // assemble
 
-        tabs.addTab("Code Generator", generatorPanel);
+        tabs.addTab("Code Generator", scrollPane);
         tabs.addTab("Classes", entitySelectorPanel);
 
         JPanel messages = new JPanel(new BorderLayout());

@@ -19,300 +19,224 @@
 
 package org.apache.cayenne.exp;
 
-import java.io.PrintWriter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.parser.ASTLike;
-import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class ExpressionFactoryTest extends ServerCase {
+public class ExpressionFactoryTest {
 
-    @Inject
-    private ObjectContext context;
+	private TstTraversalHandler handler;
 
-    public void testExpressionOfBadType() throws Exception {
+	@Before
+	public void before() throws Exception {
+		handler = new TstTraversalHandler();
+	}
 
-        // non existing type
-        int badType = -50;
+	@Test
+	public void testMatchAllExp() throws Exception {
+		// create expressions and check the counts,
+		// leaf count should be (2N) : 2 leafs for each pair
+		// node count should be (2N + 1) for nodes with more than 1 pair
+		// and 2N for a single pair : 2 nodes for each pair + 1 list node
+		// where N is map size
 
-        try {
-            ExpressionFactory.expressionOfType(badType);
-            fail();
-        }
-        catch (ExpressionException ex) {
-            // exception expected
-        }
-    }
+		// check for N in (1..3)
+		for (int n = 1; n <= 3; n++) {
+			Map<String, Object> map = new HashMap<String, Object>();
 
-    public void testBetweenExp() throws Exception {
-        Object v1 = new Object();
-        Object v2 = new Object();
-        Expression exp = ExpressionFactory.betweenExp("abc", v1, v2);
-        assertEquals(Expression.BETWEEN, exp.getType());
+			// populate map
+			for (int i = 1; i <= n; i++) {
+				map.put("k" + i, "v" + i);
+			}
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.OBJ_PATH, path.getType());
-    }
+			Expression exp = ExpressionFactory.matchAllExp(map,
+					Expression.LESS_THAN);
+			assertNotNull(exp);
+			handler.traverseExpression(exp);
 
-    public void testBetweenDbExp() throws Exception {
-        Object v1 = new Object();
-        Object v2 = new Object();
-        Expression exp = ExpressionFactory.betweenDbExp("abc", v1, v2);
-        assertEquals(Expression.BETWEEN, exp.getType());
+			// assert statistics
+			handler.assertConsistency();
+			assertEquals("Failed: " + exp, 2 * n, handler.getLeafs());
+			assertEquals("Failed: " + exp, n < 2 ? 2 * n : 2 * n + 1,
+					handler.getNodeCount());
+		}
+	}
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.DB_PATH, path.getType());
-    }
+	@Test
+	public void testJoinExp() throws Exception {
+		// create expressions and check the counts,
+		// leaf count should be (2N) : 2 leafs for each expression
+		// node count should be N > 1 ? 2 * N + 1 : 2 * N
+		// where N is map size
 
-    public void testNotBetweenExp() throws Exception {
-        Object v1 = new Object();
-        Object v2 = new Object();
-        Expression exp = ExpressionFactory.notBetweenExp("abc", v1, v2);
-        assertEquals(Expression.NOT_BETWEEN, exp.getType());
+		// check for N in (1..5)
+		for (int n = 1; n <= 5; n++) {
+			Collection<Expression> list = new ArrayList<Expression>();
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.OBJ_PATH, path.getType());
-    }
+			// populate map
+			for (int i = 1; i <= n; i++) {
+				list.add(ExpressionFactory.matchExp(("k" + i), "v" + i));
+			}
 
-    public void testNotBetweenDbExp() throws Exception {
-        Object v1 = new Object();
-        Object v2 = new Object();
-        Expression exp = ExpressionFactory.notBetweenDbExp("abc", v1, v2);
-        assertEquals(Expression.NOT_BETWEEN, exp.getType());
+			Expression exp = ExpressionFactory.joinExp(Expression.AND, list);
+			assertNotNull(exp);
+			handler.traverseExpression(exp);
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.DB_PATH, path.getType());
-    }
+			// assert statistics
+			handler.assertConsistency();
+			assertEquals("Failed: " + exp, 2 * n, handler.getLeafs());
+			assertEquals("Failed: " + exp, n > 1 ? 2 * n + 1 : 2 * n,
+					handler.getNodeCount());
+		}
+	}
 
-    public void testGreaterExp() throws Exception {
-        Object v = new Object();
-        Expression exp = ExpressionFactory.greaterExp("abc", v);
-        assertEquals(Expression.GREATER_THAN, exp.getType());
-    }
+	@Test
+	public void testAnd_Collection() {
+		Expression e1 = ExpressionFactory.matchExp("a", 1);
+		Expression e2 = ExpressionFactory.matchExp("b", 2);
+		Expression e3 = ExpressionFactory.matchExp("c", "C");
 
-    public void testGreaterDbExp() throws Exception {
-        Object v = new Object();
-        Expression exp = ExpressionFactory.greaterDbExp("abc", v);
-        assertEquals(Expression.GREATER_THAN, exp.getType());
+		Collection<Expression> c = Arrays.asList(e1, e2, e3);
+		Expression e = ExpressionFactory.and(c);
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.DB_PATH, path.getType());
-    }
+		assertEquals("(a = 1) and (b = 2) and (c = \"C\")", e.toString());
+	}
 
-    public void testGreaterOrEqualExp() throws Exception {
-        Object v = new Object();
-        Expression exp = ExpressionFactory.greaterOrEqualExp("abc", v);
-        assertEquals(Expression.GREATER_THAN_EQUAL_TO, exp.getType());
-    }
+	@Test
+	public void testAnd_Collection_OneElement() {
+		Expression e1 = ExpressionFactory.matchExp("a", 1);
 
-    public void testGreaterOrEqualDbExp() throws Exception {
-        Object v = new Object();
-        Expression exp = ExpressionFactory.greaterOrEqualDbExp("abc", v);
-        assertEquals(Expression.GREATER_THAN_EQUAL_TO, exp.getType());
+		Collection<Expression> c = Arrays.asList(e1);
+		Expression e = ExpressionFactory.and(c);
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.DB_PATH, path.getType());
-    }
+		assertEquals("a = 1", e.toString());
+	}
 
-    public void testLessExp() throws Exception {
-        Object v = new Object();
-        Expression exp = ExpressionFactory.lessExp("abc", v);
-        assertEquals(Expression.LESS_THAN, exp.getType());
-    }
+	@Test
+	public void testAnd_Collection_Empty() {
 
-    public void testLessDbExp() throws Exception {
-        Object v = new Object();
-        Expression exp = ExpressionFactory.lessDbExp("abc", v);
-        assertEquals(Expression.LESS_THAN, exp.getType());
+		Expression e = ExpressionFactory.and(Collections
+				.<Expression> emptyList());
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.DB_PATH, path.getType());
-    }
+		// hmm... is this really a valid return value?
+		assertNull(e);
+	}
 
-    public void testLessOrEqualExp() throws Exception {
-        Object v = new Object();
-        Expression exp = ExpressionFactory.lessOrEqualExp("abc", v);
-        assertEquals(Expression.LESS_THAN_EQUAL_TO, exp.getType());
+	@Test
+	public void testAnd_Vararg() {
+		Expression e1 = ExpressionFactory.matchExp("a", 1);
+		Expression e2 = ExpressionFactory.matchExp("b", 2);
+		Expression e3 = ExpressionFactory.matchExp("c", "C");
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.OBJ_PATH, path.getType());
-    }
+		Expression e = ExpressionFactory.and(e1, e2, e3);
 
-    public void testLessOrEqualDbExp() throws Exception {
-        Object v = new Object();
-        Expression exp = ExpressionFactory.lessOrEqualDbExp("abc", v);
-        assertEquals(Expression.LESS_THAN_EQUAL_TO, exp.getType());
+		assertEquals("(a = 1) and (b = 2) and (c = \"C\")", e.toString());
+	}
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.DB_PATH, path.getType());
-    }
+	@Test
+	public void testAnd_Vararg_OneElement() {
+		Expression e1 = ExpressionFactory.matchExp("a", 1);
+		Expression e = ExpressionFactory.and(e1);
+		assertEquals("a = 1", e.toString());
+	}
 
-    public void testInExp1() throws Exception {
-        Expression exp = ExpressionFactory.inExp("abc", "a", "b");
-        assertEquals(Expression.IN, exp.getType());
-    }
+	@Test
+	public void testAnd_Vararg_Empty() {
 
-    public void testInExp2() throws Exception {
-        List<Object> v = new ArrayList<Object>();
-        v.add("a");
-        v.add("b");
-        Expression exp = ExpressionFactory.inExp("abc", v);
-        assertEquals(Expression.IN, exp.getType());
-    }
+		Expression e = ExpressionFactory.and();
 
-    public void testInExp3() throws Exception {
-        List<Object> v = new ArrayList<Object>();
-        Expression exp = ExpressionFactory.inExp("abc", v);
-        assertEquals(Expression.FALSE, exp.getType());
-    }
+		// hmm... is this really a valid return value?
+		assertNull(e);
+	}
 
-    public void testLikeExp() throws Exception {
-        String v = "abc";
-        Expression exp = ExpressionFactory.likeExp("abc", v);
-        assertEquals(Expression.LIKE, exp.getType());
+	@Test
+	public void testOr_Collection() {
+		Expression e1 = ExpressionFactory.matchExp("a", 1);
+		Expression e2 = ExpressionFactory.matchExp("b", 2);
+		Expression e3 = ExpressionFactory.matchExp("c", "C");
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.OBJ_PATH, path.getType());
-    }
+		Collection<Expression> c = Arrays.asList(e1, e2, e3);
+		Expression e = ExpressionFactory.or(c);
 
-    public void testLikeDbExp() throws Exception {
-        String v = "abc";
-        Expression exp = ExpressionFactory.likeDbExp("abc", v);
-        assertEquals(Expression.LIKE, exp.getType());
+		assertEquals("(a = 1) or (b = 2) or (c = \"C\")", e.toString());
+	}
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.DB_PATH, path.getType());
-    }
+	@Test
+	public void testOr_Vararg() {
+		Expression e1 = ExpressionFactory.matchExp("a", 1);
+		Expression e2 = ExpressionFactory.matchExp("b", 2);
+		Expression e3 = ExpressionFactory.matchExp("c", "C");
 
-    public void testLikeExpEscape() throws Exception {
-        String v = "abc";
-        Expression exp = ExpressionFactory.likeExp("=abc", v, '=');
-        assertEquals(Expression.LIKE, exp.getType());
+		Expression e = ExpressionFactory.or(e1, e2, e3);
 
-        assertEquals('=', ((ASTLike) exp).getEscapeChar());
+		assertEquals("(a = 1) or (b = 2) or (c = \"C\")", e.toString());
+	}
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.OBJ_PATH, path.getType());
-    }
+	@Test
+	public void testExp_Long() {
+		Expression e = ExpressionFactory.exp("216201000180L");
+		assertEquals(216201000180L, e.evaluate(new Object()));
+	}
 
-    public void testLikeIgnoreCaseExp() throws Exception {
-        String v = "abc";
-        Expression exp = ExpressionFactory.likeIgnoreCaseExp("abc", v);
-        assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
-        assertEquals(0, ((ASTLikeIgnoreCase) exp).getEscapeChar());
+	@Test
+	public void testExp_Path() {
+		Expression e1 = ExpressionFactory.exp("object.path");
+		assertEquals(Expression.OBJ_PATH, e1.getType());
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.OBJ_PATH, path.getType());
-    }
+		Expression e2 = ExpressionFactory.exp("db:object.path");
+		assertEquals(Expression.DB_PATH, e2.getType());
 
-    public void testLikeIgnoreCaseExpEscape() throws Exception {
-        String v = "abc";
-        Expression exp = ExpressionFactory.likeIgnoreCaseExp("=abc", v, '=');
-        assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
-        assertEquals('=', ((ASTLikeIgnoreCase) exp).getEscapeChar());
+		Expression e3 = ExpressionFactory.exp("object+.path");
+		assertEquals(Expression.OBJ_PATH, e3.getType());
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.OBJ_PATH, path.getType());
-    }
+		Expression e4 = ExpressionFactory.exp("db:object.path+");
+		assertEquals(Expression.DB_PATH, e4.getType());
+	}
 
-    public void testLikeIgnoreCaseDbExp() throws Exception {
-        String v = "abc";
-        Expression exp = ExpressionFactory.likeIgnoreCaseDbExp("abc", v);
-        assertEquals(Expression.LIKE_IGNORE_CASE, exp.getType());
+	@Test
+	public void testExp_Scalar() {
+		Expression e1 = ExpressionFactory.exp("a = 'abc'");
+		assertEquals("abc", e1.getOperand(1));
+	}
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.DB_PATH, path.getType());
-    }
+	@Test
+	public void testExp_Enum() {
+		Expression e1 = ExpressionFactory
+				.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.ONE");
+		assertEquals(ExpEnum1.ONE, e1.getOperand(1));
 
-    public void testNotLikeIgnoreCaseExp() throws Exception {
-        String v = "abc";
-        Expression exp = ExpressionFactory.notLikeIgnoreCaseExp("abc", v);
-        assertEquals(Expression.NOT_LIKE_IGNORE_CASE, exp.getType());
-    }
+		Expression e2 = ExpressionFactory
+				.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
+		assertEquals(ExpEnum1.TWO, e2.getOperand(1));
 
-    // testing CAY-941 bug
-    public void testLikeExpNull() throws Exception {
-        Expression exp = ExpressionFactory.likeExp("abc", null);
-        assertEquals(Expression.LIKE, exp.getType());
+		Expression e3 = ExpressionFactory
+				.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
+		assertEquals(ExpEnum1.THREE, e3.getOperand(1));
+	}
 
-        Expression path = (Expression) exp.getOperand(0);
-        assertEquals(Expression.OBJ_PATH, path.getType());
-        assertNull(exp.getOperand(1));
-    }
+	@Test(expected = ExpressionException.class)
+	public void testExp_EnumInvalid1() {
+		ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.BOGUS");
+	}
 
-    // CAY-416
-    public void testCollectionMatch() {
-        Artist artist = context.newObject(Artist.class);
-        artist.setArtistName("artist");
-        Painting p1 = context.newObject(Painting.class), p2 = context
-                .newObject(Painting.class), p3 = context.newObject(Painting.class);
-        p1.setPaintingTitle("p1");
-        p2.setPaintingTitle("p2");
-        p3.setPaintingTitle("p3");
-        artist.addToPaintingArray(p1);
-        artist.addToPaintingArray(p2);
-        
-        context.commitChanges();
+	@Test(expected = ExpressionException.class)
+	public void testExp_EnumInvalid2() {
+		ExpressionFactory.exp("a = enum:BOGUS");
+	}
 
-        assertTrue(ExpressionFactory.matchExp("paintingArray", p1).match(artist));
-        assertFalse(ExpressionFactory.matchExp("paintingArray", p3).match(artist));
-        assertFalse(ExpressionFactory.noMatchExp("paintingArray", p1).match(artist));
-        assertTrue(ExpressionFactory.noMatchExp("paintingArray", p3).match(artist));
-
-        assertTrue(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p1").match(
-                artist));
-        assertFalse(ExpressionFactory
-                .matchExp("paintingArray.paintingTitle", "p3")
-                .match(artist));
-        assertFalse(ExpressionFactory
-                .noMatchExp("paintingArray.paintingTitle", "p1")
-                .match(artist));
-        assertTrue(ExpressionFactory
-                .noMatchExp("paintingArray.paintingTitle", "p3")
-                .match(artist));
-
-        assertTrue(ExpressionFactory.inExp("paintingTitle", "p1").match(p1));
-        assertFalse(ExpressionFactory.notInExp("paintingTitle", "p3").match(p3));
-    }
-
-    public void testIn() {
-        Artist a1 = context.newObject(Artist.class);
-        a1.setArtistName("a1");
-        Painting p1 = context.newObject(Painting.class);
-        p1.setPaintingTitle("p1");
-        Painting p2 = context.newObject(Painting.class);
-        p2.setPaintingTitle("p2");
-        a1.addToPaintingArray(p1);
-        a1.addToPaintingArray(p2);
-
-        Expression in = ExpressionFactory.inExp("paintingArray", p1);
-        assertTrue(in.match(a1));
-    }
-    
-    public void testEscapeCharacter() {
-        Artist a1 = context.newObject(Artist.class);
-        a1.setArtistName("A_1");
-        Artist a2 = context.newObject(Artist.class);
-        a2.setArtistName("A_2");
-        context.commitChanges();
-        
-        Expression ex1 = ExpressionFactory.likeIgnoreCaseDbExp("ARTIST_NAME", "A*_1", '*');
-        SelectQuery q1 = new SelectQuery(Artist.class, ex1);
-        List<Artist> artists = context.performQuery(q1);
-        assertEquals(1, artists.size());
-        
-        Expression ex2 = ExpressionFactory.likeExp("artistName", "A*_2", '*');
-        SelectQuery q2 = new SelectQuery(Artist.class, ex2);
-        artists = context.performQuery(q2);
-        assertEquals(1, artists.size());
-    }
+	@Test
+	public void testExp_Vararg_InAsValues() throws Exception {
+		Expression e = ExpressionFactory.exp("k1 in ($ap, $bp)", "a", "b");
+		assertEquals("k1 in (\"a\", \"b\")", e.toString());
+	}
 }

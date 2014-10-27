@@ -19,23 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.swing.Action;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -69,6 +52,7 @@ import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CutAction;
+import org.apache.cayenne.modeler.action.LinkDataMapsAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
@@ -99,6 +83,26 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.Action;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.dnd.DnDConstants;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * Panel displaying Cayenne project as a tree.
  */
@@ -113,7 +117,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
     protected ProjectController mediator;
     protected TreeSelectionListener treeSelectionListener;
+    protected TreeWillExpandListener treeWillExpandListener;
     protected JPopupMenu popup;
+    private TreeDragSource tds;
 
     public ProjectTreeView(ProjectController mediator) {
         super();
@@ -122,6 +128,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         initView();
         initController();
         initFromModel(Application.getInstance().getProject());
+        this.tds = new TreeDragSource(this, DnDConstants.ACTION_COPY, mediator);
     }
 
     private void initView() {
@@ -136,15 +143,27 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
                 if (paths != null) {
                     if (paths.length > 1) {
+                        ConfigurationNode projectParentPath = null;
                         ConfigurationNode[] projectPaths = new ConfigurationNode[paths.length];
+                        boolean commonParentPath = true;
+
                         for (int i = 0; i < paths.length; i++) {
                             projectPaths[i] = createProjectPath(paths[i]);
+
+                            if(i>0 && paths[i].getParentPath() != paths[i-1].getParentPath()) {
+                                commonParentPath = false;
+                            }
+                        }
+
+                        if(commonParentPath) {
+                            TreePath parentPath = paths[0].getParentPath();
+                            projectParentPath = createProjectPath(parentPath);
                         }
 
                         mediator
                                 .fireMultipleObjectsDisplayEvent(new MultipleObjectsDisplayEvent(
                                         this,
-                                        projectPaths));
+                                        projectPaths, projectParentPath));
                     }
                     else if (paths.length == 1) {
                         processSelection(paths[0]);
@@ -164,7 +183,22 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             }
         };
 
+        treeWillExpandListener = new TreeWillExpandListener() {
+            @Override
+            public void treeWillExpand(TreeExpansionEvent e) throws ExpandVetoException {
+                TreePath path = e.getPath();
+                processSelection(path);
+            }
+
+            @Override
+            public void treeWillCollapse(TreeExpansionEvent e) throws ExpandVetoException {
+                TreePath path = e.getPath();
+                processSelection(path);
+            }
+        };
+
         addTreeSelectionListener(treeSelectionListener);
+        addTreeWillExpandListener(treeWillExpandListener);
 
         addMouseListener(new PopupHandler());
 
@@ -490,7 +524,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 }
                 // DataMap was unlinked
                 else if (mapCount < node.getChildCount()) {
-                    for (int j = 0; j < node.getChildCount(); j++) {
+                    int j = 0;
+                    while (j < node.getChildCount()) {
                         boolean found = false;
                         DefaultMutableTreeNode child;
                         child = (DefaultMutableTreeNode) node.getChildAt(j);
@@ -498,12 +533,11 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                         for (int i = 0; i < mapCount; i++) {
                             if (domain.getDataMap(mapsName[i].toString()) == obj) {
                                 found = true;
-                                break;
+                                j++;
                             }
                         }
                         if (!found) {
                             removeNode(child);
-                            break;
                         }
                     }
                 }
@@ -941,6 +975,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         popup.addSeparator();
         popup.add(buildMenu(ObjEntitySyncAction.class));
         popup.addSeparator();
+        popup.add(buildMenu(LinkDataMapsAction.class));
+        popup.addSeparator();
         popup.add(buildMenu(RemoveAction.class));
         popup.addSeparator();
         popup.add(buildMenu(CutAction.class));
@@ -1052,4 +1088,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         });
 
     }
+
+    public TreeDragSource getTds() {
+        return tds;
+    }
+
 }

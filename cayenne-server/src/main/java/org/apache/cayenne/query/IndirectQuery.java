@@ -25,95 +25,99 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
- * A convenience superclass of the queries that resolve into some other queries during the
+ * A base superclass for queries that resolve into some other queries during the
  * routing phase. Provides caching of a replacement query.
  * 
  * @since 1.2
  */
 public abstract class IndirectQuery implements Query {
 
-    protected String name;
+	private static final long serialVersionUID = 974666786498898209L;
 
-    /**
-     * @since 3.1
-     */
-    protected DataMap dataMap;
+	protected String name;
 
-    protected transient Query replacementQuery;
+	/**
+	 * @since 3.1
+	 */
+	protected DataMap dataMap;
 
-    protected transient EntityResolver lastResolver;
+	protected transient Query replacementQuery;
+	protected transient EntityResolver lastResolver;
 
-    /**
-     * @since 3.1
-     */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
-    }
+	/**
+	 * @since 3.1
+	 */
+	@Override
+	public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+		return visitor.visitQuery(this);
+	}
 
-    /**
-     * @since 3.1
-     */
-    public DataMap getDataMap() {
-        return dataMap;
-    }
+	/**
+	 * @since 3.1
+	 */
+	@Override
+	public DataMap getDataMap() {
+		return dataMap;
+	}
 
-    /**
-     * @since 3.1
-     */
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
-    }
+	/**
+	 * @since 3.1
+	 */
+	public void setDataMap(DataMap dataMap) {
+		this.dataMap = dataMap;
+	}
 
-    /**
-     * Returns the metadata obtained from the replacement query.
-     */
-    public QueryMetadata getMetaData(EntityResolver resolver) {
-        return getReplacementQuery(resolver).getMetaData(resolver);
-    }
+	/**
+	 * Returns the metadata obtained from the replacement query.
+	 */
+	@Override
+	public QueryMetadata getMetaData(EntityResolver resolver) {
+		return getReplacementQuery(resolver).getMetaData(resolver);
+	}
 
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * Delegates routing to a replacement query.
-     */
-    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        getReplacementQuery(resolver).route(
-                router,
-                resolver,
-                substitutedQuery != null ? substitutedQuery : this);
-    }
+	/**
+	 * Delegates routing to a replacement query.
+	 */
+	@Override
+	public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
+		getReplacementQuery(resolver).route(router, resolver, substitutedQuery != null ? substitutedQuery : this);
+	}
 
-    /**
-     * Creates a substitute query. An implementor is free to provide an arbitrary
-     * replacement query.
-     */
-    protected abstract Query createReplacementQuery(EntityResolver resolver);
+	/**
+	 * Creates a substitute query. An implementor is free to provide an
+	 * arbitrary replacement query.
+	 */
+	protected abstract Query createReplacementQuery(EntityResolver resolver);
 
-    /**
-     * Returns a replacement query, creating it on demand and caching it for reuse.
-     */
-    protected Query getReplacementQuery(EntityResolver resolver) {
-        if (replacementQuery == null || lastResolver != resolver) {
-            this.replacementQuery = createReplacementQuery(resolver);
-            this.lastResolver = resolver;
-        }
+	/**
+	 * Returns a replacement query, creating it on demand and caching it for
+	 * reuse.
+	 */
+	protected Query getReplacementQuery(EntityResolver resolver) {
+		if (replacementQuery == null || lastResolver != resolver) {
+			this.replacementQuery = createReplacementQuery(resolver);
+			this.lastResolver = resolver;
+		}
 
-        return replacementQuery;
-    }
+		return replacementQuery;
+	}
 
-    /**
-     * Throws an exception as indirect query should not be executed directly.
-     */
-    public SQLAction createSQLAction(SQLActionVisitor visitor) {
-        throw new CayenneRuntimeException(this.getClass().getName()
-                + " is an indirect query and doesn't support its own sql actions. "
-                + "It should've been delegated to another "
-                + "query during resolution or routing phase.");
-    }
+	/**
+	 * Throws an exception as indirect query should not be executed directly.
+	 */
+	@Override
+	public SQLAction createSQLAction(SQLActionVisitor visitor) {
+		throw new CayenneRuntimeException(this.getClass().getName()
+				+ " is an indirect query and doesn't support its own sql actions. "
+				+ "It should've been delegated to another " + "query during resolution or routing phase.");
+	}
 }

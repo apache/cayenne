@@ -13,6 +13,8 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-1826 Merge Entity Attributes and Relationships tabs together with one toolbar.
+CAY-1839 Allow to link DataMaps to DataNodes from DataNode editor.
 CAY-1841 Filters for Left-hand project navigator
 CAY-1842 Remove Listeners support from the Modeler 
 CAY-1843 DataMap v7: Stop saving listeners in DataMap, add upgrade handler
@@ -63,6 +65,9 @@ CAY-1949 Search in configuration fields (Catalog, Schema) in DbEntity
 CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
 CAY-1953 Redo ResultIteratorCallback to handle single row callback instead of iterator
 CAY-1954 Make Cayenne class constructor protected
+CAY-1958 SelectById - a new full-featured select query to get objects by id
+CAY-1960 ExpressionFactory.exp(..) , and(..), or(..)
+CAY-1962 Implement CayenneTable column resize on double-click on the header separator
 
 Bug Fixes:
 
@@ -89,6 +94,7 @@ CAY-1881 CayenneModeler (Mac version) doesn't work with Java 7
 CAY-1885 Null value in subclass's field.
 CAY-1905 Multi-step prefetching NPE : 1..N..1 with absent N and root with no qualifier
 CAY-1943 XML file not deleted when a DataMap is deleted from the project
+CAY-1961 Fix RemoveAction for DataMaps in ProjectTree
 
 ----------------------------------
 Release: 3.2M1

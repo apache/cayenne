@@ -19,11 +19,15 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DBGeneratorOptions;
+import org.apache.cayenne.project.Project;
+
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Action that generates database tables from a DataMap.
@@ -40,17 +44,17 @@ public class GenerateDBAction extends DBWizardAction {
 
     public void performAction(ActionEvent e) {
 
-        DataMap map = getProjectController().getCurrentDataMap();
+        Collection<DataMap> dataMaps;
+        DataMap dataMap = getProjectController().getCurrentDataMap();
 
-        // sanity check
-        if (map == null) {
-            throw new IllegalStateException("No current DataMap selected.");
+        if (dataMap != null) {
+            dataMaps = new ArrayList<DataMap>();
+            dataMaps.add(dataMap);
+            new DBGeneratorOptions(getProjectController(), "Generate DB Schema: Options", dataMaps).startupAction();
+        } else {
+            Project project = getProjectController().getProject();
+            dataMaps = ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
+            new DBGeneratorOptions(getProjectController(), "Generate DB Schema: Options", dataMaps).startupAction();
         }
-
-        // ... show dialog...
-        new DBGeneratorOptions(
-                getProjectController(),
-                "Generate DB Schema: Options",
-                map).startupAction();
     }
 }

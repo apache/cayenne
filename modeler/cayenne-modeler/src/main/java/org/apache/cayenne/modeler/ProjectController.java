@@ -19,20 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.prefs.Preferences;
-
-import javax.swing.event.EventListenerList;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -126,6 +112,19 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.IDUtil;
 
+import javax.swing.event.EventListenerList;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import java.util.prefs.Preferences;
+
 /**
  * A controller that works with the project tree, tracking selection and
  * dispatching project events.
@@ -162,6 +161,11 @@ public class ProjectController extends CayenneController {
          * Paths of multiple selection
          */
         private Object[] paths;
+
+        /**
+         * Parent path of multiple selection
+         */
+        private Object parentPath;
 
         /**
          * currently selecte entity listener class
@@ -353,6 +357,24 @@ public class ProjectController extends CayenneController {
                 DataMapDefaults.class, pref);
     }
 
+    public DataMapDefaults getDataMapPreferences(DataMap dataMap) {
+        Preferences pref;
+        pref = getPreferenceForDataDomain().node("DataMap").node(dataMap.getName());
+
+        return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
+    }
+
+    public DataMapDefaults getDataMapPreferences(String nameSuffix, DataMap map) {
+        Preferences pref;
+
+        if (nameSuffix == null || nameSuffix.length() == 0) {
+            pref = getPreferenceForDataDomain().node("DataMap").node(map.getName());
+        } else {
+            pref = getPreferenceForDataDomain().node("DataMap").node(map.getName()).node(nameSuffix);
+        }
+        return (DataMapDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(DataMapDefaults.class, pref);
+    }
+
     /**
      * Returns preferences object for the current DataMap, throwing an exception
      * if no DataMap is selected.
@@ -536,6 +558,10 @@ public class ProjectController extends CayenneController {
 
     public Object[] getCurrentPaths() {
         return currentState.paths;
+    }
+
+    public Object getCurrentParentPath() {
+        return currentState.parentPath;
     }
 
     public void addDomainDisplayListener(DomainDisplayListener listener) {
@@ -1447,6 +1473,7 @@ public class ProjectController extends CayenneController {
     public void fireMultipleObjectsDisplayEvent(MultipleObjectsDisplayEvent e) {
         clearState();
         currentState.paths = e.getNodes();
+        currentState.parentPath = e.getParentNode();
 
         EventListener[] list = listenerList.getListeners(MultipleObjectsDisplayListener.class);
         for (EventListener listener : list) {
@@ -1787,4 +1814,33 @@ public class ProjectController extends CayenneController {
         application.getActionManager().getAction(SaveAction.class).setEnabled(enable);
         application.getActionManager().getAction(SaveAsAction.class).setEnabled(enable);
     }
+
+    /**
+    * Set currently selected ObjAttributes
+    */
+    public void setCurrentObjAttributes(ObjAttribute[] attrs) {
+currentState.objAttrs = attrs;
+}
+
+    /**
+    * Set currently selected ObjRelationships
+    */
+    public void setCurrentObjRelationships(ObjRelationship[] rels) {
+currentState.objRels = rels;
+}
+
+    /**
+    * Set currently selected DbAttributes
+    */
+    public void setCurrentDbAttributes(DbAttribute[] attrs) {
+        currentState.dbAttrs = attrs;
+    }
+
+    /**
+    * Set currently selected DbRelationships
+    */
+    public void setCurrentDbRelationships(DbRelationship[] rels) {
+        currentState.dbRels = rels;
+    }
+
 }

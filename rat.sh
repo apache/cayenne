@@ -62,6 +62,7 @@ java -jar $RAT -d $DIR \
 	-e 'CLOVER.txt' \
 	-e '*.html' \
 	-e '*.css' \
+	-e '*.jceks' \
 	-e 'derby.log'
 
 

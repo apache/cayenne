@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.util.Util;
@@ -25,38 +24,38 @@ import org.apache.cayenne.util.Util;
 import java.io.Serializable;
 
 /**
- * Named parameter for paramterized expressions.
- * 
+ * Named parameter for parameterized expressions.
  */
 public class ExpressionParameter implements Serializable {
+	
 	protected String name;
 
-    /**
-     * Constructor for ExpressionParam.
-     */
-    public ExpressionParameter(String name) {
-        this.name = name;
-    }
-    
-    /**
-     * Returns the name of the expression parameter.
-     */
-    public String getName() {
-        return name;
-    }
-    
-    @Override
-    public String toString() {
-    	return '$' + name;
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if(!(o instanceof ExpressionParameter)) {
-            return false;
-        }
-        
-        ExpressionParameter parameter = (ExpressionParameter)o;
-        return Util.nullSafeEquals(name, parameter.name);
-    }
+	/**
+	 * Constructor for ExpressionParam.
+	 */
+	public ExpressionParameter(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Returns the name of the expression parameter.
+	 */
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String toString() {
+		return '$' + name;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof ExpressionParameter)) {
+			return false;
+		}
+
+		ExpressionParameter parameter = (ExpressionParameter) o;
+		return Util.nullSafeEquals(name, parameter.name);
+	}
 }

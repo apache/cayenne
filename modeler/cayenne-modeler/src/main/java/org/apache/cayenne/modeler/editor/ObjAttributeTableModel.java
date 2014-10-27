@@ -160,7 +160,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
             case INHERITED:
                 return "In";
             case OBJ_ATTRIBUTE:
-                return "ObjAttribute";
+                return "Name";
             case OBJ_ATTRIBUTE_TYPE:
                 return "Java Type";
             case DB_ATTRIBUTE:
