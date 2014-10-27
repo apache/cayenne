@@ -29,7 +29,7 @@ public class Type {
     private String java;
 
     private Integer length;
-    private Double precision;
+    private Integer precision;
     private Integer scale;
     private Boolean notNull;
 
@@ -57,11 +57,11 @@ public class Type {
         this.length = length;
     }
 
-    public Double getPrecision() {
+    public Integer getPrecision() {
         return precision;
     }
 
-    public void setPrecision(Double precision) {
+    public void setPrecision(Integer precision) {
         this.precision = precision;
     }
 

@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.util;
+package org.apache.cayenne.access.loader.mapper;
 
+import org.apache.cayenne.util.EqualsBuilder;
+import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
