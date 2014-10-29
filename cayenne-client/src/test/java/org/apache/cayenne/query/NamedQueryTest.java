@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class NamedQueryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
+public class NamedQueryTest {
+
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         NamedQuery o = new NamedQuery("abc");
         Object clone = HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());

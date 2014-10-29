@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilterChain;
@@ -39,17 +33,25 @@ import org.apache.cayenne.lifecycle.id.IdCoder;
 import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class AuditableFilterTest extends TestCase {
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+public class AuditableFilterTest {
 
     private AuditableProcessor processor;
     private ServerRuntime runtime;
     private AuditableFilter filter;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
         EntityResolver resolver = mock(EntityResolver.class);
 
@@ -65,11 +67,12 @@ public class AuditableFilterTest extends TestCase {
         this.filter.init(channel);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         runtime.shutdown();
     }
 
+    @Test
     public void testInsertAudit() {
 
         Persistent audited = mock(Persistent.class);
@@ -79,6 +82,7 @@ public class AuditableFilterTest extends TestCase {
         verify(processor).audit(audited, AuditableOperation.INSERT);
     }
 
+    @Test
     public void testDeleteAudit() {
 
         Persistent audited = mock(Persistent.class);
@@ -88,6 +92,7 @@ public class AuditableFilterTest extends TestCase {
         verify(processor).audit(audited, AuditableOperation.DELETE);
     }
 
+    @Test
     public void testUpdateAudit() {
 
         Persistent audited = mock(Persistent.class);
@@ -97,6 +102,7 @@ public class AuditableFilterTest extends TestCase {
         verify(processor).audit(audited, AuditableOperation.UPDATE);
     }
 
+    @Test
     public void testUpdateAuditChild() {
 
         Persistent auditedParent = mock(Persistent.class);
@@ -109,6 +115,7 @@ public class AuditableFilterTest extends TestCase {
         verify(processor).audit(auditedParent, AuditableOperation.UPDATE);
     }
 
+    @Test
     public void testUpdateAuditChildByObjectIdRelationship() {
 
         ObjectContext context = runtime.newContext();
@@ -125,6 +132,7 @@ public class AuditableFilterTest extends TestCase {
         verify(processor).audit(auditedParent, AuditableOperation.UPDATE);
     }
 
+    @Test
     public void testOnSyncPassThrough() {
 
         ObjectContext context = mock(ObjectContext.class);
@@ -139,6 +147,7 @@ public class AuditableFilterTest extends TestCase {
         verify(chain).onSync(context, changes, DataChannel.ROLLBACK_CASCADE_SYNC);
     }
 
+    @Test
     public void testOnSyncAuditEventsCollapse() {
 
         ObjectContext context = mock(ObjectContext.class);

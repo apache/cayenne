@@ -19,26 +19,29 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.regex.Pattern;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
+import org.junit.Test;
 
-public class CayenneGeneratorTaskCrossMapRelationshipsTest extends TestCase {
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 
     /**
      * Tests pairs generation with a cross-DataMap relationship.
      */
+    @Test
     public void testCrossDataMapRelationships() throws Exception {
 
         CayenneGeneratorTask task = new CayenneGeneratorTask();

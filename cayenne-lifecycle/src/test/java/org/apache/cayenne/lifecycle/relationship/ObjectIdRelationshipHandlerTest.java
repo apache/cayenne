@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -29,16 +27,23 @@ import org.apache.cayenne.lifecycle.id.IdCoder;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ObjectIdRelationshipHandlerTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+
+public class ObjectIdRelationshipHandlerTest {
 
     private ServerRuntime runtime;
 
     private TableHelper rootTable;
     private TableHelper e1Table;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
 
         // a filter is required to invalidate root objects after commit
@@ -56,11 +61,12 @@ public class ObjectIdRelationshipHandlerTest extends TestCase {
         e1Table.deleteAll();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         runtime.shutdown();
     }
 
+    @Test
     public void testRelate_Existing() throws Exception {
 
         e1Table.insert(1);
@@ -84,6 +90,7 @@ public class ObjectIdRelationshipHandlerTest extends TestCase {
         assertEquals("E1:1", r1x[1]);
     }
 
+    @Test
     public void testRelate_New() throws Exception {
 
         ObjectContext context = runtime.newContext();
@@ -107,6 +114,7 @@ public class ObjectIdRelationshipHandlerTest extends TestCase {
         assertEquals("E1:" + id, r1.getUuid());
     }
 
+    @Test
     public void testRelate_Change() throws Exception {
 
         e1Table.insert(1);

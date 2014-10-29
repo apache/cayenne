@@ -18,39 +18,44 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.id;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class StringIdQueryTest extends TestCase {
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class StringIdQueryTest {
 
     private ServerRuntime runtime;
     private DBHelper dbHelper;
     private TableHelper e1Helper;
     private TableHelper e2Helper;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
         dbHelper = new DBHelper(runtime.getDataSource("lifecycle-db"));
         e1Helper = new TableHelper(dbHelper, "E1", "ID");
         e2Helper = new TableHelper(dbHelper, "E2", "ID");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         runtime.shutdown();
     }
 
+    @Test
     public void testConstructor() {
         StringIdQuery q1 = new StringIdQuery();
         assertEquals(0, q1.getStringIds().size());
@@ -68,6 +73,7 @@ public class StringIdQueryTest extends TestCase {
         assertTrue(q3.getStringIds().contains("c"));
     }
 
+    @Test
     public void testPerformQuery_SingleEntity() throws Exception {
         e1Helper.deleteAll();
         e1Helper.insert(3).insert(4);
@@ -89,6 +95,7 @@ public class StringIdQueryTest extends TestCase {
         assertTrue(ids.contains(4l));
     }
 
+    @Test
     public void testPerformQuery_MultipleEntities() throws Exception {
         e1Helper.deleteAll();
         e1Helper.insert(3).insert(4);
@@ -114,4 +121,5 @@ public class StringIdQueryTest extends TestCase {
         assertTrue(ids.contains("E1:4"));
         assertTrue(ids.contains("E2:6"));
     }
+
 }

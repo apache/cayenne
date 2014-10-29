@@ -18,16 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.tools.dbimport;
 
-import static org.mockito.Mockito.mock;
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.commons.logging.Log;
+import org.junit.Test;
 
-public class DbImportModuleTest extends TestCase {
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
+public class DbImportModuleTest {
+
+    @Test
     public void testModuleContents() {
 
         Log log = mock(Log.class);

@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.tools.configuration;
 
-import static org.mockito.Mockito.mock;
-
-import javax.sql.DataSource;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
@@ -34,9 +28,17 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.commons.logging.Log;
+import org.junit.Test;
 
-public class ToolsModuleTest extends TestCase {
+import javax.sql.DataSource;
 
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+public class ToolsModuleTest {
+
+    @Test
     public void testModuleContents() {
 
         Log log = mock(Log.class);
@@ -48,6 +50,7 @@ public class ToolsModuleTest extends TestCase {
         assertTrue(i.getInstance(DbAdapterFactory.class) instanceof DefaultDbAdapterFactory);
     }
 
+    @Test
     public void testDbApdater() throws Exception {
         Log log = mock(Log.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));

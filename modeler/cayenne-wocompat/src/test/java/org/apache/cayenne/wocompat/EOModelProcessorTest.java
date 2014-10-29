@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.wocompat;
 
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.Collection;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -35,16 +29,29 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.XMLEncoder;
+import org.junit.Before;
+import org.junit.Test;
 
-public class EOModelProcessorTest extends TestCase {
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+public class EOModelProcessorTest {
 
     protected EOModelProcessor processor;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         processor = new EOModelProcessor();
     }
 
+    @Test
     public void testLoadModel() throws Exception {
         URL url = getClass().getClassLoader().getResource("wotests/art.eomodeld/");
         assertNotNull(url);
@@ -57,6 +64,7 @@ public class EOModelProcessorTest extends TestCase {
         assertLoadedCustomTypes(map);
     }
 
+    @Test
     public void testLoadModelWithDependencies() throws Exception {
         URL url = getClass().getClassLoader().getResource(
                 "wotests/cross-model-relationships.eomodeld/");
@@ -79,7 +87,8 @@ public class EOModelProcessorTest extends TestCase {
         assertEquals(0, entity.getRelationships().size());
         assertEquals(0, entity.getDbEntity().getRelationships().size());
     }
-    
+
+    @Test
     public void testLoadFlattened() throws Exception {
         URL url = getClass().getClassLoader().getResource("wotests/flattened.eomodeld/");
         assertNotNull(url);
@@ -93,6 +102,7 @@ public class EOModelProcessorTest extends TestCase {
         assertNotNull(artistE.getRelationship("artistExhibitArray"));
     }
 
+    @Test
     public void testLoadBrokenModel() throws Exception {
         URL url = getClass().getClassLoader().getResource("art-with-errors.eomodeld/");
         assertNotNull(url);

@@ -18,13 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class RefreshQueryTest extends TestCase {
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
+public class RefreshQueryTest {
+
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         RefreshQuery o = new RefreshQuery();
         Object clone = HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());

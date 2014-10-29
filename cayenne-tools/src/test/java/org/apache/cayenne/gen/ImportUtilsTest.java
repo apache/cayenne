@@ -19,24 +19,29 @@
 
 package org.apache.cayenne.gen;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ImportUtilsTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class ImportUtilsTest {
 
     protected ImportUtils importUtils = null;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         importUtils = new ImportUtils();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         importUtils = null;
     }
 
+    @Test
     public void testSetPackageGeneratesPackageStatement() throws Exception {
         final String packageName = "org.myPackage";
         final String expectedPackageStatement = "package " + packageName + ";";
@@ -54,6 +59,7 @@ public class ImportUtilsTest extends TestCase {
                 .lastIndexOf(expectedPackageStatement));
     }
 
+    @Test
     public void testAddTypeGeneratesImportStatement() throws Exception {
         final String type = "org.myPackage.myType";
         final String expectedImportStatement = "import " + type + ";";
@@ -71,6 +77,7 @@ public class ImportUtilsTest extends TestCase {
                 .lastIndexOf(expectedImportStatement));
     }
 
+    @Test
     public void testAddReservedTypeGeneratesNoImportStatement() throws Exception {
         final String type = "org.myPackage.myType";
 
@@ -83,6 +90,7 @@ public class ImportUtilsTest extends TestCase {
                 generatedStatements.indexOf(type));
     }
 
+    @Test
     public void testAddTypeAfterReservedTypeGeneratesNoImportStatement() throws Exception {
         final String baseType = "myType";
         final String reservedType = "org.myPackage." + baseType;
@@ -102,6 +110,7 @@ public class ImportUtilsTest extends TestCase {
                 generatedStatements.indexOf(nonReservedType));
     }
 
+    @Test
     public void testAddTypeAfterPackageReservedTypeGeneratesNoImportStatement()
             throws Exception {
         final String baseType = "myType";
@@ -125,6 +134,7 @@ public class ImportUtilsTest extends TestCase {
                 generatedStatements.indexOf(nonReservedType));
     }
 
+    @Test
     public void testAddTypeAfterTypeGeneratesNoImportStatement() throws Exception {
         final String baseType = "myType";
         final String firstType = "org.myPackage." + baseType;
@@ -152,6 +162,7 @@ public class ImportUtilsTest extends TestCase {
                 generatedStatements.indexOf(secondType));
     }
 
+    @Test
     public void testAddSimilarTypeTwiceBeforeFormatJavaTypeGeneratesCorrectFQNs()
             throws Exception {
         final String baseType = "myType";
@@ -165,6 +176,7 @@ public class ImportUtilsTest extends TestCase {
         assertEquals(secondType, importUtils.formatJavaType(secondType));
     }
 
+    @Test
     public void testAddTypeBeforeFormatJavaTypeGeneratesCorrectFQNs() throws Exception {
         final String baseType = "myType";
         final String fullyQualifiedType = "org.myPackage." + baseType;
@@ -174,6 +186,7 @@ public class ImportUtilsTest extends TestCase {
         assertEquals(baseType, importUtils.formatJavaType(fullyQualifiedType));
     }
 
+    @Test
     public void testAddReservedTypeBeforeFormatJavaTypeGeneratesCorrectFQNs()
             throws Exception {
         final String baseType = "myType";
@@ -184,6 +197,7 @@ public class ImportUtilsTest extends TestCase {
         assertEquals(fullyQualifiedType, importUtils.formatJavaType(fullyQualifiedType));
     }
 
+    @Test
     public void testFormatJavaTypeWithPrimitives() throws Exception {
         assertEquals("int", importUtils.formatJavaType("int", true));
         assertEquals("Integer", importUtils.formatJavaType("int", false));
@@ -199,6 +213,7 @@ public class ImportUtilsTest extends TestCase {
         assertEquals("a.b.C", importUtils.formatJavaType("a.b.C", false));
     }
 
+    @Test
     public void testFormatJavaTypeWithoutAddTypeGeneratesCorrectFQNs() throws Exception {
         final String baseType = "myType";
         final String fullyQualifiedType = "org.myPackage." + baseType;
@@ -206,6 +221,7 @@ public class ImportUtilsTest extends TestCase {
         assertEquals(fullyQualifiedType, importUtils.formatJavaType(fullyQualifiedType));
     }
 
+    @Test
     public void testPackageFormatJavaTypeWithoutAddTypeGeneratesCorrectFQNs()
             throws Exception {
         final String baseType = "myType";
@@ -217,12 +233,14 @@ public class ImportUtilsTest extends TestCase {
         assertEquals(baseType, importUtils.formatJavaType(fullyQualifiedType));
     }
 
+    @Test
     public void testFormatJavaType() {
         assertEquals("x.X", importUtils.formatJavaType("x.X"));
         assertEquals("X", importUtils.formatJavaType("java.lang.X"));
         assertEquals("java.lang.x.X", importUtils.formatJavaType("java.lang.x.X"));
     }
 
+    @Test
     public void testJavaLangTypeFormatJavaTypeWithoutAddTypeGeneratesCorrectFQNs()
             throws Exception {
         final String baseType = "myType";

@@ -19,42 +19,52 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.io.File;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class DataMapFileFilterTest extends TestCase {
+public class DataMapFileFilterTest {
 
     protected FileFilter filter;
 
+    @Before
     public void setUp() throws Exception {
         filter = FileFilters.getDataMapFilter();
     }
 
+    @Test
     public void testAcceptDir() throws Exception {
         assertTrue(filter.accept(new File(".")));
     }
 
+    @Test
     public void testRejectCayenneXml() throws Exception {
         assertFalse(filter.accept(new File("cayenne.xml")));
     }
 
+    @Test
     public void testRejectOther() throws Exception {
         assertFalse(filter.accept(new File("somefile.txt")));
     }
 
+    @Test
     public void testRejectHiddenMapXml() throws Exception {
         assertFalse(filter.accept(new File(".map.xml")));
     }
 
+    @Test
     public void testAcceptMapXml() throws Exception {
         assertTrue(filter.accept(new File("xyz.map.xml")));
     }
 
+    @Test
     public void testRejectMixedCase() throws Exception {
         assertFalse(filter.accept(new File("xyz.MAP.xml")));
     }

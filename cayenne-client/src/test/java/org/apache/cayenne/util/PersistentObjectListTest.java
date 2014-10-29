@@ -18,18 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.junit.Test;
 
-public class PersistentObjectListTest extends TestCase {
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+public class PersistentObjectListTest {
+
+    @Test
     public void testFaultHessianSerialization() throws Exception {
 
         ClientMtTable1 owner = new ClientMtTable1();
@@ -45,6 +51,7 @@ public class PersistentObjectListTest extends TestCase {
         assertNull(deserialized);
     }
 
+    @Test
     public void testResolvedHessianSerialization() throws Exception {
 
         ClientMtTable1 owner = new ClientMtTable1();

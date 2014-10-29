@@ -18,21 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.project.unit;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.test.file.FileUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class Project2Case extends TestCase {
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.fail;
+
+public class Project2Case {
 
     /**
      * A helper method returning the contents of an XML source as a DOM Document.

@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;
@@ -27,9 +25,14 @@ import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface1_Decorator1;
 import org.apache.cayenne.di.mock.MockInterface1_Decorator2;
 import org.apache.cayenne.di.mock.MockInterface1_Decorator3;
+import org.junit.Test;
 
-public class DefaultInjectorDecorationTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+public class DefaultInjectorDecorationTest {
+
+    @Test
     public void testSingleDecorator_After() {
 
         Module module = new Module() {
@@ -48,6 +51,7 @@ public class DefaultInjectorDecorationTest extends TestCase {
         assertEquals("[MyName]", service.getName());
     }
 
+    @Test
     public void testSingleDecorator_Before() {
 
         Module module = new Module() {
@@ -66,6 +70,7 @@ public class DefaultInjectorDecorationTest extends TestCase {
         assertEquals("[MyName]", service.getName());
     }
 
+    @Test
     public void testDecoratorChain() {
 
         Module module = new Module() {

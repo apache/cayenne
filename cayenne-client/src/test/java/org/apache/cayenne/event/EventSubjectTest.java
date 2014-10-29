@@ -18,13 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.event;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class EventSubjectTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
+public class EventSubjectTest {
+
+    @Test
     public void testEqualityOfClonedSubjectsHessian() throws Exception {
         EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
         EventSubject s2 = (EventSubject) HessianUtil.cloneViaClientServerSerialization(s1, new EntityResolver());

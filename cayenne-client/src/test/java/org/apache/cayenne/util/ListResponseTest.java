@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.util;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class ListResponseTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+public class ListResponseTest {
+
+    @Test
     public void testSerializationWithHessian() throws Exception {
 
         ListResponse r = new ListResponse(new Integer(67));

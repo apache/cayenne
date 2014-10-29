@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.wocompat;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -27,19 +30,25 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class EOModelHelperTest extends TestCase {
+public class EOModelHelperTest {
 
     protected EOModelHelper helper;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         URL url = getClass().getClassLoader().getResource("wotests/art.eomodeld/");
         assertNotNull(url);
         helper = new EOModelHelper(url);
     }
 
+    @Test
     public void testModelNames() throws Exception {
         Iterator names = helper.modelNames();
 
@@ -55,6 +64,7 @@ public class EOModelHelperTest extends TestCase {
         assertTrue(list.contains("ExhibitType"));
     }
 
+    @Test
     public void testQueryNames() throws Exception {
         Iterator artistNames = helper.queryNames("Artist");
         assertFalse(artistNames.hasNext());
@@ -73,6 +83,7 @@ public class EOModelHelperTest extends TestCase {
         assertTrue(list.contains("TestQuery"));
     }
 
+    @Test
     public void testQueryPListMap() throws Exception {
         assertNull(helper.queryPListMap("Artist", "AAA"));
         assertNull(helper.queryPListMap("ExhibitType", "AAA"));
@@ -82,18 +93,21 @@ public class EOModelHelperTest extends TestCase {
         assertFalse(query.isEmpty());
     }
 
+    @Test
     public void testLoadQueryIndex() throws Exception {
         Map index = helper.loadQueryIndex("ExhibitType");
         assertNotNull(index);
         assertTrue(index.containsKey("FetchAll"));
     }
 
+    @Test
     public void testOpenQueryStream() throws Exception {
         InputStream in = helper.openQueryStream("ExhibitType");
         assertNotNull(in);
         in.close();
     }
 
+    @Test
     public void testOpenNonExistentQueryStream() throws Exception {
         try {
             helper.openQueryStream("Artist");

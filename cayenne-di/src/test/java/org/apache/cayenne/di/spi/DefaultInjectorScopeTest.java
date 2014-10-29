@@ -18,18 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import junit.framework.TestCase;
-
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.mock.MockImplementation1;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockImplementation1_Provider;
 import org.apache.cayenne.di.mock.MockInterface1;
+import org.junit.Test;
 
-public class DefaultInjectorScopeTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+public class DefaultInjectorScopeTest {
+
+    @Test
     public void testDefaultScope_IsSingleton() {
 
         Module module = new Module() {
@@ -53,6 +60,7 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertSame(instance2, instance3);
     }
 
+    @Test
     public void testNoScope() {
 
         Module module = new Module() {
@@ -80,6 +88,7 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertNotSame(instance3, instance1);
     }
 
+    @Test
     public void testSingletonScope() {
 
         Module module = new Module() {
@@ -106,6 +115,7 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertSame(instance2, instance3);
     }
 
+    @Test
     public void testSingletonScope_AnnotatedEvents() {
 
         MockImplementation1_EventAnnotations.reset();
@@ -134,6 +144,7 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertTrue(MockImplementation1_EventAnnotations.shutdown3);
     }
 
+    @Test
     public void testSingletonScope_WithProvider() {
 
         Module module = new Module() {
@@ -158,6 +169,7 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertSame(instance2, instance3);
     }
 
+    @Test
     public void testNoScope_WithProvider() {
 
         Module module = new Module() {

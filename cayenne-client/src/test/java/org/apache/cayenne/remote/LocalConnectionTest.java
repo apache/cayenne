@@ -22,13 +22,17 @@ package org.apache.cayenne.remote;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.MockDataChannel;
 import org.apache.cayenne.remote.service.LocalConnection;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class LocalConnectionTest extends TestCase {
+public class LocalConnectionTest {
 
+    @Test
     public void testConstructors() {
         DataChannel handler1 = new MockDataChannel();
         LocalConnection connector1 = new LocalConnection(handler1);

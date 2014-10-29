@@ -19,15 +19,17 @@
 
 package org.apache.cayenne.tools;
 
-import junit.framework.TestCase;
-
 import org.apache.tools.ant.Task;
+import org.junit.Test;
 
-public class NamePatternMatcherTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class NamePatternMatcherTest {
 
     /**
      * Test pattern expansion.
      */
+    @Test
     public void testReplaceWildcardInStringWithString() throws Exception {
         assertEquals(null, NamePatternMatcher.replaceWildcardInStringWithString(
                 "*",
@@ -60,6 +62,7 @@ public class NamePatternMatcherTest extends TestCase {
     /**
      * Test tokenizing
      */
+    @Test
     public void testTokenizer() {
         Task parentTask = new Task() {
 
@@ -88,6 +91,7 @@ public class NamePatternMatcherTest extends TestCase {
     /**
      * Test tokenizing
      */
+    @Test
     public void testTokenizerEntities() {
         Task parentTask = new Task() {
 

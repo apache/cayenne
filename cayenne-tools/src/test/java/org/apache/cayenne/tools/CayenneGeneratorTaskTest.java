@@ -19,20 +19,24 @@
 
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.test.file.FileUtil;
+import org.apache.cayenne.test.resource.ResourceUtil;
+import org.apache.tools.ant.Location;
+import org.apache.tools.ant.Project;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import org.apache.cayenne.test.file.FileUtil;
-import org.apache.cayenne.test.resource.ResourceUtil;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.Project;
-
-public class CayenneGeneratorTaskTest extends TestCase {
+public class CayenneGeneratorTaskTest {
 
     private static final File baseDir;
     private static final File map;
@@ -55,7 +59,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
 
     protected CayenneGeneratorTask task;
 
-    @Override
+    @Before
     public void setUp() {
 
         Project project = new Project();
@@ -70,6 +74,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
     /**
      * Test single classes with a non-standard template.
      */
+    @Test
     public void testSingleClassesCustTemplate() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "single-classes-custtempl");
@@ -103,6 +108,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
     }
 
     /** Test single classes generation including full package path. */
+    @Test
     public void testSingleClasses1() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "single-classes-tree");
@@ -135,6 +141,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
     }
 
     /** Test single classes generation ignoring package path. */
+    @Test
     public void testSingleClasses2() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "single-classes-flat");
@@ -168,6 +175,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
     }
 
     /** Test pairs generation including full package path, default superclass package. */
+    @Test
     public void testPairs1() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "pairs-tree");
@@ -201,6 +209,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
     }
 
     /** Test pairs generation in the same directory. */
+    @Test
     public void testPairs2() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "pairs-flat");
@@ -238,6 +247,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
      * Test pairs generation including full package path with superclass and subclass in
      * different packages.
      */
+    @Test
     public void testPairs3() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "pairs-tree-split");
@@ -271,6 +281,7 @@ public class CayenneGeneratorTaskTest extends TestCase {
                 "CayenneDataObject");
     }
 
+    @Test
     public void testPairsEmbeddable3() throws Exception {
         // prepare destination directory
         File mapDir = new File(baseDir, "pairs-embeddables3-split");

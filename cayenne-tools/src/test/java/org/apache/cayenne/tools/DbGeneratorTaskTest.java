@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.tools;
 
-import static org.mockito.Mockito.mock;
-
-import javax.sql.DataSource;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
@@ -32,21 +26,31 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.commons.logging.Log;
+import org.junit.Test;
 
-public class DbGeneratorTaskTest extends TestCase {
+import javax.sql.DataSource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+public class DbGeneratorTaskTest {
+
+    @Test
     public void testSetUserName() throws Exception {
         DbGeneratorTask task = new DbGeneratorTask();
         task.setUserName("abc");
         assertEquals("abc", task.userName);
     }
 
+    @Test
     public void testSetPassword() throws Exception {
         DbGeneratorTask task = new DbGeneratorTask();
         task.setPassword("xyz");
         assertEquals("xyz", task.password);
     }
 
+    @Test
     public void testSetAdapter() throws Exception {
         DataSource ds = mock(DataSource.class);
         Injector injector = DIBootstrap.createInjector(new ToolsModule(mock(Log.class)));
@@ -62,6 +66,7 @@ public class DbGeneratorTaskTest extends TestCase {
         assertTrue(sqlServerAdapter instanceof SQLServerAdapter);
     }
 
+    @Test
     public void testSetUrl() throws Exception {
         DbGeneratorTask task = new DbGeneratorTask();
         task.setUrl("jdbc:///");

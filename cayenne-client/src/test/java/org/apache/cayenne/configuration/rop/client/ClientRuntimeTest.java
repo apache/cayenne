@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
@@ -37,9 +29,24 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.MockClientConnection;
+import org.junit.Test;
 
-public class ClientRuntimeTest extends TestCase {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+public class ClientRuntimeTest {
+
+    @Test
 	public void testDefaultConstructor() {
 		ClientRuntime runtime = new ClientRuntime(Collections.<String, String> emptyMap());
 
@@ -50,6 +57,7 @@ public class ClientRuntimeTest extends TestCase {
 		assertTrue(marray[0] instanceof ClientModule);
 	}
 
+    @Test
 	public void testConstructor_Modules() {
 
 		final boolean[] configured = new boolean[2];
@@ -78,6 +86,7 @@ public class ClientRuntimeTest extends TestCase {
 		assertTrue(configured[1]);
 	}
 
+    @Test
 	public void testConstructor_ModulesCollection() {
 
 		final boolean[] configured = new boolean[2];
@@ -108,6 +117,7 @@ public class ClientRuntimeTest extends TestCase {
 		assertTrue(configured[1]);
 	}
 
+    @Test
 	public void testGetObjectContext() {
 
 		Map<String, String> properties = new HashMap<String, String>();
@@ -134,6 +144,7 @@ public class ClientRuntimeTest extends TestCase {
 		assertSame(runtime.getChannel(), clientContext.getChannel());
 	}
 
+    @Test
 	public void testGetDataChannel() {
 
 		Map<String, String> properties = new HashMap<String, String>();
@@ -154,6 +165,7 @@ public class ClientRuntimeTest extends TestCase {
 		assertTrue(channel instanceof ClientChannel);
 	}
 
+    @Test
 	public void testShutdown() throws Exception {
 
 		Map<String, String> properties = new HashMap<String, String>();

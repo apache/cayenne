@@ -19,16 +19,18 @@
 
 package org.apache.cayenne.modeler.event;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
+import org.junit.Test;
+
+import static org.junit.Assert.assertSame;
 
 /**
  */
-public class RelationshipEventTest extends TestCase {
+public class RelationshipEventTest {
 
+    @Test
 	public void testRelationship() throws Exception {
 		Object src = new Object();
 		Relationship r = new DbRelationship();

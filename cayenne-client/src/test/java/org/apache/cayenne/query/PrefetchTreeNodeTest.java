@@ -18,13 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class PrefetchTreeNodeTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
+public class PrefetchTreeNodeTest {
+
+    @Test
     public void testTreeSerializationWithHessian() throws Exception {
         PrefetchTreeNode n1 = new PrefetchTreeNode();
         PrefetchTreeNode n2 = n1.addPath("abc");
@@ -40,6 +46,7 @@ public class PrefetchTreeNodeTest extends TestCase {
         assertEquals("abc", nc2.getName());
     }
 
+    @Test
     public void testSubtreeSerializationWithHessian() throws Exception {
         PrefetchTreeNode n1 = new PrefetchTreeNode();
         PrefetchTreeNode n2 = n1.addPath("abc");
