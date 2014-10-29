@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.util.CayenneController;
 
@@ -120,9 +121,7 @@ public class ClassNameUpdater extends CayenneController {
     }
 
     private String suggestedServerClassName() {
-        String pkg = entity.getDataMap() != null ? entity
-                .getDataMap()
-                .getDefaultPackage() : null;
+        String pkg = entity.getDataMap() == null ? null : entity.getDataMap().getDefaultPackage();
         return suggestedClassName(entity.getName(), pkg, entity.getClassName());
     }
 
@@ -132,21 +131,16 @@ public class ClassNameUpdater extends CayenneController {
             return null;
         }
 
-        String pkg = entity.getDataMap() != null ? entity
-                .getDataMap()
-                .getDefaultClientPackage() : null;
+        String pkg = entity.getDataMap() == null ? null : entity.getDataMap().getDefaultClientPackage();
         return suggestedClassName(entity.getName(), pkg, entity.getClientClassName());
     }
 
     /**
      * Suggests a new class name based on new entity name and current selections.
      */
-    private String suggestedClassName(
-            String entityName,
-            String suggestedPackage,
-            String oldClassName) {
+    private static String suggestedClassName(String entityName, String suggestedPackage, String oldClassName) {
 
-        if (entityName == null || entityName.trim().length() == 0) {
+        if (entityName == null || entityName.trim().isEmpty()) {
             return null;
         }
 
@@ -156,20 +150,13 @@ public class ClassNameUpdater extends CayenneController {
             pkg = oldClassName.substring(0, oldClassName.lastIndexOf('.'));
         }
 
-        if (pkg == null) {
-            pkg = "";
-        }
-        else {
-            pkg = pkg + '.';
-        }
-
         // build suggested class name
-        int dot = entityName.lastIndexOf('.');
-        if (dot >= 0 && dot < entityName.length() - 1) {
-            entityName = entityName.substring(dot + 1);
+        int lastDotIndex = entityName.lastIndexOf('.');
+        if (lastDotIndex >= 0 && lastDotIndex < entityName.length() - 1) {
+            entityName = entityName.substring(lastDotIndex + 1);
         }
 
-        return pkg + entityName;
+        return DataMap.getNameWithPackage(pkg, entityName);
     }
 
     protected void initBindings(

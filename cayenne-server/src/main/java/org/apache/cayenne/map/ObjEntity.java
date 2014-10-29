@@ -55,8 +55,8 @@ import org.apache.commons.collections.Transformer;
  */
 public class ObjEntity extends Entity implements ObjEntityListener, ConfigurationNode {
 
-    final public static int LOCK_TYPE_NONE = 0;
-    final public static int LOCK_TYPE_OPTIMISTIC = 1;
+    public static final int LOCK_TYPE_NONE = 0;
+    public static final int LOCK_TYPE_OPTIMISTIC = 1;
 
     // do not import CayenneDataObject as it introduces unneeded client
     // dependency
@@ -320,7 +320,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         try {
             return Util.getJavaClass(name);
         } catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException("Failed to load class " + name + ": " + e.getMessage(), e);
+            throw new CayenneRuntimeException("Failed to doLoad class " + name + ": " + e.getMessage(), e);
         }
     }
 
@@ -461,7 +461,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * @since 1.2
      */
     public boolean isClientAllowed() {
-        return (getDataMap() == null || isServerOnly()) ? false : getDataMap().isClientSupported();
+        return getDataMap() != null && !isServerOnly() && getDataMap().isClientSupported();
     }
 
     public boolean isAbstract() {
@@ -948,12 +948,13 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Clears mapping between entities, attributes and relationships.
      */
     public void clearDbMapping() {
-        if (dbEntityName == null)
+        if (dbEntityName == null) {
             return;
+        }
 
         for (ObjAttribute attribute : getAttributeMap().values()) {
             DbAttribute dbAttr = attribute.getDbAttribute();
-            if (null != dbAttr) {
+            if (dbAttr != null) {
                 attribute.setDbAttributePath(null);
             }
         }

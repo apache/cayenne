@@ -26,7 +26,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;

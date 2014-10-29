@@ -17,12 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.tools;
+package org.apache.cayenne.access.loader;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -34,17 +33,21 @@ import org.apache.commons.logging.Log;
  * 
  * @since 1.2
  */
-public class NamePatternMatcher {
+public class NamePatternMatcher implements NameFilter {
 
-    protected Log logger;
+    private static final String[] EMPTY_ARRAY = new String[0];
+    private static final Pattern COMMA = Pattern.compile(",");
 
-    protected Pattern[] itemIncludeFilters;
-    protected Pattern[] itemExcludeFilters;
+    private final Pattern[] itemIncludeFilters;
+    private final Pattern[] itemExcludeFilters;
 
-    public NamePatternMatcher(Log logger, String includePattern, String excludePattern) {
-        this.logger = logger;
-        this.itemIncludeFilters = createPatterns(includePattern);
-        this.itemExcludeFilters = createPatterns(excludePattern);
+    public static NamePatternMatcher build(Log logger, String includePattern, String excludePattern) {
+        return new NamePatternMatcher(createPatterns(logger, includePattern), createPatterns(logger, excludePattern));
+    }
+
+    public NamePatternMatcher(Pattern[] itemIncludeFilters, Pattern[] itemExcludeFilters) {
+        this.itemIncludeFilters = itemIncludeFilters;
+        this.itemExcludeFilters = itemExcludeFilters;
     }
 
     /**
@@ -55,12 +58,12 @@ public class NamePatternMatcher {
      *             probably be deprecated
      */
     @Deprecated
-    List<?> filter(List<?> items) {
+    public List<?> filter(List<?> items) {
         if (items == null || items.isEmpty()) {
             return items;
         }
 
-        if ((itemIncludeFilters.length == 0) && (itemExcludeFilters.length == 0)) {
+        if (itemIncludeFilters.length == 0 && itemExcludeFilters.length == 0) {
             return items;
         }
 
@@ -68,62 +71,17 @@ public class NamePatternMatcher {
         while (it.hasNext()) {
             CayenneMapEntry entity = (CayenneMapEntry) it.next();
 
-            if (!passedIncludeFilter(entity)) {
+            if (!passedIncludeFilter(entity.getName())) {
                 it.remove();
                 continue;
             }
 
-            if (!passedExcludeFilter(entity)) {
+            if (!passedExcludeFilter(entity.getName())) {
                 it.remove();
             }
         }
 
         return items;
-    }
-
-    /**
-     * Returns true if the entity matches any one of the "include" patterns, or if there
-     * is no "include" patterns defined.
-     * 
-     * @deprecated since 3.0. still used by AntDataPortDelegate, which itself should
-     *             probably be deprecated
-     */
-    @Deprecated
-    private boolean passedIncludeFilter(CayenneMapEntry item) {
-        if (itemIncludeFilters.length == 0) {
-            return true;
-        }
-
-        String itemName = item.getName();
-        for (Pattern itemIncludeFilter : itemIncludeFilters) {
-            if (itemIncludeFilter.matcher(itemName).find()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if the entity does not match any one of the "exclude" patterns, or if
-     * there is no "exclude" patterns defined.
-     * 
-     * @deprecated since 3.0
-     */
-    @Deprecated
-    private boolean passedExcludeFilter(CayenneMapEntry item) {
-        if (itemExcludeFilters.length == 0) {
-            return true;
-        }
-
-        String itemName = item.getName();
-        for (Pattern itemExcludeFilter : itemExcludeFilters) {
-            if (itemExcludeFilter.matcher(itemName).find()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -135,23 +93,22 @@ public class NamePatternMatcher {
      * <code>^billing_.*$</code><br>
      * <code>^user.?$</code><br>
      */
-    public Pattern[] createPatterns(String patternString) {
+    public static Pattern[] createPatterns(Log logger, String patternString) {
+        if (patternString == null) {
+            return new Pattern[0];
+        }
         String[] patternStrings = tokenizePattern(patternString);
         List<Pattern> patterns = new ArrayList<Pattern>(patternStrings.length);
 
-        for (int i = 0; i < patternStrings.length; i++) {
+        for (String patternString1 : patternStrings) {
 
             // test the pattern
             try {
-                patterns.add(Pattern.compile(patternStrings[i]));
-            }
-            catch (PatternSyntaxException e) {
+                patterns.add(Pattern.compile(patternString1));
+            } catch (PatternSyntaxException e) {
 
                 if (logger != null) {
-                    logger.warn("Ignoring invalid pattern ["
-                            + patternStrings[i]
-                            + "], reason: "
-                            + e.getMessage());
+                    logger.warn("Ignoring invalid pattern [" + patternString1 + "], reason: " + e.getMessage());
                 }
             }
         }
@@ -168,40 +125,24 @@ public class NamePatternMatcher {
      * <code>^billing_.*$</code><br>
      * <code>^user.?$</code><br>
      */
-    public String[] tokenizePattern(String pattern) {
-        if (pattern != null && pattern.length() > 0) {
-            StringTokenizer toks = new StringTokenizer(pattern, ",");
-
-            int len = toks.countTokens();
-            if (len == 0) {
-                return new String[0];
-            }
-
-            List<String> patterns = new ArrayList<String>(len);
-            for (int i = 0; i < len; i++) {
-                String nextPattern = toks.nextToken();
-                StringBuilder buffer = new StringBuilder();
-
-                // convert * into regex syntax
-                // e.g. abc*x becomes ^abc.*x$
-                // or abc?x becomes ^abc.?x$
-                buffer.append("^");
-                for (int j = 0; j < nextPattern.length(); j++) {
-                    char nextChar = nextPattern.charAt(j);
-                    if (nextChar == '*' || nextChar == '?') {
-                        buffer.append('.');
-                    }
-                    buffer.append(nextChar);
-                }
-                buffer.append("$");
-                patterns.add(buffer.toString());
-            }
-
-            return patterns.toArray(new String[patterns.size()]);
+    public static String[] tokenizePattern(String pattern) {
+        if (pattern == null || pattern.isEmpty()) {
+            return EMPTY_ARRAY;
         }
-        else {
-            return new String[0];
+
+        String[] patterns = COMMA.split(pattern);
+        if (patterns.length == 0) {
+            return EMPTY_ARRAY;
         }
+
+        for (int i = 0; i < patterns.length; i++) {
+            // convert * into regex syntax
+            // e.g. abc*x becomes ^abc.*x$
+            // or abc?x becomes ^abc.?x$
+            patterns[i] = "^" + patterns[i].replaceAll("[*?]", ".$0") + "$";
+        }
+
+        return patterns;
     }
 
     /**
@@ -209,21 +150,9 @@ public class NamePatternMatcher {
      * 
      * @since 3.0
      */
+    @Override
     public boolean isIncluded(String string) {
-
-        if ((itemIncludeFilters.length == 0) && (itemExcludeFilters.length == 0)) {
-            return true;
-        }
-
-        if (!passedIncludeFilter(string)) {
-            return false;
-        }
-
-        if (!passedExcludeFilter(string)) {
-            return false;
-        }
-
-        return true;
+        return passedIncludeFilter(string) && passedExcludeFilter(string);
     }
 
     /**
@@ -232,7 +161,7 @@ public class NamePatternMatcher {
      * 
      * @since 3.0
      */
-    boolean passedIncludeFilter(String item) {
+    private boolean passedIncludeFilter(String item) {
         if (itemIncludeFilters.length == 0) {
             return true;
         }
@@ -252,7 +181,7 @@ public class NamePatternMatcher {
      * 
      * @since 3.0
      */
-    boolean passedExcludeFilter(String item) {
+    private boolean passedExcludeFilter(String item) {
         if (itemExcludeFilters.length == 0) {
             return true;
         }
@@ -270,13 +199,15 @@ public class NamePatternMatcher {
             String wildcard,
             String pattern,
             String replacement) {
-        if (null == pattern || null == wildcard)
+
+        if (pattern == null || wildcard == null) {
             return pattern;
+        }
 
         StringBuilder buffer = new StringBuilder();
         int lastPos = 0;
         int wildCardPos = pattern.indexOf(wildcard);
-        while (-1 != wildCardPos) {
+        while (wildCardPos != -1) {
             if (lastPos != wildCardPos) {
                 buffer.append(pattern.substring(lastPos, wildCardPos));
             }

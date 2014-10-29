@@ -16,33 +16,40 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access;
+package org.apache.cayenne.access.loader;
+
+import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
  * @since 3.2.
  */
-public class DbLoaderConfiguration {
+public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
 
-    private String catalog;
-
-    private String schema;
-
-
-    public String getCatalog() {
-        return catalog;
+    @Override
+    public boolean overwriteDbEntity(DbEntity entity) throws CayenneException {
+        return false;
     }
 
-    public void setCatalog(String catalog) {
-        this.catalog = catalog;
+    @Override
+    public void dbEntityAdded(DbEntity entity) {
+
     }
 
-    public String getSchema() {
-        return schema;
+    @Override
+    public void dbEntityRemoved(DbEntity entity) {
+
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
+    @Override
+    public void objEntityAdded(ObjEntity entity) {
+
     }
 
+    @Override
+    public void objEntityRemoved(ObjEntity entity) {
 
+    }
 }

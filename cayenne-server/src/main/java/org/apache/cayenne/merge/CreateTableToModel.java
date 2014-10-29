@@ -72,30 +72,14 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         String className = objEntityClassName;
         if (className == null) {
             // we should generate a className based on the objEntityName
-            String packageName = map.getDefaultPackage();
-            if (Util.isEmptyString(packageName)) {
-                packageName = "";
-            }
-            else if (!packageName.endsWith(".")) {
-                packageName = packageName + ".";
-            }
-            className = packageName + objEntityName;
+            className = map.getNameWithDefaultPackage(objEntityName);
         }
 
         objEntity.setClassName(className);
-        
         objEntity.setSuperClassName(map.getDefaultSuperclass());
         
         if (map.isClientSupported()) {
-            String clientPkg = map.getDefaultClientPackage();
-            if (clientPkg != null) {
-                if (!clientPkg.endsWith(".")) {
-                    clientPkg = clientPkg + ".";
-                }
-
-                objEntity.setClientClassName(clientPkg + objEntity.getName());
-            }
-
+            objEntity.setClientClassName(map.getNameWithDefaultClientPackage(objEntity.getName()));
             objEntity.setClientSuperClassName(map.getDefaultClientSuperclass());
         }
         
