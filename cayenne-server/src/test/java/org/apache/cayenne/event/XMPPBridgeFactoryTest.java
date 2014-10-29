@@ -19,15 +19,19 @@
 
 package org.apache.cayenne.event;
 
+import org.junit.Test;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class XMPPBridgeFactoryTest extends TestCase {
+public class XMPPBridgeFactoryTest {
 
+    @Test
     public void testCreateEventBridge() {
         XMPPBridgeFactory factory = new XMPPBridgeFactory();
 

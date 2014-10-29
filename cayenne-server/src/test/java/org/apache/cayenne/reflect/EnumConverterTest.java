@@ -18,14 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.access.types.MockEnum2;
 import org.apache.cayenne.access.types.MockEnum3;
 import org.apache.cayenne.access.types.MockEnum4;
+import org.junit.Test;
 
-public class EnumConverterTest extends TestCase {
-    
+import static org.junit.Assert.assertSame;
+
+public class EnumConverterTest {
+
+    @Test
     public void testConvert() {
         EnumConverter converter = new EnumConverter();
 
@@ -33,13 +35,15 @@ public class EnumConverterTest extends TestCase {
         assertSame(MockEnum2.z, converter.convert("z", MockEnum2.class));
     }
 
+    @Test
     public void testConvertExtendedEnumeration() {
         EnumConverter converter = new EnumConverter();
 
         assertSame(MockEnum3.B, converter.convert(2, MockEnum3.class));
         assertSame(MockEnum3.C, converter.convert(3, MockEnum3.class));
     }
-    
+
+    @Test
     public void testConvertExtendedEnumerationWithNull() {
         EnumConverter converter = new EnumConverter();
 

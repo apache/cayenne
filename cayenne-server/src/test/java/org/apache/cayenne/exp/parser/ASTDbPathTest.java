@@ -18,16 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import org.junit.Test;
+
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class ASTDbPathTest extends TestCase {
+public class ASTDbPathTest {
 
+    @Test
     public void testToString() {
         assertEquals("db:x.y", new ASTDbPath("x.y").toString());
     }
 
+    @Test
     public void testAppendAsString() throws IOException {
         StringBuilder buffer = new StringBuilder();
 

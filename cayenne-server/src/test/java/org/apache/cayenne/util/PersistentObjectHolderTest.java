@@ -19,16 +19,21 @@
 
 package org.apache.cayenne.util;
 
-import static org.mockito.Mockito.mock;
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.junit.Test;
 
-public class PersistentObjectHolderTest extends TestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
+public class PersistentObjectHolderTest {
+
+    @Test
     public void testSetInitialValue() {
 
         ObjectContext context = mock(ObjectContext.class);
@@ -47,6 +52,7 @@ public class PersistentObjectHolderTest extends TestCase {
         assertSame(o1, holder.value);
     }
 
+    @Test
     public void testInvalidate() {
         ObjectContext context = mock(ObjectContext.class);
 

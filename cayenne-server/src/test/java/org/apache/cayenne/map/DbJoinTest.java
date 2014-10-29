@@ -19,12 +19,17 @@
 
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class DbJoinTest extends TestCase {
+public class DbJoinTest {
 
+    @Test
     public void testRelationship() throws Exception {
         DbJoin join = new DbJoin(null);
         assertNull(join.getRelationship());
@@ -34,6 +39,7 @@ public class DbJoinTest extends TestCase {
         assertSame(relationship, join.getRelationship());
     }
 
+    @Test
     public void testToString() {
         DbJoin join = new DbJoin();
         join.setSourceName("X");

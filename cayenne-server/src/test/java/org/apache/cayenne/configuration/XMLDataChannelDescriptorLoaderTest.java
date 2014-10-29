@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.Iterator;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -35,13 +29,24 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.URLResource;
+import org.junit.Before;
+import org.junit.Test;
 
-public class XMLDataChannelDescriptorLoaderTest extends TestCase {
+import java.net.URL;
+import java.util.Collection;
+import java.util.Iterator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+public class XMLDataChannelDescriptorLoaderTest {
 
     private Injector injector;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
@@ -55,6 +60,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         this.injector = DIBootstrap.createInjector(testModule);
     }
 
+    @Test
     public void testLoadEmpty() {
 
         // create and initialize loader instance to test
@@ -71,6 +77,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         assertEquals(testConfigName, tree.getRootNode().getName());
     }
 
+    @Test
     public void testLoad_MissingConfig() throws Exception {
 
         // create and initialize loader instance to test
@@ -85,6 +92,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testLoadDataMap() {
 
         // create and initialize loader instance to test
@@ -106,6 +114,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         assertEquals("testConfigMap2", maps.iterator().next().getName());
     }
 
+    @Test
     public void testLoadDataEverything() {
 
         // create and initialize loader instance to test

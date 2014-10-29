@@ -20,17 +20,23 @@
 
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  */
-public class DbKeyGeneratorTest extends TestCase {
+public class DbKeyGeneratorTest {
+
+    @Test
     public void testName() throws Exception {
         DbKeyGenerator generator = new DbKeyGenerator();
         generator.setGeneratorName("abc");
         assertEquals("abc", generator.getGeneratorName());
     }
 
+    @Test
     public void testSize() throws Exception {
         DbKeyGenerator generator = new DbKeyGenerator();
         generator.setKeyCacheSize(new Integer(3));

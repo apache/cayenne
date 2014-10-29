@@ -18,20 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.resource.URLResource;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.junit.Test;
+
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.sql.DataSource;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+public class DBCPDataSourceFactoryTest {
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DBCPDataSourceFactory;
-import org.apache.cayenne.resource.URLResource;
-import org.apache.commons.dbcp.BasicDataSource;
-
-public class DBCPDataSourceFactoryTest extends TestCase {
-
+    @Test
     public void testGetDataSource() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
@@ -59,6 +62,7 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         assertEquals("select 1 from xyz;", basicDataSource.getValidationQuery());
     }
 
+    @Test
     public void testGetDataSource_LegacyConfig() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
@@ -86,6 +90,7 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         assertEquals("select 1 from xyz;", basicDataSource.getValidationQuery());
     }
 
+    @Test
     public void testGetDataSource_InvalidLocation() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');

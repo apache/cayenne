@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class RelationshipTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
+public class RelationshipTest {
+
+    @Test
     public void testName() throws Exception {
         Relationship rel = new MockRelationship();
 
@@ -31,6 +35,7 @@ public class RelationshipTest extends TestCase {
         assertEquals(tstName, rel.getName());
     }
 
+    @Test
     public void testSourceEntity() {
         Relationship rel = new MockRelationship();
         Entity tstEntity = new MockEntity();
@@ -38,6 +43,7 @@ public class RelationshipTest extends TestCase {
         assertSame(tstEntity, rel.getSourceEntity());
     }
 
+    @Test
     public void testTargetEntity() {
         Relationship rel = new MockRelationship();
         Entity tstEntity = new MockEntity();
@@ -46,6 +52,7 @@ public class RelationshipTest extends TestCase {
         assertSame("abc", rel.getTargetEntityName());
     }
 
+    @Test
     public void testTargetEntityName() {
         Relationship rel = new MockRelationship();
         rel.setTargetEntityName("abc");

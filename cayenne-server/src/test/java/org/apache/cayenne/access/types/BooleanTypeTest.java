@@ -22,19 +22,24 @@ package org.apache.cayenne.access.types;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import junit.framework.TestCase;
-
 import com.mockrunner.mock.jdbc.MockResultSet;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 
 /**
  */
-public class BooleanTypeTest extends TestCase {
+public class BooleanTypeTest {
 
+    @Test
     public void testClassName() {
         BooleanType type = new BooleanType();
         assertEquals(Boolean.class.getName(), type.getClassName());
     }
 
+    @Test
     public void testMaterializeObjectFromResultSet() throws Exception {
         MockResultSet rs = new MockResultSet("") {
 

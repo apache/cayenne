@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class AttributeTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
+public class AttributeTest {
+
+    @Test
     public void testName() throws Exception {
         Attribute a = new MockAttribute();
 
@@ -31,6 +35,7 @@ public class AttributeTest extends TestCase {
         assertEquals(tstName, a.getName());
     }
 
+    @Test
     public void testEntity() throws Exception {
         Attribute a = new MockAttribute();
 

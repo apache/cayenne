@@ -19,18 +19,25 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class ProcedureQueryTest extends TestCase {
+public class ProcedureQueryTest {
 
+    @Test
     public void testCreateQuery() {
         ProcedureQuery template = new ProcedureQuery();
         Query clone = template.createQuery(Collections.EMPTY_MAP);
@@ -38,6 +45,7 @@ public class ProcedureQueryTest extends TestCase {
         assertNotSame(template, clone);
     }
 
+    @Test
     public void testColumnNameCapitalization() {
         ProcedureQuery q1 = new ProcedureQuery();
         assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
@@ -45,6 +53,7 @@ public class ProcedureQueryTest extends TestCase {
         assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
     }
 
+    @Test
     public void testCreateQueryWithParameters() {
         Map params = new HashMap();
         params.put("a", "1");
@@ -56,6 +65,7 @@ public class ProcedureQueryTest extends TestCase {
         assertEquals(params, clone.getParameters());
     }
 
+    @Test
     public void testResultEntityName() {
         ProcedureQuery query = new ProcedureQuery();
         assertNull(query.getResultEntityName());
@@ -64,6 +74,7 @@ public class ProcedureQueryTest extends TestCase {
         assertSame("abc.AAAA", query.getResultEntityName());
     }
 
+    @Test
     public void testResultDescriptors() {
         ProcedureQuery query = new ProcedureQuery();
 

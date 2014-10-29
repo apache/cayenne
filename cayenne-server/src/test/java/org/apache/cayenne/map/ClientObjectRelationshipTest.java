@@ -19,12 +19,15 @@
 
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class ClientObjectRelationshipTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+public class ClientObjectRelationshipTest {
+
+    @Test
     public void testSerializability() throws Exception {
 
         ClientObjRelationship r1 = new ClientObjRelationship("r1", "rr1", true, true);

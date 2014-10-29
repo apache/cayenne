@@ -19,15 +19,20 @@
 
 package org.apache.cayenne;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class ObjectContextChangeLogTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+public class ObjectContextChangeLogTest {
+
+    @Test
     public void testReset() {
         ObjectContextChangeLog recorder = new ObjectContextChangeLog();
         assertNotNull(recorder.getDiffs());
@@ -50,6 +55,7 @@ public class ObjectContextChangeLogTest extends TestCase {
         assertFalse(diff.isNoop());
     }
 
+    @Test
     public void testGetDiffs() {
         // assert that after returning, the diffs array won't get modified by
         // operation
@@ -66,6 +72,7 @@ public class ObjectContextChangeLogTest extends TestCase {
         assertEquals(2, diff2.getDiffs().size());
     }
 
+    @Test
     public void testGetDiffsSerializable() throws Exception {
         ObjectContextChangeLog recorder = new ObjectContextChangeLog();
         recorder.addOperation(new NodeCreateOperation(new ObjectId("test")));

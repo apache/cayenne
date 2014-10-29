@@ -18,20 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.Persistent;
+public class ASTListTest {
 
-public class ASTListTest extends TestCase {
-
+    @Test
 	public void testConstructorWithCollection() {
 		ObjectId objectId = new ObjectId("Artist", "ARTIST_ID", 1);
 		Persistent artist = mock(Persistent.class);

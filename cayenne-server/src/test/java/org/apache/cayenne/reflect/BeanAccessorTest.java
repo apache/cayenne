@@ -19,12 +19,15 @@
 
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.reflect.BeanAccessor;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
-public class BeanAccessorTest extends TestCase {
+public class BeanAccessorTest {
 
+    @Test
     public void testByteArrayProperty() {
 
         BeanAccessor accessor = new BeanAccessor(
@@ -43,6 +46,7 @@ public class BeanAccessorTest extends TestCase {
         assertSame(bytes, accessor.getValue(o1));
     }
 
+    @Test
     public void testStringProperty() {
 
         BeanAccessor accessor = new BeanAccessor(
@@ -58,6 +62,7 @@ public class BeanAccessorTest extends TestCase {
         assertSame("ABC", accessor.getValue(o1));
     }
 
+    @Test
     public void testIntProperty() {
 
         BeanAccessor accessor = new BeanAccessor(

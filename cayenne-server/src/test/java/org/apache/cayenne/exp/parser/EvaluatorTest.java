@@ -18,20 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.Persistent;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import junit.framework.TestCase;
+public class EvaluatorTest {
 
-public class EvaluatorTest extends TestCase {
-
+    @Test
     public void testEvaluator_Null() {
         Evaluator e = Evaluator.evaluator(null);
         assertNotNull(e);
@@ -39,6 +43,7 @@ public class EvaluatorTest extends TestCase {
         assertFalse(e.eq(null, new Object()));
     }
 
+    @Test
     public void testEvaluator_Object() {
         Object o = new Object();
         Evaluator e = Evaluator.evaluator(o);
@@ -47,6 +52,7 @@ public class EvaluatorTest extends TestCase {
         assertFalse(e.eq(o, null));
     }
 
+    @Test
     public void testEvaluator_Number() {
 
         Evaluator e = Evaluator.evaluator(1);
@@ -57,6 +63,7 @@ public class EvaluatorTest extends TestCase {
         assertFalse(e.eq(1, 1.1));
     }
 
+    @Test
     public void testEvaluator_BigDecimal() {
         Object lhs = new BigDecimal("1.10");
         Evaluator e = Evaluator.evaluator(lhs);
@@ -68,6 +75,7 @@ public class EvaluatorTest extends TestCase {
         assertEquals(-1, c.intValue());
     }
 
+    @Test
     public void testEvaluator_Persistent() {
 
         ObjectId lhsId = new ObjectId("X", "k", 3);
@@ -94,6 +102,7 @@ public class EvaluatorTest extends TestCase {
         assertFalse(e.eq(lhs, 4));
     }
 
+    @Test
     public void testEvaluator_Persistent_StringId() {
 
         ObjectId lhsId = new ObjectId("X", "k", "A");
@@ -120,6 +129,7 @@ public class EvaluatorTest extends TestCase {
         assertFalse(e.eq(lhs, "B"));
     }
 
+    @Test
     public void testEvaluator_Persistent_MultiKey() {
 
         Map<String, Object> lhsIdMap = new HashMap<String, Object>();

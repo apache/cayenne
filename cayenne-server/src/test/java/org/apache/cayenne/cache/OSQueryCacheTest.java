@@ -18,21 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
+import com.opensymphony.oscache.base.CacheEntry;
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import org.apache.cayenne.cache.OSQueryCache.RefreshSpecification;
+import org.apache.cayenne.query.MockQueryMetadata;
+import org.apache.cayenne.query.QueryMetadata;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.cache.OSQueryCache.RefreshSpecification;
-import org.apache.cayenne.query.MockQueryMetadata;
-import org.apache.cayenne.query.QueryMetadata;
+public class OSQueryCacheTest {
 
-import com.opensymphony.oscache.base.CacheEntry;
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-
-public class OSQueryCacheTest extends TestCase {
-
+    @Test
     public void testDefaults() {
         OSQueryCache cache = new OSQueryCache();
 
@@ -43,6 +47,7 @@ public class OSQueryCacheTest extends TestCase {
                 cache.defaultRefreshSpecification.refreshPeriod);
     }
 
+    @Test
     public void testDefaultOverrides() {
 
         Properties props = new Properties();
@@ -55,6 +60,7 @@ public class OSQueryCacheTest extends TestCase {
         assertEquals(15, cache.defaultRefreshSpecification.refreshPeriod);
     }
 
+    @Test
     public void testQueryOverrides() {
 
         Properties props = new Properties();
@@ -82,7 +88,8 @@ public class OSQueryCacheTest extends TestCase {
         assertEquals("24 * * * * *", xyz.cronExpression);
         assertEquals(35, xyz.refreshPeriod);
     }
-    
+
+    @Test
     public void testGroupNames() {
 
         Properties props = new Properties();
@@ -102,6 +109,7 @@ public class OSQueryCacheTest extends TestCase {
         assertTrue(c2.getGroupNames().contains("XYZ"));
     }
 
+    @Test
     public void testSize() {
         OSQueryCache cache = new OSQueryCache();
 

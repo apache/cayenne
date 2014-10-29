@@ -19,14 +19,17 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.util.Util;
+import org.junit.Test;
+
 import java.sql.Types;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import org.apache.cayenne.util.Util;
+public class ObjAttributeTest {
 
-public class ObjAttributeTest extends TestCase {
-
+    @Test
     public void testDbAttribute() {
         ObjAttribute attribute = new ObjAttribute("a1");
 
@@ -34,7 +37,8 @@ public class ObjAttributeTest extends TestCase {
         attribute.setDbAttributePath(dbAttr.getName());
         assertEquals(dbAttr.getName(), attribute.getDbAttributeName());
     }
-    
+
+    @Test
     public void testDbAttributePath() {
         ObjAttribute attribute = new ObjAttribute("a1");
         attribute.setDbAttributePath("a");
@@ -46,6 +50,7 @@ public class ObjAttributeTest extends TestCase {
         assertEquals("b", attribute.getDbAttributeName());
     }
 
+    @Test
     public void testType() {
         ObjAttribute attribute = new ObjAttribute("a1");
 
@@ -54,6 +59,7 @@ public class ObjAttributeTest extends TestCase {
         assertEquals(type, attribute.getType());
     }
 
+    @Test
     public void testSerializability() throws Exception {
         ObjAttribute a1 = new ObjAttribute("a1");
 
@@ -61,6 +67,7 @@ public class ObjAttributeTest extends TestCase {
         assertEquals(a1.getName(), a2.getName());
     }
 
+    @Test
     public void testGetClientAttribute() {
         ObjAttribute a1 = new ObjAttribute("a1");
         a1.setType("x.y.z");
@@ -71,6 +78,7 @@ public class ObjAttributeTest extends TestCase {
         assertEquals(a1.getType(), a2.getType());
     }
 
+    @Test
     public void testGetJavaClass() throws Exception {
 
         ObjAttribute a1 = new ObjAttribute("test");

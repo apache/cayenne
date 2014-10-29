@@ -19,12 +19,15 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.map.MockCallingBackEntity;
-import org.apache.cayenne.reflect.CallbackOnEntity;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class CallbackOnEntityTest extends TestCase {
+public class CallbackOnEntityTest {
 
+    @Test
     public void testPublicCallbackMethod() {
         CallbackOnEntity callback = new CallbackOnEntity(
                 MockCallingBackEntity.class,
@@ -38,6 +41,7 @@ public class CallbackOnEntityTest extends TestCase {
         assertFalse(e.defaultCallbackInvoked);
     }
 
+    @Test
     public void testProtectedCallbackMethod() {
         CallbackOnEntity callback = new CallbackOnEntity(
                 MockCallingBackEntity.class,
@@ -51,6 +55,7 @@ public class CallbackOnEntityTest extends TestCase {
         assertFalse(e.defaultCallbackInvoked);
     }
 
+    @Test
     public void testPrivateCallbackMethod() {
         CallbackOnEntity callback = new CallbackOnEntity(
                 MockCallingBackEntity.class,
@@ -64,6 +69,7 @@ public class CallbackOnEntityTest extends TestCase {
         assertFalse(e.defaultCallbackInvoked);
     }
 
+    @Test
     public void testDefaultCallbackMethod() {
         CallbackOnEntity callback = new CallbackOnEntity(
                 MockCallingBackEntity.class,
@@ -77,6 +83,7 @@ public class CallbackOnEntityTest extends TestCase {
         assertTrue(e.defaultCallbackInvoked);
     }
 
+    @Test
     public void testStaticCallbackMethod() {
         try {
             new CallbackOnEntity(MockCallingBackEntity.class, "staticCallback");

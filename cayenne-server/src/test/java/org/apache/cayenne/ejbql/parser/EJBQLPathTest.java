@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class EJBQLPathTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class EJBQLPathTest {
+
+    @Test
     public void testGetAbsolutePath() {
         EJBQLPath path = new EJBQLPath(-1);
         EJBQLIdentifier id = new EJBQLIdentifier(-1);

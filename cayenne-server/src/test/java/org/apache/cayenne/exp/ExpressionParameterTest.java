@@ -19,10 +19,13 @@
 
 package org.apache.cayenne.exp;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class ExpressionParameterTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class ExpressionParameterTest {
+
+    @Test
     public void testConstructor() throws Exception {
         ExpressionParameter p = new ExpressionParameter("abc");
         assertEquals("abc", p.getName());

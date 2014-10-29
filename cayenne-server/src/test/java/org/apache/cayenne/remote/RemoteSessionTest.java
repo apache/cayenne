@@ -19,24 +19,29 @@
 
 package org.apache.cayenne.remote;
 
-import org.apache.cayenne.remote.RemoteSession;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class RemoteSessionTest extends TestCase {
+public class RemoteSessionTest {
 
+    @Test
     public void testConstructor1() {
         RemoteSession descriptor = new RemoteSession("abc");
         assertEquals("abc", descriptor.getSessionId());
         assertFalse(descriptor.isServerEventsEnabled());
     }
 
+    @Test
     public void testConstructor2() {
         RemoteSession descriptor = new RemoteSession("abc", "factory", null);
         assertEquals("abc", descriptor.getSessionId());
         assertTrue(descriptor.isServerEventsEnabled());
     }
 
+    @Test
     public void testHashCode() {
         RemoteSession d1 = new RemoteSession("1");
         RemoteSession d2 = new RemoteSession("1");

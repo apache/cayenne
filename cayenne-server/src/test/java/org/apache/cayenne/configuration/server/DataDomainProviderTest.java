@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import static org.mockito.Mockito.mock;
-
-import java.util.Collection;
-import java.util.Collections;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
@@ -82,9 +75,21 @@ import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResource;
+import org.junit.Test;
 
-public class DataDomainProviderTest extends TestCase {
+import java.util.Collection;
+import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+public class DataDomainProviderTest {
+
+    @Test
     public void testGet() {
 
         // create dependencies

@@ -18,18 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.resource;
 
+import org.apache.cayenne.test.file.FileUtil;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import org.apache.cayenne.test.file.FileUtil;
+public class FilesystemResourceLocatorTest {
 
-public class FilesystemResourceLocatorTest extends TestCase {
-
+    @Test
     public void testArrayConstructor() {
         FilesystemResourceLocator l1 = new FilesystemResourceLocator();
         assertEquals(1, l1.roots.length);
@@ -45,6 +48,7 @@ public class FilesystemResourceLocatorTest extends TestCase {
         assertEquals(new File(base, "f2"), l2.roots[1]);
     }
 
+    @Test
     public void testCollectionConstructor() {
         FilesystemResourceLocator l1 = new FilesystemResourceLocator(Collections
                 .<File> emptyList());
@@ -62,6 +66,7 @@ public class FilesystemResourceLocatorTest extends TestCase {
         assertEquals(new File(base, "f2"), l2.roots[1]);
     }
 
+    @Test
     public void testFindResources() throws Exception {
 
         File base = new File(FileUtil.baseTestDirectory(), getClass().getName());

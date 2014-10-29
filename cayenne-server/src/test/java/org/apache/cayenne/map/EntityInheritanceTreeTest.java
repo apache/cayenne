@@ -18,15 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.util.Collections;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import java.util.Collections;
 
-public class EntityInheritanceTreeTest extends TestCase {
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
+
+public class EntityInheritanceTreeTest {
+
+    @Test
     public void testEntityMatchingRow_NoInheritance() {
         DataMap dataMap = new DataMap("map");
 
@@ -54,6 +58,7 @@ public class EntityInheritanceTreeTest extends TestCase {
 
     }
 
+    @Test
     public void testEntityMatchingRow_SingleTableInheritance() {
         DataMap dataMap = new DataMap("map");
 

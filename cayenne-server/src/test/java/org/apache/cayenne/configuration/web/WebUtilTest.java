@@ -18,16 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import com.mockrunner.mock.web.MockServletContext;
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
-import org.apache.cayenne.configuration.CayenneRuntime;
+public class WebUtilTest {
 
-import com.mockrunner.mock.web.MockServletContext;
-
-import junit.framework.TestCase;
-
-public class WebUtilTest extends TestCase {
-
+    @Test
 	public void testGetCayenneRuntime() {
 		MockServletContext context = new MockServletContext();
 

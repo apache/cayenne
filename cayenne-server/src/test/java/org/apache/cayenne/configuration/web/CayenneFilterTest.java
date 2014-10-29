@@ -18,27 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import junit.framework.TestCase;
-
+import com.mockrunner.mock.web.MockFilterChain;
+import com.mockrunner.mock.web.MockFilterConfig;
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockServletContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
+import org.junit.Test;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockFilterConfig;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockServletContext;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
-public class CayenneFilterTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+public class CayenneFilterTest {
+
+    @Test
 	public void testInitWithFilterName() throws Exception {
 
 		MockFilterConfig config = new MockFilterConfig();
@@ -61,6 +65,7 @@ public class CayenneFilterTest extends TestCase {
 		assertEquals(Arrays.asList("abc.xml"), locations);
 	}
 
+    @Test
 	public void testInitWithLocation() throws Exception {
 
 		MockFilterConfig config = new MockFilterConfig();
@@ -81,6 +86,7 @@ public class CayenneFilterTest extends TestCase {
 		assertEquals(Arrays.asList("xyz"), locations);
 	}
 
+    @Test
 	public void testInitWithStandardModules() throws Exception {
 
 		MockFilterConfig config = new MockFilterConfig();
@@ -112,6 +118,7 @@ public class CayenneFilterTest extends TestCase {
 		assertTrue(handler instanceof SessionContextRequestHandler);
 	}
 
+    @Test
 	public void testInitWithExtraModules() throws Exception {
 
 		MockFilterConfig config = new MockFilterConfig();
@@ -141,6 +148,7 @@ public class CayenneFilterTest extends TestCase {
 		assertTrue(handler instanceof MockRequestHandler);
 	}
 
+    @Test
 	public void testDoFilter() throws Exception {
 		MockFilterConfig config = new MockFilterConfig();
 		config.setFilterName("abc");

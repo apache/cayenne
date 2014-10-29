@@ -19,29 +19,35 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Types;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Test;
+
+import java.sql.Types;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class ColumnDescriptorTest extends TestCase {
+public class ColumnDescriptorTest {
 
+    @Test
     public void testName() {
         ColumnDescriptor column = new ColumnDescriptor();
         column.setName("abc");
         assertEquals("abc", column.getName());
     }
 
+    @Test
     public void testLabel() {
         ColumnDescriptor column = new ColumnDescriptor();
         column.setDataRowKey("abc");
         assertEquals("abc", column.getDataRowKey());
     }
 
+    @Test
     public void testDbAttributeConstructor() {
         DbEntity entity = new DbEntity("entity");
         DbAttribute a = new DbAttribute();
@@ -60,6 +66,7 @@ public class ColumnDescriptorTest extends TestCase {
         assertEquals(Types.VARCHAR, column.getJdbcType());
     }
 
+    @Test
     public void testEquals() {
         ColumnDescriptor column1 = new ColumnDescriptor();
         column1.setName("n1");
@@ -84,6 +91,7 @@ public class ColumnDescriptorTest extends TestCase {
         assertFalse(column3.equals(column2));
     }
 
+    @Test
     public void testHashCode() {
         ColumnDescriptor column1 = new ColumnDescriptor();
         column1.setName("n1");

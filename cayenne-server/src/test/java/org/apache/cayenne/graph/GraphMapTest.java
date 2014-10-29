@@ -19,12 +19,19 @@
 
 package org.apache.cayenne.graph;
 
+import org.junit.Test;
+
 import java.util.Collection;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class GraphMapTest extends TestCase {
+public class GraphMapTest {
 
+    @Test
     public void testRegisterNode() {
         GraphMap map = new GraphMap();
         Object node = new Object();
@@ -33,6 +40,7 @@ public class GraphMapTest extends TestCase {
         assertSame(node, map.getNode("key"));
     }
 
+    @Test
     public void testRegisteredNodes() {
         GraphMap map = new GraphMap();
         Object n1 = new Object();

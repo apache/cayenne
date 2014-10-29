@@ -19,17 +19,22 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.util.TstBean;
+import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.util.TstBean;
+public class OrderingTest {
 
-public class OrderingTest extends TestCase {
-
+    @Test
     public void testPathSpec1() throws Exception {
         String pathSpec = "a.b.c";
         Ordering ord = new Ordering();
@@ -39,12 +44,14 @@ public class OrderingTest extends TestCase {
         assertEquals(pathSpec, ord.getSortSpec().getOperand(0));
     }
 
+    @Test
     public void testPathSpec3() throws Exception {
         String pathSpec = "a.b.c";
         Ordering ord = new Ordering(pathSpec, SortOrder.DESCENDING);
         assertEquals(pathSpec, ord.getSortSpec().getOperand(0));
     }
 
+    @Test
     public void testAscending1() throws Exception {
         Ordering ord = new Ordering();
         ord.setAscending();
@@ -52,6 +59,7 @@ public class OrderingTest extends TestCase {
         assertFalse(ord.isDescending());
     }
 
+    @Test
     public void testAscending2() throws Exception {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.ASCENDING);
@@ -59,6 +67,7 @@ public class OrderingTest extends TestCase {
         assertFalse(ord.isDescending());
     }
 
+    @Test
     public void testAscending3() throws Exception {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
@@ -66,6 +75,7 @@ public class OrderingTest extends TestCase {
         assertFalse(ord.isDescending());
     }
 
+    @Test
     public void testDescending1() throws Exception {
         Ordering ord = new Ordering();
         ord.setDescending();
@@ -73,6 +83,7 @@ public class OrderingTest extends TestCase {
         assertTrue(ord.isDescending());
     }
 
+    @Test
     public void testDescending2() throws Exception {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.DESCENDING);
@@ -80,6 +91,7 @@ public class OrderingTest extends TestCase {
         assertTrue(ord.isDescending());
     }
 
+    @Test
     public void testDescending3() throws Exception {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
@@ -87,26 +99,31 @@ public class OrderingTest extends TestCase {
         assertTrue(ord.isDescending());
     }
 
+    @Test
     public void testCaseInsensitive3() throws Exception {
         Ordering ord = new Ordering("M", SortOrder.ASCENDING_INSENSITIVE);
         assertTrue(ord.isCaseInsensitive());
     }
 
+    @Test
     public void testCaseInsensitive4() throws Exception {
         Ordering ord = new Ordering("N", SortOrder.ASCENDING);
         assertFalse(ord.isCaseInsensitive());
     }
 
+    @Test
     public void testCaseInsensitive5() throws Exception {
         Ordering ord = new Ordering("M", SortOrder.DESCENDING_INSENSITIVE);
         assertTrue(ord.isCaseInsensitive());
     }
 
+    @Test
     public void testCaseInsensitive6() throws Exception {
         Ordering ord = new Ordering("N", SortOrder.DESCENDING);
         assertFalse(ord.isCaseInsensitive());
     }
 
+    @Test
     public void testCompare3() throws Exception {
         Painting p1 = new Painting();
         p1.setEstimatedPrice(new BigDecimal(1000.00));
@@ -123,6 +140,7 @@ public class OrderingTest extends TestCase {
         assertTrue(ordering.compare(p2, p3) == 0);
     }
 
+    @Test
     public void testCompare4() throws Exception {
         // compare on non-persistent property
         TstBean t1 = new TstBean(1000);
@@ -135,6 +153,7 @@ public class OrderingTest extends TestCase {
         assertTrue(ordering.compare(t2, t3) == 0);
     }
 
+    @Test
     public void testOrderList2() throws Exception {
         // compare on non-persistent property
         List<TstBean> list = new ArrayList<TstBean>(3);
@@ -149,6 +168,7 @@ public class OrderingTest extends TestCase {
         assertEquals(5, ((TstBean) list.get(2)).getInteger().intValue());
     }
 
+    @Test
     public void testOrderListWithMultipleOrderings2() throws Exception {
         // compare on non-persistent property
         List<TstBean> list = new ArrayList<TstBean>(6);

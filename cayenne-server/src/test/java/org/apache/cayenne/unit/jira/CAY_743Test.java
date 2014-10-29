@@ -18,17 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.unit.jira;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.Test;
 
-public class CAY_743Test extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
+public class CAY_743Test {
+
+    @Test
     public void testLoad2MapsWithCrossMapInheritance() throws Exception {
 
         Injector injector = DIBootstrap.createInjector(new ServerModule(

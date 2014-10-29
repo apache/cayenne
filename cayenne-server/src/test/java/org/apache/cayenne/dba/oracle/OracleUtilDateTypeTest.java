@@ -19,13 +19,17 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.junit.Test;
+
 import java.util.Calendar;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class OracleUtilDateTypeTest extends TestCase {
+public class OracleUtilDateTypeTest {
 
+    @Test
     public void testNormalizeDate() throws Exception {
         Date date = new Date();
         Date timeNormalized = new OracleUtilDateType().normalizeDate(date);

@@ -19,17 +19,20 @@
 
 package org.apache.cayenne.remote.service;
 
-import static org.mockito.Mockito.mock;
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.MockDataChannel;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.BootstrapMessage;
 import org.apache.cayenne.remote.ClientMessage;
+import org.junit.Test;
 
-public class DispatchHelperTest extends TestCase {
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
+public class DispatchHelperTest {
+
+    @Test
     public void testBootstrapMessage() {
         EntityResolver resolver = new EntityResolver();
         MockDataChannel channel = new MockDataChannel(resolver);
@@ -38,6 +41,7 @@ public class DispatchHelperTest extends TestCase {
                 new BootstrapMessage()));
     }
 
+    @Test
     public void testUnknownMessage() {
         try {
             DispatchHelper.dispatch(new MockDataChannel(), mock(ClientMessage.class));

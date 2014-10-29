@@ -18,15 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class EJBQLParserFactoryTest extends TestCase {
+import static org.junit.Assert.assertNotNull;
 
+public class EJBQLParserFactoryTest {
+
+    @Test
     public void testGetParser() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         assertNotNull(parser);
     }
 
+    @Test
     public void testDefaultParser() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLExpression parsedSelect = parser.parse("select a from b");

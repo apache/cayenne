@@ -19,12 +19,19 @@
 
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class PrefetchTreeNodeTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+public class PrefetchTreeNodeTest {
+
+    @Test
     public void testAddPath() {
         PrefetchTreeNode tree = new PrefetchTreeNode();
         tree.addPath("abc");
@@ -54,6 +61,7 @@ public class PrefetchTreeNodeTest extends TestCase {
         assertEquals("xyz", n4.getName());
     }
 
+    @Test
     public void testGetPath() {
         PrefetchTreeNode tree = new PrefetchTreeNode();
         tree.addPath("abc");
@@ -75,8 +83,7 @@ public class PrefetchTreeNodeTest extends TestCase {
         assertEquals("xyz", n4.getPath());
     }
 
-  
-
+    @Test
     public void testTreeSerialization() throws Exception {
         PrefetchTreeNode n1 = new PrefetchTreeNode();
         PrefetchTreeNode n2 = n1.addPath("abc");
@@ -91,6 +98,7 @@ public class PrefetchTreeNodeTest extends TestCase {
         assertEquals("abc", nc2.getName());
     }
 
+    @Test
     public void testSubtreeSerialization() throws Exception {
         PrefetchTreeNode n1 = new PrefetchTreeNode();
         PrefetchTreeNode n2 = n1.addPath("abc");
@@ -108,6 +116,7 @@ public class PrefetchTreeNodeTest extends TestCase {
         assertEquals("xyz", nc3.getName());
     }
 
+    @Test
     public void testCloneJointSubtree() throws Exception {
         PrefetchTreeNode root = new PrefetchTreeNode(null, "root");
         root.setPhantom(false);

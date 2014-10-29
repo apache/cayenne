@@ -19,14 +19,18 @@
 
 package org.apache.cayenne.access.types;
 
+import com.mockrunner.mock.jdbc.MockResultSet;
+import org.junit.Test;
+
 import java.sql.Types;
 
-import com.mockrunner.mock.jdbc.MockResultSet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+public class EnumTypeTest {
 
-public class EnumTypeTest extends TestCase {
-
+    @Test
     public void testConstructor() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         assertEquals(MockEnum.class.getName(), type.getClassName());
@@ -37,6 +41,7 @@ public class EnumTypeTest extends TestCase {
         }
     }
 
+    @Test
     public void testInvalidConstructor1() throws Exception {
         try {
             new EnumType(Object.class);
@@ -47,6 +52,7 @@ public class EnumTypeTest extends TestCase {
         }
     }
 
+    @Test
     public void testInvalidConstructor2() throws Exception {
         try {
             new EnumType(null);
@@ -56,7 +62,8 @@ public class EnumTypeTest extends TestCase {
             // expected
         }
     }
-    
+
+    @Test
     public void testMaterializeStringObject() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         
@@ -68,7 +75,8 @@ public class EnumTypeTest extends TestCase {
         Object o = type.materializeObject(rs, 1, Types.VARCHAR);
         assertSame(MockEnum.b, o);
     }
-    
+
+    @Test
     public void testMaterializeNumericObject() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         
@@ -80,7 +88,8 @@ public class EnumTypeTest extends TestCase {
         Object o = type.materializeObject(rs, 1, Types.NUMERIC);
         assertSame(MockEnum.c, o);
     }
-    
+
+    @Test
     public void testMaterializeStringObjectInnerEnum() throws Exception {
         EnumType type = new EnumType(InnerEnumHolder.InnerEnum.class);
         
@@ -92,7 +101,8 @@ public class EnumTypeTest extends TestCase {
         Object o = type.materializeObject(rs, 1, Types.VARCHAR);
         assertSame(InnerEnumHolder.InnerEnum.b, o);
     }
-    
+
+    @Test
     public void testMaterializeNumericObjectInnerEnum() throws Exception {
         EnumType type = new EnumType(InnerEnumHolder.InnerEnum.class);
         

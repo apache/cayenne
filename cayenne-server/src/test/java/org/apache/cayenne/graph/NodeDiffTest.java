@@ -19,16 +19,21 @@
 
 package org.apache.cayenne.graph;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class NodeDiffTest extends TestCase {
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+public class NodeDiffTest {
+
+    @Test
     public void testGetNodeId() {
         Object id = new Object();
         NodeDiff diff = new MockNodeDiff(id);
         assertSame(id, diff.getNodeId());
     }
 
+    @Test
     public void testCompareTo() {
         NodeDiff d1 = new MockNodeDiff("x", 1);
         NodeDiff d2 = new MockNodeDiff("y", 2);

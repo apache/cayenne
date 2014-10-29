@@ -20,11 +20,14 @@ package org.apache.cayenne.configuration.web;
 
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultInjector;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
-public class WebModuleTest extends TestCase {
+public class WebModuleTest {
 
+    @Test
     public void testBind_Scopes() {
 
         Injector injector = new DefaultInjector(new WebModule());

@@ -19,22 +19,27 @@
 
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class SelectQueryBuilderTest extends TestCase {
+public class SelectQueryBuilderTest {
 
+    @Test
     public void testGetQueryType() throws Exception {
         SelectQueryBuilder builder = new MockupRootQueryBuilder();
         assertTrue(builder.getQuery() instanceof SelectQuery);
     }
 
+    @Test
     public void testGetQueryName() throws Exception {
         SelectQueryBuilder builder = new MockupRootQueryBuilder();
         builder.setName("xyz");
@@ -42,6 +47,7 @@ public class SelectQueryBuilderTest extends TestCase {
         assertEquals("xyz", builder.getQuery().getName());
     }
 
+    @Test
     public void testGetQueryRoot() throws Exception {
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("A");
@@ -54,6 +60,7 @@ public class SelectQueryBuilderTest extends TestCase {
         assertSame(entity, ((SelectQuery) builder.getQuery()).getRoot());
     }
 
+    @Test
     public void testGetQueryQualifier() throws Exception {
         SelectQueryBuilder builder = new MockupRootQueryBuilder();
         builder.setQualifier("abc = 5");
@@ -63,6 +70,7 @@ public class SelectQueryBuilderTest extends TestCase {
         assertEquals(Expression.fromString("abc = 5"), query.getQualifier());
     }
 
+    @Test
     public void testGetQueryProperties() throws Exception {
         SelectQueryBuilder builder = new MockupRootQueryBuilder();
         builder.addProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
