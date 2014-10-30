@@ -39,6 +39,7 @@
 				<configuration>
 					<map>src/test/resources/cgen/testDomainMap.map.xml</map>
 					<destDir>target/cayenneGeneratedClasses</destDir>
+                    <additionalMaps>src/test/resources/cgen/</additionalMaps>
 					<outputPattern>*.txt</outputPattern>
 					<makePairs>true</makePairs>
 					<usePkgPath>true</usePkgPath>

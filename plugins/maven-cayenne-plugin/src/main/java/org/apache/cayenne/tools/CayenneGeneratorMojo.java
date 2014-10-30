@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -28,6 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+
+import java.io.File;
+import java.io.FilenameFilter;
 
 /**
  * Maven mojo to perform class generation from data map. This class is an Maven
@@ -238,15 +239,21 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 		if (!additionalMaps.isDirectory()) {
 			throw new MojoFailureException(
-					"'additionalMaps' must be a directory containing only datamap files.");
+					"'additionalMaps' must be a directory.");
 		}
 
-		String[] maps = additionalMaps.list();
-		File[] dataMaps = new File[maps.length];
-		for (int i = 0; i < maps.length; i++) {
-			dataMaps[i] = new File(maps[i]);
-		}
-		return dataMaps;
+        FilenameFilter mapFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if (name != null &&
+                        name.toLowerCase().endsWith(".map.xml")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        };
+        return additionalMaps.listFiles(mapFilter);
 	}
 
 	/**
