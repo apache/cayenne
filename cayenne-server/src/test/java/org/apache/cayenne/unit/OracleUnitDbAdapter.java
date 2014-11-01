@@ -19,14 +19,7 @@
 
 package org.apache.cayenne.unit;
 
-import java.sql.Connection;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.cayenne.access.DataContextProcedureQueryTest;
+import org.apache.cayenne.access.DataContextProcedureQueryIT;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.map.DataMap;
@@ -34,6 +27,13 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+
+import java.sql.Connection;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  */
@@ -104,7 +104,7 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
 
     @Override
     public void tweakProcedure(Procedure proc) {
-        if (DataContextProcedureQueryTest.SELECT_STORED_PROCEDURE.equals(proc.getName())
+        if (DataContextProcedureQueryIT.SELECT_STORED_PROCEDURE.equals(proc.getName())
                 && proc.getCallParameters().size() == 2) {
             List params = new ArrayList(proc.getCallParameters());
 
