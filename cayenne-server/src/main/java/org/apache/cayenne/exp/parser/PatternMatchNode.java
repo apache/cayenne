@@ -55,7 +55,6 @@ public abstract class PatternMatchNode extends ConditionNode {
      * clause.  The escape character will eventually end up in the
      * query as <code>...(t0.foo LIKE ? &#123;escape '|'&#125;)</code> where the
      * pipe symbol is the escape character.</p>
-     * <p/>
      * <p>Note that having no escape character is represented as
      * the character 0.</p>
      */
