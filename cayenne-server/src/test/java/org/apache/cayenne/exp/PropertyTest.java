@@ -18,17 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import java.util.Arrays;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.reflect.TstJavaBean;
 import org.apache.cayenne.reflect.UnresolvablePathException;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class PropertyTest extends TestCase {
+import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class PropertyTest {
+
+    @Test
     public void testIn() {
         Property<String> p = new Property<String>("x.y");
 
@@ -41,14 +45,16 @@ public class PropertyTest extends TestCase {
         Expression e3 = p.in(Arrays.asList("a", "b"));
         assertEquals("x.y in (\"a\", \"b\")", e3.toString());
     }
-    
+
+    @Test
     public void testGetFrom() {
     	TstJavaBean bean = new TstJavaBean();
     	bean.setIntField(7);
     	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
     	assertEquals(Integer.valueOf(7), INT_FIELD.getFrom(bean));
     }
-    
+
+    @Test
     public void testGetFromNestedProperty() {
     	TstJavaBean bean = new TstJavaBean();
     	TstJavaBean nestedBean = new TstJavaBean();
@@ -57,7 +63,8 @@ public class PropertyTest extends TestCase {
     	final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
     	assertEquals(Integer.valueOf(7), OBJECT_FIELD_INT_FIELD.getFrom(bean));
     }
-    
+
+    @Test
     public void testGetFromNestedNull() {
     	TstJavaBean bean = new TstJavaBean();
     	bean.setObjectField(null);
@@ -72,7 +79,8 @@ public class PropertyTest extends TestCase {
     		}
     	}
     }
-    
+
+    @Test
     public void testGetFromAll() {
     	TstJavaBean bean = new TstJavaBean();
     	bean.setIntField(7);
@@ -85,14 +93,16 @@ public class PropertyTest extends TestCase {
     	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
     	assertEquals(Arrays.asList(7, 8), INT_FIELD.getFromAll(beans));
     }
-    
+
+    @Test
     public void testSetIn() {
     	TstJavaBean bean = new TstJavaBean();
     	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
     	INT_FIELD.setIn(bean, 7);
     	assertEquals(7, bean.getIntField());
     }
-    
+
+    @Test
     public void testSetInNestedProperty() {
     	TstJavaBean bean = new TstJavaBean();
     	bean.setObjectField(new TstJavaBean());
@@ -102,7 +112,8 @@ public class PropertyTest extends TestCase {
     	OBJECT_FIELD_INT_FIELD.setIn(bean, 7);
     	assertEquals(7, ((TstJavaBean)bean.getObjectField()).getIntField());
     }
-    
+
+    @Test
     public void testSetInNestedNull() {
     	TstJavaBean bean = new TstJavaBean();
     	bean.setObjectField(null);
@@ -117,7 +128,8 @@ public class PropertyTest extends TestCase {
     		}
     	}
     }
-    
+
+    @Test
     public void testSetInAll() {
     	TstJavaBean bean = new TstJavaBean();
     	TstJavaBean bean2 = new TstJavaBean();
@@ -128,7 +140,8 @@ public class PropertyTest extends TestCase {
     	assertEquals(7, bean.getIntField());
     	assertEquals(7, bean2.getIntField());
     }
-    
+
+    @Test
     public void testEquals() {
     	final Property<Integer> INT_FIELD = new Property<Integer>("intField");
     	final Property<Integer> INT_FIELD2 = new Property<Integer>("intField");
@@ -136,7 +149,8 @@ public class PropertyTest extends TestCase {
     	assertTrue(INT_FIELD != INT_FIELD2);
     	assertTrue(INT_FIELD.equals(INT_FIELD2));
     }
-    
+
+    @Test
     public void testHashCode() {
     	final Property<Integer> INT_FIELD  = new Property<Integer>("intField");
     	final Property<Integer> INT_FIELD2 = new Property<Integer>("intField");
@@ -145,7 +159,8 @@ public class PropertyTest extends TestCase {
     	assertTrue(INT_FIELD.hashCode() == INT_FIELD2.hashCode());
     	assertTrue(INT_FIELD.hashCode() != LONG_FIELD.hashCode());
     }
-    
+
+    @Test
     public void testOuter() {
         Property<String> inner = new Property<String>("xyz");
         assertEquals("xyz+", inner.outer().getName());

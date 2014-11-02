@@ -19,12 +19,16 @@
 
 package org.apache.cayenne.exp;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  */
-public class ExpressionEqualsTest extends TestCase {
+public class ExpressionEqualsTest {
 
+    @Test
     public void testEquals3() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("aa", "3");
         Expression e2 = ExpressionFactory.matchExp("aa", "3");
@@ -33,6 +37,7 @@ public class ExpressionEqualsTest extends TestCase {
         assertFalse(e2.equals(e3));
     }
 
+    @Test
     public void testEquals4() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("aa", "3").andExp(
                 ExpressionFactory.matchExp("aa", "4"));

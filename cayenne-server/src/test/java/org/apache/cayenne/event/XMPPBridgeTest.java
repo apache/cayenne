@@ -19,15 +19,21 @@
 
 package org.apache.cayenne.event;
 
+import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class XMPPBridgeTest extends TestCase {
+public class XMPPBridgeTest {
 
+    @Test
     public void testEventSerialization() throws Exception {
         Map info = new HashMap();
         info.put("a", "b");

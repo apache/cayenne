@@ -19,15 +19,18 @@
 
 package org.apache.cayenne.conn;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.util.Util;
+import org.junit.Before;
+import org.junit.Test;
 
-public class DataSourceInfoTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class DataSourceInfoTest {
 
     private DataSourceInfo dsi;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         dsi = new DataSourceInfo();
         dsi.setUserName("a");
@@ -39,18 +42,21 @@ public class DataSourceInfoTest extends TestCase {
         dsi.setAdapterClassName("d");
     }
 
+    @Test
     public void testDefaultValues() throws java.lang.Exception {
         DataSourceInfo localDsi = new DataSourceInfo();
         assertEquals(1, localDsi.getMinConnections());
         assertTrue(localDsi.getMinConnections() <= localDsi.getMaxConnections());
     }
 
+    @Test
     public void testClone() throws java.lang.Exception {
         DataSourceInfo dsiClone = dsi.cloneInfo();
         assertEquals(dsi, dsiClone);
         assertTrue(dsi != dsiClone);
     }
 
+    @Test
     public void testSerialize() throws java.lang.Exception {
         DataSourceInfo dsiUnserialized = Util.cloneViaSerialization(dsi);
         assertEquals(dsi, dsiUnserialized);

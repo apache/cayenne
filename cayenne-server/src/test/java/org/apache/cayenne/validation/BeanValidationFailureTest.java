@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.validation;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class BeanValidationFailureTest extends TestCase {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+public class BeanValidationFailureTest {
+
+    @Test
     public void testValidateJavaClassName() {
 
         Object source = new Object();

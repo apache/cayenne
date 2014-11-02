@@ -18,34 +18,39 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import org.apache.cayenne.query.QueryMetadata;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.net.URL;
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.apache.cayenne.query.QueryMetadata;
-
-public class EhCacheQueryCache_WithConfigTest extends TestCase {
+public class EhCacheQueryCache_WithConfigTest {
 
     protected CacheManager cacheManager;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         URL config = getClass().getResource("test-ehcache.xml");
         assertNotNull(config);
         cacheManager = new CacheManager(config);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         cacheManager.shutdown();
     }
 
+    @Test
     public void testRemoveGroup_WithFactory_WithCacheGroups() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);

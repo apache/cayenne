@@ -19,15 +19,18 @@
 
 package org.apache.cayenne.access.event;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertSame;
 
-public class SnapshotEventTest extends TestCase {
+public class SnapshotEventTest {
 
+    @Test
     public void testRootEvent() {
         Object source = new Object();
         Collection<?> deleted = new ArrayList<Object>();

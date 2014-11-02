@@ -19,20 +19,25 @@
 
 package org.apache.cayenne.remote.hessian;
 
-import org.apache.cayenne.map.EntityResolver;
-
-import junit.framework.TestCase;
-
 import com.caucho.hessian.io.AbstractSerializerFactory;
 import com.caucho.hessian.io.SerializerFactory;
+import org.apache.cayenne.map.EntityResolver;
+import org.junit.Test;
 
-public class HessianConfigTest extends TestCase {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+public class HessianConfigTest {
+
+    @Test
     public void testLoadFactoryNoExtensions() {
         SerializerFactory factory = HessianConfig.createFactory(null, null);
         assertNotNull(factory);
     }
 
+    @Test
     public void testLoadFactoryNoInjection() throws Exception {
         AbstractSerializerFactory factory = HessianConfig.loadFactory(
                 MockAbstractSerializerFactory.class.getName(),
@@ -42,6 +47,7 @@ public class HessianConfigTest extends TestCase {
         assertNull(((MockAbstractSerializerFactory) factory).getEntityResolver());
     }
 
+    @Test
     public void testLoadFactoryInjection() throws Exception {
         EntityResolver resolver = new EntityResolver();
         AbstractSerializerFactory factory = HessianConfig.loadFactory(

@@ -19,13 +19,20 @@
 
 package org.apache.cayenne.access.types;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-public class ExtendedTypeMapTest extends TestCase {
+public class ExtendedTypeMapTest {
 
+    @Test
     public void testRegisterType() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType = new MockExtendedType();
@@ -39,6 +46,7 @@ public class ExtendedTypeMapTest extends TestCase {
         assertSame(map.getDefaultType(), map.getRegisteredType(tstType.getClassName()));
     }
 
+    @Test
     public void testRegisterTypeSubclasses() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType1 = new MockExtendedType(List.class);
@@ -74,7 +82,8 @@ public class ExtendedTypeMapTest extends TestCase {
         assertSame(tstType1, map.getRegisteredType(List.class));
         
     }
-    
+
+    @Test
     public void testRegisterArrayType() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ByteArrayType tstType = new ByteArrayType(false, true);
@@ -93,6 +102,7 @@ public class ExtendedTypeMapTest extends TestCase {
                 .indexOf("SerializableTypeFactory") > 0);
     }
 
+    @Test
     public void testRegisteredTypeName() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType = new MockExtendedType();

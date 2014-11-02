@@ -18,14 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class DataObjectAttributePropertyTest extends TestCase {
-	
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class DataObjectAttributePropertyTest {
+
+    @Test
 	public void testSerialization() throws Exception {
 		ObjEntity e1 = new ObjEntity("objEntityName");
 		ObjAttribute a1 = new ObjAttribute("aName", "aType", e1);

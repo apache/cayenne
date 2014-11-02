@@ -19,14 +19,20 @@
 
 package org.apache.cayenne.util;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class GenericResponseTest extends TestCase {
+public class GenericResponseTest {
 
+    @Test
     public void testCreation() throws Exception {
         List list = new ArrayList();
         list.add(new HashMap());
@@ -52,6 +58,7 @@ public class GenericResponseTest extends TestCase {
         assertFalse(r.next());
     }
 
+    @Test
     public void testSerialization() throws Exception {
         List list = new ArrayList();
         list.add(new HashMap());

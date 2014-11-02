@@ -19,27 +19,35 @@
 
 package org.apache.cayenne;
 
+import org.junit.Test;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class CayenneRuntimeExceptionTest extends TestCase {
+public class CayenneRuntimeExceptionTest {
 
+    @Test
     public void testConstructor1() throws Exception {
         CayenneRuntimeException ex = new CayenneRuntimeException();
         assertNull(ex.getCause());
         assertTrue(ex.getMessage().startsWith(CayenneException.getExceptionLabel()));
     }
 
+    @Test
     public void testConstructor2() throws Exception {
         CayenneRuntimeException ex = new CayenneRuntimeException("abc");
         assertNull(ex.getCause());
         assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
+    @Test
     public void testConstructor3() throws Exception {
         Throwable cause = new Throwable();
         CayenneRuntimeException ex = new CayenneRuntimeException(cause);
@@ -49,6 +57,7 @@ public class CayenneRuntimeExceptionTest extends TestCase {
             ex.getMessage());
     }
 
+    @Test
     public void testConstructor4() throws Exception {
         Throwable cause = new Throwable();
         CayenneRuntimeException ex = new CayenneRuntimeException("abc", cause);
@@ -56,6 +65,7 @@ public class CayenneRuntimeExceptionTest extends TestCase {
         assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
+    @Test
     public void testThrow1() throws Exception {
         try {
             throw new CayenneRuntimeException();
@@ -66,6 +76,7 @@ public class CayenneRuntimeExceptionTest extends TestCase {
         }
     }
 
+    @Test
     public void testThrow2() throws Exception {
         try {
             try {
@@ -80,12 +91,14 @@ public class CayenneRuntimeExceptionTest extends TestCase {
             rtex.printStackTrace(new PrintWriter(w));
         }
     }
-    
+
+    @Test
     public void testMessageFormatting1() throws Exception {
         CayenneRuntimeException ex = new CayenneRuntimeException("x%sx%sx", "a", "b");
         assertEquals("xaxbx", ex.getUnlabeledMessage());
     }
-    
+
+    @Test
     public void testMessageFormatting2() throws Exception {
         Throwable cause = new Throwable();
         CayenneRuntimeException ex = new CayenneRuntimeException("x%sx%sx", cause, "a", "b");

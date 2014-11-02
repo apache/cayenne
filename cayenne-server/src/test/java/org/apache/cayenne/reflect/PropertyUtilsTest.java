@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.types.MockEnum;
+import org.apache.cayenne.access.types.MockEnumHolder;
+import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -29,14 +34,16 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.types.MockEnum;
-import org.apache.cayenne.access.types.MockEnumHolder;
+public class PropertyUtilsTest {
 
-public class PropertyUtilsTest extends TestCase {
-
+    @Test
     public void testCreateAccessor() {
 
         Accessor accessor = PropertyUtils.createAccessor(
@@ -54,6 +61,7 @@ public class PropertyUtilsTest extends TestCase {
         assertSame(o1.getByteArrayField(), o2.getByteArrayField());
     }
 
+    @Test
     public void testCreateAccessorNested() {
 
         Accessor accessor = PropertyUtils.createAccessor(
@@ -78,6 +86,7 @@ public class PropertyUtilsTest extends TestCase {
         assertSame(b1, o2.getRelated().getByteArrayField());
     }
 
+    @Test
     public void testGetProperty() {
         TstJavaBean o1 = createBean();
 
@@ -95,6 +104,7 @@ public class PropertyUtilsTest extends TestCase {
                 "booleanField"));
     }
 
+    @Test
     public void testSetProperty() {
         TstJavaBean o1 = createBean();
         TstJavaBean o2 = new TstJavaBean();
@@ -108,6 +118,7 @@ public class PropertyUtilsTest extends TestCase {
         PropertyUtils.setProperty(o2, "booleanField", Boolean.valueOf(o1.isBooleanField()));
     }
 
+    @Test
     public void testGetPropertyMap() {
         Map o1 = createMap();
 
@@ -123,6 +134,7 @@ public class PropertyUtilsTest extends TestCase {
                 .getProperty(o1, "booleanField"));
     }
 
+    @Test
     public void testSetPropertyMap() {
         Map o1 = createMap();
         Map o2 = new HashMap();
@@ -138,6 +150,7 @@ public class PropertyUtilsTest extends TestCase {
         assertEquals(o1, o2);
     }
 
+    @Test
     public void testSetConverted() {
         TstJavaBean o1 = new TstJavaBean();
 
@@ -168,11 +181,11 @@ public class PropertyUtilsTest extends TestCase {
         
         // string to float primitive
         PropertyUtils.setProperty(o1, "floatField", "4.5");
-        assertEquals(4.5f, o1.getFloatField());
+        assertEquals(4.5f, o1.getFloatField(), 0);
         
         // string to double primitive
         PropertyUtils.setProperty(o1, "doubleField", "5.5");
-        assertEquals(5.5, o1.getDoubleField());
+        assertEquals(5.5, o1.getDoubleField(), 0);
         
         // string to boolean
         PropertyUtils.setProperty(o1, "booleanField", "true");
@@ -205,6 +218,7 @@ public class PropertyUtilsTest extends TestCase {
         assertEquals(new StringBuilder("abc").toString(), o1.getStringBuilderField().toString());
     }
 
+    @Test
     public void testSetConvertedWithCustomConverter() {
         // save old converter for restore
         Converter<Date> oldConverter = ConverterFactory.factory.getConverter(Date.class);
@@ -243,7 +257,8 @@ public class PropertyUtilsTest extends TestCase {
             ConverterFactory.addConverter(Date.class, oldConverter);
         }
     }
-    
+
+    @Test
     public void testSetNull() {
         TstJavaBean o1 = new TstJavaBean();
 
@@ -273,13 +288,14 @@ public class PropertyUtilsTest extends TestCase {
         
         o1.setFloatField(4.5f);
         PropertyUtils.setProperty(o1, "floatField", null);
-        assertEquals(0.0f, o1.getFloatField());
+        assertEquals(0.0f, o1.getFloatField(), 0);
         
         o1.setDoubleField(5.5f);
         PropertyUtils.setProperty(o1, "doubleField", null);
-        assertEquals(0.0, o1.getDoubleField());
+        assertEquals(0.0, o1.getDoubleField(), 0);
     }
 
+    @Test
     public void testSetConvertedEnum() {
         MockEnumHolder o1 = new MockEnumHolder();
 

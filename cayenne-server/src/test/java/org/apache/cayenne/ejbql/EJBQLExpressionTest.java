@@ -18,10 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class EJBQLExpressionTest extends TestCase {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
+public class EJBQLExpressionTest {
+
+    @Test
     public void testDbPath() {
 
         EJBQLParser parser = EJBQLParserFactory.getParser();
@@ -31,6 +35,7 @@ public class EJBQLExpressionTest extends TestCase {
         assertNotNull(select);
     }
 
+    @Test
     public void testEnumPath() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
@@ -42,7 +47,7 @@ public class EJBQLExpressionTest extends TestCase {
     /**
      * <p>This should not parse because there are multiple non-bracketed parameters.</p>
      */
-
+    @Test
     public void testInWithMultipleStringPositionalParameter_withoutBrackets() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
 

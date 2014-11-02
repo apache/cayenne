@@ -18,14 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.resource;
 
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.junit.Test;
+
 import java.util.Collection;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+public class ClassLoaderResourceLocatorTest {
 
-public class ClassLoaderResourceLocatorTest extends TestCase {
-
+    @Test
     public void testFindResources() {
         ClassLoaderResourceLocator locator = new ClassLoaderResourceLocator(new DefaultClassLoaderManager());
 

@@ -19,12 +19,19 @@
 
 package org.apache.cayenne.util;
 
+import org.junit.Test;
+
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-public class ListResponseTest extends TestCase {
+public class ListResponseTest {
 
+    @Test
     public void testCreation() throws Exception {
 
         Object object = new Object();
@@ -47,6 +54,7 @@ public class ListResponseTest extends TestCase {
         assertSame(currentList, r.firstList());
     }
 
+    @Test
     public void testSerialization() throws Exception {
 
         ListResponse r = new ListResponse(new Integer(67));

@@ -18,15 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import java.util.ArrayList;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class MapQueryCacheTest extends TestCase {
+import java.util.ArrayList;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class MapQueryCacheTest {
+
+    @Test
     public void testSerializability() throws Exception {
 
         MapQueryCache cache = new MapQueryCache(5);

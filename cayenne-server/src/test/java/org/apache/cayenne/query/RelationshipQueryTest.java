@@ -19,13 +19,17 @@
 
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class RelationshipQueryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
+public class RelationshipQueryTest {
+
+    @Test
     public void testConstructorObjectId() {
 
         ObjectId oid = new ObjectId("MockDataObject", "a", "b");
@@ -34,6 +38,7 @@ public class RelationshipQueryTest extends TestCase {
         assertSame("relX", query.getRelationshipName());
     }
 
+    @Test
     public void testSerializability() throws Exception {
         ObjectId oid = new ObjectId("test", "a", "b");
         RelationshipQuery query = new RelationshipQuery(oid, "relX");

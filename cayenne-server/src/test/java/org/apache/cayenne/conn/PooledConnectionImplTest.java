@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.conn;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class PooledConnectionImplTest extends TestCase {
+public class PooledConnectionImplTest {
 
+    @Test
     public void testConnectionErrorNotificationConcurrency() throws Exception {
         // test a case when error notification is sent to connection
         // that has been removed from the pool, but when pool is still a 
@@ -36,6 +37,7 @@ public class PooledConnectionImplTest extends TestCase {
         con.connectionErrorNotification(new java.sql.SQLException("Bad SQL Exception.."));
     }
 
+    @Test
     public void testConnectionClosedNotificationConcurrency() throws Exception {
         // test a case when closed notification is sent to connection
         // that has been removed from the pool, but when pool is still a 

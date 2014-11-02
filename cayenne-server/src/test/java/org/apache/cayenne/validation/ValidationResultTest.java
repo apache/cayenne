@@ -19,24 +19,29 @@
 
 package org.apache.cayenne.validation;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class ValidationResultTest extends TestCase {
+public class ValidationResultTest {
 
     private ValidationResult res;
 
     private Object obj1;
     private Object obj2;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         obj1 = new Object();
         obj2 = new Object();
     }
 
+    @Test
     public void testHasFailures() {
         res = new ValidationResult();
         res.addFailure(new BeanValidationFailure(obj1, "obj1 1", "mes obj1 1"));
@@ -45,6 +50,7 @@ public class ValidationResultTest extends TestCase {
         assertFalse(res.hasFailures(obj2));
     }
 
+    @Test
     public void testGetFailures() {
         res = new ValidationResult();
         res.addFailure(new BeanValidationFailure(obj1, "obj1 1", "mes obj1 1"));
@@ -56,6 +62,7 @@ public class ValidationResultTest extends TestCase {
         assertEquals(3, res.getFailures().size());
     }
 
+    @Test
     public void testEmpty() {
         res = new ValidationResult();
         assertFalse(res.hasFailures());

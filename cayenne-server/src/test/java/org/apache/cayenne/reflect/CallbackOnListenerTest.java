@@ -20,12 +20,14 @@ package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.access.MockCallingBackListener;
 import org.apache.cayenne.map.MockCallingBackEntity;
-import org.apache.cayenne.reflect.CallbackOnListener;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 
-public class CallbackOnListenerTest extends TestCase {
+public class CallbackOnListenerTest {
 
+    @Test
     public void testPublicCallbackMethod() {
 
         MockCallingBackListener listener = new MockCallingBackListener();

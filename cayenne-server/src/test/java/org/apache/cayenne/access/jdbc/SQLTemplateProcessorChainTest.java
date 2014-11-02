@@ -19,14 +19,17 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class SQLTemplateProcessorChainTest extends TestCase {
+public class SQLTemplateProcessorChainTest {
 
+    @Test
     public void testProcessTemplateNoChunks() throws Exception {
         // whatever is inside the chain, it should render as empty if there
         // is no chunks...
@@ -55,6 +58,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplateFullChain() throws Exception {
         String template = "#chain(' OR ')"
                 + "#chunk($a)$a#end"
@@ -71,6 +75,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("[A] OR [B] OR [C]", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplateFullChainAndPrefix() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
@@ -87,6 +92,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("WHERE [A] OR [B] OR [C]", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplatePartialChainMiddle() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
@@ -102,6 +108,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("WHERE [A] OR [C]", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplatePartialChainStart() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
@@ -117,6 +124,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("WHERE [B] OR [C]", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplatePartialChainEnd() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
@@ -132,6 +140,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("WHERE [A] OR [B]", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplateChainWithGarbage() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
@@ -147,6 +156,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("WHERE [A] some other stuff OR [C]", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplateChainUnconditionalChunks() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk()C1#end"
@@ -160,6 +170,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("WHERE C1 OR C2 OR C3", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplateEmptyChain() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"
@@ -173,6 +184,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplateWithFalseOrZero1() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)[A]#end"
@@ -188,6 +200,7 @@ public class SQLTemplateProcessorChainTest extends TestCase {
         assertEquals("WHERE [A] OR [B]", compiled.getSql());
     }
 
+    @Test
     public void testProcessTemplateWithFalseOrZero2() throws Exception {
         String template = "#chain(' OR ' 'WHERE ')"
                 + "#chunk($a)$a#end"

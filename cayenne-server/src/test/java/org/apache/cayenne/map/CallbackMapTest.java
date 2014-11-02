@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class CallbackMapTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class CallbackMapTest {
+
+    @Test
     public void testGetCallbacks() {
         CallbackDescriptor[] callbacks = new CallbackMap().getCallbacks();
         assertEquals(LifecycleEvent.values().length, callbacks.length);

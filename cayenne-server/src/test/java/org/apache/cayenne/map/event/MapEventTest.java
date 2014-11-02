@@ -19,24 +19,32 @@
 
 package org.apache.cayenne.map.event;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class MapEventTest extends TestCase {
+public class MapEventTest {
 
+    @Test
     public void testNoNameChange() throws Exception {
         MapEvent event = new MapEventFixture(new Object(), "someName");
         assertEquals("someName", event.getNewName());
         assertFalse(event.isNameChange());
     }
 
+    @Test
     public void testNameChange() throws Exception {
         MapEvent event = new MapEventFixture(new Object(), "someName", "someOldName");
         assertEquals("someName", event.getNewName());
         assertTrue(event.isNameChange());
     }
 
+    @Test
     public void testOldName() throws Exception {
         MapEvent event = new MapEventFixture(new Object(), "someName");
         assertNull(event.getOldName());

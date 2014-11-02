@@ -19,17 +19,24 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.dba.TypesMapping;
+import org.junit.Test;
+
 import java.sql.Types;
 import java.util.Collection;
 
-import junit.framework.TestCase;
-
-import org.apache.cayenne.dba.TypesMapping;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class DbAttributeTest extends TestCase {
+public class DbAttributeTest {
 
+    @Test
     public void testConstructor1() throws Exception {
         DbAttribute a = new DbAttribute("abc");
         assertEquals("abc", a.getName());
@@ -37,6 +44,7 @@ public class DbAttributeTest extends TestCase {
         assertNull(a.getEntity());
     }
 
+    @Test
     public void testConstructor2() throws Exception {
         int type = Types.INTEGER;
         DbEntity dbe = new DbEntity("e");
@@ -46,6 +54,7 @@ public class DbAttributeTest extends TestCase {
         assertSame(dbe, a.getEntity());
     }
 
+    @Test
     public void testPrimaryKeyEmpty() {
         DbEntity dbe = new DbEntity("e");
         assertNotNull(dbe.getPrimaryKeys());
@@ -56,6 +65,7 @@ public class DbAttributeTest extends TestCase {
         assertEquals(0, dbe.getPrimaryKeys().size());
     }
 
+    @Test
     public void testPrimaryKeyAdded() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
@@ -66,6 +76,7 @@ public class DbAttributeTest extends TestCase {
         assertEquals(1, pk.size());
     }
 
+    @Test
     public void testPrimaryKeyAttributeChanged() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
@@ -80,6 +91,7 @@ public class DbAttributeTest extends TestCase {
         assertEquals(1, pk.size());
     }
 
+    @Test
     public void testPrimaryKeyRemoved() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
@@ -94,6 +106,7 @@ public class DbAttributeTest extends TestCase {
         assertNotNull(pk);
         assertEquals(0, pk.size());    }
 
+    @Test
     public void testAttributesCleared() {
         DbEntity dbe = new DbEntity("e");
         DbAttribute a = new DbAttribute("abc", Types.INTEGER, dbe);
@@ -109,6 +122,7 @@ public class DbAttributeTest extends TestCase {
         assertEquals(0, pk.size());
     }
 
+    @Test
     public void testAutoIncrement() throws Exception {
         DbAttribute attribute = new DbAttribute();
         assertFalse(attribute.isGenerated());

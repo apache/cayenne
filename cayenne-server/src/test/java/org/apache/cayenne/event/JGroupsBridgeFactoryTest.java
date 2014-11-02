@@ -19,15 +19,18 @@
 
 package org.apache.cayenne.event;
 
+import org.junit.Test;
+
 import java.util.Collection;
 import java.util.Collections;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 /**
  */
-public class JGroupsBridgeFactoryTest extends TestCase {
+public class JGroupsBridgeFactoryTest {
 
+    @Test
     public void testCreateEventBridge() throws Exception {
         Collection subjects = Collections.singleton(new EventSubject("test"));
         EventBridge bridge = new JavaGroupsBridgeFactory().createEventBridge(

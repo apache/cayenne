@@ -18,16 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.MockPersistentObject;
+import org.apache.cayenne.Persistent;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.MockPersistentObject;
-import org.apache.cayenne.Persistent;
+public class RefreshQueryTest {
 
-public class RefreshQueryTest extends TestCase {
-
+    @Test
     public void testRefreshAllConstructor() {
 
         RefreshQuery q = new RefreshQuery();
@@ -37,6 +45,7 @@ public class RefreshQueryTest extends TestCase {
         assertTrue(q.isRefreshAll());
     }
 
+    @Test
     public void testCollectionConstructor() {
         Collection c = new ArrayList();
         c.add(new Object());
@@ -49,6 +58,7 @@ public class RefreshQueryTest extends TestCase {
         assertFalse(q.isRefreshAll());
     }
 
+    @Test
     public void testObjectConstructor() {
         Persistent p = new MockPersistentObject();
 
@@ -61,6 +71,7 @@ public class RefreshQueryTest extends TestCase {
         assertFalse(q.isRefreshAll());
     }
 
+    @Test
     public void testQueryConstructor() {
         Query query = new MockQuery();
 
@@ -72,6 +83,7 @@ public class RefreshQueryTest extends TestCase {
         assertFalse(q.isRefreshAll());
     }
 
+    @Test
     public void testGroupKeysConstructor() {
         String[] groupKeys = new String[] { "a", "b" };
 

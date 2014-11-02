@@ -18,20 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import com.mockrunner.mock.web.MockFilterConfig;
+import com.mockrunner.mock.web.MockServletConfig;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Module;
+import org.junit.Test;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
+public class WebConfigurationTest {
 
-import com.mockrunner.mock.web.MockFilterConfig;
-import com.mockrunner.mock.web.MockServletConfig;
-
-public class WebConfigurationTest extends TestCase {
-
+    @Test
     public void testFilterCreateModules_Standard() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -57,6 +61,7 @@ public class WebConfigurationTest extends TestCase {
         assertSame(m2, it.next());
     }
 
+    @Test
     public void testFilterCreateModules_Extra() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -90,6 +95,7 @@ public class WebConfigurationTest extends TestCase {
         assertTrue(it.next() instanceof MockModule2);
     }
 
+    @Test
     public void testServletCreateModules_Extra() throws Exception {
 
         MockServletConfig config = new MockServletConfig();
@@ -123,6 +129,7 @@ public class WebConfigurationTest extends TestCase {
         assertTrue(it.next() instanceof MockModule2);
     }
 
+    @Test
     public void testFilterConfigurationLocation_Name() {
         MockFilterConfig config1 = new MockFilterConfig();
         config1.setFilterName("cayenne-x");
@@ -143,6 +150,7 @@ public class WebConfigurationTest extends TestCase {
         assertEquals("a/b/c/cayenne-z.xml", configuration3.getConfigurationLocation());
     }
 
+    @Test
     public void testServletConfigurationLocation_Name() {
         MockServletConfig config1 = new MockServletConfig();
         config1.setServletName("cayenne-x");
@@ -163,6 +171,7 @@ public class WebConfigurationTest extends TestCase {
         assertEquals("a/b/c/cayenne-z.xml", configuration3.getConfigurationLocation());
     }
 
+    @Test
     public void testFilterConfigurationLocation_Parameter() {
         MockFilterConfig config1 = new MockFilterConfig();
         config1.setFilterName("cayenne-x");
@@ -174,6 +183,7 @@ public class WebConfigurationTest extends TestCase {
         assertEquals("cayenne-y.xml", configuration1.getConfigurationLocation());
     }
 
+    @Test
     public void testServletConfigurationLocation_Parameter() {
         MockServletConfig config1 = new MockServletConfig();
         config1.setServletName("cayenne-x");
@@ -185,6 +195,7 @@ public class WebConfigurationTest extends TestCase {
         assertEquals("cayenne-y.xml", configuration1.getConfigurationLocation());
     }
 
+    @Test
     public void testFilterParameters() {
         MockFilterConfig config1 = new MockFilterConfig();
         config1.setFilterName("cayenne-x");
@@ -204,6 +215,7 @@ public class WebConfigurationTest extends TestCase {
         assertEquals("xxx", parameters.get("test"));
     }
 
+    @Test
     public void testFilterOtherParameters() {
         MockFilterConfig config1 = new MockFilterConfig();
         config1.setFilterName("cayenne-x");

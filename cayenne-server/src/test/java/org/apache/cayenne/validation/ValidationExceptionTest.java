@@ -18,11 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.validation;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 
-public class ValidationExceptionTest extends TestCase {
+public class ValidationExceptionTest {
 
+    @Test
     public void testValidationExceptionValidationResult() {
         ValidationResult valResult = new ValidationResult();
         String message = "Error message with a % literal (should be escaped)";

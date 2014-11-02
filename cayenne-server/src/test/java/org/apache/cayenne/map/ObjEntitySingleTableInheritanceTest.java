@@ -19,13 +19,19 @@
 
 package org.apache.cayenne.map;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.sql.Types;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  */
-public class ObjEntitySingleTableInheritanceTest extends TestCase {
+public class ObjEntitySingleTableInheritanceTest {
 
     protected DataMap map;
 
@@ -51,7 +57,7 @@ public class ObjEntitySingleTableInheritanceTest extends TestCase {
     protected ObjRelationship relationship2;
     protected ObjRelationship relationship3;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         map = new DataMap();
 
@@ -100,6 +106,7 @@ public class ObjEntitySingleTableInheritanceTest extends TestCase {
         map.addObjEntity(entity3);
     }
 
+    @Test
     public void testInheritedAttributes() throws Exception {
         assertSame(attribute1, entity1.getAttribute("a1"));
         assertNull(entity1.getAttribute("a2"));
@@ -114,6 +121,7 @@ public class ObjEntitySingleTableInheritanceTest extends TestCase {
         assertNotNull(entity1.getAttribute("a3"));
     }
 
+    @Test
     public void testInheritedRelationships() throws Exception {
         assertSame(relationship1, entity1.getRelationship("r1"));
         assertNull(entity1.getRelationship("r2"));
@@ -126,6 +134,7 @@ public class ObjEntitySingleTableInheritanceTest extends TestCase {
         assertSame(relationship3, entity1.getRelationship("r3"));
     }
 
+    @Test
     public void testAttributeForDbAttribute() throws Exception {
         entity1.setSuperEntityName("e2");
         entity2.setDbEntityName(dbEntity.getName());
@@ -140,6 +149,7 @@ public class ObjEntitySingleTableInheritanceTest extends TestCase {
         assertNotNull(entity1.getAttributeForDbAttribute(dbAttribute2));
     }
 
+    @Test
     public void testRelationshipForDbRelationship() throws Exception {
         entity1.setSuperEntityName("e2");
         entity2.setDbEntityName(dbEntity.getName());

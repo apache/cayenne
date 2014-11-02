@@ -19,11 +19,17 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  */
-public class SQLStatementTest extends TestCase {
+public class SQLStatementTest {
+
+    @Test
     public void testConstructor() throws Exception {
         ParameterBinding[] bindings = new ParameterBinding[0];
         SQLStatement statement = new SQLStatement("abc", bindings);
@@ -31,6 +37,7 @@ public class SQLStatementTest extends TestCase {
         assertSame(bindings, statement.getBindings());
     }
 
+    @Test
     public void testSQL() throws Exception {
         SQLStatement statement = new SQLStatement();
         statement.setSql("abc");

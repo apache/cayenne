@@ -18,21 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.resource;
 
+import org.junit.Test;
+
 import java.net.URL;
 
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.resource.URLResource;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
-import junit.framework.TestCase;
+public class URLResourceTest {
 
-public class URLResourceTest extends TestCase {
-
+    @Test
     public void testURL() throws Exception {
         URL url = new URL("http://cayenne.apache.org");
         URLResource resource = new URLResource(url);
         assertSame(url, resource.getURL());
     }
 
+    @Test
     public void testGetRelativeResource() throws Exception {
         URL url = new URL("http://cayenne.apache.org");
         URLResource resource = new URLResource(url);

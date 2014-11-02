@@ -18,15 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class CallbackDescriptorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class CallbackDescriptorTest {
+
+    @Test
     public void testConstructor() {
         CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.POST_LOAD);
         assertEquals(LifecycleEvent.POST_LOAD, m.getCallbackType());
     }
 
+    @Test
     public void testAddCallbackMethod() {
         CallbackDescriptor m = new CallbackDescriptor(LifecycleEvent.POST_ADD);
         assertEquals(0, m.getCallbackMethods().size());

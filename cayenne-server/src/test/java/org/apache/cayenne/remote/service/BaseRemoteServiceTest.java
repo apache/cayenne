@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.remote.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
@@ -33,9 +28,18 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.remote.QueryMessage;
 import org.apache.cayenne.remote.RemoteSession;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class BaseRemoteServiceTest extends TestCase {
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
+public class BaseRemoteServiceTest {
+
+    @Test
     public void testConstructor() throws Exception {
 
         Map<String, String> map = new HashMap<String, String>();
@@ -76,6 +80,7 @@ public class BaseRemoteServiceTest extends TestCase {
 
     }
 
+    @Test
     public void testProcessMessageExceptionSerializability() throws Throwable {
 
         Map<String, String> map = new HashMap<String, String>();

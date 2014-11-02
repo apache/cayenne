@@ -18,13 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Test;
 
-public class DefaultQuotingStrategyTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class DefaultQuotingStrategyTest {
+
+    @Test
     public void testQuotedIdentifer() {
 
         DataMap dm = new DataMap();
@@ -38,6 +40,7 @@ public class DefaultQuotingStrategyTest extends TestCase {
         assertEquals("[c].[b].[a]", strategy.quotedIdentifier(de, "c", "b", "a"));
     }
 
+    @Test
     public void testUnQuotedIdentifer() {
 
         DataMap dm = new DataMap();

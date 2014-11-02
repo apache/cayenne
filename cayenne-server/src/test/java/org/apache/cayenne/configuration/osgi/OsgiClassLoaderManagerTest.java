@@ -18,14 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.osgi;
 
-import static org.mockito.Mockito.mock;
+import org.junit.Test;
 
 import java.util.Collections;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
-public class OsgiClassLoaderManagerTest extends TestCase {
+public class OsgiClassLoaderManagerTest {
 
+    @Test
     public void testGetClassLoader() {
 
         final ClassLoader appCl = mock(ClassLoader.class);

@@ -19,24 +19,32 @@
 
 package org.apache.cayenne;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class ConfigExceptionTest extends TestCase {
+public class ConfigExceptionTest {
 
+    @Test
     public void testConstructor1() throws Exception {
         ConfigurationException ex = new ConfigurationException();
         assertNull(ex.getCause());
         assertTrue(ex.getMessage().startsWith(CayenneException.getExceptionLabel()));
     }
 
+    @Test
     public void testConstructor2() throws Exception {
         ConfigurationException ex = new ConfigurationException("abc");
         assertNull(ex.getCause());
         assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
+    @Test
     public void testConstructor3() throws Exception {
         Throwable cause = new Throwable();
         ConfigurationException ex = new ConfigurationException(cause);
@@ -46,6 +54,7 @@ public class ConfigExceptionTest extends TestCase {
             ex.getMessage());
     }
 
+    @Test
     public void testConstructor4() throws Exception {
         Throwable cause = new Throwable();
         ConfigurationException ex = new ConfigurationException("abc", cause);

@@ -19,15 +19,19 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import junit.framework.TestCase;
-
 import org.apache.velocity.Template;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.Resource;
 import org.apache.velocity.runtime.resource.ResourceManager;
+import org.junit.Test;
 
-public class SQLTemplateResourceManagerTest extends TestCase {
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+public class SQLTemplateResourceManagerTest {
+
+    @Test
     public void testFetResource() throws Exception {
         SQLTemplateResourceManager rm = new SQLTemplateResourceManager();
         rm.initialize(new MockupRuntimeServices());

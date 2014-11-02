@@ -18,10 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class EmbeddableAttributeTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+public class EmbeddableAttributeTest {
+
+    @Test
     public void testName() {
         EmbeddableAttribute a1 = new EmbeddableAttribute();
         assertNull(a1.getName());

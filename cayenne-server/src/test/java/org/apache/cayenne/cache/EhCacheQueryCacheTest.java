@@ -18,31 +18,36 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import net.sf.ehcache.CacheManager;
+import org.apache.cayenne.query.QueryMetadata;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-import net.sf.ehcache.CacheManager;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.apache.cayenne.query.QueryMetadata;
-
-public class EhCacheQueryCacheTest extends TestCase {
+public class EhCacheQueryCacheTest {
 
     private CacheManager cacheManager;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         cacheManager = new CacheManager();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         cacheManager.shutdown();
     }
 
+    @Test
     public void testGet() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
@@ -57,6 +62,7 @@ public class EhCacheQueryCacheTest extends TestCase {
         assertSame(results, cache.get(md));
     }
 
+    @Test
     public void testGet_WithFactory() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
@@ -77,6 +83,7 @@ public class EhCacheQueryCacheTest extends TestCase {
         assertSame(results, cache.get(md));
     }
 
+    @Test
     public void testGet_WithFactory_WithCacheGroups() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
@@ -98,6 +105,7 @@ public class EhCacheQueryCacheTest extends TestCase {
         assertSame(results, cache.get(md));
     }
 
+    @Test
     public void testRemoveGroup_WithFactory_WithCacheGroups() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
