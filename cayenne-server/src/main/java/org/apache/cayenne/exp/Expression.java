@@ -353,13 +353,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 *         real values, or null if the whole expression was pruned, due to
 	 *         the missing parameters.
 	 * 
-	 * @deprecated since 4.0 use {@link #params(Map)} or
-	 *             {@link #paramsNoPrune(Map)}.
+	 * @deprecated since 4.0 use {@link #params(Map, boolean)} instead.
 	 */
 	@Deprecated
-	public Expression expWithParameters(Map<String, ?> parameters,
-			boolean pruneMissing) {
-		return transform(new NamedParamTransformer(parameters, pruneMissing));
+	public Expression expWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
+		return params(parameters, pruneMissing);
 	}
 
 	/**

@@ -43,6 +43,8 @@ import org.apache.cayenne.util.XMLSerializable;
  */
 public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery, XMLSerializable, Select<T> {
 
+	private static final long serialVersionUID = 5486418811888197559L;
+	
 	public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
 	public static final boolean DISTINCT_DEFAULT = false;
 
@@ -471,7 +473,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 		// substitute qualifier parameters
 		if (qualifier != null) {
-			query.setQualifier(qualifier.expWithParameters(parameters, pruneMissing));
+			query.setQualifier(qualifier.params(parameters, pruneMissing));
 		}
 
 		return query;
