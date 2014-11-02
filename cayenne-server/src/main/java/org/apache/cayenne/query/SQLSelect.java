@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +92,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	protected QueryCacheStrategy cacheStrategy;
 	protected String[] cacheGroups;
 	protected Map<String, Object> params;
+	protected List<Object> positionalParams;
 	protected CapsStrategy columnNameCaps;
 	protected int limit;
 	protected int offset;
@@ -103,7 +106,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	public SQLSelect(Class<T> persistentType, String sql) {
 		this.persistentType = persistentType;
 		this.sqlBuffer = sql != null ? new StringBuilder(sql) : new StringBuilder();
-		this.params = new HashMap<String, Object>();
 		this.limit = QueryMetadata.FETCH_LIMIT_DEFAULT;
 		this.offset = QueryMetadata.FETCH_OFFSET_DEFAULT;
 		this.pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
@@ -148,26 +150,48 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	public SQLSelect<T> params(String name, Object value) {
-		params.put(name, value);
-		this.replacementQuery = null;
+		params(Collections.singletonMap(name, value));
 		return this;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SQLSelect<T> params(Map<String, ?> parameters) {
-		Map bareMap = parameters;
-		parameters.putAll(bareMap);
+
+		if (this.params == null) {
+			this.params = new HashMap<String, Object>(parameters);
+		} else {
+			Map bareMap = parameters;
+			this.params.putAll(bareMap);
+		}
+
 		this.replacementQuery = null;
+
+		// since named parameters are specified, resetting positional
+		// parameters
+		this.positionalParams = null;
+		return this;
+	}
+
+	public SQLSelect<T> paramsArray(Object... params) {
+		return paramsList(params != null ? Arrays.asList(params) : null);
+	}
+
+	public SQLSelect<T> paramsList(List<Object> params) {
+		// since named parameters are specified, resetting positional
+		// parameters
+		this.params = null;
+
+		this.positionalParams = params;
 		return this;
 	}
 
 	/**
-	 * Returns a mutable map of parameters that will be bound to SQL. A caller
-	 * is free to add/remove parameters from the returned map as needed.
+	 * Returns an immmutable map of parameters that will be bound to SQL. A
+	 * caller is free to add/remove parameters from the returned map as needed.
 	 * Alternatively one may use chained {@link #params(String, Object)}
 	 */
 	public Map<String, Object> getParams() {
-		return params;
+		return params != null ? params : Collections.<String, Object> emptyMap();
 	}
 
 	@Override
@@ -195,7 +219,13 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroups(cacheGroups);
 		template.setCacheStrategy(cacheStrategy);
-		template.setParams(params);
+
+		if (positionalParams != null) {
+			template.setParamsArray(positionalParams);
+		} else {
+			template.setParams(params);
+		}
+
 		template.setColumnNamesCapitalization(columnNameCaps);
 		template.setFetchLimit(limit);
 		template.setFetchOffset(offset);

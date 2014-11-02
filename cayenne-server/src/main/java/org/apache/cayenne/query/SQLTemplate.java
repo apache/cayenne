@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -357,11 +358,17 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	 * @since 4.0
 	 */
 	public void setParamsArray(Object... params) {
+		setParamsList(params != null ? Arrays.asList(params) : null);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public void setParamsList(List<Object> params) {
 		// since positional parameters are specified, resetting named
 		// parameters
 		this.parameters = null;
-
-		this.positionalParams = params != null ? Arrays.asList(params) : null;
+		this.positionalParams = params != null ? new ArrayList<Object>(params) : null;
 	}
 
 	/**
