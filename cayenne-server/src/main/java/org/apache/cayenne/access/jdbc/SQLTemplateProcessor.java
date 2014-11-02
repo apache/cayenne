@@ -118,7 +118,7 @@ class SQLTemplateProcessor {
 		internalParameters.put(RESULT_COLUMNS_LIST_KEY, results);
 		internalParameters.put(HELPER_KEY, renderingUtils);
 
-		String sql = buildStatement(new VelocityContext(internalParameters), template, parameters);
+		String sql = buildStatement(new VelocityContext(internalParameters), template);
 
 		ParameterBinding[] bindingsArray = new ParameterBinding[bindings.size()];
 		bindings.toArray(bindingsArray);
@@ -129,7 +129,7 @@ class SQLTemplateProcessor {
 		return new SQLStatement(sql, resultsArray, bindingsArray);
 	}
 
-    String buildStatement(VelocityContext context, String template, Map<String, ?> parameters)
+    String buildStatement(VelocityContext context, String template)
             throws Exception {
         // Note: this method is a reworked version of
         // org.apache.velocity.app.Velocity.evaluate(..)
