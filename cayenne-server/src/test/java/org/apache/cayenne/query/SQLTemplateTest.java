@@ -19,12 +19,13 @@
 package org.apache.cayenne.query;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,6 @@ public class SQLTemplateTest {
 	public void testSetParams() throws Exception {
 		SQLTemplate query = new SQLTemplate();
 
-		assertNotNull(query.getParams());
 		assertTrue(query.getParams().isEmpty());
 
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -47,8 +47,43 @@ public class SQLTemplateTest {
 		assertEquals(params, query.getParams());
 
 		query.setParams(null);
-		assertNotNull(query.getParams());
 		assertTrue(query.getParams().isEmpty());
+	}
+
+	@Test
+	public void testSetParamsArray() throws Exception {
+		SQLTemplate query = new SQLTemplate();
+
+		assertTrue(query.getPositionalParams().isEmpty());
+
+		query.setParamsArray("N", "m");
+		assertEquals(Arrays.asList("N", "m"), query.getPositionalParams());
+
+		query.setParamsArray();
+		assertTrue(query.getPositionalParams().isEmpty());
+	}
+
+	@Test
+	public void testSetParams_MixingStyles() throws Exception {
+
+		SQLTemplate query = new SQLTemplate();
+
+		assertTrue(query.getParams().isEmpty());
+		assertTrue(query.getPositionalParams().isEmpty());
+
+		Map<String, Object> params = Collections.<String, Object> singletonMap("a", "b");
+		query.setParams(params);
+		assertEquals(params, query.getParams());
+		assertTrue(query.getPositionalParams().isEmpty());
+
+		query.setParamsArray("D", "G");
+		assertEquals(Arrays.asList("D", "G"), query.getPositionalParams());
+		assertTrue(query.getParams().isEmpty());
+
+		// even resetting named to null should result in resetting positional
+		query.setParams(null);
+		assertTrue(query.getParams().isEmpty());
+		assertTrue(query.getPositionalParams().isEmpty());
 	}
 
 	@Test

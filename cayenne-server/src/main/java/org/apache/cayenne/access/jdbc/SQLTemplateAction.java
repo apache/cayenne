@@ -101,16 +101,54 @@ public class SQLTemplateAction implements SQLAction {
 		}
 
 		boolean loggable = dataNode.getJdbcEventLogger().isLoggable();
+		List<Number> counts = new ArrayList<Number>();
+
+		// bind either positional or named parameters;
+		// for legacy reasons named parameters are processed as a batch.. this
+		// should go away after 4.0; newer positional parameter only support a
+		// single set of values.
+		if (query.getPositionalParams().isEmpty()) {
+			runWithNamedParametersBatch(connection, callback, template, counts, loggable);
+		} else {
+			runWithPositionalParameters(connection, callback, template, counts, loggable);
+		}
+
+		// notify of combined counts of all queries inside SQLTemplate
+		// multiplied by the
+		// number of parameter sets...
+		int[] ints = new int[counts.size()];
+		for (int i = 0; i < ints.length; i++) {
+			ints[i] = counts.get(i).intValue();
+		}
+
+		callback.nextBatchCount(query, ints);
+	}
+
+	private void runWithPositionalParameters(Connection connection, OperationObserver callback, String template,
+			Collection<Number> counts, boolean loggable) throws Exception {
+
+		SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template,
+				query.getPositionalParams());
+
+		if (loggable) {
+			dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
+		}
+
+		execute(connection, callback, compiled, counts);
+	}
+
+	@SuppressWarnings("deprecation")
+	private void runWithNamedParametersBatch(Connection connection, OperationObserver callback, String template,
+			Collection<Number> counts, boolean loggable) throws Exception {
+
 		int size = query.parametersSize();
 
 		// zero size indicates a one-shot query with no parameters
 		// so fake a single entry batch...
 		int batchSize = (size > 0) ? size : 1;
 
-		List<Number> counts = new ArrayList<Number>(batchSize);
-
 		// for now supporting deprecated batch parameters...
-		@SuppressWarnings({ "deprecation", "unchecked" })
+		@SuppressWarnings("unchecked")
 		Iterator<Map<String, ?>> it = (size > 0) ? query.parametersIterator() : IteratorUtils
 				.singletonIterator(Collections.emptyMap());
 		for (int i = 0; i < batchSize; i++) {
@@ -125,15 +163,6 @@ public class SQLTemplateAction implements SQLAction {
 			execute(connection, callback, compiled, counts);
 		}
 
-		// notify of combined counts of all queries inside SQLTemplate
-		// multiplied by the
-		// number of parameter sets...
-		int[] ints = new int[counts.size()];
-		for (int i = 0; i < ints.length; i++) {
-			ints[i] = counts.get(i).intValue();
-		}
-
-		callback.nextBatchCount(query, ints);
 	}
 
 	protected void execute(Connection connection, OperationObserver callback, SQLStatement compiled,

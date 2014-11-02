@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
@@ -45,9 +44,7 @@ public class SQLTemplateTest {
 
 		// set immutable parameters ... query must recast them to mutable
 		// version
-		@SuppressWarnings("unchecked")
-		Map<String, Object>[] parameters = new Map[] { Collections.EMPTY_MAP };
-		o.setParameters(parameters);
+		o.setParams(Collections.<String, Object> emptyMap());
 
 		HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
 	}

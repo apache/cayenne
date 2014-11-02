@@ -19,10 +19,12 @@
 
 package org.apache.cayenne.query;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -82,6 +84,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	protected String defaultTemplate;
 	protected Map<String, String> templates;
 	protected Map<String, ?>[] parameters;
+	protected List<Object> positionalParams;
 	protected CapsStrategy columnNamesCapitalization;
 	protected SQLResult result;
 	private String dataNodeName;
@@ -323,15 +326,42 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	}
 
 	/**
-	 * Initializes parameters map of this query.
+	 * Initializes named parameter of this query. Note that calling this method
+	 * will reset any positional parameters.
 	 * 
 	 * @since 4.0
 	 */
 	@SuppressWarnings("unchecked")
-	public void setParams(Map<String, ?> parameters) {
+	public void setParams(Map<String, ?> params) {
+
+		// since named parameters are specified, resetting positional
+		// parameters
+		this.positionalParams = null;
+
 		// calling a deprecated method until we can remove multi-parameter-batch
 		// deprecation.
-		setParameters(parameters);
+		setParameters(params);
+	}
+
+	/**
+	 * Initializes positional parameters of the query. This is a positional
+	 * style of binding. Names of variables in the expression are ignored and
+	 * parameters are bound in order they are found in the expression. E.g. if
+	 * the same name is mentioned twice, it can be bound to two different
+	 * values. If declared and provided parameters counts are mismatched, an
+	 * exception will be thrown.
+	 * <p>
+	 * Note that calling this method will reset any previously set *named*
+	 * parameters.
+	 * 
+	 * @since 4.0
+	 */
+	public void setParamsArray(Object... params) {
+		// since positional parameters are specified, resetting named
+		// parameters
+		this.parameters = null;
+
+		this.positionalParams = params != null ? Arrays.asList(params) : null;
 	}
 
 	/**
@@ -552,13 +582,22 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	}
 
 	/**
-	 * Returns a map of parameters.
+	 * Returns a map of named parameters that will be bound to SQL.
 	 * 
 	 * @since 4.0
 	 */
 	public Map<String, ?> getParams() {
 		Map<String, ?> map = (parameters != null && parameters.length > 0) ? parameters[0] : null;
 		return (map != null) ? map : Collections.<String, Object> emptyMap();
+	}
+
+	/**
+	 * Returns a list of positional parameters that will be bound to SQL.
+	 * 
+	 * @since 4.0
+	 */
+	public List<Object> getPositionalParams() {
+		return positionalParams != null ? positionalParams : Collections.emptyList();
 	}
 
 	/**
@@ -581,6 +620,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	 *             batches of parameters are superseded by the use of
 	 *             {@link QueryChain}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Deprecated
 	public void setParameters(Map<String, ?>... parameters) {
 

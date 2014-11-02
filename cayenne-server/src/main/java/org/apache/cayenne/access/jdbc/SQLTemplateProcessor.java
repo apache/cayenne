@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,4 +31,10 @@ public interface SQLTemplateProcessor {
 	 * of parameters.
 	 */
 	SQLStatement processTemplate(String template, Map<String, ?> parameters);
+
+	/**
+	 * Builds and returns a SQLStatement based on SQL template String and a list
+	 * of positional parameters.
+	 */
+	SQLStatement processTemplate(String template, List<Object> positionalParameters);
 }

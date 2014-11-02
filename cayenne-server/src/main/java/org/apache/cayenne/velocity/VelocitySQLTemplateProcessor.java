@@ -31,13 +31,16 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeInstance;
 import org.apache.velocity.runtime.log.NullLogChute;
 import org.apache.velocity.runtime.parser.ParseException;
+import org.apache.velocity.runtime.parser.node.ASTReference;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
+import org.apache.velocity.runtime.visitor.BaseVisitor;
 
 /**
  * Processor for SQL velocity templates.
@@ -46,6 +49,45 @@ import org.apache.velocity.runtime.parser.node.SimpleNode;
  * @since 4.0
  */
 public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
+
+	private final class PositionalParamMapper extends BaseVisitor {
+
+		private int i;
+		private List<Object> positionalParams;
+		private Map<String, Object> params;
+
+		PositionalParamMapper(List<Object> positionalParams, Map<String, Object> params) {
+			this.positionalParams = positionalParams;
+			this.params = params;
+		}
+
+		@Override
+		public Object visit(ASTReference node, Object data) {
+
+			if (i >= positionalParams.size()) {
+				throw new ExpressionException("Too few parameters to bind template: " + positionalParams.size());
+			}
+
+			// strip off leading "$"
+			String paramName = node.getFirstToken().image.substring(1);
+			VelocityParamSequence sequence = (VelocityParamSequence) params.get(paramName);
+			if (sequence == null) {
+				sequence = new VelocityParamSequence();
+				params.put(paramName, sequence);
+			}
+
+			sequence.add(positionalParams.get(i++));
+
+			return data;
+		}
+
+		void onFinish() {
+			if (i < positionalParams.size()) {
+				throw new ExpressionException("Too many parameters to bind template. Expected: " + i + ", actual: "
+						+ positionalParams.size());
+			}
+		}
+	}
 
 	static final String BINDINGS_LIST_KEY = "bindings";
 	static final String RESULT_COLUMNS_LIST_KEY = "resultColumns";
@@ -91,15 +133,34 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<String, Object>(
 				parameters) : new HashMap<String, Object>(5);
 
+		SimpleNode parsedTemplate = parse(template);
+		return processTemplate(template, parsedTemplate, internalParameters);
+	}
+
+	@Override
+	public SQLStatement processTemplate(String template, List<Object> positionalParameters) {
+
+		SimpleNode parsedTemplate = parse(template);
+
+		Map<String, Object> internalParameters = new HashMap<String, Object>();
+
+		PositionalParamMapper visitor = new PositionalParamMapper(positionalParameters, internalParameters);
+		parsedTemplate.jjtAccept(visitor, null);
+		visitor.onFinish();
+
+		return processTemplate(template, parsedTemplate, internalParameters);
+	}
+
+	SQLStatement processTemplate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters) {
 		List<ParameterBinding> bindings = new ArrayList<ParameterBinding>();
 		List<ColumnDescriptor> results = new ArrayList<ColumnDescriptor>();
-		internalParameters.put(BINDINGS_LIST_KEY, bindings);
-		internalParameters.put(RESULT_COLUMNS_LIST_KEY, results);
-		internalParameters.put(HELPER_KEY, renderingUtils);
+		parameters.put(BINDINGS_LIST_KEY, bindings);
+		parameters.put(RESULT_COLUMNS_LIST_KEY, results);
+		parameters.put(HELPER_KEY, renderingUtils);
 
 		String sql;
 		try {
-			sql = buildStatement(new VelocityContext(internalParameters), template);
+			sql = buildStatement(new VelocityContext(parameters), template, parsedTemplate);
 		} catch (Exception e) {
 			throw new CayenneRuntimeException("Error processing Velocity template", e);
 		}
@@ -113,12 +174,24 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 		return new SQLStatement(sql, resultsArray, bindingsArray);
 	}
 
-	String buildStatement(VelocityContext context, String template) throws Exception {
-		// Note: this method is a reworked version of
-		// org.apache.velocity.app.Velocity.evaluate(..)
-		// cleaned up to avoid using any Velocity singletons
+	String buildStatement(VelocityContext context, String template, SimpleNode parsedTemplate) throws Exception {
+
+		// ... not sure what InternalContextAdapter is for...
+		InternalContextAdapterImpl ica = new InternalContextAdapterImpl(context);
+		ica.pushCurrentTemplateName(template);
 
 		StringWriter out = new StringWriter(template.length());
+		try {
+			parsedTemplate.init(ica, velocityRuntime);
+			parsedTemplate.render(ica, out);
+			return out.toString();
+		} finally {
+			ica.popCurrentTemplateName();
+		}
+	}
+
+	private SimpleNode parse(String template) {
+
 		SimpleNode nodeTree = null;
 
 		try {
@@ -131,16 +204,6 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 			throw new CayenneRuntimeException("Error parsing template " + template);
 		}
 
-		// ... not sure what InternalContextAdapter is for...
-		InternalContextAdapterImpl ica = new InternalContextAdapterImpl(context);
-		ica.pushCurrentTemplateName(template);
-
-		try {
-			nodeTree.init(ica, velocityRuntime);
-			nodeTree.render(ica, out);
-			return out.toString();
-		} finally {
-			ica.popCurrentTemplateName();
-		}
+		return nodeTree;
 	}
 }

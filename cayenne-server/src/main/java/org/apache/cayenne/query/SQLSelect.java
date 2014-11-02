@@ -89,7 +89,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	protected StringBuilder sqlBuffer;
 	protected QueryCacheStrategy cacheStrategy;
 	protected String[] cacheGroups;
-	protected Map<String, Object> parameters;
+	protected Map<String, Object> params;
 	protected CapsStrategy columnNameCaps;
 	protected int limit;
 	protected int offset;
@@ -103,7 +103,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	public SQLSelect(Class<T> persistentType, String sql) {
 		this.persistentType = persistentType;
 		this.sqlBuffer = sql != null ? new StringBuilder(sql) : new StringBuilder();
-		this.parameters = new HashMap<String, Object>();
+		this.params = new HashMap<String, Object>();
 		this.limit = QueryMetadata.FETCH_LIMIT_DEFAULT;
 		this.offset = QueryMetadata.FETCH_OFFSET_DEFAULT;
 		this.pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
@@ -148,7 +148,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	public SQLSelect<T> params(String name, Object value) {
-		parameters.put(name, value);
+		params.put(name, value);
 		this.replacementQuery = null;
 		return this;
 	}
@@ -162,12 +162,12 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Returns mutable map of parameters that will be bound to SQL. A caller is
-	 * free to add/remove parameters from the returned map as needed.
+	 * Returns a mutable map of parameters that will be bound to SQL. A caller
+	 * is free to add/remove parameters from the returned map as needed.
 	 * Alternatively one may use chained {@link #params(String, Object)}
 	 */
 	public Map<String, Object> getParams() {
-		return parameters;
+		return params;
 	}
 
 	@Override
@@ -195,7 +195,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroups(cacheGroups);
 		template.setCacheStrategy(cacheStrategy);
-		template.setParams(parameters);
+		template.setParams(params);
 		template.setColumnNamesCapitalization(columnNameCaps);
 		template.setFetchLimit(limit);
 		template.setFetchOffset(offset);

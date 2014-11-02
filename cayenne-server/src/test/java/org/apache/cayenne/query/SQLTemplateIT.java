@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.query;
 
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -27,9 +29,10 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.cayenne.util.Util;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SQLTemplateIT extends ServerCase {
@@ -40,6 +43,8 @@ public class SQLTemplateIT extends ServerCase {
 	@Inject
 	private DBHelper dbHelper;
 
+	private TableHelper tPainting;
+
 	@Override
 	protected void setUpAfterInjection() throws Exception {
 		dbHelper.deleteAll("PAINTING_INFO");
@@ -47,6 +52,10 @@ public class SQLTemplateIT extends ServerCase {
 		dbHelper.deleteAll("ARTIST_EXHIBIT");
 		dbHelper.deleteAll("ARTIST_GROUP");
 		dbHelper.deleteAll("ARTIST");
+
+		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
+				Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
 	}
 
 	public void testSQLTemplateForDataMap() {
@@ -82,5 +91,65 @@ public class SQLTemplateIT extends ServerCase {
 		}
 		assertTrue("If fetchingDataRows is false and ObjectEntity not set, shoulb be thrown exception",
 				gotRuntimeException);
+	}
+
+	public void testSQLTemplate_PositionalParams() throws SQLException {
+
+		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
+				+ "VALUES ($b, '$n', #bind($c 'INTEGER'))";
+
+		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
+		q1.setParamsArray(76, "The Fiddler", 10005);
+		context.performNonSelectingQuery(q1);
+
+		assertEquals("The Fiddler", tPainting.getString("PAINTING_TITLE"));
+		assertEquals(76, tPainting.getInt("PAINTING_ID"));
+		assertEquals(10005.d, tPainting.getDouble("ESTIMATED_PRICE"), 0.001);
+	}
+
+	public void testSQLTemplate_PositionalParams_RepeatingVars() throws SQLException {
+
+		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
+				+ "VALUES ($b, '$n', #bind($b 'INTEGER'))";
+
+		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
+		q1.setParamsArray(11, "The Fiddler", 4567);
+		context.performNonSelectingQuery(q1);
+
+		assertEquals("The Fiddler", tPainting.getString("PAINTING_TITLE"));
+		assertEquals(11, tPainting.getInt("PAINTING_ID"));
+		assertEquals(4567.d, tPainting.getDouble("ESTIMATED_PRICE"), 0.001);
+	}
+
+	public void testSQLTemplate_PositionalParams_ToFewParams() throws SQLException {
+
+		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
+				+ "VALUES ($b, '$n', #bind($b 'INTEGER'))";
+
+		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
+		q1.setParamsArray(11, "The Fiddler");
+
+		try {
+			context.performNonSelectingQuery(q1);
+			fail("Exception not thrown on parameter length mismatch");
+		} catch (CayenneRuntimeException e) {
+			// expected
+		}
+	}
+
+	public void testSQLTemplate_PositionalParams_ToManyParams() throws SQLException {
+
+		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
+				+ "VALUES ($b, '$n', #bind($b 'INTEGER'))";
+
+		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
+		q1.setParamsArray(11, "The Fiddler", 2345, 333);
+
+		try {
+			context.performNonSelectingQuery(q1);
+			fail("Exception not thrown on parameter length mismatch");
+		} catch (CayenneRuntimeException e) {
+			// expected
+		}
 	}
 }

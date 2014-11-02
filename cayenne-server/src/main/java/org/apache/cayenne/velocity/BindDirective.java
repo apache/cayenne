@@ -35,8 +35,8 @@ import org.apache.velocity.runtime.directive.Directive;
 import org.apache.velocity.runtime.parser.node.Node;
 
 /**
- * A custom Velocity directive to create a PreparedStatement parameter text. There are the
- * following possible invocation formats inside the template:
+ * A custom Velocity directive to create a PreparedStatement parameter text.
+ * There are the following possible invocation formats inside the template:
  * 
  * <pre>
  * #bind(value) - e.g. #bind($xyz)
@@ -51,16 +51,17 @@ import org.apache.velocity.runtime.parser.node.Node;
  * </p>
  * <p>
  * <code>"WHERE SOME_COLUMN &gt; #bind($xyz)"</code> produces
- * <code>"WHERE SOME_COLUMN &gt; ?"</code> and also places the value of the "xyz" parameter
- * in the context "bindings" collection.
+ * <code>"WHERE SOME_COLUMN &gt; ?"</code> and also places the value of the
+ * "xyz" parameter in the context "bindings" collection.
  * </p>
  * <p>
  * <strong>Binding ID column of a DataObject value:</strong>
  * </p>
  * <p>
  * <code>"WHERE ID_COL1 = #bind($helper.cayenneExp($xyz, 'db:ID_COL2')) 
- * AND ID_COL2 = #bind($helper.cayenneExp($xyz, 'db:ID_COL2'))"</code> produces <code>"WHERE ID_COL1 = ? AND ID_COL2 = ?"</code> and also places the
- * values of id columns of the DataObject parameter "xyz" in the context "bindings"
+ * AND ID_COL2 = #bind($helper.cayenneExp($xyz, 'db:ID_COL2'))"</code> produces
+ * <code>"WHERE ID_COL1 = ? AND ID_COL2 = ?"</code> and also places the values
+ * of id columns of the DataObject parameter "xyz" in the context "bindings"
  * collection.
  * </p>
  * 
@@ -68,109 +69,97 @@ import org.apache.velocity.runtime.parser.node.Node;
  */
 public class BindDirective extends Directive {
 
-    @Override
-    public String getName() {
-        return "bind";
-    }
+	@Override
+	public String getName() {
+		return "bind";
+	}
 
-    @Override
-    public int getType() {
-        return LINE;
-    }
+	@Override
+	public int getType() {
+		return LINE;
+	}
 
-    /**
-     * Extracts the value of the object property to render and passes control to
-     * {@link #render(InternalContextAdapter, Writer, ParameterBinding)} to do the actual
-     * rendering.
-     */
-    @Override
-    public boolean render(InternalContextAdapter context, Writer writer, Node node)
-            throws IOException, ResourceNotFoundException, ParseErrorException,
-            MethodInvocationException {
+	/**
+	 * Extracts the value of the object property to render and passes control to
+	 * {@link #render(InternalContextAdapter, Writer, ParameterBinding)} to do
+	 * the actual rendering.
+	 */
+	@Override
+	public boolean render(InternalContextAdapter context, Writer writer, Node node) throws IOException,
+			ResourceNotFoundException, ParseErrorException, MethodInvocationException {
 
-        Object value = getChild(context, node, 0);
-        Object type = getChild(context, node, 1);
-        int scale = ConversionUtil.toInt(getChild(context, node, 2), -1);
-        String typeString = type != null ? type.toString() : null;
+		Object value = getChild(context, node, 0);
+		Object type = getChild(context, node, 1);
+		int scale = ConversionUtil.toInt(getChild(context, node, 2), -1);
+		String typeString = type != null ? type.toString() : null;
 
-        if (value instanceof Collection) {
-            Iterator<?> it = ((Collection) value).iterator();
-            while (it.hasNext()) {
-                render(context, writer, node, it.next(), typeString, scale);
+		if (value instanceof Collection) {
+			Iterator<?> it = ((Collection) value).iterator();
+			while (it.hasNext()) {
+				render(context, writer, node, it.next(), typeString, scale);
 
-                if (it.hasNext()) {
-                    writer.write(',');
-                }
-            }
-        }
-        else {
-            render(context, writer, node, value, typeString, scale);
-        }
+				if (it.hasNext()) {
+					writer.write(',');
+				}
+			}
+		} else {
+			render(context, writer, node, value, typeString, scale);
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * @since 3.0
-     */
-    protected void render(
-            InternalContextAdapter context,
-            Writer writer,
-            Node node,
-            Object value,
-            String typeString,
-            int scale) throws IOException, ParseErrorException {
+	/**
+	 * @since 3.0
+	 */
+	protected void render(InternalContextAdapter context, Writer writer, Node node, Object value, String typeString,
+			int scale) throws IOException, ParseErrorException {
 
-        int jdbcType = TypesMapping.NOT_DEFINED;
-        if (typeString != null) {
-            jdbcType = TypesMapping.getSqlTypeByName(typeString);
-        }
-        else if (value != null) {
-            jdbcType = TypesMapping.getSqlTypeByJava(value.getClass());
-        } else {
-            // value is null, set JDBC type to NULL
-        	jdbcType = TypesMapping.getSqlTypeByName(TypesMapping.SQL_NULL);
-        }
+		int jdbcType = TypesMapping.NOT_DEFINED;
+		if (typeString != null) {
+			jdbcType = TypesMapping.getSqlTypeByName(typeString);
+		} else if (value != null) {
+			jdbcType = TypesMapping.getSqlTypeByJava(value.getClass());
+		} else {
+			// value is null, set JDBC type to NULL
+			jdbcType = TypesMapping.getSqlTypeByName(TypesMapping.SQL_NULL);
+		}
 
-        if (jdbcType == TypesMapping.NOT_DEFINED) {
-            throw new ParseErrorException("Can't determine JDBC type of binding ("
-                    + value
-                    + ", "
-                    + typeString
-                    + ") at line "
-                    + node.getLine()
-                    + ", column "
-                    + node.getColumn());
-        }
+		if (jdbcType == TypesMapping.NOT_DEFINED) {
+			throw new ParseErrorException("Can't determine JDBC type of binding (" + value + ", " + typeString
+					+ ") at line " + node.getLine() + ", column " + node.getColumn());
+		}
 
-        render(context, writer, new ParameterBinding(value, jdbcType, scale));
-    }
+		render(context, writer, new ParameterBinding(value, jdbcType, scale));
+	}
 
-    protected void render(
-            InternalContextAdapter context,
-            Writer writer,
-            ParameterBinding binding) throws IOException {
+	protected void render(InternalContextAdapter context, Writer writer, ParameterBinding binding) throws IOException {
 
-        bind(context, binding);
-        writer.write('?');
-    }
+		bind(context, binding);
+		writer.write('?');
+	}
 
-    protected Object getChild(InternalContextAdapter context, Node node, int i)
-            throws MethodInvocationException {
-        return (i >= 0 && i < node.jjtGetNumChildren()) ? node.jjtGetChild(i).value(
-                context) : null;
-    }
+	protected Object getChild(InternalContextAdapter context, Node node, int i) throws MethodInvocationException {
+		Object child = (i >= 0 && i < node.jjtGetNumChildren()) ? node.jjtGetChild(i).value(context) : null;
 
-    /**
-     * Adds value to the list of bindings in the context.
-     */
-    protected void bind(InternalContextAdapter context, ParameterBinding binding) {
+		// unwrap postional parameters
+		if (child instanceof VelocityParamSequence) {
+			child = ((VelocityParamSequence) child).next();
+		}
 
-        Collection bindings = (Collection) context.getInternalUserContext().get(
-                VelocitySQLTemplateProcessor.BINDINGS_LIST_KEY);
+		return child;
+	}
 
-        if (bindings != null) {
-            bindings.add(binding);
-        }
-    }
+	/**
+	 * Adds value to the list of bindings in the context.
+	 */
+	protected void bind(InternalContextAdapter context, ParameterBinding binding) {
+
+		Collection bindings = (Collection) context.getInternalUserContext().get(
+				VelocitySQLTemplateProcessor.BINDINGS_LIST_KEY);
+
+		if (bindings != null) {
+			bindings.add(binding);
+		}
+	}
 }
