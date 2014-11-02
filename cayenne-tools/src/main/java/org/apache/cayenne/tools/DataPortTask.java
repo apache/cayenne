@@ -64,7 +64,7 @@ public class DataPortTask extends CayenneTask {
     @Override
     public void execute() throws BuildException {
 
-        log("*** 'cdataport' task is deprecated and will be removed after 3.2",
+        log("*** 'cdataport' task is deprecated and will be removed after 4.0",
                 Project.MSG_WARN);
 
         validateParameters();

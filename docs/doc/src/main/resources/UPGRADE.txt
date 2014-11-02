@@ -4,10 +4,13 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
-UPGRADING TO 3.2M2
+UPGRADING TO 4.0.M2
+
+* Note that 3.2 line of development was renamed to 4.0. So 4.0.M2 is a straight descendant of
+  3.2M1.
 
 * Minimal required JDK version is now 1.6 (both for modeler and runtime). This is a pretty conservative 
-  requirement, considering that even Java 1.6 has been EOL'd by Oracle on Feb 2013.
+  requirement, considering that Java 1.6 has been EOL'd by Oracle on Feb 2013.
 
 * Managing listeners in the Modeler is counterproductive and confusing,
   so support for them was removed from the Modeler per CAY-1842. If you have

@@ -876,7 +876,7 @@ public class DataContext extends BaseContext {
     // interface
     @SuppressWarnings({ "rawtypes" })
     public ResultIterator performIteratedQuery(Query query) {
-        // TODO: use 3.2 TransactionManager
+        // TODO: use 4.0 TransactionManager
         if (BaseTransaction.getThreadTransaction() != null) {
             return internalPerformIteratedQuery(query);
         } else {
