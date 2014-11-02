@@ -282,7 +282,7 @@ public class ConverterFactory {
      * 		the Class to convert a value to; the destination type
      * @param converter
      * 		a converter used to convert the value from Object to T
-     * @since 3.2
+     * @since 4.0
      */
     public static <T> void addConverter(Class<? super T> type, Converter<T> converter) {
     	factory._addConverter(type, converter);

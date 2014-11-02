@@ -114,14 +114,14 @@ public class EntityMergeSupport {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected boolean removePK(DbEntity dbEntity) {
         return removeMeaningfulPKs;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected boolean removeFK(DbEntity dbEntity) {
         return removeMeaningfulFKs;
@@ -420,14 +420,14 @@ public class EntityMergeSupport {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public boolean isUsePrimitives() {
         return usePrimitives;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      * @param usePrimitives
      */
     public void setUsePrimitives(boolean usePrimitives) {

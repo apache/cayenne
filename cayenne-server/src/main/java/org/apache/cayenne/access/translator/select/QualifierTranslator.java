@@ -355,14 +355,14 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     }
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected String operandForBitwiseLeftShift() {
         return "<<";
     }
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected String operandForBitwiseRightShift() {
         return ">>";

@@ -25,7 +25,7 @@ import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
  * A factory that creates encryption transformers used for processing batch
  * bindings and decryption transformers - for result rows.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface TransformerFactory {
 

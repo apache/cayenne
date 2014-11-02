@@ -35,7 +35,7 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
  * <li>byte 5..N: UTF8-encoded symbolic name of the encryption key.
  * </ul>
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class Header {
 

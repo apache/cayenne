@@ -78,7 +78,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
     }
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected Object value(Field field, String bindingName) {
 

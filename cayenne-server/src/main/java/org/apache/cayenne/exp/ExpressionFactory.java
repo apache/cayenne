@@ -907,28 +907,28 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression and(Collection<Expression> expressions) {
 		return joinExp(Expression.AND, expressions);
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression and(Expression... expressions) {
 		return join(Expression.AND, expressions);
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression or(Collection<Expression> expressions) {
 		return joinExp(Expression.OR, expressions);
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression or(Expression... expressions) {
 		return join(Expression.OR, expressions);
@@ -942,7 +942,7 @@ public class ExpressionFactory {
 	 * Binding of parameters by name (as opposed to binding by position) can be
 	 * achieved by chaining this call with {@link Expression#params(Map)}.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression exp(String expressionString, Object... parameters) {
 		Expression e = fromString(expressionString);
@@ -960,7 +960,7 @@ public class ExpressionFactory {
 	 * Parses string, converting it to Expression. If string does not represent
 	 * a semantically correct expression, an ExpressionException is thrown.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	private static Expression fromString(String expressionString) {
 

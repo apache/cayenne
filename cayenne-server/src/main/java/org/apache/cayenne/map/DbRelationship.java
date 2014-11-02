@@ -281,7 +281,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * relationship in any way will not change the underlying table row of the
      * source.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public boolean isSourceIndependentFromTargetChange() {
         // note - call "isToPK" at the end of the chain, since

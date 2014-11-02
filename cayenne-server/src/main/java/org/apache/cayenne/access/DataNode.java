@@ -454,7 +454,7 @@ public class DataNode implements QueryEngine {
     /**
      * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
         return rowReader(descriptor, queryMetadata, Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
@@ -463,7 +463,7 @@ public class DataNode implements QueryEngine {
     /**
      * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
             Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
@@ -471,35 +471,35 @@ public class DataNode implements QueryEngine {
     }
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public BatchTranslator batchTranslator(BatchQuery query, String trimFunction) {
         return batchTranslatorFactory.translator(query, getAdapter(), trimFunction);
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public RowReaderFactory getRowReaderFactory() {
         return rowReaderFactory;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setRowReaderFactory(RowReaderFactory rowReaderFactory) {
         this.rowReaderFactory = rowReaderFactory;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public BatchTranslatorFactory getBatchTranslatorFactory() {
         return batchTranslatorFactory;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setBatchTranslatorFactory(BatchTranslatorFactory batchTranslatorFactory) {
         this.batchTranslatorFactory = batchTranslatorFactory;

@@ -29,7 +29,7 @@ import org.apache.cayenne.util.HashCodeBuilder;
  * DbEntities of flattened attributes or relationships. Provides 'equals' and
  * 'hashCode' implementations adequate for use as a map key.
  * 
- * @since 3.2
+ * @since 4.0
  */
 final class DbArcId {
 

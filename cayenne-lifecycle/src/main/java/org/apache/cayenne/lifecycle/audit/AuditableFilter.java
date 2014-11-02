@@ -53,7 +53,7 @@ public class AuditableFilter implements DataChannelFilter {
     protected EntityResolver entityResolver;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public AuditableFilter(AuditableProcessor processor) {
         this.processor = processor;

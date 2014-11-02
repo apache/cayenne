@@ -31,7 +31,7 @@ import org.apache.cayenne.query.BatchQuery;
 class OracleBatchAction extends BatchAction {
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     OracleBatchAction(BatchQuery batchQuery, DataNode dataNode, boolean runningAsBatch) {
         super(batchQuery, dataNode, runningAsBatch);

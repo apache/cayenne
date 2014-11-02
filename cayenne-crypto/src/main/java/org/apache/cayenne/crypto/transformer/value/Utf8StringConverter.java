@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.transformer.value;
 import java.nio.charset.Charset;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 final class Utf8StringConverter implements BytesConverter {
 

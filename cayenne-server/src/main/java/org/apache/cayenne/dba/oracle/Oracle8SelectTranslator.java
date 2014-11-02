@@ -30,7 +30,7 @@ import org.apache.cayenne.query.Query;
 class Oracle8SelectTranslator extends OracleSelectTranslator {
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public Oracle8SelectTranslator(Query query, DataNode dataNode, Connection connection) {
         super(query, dataNode, connection);

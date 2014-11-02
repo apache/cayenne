@@ -44,7 +44,7 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * 
  * @param <E>
  *            The type this property returns.
- * @since 3.2
+ * @since 4.0
  */
 public class Property<E> {
 

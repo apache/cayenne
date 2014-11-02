@@ -44,7 +44,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     protected DataNode dataNode;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public JdbcActionBuilder(DataNode dataNode) {
         this.dataNode = dataNode;

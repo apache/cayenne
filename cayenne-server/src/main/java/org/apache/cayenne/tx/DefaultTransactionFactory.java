@@ -24,7 +24,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultTransactionFactory implements TransactionFactory {
 

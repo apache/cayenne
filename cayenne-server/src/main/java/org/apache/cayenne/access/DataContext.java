@@ -83,7 +83,7 @@ public class DataContext extends BaseContext {
     protected ObjectStore objectStore;
 
     /**
-     * @deprecated since 3.2 used in a method that itself should be deprecated,
+     * @deprecated since 4.0 used in a method that itself should be deprecated,
      *             so this is a temp code
      */
     @Deprecated
@@ -1205,8 +1205,8 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * @since 3.2
-     * @deprecated since 3.2 avoid using thsi directly. Transaction management
+     * @since 4.0
+     * @deprecated since 4.0 avoid using thsi directly. Transaction management
      *             at this level will be eventually removed
      */
     @Deprecated

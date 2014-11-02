@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 /**
  * A factory for creating DataNodes from descriptors.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface DataNodeFactory {
 

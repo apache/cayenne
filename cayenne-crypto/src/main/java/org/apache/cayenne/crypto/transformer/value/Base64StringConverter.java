@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.transformer.value;
 import javax.xml.bind.DatatypeConverter;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class Base64StringConverter implements BytesConverter {
 

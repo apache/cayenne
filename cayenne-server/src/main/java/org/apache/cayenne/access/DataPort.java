@@ -54,7 +54,7 @@ import org.apache.cayenne.query.SelectQuery;
  * 
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples
  *        package.
- * @deprecated since 3.2
+ * @deprecated since 4.0
  */
 @Deprecated
 public class DataPort {

@@ -24,7 +24,7 @@ import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Injector;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class OsgiClassLoaderManager implements ClassLoaderManager {
 

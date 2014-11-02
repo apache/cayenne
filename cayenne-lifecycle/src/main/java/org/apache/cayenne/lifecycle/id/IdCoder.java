@@ -53,7 +53,7 @@ public class IdCoder {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public String getStringId(ObjectId id) {
         EntityIdCoder coder = getCoder(id.getEntityName());

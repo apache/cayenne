@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.transformer.value;
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class DefaultValueEncryptor implements ValueEncryptor {
 

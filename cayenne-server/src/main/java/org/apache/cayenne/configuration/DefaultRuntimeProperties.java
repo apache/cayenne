@@ -55,7 +55,7 @@ public class DefaultRuntimeProperties implements RuntimeProperties {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public String get(String key, String defaultValue) {

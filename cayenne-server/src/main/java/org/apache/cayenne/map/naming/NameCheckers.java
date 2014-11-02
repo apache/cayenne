@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public enum NameCheckers implements NameChecker {
 

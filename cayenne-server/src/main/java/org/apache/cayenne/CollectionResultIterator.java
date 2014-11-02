@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * A ResultIterator over a collection of objects.
  * 
- * @since 3.2
+ * @since 4.0
  */
 class CollectionResultIterator<T> implements ResultIterator<T> {
 

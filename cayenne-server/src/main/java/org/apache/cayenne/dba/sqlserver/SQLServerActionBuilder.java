@@ -33,7 +33,7 @@ import org.apache.cayenne.query.SelectQuery;
 public class SQLServerActionBuilder extends JdbcActionBuilder {
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public SQLServerActionBuilder(DataNode dataNode) {
         super(dataNode);

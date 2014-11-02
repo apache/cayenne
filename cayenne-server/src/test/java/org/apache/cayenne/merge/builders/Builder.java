@@ -21,7 +21,7 @@ package org.apache.cayenne.merge.builders;
 /**
  * Base interface for all domain builders
  *
- * @since 3.2.
+ * @since 4.0.
  */
 public interface Builder<T> {
 

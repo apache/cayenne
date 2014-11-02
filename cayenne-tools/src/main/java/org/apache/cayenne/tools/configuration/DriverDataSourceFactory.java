@@ -30,7 +30,7 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DriverDataSourceFactory implements DataSourceFactory {
 

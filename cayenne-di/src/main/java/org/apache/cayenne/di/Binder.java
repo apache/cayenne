@@ -60,12 +60,12 @@ public interface Binder {
     <T> ListBuilder<T> bindList(String bindingName);
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     <T> DecoratorBuilder<T> decorate(Class<T> interfaceType);
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     <T> DecoratorBuilder<T> decorate(Key<T> key);
 }

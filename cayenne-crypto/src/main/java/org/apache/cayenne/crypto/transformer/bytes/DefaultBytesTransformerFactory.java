@@ -30,7 +30,7 @@ import org.apache.cayenne.di.Inject;
  * A {@link BytesTransformerFactory} that creates transformers depending on the
  * encryption mode specified via properties.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultBytesTransformerFactory implements BytesTransformerFactory {
 

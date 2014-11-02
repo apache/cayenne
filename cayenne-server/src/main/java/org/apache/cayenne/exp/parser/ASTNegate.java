@@ -67,7 +67,7 @@ public class ASTNegate extends SimpleNode {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public void appendAsString(Appendable out) throws IOException {
@@ -92,7 +92,7 @@ public class ASTNegate extends SimpleNode {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {

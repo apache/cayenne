@@ -48,7 +48,7 @@ import org.apache.cayenne.di.Module;
  * to specify custom ciphers, as well as a strategy for discovering which
  * columns are encrypted.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class CryptoModuleBuilder {
 

@@ -32,7 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class MappingCache implements MappingNamespace {
 

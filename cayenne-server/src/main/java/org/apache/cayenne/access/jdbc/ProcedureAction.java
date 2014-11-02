@@ -53,7 +53,7 @@ public class ProcedureAction extends BaseSQLAction {
     protected int processedResultSets;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public ProcedureAction(ProcedureQuery query, DataNode dataNode) {
         super(dataNode);

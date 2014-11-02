@@ -285,7 +285,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * specified explicitly, default DataMap superclass is used, and if it is
      * not set - CayenneDataObject is used.
      * 
-     * @since 3.2
+     * @since 4.0
      */
    public  String getJavaClassName() {
         String name = getClassName();
@@ -308,7 +308,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Casts any thrown exceptions into CayenneRuntimeException.
      * 
      * @since 1.2
-     * @deprecated since 3.2 this method based on statically defined class
+     * @deprecated since 4.0 this method based on statically defined class
      *             loading algorithm is not going to work in environments like
      *             OSGi. {@link AdhocObjectFactory} should be used as it can
      *             provide the environment-specific class loading policy. 
@@ -330,7 +330,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * not just a generic Collection is returned.
      * 
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -344,7 +344,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * @since 3.0
      * @throws IllegalArgumentException
      *             if a listener for the same class name is already registered.
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -362,7 +362,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Removes a listener matching class name.
      * 
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -379,7 +379,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
     /**
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -1118,7 +1118,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public Set<String> getCallbackMethods() {
         Set<String> res = new LinkedHashSet<String>();
@@ -1252,7 +1252,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * this entity lifecycle events.
      * 
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -1261,7 +1261,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -1274,7 +1274,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * not be notified of this entity lifecycle events.
      * 
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -1283,7 +1283,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated

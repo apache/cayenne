@@ -21,7 +21,7 @@ package org.apache.cayenne.map.naming;
 import org.apache.cayenne.map.DataMap;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultUniqueNameGenerator implements UniqueNameGenerator {
 

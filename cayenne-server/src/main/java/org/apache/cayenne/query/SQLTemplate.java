@@ -105,7 +105,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
     /**
      * Creates a SQLTemplate without an explicit root.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public SQLTemplate(String defaultTemplate, boolean isFetchingDataRows) {
         setDefaultTemplate(defaultTemplate);
@@ -396,7 +396,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
      * </pre>
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void useLocalCache(String... cacheGroups) {
         setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -412,7 +412,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
      * </pre>
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void useSharedCache(String... cacheGroups) {
         setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
@@ -670,7 +670,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * information will be used during query execution if no other routing
      * information is provided such as entity name or class, etc.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public String getDataNodeName() {
         return dataNodeName;
@@ -681,7 +681,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
      * information will be used during query execution if no other routing
      * information is provided such as entity name or class, etc.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void setDataNodeName(String dataNodeName) {
         this.dataNodeName = dataNodeName;

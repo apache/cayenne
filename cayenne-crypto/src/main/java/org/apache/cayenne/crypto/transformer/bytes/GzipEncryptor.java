@@ -25,7 +25,7 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.cayenne.crypto.CayenneCryptoException;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class GzipEncryptor implements BytesEncryptor {
 

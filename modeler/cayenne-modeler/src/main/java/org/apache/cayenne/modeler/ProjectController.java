@@ -1793,14 +1793,14 @@ public class ProjectController extends CayenneController {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public int getEntityTabSelection() {
         return entityTabSelection;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setEntityTabSelection(int entityTabSelection) {
         this.entityTabSelection = entityTabSelection;

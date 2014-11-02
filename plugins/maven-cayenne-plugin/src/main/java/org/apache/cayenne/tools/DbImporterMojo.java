@@ -57,7 +57,7 @@ public class DbImporterMojo extends AbstractMojo {
      * will be used.
      * 
      * @parameter expression="${cdbimport.defaultPackage}"
-     * @since 3.2
+     * @since 4.0
      */
     private String defaultPackage;
 
@@ -74,7 +74,7 @@ public class DbImporterMojo extends AbstractMojo {
      * DB schema to use for DB importing.
      * 
      * @parameter expression="${cdbimport.schemaName}"
-     * @deprecated since 3.2 renamed to "schema"
+     * @deprecated since 4.0 renamed to "schema"
      */
     private String schemaName;
 
@@ -82,7 +82,7 @@ public class DbImporterMojo extends AbstractMojo {
      * DB schema to use for DB importing.
      * 
      * @parameter expression="${cdbimport.catalog}"
-     * @since 3.2
+     * @since 4.0
      */
     private String catalog;
 
@@ -90,7 +90,7 @@ public class DbImporterMojo extends AbstractMojo {
      * DB schema to use for DB importing.
      * 
      * @parameter expression="${cdbimport.schema}"
-     * @since 3.2
+     * @since 4.0
      */
     private String schema;
 
@@ -146,13 +146,13 @@ public class DbImporterMojo extends AbstractMojo {
      * Default is <code>false</code>.
      * 
      * @parameter expression="${cdbimport.meaningfulPk}" default-value="false"
-     * @deprecated since 3.2 use meaningfulPkTables
+     * @deprecated since 4.0 use meaningfulPkTables
      */
     private boolean meaningfulPk;
 
     /**
      * @parameter expression="${cdbimport.meaningfulPkTables}"
-     * @since 3.2
+     * @since 4.0
      */
     private String meaningfulPkTables;
 

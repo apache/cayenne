@@ -29,7 +29,7 @@ import org.jvnet.inflector.Noun;
  * SmartNameGenerator is a strategy for generating names of entities, attributes
  * etc.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultNameGenerator implements ObjectNameGenerator {
 

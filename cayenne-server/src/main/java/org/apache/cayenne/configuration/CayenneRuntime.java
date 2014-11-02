@@ -80,7 +80,7 @@ public abstract class CayenneRuntime {
 	/**
 	 * Returns an array of modules used to initialize this runtime.
 	 * 
-	 * @deprecated since 3.2. We only keep one module now, so use
+	 * @deprecated since 4.0. We only keep one module now, so use
 	 *             {@link #getModule()}.
 	 */
 	@Deprecated
@@ -92,7 +92,7 @@ public abstract class CayenneRuntime {
 	 * 
 	 * Returns the module used to initialize this runtime.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public Module getModule() {
 		return module;
@@ -128,7 +128,7 @@ public abstract class CayenneRuntime {
 	 * Returns a new ObjectContext instance based on the runtime's main
 	 * DataChannel.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public ObjectContext newContext() {
 		return injector.getInstance(ObjectContextFactory.class).createContext();
@@ -139,7 +139,7 @@ public abstract class CayenneRuntime {
 	 * DataChannel. This method is used for creation of nested ObjectContexts,
 	 * with parent ObjectContext passed as an argument.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public ObjectContext newContext(DataChannel parentChannel) {
 		return injector.getInstance(ObjectContextFactory.class).createContext(parentChannel);

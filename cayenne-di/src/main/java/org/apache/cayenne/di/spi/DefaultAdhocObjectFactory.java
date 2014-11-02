@@ -38,7 +38,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
     protected ClassLoaderManager classLoaderManager;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public DefaultAdhocObjectFactory(@Inject Injector injector, @Inject ClassLoaderManager classLoaderManager) {
         this.injector = injector;

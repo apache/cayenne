@@ -23,7 +23,7 @@ import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 /**
  * An encryptor or decryptor of a single value.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface ValueEncryptor {
 

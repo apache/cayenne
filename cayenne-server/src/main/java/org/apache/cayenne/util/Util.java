@@ -500,7 +500,7 @@ public class Util {
      * single-dimensional arrays and primitive types.
      * 
      * @since 1.2
-     * @deprecated since 3.2 this method based on statically defined class
+     * @deprecated since 4.0 this method based on statically defined class
      *             loading algorithm is not going to work in environments like
      *             OSGi. {@link AdhocObjectFactory} should be used as it can
      *             provide the environment-specific class loading policy.

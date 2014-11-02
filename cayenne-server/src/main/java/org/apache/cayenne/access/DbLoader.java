@@ -538,7 +538,7 @@ public class DbLoader {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected EntityMergeSupport createEntityMerger(DataMap map) {
         return new EntityMergeSupport(map, nameGenerator, !creatingMeaningfulPK);
@@ -734,7 +734,7 @@ public class DbLoader {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public String[] getDefaultTableTypes() {
         String viewType = adapter.tableTypeForView();
@@ -760,7 +760,7 @@ public class DbLoader {
      * tables and views.
      * 
      * @since 1.0.7
-     * @deprecated since 3.2 use
+     * @deprecated since 4.0 use
      *             {@link #load(DataMap, String, String, String, String...)}
      *             method that supports catalogs.
      */
@@ -781,7 +781,7 @@ public class DbLoader {
      * contains default mapping of the tables and views. Allows to limit types
      * of tables to read.
      * 
-     * @deprecated since 3.2 use
+     * @deprecated since 4.0 use
      *             {@link #load(DataMap, String, String, String, String...)}
      *             method that supports catalogs.
      */
@@ -799,7 +799,7 @@ public class DbLoader {
      * schema, table name and table type patterns and fills the specified
      * DataMap object with DB and object mapping info.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void load(DataMap dataMap, String catalogPattern, String schemaPattern, String tablePattern,
             String... tableTypes) throws SQLException {
@@ -829,7 +829,7 @@ public class DbLoader {
      * </p>
      * 
      * @since 1.1
-     * @deprecated since 3.2 use
+     * @deprecated since 4.0 use
      *             {@link #loadProcedures(DataMap, String, String, String)} that
      *             supports "catalog" pattern.
      */
@@ -846,7 +846,7 @@ public class DbLoader {
      * be invoked explicitly by the user. </i>
      * </p>
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void loadProcedures(DataMap dataMap, String catalogPattern, String schemaPattern, String namePattern)
             throws SQLException {

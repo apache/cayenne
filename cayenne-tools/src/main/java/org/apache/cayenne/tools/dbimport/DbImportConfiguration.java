@@ -48,7 +48,7 @@ import java.util.Collections;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DbImportConfiguration {
 

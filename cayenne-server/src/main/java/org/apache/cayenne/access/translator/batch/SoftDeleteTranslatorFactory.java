@@ -29,7 +29,7 @@ import org.apache.cayenne.query.DeleteBatchQuery;
  * Implementation of {link #BatchTranslator}, which uses 'soft' delete
  * (runs UPDATE and sets 'deleted' field to true instead-of running SQL DELETE)
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class SoftDeleteTranslatorFactory extends DefaultBatchTranslatorFactory {
     /**

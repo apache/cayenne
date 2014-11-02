@@ -66,7 +66,7 @@ public class SQLTemplateAction implements SQLAction {
     protected DbAdapter dbAdapter;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public SQLTemplateAction(SQLTemplate query, DataNode dataNode) {
         this.query = query;

@@ -29,7 +29,7 @@ import org.apache.cayenne.log.JdbcEventLogger;
 /**
  * Represents a Cayenne-managed local Transaction.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class CayenneTransaction extends BaseTransaction {
 

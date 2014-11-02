@@ -23,7 +23,7 @@ import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultBindingsTransformer implements BindingsTransformer {
 

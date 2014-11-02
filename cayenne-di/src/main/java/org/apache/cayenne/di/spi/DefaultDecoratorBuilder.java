@@ -23,7 +23,7 @@ import org.apache.cayenne.di.DecoratorBuilder;
 import org.apache.cayenne.di.Key;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class DefaultDecoratorBuilder<T> implements DecoratorBuilder<T> {
 

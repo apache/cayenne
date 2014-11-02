@@ -72,7 +72,7 @@ public class ServerRuntime extends CayenneRuntime {
 	 * user code, which most often than not will consist of multiple Cayenne
 	 * operations.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public <T> T performInTransaction(TransactionalOperation<T> op) {
 		TransactionManager tm = injector.getInstance(TransactionManager.class);
@@ -94,7 +94,7 @@ public class ServerRuntime extends CayenneRuntime {
 	 * Returns a default DataSource for this runtime. If no default DataSource
 	 * exists, an exception is thrown.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public DataSource getDataSource() {
 		DataDomain domain = getDataDomain();

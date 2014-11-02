@@ -49,7 +49,7 @@ import org.apache.cayenne.query.Query;
 public class SQLServerProcedureAction extends ProcedureAction {
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public SQLServerProcedureAction(ProcedureQuery query, DataNode dataNode) {
         super(query, dataNode);

@@ -169,7 +169,7 @@ public interface Constants {
      * milliseconds a query must run before is logged. A value less than or
      * equal to zero (the default) disables this feature.
      * 
-     * @since 3.2
+     * @since 4.0
      * */
     public final static String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.server.query_execution_time_logging_threshold";
 

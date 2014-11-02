@@ -22,7 +22,7 @@ package org.apache.cayenne.crypto.transformer.bytes;
  * A class that encapsulates Cayenne cryptography protocol, which is usually
  * dependent on the encryption mode.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface BytesTransformerFactory {
 

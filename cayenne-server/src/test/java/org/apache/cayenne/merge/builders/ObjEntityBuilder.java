@@ -23,7 +23,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class ObjEntityBuilder extends DefaultBuilder<ObjEntity> {
 

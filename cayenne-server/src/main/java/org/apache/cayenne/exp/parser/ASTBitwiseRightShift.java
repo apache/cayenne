@@ -27,7 +27,7 @@ import org.apache.cayenne.util.ConversionUtil;
 /**
  * Bitwise right shift '&gt;&gt;' operation.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class ASTBitwiseRightShift extends SimpleNode {
 	private static final long serialVersionUID = 1L;

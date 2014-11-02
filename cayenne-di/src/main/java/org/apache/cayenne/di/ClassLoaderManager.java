@@ -23,7 +23,7 @@ package org.apache.cayenne.di;
  * between environments. E.g. between JEE with thread/hierarchical classloaders
  * and OSGi with per-bundle classloaders.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface ClassLoaderManager {
 

@@ -41,7 +41,7 @@ public interface MappingNamespace {
     Embeddable getEmbeddable(String className);
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     Collection<Embeddable> getEmbeddables();
 
@@ -53,7 +53,7 @@ public interface MappingNamespace {
     SQLResult getResult(String name);
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     Collection<SQLResult> getResults();
 
@@ -102,17 +102,17 @@ public interface MappingNamespace {
     Collection<Query> getQueries();
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     EntityInheritanceTree getInheritanceTree(String entityName);
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     ObjEntity getObjEntity(Class<?> entityClass);
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     ObjEntity getObjEntity(Persistent object);
 }

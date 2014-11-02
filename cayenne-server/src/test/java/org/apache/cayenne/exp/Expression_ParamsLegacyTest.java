@@ -28,7 +28,7 @@ import org.junit.Test;
 /**
  * Testing deprecated Expression.expWithParameters(..) API.
  * 
- * @deprecated since 3.2
+ * @deprecated since 4.0
  */
 @Deprecated
 public class Expression_ParamsLegacyTest {

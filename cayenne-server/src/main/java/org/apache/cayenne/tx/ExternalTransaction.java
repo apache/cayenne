@@ -24,7 +24,7 @@ import org.apache.cayenne.log.JdbcEventLogger;
 /**
  * Represents a container-managed transaction.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class ExternalTransaction extends BaseTransaction {
 

@@ -22,7 +22,7 @@ package org.apache.cayenne.map.naming;
  * A "filter" for the mapping artifact names generated elsewhere that ensures no
  * duplicate names are generated.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface UniqueNameGenerator {
 

@@ -67,7 +67,7 @@ public abstract class QueryAssembler {
     protected int parameterIndex;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public QueryAssembler(Query query, DataNode dataNode, Connection connection) {
         this.logger = dataNode.getJdbcEventLogger();

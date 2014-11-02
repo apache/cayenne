@@ -35,7 +35,7 @@ import org.apache.cayenne.map.ObjEntity;
 /**
  * A query to select single objects by id.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class SelectById<T> extends IndirectQuery implements Select<T> {
 
@@ -141,7 +141,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
 	 * </pre>
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public SelectById<T> useLocalCache(String... cacheGroups) {
 		cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);

@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * A Cayenne transaction. Currently supports managing JDBC connections.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public abstract class BaseTransaction implements Transaction {
 

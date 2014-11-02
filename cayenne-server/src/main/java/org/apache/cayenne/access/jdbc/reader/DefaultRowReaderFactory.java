@@ -41,7 +41,7 @@ import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultRowReaderFactory implements RowReaderFactory {
 

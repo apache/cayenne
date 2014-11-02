@@ -47,7 +47,7 @@ public interface QueryRouter {
      * QueryEngine is returned. If there's no default engine, an exception is
      * thrown.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     QueryEngine engineForName(String name);
 

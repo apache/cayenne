@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto;
 import org.apache.cayenne.CayenneRuntimeException;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class CayenneCryptoException extends CayenneRuntimeException {
 

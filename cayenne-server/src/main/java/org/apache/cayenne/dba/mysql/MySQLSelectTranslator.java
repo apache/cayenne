@@ -31,7 +31,7 @@ import org.apache.cayenne.query.Query;
 class MySQLSelectTranslator extends SelectTranslator {
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public MySQLSelectTranslator(Query query, DataNode dataNode, Connection connection) {
         super(query, dataNode, connection);

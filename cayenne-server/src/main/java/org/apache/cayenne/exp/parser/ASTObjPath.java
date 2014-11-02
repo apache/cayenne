@@ -69,7 +69,7 @@ public class ASTObjPath extends ASTPath {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
@@ -79,7 +79,7 @@ public class ASTObjPath extends ASTPath {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public void appendAsString(Appendable out) throws IOException {

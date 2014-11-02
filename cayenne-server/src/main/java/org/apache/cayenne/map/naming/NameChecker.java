@@ -19,7 +19,7 @@
 package org.apache.cayenne.map.naming;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public interface NameChecker {
 

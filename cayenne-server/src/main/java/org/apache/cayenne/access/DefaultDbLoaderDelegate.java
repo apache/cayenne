@@ -23,7 +23,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
 

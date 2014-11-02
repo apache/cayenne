@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class SyntheticNodeDataDomainProvider extends DataDomainProvider {
 

@@ -21,7 +21,7 @@ package org.apache.cayenne.merge.builders;
 import org.apache.cayenne.map.ObjAttribute;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class ObjAttributeBuilder extends DefaultBuilder<ObjAttribute> {
 

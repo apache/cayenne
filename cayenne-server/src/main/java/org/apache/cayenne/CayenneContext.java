@@ -380,7 +380,7 @@ public class CayenneContext extends BaseContext {
      * This method simply returns an iterator over a list of selected objects.
      * There's no performance benefit of using it vs. regular "select".
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public <T> ResultIterator<T> iterator(org.apache.cayenne.query.Select<T> query) {
         List<T> objects = select(query);

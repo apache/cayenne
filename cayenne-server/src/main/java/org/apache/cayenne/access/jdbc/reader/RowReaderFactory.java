@@ -29,7 +29,7 @@ import org.apache.cayenne.query.QueryMetadata;
 /**
  * Creates RowReader instances for executed queries.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface RowReaderFactory {
 

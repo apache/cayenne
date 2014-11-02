@@ -57,7 +57,7 @@ import java.util.List;
  * A thin wrapper around {@link DbLoader} that encapsulates DB import logic for
  * the benefit of Ant and Maven db importers.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class DbImportAction {
 

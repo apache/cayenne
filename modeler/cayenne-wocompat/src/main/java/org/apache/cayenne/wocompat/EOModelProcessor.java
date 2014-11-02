@@ -74,7 +74,7 @@ public class EOModelProcessor {
     }
 
     /**
-     * @deprecated since 3.2 in favor of {@link #loadModeIndex(URL)}.
+     * @deprecated since 4.0 in favor of {@link #loadModeIndex(URL)}.
      */
     @Deprecated
     public Map loadModeIndex(String path) throws Exception {
@@ -84,7 +84,7 @@ public class EOModelProcessor {
     /**
      * Returns index.eomodeld contents as a Map.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     // TODO: refactor EOModelHelper to provide a similar method without loading
     // all entity files in memory... here we simply copied stuff from
@@ -109,7 +109,7 @@ public class EOModelProcessor {
     }
 
     /**
-     * @deprecated since 3.2 in favor of {@link #loadEOModel(URL)}.
+     * @deprecated since 4.0 in favor of {@link #loadEOModel(URL)}.
      */
     @Deprecated
     public DataMap loadEOModel(String path) throws Exception {
@@ -117,7 +117,7 @@ public class EOModelProcessor {
     }
 
     /**
-     * @deprecated since 3.2 in favor of {@link #loadEOModel(URL, boolean)}.
+     * @deprecated since 4.0 in favor of {@link #loadEOModel(URL, boolean)}.
      */
     @Deprecated
     public DataMap loadEOModel(String path, boolean generateClientClass) throws Exception {

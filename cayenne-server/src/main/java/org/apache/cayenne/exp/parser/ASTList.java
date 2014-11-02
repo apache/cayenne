@@ -92,7 +92,7 @@ public class ASTList extends SimpleNode {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public void appendAsString(Appendable out) throws IOException {

@@ -56,7 +56,7 @@ import org.apache.commons.logging.LogFactory;
 public class DataDomainProvider implements Provider<DataDomain> {
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     static final String DEFAULT_NAME = "cayenne";
 
@@ -165,7 +165,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected DataNode addDataNode(DataDomain dataDomain, DataNodeDescriptor nodeDescriptor) throws Exception {
         DataNode dataNode = dataNodeFactory.createDataNode(nodeDescriptor);

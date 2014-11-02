@@ -122,7 +122,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     /**
      * @since 3.0
-     * @deprecated since 3.2 does nothing. Previously it used to create runtime
+     * @deprecated since 4.0 does nothing. Previously it used to create runtime
      *             ObjRelationships, that broke a lot of things.
      */
     @Deprecated
@@ -241,7 +241,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 3.2 use {@link #getResults()}.
+     * @deprecated since 4.0 use {@link #getResults()}.
      */
     @Deprecated
     public Collection<SQLResult> getResultSets() {
@@ -249,7 +249,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public Collection<SQLResult> getResults() {
         return mappingCache.getResults();
@@ -371,7 +371,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Removes all entity mappings from the cache.
      * 
-     * @deprecated since 3.2 in favor of {@link #refreshMappingCache()}.
+     * @deprecated since 4.0 in favor of {@link #refreshMappingCache()}.
      */
     @Deprecated
     public void clearCache() {
@@ -382,7 +382,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Refreshes entity cache to reflect the current state of the DataMaps in
      * the EntityResolver.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void refreshMappingCache() {
         mappingCache = new ProxiedMappingNamespace() {
@@ -427,7 +427,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public EntityInheritanceTree getInheritanceTree(String entityName) {
 
@@ -448,7 +448,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 3.2 use {@link #getInheritanceTree(String)}.
+     * @deprecated since 4.0 use {@link #getInheritanceTree(String)}.
      */
     @Deprecated
     public EntityInheritanceTree lookupInheritanceTree(String entityName) {
@@ -462,7 +462,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @return the required ObjEntity or null if there is none that matches the
      *         specifier
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public ObjEntity getObjEntity(Class<?> entityClass) {
         ObjEntity result = mappingCache.getObjEntity(entityClass);
@@ -477,7 +477,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 3.2, use {@link #getObjEntity(Class)}.
+     * @deprecated since 4.0, use {@link #getObjEntity(Class)}.
      */
     public ObjEntity lookupObjEntity(Class<?> entityClass) {
         return getObjEntity(entityClass);
@@ -492,7 +492,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * ObjEntity that services the specified data Object
      * 
      * @return the required ObjEntity, or null if none matches the specifier
-     * @since 3.2 a corresponding getObjEntity method should be used.
+     * @since 4.0 a corresponding getObjEntity method should be used.
      */
     @Deprecated
     public ObjEntity lookupObjEntity(Object object) {
@@ -513,7 +513,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 3.2. Use q.getMetaData(resolver).getProcedure()
+     * @deprecated since 4.0. Use q.getMetaData(resolver).getProcedure()
      */
     @Deprecated
     public Procedure lookupProcedure(Query q) {
@@ -521,7 +521,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 3.2 use {@link #getProcedure(String)}.
+     * @deprecated since 4.0 use {@link #getProcedure(String)}.
      */
     @Deprecated
     public Procedure lookupProcedure(String procedureName) {
@@ -529,7 +529,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 3.2 use {@link #getQuery(String)}.
+     * @deprecated since 4.0 use {@link #getQuery(String)}.
      */
     @Deprecated
     public Query lookupQuery(String name) {
@@ -543,7 +543,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 3.2. There's no replacement. This property is
+     * @deprecated since 4.0. There's no replacement. This property is
      *             meaningless and is no longer respected by the code.
      */
     @Deprecated
@@ -552,7 +552,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 3.2. There's no replacement. This property is
+     * @deprecated since 4.0. There's no replacement. This property is
      *             meaningless.
      */
     public void setIndexedByClass(boolean b) {
@@ -598,7 +598,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     /**
      * @since 3.0
-     * @deprecated since 3.2 this method does nothing, as EntityResolver no
+     * @deprecated since 4.0 this method does nothing, as EntityResolver no
      *             longer loads listeners from its DataMaps.
      */
     @Deprecated

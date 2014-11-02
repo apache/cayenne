@@ -28,7 +28,7 @@ import org.apache.commons.collections.Factory;
 /**
  * Represents a single row of values in a BatchQuery.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public abstract class BatchQueryRow {
 

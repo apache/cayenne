@@ -122,7 +122,7 @@ public class EJBQLQuery implements Query, XMLSerializable {
      * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
      * </pre>
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void useLocalCache(String... cacheGroups) {
         setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -138,7 +138,7 @@ public class EJBQLQuery implements Query, XMLSerializable {
      * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
      * </pre>
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void useSharedCache(String... cacheGroups) {
         setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);

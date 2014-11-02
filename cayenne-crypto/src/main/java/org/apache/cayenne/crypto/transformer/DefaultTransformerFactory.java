@@ -33,7 +33,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultTransformerFactory implements TransformerFactory {
 

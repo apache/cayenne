@@ -29,7 +29,7 @@ import org.apache.cayenne.di.Module;
 /**
  * A DI module that helps to bootstrap Cayenne in OSGi environment.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class OsgiModule implements Module {
 

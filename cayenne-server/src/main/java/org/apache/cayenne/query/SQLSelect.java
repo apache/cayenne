@@ -32,7 +32,7 @@ import org.apache.cayenne.map.SQLResult;
 /**
  * A selecting query based on raw SQL and featuring fluent API.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
@@ -221,7 +221,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
 	 * </pre>
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public void useLocalCache(String... cacheGroups) {
 		cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);

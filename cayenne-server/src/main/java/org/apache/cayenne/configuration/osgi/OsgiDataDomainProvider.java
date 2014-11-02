@@ -27,7 +27,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 // TODO: this is really a hack until we can have fully injectable class loading
 // at the EntityResolver level per CAY-1887

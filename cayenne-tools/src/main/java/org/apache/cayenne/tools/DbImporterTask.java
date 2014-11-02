@@ -39,13 +39,13 @@ public class DbImporterTask extends Task {
     private final DbImportConfiguration parameters;
 
     /**
-     * @deprecated since 3.2 in favor of "schema"
+     * @deprecated since 4.0 in favor of "schema"
      */
     @Deprecated
     private String schemaName;
 
     /**
-     * @deprecated since 3.2 in favor of "meaningfulPkTable"
+     * @deprecated since 4.0 in favor of "meaningfulPkTable"
      */
     @Deprecated
     private boolean meaningfulPk;
@@ -114,28 +114,28 @@ public class DbImporterTask extends Task {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setOverwrite(boolean overwrite) {
         parameters.setOverwrite(overwrite);
     }
 
     /**
-     * @deprecated since 3.2 use {@link #setSchema(String)}
+     * @deprecated since 4.0 use {@link #setSchema(String)}
      */
     public void setSchemaName(String schemaName) {
         this.schemaName = schemaName;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setSchema(String schema) {
         parameters.setSchema(schema);
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setDefaultPackage(String defaultPackage) {
         parameters.setDefaultPackage(defaultPackage);
@@ -154,14 +154,14 @@ public class DbImporterTask extends Task {
     }
 
     /**
-     * @deprecated since 3.2 use {@link #setMeaningfulPkTables(String)}
+     * @deprecated since 4.0 use {@link #setMeaningfulPkTables(String)}
      */
     public void setMeaningfulPk(boolean meaningfulPk) {
         this.meaningfulPk = meaningfulPk;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setMeaningfulPkTables(String meaningfulPkTables) {
         parameters.setMeaningfulPkTables(meaningfulPkTables);
@@ -196,21 +196,21 @@ public class DbImporterTask extends Task {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setIncludeTables(String includeTables) {
         parameters.setIncludeTables(includeTables);
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setExcludeTables(String excludeTables) {
         parameters.setExcludeTables(excludeTables);
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setUsePrimitives(boolean usePrimitives) {
         parameters.setUsePrimitives(usePrimitives);

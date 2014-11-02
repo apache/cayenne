@@ -74,7 +74,7 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
-     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the
+     * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
      *             DataNode.
      */
     @Inject
@@ -244,7 +244,7 @@ public class JdbcAdapter implements DbAdapter {
      * Returns true if supplied type can have a length attribute as a part of column
      * definition
      * 
-     * @since 3.2
+     * @since 4.0
      */
 	public boolean typeSupportsLength(int type) {
 	    return JdbcAdapter.supportsLength(type);
@@ -591,7 +591,7 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      * @return
      */
     protected QuotingStrategy createQuotingStrategy() {
@@ -600,7 +600,7 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.0
-     * @deprecated since 3.2 use {@link #getQuotingStrategy()}.
+     * @deprecated since 4.0 use {@link #getQuotingStrategy()}.
      */
     @Deprecated
     public QuotingStrategy getQuotingStrategy(boolean needQuotes) {
@@ -608,7 +608,7 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public QuotingStrategy getQuotingStrategy() {
         return quotingStrategy;
@@ -616,7 +616,7 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
-     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the
+     * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
      *             DataNode.
      */
     @Deprecated
@@ -626,7 +626,7 @@ public class JdbcAdapter implements DbAdapter {
 
     /**
      * @since 3.1
-     * @deprecated since 3.2 BatchQueryBuilderfactory is attached to the
+     * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
      *             DataNode.
      */
     @Deprecated
@@ -637,7 +637,7 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * Simply returns this, as JdbcAdapter is not a wrapper.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public DbAdapter unwrap() {

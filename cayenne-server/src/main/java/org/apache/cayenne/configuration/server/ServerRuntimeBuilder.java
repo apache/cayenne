@@ -36,7 +36,7 @@ import org.apache.cayenne.di.Module;
  * configure custom modules, multiple config locations, or quickly create a
  * global DataSource.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class ServerRuntimeBuilder {
 

@@ -83,7 +83,7 @@ public class PoolManager implements ScopeEventListener, DataSource,
      * Creates new PoolManager using org.apache.cayenne.conn.PoolDataSource for an
      * underlying ConnectionPoolDataSource.
      * 
-     * @deprecated since 3.2 This constructor causes implicit class loading that should avoided.
+     * @deprecated since 4.0 This constructor causes implicit class loading that should avoided.
      */
     @Deprecated
     public PoolManager(String jdbcDriver, String dataSourceUrl, int minCons, int maxCons,
@@ -93,7 +93,7 @@ public class PoolManager implements ScopeEventListener, DataSource,
     }
 
     /**
-     * @deprecated since 3.2 This constructor causes implicit class loading that should avoided.
+     * @deprecated since 4.0 This constructor causes implicit class loading that should avoided.
      */
     @Deprecated
     public PoolManager(String jdbcDriver, String dataSourceUrl, int minCons, int maxCons,
@@ -128,7 +128,7 @@ public class PoolManager implements ScopeEventListener, DataSource,
      * @param maxCons Non-negative integer that specifies maximum number of simultaneuosly
      *            open connections
      * @throws SQLException if pool manager can not be created.
-     * @deprecated since 3.2 use {@link #PoolManager(ConnectionPoolDataSource, int, int, String, String, long)}
+     * @deprecated since 4.0 use {@link #PoolManager(ConnectionPoolDataSource, int, int, String, String, long)}
      */
     public PoolManager(ConnectionPoolDataSource poolDataSource, int minCons, int maxCons,
             String userName, String password) throws SQLException {
@@ -145,7 +145,7 @@ public class PoolManager implements ScopeEventListener, DataSource,
      * @param maxCons Non-negative integer that specifies maximum number of simultaneuosly
      *            open connections
      * @throws SQLException if pool manager can not be created.
-     * @since 3.2
+     * @since 4.0
      */
     public PoolManager(ConnectionPoolDataSource poolDataSource, int minCons, int maxCons,
             String userName, String password, long maxQueueWaitTime) throws SQLException {

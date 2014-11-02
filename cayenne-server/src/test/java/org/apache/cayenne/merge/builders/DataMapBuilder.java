@@ -26,7 +26,7 @@ import org.apache.cayenne.map.ObjEntity;
 import java.util.Collections;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class DataMapBuilder extends DefaultBuilder<DataMap> {
 

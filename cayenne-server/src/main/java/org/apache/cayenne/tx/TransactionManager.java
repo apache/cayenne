@@ -23,7 +23,7 @@ package org.apache.cayenne.tx;
  * transactions. Users only rarely need to invoke it directly, as all standard
  * Cayenne operations are managing their own transactions internally.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface TransactionManager {
 

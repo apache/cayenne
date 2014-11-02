@@ -227,7 +227,7 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
     }
 
     /**
-     * @deprecated since 3.2 as class loading should not happen here.
+     * @deprecated since 4.0 as class loading should not happen here.
      */
     @Deprecated
     public PasswordEncoding getPasswordEncoder() {

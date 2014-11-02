@@ -26,7 +26,7 @@ import org.apache.cayenne.query.SelectQuery;
 public class IngresActionBuilder extends JdbcActionBuilder {
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public IngresActionBuilder(DataNode dataNode) {
         super(dataNode);

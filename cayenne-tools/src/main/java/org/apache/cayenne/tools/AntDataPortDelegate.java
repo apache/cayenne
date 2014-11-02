@@ -37,7 +37,7 @@ import org.apache.tools.ant.Task;
  * 
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples
  *        package.
- * @deprecated since 3.2
+ * @deprecated since 4.0
  */
 @Deprecated
 class AntDataPortDelegate implements DataPortDelegate {

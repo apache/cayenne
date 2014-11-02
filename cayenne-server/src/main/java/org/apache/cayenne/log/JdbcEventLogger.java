@@ -59,12 +59,12 @@ public interface JdbcEventLogger {
     void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time);
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     void logQueryParameters(String label, BatchParameterBinding[] bindings);
 
     /**
-     * @deprecated since 3.2 in favor of
+     * @deprecated since 4.0 in favor of
      *             {@link #logQueryParameters(String, List)}
      */
     @Deprecated
@@ -80,7 +80,7 @@ public interface JdbcEventLogger {
      * @param sql
      *            SQL that was executed, printed when time exceeds timeThreshold
      * 
-     * @since 3.2
+     * @since 4.0
      */
     void logSelectCount(int count, long time, String sql);
 
