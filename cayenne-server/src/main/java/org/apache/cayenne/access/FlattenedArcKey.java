@@ -203,7 +203,7 @@ final class FlattenedArcKey {
 
         SQLTemplate query = new SQLTemplate(joinEntity.getDataMap(),
                 sql.toString(), true);
-        query.setParameters(snapshot);
+        query.setParams(snapshot);
 
         final List[] result = new List[1];
 

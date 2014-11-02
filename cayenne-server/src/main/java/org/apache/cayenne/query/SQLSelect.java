@@ -166,11 +166,10 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * free to add/remove parameters from the returned map as needed.
 	 * Alternatively one may use chained {@link #params(String, Object)}
 	 */
-	public Map<String, Object> getParameters() {
+	public Map<String, Object> getParams() {
 		return parameters;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Query createReplacementQuery(EntityResolver resolver) {
 
@@ -196,7 +195,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroups(cacheGroups);
 		template.setCacheStrategy(cacheStrategy);
-		template.setParameters(parameters);
+		template.setParams(parameters);
 		template.setColumnNamesCapitalization(columnNameCaps);
 		template.setFetchLimit(limit);
 		template.setFetchOffset(offset);

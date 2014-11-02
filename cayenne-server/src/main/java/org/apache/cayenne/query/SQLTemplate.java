@@ -40,39 +40,33 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
 
 /**
- * A query that executes unchanged (except for template preprocessing) "raw" SQL specified
- * by the user. <h3>Template Script</h3>
+ * A query that executes unchanged (except for template preprocessing) "raw" SQL
+ * specified by the user. <h3>Template Script</h3>
  * <p>
- * SQLTemplate stores a dynamic template for the SQL query that supports parameters and
- * customization using Velocity scripting language. The most straightforward use of
- * scripting abilities is to build parameterized queries. For example:
+ * SQLTemplate stores a dynamic template for the SQL query that supports
+ * parameters and customization using Velocity scripting language. The most
+ * straightforward use of scripting abilities is to build parameterized queries.
+ * For example:
  * </p>
  * 
  * <pre>
  *                  SELECT ID, NAME FROM SOME_TABLE WHERE NAME LIKE $a
  * </pre>
  * <p>
- * <i>For advanced scripting options see "Scripting SQLTemplate" chapter in the User
- * Guide. </i>
+ * <i>For advanced scripting options see "Scripting SQLTemplate" chapter in the
+ * User Guide. </i>
  * </p>
  * <h3>Per-Database Template Customization</h3>
  * <p>
- * SQLTemplate has a {@link #getDefaultTemplate() default template script}, but also it
- * allows to configure multiple templates and switch them dynamically. This way a single
- * query can have multiple "dialects" specific to a given database.
- * </p>
- * <h3>Parameter Sets</h3>
- * <p>
- * SQLTemplate supports multiple sets of parameters, so a single query can be executed
- * multiple times with different parameters. "Scrolling" through parameter list is done by
- * calling {@link #parametersIterator()}. This iterator goes over parameter sets,
- * returning a Map on each call to "next()"
+ * SQLTemplate has a {@link #getDefaultTemplate() default template script}, but
+ * also it allows to configure multiple templates and switch them dynamically.
+ * This way a single query can have multiple "dialects" specific to a given
+ * database.
  * </p>
  * 
  * @since 1.1
  */
-public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
- XMLSerializable {
+public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XMLSerializable {
 
 	private static final long serialVersionUID = -3073521388289663641L;
 
@@ -306,23 +300,49 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * Returns an iterator over parameter sets. Each element returned from the
 	 * iterator is a java.util.Map.
+	 * 
+	 * @deprecated since 4.0 as multiple batches of parameters are superseded by
+	 *             the use of {@link QueryChain}.
 	 */
-	public Iterator<?> parametersIterator() {
+	@SuppressWarnings("unchecked")
+	@Deprecated
+	public Iterator<Map<String, ?>> parametersIterator() {
 		return (parameters == null || parameters.length == 0) ? IteratorUtils.emptyIterator() : IteratorUtils
 				.transformedIterator(IteratorUtils.arrayIterator(parameters), nullMapTransformer);
 	}
 
 	/**
 	 * Returns the number of parameter sets.
+	 * 
+	 * @deprecated since 4.0 as multiple batches of parameters are superseded by
+	 *             the use of {@link QueryChain}.
 	 */
+	@Deprecated
 	public int parametersSize() {
 		return (parameters != null) ? parameters.length : 0;
 	}
 
 	/**
+	 * Initializes parameters map of this query.
+	 * 
+	 * @since 4.0
+	 */
+	@SuppressWarnings("unchecked")
+	public void setParams(Map<String, ?> parameters) {
+		// calling a deprecated method until we can remove multi-parameter-batch
+		// deprecation.
+		setParameters(parameters);
+	}
+
+	/**
 	 * Returns a new query built using this query as a prototype and a new set
 	 * of parameters.
+	 * 
+	 * @deprecated since 4.0 as multiple batches of parameters are superseded by
+	 *             the use of {@link QueryChain}. For an alternative use
+	 *             {@link #createQuery(Map)}.
 	 */
+	@Deprecated
 	public SQLTemplate queryWithParameters(Map<String, ?>... parameters) {
 		// create a query replica
 		SQLTemplate query = new SQLTemplate();
@@ -350,7 +370,21 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 	 */
 	@Override
 	public Query createQuery(Map<String, ?> parameters) {
-		return queryWithParameters(parameters);
+		// create a query replica
+		SQLTemplate query = new SQLTemplate();
+
+		query.setRoot(root);
+		query.setDefaultTemplate(getDefaultTemplate());
+
+		if (templates != null) {
+			query.templates = new HashMap<String, String>(templates);
+		}
+
+		query.metaData.copyFromInfo(this.metaData);
+		query.setParams(parameters);
+		query.setColumnNamesCapitalization(this.getColumnNamesCapitalization());
+
+		return query;
 	}
 
 	/**
@@ -514,21 +548,40 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery,
 	 * Returns a collection of configured template keys.
 	 */
 	public synchronized Collection<String> getTemplateKeys() {
-		return (templates != null) ? templates.keySet() : Collections.<String>emptyList();
+		return (templates != null) ? templates.keySet() : Collections.<String> emptyList();
 	}
 
 	/**
-	 * Utility method to get the first set of parameters, since most queries
-	 * will only have one.
+	 * Returns a map of parameters.
+	 * 
+	 * @since 4.0
 	 */
-	public Map<String, ?> getParameters() {
+	public Map<String, ?> getParams() {
 		Map<String, ?> map = (parameters != null && parameters.length > 0) ? parameters[0] : null;
 		return (map != null) ? map : Collections.<String, Object> emptyMap();
 	}
 
 	/**
-	 * Utility method to initialize query with one or more sets of parameters.
+	 * Utility method to get the first set of parameters, since most queries
+	 * will only have one.
+	 * 
+	 * @deprecated since 4.0 in favor of {@link #getParams()}, as multiple
+	 *             batches of parameters are superseded by the use of
+	 *             {@link QueryChain}.
 	 */
+	@Deprecated
+	public Map<String, ?> getParameters() {
+		return getParams();
+	}
+
+	/**
+	 * Utility method to initialize query with one or more sets of parameters.
+	 * 
+	 * @deprecated since 4.0 in favor of {@link #setParams(Map)}, as multiple
+	 *             batches of parameters are superseded by the use of
+	 *             {@link QueryChain}.
+	 */
+	@Deprecated
 	public void setParameters(Map<String, ?>... parameters) {
 
 		if (parameters == null) {

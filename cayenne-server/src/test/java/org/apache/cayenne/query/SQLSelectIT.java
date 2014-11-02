@@ -98,7 +98,7 @@ public class SQLSelectIT extends ServerCase {
         createArtistsDataSet();
 
         SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)");
-        q1.getParameters().put("a", "artist3");
+        q1.getParams().put("a", "artist3");
 
         assertFalse(q1.isFetchingDataRows());
         Artist a = context.selectOne(q1);
