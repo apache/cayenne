@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
@@ -41,8 +34,19 @@ import org.apache.cayenne.lifecycle.id.IdCoder;
 import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.junit.Before;
+import org.junit.Test;
 
-public class AuditableFilter_InRuntime_Test extends TestCase {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+public class AuditableFilter_InRuntime_Test {
 
     private ServerRuntime runtime;
 
@@ -54,8 +58,8 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
     private TableHelper auditableChild3;
     private TableHelper auditableChildUuid;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
 
         DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
@@ -86,6 +90,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         auditableChildUuid.deleteAll();
     }
 
+    @Test
     public void testAudit_IgnoreRuntimeRelationships() throws Exception {
 
         auditable1.insert(1, "xx");
@@ -126,6 +131,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         assertTrue(processor.audited.get(AuditableOperation.UPDATE).contains(a3));
     }
 
+    @Test
     public void testAudit_IncludeToManyRelationships() throws Exception {
 
         auditable1.insert(1, "xx");
@@ -158,6 +164,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
                 Cayenne.objectForPK(context, Auditable1.class, 1)));
     }
 
+    @Test
     public void testAudit_IgnoreProperties() throws Exception {
 
         auditable2.insert(1, "P1_1", "P2_1");
@@ -193,6 +200,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         assertTrue(processor.audited.get(AuditableOperation.UPDATE).contains(a3));
     }
 
+    @Test
     public void testAuditableChild_IgnoreProperties() throws Exception {
 
         auditable2.insert(1, "P1_1", "P2_1");
@@ -226,6 +234,7 @@ public class AuditableFilter_InRuntime_Test extends TestCase {
         assertEquals(1, processor.size);
     }
 
+    @Test
     public void testAuditableChild_objectIdRelationship() throws Exception {
         auditable1.insert(1, "xx");
         auditableChildUuid.insert(1, "Auditable1:1", "xxx", "yyy");

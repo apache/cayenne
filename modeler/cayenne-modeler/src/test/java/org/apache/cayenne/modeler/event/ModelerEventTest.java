@@ -19,20 +19,24 @@
 
 package org.apache.cayenne.modeler.event;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.event.MapEvent;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  */
-public class ModelerEventTest extends TestCase {
+public class ModelerEventTest {
 
+    @Test
     public void testConstructor1() throws Exception {
     	Object src = new Object();
     	MapEvent e = new TestMapEvent(src);
     	assertSame(src, e.getSource());
     }
-    
+
+    @Test
     public void testId() throws Exception  {
     	MapEvent e = new TestMapEvent(new Object());
     	assertEquals(MapEvent.CHANGE, e.getId());

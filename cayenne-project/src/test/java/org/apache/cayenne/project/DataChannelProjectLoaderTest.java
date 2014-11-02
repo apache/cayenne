@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import java.net.URL;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
@@ -37,13 +33,19 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.project.DataChannelProjectLoader;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
+import org.junit.Test;
 
-public class DataChannelProjectLoaderTest extends TestCase {
+import java.net.URL;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
+public class DataChannelProjectLoaderTest {
+
+    @Test
     public void testLoad() {
 
         DataChannelProjectLoader loader = new DataChannelProjectLoader();

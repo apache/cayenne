@@ -20,14 +20,17 @@
 package org.apache.cayenne.modeler.action;
 
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.junit.Test;
 
-public class CreateNodeActionTest extends TestCase {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
+public class CreateNodeActionTest {
+
+    @Test
     public void testCreateDataNode() {
         CreateNodeAction action;
 

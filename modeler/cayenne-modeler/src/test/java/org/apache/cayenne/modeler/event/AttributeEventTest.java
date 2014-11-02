@@ -19,16 +19,18 @@
 
 package org.apache.cayenne.modeler.event;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.event.AttributeEvent;
+import org.junit.Test;
+
+import static org.junit.Assert.assertSame;
 
 /**
  */
-public class AttributeEventTest extends TestCase {
+public class AttributeEventTest {
 
+    @Test
 	public void testAttribute() throws Exception {
 		Object src = new Object();
 		Attribute a = new DbAttribute();

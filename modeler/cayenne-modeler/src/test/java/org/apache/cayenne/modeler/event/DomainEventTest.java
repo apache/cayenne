@@ -19,15 +19,18 @@
 
 package org.apache.cayenne.modeler.event;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  */
-public class DomainEventTest extends TestCase {
+public class DomainEventTest {
 
+    @Test
     public void testConstructor1() throws Exception {
     	Object src = new Object();
     	DataChannelDescriptor d = new DataChannelDescriptor();
@@ -36,7 +39,8 @@ public class DomainEventTest extends TestCase {
     	assertSame(src, e.getSource());
     	assertSame(d, e.getDomain());
     }
-    
+
+    @Test
     public void testConstructor2() throws Exception  {
     	Object src = new Object();
     	DataChannelDescriptor d = new DataChannelDescriptor();
@@ -46,7 +50,8 @@ public class DomainEventTest extends TestCase {
     	assertSame(d, e.getDomain());
     	assertEquals("oldname", e.getOldName());
     }
-    
+
+    @Test
     public void testDomain() throws Exception  {
     	Object src = new Object();
    	    DataChannelDescriptor d = new DataChannelDescriptor();

@@ -18,27 +18,30 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.id;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.lifecycle.db.E1;
-import org.apache.cayenne.lifecycle.id.IdCoder;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class IdCoderTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class IdCoderTest {
 
     private ServerRuntime runtime;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         runtime.shutdown();
     }
 
+    @Test
     public void testGetStringId() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
@@ -47,11 +50,13 @@ public class IdCoderTest extends TestCase {
         assertEquals("E1:5", handler.getStringId(e1));
     }
 
+    @Test
     public void testGetStringId_ObjectId() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
         assertEquals("E1:5", handler.getStringId(new ObjectId("E1", "ID", 5)));
     }
 
+    @Test
     public void testGetStringId_Temp() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
@@ -63,6 +68,7 @@ public class IdCoderTest extends TestCase {
         assertEquals(".E1:01020A64", handler.getStringId(e1));
     }
 
+    @Test
     public void testGetObjectId_Temp() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
@@ -72,6 +78,7 @@ public class IdCoderTest extends TestCase {
         assertEquals(new ObjectId("E1", key), decoded);
     }
 
+    @Test
     public void testGetSringId_TempWithReplacement() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 

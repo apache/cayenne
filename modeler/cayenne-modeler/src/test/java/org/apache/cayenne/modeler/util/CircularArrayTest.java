@@ -19,10 +19,13 @@
 
 package org.apache.cayenne.modeler.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class CircularArrayTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class CircularArrayTest {
+
+    @Test
     public void testArray() {
 
         String a = "A";
@@ -235,6 +238,7 @@ public class CircularArrayTest extends TestCase {
         }
     }
 
+    @Test
     public void testToString() {
         CircularArray a = new CircularArray(5);
         assertEquals("[null, null, null, null, null]", a.toString());

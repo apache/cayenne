@@ -19,26 +19,30 @@
 
 package org.apache.cayenne.remote.hessian;
 
-import org.apache.cayenne.remote.hessian.HessianConnection;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.remote.RemoteSession;
-import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.service.MissingSessionException;
-import org.apache.cayenne.CayenneRuntimeException;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.rmi.RemoteException;
 
-public class HessianConnectionTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+public class HessianConnectionTest {
+
+    @Test
     public void testConstructor1Arg() {
         HessianConnection c = new HessianConnection("a");
         assertEquals("a", c.getUrl());
         assertNull(c.getUserName());
         assertNull(c.getPassword());
     }
-    
+
+    @Test
     public void testConstructor3Arg() {
         HessianConnection c = new HessianConnection("a", "b", "c", "d");
         assertEquals("a", c.getUrl());
@@ -47,6 +51,7 @@ public class HessianConnectionTest extends TestCase {
         assertEquals("d", c.getSharedSessionName());
     }
 
+    @Test
     public void testMissingSessionException() {
         // Set up the test objects.  We want to mock out RemoteService.
         HessianConnection c = new HessianConnection("a");

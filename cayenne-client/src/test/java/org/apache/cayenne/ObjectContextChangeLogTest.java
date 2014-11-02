@@ -18,15 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class ObjectContextChangeLogTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+public class ObjectContextChangeLogTest {
+
+    @Test
     public void testGetDiffsSerializableWithHessian() throws Exception {
         ObjectContextChangeLog recorder = new ObjectContextChangeLog();
 

@@ -19,14 +19,16 @@
 
 package org.apache.cayenne.modeler.event;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.junit.Test;
+
+import static org.junit.Assert.assertSame;
 
 /**
  */
-public class DomainDisplayEventTest extends TestCase {
+public class DomainDisplayEventTest {
 
+    @Test
 	public void testDomain() throws Exception {
 		DataChannelDescriptor d = new DataChannelDescriptor();
 		DomainDisplayEvent e = new DomainDisplayEvent(new Object(), d);

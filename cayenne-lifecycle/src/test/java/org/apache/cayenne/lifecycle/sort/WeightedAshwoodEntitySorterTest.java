@@ -18,29 +18,33 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.sort;
 
-import java.util.Arrays;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class WeightedAshwoodEntitySorterTest extends TestCase {
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
+public class WeightedAshwoodEntitySorterTest {
 
     private ServerRuntime runtime;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         runtime.shutdown();
     }
 
+    @Test
     public void testSortDbEntities() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();

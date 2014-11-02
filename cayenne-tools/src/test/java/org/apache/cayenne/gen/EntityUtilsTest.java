@@ -18,37 +18,39 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import static org.junit.Assert.assertTrue;
 
 
-public class EntityUtilsTest extends TestCase {
+public class EntityUtilsTest {
     
     protected EntityUtils entityUtils = null;
     protected DataMap dataMap = null;
     protected ObjEntity objEntity = null;
     
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         dataMap = new DataMap();
         objEntity = new ObjEntity();
     }
     
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         dataMap = null;
         objEntity = null;
         entityUtils = null;
     }
-    
+
+    @Test
     public void testAllCallbackNamesUnique() throws Exception {
         
         CallbackDescriptor[] callbacks = objEntity.getCallbackMap().getCallbacks();

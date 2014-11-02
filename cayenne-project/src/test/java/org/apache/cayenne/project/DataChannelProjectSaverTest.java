@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.net.URL;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
@@ -37,16 +33,22 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.project.DataChannelProjectLoader;
-import org.apache.cayenne.project.FileProjectSaver;
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.net.URL;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DataChannelProjectSaverTest extends Project2Case {
 
+    @Test
     public void testSaveAs() throws Exception {
 
         FileProjectSaver saver = new FileProjectSaver();
@@ -95,6 +97,7 @@ public class DataChannelProjectSaverTest extends Project2Case {
         assertTrue(map2File.length() > 0);
     }
 
+    @Test
     public void testSaveAs_RecoverFromSaveError() throws Exception {
 
         FileProjectSaver saver = new FileProjectSaver() {

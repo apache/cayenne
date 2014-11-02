@@ -18,16 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
-public class DIBootstrapTest extends TestCase {
+public class DIBootstrapTest {
 
+    @Test
 	public void testCreateInjector_Empty() {
 		Injector emptyInjector = DIBootstrap.createInjector();
 		assertNotNull(emptyInjector);
 	}
 
+    @Test
 	public void testCreateInjector_SingleModule() {
 		final boolean[] configureCalled = new boolean[1];
 
@@ -43,6 +48,7 @@ public class DIBootstrapTest extends TestCase {
 		assertTrue(configureCalled[0]);
 	}
 
+    @Test
 	public void testCreateInjector_MultiModule() {
 
 		final boolean[] configureCalled = new boolean[2];

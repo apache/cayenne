@@ -19,16 +19,21 @@
 
 package org.apache.cayenne.modeler.event;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.EntityEvent;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class EntityEventTest extends TestCase {
+public class EntityEventTest {
 
+    @Test
     public void testConstructor1() throws Exception {
         Object src = new Object();
         Entity d = new DbEntity("abc");
@@ -38,6 +43,7 @@ public class EntityEventTest extends TestCase {
         assertSame(d, e.getEntity());
     }
 
+    @Test
     public void testConstructor2() throws Exception {
         Object src = new Object();
         Entity d = new DbEntity("abc");
@@ -48,6 +54,7 @@ public class EntityEventTest extends TestCase {
         assertEquals("oldname", e.getOldName());
     }
 
+    @Test
     public void testEntity() throws Exception {
         Object src = new Object();
         Entity d = new DbEntity("abc");
@@ -57,13 +64,15 @@ public class EntityEventTest extends TestCase {
         assertSame(d, e.getEntity());
     }
 
+    @Test
     public void testNameChange1() throws Exception {
         Entity d = new DbEntity("abc");
         EntityEvent e = new EntityEvent(new Object(), d, "xyz");
         assertEquals(d.getName(), e.getNewName());
         assertTrue(e.isNameChange());
     }
-    
+
+    @Test
 	public void testNameChange2() throws Exception {
 		Entity d = new DbEntity("abc");
 		EntityEvent e = new EntityEvent(new Object(), d, "abc");
