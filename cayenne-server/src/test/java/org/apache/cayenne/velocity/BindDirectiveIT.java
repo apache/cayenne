@@ -18,12 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.velocity;
 
+import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.Inject;
@@ -36,19 +46,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-
-import java.sql.Connection;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests BindDirective for passed null parameters and for not passed parameters
@@ -70,6 +67,9 @@ public class BindDirectiveIT extends ServerCase {
 
     @Inject
     private JdbcEventLogger logger;
+    
+    @Inject
+    private DataNode node;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -238,10 +238,7 @@ public class BindDirectiveIT extends ServerCase {
 
         template.setParams(parameters);
 
-        DataNode node = new DataNode();
-        node.setEntityResolver(context.getEntityResolver());
-        node.setRowReaderFactory(mock(RowReaderFactory.class));
-        node.setAdapter(adapter);
+    
         SQLTemplateAction action = new SQLTemplateAction(template, node);
 
         Connection c = dataSourceFactory.getSharedDataSource().getConnection();

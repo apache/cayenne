@@ -49,7 +49,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
-import org.apache.cayenne.velocity.SQLTemplateProcessor;
 import org.apache.commons.collections.IteratorUtils;
 
 /**
@@ -104,8 +103,6 @@ public class SQLTemplateAction implements SQLAction {
 		boolean loggable = dataNode.getJdbcEventLogger().isLoggable();
 		int size = query.parametersSize();
 
-		SQLTemplateProcessor templateProcessor = new SQLTemplateProcessor();
-
 		// zero size indicates a one-shot query with no parameters
 		// so fake a single entry batch...
 		int batchSize = (size > 0) ? size : 1;
@@ -119,7 +116,7 @@ public class SQLTemplateAction implements SQLAction {
 		for (int i = 0; i < batchSize; i++) {
 			Map<String, ?> nextParameters = it.next();
 
-			SQLStatement compiled = templateProcessor.processTemplate(template, nextParameters);
+			SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template, nextParameters);
 
 			if (loggable) {
 				dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));

@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -54,6 +55,9 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
 
     @Inject
     protected SchemaUpdateStrategy defaultSchemaUpdateStrategy;
+    
+    @Inject
+    protected SQLTemplateProcessor sqlTemplateProcessor;
 
     @Override
     public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception {
@@ -63,6 +67,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
         dataNode.setJdbcEventLogger(jdbcEventLogger);
         dataNode.setRowReaderFactory(rowReaderFactory);
         dataNode.setBatchTranslatorFactory(batchTranslatorFactory);
+        dataNode.setSqlTemplateProcessor(sqlTemplateProcessor);
 
         dataNode.setDataSourceLocation(nodeDescriptor.getParameters());
 

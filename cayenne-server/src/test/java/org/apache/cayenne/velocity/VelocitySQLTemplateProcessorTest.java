@@ -33,16 +33,23 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
 import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.junit.Before;
 import org.junit.Test;
 
-public class SQLTemplateProcessorTest {
+public class VelocitySQLTemplateProcessorTest {
+
+	private VelocitySQLTemplateProcessor processor;
+
+	@Before
+	public void before() {
+		processor = new VelocitySQLTemplateProcessor();
+	}
 
 	@Test
 	public void testProcessTemplateUnchanged1() throws Exception {
 		String sqlTemplate = "SELECT * FROM ME";
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate,
-				Collections.<String, Object> emptyMap());
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals(sqlTemplate, compiled.getSql());
 		assertEquals(0, compiled.getBindings().length);
@@ -52,8 +59,7 @@ public class SQLTemplateProcessorTest {
 	public void testProcessTemplateUnchanged2() throws Exception {
 		String sqlTemplate = "SELECT a.b as XYZ FROM $SYSTEM_TABLE";
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate,
-				Collections.<String, Object> emptyMap());
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals(sqlTemplate, compiled.getSql());
 		assertEquals(0, compiled.getBindings().length);
@@ -64,7 +70,7 @@ public class SQLTemplateProcessorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE $a";
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE VALUE_OF_A", compiled.getSql());
 
@@ -77,7 +83,7 @@ public class SQLTemplateProcessorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE "
 				+ "COLUMN1 = #bind($a 'VARCHAR') AND COLUMN2 = #bind($b 'INTEGER')";
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN1 = ? AND COLUMN2 = ?", compiled.getSql());
 		assertEquals(2, compiled.getBindings().length);
@@ -90,7 +96,7 @@ public class SQLTemplateProcessorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals(1, compiled.getBindings().length);
 		assertBindingType(Types.VARCHAR, compiled.getBindings()[0]);
@@ -101,7 +107,7 @@ public class SQLTemplateProcessorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", 4);
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals(1, compiled.getBindings().length);
 		assertBindingType(Types.INTEGER, compiled.getBindings()[0]);
@@ -111,15 +117,14 @@ public class SQLTemplateProcessorTest {
 	public void testProcessTemplateBindEqual() throws Exception {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindEqual($a 'VARCHAR')";
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate,
-				Collections.<String, Object> emptyMap());
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN IS NULL", compiled.getSql());
 		assertEquals(0, compiled.getBindings().length);
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
 
-		compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN = ?", compiled.getSql());
 		assertEquals(1, compiled.getBindings().length);
@@ -130,15 +135,14 @@ public class SQLTemplateProcessorTest {
 	public void testProcessTemplateBindNotEqual() throws Exception {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindNotEqual($a 'VARCHAR')";
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate,
-				Collections.<String, Object> emptyMap());
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN IS NOT NULL", compiled.getSql());
 		assertEquals(0, compiled.getBindings().length);
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
 
-		compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN <> ?", compiled.getSql());
 		assertEquals(1, compiled.getBindings().length);
@@ -154,7 +158,7 @@ public class SQLTemplateProcessorTest {
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", dataObject);
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN1 = ?", compiled.getSql());
 		assertEquals(1, compiled.getBindings().length);
@@ -176,7 +180,7 @@ public class SQLTemplateProcessorTest {
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", dataObject);
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN1 <> ? AND COLUMN2 <> ?", compiled.getSql());
 		assertEquals(2, compiled.getBindings().length);
@@ -190,13 +194,13 @@ public class SQLTemplateProcessorTest {
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
 
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME  WHERE COLUMN1 > ?", compiled.getSql());
 		assertEquals(1, compiled.getBindings().length);
 		assertBindingValue("VALUE_OF_A", compiled.getBindings()[0]);
 
-		compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
+		compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals("SELECT * FROM ME ", compiled.getSql());
 		assertEquals(0, compiled.getBindings().length);
@@ -207,29 +211,24 @@ public class SQLTemplateProcessorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN IN (#bind($list 'VARCHAR'))";
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("list", Arrays.asList("a", "b", "c"));
-		SQLStatement compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		SQLStatement compiled = new VelocitySQLTemplateProcessor().processTemplate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN IN (?,?,?)", compiled.getSql());
 		assertEquals(3, compiled.getBindings().length);
 
-		compiled = new SQLTemplateProcessor().processTemplate(sqlTemplate, map);
+		compiled = processor.processTemplate(sqlTemplate, map);
 		assertBindingValue("a", compiled.getBindings()[0]);
 		assertBindingValue("b", compiled.getBindings()[1]);
 		assertBindingValue("c", compiled.getBindings()[2]);
 	}
 
-	protected void assertBindingValue(Object expectedValue, Object binding) {
+	private void assertBindingValue(Object expectedValue, Object binding) {
 		assertTrue("Not a binding!", binding instanceof ParameterBinding);
 		assertEquals(expectedValue, ((ParameterBinding) binding).getValue());
 	}
 
-	protected void assertBindingType(int expectedType, Object binding) {
+	private void assertBindingType(int expectedType, Object binding) {
 		assertTrue("Not a binding!", binding instanceof ParameterBinding);
 		assertEquals(expectedType, ((ParameterBinding) binding).getJdbcType());
-	}
-
-	protected void assertBindingPrecision(int expectedPrecision, Object binding) {
-		assertTrue("Not a binding!", binding instanceof ParameterBinding);
-		assertEquals(expectedPrecision, ((ParameterBinding) binding).getScale());
 	}
 }

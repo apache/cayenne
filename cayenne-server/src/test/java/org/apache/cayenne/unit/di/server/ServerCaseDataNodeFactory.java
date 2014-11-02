@@ -20,6 +20,7 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -44,6 +45,9 @@ public class ServerCaseDataNodeFactory implements DataNodeFactory {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    protected SQLTemplateProcessor sqlTemplateProcessor;
 
     @Override
     public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception {
@@ -57,6 +61,7 @@ public class ServerCaseDataNodeFactory implements DataNodeFactory {
         dataNode.setDataSource(dataSourceFactory.getDataSource(nodeDescriptor.getName()));
         dataNode.setAdapter(adapter);
         dataNode.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
+        dataNode.setSqlTemplateProcessor(sqlTemplateProcessor);
 
         return dataNode;
     }

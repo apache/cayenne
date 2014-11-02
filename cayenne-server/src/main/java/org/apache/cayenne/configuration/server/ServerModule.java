@@ -27,6 +27,7 @@ import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
@@ -98,6 +99,7 @@ import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
+import org.apache.cayenne.velocity.VelocitySQLTemplateProcessor;
 
 /**
  * A DI module containing all Cayenne server runtime configuration.
@@ -265,5 +267,7 @@ public class ServerModule implements Module {
         
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
+        
+        binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
     }
 }

@@ -167,7 +167,7 @@ public class BindDirective extends Directive {
     protected void bind(InternalContextAdapter context, ParameterBinding binding) {
 
         Collection bindings = (Collection) context.getInternalUserContext().get(
-                SQLTemplateProcessor.BINDINGS_LIST_KEY);
+                VelocitySQLTemplateProcessor.BINDINGS_LIST_KEY);
 
         if (bindings != null) {
             bindings.add(binding);

@@ -30,6 +30,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.ParameterBinding;
 import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -44,54 +45,38 @@ import org.apache.velocity.runtime.parser.node.SimpleNode;
  * @see org.apache.cayenne.query.SQLTemplate
  * @since 4.0
  */
-public class SQLTemplateProcessor {
-
-	private static RuntimeInstance sharedRuntime;
+public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 
 	static final String BINDINGS_LIST_KEY = "bindings";
 	static final String RESULT_COLUMNS_LIST_KEY = "resultColumns";
 	static final String HELPER_KEY = "helper";
 
-	private static final SQLTemplateRenderingUtils sharedUtils = new SQLTemplateRenderingUtils();
+	protected RuntimeInstance velocityRuntime;
+	protected SQLTemplateRenderingUtils renderingUtils;
 
-	RuntimeInstance velocityRuntime;
-	SQLTemplateRenderingUtils renderingUtils;
-
-	static {
-		initVelocityRuntime();
-	}
-
-	private static void initVelocityRuntime() {
-		// init static velocity engine
-		sharedRuntime = new RuntimeInstance();
+	public VelocitySQLTemplateProcessor() {
+		this.renderingUtils = new SQLTemplateRenderingUtils();
+		this.velocityRuntime = new RuntimeInstance();
 
 		// set null logger
-		sharedRuntime.addProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM, new NullLogChute());
+		velocityRuntime.addProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM, new NullLogChute());
 
-		sharedRuntime.addProperty(RuntimeConstants.RESOURCE_MANAGER_CLASS, SQLTemplateResourceManager.class.getName());
-		sharedRuntime.addProperty("userdirective", BindDirective.class.getName());
-		sharedRuntime.addProperty("userdirective", BindEqualDirective.class.getName());
-		sharedRuntime.addProperty("userdirective", BindNotEqualDirective.class.getName());
-		sharedRuntime.addProperty("userdirective", BindObjectEqualDirective.class.getName());
-		sharedRuntime.addProperty("userdirective", BindObjectNotEqualDirective.class.getName());
-		sharedRuntime.addProperty("userdirective", ResultDirective.class.getName());
-		sharedRuntime.addProperty("userdirective", ChainDirective.class.getName());
-		sharedRuntime.addProperty("userdirective", ChunkDirective.class.getName());
+		velocityRuntime
+				.addProperty(RuntimeConstants.RESOURCE_MANAGER_CLASS, SQLTemplateResourceManager.class.getName());
+		velocityRuntime.addProperty("userdirective", BindDirective.class.getName());
+		velocityRuntime.addProperty("userdirective", BindEqualDirective.class.getName());
+		velocityRuntime.addProperty("userdirective", BindNotEqualDirective.class.getName());
+		velocityRuntime.addProperty("userdirective", BindObjectEqualDirective.class.getName());
+		velocityRuntime.addProperty("userdirective", BindObjectNotEqualDirective.class.getName());
+		velocityRuntime.addProperty("userdirective", ResultDirective.class.getName());
+		velocityRuntime.addProperty("userdirective", ChainDirective.class.getName());
+		velocityRuntime.addProperty("userdirective", ChunkDirective.class.getName());
 		try {
-			sharedRuntime.init();
+			velocityRuntime.init();
 		} catch (Exception ex) {
 			throw new CayenneRuntimeException("Error setting up Velocity RuntimeInstance.", ex);
 		}
-	}
 
-	public SQLTemplateProcessor() {
-		this.velocityRuntime = sharedRuntime;
-		this.renderingUtils = sharedUtils;
-	}
-
-	public SQLTemplateProcessor(RuntimeInstance velocityRuntime, SQLTemplateRenderingUtils renderingUtils) {
-		this.velocityRuntime = velocityRuntime;
-		this.renderingUtils = renderingUtils;
 	}
 
 	/**
@@ -100,7 +85,8 @@ public class SQLTemplateProcessor {
 	 * variables: all parameters in the map, {@link SQLTemplateRenderingUtils}
 	 * as a "helper" variable and SQLStatement object as "statement" variable.
 	 */
-	public SQLStatement processTemplate(String template, Map<String, ?> parameters) throws Exception {
+	@Override
+	public SQLStatement processTemplate(String template, Map<String, ?> parameters) {
 		// have to make a copy of parameter map since we are gonna modify it..
 		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<String, Object>(
 				parameters) : new HashMap<String, Object>(5);
@@ -111,7 +97,12 @@ public class SQLTemplateProcessor {
 		internalParameters.put(RESULT_COLUMNS_LIST_KEY, results);
 		internalParameters.put(HELPER_KEY, renderingUtils);
 
-		String sql = buildStatement(new VelocityContext(internalParameters), template);
+		String sql;
+		try {
+			sql = buildStatement(new VelocityContext(internalParameters), template);
+		} catch (Exception e) {
+			throw new CayenneRuntimeException("Error processing Velocity template", e);
+		}
 
 		ParameterBinding[] bindingsArray = new ParameterBinding[bindings.size()];
 		bindings.toArray(bindingsArray);

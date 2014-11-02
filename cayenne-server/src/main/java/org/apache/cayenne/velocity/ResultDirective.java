@@ -197,7 +197,7 @@ public class ResultDirective extends Directive {
 
         Collection<Object> resultColumns = (Collection<Object>) context
                 .getInternalUserContext()
-                .get(SQLTemplateProcessor.RESULT_COLUMNS_LIST_KEY);
+                .get(VelocitySQLTemplateProcessor.RESULT_COLUMNS_LIST_KEY);
 
         if (resultColumns != null) {
             resultColumns.add(columnDescriptor);

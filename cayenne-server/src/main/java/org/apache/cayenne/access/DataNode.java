@@ -36,6 +36,7 @@ import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
@@ -74,6 +75,7 @@ public class DataNode implements QueryEngine {
     private JdbcEventLogger jdbcEventLogger;
     private RowReaderFactory rowReaderFactory;
     private BatchTranslatorFactory batchTranslatorFactory;
+    private SQLTemplateProcessor sqlTemplateProcessor;
 
     TransactionDataSource readThroughDataSource;
 
@@ -504,4 +506,18 @@ public class DataNode implements QueryEngine {
     public void setBatchTranslatorFactory(BatchTranslatorFactory batchTranslatorFactory) {
         this.batchTranslatorFactory = batchTranslatorFactory;
     }
+
+    /**
+     * @since 4.0
+     */
+	public SQLTemplateProcessor getSqlTemplateProcessor() {
+		return sqlTemplateProcessor;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public void setSqlTemplateProcessor(SQLTemplateProcessor sqlTemplateProcessor) {
+		this.sqlTemplateProcessor = sqlTemplateProcessor;
+	}
 }
