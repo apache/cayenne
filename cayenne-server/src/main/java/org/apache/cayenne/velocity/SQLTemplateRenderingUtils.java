@@ -17,21 +17,21 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.velocity;
 
-import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
- * Implements utility methods used inside Velocity templates
- * when rendering SQLTemplates.
+ * Implements utility methods used inside Velocity templates when rendering
+ * SQLTemplates.
  * 
  * @since 1.1
  */
 public class SQLTemplateRenderingUtils {
-    /**
-     * Returns the result of evaluation of expression with object.
-     */
-    public Object cayenneExp(Object object, String expression) {
-        return Expression.fromString(expression).evaluate(object);
-    }
+	/**
+	 * Returns the result of evaluation of expression with object.
+	 */
+	public Object cayenneExp(Object object, String expression) {
+		return ExpressionFactory.exp(expression).evaluate(object);
+	}
 }

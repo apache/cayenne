@@ -17,8 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.velocity;
 
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.apache.cayenne.velocity.SQLTemplateProcessor;
 import org.junit.Test;
 
 import java.util.Collections;

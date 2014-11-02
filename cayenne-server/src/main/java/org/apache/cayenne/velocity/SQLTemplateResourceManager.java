@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.velocity;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

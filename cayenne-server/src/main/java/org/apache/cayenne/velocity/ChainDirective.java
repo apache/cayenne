@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.velocity;
 
 import java.io.IOException;
 import java.io.StringWriter;

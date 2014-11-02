@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.velocity;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.jdbc.ParameterBinding;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;

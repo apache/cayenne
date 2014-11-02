@@ -49,6 +49,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.velocity.SQLTemplateProcessor;
 import org.apache.commons.collections.IteratorUtils;
 
 /**

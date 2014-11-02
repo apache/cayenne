@@ -17,13 +17,14 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.velocity;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.cayenne.access.jdbc.ParameterBinding;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.velocity.context.InternalContextAdapter;

@@ -17,26 +17,41 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.velocity;
 
-import java.io.Reader;
+import java.io.IOException;
+import java.io.Writer;
 
-import org.apache.velocity.runtime.RuntimeInstance;
-import org.apache.velocity.runtime.parser.ParseException;
-import org.apache.velocity.runtime.parser.node.SimpleNode;
+import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.velocity.context.InternalContextAdapter;
 
 /**
+ * A custom Velocity directive to create a PreparedStatement parameter text
+ * for "= ?". If null value is encountered, generated text will look like "IS NULL".
+ * Usage in Velocity template is "WHERE SOME_COLUMN #bindEqual($xyz)".
+ * 
+ * @since 1.1
  */
-class MockupRuntimeServices extends RuntimeInstance {
+public class BindEqualDirective extends BindDirective {
 
     @Override
-    public SimpleNode parse(Reader reader, String templateName, boolean dumpNamespace)
-        throws ParseException {
-        return new SimpleNode(1);
+    public String getName() {
+        return "bindEqual";
     }
 
     @Override
-    public SimpleNode parse(Reader reader, String templateName) throws ParseException {
-        return new SimpleNode(1);
+    protected void render(
+        InternalContextAdapter context,
+        Writer writer,
+        ParameterBinding binding)
+        throws IOException {
+
+        if (binding.getValue() != null) {
+            bind(context, binding);
+            writer.write("= ?");
+        }
+        else {
+            writer.write("IS NULL");
+        }
     }
 }
