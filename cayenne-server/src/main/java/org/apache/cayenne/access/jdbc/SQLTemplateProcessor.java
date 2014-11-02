@@ -31,7 +31,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeInstance;
-import org.apache.velocity.runtime.log.NullLogSystem;
+import org.apache.velocity.runtime.log.NullLogChute;
 import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 
@@ -65,7 +65,7 @@ class SQLTemplateProcessor {
         // set null logger
         sharedRuntime.addProperty(
                 RuntimeConstants.RUNTIME_LOG_LOGSYSTEM,
-                new NullLogSystem());
+                new NullLogChute());
 
         sharedRuntime.addProperty(
                 RuntimeConstants.RESOURCE_MANAGER_CLASS,
@@ -107,33 +107,29 @@ class SQLTemplateProcessor {
      * parameters in the map, {@link SQLTemplateRenderingUtils} as a "helper" variable and
      * SQLStatement object as "statement" variable.
      */
-    SQLStatement processTemplate(String template, Map parameters) throws Exception {
-        // have to make a copy of parameter map since we are gonna modify it..
-        Map internalParameters = (parameters != null && !parameters.isEmpty())
-                ? new HashMap(parameters)
-                : new HashMap(3);
+	SQLStatement processTemplate(String template, Map<String, ?> parameters) throws Exception {
+		// have to make a copy of parameter map since we are gonna modify it..
+		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<String, Object>(
+				parameters) : new HashMap<String, Object>(5);
 
-        List<ParameterBinding> bindings = new ArrayList<ParameterBinding>();
-        List<ColumnDescriptor> results = new ArrayList<ColumnDescriptor>();
-        internalParameters.put(BINDINGS_LIST_KEY, bindings);
-        internalParameters.put(RESULT_COLUMNS_LIST_KEY, results);
-        internalParameters.put(HELPER_KEY, renderingUtils);
+		List<ParameterBinding> bindings = new ArrayList<ParameterBinding>();
+		List<ColumnDescriptor> results = new ArrayList<ColumnDescriptor>();
+		internalParameters.put(BINDINGS_LIST_KEY, bindings);
+		internalParameters.put(RESULT_COLUMNS_LIST_KEY, results);
+		internalParameters.put(HELPER_KEY, renderingUtils);
 
-        String sql = buildStatement(
-                new VelocityContext(internalParameters),
-                template,
-                parameters);
+		String sql = buildStatement(new VelocityContext(internalParameters), template, parameters);
 
-        ParameterBinding[] bindingsArray = new ParameterBinding[bindings.size()];
-        bindings.toArray(bindingsArray);
+		ParameterBinding[] bindingsArray = new ParameterBinding[bindings.size()];
+		bindings.toArray(bindingsArray);
 
-        ColumnDescriptor[] resultsArray = new ColumnDescriptor[results.size()];
-        results.toArray(resultsArray);
+		ColumnDescriptor[] resultsArray = new ColumnDescriptor[results.size()];
+		results.toArray(resultsArray);
 
-        return new SQLStatement(sql, resultsArray, bindingsArray);
-    }
+		return new SQLStatement(sql, resultsArray, bindingsArray);
+	}
 
-    String buildStatement(VelocityContext context, String template, Map parameters)
+    String buildStatement(VelocityContext context, String template, Map<String, ?> parameters)
             throws Exception {
         // Note: this method is a reworked version of
         // org.apache.velocity.app.Velocity.evaluate(..)

@@ -164,7 +164,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	/**
 	 * Returns mutable map of parameters that will be bound to SQL. A caller is
 	 * free to add/remove parameters from the returned map as needed.
-	 * Alternatively one should use chained {@link #params(String, Object)}
+	 * Alternatively one may use chained {@link #params(String, Object)}
 	 */
 	public Map<String, Object> getParameters() {
 		return parameters;
