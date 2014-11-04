@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -40,862 +45,864 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Tests nested object contexts
  */
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
-@RunWith(value=Parameterized.class)
+@RunWith(value = Parameterized.class)
 public class NestedCayenneContextIT extends RemoteCayenneCase {
 
-    @Inject
-    private ClientRuntime runtime;
-    
-    @Inject
-    private DBHelper dbHelper;
+	@Inject
+	private ClientRuntime runtime;
 
-    @Inject
-    private DataChannelInterceptor queryInterceptor;
+	@Inject
+	private DBHelper dbHelper;
 
-    @Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {LocalConnection.HESSIAN_SERIALIZATION},
-                {LocalConnection.JAVA_SERIALIZATION},
-                {LocalConnection.NO_SERIALIZATION},
-        });
-    }
-
-    public NestedCayenneContextIT(int serializationPolicy) {
-        super.serializationPolicy = serializationPolicy;
-    }
-
-    @Override
-    public void setUpAfterInjection() throws Exception {
-        super.setUpAfterInjection();
-
-        dbHelper.deleteAll("MT_TABLE2");
-        dbHelper.deleteAll("MT_TABLE1");
-    }
-
-    @Test
-    public void testChannels() {
-        ObjectContext child = runtime.newContext(clientContext);
-
-        assertNotNull(child);
-        assertSame(clientContext, child.getChannel());
-
-        // second level of nesting
-        ObjectContext grandchild = runtime.newContext((DataChannel) child);
+	@Inject
+	private DataChannelInterceptor queryInterceptor;
 
-        assertNotNull(grandchild);
-        assertSame(child, grandchild.getChannel());
-    }
+	@Parameters
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][] {
+				{ LocalConnection.HESSIAN_SERIALIZATION },
+				{ LocalConnection.JAVA_SERIALIZATION },
+				{ LocalConnection.NO_SERIALIZATION }, });
+	}
 
-    @Test
-    public void testSelect() throws Exception {
-        ObjectContext child = runtime.newContext(clientContext);
+	public NestedCayenneContextIT(int serializationPolicy) {
+		super.serializationPolicy = serializationPolicy;
+	}
+
+	@Override
+	public void setUpAfterInjection() throws Exception {
+		super.setUpAfterInjection();
+
+		dbHelper.deleteAll("MT_TABLE2");
+		dbHelper.deleteAll("MT_TABLE1");
+	}
+
+	@Test
+	public void testChannels() {
+		ObjectContext child = runtime.newContext(clientContext);
+
+		assertNotNull(child);
+		assertSame(clientContext, child.getChannel());
+
+		// second level of nesting
+		ObjectContext grandchild = runtime.newContext((DataChannel) child);
+
+		assertNotNull(grandchild);
+		assertSame(child, grandchild.getChannel());
+	}
+
+	@Test
+	public void testSelect() throws Exception {
+		ObjectContext child = runtime.newContext(clientContext);
+
+		ClientMtTable1 committed = clientContext
+				.newObject(ClientMtTable1.class);
+		ClientMtTable1 deleted = clientContext.newObject(ClientMtTable1.class);
+		ClientMtTable1 modified = clientContext.newObject(ClientMtTable1.class);
 
-        ClientMtTable1 committed = clientContext.newObject(ClientMtTable1.class);
-        ClientMtTable1 deleted = clientContext.newObject(ClientMtTable1.class);
-        ClientMtTable1 modified = clientContext.newObject(ClientMtTable1.class);
+		clientContext.commitChanges();
+		int modifiedid = Cayenne.intPKForObject(modified);
 
-        clientContext.commitChanges();
-        int modifiedid = Cayenne.intPKForObject(modified);
+		// test how different object states appear in the child on select
 
-        // test how different object states appear in the child on select
+		clientContext.deleteObjects(deleted);
+		modified.setGlobalAttribute1("a");
 
-        clientContext.deleteObjects(deleted);
-        modified.setGlobalAttribute1("a");
+		ClientMtTable1 _new = clientContext.newObject(ClientMtTable1.class);
 
-        ClientMtTable1 _new = clientContext.newObject(ClientMtTable1.class);
+		assertEquals(PersistenceState.COMMITTED,
+				committed.getPersistenceState());
+		assertEquals(PersistenceState.MODIFIED, modified.getPersistenceState());
+		assertEquals(PersistenceState.DELETED, deleted.getPersistenceState());
+		assertEquals(PersistenceState.NEW, _new.getPersistenceState());
+
+		List<ClientMtTable1> objects = child
+				.select(new SelectQuery<ClientMtTable1>(ClientMtTable1.class));
+		assertEquals("All but NEW object must have been included", 3,
+				objects.size());
 
-        assertEquals(PersistenceState.COMMITTED, committed.getPersistenceState());
-        assertEquals(PersistenceState.MODIFIED, modified.getPersistenceState());
-        assertEquals(PersistenceState.DELETED, deleted.getPersistenceState());
-        assertEquals(PersistenceState.NEW, _new.getPersistenceState());
+		for (ClientMtTable1 next : objects) {
+			assertEquals(PersistenceState.COMMITTED, next.getPersistenceState());
+
+			int id = Cayenne.intPKForObject(next);
+			if (id == modifiedid) {
+				assertEquals("a", next.getGlobalAttribute1());
+			}
+		}
+	}
+
+	@Test
+	public void testPrefetchingToOne() throws Exception {
+		final ClientMtTable1 mt11 = clientContext
+				.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		ClientMtTable2 mt21 = clientContext.newObject(ClientMtTable2.class);
+		ClientMtTable2 mt22 = clientContext.newObject(ClientMtTable2.class);
+
+		mt21.setTable1(mt11);
+		mt22.setTable1(mt11);
+
+		clientContext.commitChanges();
+
+		final ObjectContext child = runtime.newContext(clientContext);
+
+		SelectQuery<ClientMtTable2> q = new SelectQuery<ClientMtTable2>(
+				ClientMtTable2.class);
+		q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
+
+		final List<ClientMtTable2> results = child.select(q);
 
-        List<?> objects = child.performQuery(new SelectQuery(ClientMtTable1.class));
-        assertEquals("All but NEW object must have been included", 3, objects.size());
+		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        Iterator<?> it = objects.iterator();
-        while (it.hasNext()) {
-            ClientMtTable1 next = (ClientMtTable1) it.next();
-            assertEquals(PersistenceState.COMMITTED, next.getPersistenceState());
+			public void execute() {
+				assertEquals(2, results.size());
+				Iterator<?> it = results.iterator();
+				while (it.hasNext()) {
+					ClientMtTable2 o = (ClientMtTable2) it.next();
+					assertEquals(PersistenceState.COMMITTED,
+							o.getPersistenceState());
+					assertSame(child, o.getObjectContext());
+
+					ClientMtTable1 o1 = o.getTable1();
+					assertNotNull(o1);
+					assertEquals(PersistenceState.COMMITTED,
+							o1.getPersistenceState());
+					assertSame(child, o1.getObjectContext());
+					assertEquals(mt11.getObjectId(), o1.getObjectId());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testPrefetchingToMany() throws Exception {
+		ClientMtTable1 mt11 = clientContext.newObject(ClientMtTable1.class);
+		mt11.setGlobalAttribute1("1");
 
-            int id = Cayenne.intPKForObject(next);
-            if (id == modifiedid) {
-                assertEquals("a", next.getGlobalAttribute1());
-            }
-        }
-    }
+		ClientMtTable1 mt12 = clientContext.newObject(ClientMtTable1.class);
+		mt12.setGlobalAttribute1("2");
 
-    @Test
-    public void testPrefetchingToOne() throws Exception {
-        final ClientMtTable1 mt11 = clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        ClientMtTable2 mt21 = clientContext.newObject(ClientMtTable2.class);
-        ClientMtTable2 mt22 = clientContext.newObject(ClientMtTable2.class);
+		ClientMtTable2 mt21 = clientContext.newObject(ClientMtTable2.class);
+		ClientMtTable2 mt22 = clientContext.newObject(ClientMtTable2.class);
 
-        mt21.setTable1(mt11);
-        mt22.setTable1(mt11);
+		mt21.setTable1(mt11);
+		mt22.setTable1(mt11);
 
-        clientContext.commitChanges();
+		clientContext.commitChanges();
 
-        final ObjectContext child = runtime.newContext(clientContext);
+		final ObjectContext child = runtime.newContext(clientContext);
 
-        SelectQuery q = new SelectQuery(ClientMtTable2.class);
-        q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
+		SelectQuery<ClientMtTable1> q = new SelectQuery<ClientMtTable1>(
+				ClientMtTable1.class);
+		q.addOrdering("globalAttribute1", SortOrder.ASCENDING);
+		q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
 
-        final List<?> results = child.performQuery(q);
+		final List<ClientMtTable1> results = child.select(q);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            public void execute() {
-                assertEquals(2, results.size());
-                Iterator<?> it = results.iterator();
-                while (it.hasNext()) {
-                    ClientMtTable2 o = (ClientMtTable2) it.next();
-                    assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
-                    assertSame(child, o.getObjectContext());
+			public void execute() {
+				ClientMtTable1 o1 = results.get(0);
+				assertEquals(PersistenceState.COMMITTED,
+						o1.getPersistenceState());
+				assertSame(child, o1.getObjectContext());
 
-                    ClientMtTable1 o1 = o.getTable1();
-                    assertNotNull(o1);
-                    assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
-                    assertSame(child, o1.getObjectContext());
-                    assertEquals(mt11.getObjectId(), o1.getObjectId());
-                }
-            }
-        });
-    }
+				List<ClientMtTable2> children1 = o1.getTable2Array();
 
-    @Test
-    public void testPrefetchingToMany() throws Exception {
-        ClientMtTable1 mt11 = clientContext.newObject(ClientMtTable1.class);
-        mt11.setGlobalAttribute1("1");
+				assertEquals(2, children1.size());
+				Iterator<ClientMtTable2> it = children1.iterator();
+				while (it.hasNext()) {
+					ClientMtTable2 o = it.next();
+					assertEquals(PersistenceState.COMMITTED,
+							o.getPersistenceState());
+					assertSame(child, o.getObjectContext());
 
-        ClientMtTable1 mt12 = clientContext.newObject(ClientMtTable1.class);
-        mt12.setGlobalAttribute1("2");
+					assertEquals(o1, o.getTable1());
+				}
 
-        ClientMtTable2 mt21 = clientContext.newObject(ClientMtTable2.class);
-        ClientMtTable2 mt22 = clientContext.newObject(ClientMtTable2.class);
+				ClientMtTable1 o2 = results.get(1);
+				assertEquals(PersistenceState.COMMITTED,
+						o2.getPersistenceState());
+				assertSame(child, o2.getObjectContext());
 
-        mt21.setTable1(mt11);
-        mt22.setTable1(mt11);
+				List<?> children2 = o2.getTable2Array();
 
-        clientContext.commitChanges();
+				assertEquals(0, children2.size());
+			}
+		});
+	}
 
-        final ObjectContext child = runtime.newContext(clientContext);
+	@Test
+	public void testDeleteNew() throws Exception {
+		ObjectContext child = runtime.newContext(clientContext);
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        q.addOrdering("globalAttribute1", SortOrder.ASCENDING);
-        q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
+		ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
+		clientContext.commitChanges();
 
-        final List<?> results = child.performQuery(q);
+		ClientMtTable2 p = child.newObject(ClientMtTable2.class);
+		ClientMtTable1 aChild = (ClientMtTable1) Cayenne.objectForPK(child,
+				a.getObjectId());
+		p.setGlobalAttribute("X");
+		aChild.addToTable2Array(p);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+		child.commitChangesToParent();
 
-            public void execute() {
-                ClientMtTable1 o1 = (ClientMtTable1) results.get(0);
-                assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
-                assertSame(child, o1.getObjectContext());
+		child.deleteObjects(p);
+		aChild.removeFromTable2Array(p);
 
-                List<ClientMtTable2> children1 = o1.getTable2Array();
+		child.commitChangesToParent();
+	}
 
-                assertEquals(2, children1.size());
-                Iterator<ClientMtTable2> it = children1.iterator();
-                while (it.hasNext()) {
-                    ClientMtTable2 o = it.next();
-                    assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
-                    assertSame(child, o.getObjectContext());
+	/**
+	 * A test case for CAY-698 bug.
+	 */
+	@Test
+	public void testNullifyToOne() throws Exception {
+		ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
+		ClientMtTable2 b = clientContext.newObject(ClientMtTable2.class);
+		a.addToTable2Array(b);
 
-                    assertEquals(o1, o.getTable1());
-                }
+		clientContext.commitChanges();
 
-                ClientMtTable1 o2 = (ClientMtTable1) results.get(1);
-                assertEquals(PersistenceState.COMMITTED, o2.getPersistenceState());
-                assertSame(child, o2.getObjectContext());
+		final ObjectContext child = runtime.newContext(clientContext);
+		ObjectContext childPeer = runtime.newContext(clientContext);
 
-                List<?> children2 = o2.getTable2Array();
+		final ClientMtTable2 childP1 = (ClientMtTable2) Cayenne.objectForPK(
+				child, b.getObjectId());
 
-                assertEquals(0, children2.size());
-            }
-        });
-    }
+		// trigger object creation in the peer nested DC
+		Cayenne.objectForPK(childPeer, b.getObjectId());
+		childP1.setTable1(null);
 
-    @Test
-    public void testDeleteNew() throws Exception {
-        ObjectContext child = runtime.newContext(clientContext);
+		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-        ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
-        clientContext.commitChanges();
+			public void execute() {
+				child.commitChangesToParent();
+				assertEquals(PersistenceState.COMMITTED,
+						childP1.getPersistenceState());
 
-        ClientMtTable2 p = child.newObject(ClientMtTable2.class);
-        ClientMtTable1 aChild = (ClientMtTable1) Cayenne.objectForPK(
-                child,
-                a.getObjectId());
-        p.setGlobalAttribute("X");
-        aChild.addToTable2Array(p);
+				ClientMtTable2 parentP1 = (ClientMtTable2) clientContext
+						.getGraphManager().getNode(childP1.getObjectId());
 
-        child.commitChangesToParent();
+				assertNotNull(parentP1);
+				assertEquals(PersistenceState.MODIFIED,
+						parentP1.getPersistenceState());
+				assertNull(parentP1.getTable1());
 
-        child.deleteObjects(p);
-        aChild.removeFromTable2Array(p);
+				// check that arc changes got recorded in the parent context
+				GraphDiff diffs = clientContext.internalGraphManager()
+						.getDiffs();
+				final int[] arcDiffs = new int[1];
 
-        child.commitChangesToParent();
-    }
+				diffs.apply(new GraphChangeHandler() {
 
-    /**
-     * A test case for CAY-698 bug.
-     */
-    @Test
-    public void testNullifyToOne() throws Exception {
-        ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
-        ClientMtTable2 b = clientContext.newObject(ClientMtTable2.class);
-        a.addToTable2Array(b);
+					public void arcCreated(Object nodeId, Object targetNodeId,
+							Object arcId) {
+						arcDiffs[0]++;
+					}
 
-        clientContext.commitChanges();
+					public void arcDeleted(Object nodeId, Object targetNodeId,
+							Object arcId) {
+						arcDiffs[0]--;
+					}
 
-        final ObjectContext child = runtime.newContext(clientContext);
-        ObjectContext childPeer = runtime.newContext(clientContext);
+					public void nodeCreated(Object nodeId) {
 
-        final ClientMtTable2 childP1 = (ClientMtTable2) Cayenne.objectForPK(
-                child,
-                b.getObjectId());
+					}
 
-        // trigger object creation in the peer nested DC
-        Cayenne.objectForPK(childPeer, b.getObjectId());
-        childP1.setTable1(null);
+					public void nodeIdChanged(Object nodeId, Object newId) {
+					}
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+					public void nodePropertyChanged(Object nodeId,
+							String property, Object oldValue, Object newValue) {
+					}
 
-            public void execute() {
-                child.commitChangesToParent();
-                assertEquals(PersistenceState.COMMITTED, childP1.getPersistenceState());
+					public void nodeRemoved(Object nodeId) {
 
-                ClientMtTable2 parentP1 = (ClientMtTable2) clientContext
-                        .getGraphManager()
-                        .getNode(childP1.getObjectId());
+					}
+				});
 
-                assertNotNull(parentP1);
-                assertEquals(PersistenceState.MODIFIED, parentP1.getPersistenceState());
-                assertNull(parentP1.getTable1());
+				assertEquals(-2, arcDiffs[0]);
+			}
+		});
+	}
 
-                // check that arc changes got recorded in the parent context
-                GraphDiff diffs = clientContext.internalGraphManager().getDiffs();
-                final int[] arcDiffs = new int[1];
+	@Test
+	public void testCommitChangesToParent() throws Exception {
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.commitChanges();
 
-                diffs.apply(new GraphChangeHandler() {
+		final ObjectContext child = runtime.newContext(clientContext);
 
-                    public void arcCreated(
-                            Object nodeId,
-                            Object targetNodeId,
-                            Object arcId) {
-                        arcDiffs[0]++;
-                    }
-
-                    public void arcDeleted(
-                            Object nodeId,
-                            Object targetNodeId,
-                            Object arcId) {
-                        arcDiffs[0]--;
-                    }
+		SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(
+				ClientMtTable1.class);
+		List<ClientMtTable1> objects = child.select(query);
 
-                    public void nodeCreated(Object nodeId) {
+		assertEquals(4, objects.size());
 
-                    }
+		final ClientMtTable1 childNew = child.newObject(ClientMtTable1.class);
+		childNew.setGlobalAttribute1("NNN");
 
-                    public void nodeIdChanged(Object nodeId, Object newId) {
-                    }
+		final ClientMtTable1 childModified = objects.get(0);
+		childModified.setGlobalAttribute1("MMM");
 
-                    public void nodePropertyChanged(
-                            Object nodeId,
-                            String property,
-                            Object oldValue,
-                            Object newValue) {
-                    }
+		final ClientMtTable1 childCommitted = objects.get(1);
 
-                    public void nodeRemoved(Object nodeId) {
+		final ClientMtTable1 childHollow = objects.get(3);
+		child.invalidateObjects(childHollow);
 
-                    }
-                });
+		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-                assertEquals(-2, arcDiffs[0]);
-            }
-        });
-    }
+			public void execute() {
+				child.commitChangesToParent();
 
-    @Test
-    public void testCommitChangesToParent() throws Exception {
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.commitChanges();
+				// * all modified child objects must be in committed state now
+				// * all modifications should be propagated to the parent
+				// * no actual commit should occur.
 
-        final ObjectContext child = runtime.newContext(clientContext);
+				assertEquals(PersistenceState.COMMITTED,
+						childNew.getPersistenceState());
+				assertEquals(PersistenceState.COMMITTED,
+						childModified.getPersistenceState());
+				assertEquals(PersistenceState.COMMITTED,
+						childCommitted.getPersistenceState());
+				assertEquals(PersistenceState.HOLLOW,
+						childHollow.getPersistenceState());
 
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        List<?> objects = child.performQuery(query);
+				ClientMtTable1 parentNew = (ClientMtTable1) clientContext
+						.getGraphManager().getNode(childNew.getObjectId());
+				final ClientMtTable1 parentModified = (ClientMtTable1) clientContext
+						.getGraphManager().getNode(childModified.getObjectId());
+				ClientMtTable1 parentCommitted = (ClientMtTable1) clientContext
+						.getGraphManager()
+						.getNode(childCommitted.getObjectId());
+				ClientMtTable1 parentHollow = (ClientMtTable1) clientContext
+						.getGraphManager().getNode(childHollow.getObjectId());
 
-        assertEquals(4, objects.size());
+				assertNotNull(parentNew);
+				assertEquals(PersistenceState.NEW,
+						parentNew.getPersistenceState());
+				assertEquals("NNN", parentNew.getGlobalAttribute1());
 
-        final ClientMtTable1 childNew = child.newObject(ClientMtTable1.class);
-        childNew.setGlobalAttribute1("NNN");
+				assertNotNull(parentModified);
+				assertEquals(PersistenceState.MODIFIED,
+						parentModified.getPersistenceState());
+				assertEquals("MMM", parentModified.getGlobalAttribute1());
 
-        final ClientMtTable1 childModified = (ClientMtTable1) objects.get(0);
-        childModified.setGlobalAttribute1("MMM");
+				assertNotNull(parentCommitted);
+				assertEquals(PersistenceState.COMMITTED,
+						parentCommitted.getPersistenceState());
 
-        final ClientMtTable1 childCommitted = (ClientMtTable1) objects.get(1);
+				assertNotNull(parentHollow);
 
-        final ClientMtTable1 childHollow = (ClientMtTable1) objects.get(3);
-        child.invalidateObjects(childHollow);
+				// check that arc changes got recorded in the parent context
+				GraphDiff diffs = clientContext.internalGraphManager()
+						.getDiffs();
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+				final int[] modifiedProperties = new int[1];
 
-            public void execute() {
-                child.commitChangesToParent();
+				diffs.apply(new GraphChangeHandler() {
 
-                // * all modified child objects must be in committed state now
-                // * all modifications should be propagated to the parent
-                // * no actual commit should occur.
+					@Override
+					public void arcCreated(Object nodeId, Object targetNodeId,
+							Object arcId) {
 
-                assertEquals(PersistenceState.COMMITTED, childNew.getPersistenceState());
-                assertEquals(
-                        PersistenceState.COMMITTED,
-                        childModified.getPersistenceState());
-                assertEquals(
-                        PersistenceState.COMMITTED,
-                        childCommitted.getPersistenceState());
-                assertEquals(PersistenceState.HOLLOW, childHollow.getPersistenceState());
+					}
 
-                ClientMtTable1 parentNew = (ClientMtTable1) clientContext
-                        .getGraphManager()
-                        .getNode(childNew.getObjectId());
-                final ClientMtTable1 parentModified = (ClientMtTable1) clientContext
-                        .getGraphManager()
-                        .getNode(childModified.getObjectId());
-                ClientMtTable1 parentCommitted = (ClientMtTable1) clientContext
-                        .getGraphManager()
-                        .getNode(childCommitted.getObjectId());
-                ClientMtTable1 parentHollow = (ClientMtTable1) clientContext
-                        .getGraphManager()
-                        .getNode(childHollow.getObjectId());
+					@Override
+					public void arcDeleted(Object nodeId, Object targetNodeId,
+							Object arcId) {
 
-                assertNotNull(parentNew);
-                assertEquals(PersistenceState.NEW, parentNew.getPersistenceState());
-                assertEquals("NNN", parentNew.getGlobalAttribute1());
+					}
 
-                assertNotNull(parentModified);
-                assertEquals(
-                        PersistenceState.MODIFIED,
-                        parentModified.getPersistenceState());
-                assertEquals("MMM", parentModified.getGlobalAttribute1());
+					@Override
+					public void nodeCreated(Object nodeId) {
 
-                assertNotNull(parentCommitted);
-                assertEquals(
-                        PersistenceState.COMMITTED,
-                        parentCommitted.getPersistenceState());
+					}
 
-                assertNotNull(parentHollow);
+					@Override
+					public void nodeIdChanged(Object nodeId, Object newId) {
+					}
 
-                // check that arc changes got recorded in the parent context
-                GraphDiff diffs = clientContext.internalGraphManager().getDiffs();
+					@Override
+					public void nodePropertyChanged(Object nodeId,
+							String property, Object oldValue, Object newValue) {
 
-                final int[] modifiedProperties = new int[1];
+						if (nodeId.equals(parentModified.getObjectId())) {
+							modifiedProperties[0]++;
+						}
+					}
 
-                diffs.apply(new GraphChangeHandler() {
+					@Override
+					public void nodeRemoved(Object nodeId) {
 
-                    public void arcCreated(
-                            Object nodeId,
-                            Object targetNodeId,
-                            Object arcId) {
+					}
+				});
 
-                    }
+				assertEquals(1, modifiedProperties[0]);
+			}
+		});
+	}
 
-                    public void arcDeleted(
-                            Object nodeId,
-                            Object targetNodeId,
-                            Object arcId) {
+	@Test
+	public void testCommitChangesToParentDeleted() throws Exception {
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.commitChanges();
 
-                    }
+		ObjectContext child = runtime.newContext(clientContext);
 
-                    public void nodeCreated(Object nodeId) {
+		// make sure we fetch in predictable order
+		SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(
+				ClientMtTable1.class);
+		List<ClientMtTable1> objects = child.select(query);
 
-                    }
+		assertEquals(4, objects.size());
 
-                    public void nodeIdChanged(Object nodeId, Object newId) {
-                    }
+		// delete AND modify
+		ClientMtTable1 childDeleted = objects.get(2);
+		child.deleteObjects(childDeleted);
+		childDeleted.setGlobalAttribute1("DDD");
 
-                    public void nodePropertyChanged(
-                            Object nodeId,
-                            String property,
-                            Object oldValue,
-                            Object newValue) {
+		// don't block queries - on delete Cayenne may need to resolve delete
+		// rules via fetch
+		child.commitChangesToParent();
 
-                        if (nodeId.equals(parentModified.getObjectId())) {
-                            modifiedProperties[0]++;
-                        }
-                    }
+		// * all modified child objects must be in committed state now
+		// * all modifications should be propagated to the parent
+		// * no actual commit should occur.
 
-                    public void nodeRemoved(Object nodeId) {
+		assertEquals(PersistenceState.TRANSIENT,
+				childDeleted.getPersistenceState());
 
-                    }
-                });
+		ClientMtTable1 parentDeleted = (ClientMtTable1) clientContext
+				.getGraphManager().getNode(childDeleted.getObjectId());
 
-                assertEquals(1, modifiedProperties[0]);
-            }
-        });
-    }
+		assertNotNull(parentDeleted);
+		assertEquals(PersistenceState.DELETED,
+				parentDeleted.getPersistenceState());
+		assertEquals("DDD", parentDeleted.getGlobalAttribute1());
+	}
 
-    @Test
-    public void testCommitChangesToParentDeleted() throws Exception {
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.commitChanges();
+	/*
+	 * was added for CAY-1636
+	 */
+	@Test
+	public void testCAY1636() throws Exception {
 
-        ObjectContext child = runtime.newContext(clientContext);
+		ClientMtTooneMaster A = clientContext
+				.newObject(ClientMtTooneMaster.class);
+		clientContext.commitChanges();
 
-        // make sure we fetch in predictable order
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        List<?> objects = child.performQuery(query);
+		ClientMtTooneDep B = clientContext.newObject(ClientMtTooneDep.class);
+		A.setToDependent(B);
+		clientContext.commitChanges();
 
-        assertEquals(4, objects.size());
+		ObjectContext child = runtime.newContext(clientContext);
 
-        // delete AND modify
-        ClientMtTable1 childDeleted = (ClientMtTable1) objects.get(2);
-        child.deleteObjects(childDeleted);
-        childDeleted.setGlobalAttribute1("DDD");
+		SelectQuery<ClientMtTooneMaster> query = new SelectQuery<ClientMtTooneMaster>(
+				ClientMtTooneMaster.class);
+		List<ClientMtTooneMaster> objects = child.select(query);
 
-        // don't block queries - on delete Cayenne may need to resolve delete rules via
-        // fetch
-        child.commitChangesToParent();
+		assertEquals(1, objects.size());
 
-        // * all modified child objects must be in committed state now
-        // * all modifications should be propagated to the parent
-        // * no actual commit should occur.
+		ClientMtTooneMaster childDeleted = (ClientMtTooneMaster) objects.get(0);
 
-        assertEquals(PersistenceState.TRANSIENT, childDeleted.getPersistenceState());
+		child.deleteObjects(childDeleted);
 
-        ClientMtTable1 parentDeleted = (ClientMtTable1) clientContext
-                .getGraphManager()
-                .getNode(childDeleted.getObjectId());
+		child.commitChangesToParent();
 
-        assertNotNull(parentDeleted);
-        assertEquals(PersistenceState.DELETED, parentDeleted.getPersistenceState());
-        assertEquals("DDD", parentDeleted.getGlobalAttribute1());
-    }
+		ClientMtTooneMaster parentDeleted = (ClientMtTooneMaster) clientContext
+				.getGraphManager().getNode(childDeleted.getObjectId());
 
-    /*
-     * was added for CAY-1636
-     */
-    @Test
-    public void testCAY1636() throws Exception {
+		assertNotNull(parentDeleted);
+		assertEquals(PersistenceState.DELETED,
+				parentDeleted.getPersistenceState());
 
-        ClientMtTooneMaster A = clientContext.newObject(ClientMtTooneMaster.class);
-        clientContext.commitChanges();
+		clientContext.commitChanges();
 
-        ClientMtTooneDep B = clientContext.newObject(ClientMtTooneDep.class);
-        A.setToDependent(B);
-        clientContext.commitChanges();
+		SelectQuery<ClientMtTooneMaster> query2 = new SelectQuery<ClientMtTooneMaster>(
+				ClientMtTooneMaster.class);
+		List<ClientMtTooneMaster> objects2 = child.select(query2);
 
-        ObjectContext child = runtime.newContext(clientContext);
+		assertEquals(0, objects2.size());
 
-        SelectQuery query = new SelectQuery(ClientMtTooneMaster.class);
-        List<?> objects = child.performQuery(query);
+	}
 
-        assertEquals(1, objects.size());
+	@Test
+	public void testCAY1636_2() throws Exception {
 
-        ClientMtTooneMaster childDeleted = (ClientMtTooneMaster) objects.get(0);
+		ClientMtTooneMaster A = clientContext
+				.newObject(ClientMtTooneMaster.class);
+		clientContext.commitChanges();
 
-        child.deleteObjects(childDeleted);
+		ClientMtTooneDep B = clientContext.newObject(ClientMtTooneDep.class);
+		A.setToDependent(B);
+		clientContext.commitChanges();
 
-        child.commitChangesToParent();
+		ObjectContext child = runtime.newContext(clientContext);
 
-        ClientMtTooneMaster parentDeleted = (ClientMtTooneMaster) clientContext
-                .getGraphManager()
-                .getNode(childDeleted.getObjectId());
+		SelectQuery<ClientMtTooneDep> queryB = new SelectQuery<ClientMtTooneDep>(
+				ClientMtTooneDep.class);
+		List<?> objectsB = child.performQuery(queryB);
 
-        assertNotNull(parentDeleted);
-        assertEquals(PersistenceState.DELETED, parentDeleted.getPersistenceState());
+		assertEquals(1, objectsB.size());
 
-        clientContext.commitChanges();
+		ClientMtTooneDep childBDeleted = (ClientMtTooneDep) objectsB.get(0);
+		child.deleteObjects(childBDeleted);
 
-        SelectQuery query2 = new SelectQuery(ClientMtTooneMaster.class);
-        List<?> objects2 = child.performQuery(query2);
+		SelectQuery<ClientMtTooneMaster> query = new SelectQuery<ClientMtTooneMaster>(
+				ClientMtTooneMaster.class);
+		List<ClientMtTooneMaster> objects = child.select(query);
 
-        assertEquals(0, objects2.size());
+		assertEquals(1, objects.size());
 
-    }
+		ClientMtTooneMaster childDeleted = objects.get(0);
 
-    @Test
-    public void testCAY1636_2() throws Exception {
+		child.deleteObjects(childDeleted);
 
-        ClientMtTooneMaster A = clientContext.newObject(ClientMtTooneMaster.class);
-        clientContext.commitChanges();
+		child.commitChangesToParent();
 
-        ClientMtTooneDep B = clientContext.newObject(ClientMtTooneDep.class);
-        A.setToDependent(B);
-        clientContext.commitChanges();
+		ClientMtTooneMaster parentDeleted = (ClientMtTooneMaster) clientContext
+				.getGraphManager().getNode(childDeleted.getObjectId());
 
-        ObjectContext child = runtime.newContext(clientContext);
+		assertNotNull(parentDeleted);
+		assertEquals(PersistenceState.DELETED,
+				parentDeleted.getPersistenceState());
 
-        SelectQuery queryB = new SelectQuery(ClientMtTooneDep.class);
-        List<?> objectsB = child.performQuery(queryB);
+		clientContext.commitChanges();
 
-        assertEquals(1, objectsB.size());
+		SelectQuery<ClientMtTooneMaster> query2 = new SelectQuery<ClientMtTooneMaster>(
+				ClientMtTooneMaster.class);
+		List<ClientMtTooneMaster> objects2 = child.select(query2);
 
-        ClientMtTooneDep childBDeleted = (ClientMtTooneDep) objectsB.get(0);
-        child.deleteObjects(childBDeleted);
+		assertEquals(0, objects2.size());
 
-        SelectQuery query = new SelectQuery(ClientMtTooneMaster.class);
-        List<?> objects = child.performQuery(query);
+	}
 
-        assertEquals(1, objects.size());
+	@Test
+	public void testCommitChanges() throws Exception {
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.newObject(ClientMtTable1.class);
+		clientContext.commitChanges();
 
-        ClientMtTooneMaster childDeleted = (ClientMtTooneMaster) objects.get(0);
+		ObjectContext child = runtime.newContext(clientContext);
 
-        child.deleteObjects(childDeleted);
+		// make sure we fetch in predictable order
+		SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(
+				ClientMtTable1.class);
+		List<ClientMtTable1> objects = child.select(query);
 
-        child.commitChangesToParent();
+		assertEquals(4, objects.size());
 
-        ClientMtTooneMaster parentDeleted = (ClientMtTooneMaster) clientContext
-                .getGraphManager()
-                .getNode(childDeleted.getObjectId());
+		ClientMtTable1 childNew = child.newObject(ClientMtTable1.class);
+		childNew.setGlobalAttribute1("NNN");
 
-        assertNotNull(parentDeleted);
-        assertEquals(PersistenceState.DELETED, parentDeleted.getPersistenceState());
+		ClientMtTable1 childModified = objects.get(0);
+		childModified.setGlobalAttribute1("MMM");
 
-        clientContext.commitChanges();
+		ClientMtTable1 childCommitted = objects.get(1);
 
-        SelectQuery query2 = new SelectQuery(ClientMtTooneMaster.class);
-        List<?> objects2 = child.performQuery(query2);
+		// delete AND modify
+		ClientMtTable1 childDeleted = objects.get(2);
+		child.deleteObjects(childDeleted);
+		childDeleted.setGlobalAttribute1("DDD");
 
-        assertEquals(0, objects2.size());
+		ClientMtTable1 childHollow = objects.get(3);
+		child.invalidateObjects(childHollow);
 
-    }
+		child.commitChanges();
 
-    @Test
-    public void testCommitChanges() throws Exception {
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.newObject(ClientMtTable1.class);
-        clientContext.commitChanges();
+		assertEquals(PersistenceState.COMMITTED, childNew.getPersistenceState());
+		assertEquals(PersistenceState.COMMITTED,
+				childModified.getPersistenceState());
+		assertEquals(PersistenceState.COMMITTED,
+				childCommitted.getPersistenceState());
+		assertEquals(PersistenceState.TRANSIENT,
+				childDeleted.getPersistenceState());
+		assertEquals(PersistenceState.HOLLOW, childHollow.getPersistenceState());
 
-        ObjectContext child = runtime.newContext(clientContext);
+		ClientMtTable1 parentNew = (ClientMtTable1) clientContext
+				.getGraphManager().getNode(childNew.getObjectId());
+		ClientMtTable1 parentModified = (ClientMtTable1) clientContext
+				.getGraphManager().getNode(childModified.getObjectId());
+		ClientMtTable1 parentCommitted = (ClientMtTable1) clientContext
+				.getGraphManager().getNode(childCommitted.getObjectId());
+		ClientMtTable1 parentDeleted = (ClientMtTable1) clientContext
+				.getGraphManager().getNode(childDeleted.getObjectId());
+		ClientMtTable1 parentHollow = (ClientMtTable1) clientContext
+				.getGraphManager().getNode(childHollow.getObjectId());
 
-        // make sure we fetch in predictable order
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        List<?> objects = child.performQuery(query);
+		assertNotNull(parentNew);
+		assertEquals(PersistenceState.COMMITTED,
+				parentNew.getPersistenceState());
+		assertEquals("NNN", parentNew.getGlobalAttribute1());
 
-        assertEquals(4, objects.size());
+		assertNotNull(parentModified);
+		assertEquals(PersistenceState.COMMITTED,
+				parentModified.getPersistenceState());
+		assertEquals("MMM", parentModified.getGlobalAttribute1());
 
-        ClientMtTable1 childNew = child.newObject(ClientMtTable1.class);
-        childNew.setGlobalAttribute1("NNN");
+		assertNull("Deleted object should not be registered.", parentDeleted);
 
-        ClientMtTable1 childModified = (ClientMtTable1) objects.get(0);
-        childModified.setGlobalAttribute1("MMM");
+		assertNotNull(parentCommitted);
+		assertEquals(PersistenceState.COMMITTED,
+				parentCommitted.getPersistenceState());
 
-        ClientMtTable1 childCommitted = (ClientMtTable1) objects.get(1);
+		assertNotNull(parentHollow);
+	}
 
-        // delete AND modify
-        ClientMtTable1 childDeleted = (ClientMtTable1) objects.get(2);
-        child.deleteObjects(childDeleted);
-        childDeleted.setGlobalAttribute1("DDD");
+	@Test
+	public void testAddRemove() throws Exception {
+		ObjectContext child = runtime.newContext(clientContext);
 
-        ClientMtTable1 childHollow = (ClientMtTable1) objects.get(3);
-        child.invalidateObjects(childHollow);
+		ClientMtTable1 a = child.newObject(ClientMtTable1.class);
+		a.setGlobalAttribute1("X");
+		child.commitChanges();
 
-        child.commitChanges();
+		ClientMtTable2 p1 = child.newObject(ClientMtTable2.class);
+		p1.setGlobalAttribute("P1");
+		a.addToTable2Array(p1);
 
-        assertEquals(PersistenceState.COMMITTED, childNew.getPersistenceState());
-        assertEquals(PersistenceState.COMMITTED, childModified.getPersistenceState());
-        assertEquals(PersistenceState.COMMITTED, childCommitted.getPersistenceState());
-        assertEquals(PersistenceState.TRANSIENT, childDeleted.getPersistenceState());
-        assertEquals(PersistenceState.HOLLOW, childHollow.getPersistenceState());
+		ClientMtTable2 p2 = child.newObject(ClientMtTable2.class);
+		p2.setGlobalAttribute("P2");
+		a.addToTable2Array(p2);
 
-        ClientMtTable1 parentNew = (ClientMtTable1) clientContext
-                .getGraphManager()
-                .getNode(childNew.getObjectId());
-        ClientMtTable1 parentModified = (ClientMtTable1) clientContext
-                .getGraphManager()
-                .getNode(childModified.getObjectId());
-        ClientMtTable1 parentCommitted = (ClientMtTable1) clientContext
-                .getGraphManager()
-                .getNode(childCommitted.getObjectId());
-        ClientMtTable1 parentDeleted = (ClientMtTable1) clientContext
-                .getGraphManager()
-                .getNode(childDeleted.getObjectId());
-        ClientMtTable1 parentHollow = (ClientMtTable1) clientContext
-                .getGraphManager()
-                .getNode(childHollow.getObjectId());
+		a.removeFromTable2Array(p2);
 
-        assertNotNull(parentNew);
-        assertEquals(PersistenceState.COMMITTED, parentNew.getPersistenceState());
-        assertEquals("NNN", parentNew.getGlobalAttribute1());
+		// this causes an error on commit
+		child.deleteObjects(p2);
 
-        assertNotNull(parentModified);
-        assertEquals(PersistenceState.COMMITTED, parentModified.getPersistenceState());
-        assertEquals("MMM", parentModified.getGlobalAttribute1());
+		child.commitChangesToParent();
 
-        assertNull("Deleted object should not be registered.", parentDeleted);
+	}
 
-        assertNotNull(parentCommitted);
-        assertEquals(PersistenceState.COMMITTED, parentCommitted.getPersistenceState());
+	@Test
+	public void testChangeRel() throws Exception {
+		ObjectContext child = runtime.newContext(clientContext);
 
-        assertNotNull(parentHollow);
-    }
+		ClientMtTable1 a = child.newObject(ClientMtTable1.class);
+		ClientMtTable2 b = child.newObject(ClientMtTable2.class);
+		child.commitChanges();
 
-    @Test
-    public void testAddRemove() throws Exception {
-        ObjectContext child = runtime.newContext(clientContext);
+		assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
 
-        ClientMtTable1 a = child.newObject(ClientMtTable1.class);
-        a.setGlobalAttribute1("X");
-        child.commitChanges();
+		a.addToTable2Array(b);
+		assertEquals(PersistenceState.MODIFIED, a.getPersistenceState());
 
-        ClientMtTable2 p1 = child.newObject(ClientMtTable2.class);
-        p1.setGlobalAttribute("P1");
-        a.addToTable2Array(p1);
+		child.commitChangesToParent();
+		ClientMtTable1 parentA = (ClientMtTable1) clientContext
+				.getGraphManager().getNode(a.getObjectId());
+		assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
+		assertEquals(PersistenceState.MODIFIED, parentA.getPersistenceState());
+		assertEquals(1, parentA.getTable2Array().size());
 
-        ClientMtTable2 p2 = child.newObject(ClientMtTable2.class);
-        p2.setGlobalAttribute("P2");
-        a.addToTable2Array(p2);
+		clientContext.commitChanges();
+		assertEquals(PersistenceState.COMMITTED, parentA.getPersistenceState());
 
-        a.removeFromTable2Array(p2);
+		a.removeFromTable2Array(b);
+		assertEquals(PersistenceState.MODIFIED, a.getPersistenceState());
 
-        // this causes an error on commit
-        child.deleteObjects(p2);
+		child.commitChangesToParent();
+		assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
+		assertEquals(PersistenceState.MODIFIED, parentA.getPersistenceState());
+		assertEquals(0, parentA.getTable2Array().size());
+	}
 
-        child.commitChangesToParent();
+	@Test
+	public void testCAY1183() throws Exception {
+		ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
+		clientContext.commitChanges();
 
-    }
+		ObjectContext child = runtime.newContext(clientContext);
+		ClientMtTable1 childMt = (ClientMtTable1) Cayenne.objectForPK(child,
+				parentMt.getObjectId());
+		childMt.setGlobalAttribute1("1183");
+		ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
+		childMt2.setGlobalAttribute("1183");
+		childMt2.setTable1(childMt);
 
-    @Test
-    public void testChangeRel() throws Exception {
-        ObjectContext child = runtime.newContext(clientContext);
+		child.commitChangesToParent();
 
-        ClientMtTable1 a = child.newObject(ClientMtTable1.class);
-        ClientMtTable2 b = child.newObject(ClientMtTable2.class);
-        child.commitChanges();
+		// fetching other relationship... this fails per CAY-1183
+		childMt2.getTable3();
+	}
 
-        assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
+	/**
+	 * CAY1714
+	 */
+	@Test
+	public void testQueriesOnTemporaryObject() throws Exception {
+		ObjectContext clientContext = runtime
+				.newContext((DataChannel) this.clientContext);
+		ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
 
-        a.addToTable2Array(b);
-        assertEquals(PersistenceState.MODIFIED, a.getPersistenceState());
+		ObjectContext childContext = runtime
+				.newContext((DataChannel) clientContext);
+		ClientMtTable1 childMt = (ClientMtTable1) Cayenne.objectForPK(
+				childContext, parentMt.getObjectId());
+		childMt.setGlobalAttribute1("1183");
+		ClientMtTable2 childMt2 = childContext.newObject(ClientMtTable2.class);
+		childMt2.setGlobalAttribute("1183");
+		childMt2.setTable1(childMt);
 
-        child.commitChangesToParent();
-        ClientMtTable1 parentA = (ClientMtTable1) clientContext
-                .getGraphManager()
-                .getNode(a.getObjectId());
-        assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
-        assertEquals(PersistenceState.MODIFIED, parentA.getPersistenceState());
-        assertEquals(1, parentA.getTable2Array().size());
+		childContext.commitChangesToParent();
 
-        clientContext.commitChanges();
-        assertEquals(PersistenceState.COMMITTED, parentA.getPersistenceState());
+		assertNull(childMt2.getTable3());
+	}
 
-        a.removeFromTable2Array(b);
-        assertEquals(PersistenceState.MODIFIED, a.getPersistenceState());
+	@Test
+	public void testCAY1194() throws Exception {
+		ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
+		ObjectContext child = runtime.newContext(clientContext);
 
-        child.commitChangesToParent();
-        assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
-        assertEquals(PersistenceState.MODIFIED, parentA.getPersistenceState());
-        assertEquals(0, parentA.getTable2Array().size());
-    }
+		ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
+		childMt2.setGlobalAttribute("222");
 
-    @Test
-    public void testCAY1183() throws Exception {
-        ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
-        clientContext.commitChanges();
+		ClientMtTable1 localParentMt = child.localObject(parentMt);
+		assertEquals(0, parentMt.getTable2Array().size());
+		assertEquals(0, localParentMt.getTable2Array().size());
 
-        ObjectContext child = runtime.newContext(clientContext);
-        ClientMtTable1 childMt = (ClientMtTable1) Cayenne.objectForPK(
-                child,
-                parentMt.getObjectId());
-        childMt.setGlobalAttribute1("1183");
-        ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
-        childMt2.setGlobalAttribute("1183");
-        childMt2.setTable1(childMt);
+		childMt2.setTable1(localParentMt);
 
-        child.commitChangesToParent();
+		assertEquals(0, parentMt.getTable2Array().size());
+		assertEquals(1, localParentMt.getTable2Array().size());
 
-        // fetching other relationship... this fails per CAY-1183
-        childMt2.getTable3();
-    }
-    
-    /**
-     * CAY1714
-     */
-    @Test
-    public void testQueriesOnTemporaryObject() throws Exception {
-        ObjectContext clientContext = runtime.newContext((DataChannel) this.clientContext);
-        ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
+		assertEquals(localParentMt.getTable2Array().get(0).getObjectContext(),
+				child);
 
-        ObjectContext childContext = runtime.newContext((DataChannel) clientContext);
-        ClientMtTable1 childMt = (ClientMtTable1) Cayenne.objectForPK(childContext, parentMt.getObjectId());
-        childMt.setGlobalAttribute1("1183");
-        ClientMtTable2 childMt2 = childContext.newObject(ClientMtTable2.class);
-        childMt2.setGlobalAttribute("1183");
-        childMt2.setTable1(childMt);
+		child.commitChangesToParent();
+		assertEquals(1, parentMt.getTable2Array().size());
+		assertEquals(parentMt.getTable2Array().get(0).getObjectContext(),
+				clientContext);
+	}
 
-        childContext.commitChangesToParent();
+	@Test
+	public void testCommitChangesToParentOneToMany() throws Exception {
+		ObjectContext child = runtime.newContext(clientContext);
 
-        assertNull(childMt2.getTable3());
-    }
+		ClientMtTable1 master = child.newObject(ClientMtTable1.class);
+		ClientMtTable2 dep = child.newObject(ClientMtTable2.class);
+		master.addToTable2Array(dep);
 
-    @Test
-    public void testCAY1194() throws Exception {
-        ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
-        ObjectContext child = runtime.newContext(clientContext);
+		child.commitChangesToParent();
 
-        ClientMtTable2 childMt2 = child.newObject(ClientMtTable2.class);
-        childMt2.setGlobalAttribute("222");
+		ClientMtTable1 masterParent = (ClientMtTable1) clientContext
+				.getGraphManager().getNode(master.getObjectId());
+		ClientMtTable2 depParent = (ClientMtTable2) clientContext
+				.getGraphManager().getNode(dep.getObjectId());
 
-        ClientMtTable1 localParentMt = child.localObject(parentMt);
-        assertEquals(0, parentMt.getTable2Array().size());
-        assertEquals(0, localParentMt.getTable2Array().size());
+		assertNotNull(masterParent);
+		assertNotNull(depParent);
 
-        childMt2.setTable1(localParentMt);
+		assertSame(masterParent, depParent.getTable1());
+		assertTrue(masterParent.getTable2Array().contains(depParent));
 
-        assertEquals(0, parentMt.getTable2Array().size());
-        assertEquals(1, localParentMt.getTable2Array().size());
+		// check that arc changes got recorded in the parent context
+		GraphDiff diffs = clientContext.internalGraphManager().getDiffs();
 
-        assertEquals(localParentMt.getTable2Array().get(0).getObjectContext(), child);
+		final int[] arcDiffs = new int[1];
+		final int[] newNodes = new int[1];
 
-        child.commitChangesToParent();
-        assertEquals(1, parentMt.getTable2Array().size());
-        assertEquals(parentMt.getTable2Array().get(0).getObjectContext(), clientContext);
-    }
+		diffs.apply(new GraphChangeHandler() {
 
-    @Test
-    public void testCommitChangesToParentOneToMany() throws Exception {
-        ObjectContext child = runtime.newContext(clientContext);
+			public void arcCreated(Object nodeId, Object targetNodeId,
+					Object arcId) {
+				arcDiffs[0]++;
+			}
 
-        ClientMtTable1 master = child.newObject(ClientMtTable1.class);
-        ClientMtTable2 dep = child.newObject(ClientMtTable2.class);
-        master.addToTable2Array(dep);
+			public void arcDeleted(Object nodeId, Object targetNodeId,
+					Object arcId) {
+				arcDiffs[0]--;
+			}
 
-        child.commitChangesToParent();
+			public void nodeCreated(Object nodeId) {
+				newNodes[0]++;
+			}
 
-        ClientMtTable1 masterParent = (ClientMtTable1) clientContext
-                .getGraphManager()
-                .getNode(master.getObjectId());
-        ClientMtTable2 depParent = (ClientMtTable2) clientContext
-                .getGraphManager()
-                .getNode(dep.getObjectId());
+			public void nodeIdChanged(Object nodeId, Object newId) {
+			}
 
-        assertNotNull(masterParent);
-        assertNotNull(depParent);
+			public void nodePropertyChanged(Object nodeId, String property,
+					Object oldValue, Object newValue) {
+			}
 
-        assertSame(masterParent, depParent.getTable1());
-        assertTrue(masterParent.getTable2Array().contains(depParent));
+			public void nodeRemoved(Object nodeId) {
+				newNodes[0]--;
+			}
+		});
 
-        // check that arc changes got recorded in the parent context
-        GraphDiff diffs = clientContext.internalGraphManager().getDiffs();
+		assertEquals(2, newNodes[0]);
+		assertEquals(2, arcDiffs[0]);
+	}
 
-        final int[] arcDiffs = new int[1];
-        final int[] newNodes = new int[1];
+	@Test
+	public void testCommitChangesToParentOneToOne() throws Exception {
+		ObjectContext child = runtime.newContext(clientContext);
 
-        diffs.apply(new GraphChangeHandler() {
+		ClientMtTooneMaster master = child.newObject(ClientMtTooneMaster.class);
+		ClientMtTooneDep dep = child.newObject(ClientMtTooneDep.class);
+		master.setToDependent(dep);
 
-            public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
-                arcDiffs[0]++;
-            }
+		child.commitChangesToParent();
 
-            public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
-                arcDiffs[0]--;
-            }
+		ClientMtTooneMaster masterParent = (ClientMtTooneMaster) clientContext
+				.getGraphManager().getNode(master.getObjectId());
+		ClientMtTooneDep depParent = (ClientMtTooneDep) clientContext
+				.getGraphManager().getNode(dep.getObjectId());
 
-            public void nodeCreated(Object nodeId) {
-                newNodes[0]++;
-            }
+		assertNotNull(masterParent);
+		assertNotNull(depParent);
 
-            public void nodeIdChanged(Object nodeId, Object newId) {
-            }
+		assertSame(masterParent, depParent.getToMaster());
+		assertSame(depParent, masterParent.getToDependent());
 
-            public void nodePropertyChanged(
-                    Object nodeId,
-                    String property,
-                    Object oldValue,
-                    Object newValue) {
-            }
+		// check that arc changes got recorded in the parent context
+		GraphDiff diffs = clientContext.internalGraphManager().getDiffs();
 
-            public void nodeRemoved(Object nodeId) {
-                newNodes[0]--;
-            }
-        });
+		final int[] arcDiffs = new int[1];
+		final int[] newNodes = new int[1];
 
-        assertEquals(2, newNodes[0]);
-        assertEquals(2, arcDiffs[0]);
-    }
+		diffs.apply(new GraphChangeHandler() {
 
-    @Test
-    public void testCommitChangesToParentOneToOne() throws Exception {
-        ObjectContext child = runtime.newContext(clientContext);
+			public void arcCreated(Object nodeId, Object targetNodeId,
+					Object arcId) {
+				arcDiffs[0]++;
+			}
 
-        ClientMtTooneMaster master = child.newObject(ClientMtTooneMaster.class);
-        ClientMtTooneDep dep = child.newObject(ClientMtTooneDep.class);
-        master.setToDependent(dep);
+			public void arcDeleted(Object nodeId, Object targetNodeId,
+					Object arcId) {
+				arcDiffs[0]--;
+			}
 
-        child.commitChangesToParent();
+			public void nodeCreated(Object nodeId) {
+				newNodes[0]++;
+			}
 
-        ClientMtTooneMaster masterParent = (ClientMtTooneMaster) clientContext
-                .getGraphManager()
-                .getNode(master.getObjectId());
-        ClientMtTooneDep depParent = (ClientMtTooneDep) clientContext
-                .getGraphManager()
-                .getNode(dep.getObjectId());
+			public void nodeIdChanged(Object nodeId, Object newId) {
+			}
 
-        assertNotNull(masterParent);
-        assertNotNull(depParent);
+			public void nodePropertyChanged(Object nodeId, String property,
+					Object oldValue, Object newValue) {
+			}
 
-        assertSame(masterParent, depParent.getToMaster());
-        assertSame(depParent, masterParent.getToDependent());
+			public void nodeRemoved(Object nodeId) {
+				newNodes[0]--;
+			}
+		});
 
-        // check that arc changes got recorded in the parent context
-        GraphDiff diffs = clientContext.internalGraphManager().getDiffs();
-
-        final int[] arcDiffs = new int[1];
-        final int[] newNodes = new int[1];
-
-        diffs.apply(new GraphChangeHandler() {
-
-            public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
-                arcDiffs[0]++;
-            }
-
-            public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
-                arcDiffs[0]--;
-            }
-
-            public void nodeCreated(Object nodeId) {
-                newNodes[0]++;
-            }
-
-            public void nodeIdChanged(Object nodeId, Object newId) {
-            }
-
-            public void nodePropertyChanged(
-                    Object nodeId,
-                    String property,
-                    Object oldValue,
-                    Object newValue) {
-            }
-
-            public void nodeRemoved(Object nodeId) {
-                newNodes[0]--;
-            }
-        });
-
-        assertEquals(2, newNodes[0]);
-        assertEquals(2, arcDiffs[0]);
-    }
+		assertEquals(2, newNodes[0]);
+		assertEquals(2, arcDiffs[0]);
+	}
 }

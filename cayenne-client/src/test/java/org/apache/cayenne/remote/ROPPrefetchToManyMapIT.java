@@ -78,7 +78,7 @@ public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
         
         context.performQuery(new RefreshQuery());
         
-        SelectQuery query = new SelectQuery(ClientMtMapToMany.class);
+        SelectQuery<ClientMtMapToMany> query = new SelectQuery<ClientMtMapToMany>(ClientMtMapToMany.class);
         query.addPrefetch("targets");
         
         final ClientMtMapToMany mapToMany = (ClientMtMapToMany) Cayenne.objectForQuery(context, query);

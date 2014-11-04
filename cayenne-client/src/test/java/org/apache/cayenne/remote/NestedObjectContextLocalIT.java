@@ -59,7 +59,7 @@ public class NestedObjectContextLocalIT extends RemoteCayenneCase {
     @Test
     public void testLocalCacheStaysLocal() {
 
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         BaseContext child1 = (BaseContext) runtime.newContext(clientContext);
