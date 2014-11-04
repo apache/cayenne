@@ -32,7 +32,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.PersistentObjectHolder;
 import org.junit.Test;
 
-import java.util.List;import static org.junit.Assert.*;
+import java.util.List;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class PersistentObjectInContextIT extends ClientCase {

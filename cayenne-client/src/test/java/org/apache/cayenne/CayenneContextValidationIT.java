@@ -28,8 +28,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationException;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextValidationIT extends ClientCase {
 

@@ -34,7 +34,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;import static org.junit.Assert.*;
+import org.junit.Test;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ShallowMergeOperation_ClientIT extends ClientCase {

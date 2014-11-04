@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collections;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.junit.Test;
+
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 public class SQLTemplateTest {
 

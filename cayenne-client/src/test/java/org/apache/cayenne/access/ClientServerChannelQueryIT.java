@@ -38,7 +38,7 @@ import org.apache.cayenne.util.PersistentObjectList;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.List;import static org.junit.Assert.*;
+import java.util.List;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientServerChannelQueryIT extends ClientCase {

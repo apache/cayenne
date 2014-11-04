@@ -25,7 +25,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;import static org.junit.Assert.*;
+import org.junit.Test;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextRefreshQueryIT extends ClientCase {

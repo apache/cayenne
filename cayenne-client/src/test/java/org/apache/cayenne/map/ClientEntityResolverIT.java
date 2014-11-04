@@ -25,7 +25,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;import static org.junit.Assert.*;
+import java.util.Collections;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientEntityResolverIT extends ClientCase {

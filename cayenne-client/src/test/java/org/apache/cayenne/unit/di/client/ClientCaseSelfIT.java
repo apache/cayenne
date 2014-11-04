@@ -22,7 +22,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;import static org.junit.Assert.*;
+import org.junit.Test;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientCaseSelfIT extends ClientCase {

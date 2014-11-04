@@ -34,8 +34,6 @@ import org.apache.cayenne.unit.di.client.ClientRuntimeProperty;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Tests peer context synchronization via ClientChannel events.
  */

@@ -26,7 +26,7 @@ import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import static org.mockito.Mockito.mock;import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextMergeHandlerIT extends ClientCase {
