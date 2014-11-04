@@ -35,7 +35,7 @@ import java.util.Collection;
 public class CayenneContextDeletionIT extends RemoteCayenneCase {
 
     @Parameters
-    public static Collection data() {
+    public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {LocalConnection.HESSIAN_SERIALIZATION},
                 {LocalConnection.JAVA_SERIALIZATION},

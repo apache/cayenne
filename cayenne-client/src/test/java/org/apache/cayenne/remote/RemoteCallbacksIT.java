@@ -38,7 +38,7 @@ public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleLis
     private int added, loaded, prePersisted, postPersisted, preRemoved, postRemoved, preUpdated, postUpdated;
 
     @Parameters
-    public static Collection data() {
+    public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {LocalConnection.HESSIAN_SERIALIZATION},
                 {LocalConnection.JAVA_SERIALIZATION},

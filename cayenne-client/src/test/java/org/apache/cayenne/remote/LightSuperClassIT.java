@@ -49,7 +49,7 @@ public class LightSuperClassIT extends RemoteCayenneCase {
     private boolean server;
 
     @Parameters
-    public static Collection data() {
+    public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {LocalConnection.HESSIAN_SERIALIZATION, true},
                 {LocalConnection.JAVA_SERIALIZATION, true},

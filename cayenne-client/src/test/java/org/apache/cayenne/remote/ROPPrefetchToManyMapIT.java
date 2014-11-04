@@ -49,7 +49,7 @@ public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
     private DataChannelInterceptor queryInterceptor;
 
     @Parameters
-    public static Collection data() {
+    public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {LocalConnection.HESSIAN_SERIALIZATION},
                 {LocalConnection.JAVA_SERIALIZATION},
