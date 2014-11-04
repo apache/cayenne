@@ -28,6 +28,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.NoPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class DataContextNoPkIT extends ServerCase {
         noPkTestTable.insert(2);
     }
 
+    @Test
     public void testNoPkFetchObjects() throws Exception {
         try {
             List objects = context.performQuery(new SelectQuery(NoPkTestEntity.class));
@@ -62,6 +64,7 @@ public class DataContextNoPkIT extends ServerCase {
         }
     }
 
+    @Test
     public void testNoPkFetchDataRows() throws Exception {
         SelectQuery query = new SelectQuery(NoPkTestEntity.class);
         query.setFetchingDataRows(true);

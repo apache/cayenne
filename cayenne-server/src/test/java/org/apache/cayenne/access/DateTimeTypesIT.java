@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.CalendarEntity;
 import org.apache.cayenne.testdo.testmap.DateTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Time;
 import java.util.Calendar;
@@ -51,6 +52,7 @@ public class DateTimeTypesIT extends ServerCase {
         dbHelper.deleteAll("DATE_TEST");
     }
 
+    @Test
     public void testCalendar() throws Exception {
 
         CalendarEntity test = context.newObject(CalendarEntity.class);
@@ -71,6 +73,7 @@ public class DateTimeTypesIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testDate() throws Exception {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
@@ -88,6 +91,7 @@ public class DateTimeTypesIT extends ServerCase {
         assertEquals(Date.class, testRead.getDateColumn().getClass());
     }
 
+    @Test
     public void testTime() throws Exception {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
@@ -112,6 +116,7 @@ public class DateTimeTypesIT extends ServerCase {
         assertTrue("" + delta, Math.abs(delta) <= 1000 * 60 * 60);
     }
 
+    @Test
     public void testTimestamp() throws Exception {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
@@ -132,6 +137,7 @@ public class DateTimeTypesIT extends ServerCase {
         assertEquals(now, testRead.getTimestampColumn());
     }
 
+    @Test
     public void testSQLTemplateTimestamp() throws Exception {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
@@ -153,6 +159,7 @@ public class DateTimeTypesIT extends ServerCase {
         assertEquals(now, columnValue);
     }
 
+    @Test
     public void testSQLTemplateDate() throws Exception {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 
@@ -174,6 +181,7 @@ public class DateTimeTypesIT extends ServerCase {
         assertEquals(now.toString(), new java.sql.Date(columnValue.getTime()).toString());
     }
 
+    @Test
     public void testSQLTemplateTime() throws Exception {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 

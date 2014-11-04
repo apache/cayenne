@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.SelectQuery;
@@ -31,6 +29,9 @@ import org.apache.cayenne.tx.CayenneTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.sql.Connection;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class TransactionThreadIT extends ServerCase {
@@ -53,6 +54,7 @@ public class TransactionThreadIT extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testThreadConnectionReuseOnSelect() throws Exception {
 
         ConnectionCounterTx t = new ConnectionCounterTx(new CayenneTransaction(logger));

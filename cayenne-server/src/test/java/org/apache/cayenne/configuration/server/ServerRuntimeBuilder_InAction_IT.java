@@ -26,6 +26,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -62,6 +63,7 @@ public class ServerRuntimeBuilder_InAction_IT extends ServerCase {
         this.dataSource = runtime.getDataSource("tstmap");
     }
 
+    @Test
     public void testConfigFree_WithDataSource() {
 
         ServerRuntime localRuntime = new ServerRuntimeBuilder().dataSource(dataSource).build();
@@ -74,6 +76,7 @@ public class ServerRuntimeBuilder_InAction_IT extends ServerCase {
         }
     }
 
+    @Test
     public void testConfigFree_WithDBParams() {
 
         ServerRuntime localRuntime = new ServerRuntimeBuilder().jdbcDriver(dsi.getJdbcDriver())

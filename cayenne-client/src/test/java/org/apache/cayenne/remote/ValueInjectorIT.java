@@ -23,17 +23,40 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(value=Parameterized.class)
 public class ValueInjectorIT extends RemoteCayenneCase {
 
     @Inject
     protected DataContext serverContext;
 
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION},
+        });
+    }
+
+    public ValueInjectorIT(int serializationPolicy) {
+        super.serializationPolicy = serializationPolicy;
+    }
+
+    @Test
     public void testServer() {
         ObjEntity entity = serverContext.getEntityResolver().getObjEntity(MtTable1Subclass1.class);
         Expression qualifier = entity.getDeclaredQualifier();
@@ -52,6 +75,7 @@ public class ValueInjectorIT extends RemoteCayenneCase {
         }
     }
 
+    @Test
     public void testClient() {
         ObjectContext context = createROPContext();
         ObjEntity entity = context.getEntityResolver().getObjEntity(ClientMtTable1Subclass1.class);

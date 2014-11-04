@@ -39,6 +39,7 @@ import org.apache.cayenne.testdo.testmap.GeneratedF1;
 import org.apache.cayenne.testdo.testmap.GeneratedF2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -75,6 +76,7 @@ public class IdentityColumnsIT extends ServerCase {
      * Tests a bug casued by the ID Java type mismatch vs the default JDBC type
      * of the ID column.
      */
+    @Test
     public void testCAY823() throws Exception {
 
         GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
@@ -96,6 +98,7 @@ public class IdentityColumnsIT extends ServerCase {
         assertEquals(id, ((Persistent) results.get(0)).getObjectId());
     }
 
+    @Test
     public void testNewObject() throws Exception {
 
         GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
@@ -117,6 +120,7 @@ public class IdentityColumnsIT extends ServerCase {
         assertEquals(name, object.getName());
     }
 
+    @Test
     public void testGeneratedJoinInFlattenedRelationship() throws Exception {
 
         // before saving objects, let's manually access PKGenerator to get a
@@ -149,6 +153,7 @@ public class IdentityColumnsIT extends ServerCase {
     /**
      * Tests CAY-422 bug.
      */
+    @Test
     public void testUnrelatedUpdate() throws Exception {
 
         GeneratedColumnTestEntity m = context.newObject(GeneratedColumnTestEntity.class);
@@ -175,6 +180,7 @@ public class IdentityColumnsIT extends ServerCase {
      * Tests that insert in two tables with identity pk does not generate a
      * conflict. See CAY-341 for the original bug.
      */
+    @Test
     public void testMultipleNewObjectsSeparateTables() throws Exception {
 
         GeneratedColumnTestEntity idObject1 = context.newObject(GeneratedColumnTestEntity.class);
@@ -186,6 +192,7 @@ public class IdentityColumnsIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testMultipleNewObjects() throws Exception {
 
         String[] names = new String[] { "n1_" + System.currentTimeMillis(), "n2_" + System.currentTimeMillis(),
@@ -216,6 +223,7 @@ public class IdentityColumnsIT extends ServerCase {
         }
     }
 
+    @Test
     public void testCompoundPKWithGeneratedColumn() throws Exception {
         if (adapter.supportsGeneratedKeys()) {
             // only works for generated keys, as the entity tested has one
@@ -263,6 +271,7 @@ public class IdentityColumnsIT extends ServerCase {
         }
     }
 
+    @Test
     public void testUpdateDependentWithNewMaster() throws Exception {
 
         GeneratedColumnTestEntity master1 = context.newObject(GeneratedColumnTestEntity.class);
@@ -295,6 +304,7 @@ public class IdentityColumnsIT extends ServerCase {
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
     }
 
+    @Test
     public void testGeneratedDefaultValue() throws Exception {
 
         // fail("TODO: test insert with DEFAULT generated column...need custom
@@ -302,6 +312,7 @@ public class IdentityColumnsIT extends ServerCase {
         // build such table");
     }
 
+    @Test
     public void testPropagateToDependent() throws Exception {
 
         GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);

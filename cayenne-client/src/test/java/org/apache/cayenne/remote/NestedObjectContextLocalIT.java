@@ -18,23 +18,45 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
-import java.util.List;
-
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(value=Parameterized.class)
 public class NestedObjectContextLocalIT extends RemoteCayenneCase {
-    
+
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION},
+        });
+    }
+
+    public NestedObjectContextLocalIT(int serializationPolicy) {
+        super.serializationPolicy = serializationPolicy;
+    }
+
     @Inject
     private ClientRuntime runtime;
 
+    @Test
     public void testLocalCacheStaysLocal() {
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);

@@ -29,6 +29,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 
@@ -38,6 +39,7 @@ public class MergerFactoryIT extends MergeCase {
     @Inject
     private DataContext context;
 
+    @Test
     public void testAddAndDropColumnToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
@@ -59,6 +61,7 @@ public class MergerFactoryIT extends MergeCase {
         assertTokensAndExecute(0, 0);
     }
 
+    @Test
     public void testChangeVarcharSizeToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
@@ -89,6 +92,7 @@ public class MergerFactoryIT extends MergeCase {
         assertTokensAndExecute(0, 0);
     }
 
+    @Test
     public void testMultipleTokensToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
@@ -124,6 +128,7 @@ public class MergerFactoryIT extends MergeCase {
         assertTokensAndExecute(0, 0);
     }
 
+    @Test
     public void testAddTableToDb() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 
@@ -173,6 +178,7 @@ public class MergerFactoryIT extends MergeCase {
         assertTokensAndExecute(0, 0);
     }
 
+    @Test
     public void testAddForeignKeyWithTable() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 
@@ -237,6 +243,7 @@ public class MergerFactoryIT extends MergeCase {
         assertTokensAndExecute(0, 0);
     }
 
+    @Test
     public void testAddForeignKeyAfterTable() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 

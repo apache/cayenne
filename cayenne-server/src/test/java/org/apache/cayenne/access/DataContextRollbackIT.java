@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.List;
-
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -32,6 +30,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.util.List;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextRollbackIT extends ServerCase {
@@ -54,6 +55,7 @@ public class DataContextRollbackIT extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testRollbackNew() {
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("a");
@@ -80,6 +82,7 @@ public class DataContextRollbackIT extends ServerCase {
         assertEquals(PersistenceState.TRANSIENT, artist.getPersistenceState());
     }
 
+    @Test
     public void testRollbackNewObject() {
         String artistName = "revertTestArtist";
         Artist artist = (Artist) context.newObject("Artist");
@@ -105,6 +108,7 @@ public class DataContextRollbackIT extends ServerCase {
     // Catches a bug where new objects were unregistered within an object iterator, thus
     // modifying the collection the iterator was iterating over
     // (ConcurrentModificationException)
+    @Test
     public void testRollbackWithMultipleNewObjects() {
         String artistName = "rollbackTestArtist";
         String paintingTitle = "rollbackTestPainting";
@@ -133,6 +137,7 @@ public class DataContextRollbackIT extends ServerCase {
         assertEquals(0, queryResults.size());
     }
 
+    @Test
     public void testRollbackRelationshipModification() {
         String artistName = "relationshipModArtist";
         String paintingTitle = "relationshipTestPainting";
@@ -169,6 +174,7 @@ public class DataContextRollbackIT extends ServerCase {
         assertEquals(artistName, queriedPainting.getToArtist().getArtistName());
     }
 
+    @Test
     public void testRollbackDeletedObject() {
         String artistName = "deleteTestArtist";
         Artist artist = (Artist) context.newObject("Artist");
@@ -195,6 +201,7 @@ public class DataContextRollbackIT extends ServerCase {
         assertEquals(1, queryResults.size());
     }
 
+    @Test
     public void testRollbackModifiedObject() {
         String artistName = "initialTestArtist";
         Artist artist = (Artist) context.newObject("Artist");

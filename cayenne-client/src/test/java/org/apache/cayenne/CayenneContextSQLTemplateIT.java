@@ -24,6 +24,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextSQLTemplateIT extends ClientCase {
@@ -40,6 +44,7 @@ public class CayenneContextSQLTemplateIT extends ClientCase {
         dbHelper.deleteAll("MT_TABLE1");
     }
 
+    @Test
     public void testObjectRoot() throws Exception {
 
         assertNull(Cayenne.objectForPK(context, ClientMtTable1.class, 1));

@@ -22,6 +22,7 @@ package org.apache.cayenne.conn;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Connection;
 
@@ -31,6 +32,7 @@ public class PoolManagerIT extends ServerCase {
     @Inject
     private DataSourceInfo dataSourceInfo;
 
+    @Test
     public void testDataSourceUrl() throws Exception {
         String driverName = dataSourceInfo.getJdbcDriver();
         String url = dataSourceInfo.getDataSourceUrl();
@@ -45,6 +47,7 @@ public class PoolManagerIT extends ServerCase {
         assertEquals(driverName, pm.getJdbcDriver());
     }
 
+    @Test
     public void testPassword() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "b") {
 
@@ -55,6 +58,7 @@ public class PoolManagerIT extends ServerCase {
         assertEquals("b", pm.getPassword());
     }
 
+    @Test
     public void testUserName() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "a", "") {
 
@@ -65,6 +69,7 @@ public class PoolManagerIT extends ServerCase {
         assertEquals("a", pm.getUserName());
     }
 
+    @Test
     public void testMinConnections() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "") {
 
@@ -75,6 +80,7 @@ public class PoolManagerIT extends ServerCase {
         assertEquals(0, pm.getMinConnections());
     }
 
+    @Test
     public void testMaxConnections() throws Exception {
         PoolManager pm = new PoolManager(null, 0, 3, "", "") {
 
@@ -85,6 +91,7 @@ public class PoolManagerIT extends ServerCase {
         assertEquals(3, pm.getMaxConnections());
     }
 
+    @Test
     public void testPooling() throws Exception {
 
         PoolManager pm = new PoolManager(dataSourceInfo.getJdbcDriver(), dataSourceInfo

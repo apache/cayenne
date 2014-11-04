@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class DataContextCompoundRelIT extends ServerCase {
         dbHelper.deleteAll("COMPOUND_PK_TEST");
     }
 
+    @Test
     public void testInsert() {
 
         CompoundPkTestEntity master = context.newObject(CompoundPkTestEntity.class);
@@ -79,6 +81,7 @@ public class DataContextCompoundRelIT extends ServerCase {
         assertEquals("d1", detail.getName());
     }
 
+    @Test
     public void testFetchQualifyingToOne() {
         CompoundPkTestEntity master = (CompoundPkTestEntity) context
                 .newObject("CompoundPkTestEntity");
@@ -115,6 +118,7 @@ public class DataContextCompoundRelIT extends ServerCase {
         assertEquals("d1", detail.getName());
     }
 
+    @Test
     public void testFetchQualifyingToMany() throws Exception {
         CompoundPkTestEntity master = (CompoundPkTestEntity) context
                 .newObject("CompoundPkTestEntity");

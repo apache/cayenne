@@ -28,6 +28,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,27 +44,32 @@ public class EntityResolverIT extends ServerCase {
     @Inject
     private DataContext context;
 
+    @Test
     public void testGetObjEntity() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity("Artist"));
     }
 
+    @Test
     public void testLookupObjEntityByClass() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity(Artist.class));
     }
 
+    @Test
     public void testLookupObjEntityByInstance() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity(new Artist()));
     }
 
+    @Test
     public void testLookupObjEntityByDataobject() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         Artist artist = (Artist) context.newObject("Artist");
         assertIsArtistObjEntity(resolver.getObjEntity(artist));
     }
 
+    @Test
     public void testGetDataMapList() {
         DataMap m1 = new DataMap();
         DataMap m2 = new DataMap();
@@ -78,6 +84,7 @@ public class EntityResolverIT extends ServerCase {
         assertTrue(maps.containsAll(list));
     }
 
+    @Test
     public void testAddDataMap() {
 
         // create empty resolver
@@ -97,6 +104,7 @@ public class EntityResolverIT extends ServerCase {
         assertEquals(resolver, m1.getNamespace());
     }
 
+    @Test
     public void testRemoveDataMap() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();
@@ -116,6 +124,7 @@ public class EntityResolverIT extends ServerCase {
         assertNull(resolver.getObjEntity(Object.class));
     }
 
+    @Test
     public void testAddObjEntity() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();
@@ -135,6 +144,7 @@ public class EntityResolverIT extends ServerCase {
         assertSame(oe2, resolver.getObjEntity(String.class));
     }
 
+    @Test
     public void testGetQuery() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();

@@ -24,6 +24,7 @@ import org.apache.cayenne.testdo.r1.Activity;
 import org.apache.cayenne.testdo.r1.ActivityResult;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Date;
 
@@ -42,6 +43,7 @@ public class ManyToManyNoJoinIT extends ServerCase {
         dbHelper.deleteAll("RESULT");
     }
 
+    @Test
     public void testValidateForSave1() throws Exception {
         ActivityResult result = context.newObject(ActivityResult.class);
         result.setAppointDate(new Date(System.currentTimeMillis()));

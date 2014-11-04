@@ -32,6 +32,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.List;
@@ -104,35 +105,42 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
         list = new RemoteIncrementalFaultList(clientContext, query);
     }
 
+    @Test
     public void testSize() throws Exception {
         prepareList(6);
         assertEquals(COUNT, list.size());
     }
 
+    @Test
     public void testIteratorPageSize1() throws Exception {
         doTestIterator(1);
     }
 
+    @Test
     public void testIteratorPageSize5() throws Exception {
         // size divisiable by page size
         doTestIterator(5);
     }
 
+    @Test
     public void testIteratorPageSize6() throws Exception {
         // size not divisable by page size
         doTestIterator(6);
     }
 
+    @Test
     public void testIteratorPageSize25() throws Exception {
         // size equals to page size
         doTestIterator(COUNT);
     }
 
+    @Test
     public void testIteratorPageSize26() throws Exception {
         // size exceeding page size
         doTestIterator(COUNT + 1);
     }
 
+    @Test
     public void testListIterator() throws Exception {
         prepareList(6);
         ListIterator<?> it = list.listIterator();
@@ -159,6 +167,7 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
         }
     }
 
+    @Test
     public void testUnfetchedObjects() throws Exception {
         prepareList(6);
         assertEquals(COUNT - 6, list.getUnfetchedObjects());
@@ -168,6 +177,7 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
         assertEquals(0, list.getUnfetchedObjects());
     }
 
+    @Test
     public void testPageIndex() throws Exception {
         prepareList(6);
         assertEquals(0, list.pageIndex(0));
@@ -183,6 +193,7 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
         }
     }
 
+    @Test
     public void testPagesRead1() throws Exception {
         prepareList(6);
         assertTrue(list.elements.get(0) instanceof ClientMtTable1);
@@ -195,6 +206,7 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
         assertTrue((list.elements.get(list.size() - 1)) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testGet1() throws Exception {
         prepareList(6);
         assertTrue(list.elements.get(0) instanceof ClientMtTable1);
@@ -207,6 +219,7 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
         assertTrue(list.elements.get(8) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testIndexOf() throws Exception {
         prepareList(6);
 
@@ -223,6 +236,7 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
         assertEquals(-1, list.indexOf(list.context.newObject(ClientMtTable1.class)));
     }
 
+    @Test
     public void testLastIndexOf() throws Exception {
         prepareList(6);
         Expression qual = ExpressionFactory.matchExp(

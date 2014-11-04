@@ -26,6 +26,9 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationException;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextValidationIT extends ClientCase {
@@ -42,6 +45,7 @@ public class CayenneContextValidationIT extends ClientCase {
         dbHelper.deleteAll("MT_TABLE1");
     }
 
+    @Test
     public void testValidate() throws Exception {
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);

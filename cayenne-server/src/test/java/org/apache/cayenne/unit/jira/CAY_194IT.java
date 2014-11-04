@@ -29,6 +29,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -58,6 +59,7 @@ public class CAY_194IT extends ServerCase {
         dbHelper.deleteAll("TO_ONEFK1");
     }
 
+    @Test
     public void testQualifyOnToMany() {
 
         ReflexiveAndToOne ox = context.newObject(ReflexiveAndToOne.class);
@@ -84,6 +86,7 @@ public class CAY_194IT extends ServerCase {
         assertEquals(0, parents.size());
     }
 
+    @Test
     public void testQualifyOnToOne() {
 
         ReflexiveAndToOne ox = context.newObject(ReflexiveAndToOne.class);

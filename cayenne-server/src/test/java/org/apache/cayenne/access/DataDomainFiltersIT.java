@@ -32,6 +32,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.ListResponse;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +46,14 @@ public class DataDomainFiltersIT extends ServerCase {
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testDefaultNoFilters() {
 
         DataDomain domain = runtime.getDataDomain();
         assertEquals(0, domain.filters.size());
     }
 
+    @Test
     public void testOnQuery_FilterOrdering() {
 
         DataDomain domain = runtime.getDataDomain();
@@ -100,6 +103,7 @@ public class DataDomainFiltersIT extends ServerCase {
         assertEquals("f2end", results.get(3));
     }
 
+    @Test
     public void testOnSync_FilterOrdering() {
 
         DataDomain domain = runtime.getDataDomain();
@@ -159,6 +163,7 @@ public class DataDomainFiltersIT extends ServerCase {
         assertEquals("f2end", results.get(3));
     }
 
+    @Test
     public void testOnQuery_Blocking() {
 
         DataDomain domain = runtime.getDataDomain();

@@ -29,6 +29,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+import org.junit.Test;
 
 import java.util.Date;
 import java.util.List;
@@ -39,6 +40,7 @@ public class CayenneDataObjectValidationIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    @Test
     public void testValidateForSaveMandatoryToOneMissing() throws Exception {
 
         Exhibit exhibit = context.newObject(Exhibit.class);
@@ -65,6 +67,7 @@ public class CayenneDataObjectValidationIT extends ServerCase {
         assertFalse("No failures expected: " + result, result.hasFailures());
     }
 
+    @Test
     public void testValidateForSaveMandatoryAttributeMissing() throws Exception {
 
         Artist artist = context.newObject(Artist.class);
@@ -88,6 +91,7 @@ public class CayenneDataObjectValidationIT extends ServerCase {
         assertFalse(result.hasFailures());
     }
 
+    @Test
     public void testValidateForSaveAttributeTooLong() throws Exception {
 
         Artist artist = context.newObject(Artist.class);

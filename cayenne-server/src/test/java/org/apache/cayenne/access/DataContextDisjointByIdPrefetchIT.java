@@ -33,6 +33,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -110,6 +111,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         tPaintingInfo.insert(2, "green");
     }
 
+    @Test
     public void testOneToMany() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
@@ -140,6 +142,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testManyToOne() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
@@ -159,6 +162,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testFetchLimit() throws Exception {
         createThreeArtistsWithPlentyOfPaintingsDataSet();
 
@@ -193,6 +197,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testOneToOneRelationship() throws Exception {
         createTwoPaintingsWithInfosDataSet();
 

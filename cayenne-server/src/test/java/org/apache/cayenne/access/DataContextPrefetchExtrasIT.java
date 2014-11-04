@@ -37,6 +37,7 @@ import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -99,6 +100,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
         tCompoundFkTest.insert(303, "101", "201", "CFK3");
     }
 
+    @Test
     public void testPrefetchToManyOnCharKey() throws Exception {
         createPrefetchToManyOnCharKeyDataSet();
 
@@ -124,6 +126,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
     /**
      * Tests to-one prefetching over relationships with compound keys.
      */
+    @Test
     public void testPrefetch10() throws Exception {
         createCompoundDataSet();
 
@@ -149,6 +152,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
     /**
      * Tests to-many prefetching over relationships with compound keys.
      */
+    @Test
     public void testPrefetch11() throws Exception {
         createCompoundDataSet();
 

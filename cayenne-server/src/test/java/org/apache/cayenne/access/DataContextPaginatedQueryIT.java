@@ -26,6 +26,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class DataContextPaginatedQueryIT extends ServerCase {
         tArtist.insert(33010, "artist10");
     }
 
+    @Test
     public void testLocalCache() throws Exception {
 
         createArtistsDataSet();

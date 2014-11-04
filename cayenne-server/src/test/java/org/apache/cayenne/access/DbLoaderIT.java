@@ -33,6 +33,7 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -65,6 +66,7 @@ public class DbLoaderIT extends ServerCase {
         loader.getConnection().close();
     }
 
+    @Test
     public void testGetTableTypes() throws Exception {
 
         List<?> tableTypes = loader.getTableTypes();
@@ -82,6 +84,7 @@ public class DbLoaderIT extends ServerCase {
         }
     }
 
+    @Test
     public void testGetTables() throws Exception {
 
         String tableLabel = adapter.tableTypeForTable();
@@ -102,6 +105,7 @@ public class DbLoaderIT extends ServerCase {
         assertTrue("'ARTIST' is missing from the table list: " + tables, foundArtist);
     }
 
+    @Test
     public void testLoadWithMeaningfulPK() throws Exception {
 
         DataMap map = new DataMap();
@@ -128,6 +132,7 @@ public class DbLoaderIT extends ServerCase {
      * individual tests would require multiple reads of metatdata which is
      * extremely slow on some RDBMS (Sybase).
      */
+    @Test
     public void testLoad() throws Exception {
 
         boolean supportsUnique = runtime.getDataDomain().getDataNodes().iterator().next().getAdapter()

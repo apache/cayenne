@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -41,6 +36,12 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.XMLEncoder;
+import org.junit.Test;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class EJBQLQueryIT extends ServerCase {
@@ -97,6 +98,7 @@ public class EJBQLQueryIT extends ServerCase {
         tBigIntegerEntity.insert(44001, new Long(744073709551715l));
     }
 
+    @Test
     public void testLongParameter() throws Exception {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > ?1";
@@ -106,6 +108,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(1, result.size());
     }
 
+    @Test
     public void testLongLiteral() throws Exception {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > 744073709551615";
@@ -114,6 +117,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(1, result.size());
     }
 
+    @Test
     public void testParameters() {
         String ejbql = "select a FROM Artist a WHERE a.artistName = ?1 OR a.artistName = :name";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -128,6 +132,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals("Y", parameters.get("name"));
     }
 
+    @Test
     public void testCacheParameters() {
         String ejbql1 = "select a FROM Artist a WHERE a.artistName = ?1 OR a.artistName = :name";
         EJBQLQuery q1 = new EJBQLQuery(ejbql1);
@@ -152,6 +157,7 @@ public class EJBQLQueryIT extends ServerCase {
                 .getCacheKey());
     }
 
+    @Test
     public void testCacheStrategy() throws Exception {
 
         // insertValue();
@@ -178,6 +184,7 @@ public class EJBQLQueryIT extends ServerCase {
 
     }
 
+    @Test
     public void testDataRows() throws Exception {
 
         // insertValue();
@@ -195,6 +202,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(artistName, artist.getArtistName());
     }
 
+    @Test
     public void testGetExpression() {
         String ejbql = "select a FROM Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -205,6 +213,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(ejbql, parsed.getSource());
     }
 
+    @Test
     public void testGetName() {
         String ejbql = "select a FROM Artist a";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -214,6 +223,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals("XYZ", query.getName());
     }
 
+    @Test
     public void testUniqueKeyEntity() {
         // insertValue();
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -230,6 +240,7 @@ public class EJBQLQueryIT extends ServerCase {
                 .getCacheKey());
     }
 
+    @Test
     public void testGetMetadata() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -250,6 +261,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(QueryCacheStrategy.NO_CACHE, md.getCacheStrategy());
     }
 
+    @Test
     public void testSelectRelationship() throws Exception {
 
         // insertPaintValue();
@@ -290,6 +302,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(String.class, ((Object[]) result3.get(0))[1].getClass());
     }
 
+    @Test
     public void testEncodeAsXML() {
 
         String ejbql = "select a FROM Artist a";
@@ -323,6 +336,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(w.getBuffer().toString(), s.toString());
     }
 
+    @Test
     public void testInWithMultipleStringPositionalParameters_withBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.paintingTitle in (?1,?2,?3)");
@@ -333,6 +347,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(2, paintings.size());
     }
 
+    @Test
     public void testInWithSingleStringPositionalParameter_withoutBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.paintingTitle in ?1");
@@ -341,6 +356,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(1, paintings.size());
     }
 
+    @Test
     public void testInWithSingleCollectionNamedParameter_withoutBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in :artists");
@@ -349,6 +365,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(3, paintings.size());
     }
 
+    @Test
     public void testInWithSingleCollectionPositionalParameter_withoutBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in ?1");
@@ -357,6 +374,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(3, paintings.size());
     }
 
+    @Test
     public void testInWithSingleCollectionNamedParameter_withBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in (:artists)");
@@ -365,6 +383,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(3, paintings.size());
     }
 
+    @Test
     public void testInWithSingleCollectionPositionalParameter_withBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in (?1)");
@@ -373,24 +392,28 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(3, paintings.size());
     }
 
+    @Test
     public void testNullParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=:x");
         query.setParameter("x", null);
         context.performQuery(query);
     }
 
+    @Test
     public void testNullNotEqualsParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist<>:x");
         query.setParameter("x", null);
         context.performQuery(query);
     }
 
+    @Test
     public void testNullPositionalParameter() {
         EJBQLQuery query = new EJBQLQuery("select p from Painting p WHERE p.toArtist=?1");
         query.setParameter(1, null);
         context.performQuery(query);
     }
 
+    @Test
     public void testNullAndNotNullParameter() {
         EJBQLQuery query = new EJBQLQuery(
                 "select p from Painting p WHERE p.toArtist=:x OR p.toArtist.artistName=:b");
@@ -399,6 +422,7 @@ public class EJBQLQueryIT extends ServerCase {
         context.performQuery(query);
     }
 
+    @Test
     public void testLikeWithExplicitEscape() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("SELECT p FROM Painting p WHERE p.paintingTitle LIKE '|%|%?|_title|%|%|_' ESCAPE '|'");
@@ -407,12 +431,14 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals("%%?_title%%_", paintings.get(0).getPaintingTitle());
     }
 
+    @Test
     public void testJoinToJoined() {
         EJBQLQuery query = new EJBQLQuery(
                 "select g from Gallery g inner join g.paintingArray p where p.toArtist.artistName like '%a%'");
         context.performQuery(query);
     }
 
+    @Test
     public void testJoinAndCount() {
         EJBQLQuery query = new EJBQLQuery(
                 "select count(p) from Painting p where p.toGallery.galleryName LIKE '%a%' AND ("
@@ -433,6 +459,7 @@ public class EJBQLQueryIT extends ServerCase {
     // or p.partNumber like '%rimadyl%'
     // )
 
+    @Test
     public void testRelationshipWhereClause() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("a");
@@ -449,6 +476,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertSame(p, paintings.get(0));
     }
 
+    @Test
     public void testRelationshipWhereClause2() throws Exception {
         Expression exp = ExpressionFactory.matchExp(Painting.TO_GALLERY_PROPERTY, null);
         EJBQLQuery query = new EJBQLQuery("select p.toArtist from Painting p where "
@@ -457,6 +485,7 @@ public class EJBQLQueryIT extends ServerCase {
         context.performQuery(query);
     }
 
+    @Test
     public void testOrBrackets() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("testOrBrackets");

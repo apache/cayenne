@@ -18,16 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.sql.Types;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.sql.Types;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SetPrimaryKeyToDbIT extends MergeCase {
 
+    @Test
     public void test() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         assertTokensAndExecute(0, 0);

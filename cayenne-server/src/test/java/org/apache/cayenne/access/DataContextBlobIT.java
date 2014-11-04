@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.testmap.BlobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -62,7 +63,8 @@ public class DataContextBlobIT extends ServerCase {
     protected boolean skipEmptyLOBTests() {
         return !accessStackAdapter.handlesNullVsEmptyLOBs();
     }
-    
+
+    @Test
     public void testManyBlobsInOneTX() throws Exception {
         if (skipTests()) {
             return;
@@ -85,6 +87,7 @@ public class DataContextBlobIT extends ServerCase {
         assertEquals(3, objects2.size());
     }
 
+    @Test
     public void testEmptyBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -95,6 +98,7 @@ public class DataContextBlobIT extends ServerCase {
         runWithBlobSize(0);
     }
 
+    @Test
     public void test5ByteBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -102,6 +106,7 @@ public class DataContextBlobIT extends ServerCase {
         runWithBlobSize(5);
     }
 
+    @Test
     public void test5KByteBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -109,6 +114,7 @@ public class DataContextBlobIT extends ServerCase {
         runWithBlobSize(5 * 1024);
     }
 
+    @Test
     public void test1MBBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -116,6 +122,7 @@ public class DataContextBlobIT extends ServerCase {
         runWithBlobSize(1024 * 1024);
     }
 
+    @Test
     public void testNullBlob() throws Exception {
         if (skipTests()) {
             return;

@@ -44,6 +44,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Date;
 import java.util.Collections;
@@ -120,6 +121,7 @@ public class JointPrefetchIT extends ServerCase {
         tPainting.insert(33003, "P_artist21", 33002, 3000, 33002);
     }
 
+    @Test
     public void testJointPrefetch_ToOne_FetchLimit() throws Exception {
         createJointPrefetchDataSet1();
 
@@ -148,6 +150,7 @@ public class JointPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetch_ToMany_FetchLimit() throws Exception {
         createJointPrefetchDataSet1();
 
@@ -180,6 +183,7 @@ public class JointPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchDataRows() throws Exception {
         createJointPrefetchDataSet1();
 
@@ -229,6 +233,7 @@ public class JointPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchSQLTemplate() throws Exception {
         createJointPrefetchDataSet1();
 
@@ -283,6 +288,7 @@ public class JointPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchToOne() throws Exception {
         createJointPrefetchDataSet1();
 
@@ -313,6 +319,7 @@ public class JointPrefetchIT extends ServerCase {
     /**
      * Tests that joined entities can have non-standard type mappings.
      */
+    @Test
     public void testJointPrefetchDataTypes() throws Exception {
         // prepare... can't load from XML, as it doesn't yet support dates..
         SQLTemplate artistSQL = new SQLTemplate(
@@ -364,6 +371,7 @@ public class JointPrefetchIT extends ServerCase {
         }
     }
 
+    @Test
     public void testJointPrefetchToMany() throws Exception {
         createJointPrefetchDataSet1();
 
@@ -399,6 +407,7 @@ public class JointPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchToManyNonConflictingQualifier() throws Exception {
         createJointPrefetchDataSet1();
 
@@ -440,6 +449,7 @@ public class JointPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchMultiStep() throws Exception {
         createJointPrefetchDataSet2();
 

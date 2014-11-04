@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.testmap.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.testmap.StringET1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Arrays;
 
@@ -47,6 +48,7 @@ public class DataContextExtendedTypeOperationsIT extends ServerCase {
         dbHelper.deleteAll("EXTENDED_TYPE_TEST");
     }
 
+    @Test
     public void testStoreExtendedType() {
         ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
@@ -60,6 +62,7 @@ public class DataContextExtendedTypeOperationsIT extends ServerCase {
         assertEquals(1, e1.getObjectContext().performQuery(checkQ).size());
     }
 
+    @Test
     public void testInExpressionExtendedTypeArray() {
         ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));
@@ -80,6 +83,7 @@ public class DataContextExtendedTypeOperationsIT extends ServerCase {
         assertEquals(2, e1.getObjectContext().performQuery(query).size());
     }
 
+    @Test
     public void testInExpressionExtendedTypeList() {
         ExtendedTypeEntity e1 = context.newObject(ExtendedTypeEntity.class);
         e1.setName(new StringET1("X"));

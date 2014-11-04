@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Date;
@@ -40,6 +41,7 @@ public class ObjectStoreIT extends ServerCase {
     @Inject
     private DataContext context;
 
+    @Test
     public void testRegisteredObjectsCount() throws Exception {
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
@@ -62,6 +64,7 @@ public class ObjectStoreIT extends ServerCase {
         assertEquals(2, context.getObjectStore().registeredObjectsCount());
     }
 
+    @Test
     public void testObjectsUnregistered() throws Exception {
 
         DataRow row = new DataRow(10);
@@ -85,6 +88,7 @@ public class ObjectStoreIT extends ServerCase {
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
     }
 
+    @Test
     public void testUnregisterThenRegister() throws Exception {
 
         // Create a gallery.

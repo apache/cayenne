@@ -34,6 +34,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROPainting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -90,6 +91,7 @@ public class CDOMany2OneIT extends ServerCase {
 
     }
 
+    @Test
     public void testMultipleToOneDeletion() throws Exception {
 
         // was a problem per CAY-901
@@ -122,6 +124,7 @@ public class CDOMany2OneIT extends ServerCase {
         assertEquals(null, row.get("GALLERY_ID"));
     }
 
+    @Test
     public void testReadRO1() throws Exception {
 
         createArtistWithPaintingDataSet();
@@ -138,6 +141,7 @@ public class CDOMany2OneIT extends ServerCase {
         assertSame(a1, rop1.getToArtist());
     }
 
+    @Test
     public void testReadRO2() throws Exception {
 
         createArtistWithPaintingDataSet();
@@ -158,6 +162,7 @@ public class CDOMany2OneIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, rop1.getToArtist().getPersistenceState());
     }
 
+    @Test
     public void testSelectViaRelationship() throws Exception {
 
         createArtistWithPaintingDataSet();
@@ -172,6 +177,7 @@ public class CDOMany2OneIT extends ServerCase {
         assertSame(p1, paints.get(0));
     }
 
+    @Test
     public void testSelectViaMultiRelationship() throws Exception {
 
         createArtistWithPaintingsInGalleryDataSet();
@@ -187,6 +193,7 @@ public class CDOMany2OneIT extends ServerCase {
         assertSame(a1, artists.get(0));
     }
 
+    @Test
     public void testNewAdd() throws Exception {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("bL");
@@ -206,6 +213,7 @@ public class CDOMany2OneIT extends ServerCase {
         assertEquals(Cayenne.longPKForObject(a1), tPainting.getLong("ARTIST_ID"));
     }
 
+    @Test
     public void testRemove() throws Exception {
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");
@@ -241,6 +249,7 @@ public class CDOMany2OneIT extends ServerCase {
         assertNull(p3.getToGallery());
     }
 
+    @Test
     public void testReplace() throws Exception {
 
         Painting p1 = context.newObject(Painting.class);
@@ -286,6 +295,7 @@ public class CDOMany2OneIT extends ServerCase {
         assertSame(p3, g3.getPaintingArray().get(0));
     }
 
+    @Test
     public void testSavedAdd() throws Exception {
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");

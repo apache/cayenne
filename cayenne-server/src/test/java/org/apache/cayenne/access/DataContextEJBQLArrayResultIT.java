@@ -26,6 +26,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -70,6 +71,7 @@ public class DataContextEJBQLArrayResultIT extends ServerCase {
         tPainting.insert(33003, null, "P3", 5000);
     }
 
+    @Test
     public void testSQLResultSetMappingScalar() throws Exception {
 
         String ejbql = "SELECT count(p) FROM Painting p JOIN p.toArtist a";
@@ -83,6 +85,7 @@ public class DataContextEJBQLArrayResultIT extends ServerCase {
         assertEquals(new Long(2), o1);
     }
 
+    @Test
     public void testSQLResultSetMappingScalars() throws Exception {
 
         String ejbql = "SELECT count(p), sum(p.estimatedPrice) FROM Painting p JOIN p.toArtist a";
@@ -101,6 +104,7 @@ public class DataContextEJBQLArrayResultIT extends ServerCase {
         assertEquals(0, new BigDecimal(8000).compareTo((BigDecimal) array1[1]));
     }
 
+    @Test
     public void testSQLResultSetMappingMixed() throws Exception {
 
         String ejbql = "SELECT count(p), a, sum(p.estimatedPrice) "

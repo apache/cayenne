@@ -31,6 +31,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.io.Serializable;
 import java.util.List;
@@ -62,6 +63,7 @@ public class DataDomainQueryActionIT extends ServerCase {
         runtime.getDataDomain().resetProperties();
     }
 
+    @Test
     public void testCachedQuery() {
 
         DataDomain domain = runtime.getDataDomain();

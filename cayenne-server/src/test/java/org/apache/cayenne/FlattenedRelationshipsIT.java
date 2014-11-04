@@ -33,6 +33,7 @@ import org.apache.cayenne.testdo.relationship.FlattenedTest2;
 import org.apache.cayenne.testdo.relationship.FlattenedTest3;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -113,6 +114,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
         tComplexJoin.insert(2002, 2, 3, "C");
     }
 
+    @Test
     public void testInsertJoinWithPK() throws Exception {
         FlattenedTest1 obj01 = context.newObject(FlattenedTest1.class);
         FlattenedTest3 obj11 = context.newObject(FlattenedTest3.class);
@@ -140,6 +142,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
         assertEquals(2, ((List<?>) related).size());
     }
 
+    @Test
     public void testUnsetJoinWithPK() throws Exception {
         createCircularJoinDataSet();
 
@@ -170,6 +173,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
         assertEquals(1, context.performQuery(joinSelect).size());
     }
 
+    @Test
     public void testQualifyOnToManyFlattened() throws Exception {
         FlattenedTest1 obj01 = context.newObject(FlattenedTest1.class);
         FlattenedTest2 obj02 = context.newObject(FlattenedTest2.class);
@@ -213,6 +217,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
         assertSame(obj11, objects2.get(0));
     }
 
+    @Test
     public void testToOneSeriesFlattenedRel() {
 
         FlattenedTest1 ft1 = (FlattenedTest1) context.newObject("FlattenedTest1");
@@ -239,6 +244,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
         assertEquals("FT1Name", fetchedFT1.getName());
     }
 
+    @Test
     public void testTakeObjectSnapshotFlattenedFault() throws Exception {
         createFlattenedTestDataSet();
 
@@ -257,6 +263,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
 
     }
 
+    @Test
     public void testRefetchWithFlattenedFaultToOneTarget1() throws Exception {
         createFlattenedTestDataSet();
 
@@ -272,6 +279,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
     }
 
+    @Test
     public void testFlattenedCircular() throws Exception {
         createFlattenedCircularDataSet();
 

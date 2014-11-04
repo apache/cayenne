@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationException;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextValidationIT extends ServerCase {
@@ -49,6 +50,7 @@ public class NestedDataContextValidationIT extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testValidateOnCommitToParent() {
         context.setValidatingObjectsOnCommit(true);
 

@@ -26,6 +26,7 @@ import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class DataContextClobIT extends ServerCase {
         return !accessStackAdapter.handlesNullVsEmptyLOBs();
     }
 
+    @Test
     public void testEmptyClob() throws Exception {
         if (skipEmptyLOBTests()) {
             return;
@@ -69,6 +71,7 @@ public class DataContextClobIT extends ServerCase {
         runWithClobSize(0);
     }
 
+    @Test
     public void test5ByteClob() throws Exception {
         if (skipTests()) {
             return;
@@ -76,6 +79,7 @@ public class DataContextClobIT extends ServerCase {
         runWithClobSize(5);
     }
 
+    @Test
     public void test5KByteClob() throws Exception {
         if (skipTests()) {
             return;
@@ -83,6 +87,7 @@ public class DataContextClobIT extends ServerCase {
         runWithClobSize(5 * 1024);
     }
 
+    @Test
     public void test1MBClob() throws Exception {
         if (skipTests()) {
             return;
@@ -90,6 +95,7 @@ public class DataContextClobIT extends ServerCase {
         runWithClobSize(1024 * 1024);
     }
 
+    @Test
     public void testNullClob() throws Exception {
         if (skipTests()) {
             return;

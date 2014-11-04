@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class EmbeddingIT extends ServerCase {
         tEmbedEntity1.insert(1, "n1", "e1", "e2", "e3", "e4");
     }
 
+    @Test
     public void testSelect() throws Exception {
         createSelectDataSet();
 
@@ -100,6 +102,7 @@ public class EmbeddingIT extends ServerCase {
         assertEquals("ex4", e22.getEmbedded20());
     }
 
+    @Test
     public void testInsert() throws Exception {
 
         EmbedEntity1 o1 = context.newObject(EmbedEntity1.class);
@@ -131,6 +134,7 @@ public class EmbeddingIT extends ServerCase {
         assertEquals("E22", row.get("EMBEDDED40"));
     }
 
+    @Test
     public void testUpdateEmbeddedProperties() throws Exception {
         createUpdateDataSet();
 
@@ -153,6 +157,7 @@ public class EmbeddingIT extends ServerCase {
         assertEquals("x1", row.get("EMBEDDED10"));
     }
 
+    @Test
     public void testUpdateEmbedded() throws Exception {
         createUpdateDataSet();
 

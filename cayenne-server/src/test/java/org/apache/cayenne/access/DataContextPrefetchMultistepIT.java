@@ -36,6 +36,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -111,6 +112,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         tGallery.insert(45, "gallery3");
     }
 
+    @Test
     public void testToManyToManyFirstStepUnresolved() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -160,6 +162,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, ae2.getPersistenceState());
     }
 
+    @Test
     public void testToManyToManyFirstStepResolved() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -195,6 +198,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
 
+    @Test
     public void testMixedPrefetch1() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -231,6 +235,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
 
+    @Test
     public void testMixedPrefetch2() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -268,7 +273,8 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         ArtistExhibit ae1 = aexhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
-    
+
+    @Test
     public void testToManyToOne_EmptyToMany() throws Exception {
 
         createGalleriesAndArtists();
@@ -288,7 +294,8 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         assertFalse(((ValueHolder) exhibits).isFault());
         assertEquals(0, exhibits.size());
     }
-    
+
+    @Test
     public void testToManyToOne_EmptyToMany_NoRootQualifier() throws Exception {
 
         createGalleriesAndArtists();

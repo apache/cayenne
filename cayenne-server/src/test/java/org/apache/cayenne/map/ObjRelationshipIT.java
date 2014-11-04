@@ -30,6 +30,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -60,6 +61,7 @@ public class ObjRelationshipIT extends ServerCase {
         galleryDBEntity = resolver.getDbEntity("GALLERY");
     }
 
+    @Test
     public void testEncodeAsXML() {
         StringWriter buffer = new StringWriter();
         PrintWriter out = new PrintWriter(buffer);
@@ -86,6 +88,7 @@ public class ObjRelationshipIT extends ServerCase {
                 + "collection-type=\"java.util.Map\" map-key=\"bla\"/>" + lineBreak, buffer.getBuffer().toString());
     }
 
+    @Test
     public void testCollectionType() {
         ObjRelationship r = new ObjRelationship("X");
         assertNull(r.getCollectionType());
@@ -93,6 +96,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertEquals("java.util.Map", r.getCollectionType());
     }
 
+    @Test
     public void testSerializability() throws Exception {
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
 
@@ -104,6 +108,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertEquals(r1.getDbRelationshipPath(), r2.getDbRelationshipPath());
     }
 
+    @Test
     public void testGetClientRelationship() {
         final ObjEntity target = new ObjEntity("te1");
         ObjRelationship r1 = new ObjRelationship("r1") {
@@ -124,6 +129,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertEquals(r1.getDeleteRule(), r2.getDeleteRule());
     }
 
+    @Test
     public void testGetReverseDbRelationshipPath() {
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjEntity paintingObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
@@ -138,6 +144,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertEquals("paintingArray", r2.getReverseDbRelationshipPath());
     }
 
+    @Test
     public void testSetDbRelationshipPath() {
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
 
@@ -147,6 +154,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertEquals(r.getDbRelationshipPath(), "paintingArray");
     }
 
+    @Test
     public void testRefreshFromPath() {
         ObjRelationship relationship = new ObjRelationship();
 
@@ -198,6 +206,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertSame(pathR, resolvedPath.get(1));
     }
 
+    @Test
     public void testCalculateToMany() {
         // assemble fixture....
         DataMap map = new DataMap();
@@ -247,6 +256,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertTrue(relationship.isToMany());
     }
 
+    @Test
     public void testCalculateToManyFromPath() {
         // assemble fixture....
         DataMap map = new DataMap();
@@ -298,6 +308,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertTrue(relationship.isToMany());
     }
 
+    @Test
     public void testTargetEntity() throws Exception {
         ObjRelationship relationship = new ObjRelationship("some_rel");
         relationship.setTargetEntityName("targ");
@@ -323,6 +334,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertSame(target, relationship.getTargetEntity());
     }
 
+    @Test
     public void testGetReverseRel1() {
 
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
@@ -336,6 +348,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertSame(paintingObjEnt.getRelationship("toArtist"), r2);
     }
 
+    @Test
     public void testGetReverseRel2() {
         ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjEntity paintingEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
@@ -348,6 +361,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertSame(artistEnt.getRelationship("paintingArray"), r2);
     }
 
+    @Test
     public void testSingleDbRelationship() {
         ObjRelationship relationship = new ObjRelationship();
         DbRelationship r1 = new DbRelationship("X");
@@ -361,6 +375,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertEquals(0, relationship.getDbRelationships().size());
     }
 
+    @Test
     public void testFlattenedRelationship() {
         DbRelationship r1 = new DbRelationship("X");
         DbRelationship r2 = new DbRelationship("Y");
@@ -393,6 +408,7 @@ public class ObjRelationshipIT extends ServerCase {
 
     }
 
+    @Test
     public void testReadOnly_Flattened1_1__N_1() {
 
         // check common vertical inheritance relationships
@@ -408,6 +424,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertFalse(x.isReadOnly());
     }
 
+    @Test
     public void testReadOnlyMoreThan3DbRelsRelationship() {
         // Readonly is a flattened relationship that isn't over a single
         // many->many link
@@ -440,6 +457,7 @@ public class ObjRelationshipIT extends ServerCase {
     // Test for a read-only flattened relationship that is readonly because it's
     // dbrel
     // sequence is "incorrect" (or rather, unsupported)
+    @Test
     public void testIncorrectSequenceReadOnlyRelationship() {
         DbRelationship r1 = new DbRelationship("X");
         DbRelationship r2 = new DbRelationship("Y");
@@ -462,6 +480,7 @@ public class ObjRelationshipIT extends ServerCase {
 
     // Test a relationship loaded from the test datamap that we know should be
     // flattened
+    @Test
     public void testKnownFlattenedRelationship() {
         ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjRelationship theRel = artistEnt.getRelationship("groupArray");
@@ -470,6 +489,7 @@ public class ObjRelationshipIT extends ServerCase {
         assertFalse(theRel.isReadOnly());
     }
 
+    @Test
     public void testBadDeleteRuleValue() {
         ObjRelationship relationship = new ObjRelationship();
 
@@ -481,6 +501,7 @@ public class ObjRelationshipIT extends ServerCase {
         }
     }
 
+    @Test
     public void testOkDeleteRuleValue() {
         ObjRelationship relationship = new ObjRelationship();
         try {

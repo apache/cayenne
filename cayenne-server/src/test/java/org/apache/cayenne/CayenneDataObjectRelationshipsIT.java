@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -82,6 +83,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         tPaintingInfo.insert(6, "mE");
     }
 
+    @Test
     public void testReadNestedProperty1() throws Exception {
         createArtistWithPaintingDataSet();
 
@@ -89,6 +91,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertEquals("aX", p1.readNestedProperty("toArtist.artistName"));
     }
 
+    @Test
     public void testReadNestedProperty2() throws Exception {
         createArtistWithPaintingDataSet();
 
@@ -96,6 +99,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertTrue(p1.getToArtist().readNestedProperty("paintingArray") instanceof List<?>);
     }
 
+    @Test
     public void testReciprocalRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
@@ -111,6 +115,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertSame(p1, p2);
     }
 
+    @Test
     public void testReadToOneRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
@@ -123,6 +128,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
     }
 
+    @Test
     public void testReadToOneRel2() throws Exception {
         // test chained calls to read relationships
         createArtistWithPaintingAndInfoDataSet();
@@ -139,6 +145,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
     }
 
+    @Test
     public void testReadToOneRel3() throws Exception {
         createArtistWithPaintingDataSet();
 
@@ -147,6 +154,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertNull(g1);
     }
 
+    @Test
     public void testReadToManyRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
@@ -159,6 +167,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertEquals("pW", plist.get(0).getPaintingTitle());
     }
 
+    @Test
     public void testReadToManyRel2() throws Exception {
         // test empty relationship
         tArtist.insert(11, "aX");
@@ -170,6 +179,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertEquals(0, plist.size());
     }
 
+    @Test
     public void testReflexiveRelationshipInsertOrder1() {
 
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
@@ -181,6 +191,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testReflexiveRelationshipInsertOrder2() {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
@@ -194,6 +205,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testReflexiveRelationshipInsertOrder3() {
         // multiple children, one created before parent, one after
 
@@ -212,6 +224,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testReflexiveRelationshipInsertOrder4() {
         // multiple children, one created before parent, one after
 
@@ -230,6 +243,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCrossContextRelationshipException() {
 
         // Create this object in one context...
@@ -261,6 +275,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         assertEquals(0, artist.getPaintingArray().size());
     }
 
+    @Test
     public void testComplexInsertUpdateOrdering() {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("a name");
@@ -278,6 +293,7 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testNewToMany() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("test");

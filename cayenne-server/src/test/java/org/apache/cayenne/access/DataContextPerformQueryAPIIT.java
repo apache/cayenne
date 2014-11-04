@@ -35,6 +35,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -97,6 +98,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         tPainting.insert(7, 11, "p_artist2", 2000);
     }
 
+    @Test
     public void testObjectQueryStringBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -105,6 +107,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         assertEquals(2, paintings.size());
     }
 
+    @Test
     public void testObjectQueryStringMapBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -116,6 +119,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         assertEquals(1, paintings.size());
     }
 
+    @Test
     public void testProcedureQueryStringMapBoolean() throws Exception {
 
         if (!accessStackAdapter.supportsStoredProcedures()) {
@@ -151,6 +155,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         assertEquals(11, ((Number) artist.getObjectId().getIdSnapshot().get(Artist.ARTIST_ID_PK_COLUMN)).intValue());
     }
 
+    @Test
     public void testNonSelectingQueryString() throws Exception {
 
         int[] counts = context.performNonSelectingQuery("NonSelectingQuery");
@@ -163,6 +168,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         assertEquals("No Painting Like This", p.getPaintingTitle());
     }
 
+    @Test
     public void testNonSelectingQueryStringMap() throws Exception {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -180,6 +186,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         assertEquals("Go Figure", p.getPaintingTitle());
     }
 
+    @Test
     public void testPerfomQueryNonSelecting() throws Exception {
 
         Artist a = context.newObject(Artist.class);
@@ -196,6 +203,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         assertEquals(0, result.size());
     }
 
+    @Test
     public void testObjectQueryWithLocalCache() throws Exception {
         createTwoArtists();
 
@@ -211,6 +219,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         });
     }
 
+    @Test
     public void testObjectQueryWithSharedCache() throws Exception {
         createTwoArtists();
 

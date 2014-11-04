@@ -26,6 +26,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -44,6 +45,7 @@ public class DataContextCharPKIT extends ServerCase {
         dbHelper.deleteAll("CHAR_PK_TEST");
     }
 
+    @Test
     public void testInsert() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
@@ -74,6 +76,7 @@ public class DataContextCharPKIT extends ServerCase {
         assertEquals("PK1", val);
     }
 
+    @Test
     public void testDelete() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
@@ -93,6 +96,7 @@ public class DataContextCharPKIT extends ServerCase {
         assertEquals(0, rows.size());
     }
 
+    @Test
     public void testUpdate() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");

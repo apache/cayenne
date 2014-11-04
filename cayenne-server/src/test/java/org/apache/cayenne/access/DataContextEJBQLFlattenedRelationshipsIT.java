@@ -28,6 +28,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.FlattenedTest1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -80,6 +81,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
         ft4Helper.insert(1, 1, "ft4");
     }
 
+    @Test
     public void testCollectionMemberOfThetaJoin() throws Exception {
         createFt123();
 
@@ -104,6 +106,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
         assertTrue(ids.contains(3));
     }
 
+    @Test
     public void testCollectionMemberOfThetaJoinLongRelationshipSequence()
             throws Exception {
 
@@ -135,6 +138,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
         assertEquals(0, objects.size());
     }
 
+    @Test
     public void testCollectionInnerJoin() throws Exception {
 
         createFt123();
@@ -160,6 +164,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
 
     }
 
+    @Test
     public void testCollectionAsInnerJoin() throws Exception {
 
         createFt123();
@@ -187,6 +192,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
 
     }
 
+    @Test
     public void testCollectionThetaJoin() throws Exception {
         createFt123();
 
@@ -210,6 +216,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
 
     }
 
+    @Test
     public void testCollectionIdentificationVariable() throws Exception {
         createFt123();
 
@@ -236,6 +243,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
 
     }
 
+    @Test
     public void testAssociationFieldSelect() throws Exception {
         createFt123();
 
@@ -259,6 +267,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
 
     }
 
+    @Test
     public void testCollectionSubquery() throws Exception {
 
         createFt123();
@@ -281,6 +290,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
 
     }
 
+    @Test
     public void testCollectionSubquery1() throws Exception {
         createFt123();
 
@@ -306,6 +316,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
 
     }
 
+    @Test
     public void testGroupByFlattenedRelationship() throws Exception {
 
         createFt123();

@@ -21,6 +21,7 @@ package org.apache.cayenne.unit.di.server;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ServerCaseSelfIT extends ServerCase {
@@ -34,6 +35,7 @@ public class ServerCaseSelfIT extends ServerCase {
     @Inject
     protected ServerCaseProperties properties;
 
+    @Test
     public void testSetup_TearDown_Runtime() throws Exception {
 
         assertNotNull(properties);

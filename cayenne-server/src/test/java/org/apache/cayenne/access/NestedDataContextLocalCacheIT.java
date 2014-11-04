@@ -28,6 +28,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -54,6 +55,7 @@ public class NestedDataContextLocalCacheIT extends ServerCase {
         dbHelper.deleteAll("GALLERY");
     }
 
+    @Test
     public void testLocalCacheStaysLocal() {
 
         SelectQuery query = new SelectQuery(Artist.class);

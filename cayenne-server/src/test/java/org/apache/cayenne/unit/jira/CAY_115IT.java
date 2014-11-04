@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.relationship.ClobMaster;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -78,6 +79,7 @@ public class CAY_115IT extends ServerCase {
         tClobDetail.insert(4, 3, "cd31");
     }
 
+    @Test
     public void testDistinctClobFetch() throws Exception {
         if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;
@@ -99,6 +101,7 @@ public class CAY_115IT extends ServerCase {
         assertEquals(noDistinctResult, distinctResult);
     }
 
+    @Test
     public void testDistinctClobFetchWithToManyJoin() throws Exception {
         if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;

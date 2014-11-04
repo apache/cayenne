@@ -24,6 +24,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextRollbackIT extends ServerCase {
@@ -34,6 +35,7 @@ public class NestedDataContextRollbackIT extends ServerCase {
     @Inject
     private DataContext context;
 
+    @Test
     public void testRollbackChanges() {
         ObjectContext child1 = runtime.newContext(context);
 
@@ -51,6 +53,7 @@ public class NestedDataContextRollbackIT extends ServerCase {
         assertFalse(child1.hasChanges());
     }
 
+    @Test
     public void testRollbackChangesLocally() {
         ObjectContext child1 = runtime.newContext(context);
 

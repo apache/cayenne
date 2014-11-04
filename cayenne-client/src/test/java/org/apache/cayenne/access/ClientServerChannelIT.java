@@ -48,8 +48,9 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.EqualsBuilder;
+import org.junit.Test;
 
-import java.util.List;
+import java.util.List;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientServerChannelIT extends ClientCase {
@@ -101,6 +102,7 @@ public class ClientServerChannelIT extends ClientCase {
         tMtTable2.insert(2, 1, "g2");
     }
 
+    @Test
     public void testGetEntityResolver() throws Exception {
         EntityResolver resolver = clientServerChannel.getEntityResolver();
         assertNotNull(resolver);
@@ -108,6 +110,7 @@ public class ClientServerChannelIT extends ClientCase {
         assertNotNull(resolver.getClientEntityResolver().getObjEntity(ClientMtTable1.class));
     }
 
+    @Test
     public void testSynchronizeCommit() throws Exception {
 
         SelectQuery query = new SelectQuery(MtTable1.class);
@@ -124,6 +127,7 @@ public class ClientServerChannelIT extends ClientCase {
         assertEquals(1, serverContext.performQuery(query).size());
     }
 
+    @Test
     public void testPerformQueryObjectIDInjection() throws Exception {
         tMtTable1.insert(55, "g1", "s1");
 
@@ -145,6 +149,7 @@ public class ClientServerChannelIT extends ClientCase {
         assertEquals(new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 55), clientObject.getObjectId());
     }
 
+    @Test
     public void testPerformQueryValuePropagation() throws Exception {
 
         byte[] bytes = new byte[] { 1, 2, 3 };
@@ -170,6 +175,7 @@ public class ClientServerChannelIT extends ClientCase {
         assertTrue(new EqualsBuilder().append(clientObject.getBinaryColumn(), bytes).isEquals());
     }
 
+    @Test
     public void testPerformQueryPropagationInheritance() throws Exception {
 
         tMtTable1.insert(65, "sub1", "xyz");
@@ -191,6 +197,7 @@ public class ClientServerChannelIT extends ClientCase {
         assertEquals("sub1", clientObject.getGlobalAttribute1());
     }
 
+    @Test
     public void testOnQuery() {
 
         final boolean[] genericDone = new boolean[1];
@@ -209,6 +216,7 @@ public class ClientServerChannelIT extends ClientCase {
         assertTrue(genericDone[0]);
     }
 
+    @Test
     public void testOnQueryPrefetchingToMany() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -234,6 +242,7 @@ public class ClientServerChannelIT extends ClientCase {
         });
     }
 
+    @Test
     public void testOnQueryPrefetchingToManyEmpty() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 

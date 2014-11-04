@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.relationship.SetToMany;
 import org.apache.cayenne.testdo.relationship.SetToManyTarget;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Set;
 
@@ -64,6 +65,7 @@ public class CDOSetRelationshipIT extends ServerCase {
         tSetToManyTarget.insert(4, 2);
     }
 
+    @Test
     public void testReadToMany() throws Exception {
         createTestDataSet();
 
@@ -90,6 +92,7 @@ public class CDOSetRelationshipIT extends ServerCase {
                 3)));
     }
 
+    @Test
     public void testReadToManyPrefetching() throws Exception {
         createTestDataSet();
 
@@ -119,6 +122,7 @@ public class CDOSetRelationshipIT extends ServerCase {
                 3)));
     }
 
+    @Test
     public void testAddToMany() throws Exception {
         createTestDataSet();
 
@@ -143,6 +147,7 @@ public class CDOSetRelationshipIT extends ServerCase {
         assertEquals(4, o1.getTargets().size());
     }
 
+    @Test
     public void testRemoveToMany() throws Exception {
         createTestDataSet();
 
@@ -168,6 +173,7 @@ public class CDOSetRelationshipIT extends ServerCase {
         assertFalse(o1.getTargets().contains(target));
     }
 
+    @Test
     public void testAddToManyViaReverse() throws Exception {
         createTestDataSet();
 

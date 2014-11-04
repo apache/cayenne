@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy;
 import org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Tests conflicts between field and map-based persistence.
@@ -67,6 +68,7 @@ public class MixedPersistenceStrategyIT extends ServerCase {
         tMixedPersistenceStrategy2.insert(2, 1, "dn2");
     }
 
+    @Test
     public void testConflictingField1() throws Exception {
 
         createConflictingFieldDataSet();
@@ -83,6 +85,7 @@ public class MixedPersistenceStrategyIT extends ServerCase {
     /**
      * This test case reproduces CAY-582 bug.
      */
+    @Test
     public void testConflictingField2() throws Exception {
 
         createConflictingFieldDataSet();

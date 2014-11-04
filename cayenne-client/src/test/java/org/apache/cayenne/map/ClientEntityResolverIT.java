@@ -22,13 +22,15 @@ import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Collections;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientEntityResolverIT extends ClientCase {
 
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         ObjEntity entity = new ObjEntity("test_entity");
         entity.setClassName(Artist.class.getName());

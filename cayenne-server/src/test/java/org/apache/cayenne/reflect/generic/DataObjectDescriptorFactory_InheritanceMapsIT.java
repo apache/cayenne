@@ -30,6 +30,7 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
 public class DataObjectDescriptorFactory_InheritanceMapsIT extends ServerCase {
@@ -37,6 +38,7 @@ public class DataObjectDescriptorFactory_InheritanceMapsIT extends ServerCase {
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testVisitProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(

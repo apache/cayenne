@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.unit.jira;
 
-import java.sql.Types;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -29,6 +27,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.FkOfDifferentType;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.sql.Types;
 
 @UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
 public class CAY_191IT extends ServerCase {
@@ -61,6 +62,7 @@ public class CAY_191IT extends ServerCase {
         tFkOfDifferentType.insert(1, 1);
     }
 
+    @Test
     public void testResolveToOneOverFKOfDifferentNumType() throws Exception {
         // this is mostly for legacy schemas, as on many dbs you won;t be able to even
         // create the FK constraint...

@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DbGeneratorIT extends ServerCase {
@@ -49,10 +50,12 @@ public class DbGeneratorIT extends ServerCase {
                 .getDataMap("tstmap"), logger);
     }
 
+    @Test
     public void testAdapter() throws Exception {
         assertSame(adapter, generator.getAdapter());
     }
 
+    @Test
     public void testPkFilteringLogic() throws Exception {
         DataMap map = runtime.getDataDomain().getDataMap("tstmap");
         DbEntity artistExhibit = map.getDbEntity("ARTIST_EXHIBIT");
@@ -68,6 +71,7 @@ public class DbGeneratorIT extends ServerCase {
         assertFalse(generator.dbEntitiesRequiringAutoPK.contains(artistExhibit));
     }
 
+    @Test
     public void testCreatePkSupport() throws Exception {
         assertTrue(generator.shouldCreatePKSupport());
         generator.setShouldCreatePKSupport(false);
@@ -75,12 +79,14 @@ public class DbGeneratorIT extends ServerCase {
 
     }
 
+    @Test
     public void testShouldCreateTables() throws Exception {
         assertTrue(generator.shouldCreateTables());
         generator.setShouldCreateTables(false);
         assertFalse(generator.shouldCreateTables());
     }
 
+    @Test
     public void testDropPkSupport() throws Exception {
 
         assertFalse(generator.shouldDropPKSupport());
@@ -88,6 +94,7 @@ public class DbGeneratorIT extends ServerCase {
         assertTrue(generator.shouldDropPKSupport());
     }
 
+    @Test
     public void testShouldDropTables() throws Exception {
         assertFalse(generator.shouldDropTables());
         generator.setShouldDropTables(true);

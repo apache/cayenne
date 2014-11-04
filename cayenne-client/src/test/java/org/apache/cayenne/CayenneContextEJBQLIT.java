@@ -25,6 +25,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class CayenneContextEJBQLIT extends ClientCase {
         tMtTable1.insert(2, "g2", "s2");
     }
 
+    @Test
     public void testEJBQLSelect() throws Exception {
         createTwoRecords();
 
@@ -62,6 +64,7 @@ public class CayenneContextEJBQLIT extends ClientCase {
         assertEquals(2, results.size());
     }
 
+    @Test
     public void testEJBQLSelectScalar() throws Exception {
         createTwoRecords();
 
@@ -71,6 +74,7 @@ public class CayenneContextEJBQLIT extends ClientCase {
         assertEquals(Long.valueOf(2), results.get(0));
     }
 
+    @Test
     public void testEJBQLSelectMixed() throws Exception {
         createTwoRecords();
 

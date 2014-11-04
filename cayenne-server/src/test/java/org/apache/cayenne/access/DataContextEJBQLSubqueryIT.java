@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.HashSet;
@@ -84,6 +85,7 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         tPainting.insert(33004, null, "P4", 6000);
     }
 
+    @Test
     public void testSubqueryNoQualifier() throws Exception {
         if (!accessStackAdapter.supportsAllAnySome()) {
             return;
@@ -110,6 +112,7 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33004)));
     }
 
+    @Test
     public void testDifferentEntity() throws Exception {
         createTwoArtistsFourPaintings();
 
@@ -135,6 +138,7 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         assertTrue("" + objects.get(0), objects.get(0) instanceof Artist);
     }
 
+    @Test
     public void testExists() throws Exception {
         createTwoArtistsFourPaintings();
 
@@ -160,6 +164,7 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33003)));
     }
 
+    @Test
     public void testAll() throws Exception {
         if (!accessStackAdapter.supportsAllAnySome()) {
             return;
@@ -188,6 +193,7 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33004)));
     }
 
+    @Test
     public void testAny() throws Exception {
         if (!accessStackAdapter.supportsAllAnySome()) {
             return;
@@ -217,6 +223,7 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33004)));
     }
 
+    @Test
     public void testSome() throws Exception {
         if (!accessStackAdapter.supportsAllAnySome()) {
             return;

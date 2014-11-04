@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.HashMap;
@@ -96,6 +97,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         tCompoundFk.insert(33002, "b1", "b2");
     }
 
+    @Test
     public void testUpdateQualifier() throws Exception {
         createThreeArtistsTwoPaintings();
 
@@ -119,6 +121,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(new Long(1l), notUpdated);
     }
 
+    @Test
     public void testUpdateNoQualifierString() throws Exception {
         createThreeArtistsTwoPaintings();
 
@@ -142,6 +145,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(new Long(0l), notUpdated);
     }
 
+    @Test
     public void testUpdateNoQualifierNull() throws Exception {
         createThreeArtistsTwoPaintings();
 
@@ -191,6 +195,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
     // assertEquals(new Long(0l), notUpdated);
     // }
 
+    @Test
     public void testUpdateNoQualifierMultipleItems() throws Exception {
         createThreeArtistsTwoPaintings();
 
@@ -214,6 +219,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(new Long(0l), notUpdated);
     }
 
+    @Test
     public void testUpdateNoQualifierDecimal() throws Exception {
         createThreeArtistsTwoPaintings();
 
@@ -237,6 +243,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(new Long(0l), notUpdated);
     }
 
+    @Test
     public void testUpdateNoQualifierBoolean() throws Exception {
 
         BooleanTestEntity o1 = context.newObject(BooleanTestEntity.class);
@@ -270,6 +277,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(new Long(3l), notUpdated);
     }
 
+    @Test
     public void testUpdateNoQualifierToOne() throws Exception {
         createThreeArtistsTwoPaintings();
 
@@ -297,6 +305,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(new Long(0l), notUpdated);
     }
 
+    @Test
     public void testUpdateNoQualifierToOneCompoundPK() throws Exception {
         createTwoCompoundPKTwoFK();
 

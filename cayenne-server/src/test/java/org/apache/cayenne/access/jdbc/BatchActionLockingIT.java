@@ -38,6 +38,7 @@ import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,6 +61,7 @@ public class BatchActionLockingIT extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testRunAsIndividualQueriesSuccess() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
@@ -101,6 +103,7 @@ public class BatchActionLockingIT extends ServerCase {
         assertEquals(0, mockConnection.getNumberRollbacks());
     }
 
+    @Test
     public void testRunAsIndividualQueriesOptimisticLockingFailure() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 

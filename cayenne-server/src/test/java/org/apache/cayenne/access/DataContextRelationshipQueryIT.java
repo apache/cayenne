@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -63,6 +64,7 @@ public class DataContextRelationshipQueryIT extends ServerCase {
         tPainting.insert(1, "p1", 1);
     }
 
+    @Test
     public void testUnrefreshingToOne() throws Exception {
 
         createOneArtistOnePaintingDataSet();
@@ -99,6 +101,7 @@ public class DataContextRelationshipQueryIT extends ServerCase {
                 a.getPropertyWrittenDirectly());
     }
 
+    @Test
     public void testRefreshingToOne() throws Exception {
 
         createOneArtistOnePaintingDataSet();

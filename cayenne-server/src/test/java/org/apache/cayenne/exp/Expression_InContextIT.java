@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class Expression_InContextIT extends ServerCase {
 		dbHelper.deleteAll("GALLERY");
 	}
 
+    @Test
 	public void testMatch() {
 
 		assertTrue(context instanceof DataContext);
@@ -105,6 +107,7 @@ public class Expression_InContextIT extends ServerCase {
 		assertFalse(ex.match(objects.get(0)));
 	}
 
+    @Test
 	public void testFirst() {
 		List<Painting> paintingList = new ArrayList<Painting>();
 		Painting p1 = context.newObject(Painting.class);

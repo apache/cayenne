@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Types;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObject;
@@ -44,6 +39,12 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.sql.Types;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextReadIT extends ServerCase {
@@ -112,6 +113,7 @@ public class NestedDataContextReadIT extends ServerCase {
         tPainting.insert(33006, "P_artist6", 33001, 3000);
     }
 
+    @Test
     public void testCreateChildDataContext() {
         context.setValidatingObjectsOnCommit(true);
 
@@ -137,6 +139,7 @@ public class NestedDataContextReadIT extends ServerCase {
         assertFalse(((DataContext) child2).isValidatingObjectsOnCommit());
     }
 
+    @Test
     public void testSelect() throws Exception {
         createArtistsDataSet();
 
@@ -178,6 +181,7 @@ public class NestedDataContextReadIT extends ServerCase {
         }
     }
 
+    @Test
     public void testReadToOneRelationship() throws Exception {
         createRelationshipDataSet();
 
@@ -277,6 +281,7 @@ public class NestedDataContextReadIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchingToOne() throws Exception {
         createPrefetchingDataSet();
 
@@ -315,6 +320,7 @@ public class NestedDataContextReadIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchingToMany() throws Exception {
         createPrefetchingDataSet();
 
@@ -356,6 +362,7 @@ public class NestedDataContextReadIT extends ServerCase {
         });
     }
 
+    @Test
     public void testObjectFromDataRow() throws Exception {
 
         DataContext childContext = (DataContext) runtime.newContext(context);

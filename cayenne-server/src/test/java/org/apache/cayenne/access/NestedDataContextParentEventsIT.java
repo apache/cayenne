@@ -26,6 +26,7 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextParentEventsIT extends ServerCase {
@@ -36,6 +37,7 @@ public class NestedDataContextParentEventsIT extends ServerCase {
     @Inject
     private DataContext context;
 
+    @Test
     public void testParentUpdatedId() throws Exception {
         ObjectContext child1 = runtime.newContext(context);
 

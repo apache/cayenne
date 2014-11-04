@@ -19,20 +19,22 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataRowStoreIT extends ServerCase {
 
+    @Test
     public void testDefaultConstructor() {
         DataRowStore cache = new DataRowStore(
                 "cacheXYZ",
@@ -46,6 +48,7 @@ public class DataRowStoreIT extends ServerCase {
                 .isNotifyingRemoteListeners());
     }
 
+    @Test
     public void testConstructorWithProperties() {
         Map<Object, Object> props = new HashMap<Object, Object>();
         props.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, String
@@ -60,6 +63,7 @@ public class DataRowStoreIT extends ServerCase {
                 .isNotifyingRemoteListeners());
     }
 
+    @Test
     public void testNotifyingRemoteListeners() {
         DataRowStore cache = new DataRowStore(
                 "cacheXYZ",
@@ -77,6 +81,7 @@ public class DataRowStoreIT extends ServerCase {
     /**
      * Tests LRU cache behavior.
      */
+    @Test
     public void testMaxSize() throws Exception {
         Map<Object, Object> props = new HashMap<Object, Object>();
         props.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(2));

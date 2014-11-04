@@ -39,6 +39,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.GenericResponse;
+import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -49,7 +50,7 @@ import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.when;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextIT extends ClientCase {
@@ -57,6 +58,7 @@ public class CayenneContextIT extends ClientCase {
     @Inject
     private ObjectContext serverContext;
 
+    @Test
     public void testConstructor() {
 
         CayenneContext context = new CayenneContext();
@@ -70,6 +72,7 @@ public class CayenneContextIT extends ClientCase {
         assertSame(channel, context.getChannel());
     }
 
+    @Test
     public void testChannel() {
         MockDataChannel channel = new MockDataChannel();
         CayenneContext context = new CayenneContext(channel);
@@ -77,6 +80,7 @@ public class CayenneContextIT extends ClientCase {
         assertSame(channel, context.getChannel());
     }
 
+    @Test
     public void testCommitUnchanged() {
 
         MockDataChannel channel = new MockDataChannel();
@@ -87,6 +91,7 @@ public class CayenneContextIT extends ClientCase {
         assertTrue(channel.getRequestObjects().isEmpty());
     }
 
+    @Test
     public void testCommitCommandExecuted() {
 
         MockDataChannel channel = new MockDataChannel(new MockGraphDiff());
@@ -111,6 +116,7 @@ public class CayenneContextIT extends ClientCase {
         assertTrue(mainMessage instanceof GraphDiff);
     }
 
+    @Test
     public void testCommitChangesNew() {
         final CompoundDiff diff = new CompoundDiff();
         final Object newObjectId = new ObjectId("test", "key", "generated");
@@ -157,6 +163,7 @@ public class CayenneContextIT extends ClientCase {
         assertSame(object, context.graphManager.getNode(newObjectId));
     }
 
+    @Test
     public void testNewObject() {
 
         CayenneContext context = new CayenneContext(new MockDataChannel());
@@ -182,6 +189,7 @@ public class CayenneContextIT extends ClientCase {
         assertTrue(object.getObjectId().isTemporary());
     }
 
+    @Test
     public void testDeleteObject() {
 
         CayenneContext context = new CayenneContext(new MockDataChannel());
@@ -238,6 +246,7 @@ public class CayenneContextIT extends ClientCase {
         assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
     }
 
+    @Test
     public void testBeforePropertyReadShouldInflateHollow() {
 
         ObjectId gid = new ObjectId("MtTable1", "a", "b");
@@ -303,6 +312,7 @@ public class CayenneContextIT extends ClientCase {
         assertEquals(PersistenceState.COMMITTED, hollow.getPersistenceState());
     }
 
+    @Test
     public void testBeforeHollowDeleteShouldChangeStateToCommited() {
 
         ObjectId gid = new ObjectId("MtTable1", "a", "b");

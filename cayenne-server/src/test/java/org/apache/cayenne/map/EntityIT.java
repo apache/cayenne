@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
@@ -30,6 +27,10 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class EntityIT extends ServerCase {
@@ -37,6 +38,7 @@ public class EntityIT extends ServerCase {
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testSerializability() throws Exception {
         Entity entity = new MockEntity("entity");
 
@@ -66,6 +68,7 @@ public class EntityIT extends ServerCase {
         assertSame(d2.getRelationship("xyz"), d2.getRelationshipMap().get("xyz"));
     }
 
+    @Test
     public void testName() {
         Entity entity = new MockEntity();
         String tstName = "tst_name";
@@ -73,6 +76,7 @@ public class EntityIT extends ServerCase {
         assertEquals(tstName, entity.getName());
     }
 
+    @Test
     public void testAttribute() {
         Entity entity = new MockEntity();
         Attribute attribute = new MockAttribute("tst_name");
@@ -88,6 +92,7 @@ public class EntityIT extends ServerCase {
         assertNull(entity.getAttribute(attribute.getName()));
     }
 
+    @Test
     public void testRelationship() {
         Entity entity = new MockEntity();
         Relationship rel = new MockRelationship("tst_name");
@@ -103,6 +108,7 @@ public class EntityIT extends ServerCase {
         assertNull(entity.getRelationship(rel.getName()));
     }
 
+    @Test
     public void testAttributeClashWithRelationship() {
         Entity entity = new MockEntity();
         Relationship rel = new MockRelationship("tst_name");
@@ -119,6 +125,7 @@ public class EntityIT extends ServerCase {
         }
     }
 
+    @Test
     public void testRelationshipClashWithAttribute() {
         Entity entity = new MockEntity();
         Attribute attribute = new MockAttribute("tst_name");
@@ -135,6 +142,7 @@ public class EntityIT extends ServerCase {
         }
     }
 
+    @Test
     public void testResolveBadObjPath1() {
         // test invalid expression path
         Expression pathExpr = ExpressionFactory.expressionOfType(Expression.OBJ_PATH);
@@ -154,6 +162,7 @@ public class EntityIT extends ServerCase {
         }
     }
 
+    @Test
     public void testResolveBadObjPath2() {
         // test invalid expression type
         Expression badPathExpr = ExpressionFactory.expressionOfType(Expression.IN);
@@ -168,6 +177,7 @@ public class EntityIT extends ServerCase {
         }
     }
 
+    @Test
     public void testResolveObjPath1() {
         Expression pathExpr = ExpressionFactory.expressionOfType(Expression.OBJ_PATH);
         pathExpr.setOperand(0, "galleryName");
@@ -184,6 +194,7 @@ public class EntityIT extends ServerCase {
         assertSame(galleryEnt.getAttribute("galleryName"), next);
     }
 
+    @Test
     public void testRemoveAttribute() {
         Entity entity = new MockEntity();
 

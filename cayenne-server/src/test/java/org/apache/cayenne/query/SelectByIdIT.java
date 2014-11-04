@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertNotEquals;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -33,6 +30,9 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import static java.util.Collections.singletonMap;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SelectByIdIT extends ServerCase {
@@ -68,6 +68,7 @@ public class SelectByIdIT extends ServerCase {
 		tArtist.insert(3, "artist3");
 	}
 
+    @Test
 	public void testIntPk() throws Exception {
 		createTwoArtists();
 
@@ -80,6 +81,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals("artist2", a2.getArtistName());
 	}
 
+    @Test
 	public void testMapPk() throws Exception {
 		createTwoArtists();
 
@@ -92,6 +94,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals("artist2", a2.getArtistName());
 	}
 
+    @Test
 	public void testObjectIdPk() throws Exception {
 		createTwoArtists();
 
@@ -106,6 +109,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals("artist2", a2.getArtistName());
 	}
 
+    @Test
 	public void testDataRowIntPk() throws Exception {
 		createTwoArtists();
 
@@ -118,6 +122,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
 
+    @Test
 	public void testMetadataCacheKey() throws Exception {
 		SelectById<Painting> q1 = SelectById.query(Painting.class, 4);
 		QueryMetadata md1 = q1.getMetaData(context.getEntityResolver());
@@ -156,6 +161,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals(md1.getCacheKey(), md5.getCacheKey());
 	}
 
+    @Test
 	public void testLocalCache() throws Exception {
 		createTwoArtists();
 

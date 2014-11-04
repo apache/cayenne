@@ -24,7 +24,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
-import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.unit.UnitLocalConnection;
 import org.apache.cayenne.unit.di.client.ClientCase;
 
@@ -38,21 +37,7 @@ public abstract class RemoteCayenneCase extends ClientCase {
     /**
      * Used serialization policy. Per CAY-979 we're testing on all policies
      */
-    private int serializationPolicy;
-
-    @Override
-    public void runBare() throws Throwable {
-        serializationPolicy = LocalConnection.HESSIAN_SERIALIZATION;
-        runBareSimple();
-        serializationPolicy = LocalConnection.JAVA_SERIALIZATION;
-        runBareSimple();
-        serializationPolicy = LocalConnection.NO_SERIALIZATION;
-        runBareSimple();
-    }
-
-    protected void runBareSimple() throws Throwable {
-        super.runBare();
-    }
+    protected int serializationPolicy;
 
     @Override
     public void setUpAfterInjection() throws Exception {

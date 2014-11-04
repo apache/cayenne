@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.SchemaBuilder;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collections;
 
@@ -61,6 +62,7 @@ public class JdbcPkGeneratorIT extends ServerCase {
         }
     }
 
+    @Test
     public void testLongPk() throws Exception {
 
         if (!JdbcPkGenerator.class.isAssignableFrom(adapter.getPkGenerator().getClass())) {

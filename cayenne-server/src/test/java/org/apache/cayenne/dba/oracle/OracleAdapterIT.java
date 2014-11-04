@@ -26,6 +26,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 
@@ -38,6 +39,7 @@ public class OracleAdapterIT extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testUpdatesLOBColumns() throws Exception {
         DataMap map = runtime.getDataDomain().getDataMap("tstmap");
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
@@ -48,6 +50,7 @@ public class OracleAdapterIT extends ServerCase {
                 .getDbEntity("ARTIST"), 1)));
     }
 
+    @Test
     public void testTimestampMapping() throws Exception {
         
         OracleAdapter adapter = objectFactory.newInstance(

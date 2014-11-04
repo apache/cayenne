@@ -37,6 +37,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -191,6 +192,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         context.invalidateObjects(invalidate);
     }
 
+    @Test
     public void testFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -218,6 +220,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         });
     }
 
+    @Test
     public void testFlattenedMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -245,6 +248,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         });
     }
 
+    @Test
     public void testLongFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -272,6 +276,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         });
     }
 
+    @Test
     public void testMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -295,6 +300,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchInParent() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -326,6 +332,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchInChild() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 

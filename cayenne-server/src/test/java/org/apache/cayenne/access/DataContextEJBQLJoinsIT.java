@@ -27,6 +27,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.HashSet;
@@ -111,6 +112,7 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
         tPainting.insert(33007, 33001, null, "P2", 5000);
     }
 
+    @Test
     public void testThetaJoins() throws Exception {
         createFourArtistsFourPaintings();
 
@@ -133,6 +135,7 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
         assertTrue(names.contains("BB2"));
     }
 
+    @Test
     public void testInnerJoins() throws Exception {
         createTwoArtistsOnePainting();
 
@@ -145,6 +148,7 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
         assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
+    @Test
     public void testOuterJoins() throws Exception {
         createTwoArtistsOnePainting();
 
@@ -165,6 +169,7 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
         assertTrue(ids.contains(33005l));
     }
 
+    @Test
     public void testChainedJoins() throws Exception {
         createTwoArtistsTwoPaintingsTwoGalleries();
 
@@ -179,6 +184,7 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
+    @Test
     public void testImplicitJoins() throws Exception {
         createTwoArtistsTwoPaintingsTwoGalleries();
 
@@ -196,6 +202,7 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
+    @Test
     public void testPartialImplicitJoins1() throws Exception {
         createTwoArtistsTwoPaintingsTwoGalleries();
 
@@ -208,6 +215,7 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
+    @Test
     public void testPartialImplicitJoins2() throws Exception {
         createTwoArtistsTwoPaintingsTwoGalleries();
 
@@ -220,6 +228,7 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
     }
 
+    @Test
     public void testMultipleJoinsToTheSameTable() throws Exception {
         createTwoArtistsThreePaintings();
 

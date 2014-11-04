@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,7 @@ public class DataContextDelegateIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testWillPerformGenericQuery() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
@@ -90,6 +92,7 @@ public class DataContextDelegateIT extends ServerCase {
         assertTrue("Delegate unexpectedly blocked the query.", query.isRouteCalled());
     }
 
+    @Test
     public void testWillPerformGenericQueryBlocked() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
@@ -112,6 +115,7 @@ public class DataContextDelegateIT extends ServerCase {
         assertFalse("Delegate couldn't block the query.", query.isRouteCalled());
     }
 
+    @Test
     public void testWillPerformQuery() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
@@ -135,6 +139,7 @@ public class DataContextDelegateIT extends ServerCase {
         assertNotNull(results);
     }
 
+    @Test
     public void testWillPerformQueryBlocked() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);

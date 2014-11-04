@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Connection;
 
@@ -55,6 +56,7 @@ public class OrderingTranslatorIT extends ServerCase {
     /**
      * Tests ascending ordering on string attribute.
      */
+    @Test
     public void testDoTranslation1() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING);
@@ -73,6 +75,7 @@ public class OrderingTranslatorIT extends ServerCase {
     /**
      * Tests descending ordering on string attribute.
      */
+    @Test
     public void testDoTranslation2() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.DESCENDING);
@@ -91,6 +94,7 @@ public class OrderingTranslatorIT extends ServerCase {
     /**
      * Tests ascending case-insensitive ordering on string attribute.
      */
+    @Test
     public void testDoTranslation4() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
@@ -108,6 +112,7 @@ public class OrderingTranslatorIT extends ServerCase {
         tstCase.assertTranslatedWell(orderBySql);
     }
 
+    @Test
     public void testDoTranslation5() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.DESCENDING_INSENSITIVE);
@@ -132,6 +137,7 @@ public class OrderingTranslatorIT extends ServerCase {
         tstCase.assertTranslatedWell(orderBySql);
     }
 
+    @Test
     public void testDoTranslation6() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
@@ -158,6 +164,7 @@ public class OrderingTranslatorIT extends ServerCase {
         tstCase.assertTranslatedWell(orderBySql);
     }
 
+    @Test
     public void testDoTranslation3() throws Exception {
         SelectQuery q = new SelectQuery(Artist.class);
 

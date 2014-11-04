@@ -24,6 +24,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class CDOMany2OneNoRevIT extends ServerCase {
@@ -31,6 +32,7 @@ public class CDOMany2OneNoRevIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    @Test
     public void testNewAdd() throws Exception {
 
         Artist a1 = context.newObject(Artist.class);

@@ -24,6 +24,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DropTableToModelIT extends MergeCase {
 
+    @Test
     public void testDropTable() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         assertTokensAndExecute(0, 0);

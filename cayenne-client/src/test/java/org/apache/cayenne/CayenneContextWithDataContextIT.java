@@ -19,10 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.sql.Types;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -46,6 +42,19 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.sql.Types;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextWithDataContextIT extends ClientCase {
@@ -103,6 +112,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         }
     }
 
+    @Test
     public void testLocalCacheStaysLocal() {
 
         DataContext serverContext = (DataContext) clientServerChannel.getParentChannel();
@@ -122,6 +132,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         assertEquals(0, serverContext.getQueryCache().size());
     }
 
+    @Test
     public void testAddToList() throws Exception {
 
         ClientMtTable1 t1 = clientContext.newObject(ClientMtTable1.class);
@@ -140,6 +151,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         assertSame(t3, t4.getTable1());
     }
 
+    @Test
     public void testSetValueHolder() throws Exception {
 
         ClientMtTable1 t1 = clientContext.newObject(ClientMtTable1.class);
@@ -150,6 +162,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         assertSame(t1, t2.getTable1());
     }
 
+    @Test
     public void testPostAddCallback() throws Exception {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
@@ -198,6 +211,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         }
     }
 
+    @Test
     public void testPostAddOnObjectCallback() throws Exception {
 
         final DataContext serverContext = (DataContext) clientServerChannel.getParentChannel();
@@ -235,6 +249,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         }
     }
 
+    @Test
     public void testPreRemoveCallback() throws Exception {
 
         // an exception was triggered within POST_LOAD callback
@@ -288,6 +303,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         }
     }
 
+    @Test
     public void testCAY830() throws Exception {
 
         // an exception was triggered within POST_LOAD callback
@@ -341,6 +357,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         }
     }
 
+    @Test
     public void testRollbackChanges() throws Exception {
 
         ClientMtTable1 o = clientContext.newObject(ClientMtTable1.class);
@@ -356,6 +373,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         assertTrue(clientContext.modifiedObjects().isEmpty());
     }
 
+    @Test
     public void testCreateFault() throws Exception {
         tMtTable1.insert(1, "g1", "s1");
 
@@ -377,6 +395,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
     }
 
+    @Test
     public void testCreateBadFault() throws Exception {
         tMtTable1.insert(1, "g1", "s1");
 
@@ -397,6 +416,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         }
     }
 
+    @Test
     public void testMeaningfulPK() throws Exception {
         deleteAndCreateTwoMeaningfulPKsDataSet();
 
@@ -407,6 +427,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         assertEquals(2, results.size());
     }
 
+    @Test
     public void testPrefetchingToOne() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -440,6 +461,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         });
     }
 
+    @Test
     public void testPrefetchingToOneNull() throws Exception {
         tMtTable2.insert(15, null, "g3");
 
@@ -463,6 +485,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         });
     }
 
+    @Test
     public void testPrefetchingToMany() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -497,6 +520,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         });
     }
 
+    @Test
     public void testPerformPaginatedQuery() throws Exception {
         createEightMtTable1s();
 
@@ -507,6 +531,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         assertTrue(objects instanceof RemoteIncrementalFaultList);
     }
 
+    @Test
     public void testPrefetchingToManyEmpty() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -530,6 +555,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         });
     }
 
+    @Test
     public void testOIDQueryInterception() throws Exception {
 
         final ClientMtTable1 o = clientContext.newObject(ClientMtTable1.class);

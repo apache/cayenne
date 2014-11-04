@@ -27,6 +27,7 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Date;
 
@@ -55,6 +56,7 @@ public class DataContextDelegateSharedCacheIT extends ServerCase {
      * Test case to prove that delegate method is invoked on external change of object in
      * the store.
      */
+    @Test
     public void testShouldMergeChanges() throws Exception {
 
         final boolean[] methodInvoked = new boolean[1];
@@ -98,6 +100,7 @@ public class DataContextDelegateSharedCacheIT extends ServerCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testBlockedShouldMergeChanges() throws Exception {
         String oldName = artist.getArtistName();
 
@@ -132,6 +135,7 @@ public class DataContextDelegateSharedCacheIT extends ServerCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testShouldProcessDeleteOnExternalChange() throws Exception {
 
         final boolean[] methodInvoked = new boolean[1];
@@ -175,6 +179,7 @@ public class DataContextDelegateSharedCacheIT extends ServerCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testBlockShouldProcessDeleteOnExternalChange() throws Exception {
 
         final boolean[] methodInvoked = new boolean[1];

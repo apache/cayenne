@@ -28,6 +28,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DeepMergeOperationIT extends ServerCase {
@@ -41,6 +42,7 @@ public class DeepMergeOperationIT extends ServerCase {
     @Inject
     private DataContext context1;
 
+    @Test
     public void testDeepMergeNonExistent() {
 
         final Artist a = context.newObject(Artist.class);
@@ -60,6 +62,7 @@ public class DeepMergeOperationIT extends ServerCase {
         });
     }
 
+    @Test
     public void testDeepMergeModified() {
 
         final Artist a = context.newObject(Artist.class);

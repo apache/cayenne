@@ -28,8 +28,9 @@ import org.apache.cayenne.testdo.mt.MtTable1Subclass2;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-import java.util.List;
+import java.util.List;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class SelectQueryAbstractEntityIT extends ServerCase {
@@ -61,7 +62,8 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
         }
        
     }
-    
+
+    @Test
     public void testSublclassEntitySelect() throws Exception{
         createDataSet();
         
@@ -76,7 +78,8 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
         assertNotNull(sub1List);
         assertNotNull(sub2List);
     }
-    
+
+    @Test
     public void test1AbstractEntitySelect() throws Exception{
         createDataSet();
 
@@ -91,7 +94,8 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
             }
         }
     }
-    
+
+    @Test
     public void test2AbstractEntitySelect() throws Exception{
         createDataSet();
         

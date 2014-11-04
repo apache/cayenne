@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.math.BigDecimal;
-import java.sql.Types;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -38,6 +35,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.TstBean;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.sql.Types;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ExpressionEvaluateInMemoryIT extends ServerCase {
@@ -80,6 +81,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         tPainting.insert(3, null, "P3", 3000);
     }
 
+    @Test
     public void testEvaluateOBJ_PATH_DataObject() throws Exception {
         ASTObjPath node = new ASTObjPath("artistName");
 
@@ -92,6 +94,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertEquals("123", node.evaluate(a2));
     }
 
+    @Test
     public void testEvaluateOBJ_PATH_JavaBean() throws Exception {
         ASTObjPath node = new ASTObjPath("property2");
 
@@ -104,6 +107,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertEquals(new Integer(-3), node.evaluate(b2));
     }
 
+    @Test
     public void testEvaluateOBJ_PATH_ObjEntity() throws Exception {
         ASTObjPath node = new ASTObjPath("paintingArray.paintingTitle");
 
@@ -113,6 +117,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue(target instanceof ObjAttribute);
     }
 
+    @Test
     public void testEvaluateDB_PATH_DbEntity() throws Exception {
         Expression e = Expression.fromString("db:paintingArray.PAINTING_TITLE");
 
@@ -126,6 +131,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue(dbTarget instanceof DbAttribute);
     }
 
+    @Test
     public void testEvaluateEQUAL_TOBigDecimal() throws Exception {
         BigDecimal bd1 = new BigDecimal("2.0");
         BigDecimal bd2 = new BigDecimal("2.0");
@@ -147,6 +153,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(equalTo.match(p));
     }
 
+    @Test
     public void testEvaluateEQUAL_TO() throws Exception {
         Expression equalTo = new ASTEqual(new ASTObjPath("artistName"), "abc");
         Expression notEqualTo = new ASTNotEqual(new ASTObjPath("artistName"), "abc");
@@ -162,6 +169,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue("Failed: " + notEqualTo, notEqualTo.match(noMatch));
     }
 
+    @Test
     public void testEvaluateEQUAL_TO_Null() throws Exception {
         Expression equalToNull = new ASTEqual(new ASTObjPath("artistName"), null);
         Expression equalToNotNull = new ASTEqual(new ASTObjPath("artistName"), "abc");
@@ -175,6 +183,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(equalToNull.match(noMatch));
     }
 
+    @Test
     public void testEvaluateNOT_EQUAL_TONull() throws Exception {
         Expression notEqualToNull = new ASTNotEqual(new ASTObjPath("artistName"), null);
         Expression notEqualToNotNull = new ASTNotEqual(new ASTObjPath("artistName"), "abc");
@@ -188,6 +197,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue("Failed: " + notEqualToNull, notEqualToNull.match(noMatch));
     }
 
+    @Test
     public void testEvaluateEQUAL_TODataObject() throws Exception {
         Artist a1 = (Artist) context.newObject("Artist");
         Artist a2 = (Artist) context.newObject("Artist");
@@ -213,6 +223,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(e.match(p3));
     }
 
+    @Test
     public void testEvaluateEQUAL_TO_Temp_ObjectId() throws Exception {
         Artist a1 = (Artist) context.newObject("Artist");
         Artist a2 = (Artist) context.newObject("Artist");
@@ -230,6 +241,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(e.match(p3));
     }
 
+    @Test
     public void testEvaluateEQUAL_TO_Id() throws Exception {
 
         createTwoArtistsThreePaintings();
@@ -246,6 +258,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(e.match(p3));
     }
 
+    @Test
     public void testEvaluateAND() throws Exception {
         Expression e1 = new ASTEqual(new ASTObjPath("artistName"), "abc");
         Expression e2 = new ASTEqual(new ASTObjPath("artistName"), "abc");
@@ -261,6 +274,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(e.match(noMatch));
     }
 
+    @Test
     public void testEvaluateOR() throws Exception {
         Expression e1 = new ASTEqual(new ASTObjPath("artistName"), "abc");
         Expression e2 = new ASTEqual(new ASTObjPath("artistName"), "xyz");
@@ -280,6 +294,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse("Failed: " + e, e.match(noMatch));
     }
 
+    @Test
     public void testEvaluateNOT() throws Exception {
         ASTNot e = new ASTNot(new ASTEqual(new ASTObjPath("artistName"), "abc"));
 
@@ -292,6 +307,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue("Failed: " + e, e.match(match));
     }
 
+    @Test
     public void testEvaluateLESS_THAN() throws Exception {
         Expression e = new ASTLess(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 
@@ -307,7 +323,8 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(9999));
         assertTrue("Failed: " + e, e.match(match));
     }
-    
+
+    @Test
     public void testEvaluateLESS_THAN_Null() throws Exception {
         Expression ltNull = new ASTLess(new ASTObjPath("estimatedPrice"), null);
         Expression ltNotNull = new ASTLess(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
@@ -317,6 +334,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(ltNotNull.match(noMatch));
     }
 
+    @Test
     public void testEvaluateLESS_THAN_EQUAL_TO() throws Exception {
         Expression e = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 
@@ -332,7 +350,8 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(9999));
         assertTrue("Failed: " + e, e.match(match));
     }
-    
+
+    @Test
     public void testEvaluateLESS_THAN_EQUAL_TO_Null() throws Exception {
         Expression ltNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), null);
         Expression ltNotNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
@@ -342,6 +361,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(ltNotNull.match(noMatch));
     }
 
+    @Test
     public void testEvaluateGREATER_THAN() throws Exception {
         Expression e = new ASTGreater(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 
@@ -357,7 +377,8 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(10001));
         assertTrue("Failed: " + e, e.match(match));
     }
-    
+
+    @Test
     public void testEvaluateGREATER_THAN_Null() throws Exception {
         Expression gtNull = new ASTGreater(new ASTObjPath("estimatedPrice"), null);
         Expression gtNotNull = new ASTGreater(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
@@ -367,6 +388,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(gtNotNull.match(noMatch));
     }
 
+    @Test
     public void testEvaluateGREATER_THAN_EQUAL_TO() throws Exception {
         Expression e = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 
@@ -382,7 +404,8 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(10001));
         assertTrue("Failed: " + e, e.match(match));
     }
-    
+
+    @Test
     public void testEvaluateGREATER_THAN_EQUAL_TO_Null() throws Exception {
         Expression gtNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), null);
         Expression gtNotNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
@@ -392,6 +415,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(gtNotNull.match(noMatch));
     }
 
+    @Test
     public void testEvaluateBETWEEN() throws Exception {
         // evaluate both BETWEEN and NOT_BETWEEN
         Expression between = new ASTBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(20d));
@@ -418,7 +442,8 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue("Failed: " + between, between.match(match3));
         assertFalse("Failed: " + notBetween, notBetween.match(match3));
     }
-    
+
+    @Test
     public void testEvaluateBETWEEN_Null() throws Exception {
         Expression btNull = new ASTBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(20d));
         Expression btNotNull = new ASTNotBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d),
@@ -429,6 +454,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(btNotNull.match(noMatch));
     }
 
+    @Test
     public void testEvaluateIN() throws Exception {
         Expression in = new ASTIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] { new BigDecimal("10"),
                 new BigDecimal("20") }));
@@ -456,7 +482,8 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue("Failed: " + in, in.match(match2));
         assertFalse("Failed: " + notIn, notIn.match(match2));
     }
-    
+
+    @Test
     public void testEvaluateIN_Null() throws Exception {
         Expression in = new ASTIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] {
                 new BigDecimal("10"), new BigDecimal("20") }));
@@ -468,6 +495,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse(notIn.match(noMatch));
     }
 
+    @Test
     public void testEvaluateLIKE1() throws Exception {
         Expression like = new ASTLike(new ASTObjPath("artistName"), "abc%d");
         Expression notLike = new ASTNotLike(new ASTObjPath("artistName"), "abc%d");
@@ -488,6 +516,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse("Failed: " + notLike, notLike.match(match2));
     }
 
+    @Test
     public void testEvaluateLIKE2() throws Exception {
         Expression like = new ASTLike(new ASTObjPath("artistName"), "abc?d");
         Expression notLike = new ASTNotLike(new ASTObjPath("artistName"), "abc?d");
@@ -508,6 +537,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse("Failed: " + notLike, notLike.match(match));
     }
 
+    @Test
     public void testEvaluateLIKE3() throws Exception {
         // test special chars
         Expression like = new ASTLike(new ASTObjPath("artistName"), "/./");
@@ -521,6 +551,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue("Failed: " + like, like.match(match));
     }
 
+    @Test
     public void testEvaluateLIKE_IGNORE_CASE() throws Exception {
         Expression like = new ASTLikeIgnoreCase(new ASTObjPath("artistName"), "aBcD");
         Expression notLike = new ASTNotLikeIgnoreCase(new ASTObjPath("artistName"), "aBcD");
@@ -541,35 +572,42 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertFalse("Failed: " + notLike, notLike.match(match2));
     }
 
+    @Test
     public void testEvaluateADD() throws Exception {
         Expression add = new ASTAdd(new Object[] { new Integer(1), new Double(5.5) });
         assertEquals(6.5, ((Number) add.evaluate(null)).doubleValue(), 0.0001);
     }
 
+    @Test
     public void testEvaluateSubtract() throws Exception {
         Expression subtract = new ASTSubtract(new Object[] { new Integer(1), new Double(0.1), new Double(0.2) });
         assertEquals(0.7, ((Number) subtract.evaluate(null)).doubleValue(), 0.0001);
     }
 
+    @Test
     public void testEvaluateMultiply() throws Exception {
         Expression multiply = new ASTMultiply(new Object[] { new Integer(2), new Double(3.5) });
         assertEquals(7, ((Number) multiply.evaluate(null)).doubleValue(), 0.0001);
     }
 
+    @Test
     public void testEvaluateDivide() throws Exception {
         Expression divide = new ASTDivide(new Object[] { new BigDecimal("7.0"), new BigDecimal("2.0") });
         assertEquals(3.5, ((Number) divide.evaluate(null)).doubleValue(), 0.0001);
     }
 
+    @Test
     public void testEvaluateNegate() throws Exception {
         assertEquals(-3, ((Number) new ASTNegate(new Integer(3)).evaluate(null)).intValue());
         assertEquals(5, ((Number) new ASTNegate(new Integer(-5)).evaluate(null)).intValue());
     }
 
+    @Test
     public void testEvaluateTrue() throws Exception {
         assertEquals(Boolean.TRUE, new ASTTrue().evaluate(null));
     }
 
+    @Test
     public void testEvaluateFalse() throws Exception {
         assertEquals(Boolean.FALSE, new ASTFalse().evaluate(null));
     }

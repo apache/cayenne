@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.relationship.CollectionToMany;
 import org.apache.cayenne.testdo.relationship.CollectionToManyTarget;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collection;
 
@@ -58,6 +59,7 @@ public class CDOCollectionRelationshipIT extends ServerCase {
         tCollectionToManyTarget.insert(1, 1).insert(2, 1).insert(3, 1).insert(4, 2);
     }
 
+    @Test
     public void testReadToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
@@ -83,6 +85,7 @@ public class CDOCollectionRelationshipIT extends ServerCase {
                 3)));
     }
 
+    @Test
     public void testReadToManyPrefetching() throws Exception {
 
         SelectQuery query = new SelectQuery(CollectionToMany.class, ExpressionFactory
@@ -111,6 +114,7 @@ public class CDOCollectionRelationshipIT extends ServerCase {
                 3)));
     }
 
+    @Test
     public void testAddToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
@@ -133,6 +137,7 @@ public class CDOCollectionRelationshipIT extends ServerCase {
         assertEquals(4, o1.getTargets().size());
     }
 
+    @Test
     public void testRemoveToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
@@ -157,6 +162,7 @@ public class CDOCollectionRelationshipIT extends ServerCase {
         assertFalse(o1.getTargets().contains(target));
     }
 
+    @Test
     public void testAddToManyViaReverse() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);

@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 
@@ -40,6 +41,7 @@ public class JdbcAdapterIT extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testExternalTypesForJdbcType() throws Exception {
         // check a few types
         checkType(Types.BLOB);
@@ -59,6 +61,7 @@ public class JdbcAdapterIT extends ServerCase {
         assertEquals(TypesMapping.getSqlNameByType(type), types[0]);
     }
 
+    @Test
     public void testCreateTableQuoteSqlIdentifiers() {
 
         if (dbAdapter instanceof MySQLAdapter) {

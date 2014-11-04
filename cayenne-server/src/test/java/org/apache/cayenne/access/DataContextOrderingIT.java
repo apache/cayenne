@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -51,6 +52,7 @@ public class DataContextOrderingIT extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testMultipleOrdering() throws Exception {
 
         Calendar c = Calendar.getInstance();
@@ -82,6 +84,7 @@ public class DataContextOrderingIT extends ServerCase {
         assertSame(a1, list.get(2));
     }
 
+    @Test
     public void testMultipleOrderingInSelectClauseCAY_1074() throws Exception {
 
         Calendar c = Calendar.getInstance();

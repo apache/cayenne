@@ -27,8 +27,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-import java.util.List;
+import java.util.List;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientSelectQueryExpressionIT extends ClientCase {
@@ -56,6 +57,7 @@ public class ClientSelectQueryExpressionIT extends ClientCase {
         }
     }
 
+    @Test
     public void testDoubleSelectLikeExpression() throws Exception {
         createMtTable1DataSet();
 

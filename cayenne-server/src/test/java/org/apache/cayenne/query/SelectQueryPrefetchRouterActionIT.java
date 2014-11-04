@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SelectQueryPrefetchRouterActionIT extends ServerCase {
@@ -36,6 +37,7 @@ public class SelectQueryPrefetchRouterActionIT extends ServerCase {
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testPaintings1() {
         ObjEntity paintingEntity = resolver.getObjEntity(Painting.class);
         SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp("artistName", "abc"));
@@ -53,6 +55,7 @@ public class SelectQueryPrefetchRouterActionIT extends ServerCase {
         assertEquals(Expression.fromString("db:toArtist.ARTIST_NAME = 'abc'"), prefetch.getQualifier());
     }
 
+    @Test
     public void testPrefetchPaintings2() {
         ObjEntity paintingEntity = resolver.getObjEntity(Painting.class);
 
@@ -71,6 +74,7 @@ public class SelectQueryPrefetchRouterActionIT extends ServerCase {
                 prefetch.getQualifier());
     }
 
+    @Test
     public void testGalleries() {
         ObjEntity galleryEntity = resolver.getObjEntity(Gallery.class);
         SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp("artistName", "abc"));

@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.List;
-import java.util.Random;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -31,6 +28,10 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Random;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContext_DeadlockIT extends ServerCase {
@@ -64,6 +65,7 @@ public class NestedDataContext_DeadlockIT extends ServerCase {
         }
     }
 
+    @Test
     public void testDeadlock() throws Exception {
 
         createArtists();

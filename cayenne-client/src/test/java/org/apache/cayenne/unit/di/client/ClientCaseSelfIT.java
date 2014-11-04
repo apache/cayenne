@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientCaseSelfIT extends ClientCase {
@@ -32,6 +33,7 @@ public class ClientCaseSelfIT extends ClientCase {
     @Inject
     protected Provider<ServerRuntime> runtimeProvider;
 
+    @Test
     public void testServerSetup_TearDown_Runtime() throws Exception {
 
         ServerRuntime local = this.runtime;

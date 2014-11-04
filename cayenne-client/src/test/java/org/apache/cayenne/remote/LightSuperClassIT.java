@@ -22,16 +22,25 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.persistent.Continent;
 import org.apache.cayenne.testdo.persistent.Country;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Test for entites that are implemented in same class on client and server
  */
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(value=Parameterized.class)
 public class LightSuperClassIT extends RemoteCayenneCase {
 
     @Inject
@@ -39,22 +48,27 @@ public class LightSuperClassIT extends RemoteCayenneCase {
 
     private boolean server;
 
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION, true},
+                {LocalConnection.JAVA_SERIALIZATION, true},
+                {LocalConnection.NO_SERIALIZATION, true},
+                {LocalConnection.NO_SERIALIZATION, false},
+        });
+    }
+
+    public LightSuperClassIT(int serializationPolicy, boolean server) {
+        super.serializationPolicy = serializationPolicy;
+        this.server = server;
+    }
+
     @Override
     public void setUpAfterInjection() throws Exception {
         super.setUpAfterInjection();
 
         dbHelper.deleteAll("CONTINENT");
         dbHelper.deleteAll("COUNTRY");
-    }
-
-    @Override
-    public void runBare() throws Throwable {
-        server = true;
-        super.runBare();
-        server = false;
-
-        // testing ROP with all serialization policies
-        runBareSimple();
     }
 
     private ObjectContext createContext() {
@@ -66,6 +80,7 @@ public class LightSuperClassIT extends RemoteCayenneCase {
         }
     }
 
+    @Test
     public void testServer() throws Exception {
         ObjectContext context = createContext();
         Continent continent = context.newObject(Continent.class);

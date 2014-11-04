@@ -31,6 +31,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -87,6 +88,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         }
     }
 
+    @Test
     public void testDisjointByIdPrefetch() throws Exception {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(10);
@@ -104,6 +106,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         assertEquals(11, queriesCount);
     }
 
+    @Test
     public void testDisjointByIdPrefetch_Zero() throws Exception {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(0);
@@ -121,6 +124,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         assertEquals(2, queriesCount);
     }
 
+    @Test
     public void testDisjointByIdPrefetch_Negative() throws Exception {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
@@ -138,6 +142,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         assertEquals(2, queriesCount);
     }
 
+    @Test
     public void testIncrementalFaultList_Lower() throws Exception {
         insertData_OneBag_100Boxes();
 
@@ -168,7 +173,8 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
 
         assertEquals(21, queriesCount);
     }
-    
+
+    @Test
     public void testIncrementalFaultList_Higher() throws Exception {
         insertData_OneBag_100Boxes();
 
@@ -200,6 +206,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         assertEquals(2, queriesCount);
     }
 
+    @Test
     public void testIncrementalFaultList_Zero() throws Exception {
         insertData_OneBag_100Boxes();
 
@@ -219,6 +226,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         assertEquals(2, queriesCount);
     }
 
+    @Test
     public void testIncrementalFaultList_Negative() throws Exception {
         insertData_OneBag_100Boxes();
 

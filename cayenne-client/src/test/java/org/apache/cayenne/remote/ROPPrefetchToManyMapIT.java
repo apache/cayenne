@@ -23,14 +23,23 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtMapToMany;
 import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 @UseServerRuntime("cayenne-multi-tier.xml")
+@RunWith(value=Parameterized.class)
 public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
     
     @Inject
@@ -38,13 +47,27 @@ public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
     
     @Inject
     private DataChannelInterceptor queryInterceptor;
-    
+
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION},
+        });
+    }
+
+    public ROPPrefetchToManyMapIT(int serializationPolicy) {
+        super.serializationPolicy = serializationPolicy;
+    }
+
     @Override
     public void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("MT_MAP_TO_MANY_TARGET");
         dbHelper.deleteAll("MT_MAP_TO_MANY");        
     }
-    
+
+    @Test
     public void test() throws Exception {
         ObjectContext context = createROPContext();
         

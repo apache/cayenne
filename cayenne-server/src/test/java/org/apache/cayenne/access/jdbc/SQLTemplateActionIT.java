@@ -37,6 +37,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -90,6 +91,7 @@ public class SQLTemplateActionIT extends ServerCase {
         tArtist.insert(3001, "artist5", date);
     }
 
+    @Test
     public void testProperties() throws Exception {
         SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");      
   
@@ -98,6 +100,7 @@ public class SQLTemplateActionIT extends ServerCase {
         assertSame(node, action.dataNode);
     }
 
+    @Test
     public void testExecuteSelect() throws Exception {
         createFourArtists();
 
@@ -139,6 +142,7 @@ public class SQLTemplateActionIT extends ServerCase {
         assertTrue(row.containsKey("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testSelectUtilDate() throws Exception {
         createFourArtists();
 
@@ -172,6 +176,7 @@ public class SQLTemplateActionIT extends ServerCase {
         assertEquals(java.util.Date.class, row.get("DOB").getClass());
     }
 
+    @Test
     public void testSelectSQLDate() throws Exception {
         createFourArtists();
 
@@ -205,6 +210,7 @@ public class SQLTemplateActionIT extends ServerCase {
         assertEquals(java.sql.Date.class, row.get("DOB").getClass());
     }
 
+    @Test
     public void testSelectSQLTimestamp() throws Exception {
         createFourArtists();
 
@@ -239,6 +245,7 @@ public class SQLTemplateActionIT extends ServerCase {
         assertTrue(java.sql.Timestamp.class.isAssignableFrom(row.get("DOB").getClass()));
     }
 
+    @Test
     public void testExecuteUpdate() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
@@ -271,6 +278,7 @@ public class SQLTemplateActionIT extends ServerCase {
         assertEquals("a1", tArtist.getString("ARTIST_NAME").trim());
     }
 
+    @Test
     public void testExecuteUpdateNoParameters() throws Exception {
         createFourArtists();
 
@@ -295,6 +303,7 @@ public class SQLTemplateActionIT extends ServerCase {
         }
     }
 
+    @Test
     public void testExecuteUpdateBatch() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
@@ -355,6 +364,7 @@ public class SQLTemplateActionIT extends ServerCase {
         // assertEquals(bindings2.get("dob"), row2.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testExtractTemplateString() throws Exception {
         SQLTemplate template = new SQLTemplate(Artist.class, "A\nBC");
         SQLTemplateAction action = new SQLTemplateAction(template, node);

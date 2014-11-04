@@ -35,6 +35,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -94,6 +95,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
         tPaining.insert(33007, "P_artist21", 33007, 21000);
     }
 
+    @Test
     public void testListType() throws Exception {
 
         createArtistsDataSet();
@@ -110,6 +112,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
      * Test that all queries specified in prefetch are executed with a single prefetch
      * path.
      */
+    @Test
     public void testPrefetch1() throws Exception {
 
         createArtistsAndPaintingsDataSet();
@@ -144,6 +147,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
     /**
      * Test that a to-many relationship is initialized.
      */
+    @Test
     public void testPrefetch3() throws Exception {
 
         createArtistsAndPaintingsDataSet();
@@ -173,6 +177,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
     /**
      * Test that a to-one relationship is initialized.
      */
+    @Test
     public void testPrefetch4() throws Exception {
 
         createArtistsAndPaintingsDataSet();

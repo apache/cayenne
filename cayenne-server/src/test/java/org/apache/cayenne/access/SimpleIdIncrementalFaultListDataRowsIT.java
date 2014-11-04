@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
@@ -33,6 +30,10 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Tests IncrementalFaultList behavior when fetching data rows.
@@ -100,6 +101,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         tArtist.insert(33025, "artist25");
     }
 
+    @Test
     public void testGet1() throws Exception {
         assertEquals(1, list.idWidth);
         assertTrue(list.elements.get(0) instanceof Long);
@@ -113,6 +115,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         assertEquals("artist20", ((DataRow) a).get("ARTIST_NAME"));
     }
 
+    @Test
     public void testIndexOf1() throws Exception {
 
         Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
@@ -132,6 +135,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         assertEquals(-1, list.indexOf(row));
     }
 
+    @Test
     public void testIndexOf2() throws Exception {
 
         // resolve first page
@@ -151,6 +155,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         assertEquals(-1, list.indexOf(row));
     }
 
+    @Test
     public void testLastIndexOf1() throws Exception {
 
         // resolve first page
@@ -170,6 +175,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         assertEquals(-1, list.lastIndexOf(row));
     }
 
+    @Test
     public void testLastIndexOf2() throws Exception {
 
         Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
@@ -186,6 +192,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         assertEquals(-1, list.lastIndexOf(row));
     }
 
+    @Test
     public void testIterator() throws Exception {
         assertEquals(1, list.idWidth);
 

@@ -34,6 +34,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Date;
 import java.sql.Types;
@@ -118,6 +119,7 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
         tArtistExhibit.insert(1, 2);
     }
 
+    @Test
     public void testFetchJoinForOneEntity() throws Exception {
         createOneFetchJoinDataSet();
 
@@ -151,6 +153,7 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
         });
     }
 
+    @Test
     public void testSeveralFetchJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
@@ -206,6 +209,7 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
         });
     }
 
+    @Test
     public void testSeveralEntitiesFetchJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
@@ -228,6 +232,7 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
         });
     }
 
+    @Test
     public void testSeveralEntitiesAndScalarFetchInnerJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
@@ -307,6 +312,7 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
         });
     }
 
+    @Test
     public void testSeveralEntitiesAndScalarFetchOuterJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 

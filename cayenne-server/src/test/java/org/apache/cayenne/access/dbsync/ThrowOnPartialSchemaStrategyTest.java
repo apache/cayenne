@@ -18,18 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import java.util.Collections;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.util.Collections;
 
 @UseServerRuntime(ServerCase.SUS_PROJECT)
 public class ThrowOnPartialSchemaStrategyTest extends SchemaUpdateStrategyBase {
 
+    @Test
 	public void testThrowOnPartialStrategyTableNoExist() throws Exception {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
@@ -51,6 +53,7 @@ public class ThrowOnPartialSchemaStrategyTest extends SchemaUpdateStrategyBase {
 		}
 	}
 
+    @Test
 	public void testThrowOnPartialStrategyTableExist() throws Exception {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
@@ -64,6 +67,7 @@ public class ThrowOnPartialSchemaStrategyTest extends SchemaUpdateStrategyBase {
 		node.performQueries(Collections.singletonList(query), observer);
 	}
 
+    @Test
 	public void testThrowOnPartialStrategyWithOneTable() throws Exception {
 		createOneTable("SUS1");
 

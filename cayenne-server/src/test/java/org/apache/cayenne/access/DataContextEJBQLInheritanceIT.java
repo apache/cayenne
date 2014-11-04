@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -64,6 +65,7 @@ public class DataContextEJBQLInheritanceIT extends ServerCase {
         person.insert(6, "e", "C", null);
     }
 
+    @Test
     public void testSelect() throws Exception {
 
         EJBQLQuery superclass = new EJBQLQuery("select p from AbstractPerson p ORDER BY p.name");

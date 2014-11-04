@@ -35,6 +35,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ShallowMergeOperationIT extends ServerCase {
@@ -73,6 +74,7 @@ public class ShallowMergeOperationIT extends ServerCase {
         tArtist.insert(33004, "artist4");
     }
 
+    @Test
     public void testMerge_Relationship() throws Exception {
 
         ObjectContext childContext = runtime.newContext(context);
@@ -96,6 +98,7 @@ public class ShallowMergeOperationIT extends ServerCase {
         });
     }
 
+    @Test
     public void testMerge_NoOverride() throws Exception {
         createArtistsDataSet();
 
@@ -136,6 +139,7 @@ public class ShallowMergeOperationIT extends ServerCase {
         });
     }
 
+    @Test
     public void testMerge_PersistenceStates() throws Exception {
         createArtistsDataSet();
 

@@ -36,6 +36,7 @@ import org.apache.cayenne.testdo.locking.SoftDelete;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,6 +70,7 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
         return (DeleteBatchTranslator) new SoftDeleteTranslatorFactory().translator(query, adapter, null);
     }
 
+    @Test
     public void testCreateSqlString() throws Exception {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
@@ -81,6 +83,7 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE ID = ?", generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithNulls() throws Exception {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
@@ -95,6 +98,7 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
         assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE ID = ? AND NAME IS NULL", generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
         try {
@@ -121,6 +125,7 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
 
     }
 
+    @Test
     public void testUpdate() throws Exception {
 
         final DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();

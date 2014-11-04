@@ -28,6 +28,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -81,6 +82,7 @@ public class DataContextEJBQLIsNullIT extends ServerCase {
         tPainting.insert(33003, 33001, "C", 500);
     }
 
+    @Test
     public void testCompareToNull() throws Exception {
 
         // the query below can blow up on FrontBase. See CAY-819 for details.
@@ -102,6 +104,7 @@ public class DataContextEJBQLIsNullIT extends ServerCase {
         context.performQuery(query1);
     }
 
+    @Test
     public void testCompareToNull2() throws Exception {
 
         if (!accessStackAdapter.supportsEqualNullSyntax()) {
@@ -117,6 +120,7 @@ public class DataContextEJBQLIsNullIT extends ServerCase {
         context.performQuery(query1);
     }
 
+    @Test
     public void testCompareToNull3() throws Exception {
         if (!accessStackAdapter.supportsEqualNullSyntax()) {
             return;
@@ -131,6 +135,7 @@ public class DataContextEJBQLIsNullIT extends ServerCase {
         context.performQuery(query1);
     }
 
+    @Test
     public void testIsNull() throws Exception {
 
         createTwoPaintings();
@@ -143,6 +148,7 @@ public class DataContextEJBQLIsNullIT extends ServerCase {
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
+    @Test
     public void testIsNotNull() throws Exception {
 
         createTwoPaintings();
@@ -155,6 +161,7 @@ public class DataContextEJBQLIsNullIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
+    @Test
     public void testToOneIsNull() throws Exception {
 
         createTwoPaintingsAndOneArtist();
@@ -167,6 +174,7 @@ public class DataContextEJBQLIsNullIT extends ServerCase {
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results.get(0)));
     }
 
+    @Test
     public void testToOneIsNotNull() throws Exception {
 
         createTwoPaintingsAndOneArtist();

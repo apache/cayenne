@@ -29,6 +29,7 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 
@@ -40,6 +41,7 @@ public class DefaultBatchTranslatorIT extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         DefaultBatchTranslator builder = new DefaultBatchTranslator(mock(BatchQuery.class), adapter, null) {
@@ -62,6 +64,7 @@ public class DefaultBatchTranslatorIT extends ServerCase {
         assertSame(adapter, builder.adapter);
     }
 
+    @Test
     public void testAppendDbAttribute1() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String trimFunction = "testTrim";
@@ -98,6 +101,7 @@ public class DefaultBatchTranslatorIT extends ServerCase {
         assertEquals("testAttr", buf.toString());
     }
 
+    @Test
     public void testAppendDbAttribute2() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 

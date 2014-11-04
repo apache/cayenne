@@ -25,6 +25,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class CompoundPkChangeIT extends ServerCase {
@@ -48,6 +49,7 @@ public class CompoundPkChangeIT extends ServerCase {
         dbHelper.deleteAll("COMPOUND_PK_TEST");
     }
 
+    @Test
     public void testCompoundPkChangeSingleElement() throws Exception {
 
         CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
@@ -103,6 +105,7 @@ public class CompoundPkChangeIT extends ServerCase {
         assertEquals(object.getObjectId(), refreshedObject.getObjectId());
     }
 
+    @Test
     public void testCompoundPkChangeAllElements() throws Exception {
 
         CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);

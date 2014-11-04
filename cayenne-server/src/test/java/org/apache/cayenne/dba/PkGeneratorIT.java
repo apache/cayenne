@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ public class PkGeneratorIT extends ServerCase {
         pkGenerator.reset();
     }
 
+    @Test
     public void testGeneratePkForDbEntity() throws Exception {
         List<Object> pkList = new ArrayList<Object>();
 

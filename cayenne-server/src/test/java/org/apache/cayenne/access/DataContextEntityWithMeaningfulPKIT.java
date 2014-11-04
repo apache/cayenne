@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.testmap.MeaningfulPKDep;
 import org.apache.cayenne.testdo.testmap.MeaningfulPKTest1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         dbHelper.deleteAll("MEANINGFUL_PK_TEST1");
     }
 
+    @Test
     public void testInsertWithMeaningfulPK() throws Exception {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1000);
@@ -65,6 +67,7 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         assertEquals(1, context.performQuery(q).size());
     }
 
+    @Test
     public void testGeneratedKey() throws Exception {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setDescr("aaa-aaa");
@@ -84,6 +87,7 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
                 .get(MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN));
     }
 
+    @Test
     public void testChangeKey() throws Exception {
         MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
                 .newObject("MeaningfulPKTest1");
@@ -99,6 +103,7 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         assertEquals(new Integer(2000), id.getIdSnapshot().get("PK_ATTRIBUTE"));
     }
 
+    @Test
     public void testToManyRelationshipWithMeaningfulPK1() throws Exception {
         MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
                 .newObject("MeaningfulPKTest1");
@@ -114,6 +119,7 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         assertEquals(0, obj.getMeaningfulPKDepArray().size());
     }
 
+    @Test
     public void testToManyRelationshipWithMeaningfulPK2() throws Exception {
         MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
                 .newObject("MeaningfulPKTest1");

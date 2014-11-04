@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -37,6 +33,11 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextSerializationIT extends ServerCase {
@@ -78,6 +79,7 @@ public class DataContextSerializationIT extends ServerCase {
         CayenneRuntime.bindThreadInjector(null);
     }
 
+    @Test
     public void testSerializeResolver() throws Exception {
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
@@ -86,6 +88,7 @@ public class DataContextSerializationIT extends ServerCase {
         assertSame(context.getEntityResolver(), deserializedContext.getEntityResolver());
     }
 
+    @Test
     public void testSerializeChannel() throws Exception {
 
         DataContext deserializedContext = Util.cloneViaSerialization(context);
@@ -94,6 +97,7 @@ public class DataContextSerializationIT extends ServerCase {
         assertSame(context.getChannel(), deserializedContext.getChannel());
     }
 
+    @Test
     public void testSerializeNestedChannel() throws Exception {
 
         ObjectContext child = runtime.newContext(context);
@@ -104,6 +108,7 @@ public class DataContextSerializationIT extends ServerCase {
         assertNotNull(deserializedContext.getEntityResolver());
     }
 
+    @Test
     public void testSerializeWithSharedCache() throws Exception {
 
         createSingleArtistDataSet();
@@ -131,6 +136,7 @@ public class DataContextSerializationIT extends ServerCase {
         deserializedContext.commitChanges();
     }
 
+    @Test
     public void testSerializeWithLocalCache() throws Exception {
 
         createSingleArtistDataSet();
@@ -180,6 +186,7 @@ public class DataContextSerializationIT extends ServerCase {
         deserializedContext.commitChanges();
     }
 
+    @Test
     public void testSerializeNew() throws Exception {
 
         Artist artist = (Artist) context.newObject("Artist");
@@ -204,6 +211,7 @@ public class DataContextSerializationIT extends ServerCase {
         assertSame(deserializedContext, deserializedArtist.getObjectContext());
     }
 
+    @Test
     public void testSerializeCommitted() throws Exception {
 
         Artist artist = (Artist) context.newObject("Artist");
@@ -237,6 +245,7 @@ public class DataContextSerializationIT extends ServerCase {
         assertEquals(0, paintings.size());
     }
 
+    @Test
     public void testSerializeModified() throws Exception {
 
         Artist artist = (Artist) context.newObject("Artist");

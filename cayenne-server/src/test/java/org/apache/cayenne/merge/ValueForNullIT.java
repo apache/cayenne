@@ -33,6 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -45,6 +46,7 @@ public class ValueForNullIT extends MergeCase {
     @Inject
     private DataContext context;
 
+    @Test
     public void test() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);

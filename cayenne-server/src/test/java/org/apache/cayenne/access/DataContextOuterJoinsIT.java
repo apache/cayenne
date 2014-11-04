@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -77,6 +78,7 @@ public class DataContextOuterJoinsIT extends ServerCase {
         artistHelper.deleteAll();
     }
 
+    @Test
     public void testSelectWithOuterJoinFlattened() throws Exception {
 
         artistHelper.insert(33001, "AA1");
@@ -101,6 +103,7 @@ public class DataContextOuterJoinsIT extends ServerCase {
         assertEquals("BB1", artists.get(0).getArtistName());
     }
 
+    @Test
     public void testSelectWithOuterJoin() throws Exception {
 
         artistHelper.insert(33001, "AA1");
@@ -137,6 +140,7 @@ public class DataContextOuterJoinsIT extends ServerCase {
         assertEquals("BB2", artists.get(2).getArtistName());
     }
 
+    @Test
     public void testSelectWithOuterJoinFromString() throws Exception {
 
         artistHelper.insert(33001, "AA1");
@@ -171,6 +175,7 @@ public class DataContextOuterJoinsIT extends ServerCase {
         assertEquals("BB2", artists.get(2).getArtistName());
     }
 
+    @Test
     public void testSelectWithOuterOrdering() throws Exception {
 
         artistHelper.insert(33001, "AA1");

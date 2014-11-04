@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 
@@ -47,6 +48,7 @@ public class InsertBatchTranslatorIT extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
@@ -55,6 +57,7 @@ public class InsertBatchTranslatorIT extends ServerCase {
         assertSame(adapter, builder.adapter);
     }
 
+    @Test
     public void testCreateSqlString() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -68,6 +71,7 @@ public class InsertBatchTranslatorIT extends ServerCase {
                 generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();

@@ -31,6 +31,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Date;
@@ -99,6 +100,7 @@ public class DataContextRefreshingIT extends ServerCase {
         tPainting.insert(4, "p", 5, 1000);
     }
 
+    @Test
     public void testRefetchRootWithUpdatedAttributes() throws Exception {
 
         createSingleArtistDataSet();
@@ -128,6 +130,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(nameAfter, artist.getArtistName());
     }
 
+    @Test
     public void testRefetchRootWithNullifiedToOne() throws Exception {
         createSingleArtistAndPaintingDataSet();
 
@@ -147,6 +150,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertNull(painting.getToArtist());
     }
 
+    @Test
     public void testRefetchRootWithChangedToOneTarget() throws Exception {
         createTwoArtistsAndPaintingDataSet();
 
@@ -167,6 +171,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals("artist3", painting.getToArtist().getArtistName());
     }
 
+    @Test
     public void testRefetchRootWithNullToOneTargetChangedToNotNull() throws Exception {
         createSingleArtistAndUnrelatedPaintingDataSet();
 
@@ -185,6 +190,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals("artist2", painting.getToArtist().getArtistName());
     }
 
+    @Test
     public void testRefetchRootWithDeletedToMany() throws Exception {
         createSingleArtistAndPaintingDataSet();
 
@@ -208,6 +214,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(0, artist.getPaintingArray().size());
     }
 
+    @Test
     public void testRefetchRootWithAddedToMany() throws Exception {
 
         createSingleArtistDataSet();
@@ -229,6 +236,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(artist.getPaintingArray().size(), 1);
     }
 
+    @Test
     public void testInvalidateRootWithUpdatedAttributes() throws Exception {
         createSingleArtistDataSet();
 
@@ -247,6 +255,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(nameAfter, artist.getArtistName());
     }
 
+    @Test
     public void testInvalidateRootWithNullifiedToOne() throws Exception {
 
         createSingleArtistAndPaintingDataSet();
@@ -263,6 +272,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertNull(painting.getToArtist());
     }
 
+    @Test
     public void testInvalidateRootWithChangedToOneTarget() throws Exception {
         createTwoArtistsAndPaintingDataSet();
 
@@ -279,6 +289,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals("artist3", painting.getToArtist().getArtistName());
     }
 
+    @Test
     public void testInvalidateRootWithNullToOneTargetChangedToNotNull() throws Exception {
         createSingleArtistAndUnrelatedPaintingDataSet();
 
@@ -293,6 +304,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals("artist2", painting.getToArtist().getArtistName());
     }
 
+    @Test
     public void testInvalidateRootWithDeletedToMany() throws Exception {
         createSingleArtistAndPaintingDataSet();
 
@@ -306,6 +318,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(artist.getPaintingArray().size(), 0);
     }
 
+    @Test
     public void testInvaliateRootWithAddedToMany() throws Exception {
 
         createSingleArtistDataSet();
@@ -321,6 +334,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(artist.getPaintingArray().size(), 1);
     }
 
+    @Test
     public void testInvalidateThenModify() throws Exception {
 
         createSingleArtistDataSet();
@@ -345,6 +359,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(PersistenceState.MODIFIED, artist.getPersistenceState());
     }
 
+    @Test
     public void testModifyHollow() throws Exception {
 
         createSingleArtistAndPaintingDataSet();

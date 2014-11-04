@@ -25,6 +25,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SelectQueryCacheKeyIT extends ServerCase {
@@ -32,6 +33,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testNoCache() {
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -46,6 +48,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertNull(md2.getCacheKey());
     }
 
+    @Test
     public void testLocalCache() {
 
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -57,6 +60,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertNotNull(md1.getCacheKey());
     }
 
+    @Test
     public void testUseLocalCache() {
 
         SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
@@ -76,6 +80,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertEquals(2, md2.getCacheGroups().length);
     }
 
+    @Test
     public void testSharedCache() {
 
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -86,7 +91,8 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
-    
+
+    @Test
     public void testUseSharedCache() {
 
         SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
@@ -106,6 +112,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertEquals(2, md2.getCacheGroups().length);
     }
 
+    @Test
     public void testNamedQuery() {
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -118,6 +125,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertFalse("XYZ".equals(md1.getCacheKey()));
     }
 
+    @Test
     public void testUniqueKeyEntity() {
 
         SelectQuery q1 = new SelectQuery(Artist.class);
@@ -135,6 +143,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q3.getMetaData(resolver).getCacheKey()));
     }
 
+    @Test
     public void testUniqueKeyEntityQualifier() {
 
         SelectQuery q1 = new SelectQuery(Artist.class);
@@ -155,6 +164,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q3.getMetaData(resolver).getCacheKey()));
     }
 
+    @Test
     public void testUniqueKeyEntityFetchLimit() {
 
         SelectQuery q1 = new SelectQuery(Artist.class);

@@ -34,6 +34,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ public class PrefetchProcessorTreeBuilderIT extends ServerCase {
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testBuildTreeNoPrefetches() {
 
         final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
@@ -109,6 +111,7 @@ public class PrefetchProcessorTreeBuilderIT extends ServerCase {
         assertNull(processingTree.getIncoming());
     }
 
+    @Test
     public void testBuildTreeWithPrefetches() {
 
         final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");

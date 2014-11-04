@@ -28,8 +28,9 @@ import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
 import org.apache.cayenne.testdo.mt.MtMapToMany;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-import java.util.Map;
+import java.util.Map;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextMapRelationshipIT extends ClientCase {
@@ -60,6 +61,7 @@ public class CayenneContextMapRelationshipIT extends ClientCase {
         tMtMapToManyTarget.insert(1, 1).insert(2, 1).insert(3, 1).insert(4, 2);
     }
 
+    @Test
     public void testReadToMany() throws Exception {
         createTwoMapToManysWithTargetsDataSet();
 
@@ -79,6 +81,7 @@ public class CayenneContextMapRelationshipIT extends ClientCase {
         assertNotNull(targets.get(new Integer(3)));
     }
 
+    @Test
     public void testAddToMany() throws Exception {
         createTwoMapToManysWithTargetsDataSet();
 

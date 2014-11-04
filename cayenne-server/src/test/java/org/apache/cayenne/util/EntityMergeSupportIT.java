@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.util;
 
-import java.sql.Types;
-import java.util.Arrays;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -30,10 +27,15 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.merge.MergeCase;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.sql.Types;
+import java.util.Arrays;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class EntityMergeSupportIT extends MergeCase {
 
+    @Test
     public void testMerging() {
         DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
 

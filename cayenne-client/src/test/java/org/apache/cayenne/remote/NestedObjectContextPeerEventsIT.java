@@ -23,13 +23,22 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(value=Parameterized.class)
 public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
 
     @Inject
@@ -37,6 +46,19 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
     
     @Inject
     private DBHelper dbHelper;
+
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION},
+        });
+    }
+
+    public NestedObjectContextPeerEventsIT(int serializationPolicy) {
+        super.serializationPolicy = serializationPolicy;
+    }
 
     @Override
     public void setUpAfterInjection() throws Exception {
@@ -46,6 +68,7 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
         dbHelper.deleteAll("MT_TABLE1");
     }
 
+    @Test
     public void testPeerObjectUpdatedTempOID() throws Exception {
         ObjectContext peer1 = runtime.newContext(clientContext);
         ClientMtTable1 a1 = peer1.newObject(ClientMtTable1.class);
@@ -63,6 +86,7 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
         assertEquals(a2.getObjectId(), a1.getObjectId());
     }
 
+    @Test
     public void testPeerObjectUpdatedSimpleProperty() throws Exception {
         ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
         a.setGlobalAttribute1("X");
@@ -84,6 +108,7 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
                 peer2.hasChanges());
     }
 
+    @Test
     public void testPeerObjectUpdatedToOneRelationship() throws Exception {
         ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable1 altA = clientContext.newObject(ClientMtTable1.class);
@@ -114,6 +139,7 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
                 peer2.hasChanges());
     }
 
+    @Test
     public void testPeerObjectUpdatedToManyRelationship() throws Exception {
         ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
         a.setGlobalAttribute1("X");

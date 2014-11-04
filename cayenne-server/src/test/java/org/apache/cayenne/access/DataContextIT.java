@@ -54,6 +54,7 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -164,6 +165,7 @@ public class DataContextIT extends ServerCase {
         tPainting.insert(33007, "P_artist21", 33007, 21000);
     }
 
+    @Test
     public void testCurrentSnapshot1() throws Exception {
         createSingleArtistDataSet();
 
@@ -176,6 +178,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(artist.getDateOfBirth(), snapshot.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testCurrentSnapshot2() throws Exception {
         createSingleArtistDataSet();
 
@@ -195,6 +198,7 @@ public class DataContextIT extends ServerCase {
         assertNull(snapshot.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testCurrentSnapshot3() throws Exception {
         createSingleArtistDataSet();
 
@@ -216,6 +220,7 @@ public class DataContextIT extends ServerCase {
     /**
      * Testing snapshot with to-one fault. This was a bug CAY-96.
      */
+    @Test
     public void testCurrentSnapshotWithToOneFault() throws Exception {
 
         createGalleriesAndExhibitsDataSet();
@@ -244,6 +249,7 @@ public class DataContextIT extends ServerCase {
      * would pad a CHAR column with extra spaces, returned to the client.
      * Cayenne should trim it.
      */
+    @Test
     public void testCharFetch() throws Exception {
         createSingleArtistDataSet();
 
@@ -257,6 +263,7 @@ public class DataContextIT extends ServerCase {
      * databases (Oracle...) would pad a CHAR column with extra spaces, returned
      * to the client. Cayenne should trim it.
      */
+    @Test
     public void testCharInQualifier() throws Exception {
         createArtistsDataSet();
 
@@ -270,6 +277,7 @@ public class DataContextIT extends ServerCase {
      * Test fetching query with multiple relationship paths between the same 2
      * entities used in qualifier.
      */
+    @Test
     public void testMultiObjRelFetch() throws Exception {
         createArtistsAndPaintingsDataSet();
 
@@ -285,6 +293,7 @@ public class DataContextIT extends ServerCase {
      * Test fetching query with multiple relationship paths between the same 2
      * entities used in qualifier.
      */
+    @Test
     public void testMultiDbRelFetch() throws Exception {
         createArtistsAndPaintingsDataSet();
 
@@ -296,6 +305,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(2, results.size());
     }
 
+    @Test
     public void testSelectDate() throws Exception {
         createGalleriesAndExhibitsDataSet();
 
@@ -306,6 +316,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(java.util.Date.class, e1.getClosingDate().getClass());
     }
 
+    @Test
     public void testCaseInsensitiveOrdering() throws Exception {
         if (!accessStackAdapter.supportsCaseInsensitiveOrder()) {
             return;
@@ -337,6 +348,7 @@ public class DataContextIT extends ServerCase {
         assertEquals("aRtist5", objects.get(4).getArtistName());
     }
 
+    @Test
     public void testSelect_DataRows() throws Exception {
         createArtistsAndPaintingsDataSet();
 
@@ -348,6 +360,7 @@ public class DataContextIT extends ServerCase {
         assertTrue("DataRow expected, got " + objects.get(0).getClass(), objects.get(0) instanceof DataRow);
     }
 
+    @Test
     public void testPerformSelectQuery1() throws Exception {
         createArtistsAndPaintingsDataSet();
 
@@ -359,6 +372,7 @@ public class DataContextIT extends ServerCase {
         assertTrue("Artist expected, got " + objects.get(0).getClass(), objects.get(0) instanceof Artist);
     }
 
+    @Test
     public void testPerformSelectQuery2() throws Exception {
         createArtistsAndPaintingsDataSet();
 
@@ -377,6 +391,7 @@ public class DataContextIT extends ServerCase {
         assertTrue("Artist expected, got " + objects.get(0).getClass(), objects.get(0) instanceof Artist);
     }
 
+    @Test
     public void testPerformQuery_Routing() {
         Query query = mock(Query.class);
         QueryMetadata md = mock(QueryMetadata.class);
@@ -385,6 +400,7 @@ public class DataContextIT extends ServerCase {
         verify(query).route(any(QueryRouter.class), eq(context.getEntityResolver()), (Query) isNull());
     }
 
+    @Test
     public void testPerformNonSelectingQuery() throws Exception {
 
         createSingleArtistDataSet();
@@ -400,6 +416,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(1, context.performQuery(select).size());
     }
 
+    @Test
     public void testPerformNonSelectingQueryCounts1() throws Exception {
         createArtistsDataSet();
 
@@ -422,6 +439,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(1, counts[0]);
     }
 
+    @Test
     public void testPerformNonSelectingQueryCounts2() throws Exception {
 
         createArtistsDataSet();
@@ -456,6 +474,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(3, counts[0]);
     }
 
+    @Test
     public void testPerformPaginatedQuery() throws Exception {
         createArtistsDataSet();
 
@@ -470,6 +489,7 @@ public class DataContextIT extends ServerCase {
         assertTrue(objects.get(0) instanceof Artist);
     }
 
+    @Test
     public void testPerformPaginatedQuery1() throws Exception {
         createArtistsDataSet();
 
@@ -484,6 +504,7 @@ public class DataContextIT extends ServerCase {
         assertTrue(objects.get(0) instanceof Artist);
     }
 
+    @Test
     public void testPerformPaginatedQueryBigPage() throws Exception {
         createArtistsDataSet();
 
@@ -501,6 +522,7 @@ public class DataContextIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPerformDataRowQuery() throws Exception {
 
         createArtistsDataSet();
@@ -514,6 +536,7 @@ public class DataContextIT extends ServerCase {
         assertTrue("Map expected, got " + objects.get(0).getClass(), objects.get(0) instanceof Map<?, ?>);
     }
 
+    @Test
     public void testCommitChangesRO1() throws Exception {
 
         ROArtist a1 = (ROArtist) context.newObject("ROArtist");
@@ -529,6 +552,7 @@ public class DataContextIT extends ServerCase {
         }
     }
 
+    @Test
     public void testCommitChangesRO2() throws Exception {
         createArtistsDataSet();
 
@@ -546,6 +570,7 @@ public class DataContextIT extends ServerCase {
         }
     }
 
+    @Test
     public void testCommitChangesRO3() throws Exception {
 
         createArtistsDataSet();
@@ -564,6 +589,7 @@ public class DataContextIT extends ServerCase {
         }
     }
 
+    @Test
     public void testCommitChangesRO4() throws Exception {
         createArtistsDataSet();
 
@@ -585,6 +611,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
     }
 
+    @Test
 	public void testIterate() throws Exception {
 
 		createArtistsDataSet();
@@ -605,6 +632,7 @@ public class DataContextIT extends ServerCase {
 		 assertEquals(7, count[0]);
 	}
 
+    @Test
     public void testIterateDataRows() throws Exception {
 
         createArtistsDataSet();
@@ -624,6 +652,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(7, count[0]);
     }
 
+    @Test
     public void testIterator() throws Exception {
 
         createArtistsDataSet();
@@ -644,6 +673,7 @@ public class DataContextIT extends ServerCase {
         }
     }
 
+    @Test
     public void testPerformIteratedQuery1() throws Exception {
 
         createArtistsDataSet();
@@ -664,6 +694,7 @@ public class DataContextIT extends ServerCase {
         }
     }
 
+    @Test
     public void testPerformIteratedQuery2() throws Exception {
         createArtistsAndPaintingsDataSet();
 
@@ -693,6 +724,7 @@ public class DataContextIT extends ServerCase {
      * Tests that hasChanges performs correctly when an object is "modified" and
      * the property is simply set to the same value (an unreal modification)
      */
+    @Test
     public void testHasChangesPhantom() {
 
         String artistName = "ArtistName";
@@ -716,6 +748,7 @@ public class DataContextIT extends ServerCase {
      * Tests that hasChanges performs correctly when an object is "modified" and
      * the property is simply set to the same value (an unreal modification)
      */
+    @Test
     public void testHasChangesRealModify() {
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName("ArtistName");
@@ -725,6 +758,7 @@ public class DataContextIT extends ServerCase {
         assertTrue(context.hasChanges());
     }
 
+    @Test
     public void testInvalidateObjects_Vararg() throws Exception {
 
         DataRow row = new DataRow(10);
@@ -747,6 +781,7 @@ public class DataContextIT extends ServerCase {
         assertSame(object, context.getObjectStore().getNode(oid));
     }
 
+    @Test
     public void testInvalidateObjects() throws Exception {
 
         DataRow row = new DataRow(10);
@@ -769,6 +804,7 @@ public class DataContextIT extends ServerCase {
         assertSame(object, context.getObjectStore().getNode(oid));
     }
 
+    @Test
     public void testBeforeHollowDeleteShouldChangeStateToCommited() throws Exception {
         createSingleArtistDataSet();
 
@@ -784,6 +820,7 @@ public class DataContextIT extends ServerCase {
         assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());
     }
 
+    @Test
     public void testCommitUnchangedInsert() throws Exception {
 
         // see CAY-1444 - reproducible on DB's that support auto incremented PK

@@ -18,19 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.Map;
 
 @UseServerRuntime(ServerCase.SUS_PROJECT)
 public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 
+    @Test
 	public void testCreateIfNoSchemaStrategy() throws Exception {
 
 		setStrategy(CreateIfNoSchemaStrategy.class);
@@ -49,6 +51,7 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 		assertEquals(2, existingTables().size());
 	}
 
+    @Test
 	public void testNoStandardSchema() throws Exception {
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(Object.class, template);

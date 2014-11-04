@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.relationship.ToOneFK1;
 import org.apache.cayenne.testdo.relationship.ToOneFK2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Tests the behavior of one-to-one relationship where to-one is pointing to an FK.
@@ -49,6 +50,7 @@ public class CDOOneToOneFKIT extends ServerCase {
         dbHelper.deleteAll("TO_ONEFK2");
     }
 
+    @Test
     public void testReadRelationship() {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
@@ -71,6 +73,7 @@ public class CDOOneToOneFKIT extends ServerCase {
         assertSame(target2, target2.getToPK().getToOneToFK());
     }
 
+    @Test
     public void test2Null() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
@@ -86,6 +89,7 @@ public class CDOOneToOneFKIT extends ServerCase {
         assertNull(src2.getToOneToFK());
     }
 
+    @Test
     public void testReplaceNull1() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
@@ -103,6 +107,7 @@ public class CDOOneToOneFKIT extends ServerCase {
         assertNull(src2.getToOneToFK());
     }
 
+    @Test
     public void testReplaceNull2() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         context.commitChanges();
@@ -130,6 +135,7 @@ public class CDOOneToOneFKIT extends ServerCase {
         assertEquals(target.getObjectId(), target2.getObjectId());
     }
 
+    @Test
     public void testNewAdd() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
@@ -155,6 +161,7 @@ public class CDOOneToOneFKIT extends ServerCase {
         assertEquals(target.getObjectId(), target2.getObjectId());
     }
 
+    @Test
     public void testTakeObjectSnapshotDependentFault() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
@@ -174,6 +181,7 @@ public class CDOOneToOneFKIT extends ServerCase {
         assertTrue(src2.readPropertyDirectly("toOneToFK") instanceof Fault);
     }
 
+    @Test
     public void testDelete() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);

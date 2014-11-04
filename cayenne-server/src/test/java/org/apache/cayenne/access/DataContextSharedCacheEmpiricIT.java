@@ -31,6 +31,7 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
@@ -76,6 +77,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
         tArtist.insert(1, "version1");
     }
 
+    @Test
     public void testSelectSelectCommitRefresh() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -96,6 +98,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
         assertOnCommit(a2);
     }
 
+    @Test
     public void testSelectSelectCommitRefreshReverse() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -115,6 +118,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
         assertOnCommit(a2);
     }
 
+    @Test
     public void testSelectUpdateSelectCommitRefresh() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);

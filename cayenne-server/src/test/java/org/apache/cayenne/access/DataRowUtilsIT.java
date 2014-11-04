@@ -32,6 +32,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -75,6 +76,7 @@ public class DataRowUtilsIT extends ServerCase {
         tPainting.insert(6, "p_artist2", 11, 1000);
     }
 
+    @Test
     public void testMerge() throws Exception {
         createOneArtist();
 
@@ -99,6 +101,7 @@ public class DataRowUtilsIT extends ServerCase {
         assertEquals(s2.get("DATE_OF_BIRTH"), a1.getDateOfBirth());
     }
 
+    @Test
     public void testIsToOneTargetModified() throws Exception {
         createOneArtist();
 
@@ -131,6 +134,7 @@ public class DataRowUtilsIT extends ServerCase {
         assertTrue(DataRowUtils.isToOneTargetModified(toArtist, painting, diff));
     }
 
+    @Test
     public void testIsToOneTargetModifiedWithNewTarget() throws Exception {
         createOneArtistAndOnePainting();
 

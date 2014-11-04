@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -85,6 +86,7 @@ public class DataContextQualifiedEntityIT extends ServerCase {
         tPerson.insert(null, null, null, "c1", 6, "C", null);
     }
 
+    @Test
     public void testSelect() throws Exception {
         createPersonsDataSet();
 
@@ -109,6 +111,7 @@ public class DataContextQualifiedEntityIT extends ServerCase {
         assertEquals(2, managers.size());
     }
 
+    @Test
     public void testPrefetch() throws Exception {
         createPersonsDataSet();
 

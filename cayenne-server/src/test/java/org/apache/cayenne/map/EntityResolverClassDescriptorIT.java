@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,6 +41,7 @@ public class EntityResolverClassDescriptorIT extends ServerCase {
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testServerDescriptorCaching() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
@@ -54,6 +56,7 @@ public class EntityResolverClassDescriptorIT extends ServerCase {
         assertNotSame(descriptor, descriptor1);
     }
 
+    @Test
     public void testServerDescriptorFactory() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
@@ -74,6 +77,7 @@ public class EntityResolverClassDescriptorIT extends ServerCase {
         }
     }
 
+    @Test
     public void testArcProperties() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();

@@ -23,6 +23,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SQLTemplateCacheKeyIT extends ServerCase {
@@ -30,6 +31,7 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testNoCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
@@ -44,6 +46,7 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
         assertNull(md2.getCacheKey());
     }
 
+    @Test
     public void testLocalCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
@@ -55,6 +58,7 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
         assertNotNull(md1.getCacheKey());
     }
 
+    @Test
     public void testSharedCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
@@ -66,6 +70,7 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
         assertNotNull(md1.getCacheKey());
     }
 
+    @Test
     public void testNamedQuery() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
@@ -78,6 +83,7 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
         assertFalse("XYZ".equals(md1.getCacheKey()));
     }
 
+    @Test
     public void testCacheFetchLimitAndOffset() {
         SQLTemplate q1 = new SQLTemplate(Artist.class, "SELECT ME");
         q1.setFetchOffset(5);

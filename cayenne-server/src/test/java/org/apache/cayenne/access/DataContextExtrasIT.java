@@ -41,6 +41,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Date;
@@ -108,6 +109,7 @@ public class DataContextExtrasIT extends ServerCase {
         tPainting.insert(33001, 33001, "P1", 3000);
     }
 
+    @Test
     public void testManualIdProcessingOnCommit() throws Exception {
 
         Artist object = context.newObject(Artist.class);
@@ -125,6 +127,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertEquals(manualId, object.getObjectId());
     }
 
+    @Test
     public void testResolveFault() {
 
         Artist o1 = context.newObject(Artist.class);
@@ -140,6 +143,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertEquals("a", o1.readPropertyDirectly("artistName"));
     }
 
+    @Test
     public void testResolveFaultFailure() {
 
         Persistent o1 = context.findOrCreateObject(new ObjectId(
@@ -156,6 +160,7 @@ public class DataContextExtrasIT extends ServerCase {
         }
     }
 
+    @Test
     public void testUserProperties() {
 
         assertNull(context.getUserProperty("ABC"));
@@ -165,6 +170,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertSame(object, context.getUserProperty("ABC"));
     }
 
+    @Test
     public void testHasChangesNew() {
 
         assertTrue("No changes expected in context", !context.hasChanges());
@@ -174,6 +180,7 @@ public class DataContextExtrasIT extends ServerCase {
                 context.hasChanges());
     }
 
+    @Test
     public void testNewObject() {
 
         Artist a1 = (Artist) context.newObject("Artist");
@@ -181,6 +188,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertTrue(context.newObjects().contains(a1));
     }
 
+    @Test
     public void testNewObjectWithClass() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -188,6 +196,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertTrue(context.newObjects().contains(a1));
     }
 
+    @Test
     public void testIdObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
@@ -200,6 +209,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertNull(context.getObjectStore().getCachedSnapshot(obj.getObjectId()));
     }
 
+    @Test
     public void testPartialObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
@@ -212,6 +222,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertNull(context.getObjectStore().getCachedSnapshot(obj.getObjectId()));
     }
 
+    @Test
     public void testFullObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
@@ -226,6 +237,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertEquals("ArtistXYZ", obj.getArtistName());
     }
 
+    @Test
     public void testCommitChangesError() {
 
         DataDomain domain = context.getParentDataDomain();
@@ -273,6 +285,7 @@ public class DataContextExtrasIT extends ServerCase {
     /**
      * Testing behavior of Cayenne when a database exception is thrown in SELECT query.
      */
+    @Test
     public void testSelectException() {
 
         SQLTemplate q = new SQLTemplate(Artist.class, "SELECT * FROM NON_EXISTENT_TABLE");
@@ -287,10 +300,12 @@ public class DataContextExtrasIT extends ServerCase {
 
     }
 
+    @Test
     public void testEntityResolver() {
         assertNotNull(context.getEntityResolver());
     }
 
+    @Test
     public void testPhantomModificationsValidate() throws Exception {
 
         createPhantomModificationDataSet();
@@ -323,6 +338,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertFalse(a1.isValidateForSaveCalled());
     }
 
+    @Test
     public void testPhantomModificationsValidateToOne() throws Exception {
 
         createPhantomModificationsValidateToOneDataSet();
@@ -339,6 +355,7 @@ public class DataContextExtrasIT extends ServerCase {
                 p1.isValidateForSaveCalled());
     }
 
+    @Test
     public void testValidateOnToManyChange() throws Exception {
 
         createValidateOnToManyChangeDataSet();
@@ -355,6 +372,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertFalse(a1.isValidateForSaveCalled());
     }
 
+    @Test
     public void testPhantomAttributeModificationCommit() throws Exception {
 
         createPhantomModificationDataSet();
@@ -371,6 +389,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
     }
 
+    @Test
     public void testPhantomRelationshipModificationCommit() throws Exception {
 
         createPhantomRelationshipModificationCommitDataSet();
@@ -396,6 +415,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, newArtist.getPersistenceState());
     }
 
+    @Test
     public void testPhantomRelationshipModificationValidate() throws Exception {
 
         createPhantomRelationshipModificationCommitDataSet();

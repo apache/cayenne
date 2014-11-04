@@ -28,6 +28,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -65,6 +66,7 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
         tPainting.insert(3, "ACC", 1);
     }
 
+    @Test
     public void testToManyDisjointOverlappingQualifierWithInnerJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
@@ -81,6 +83,7 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
         assertEquals(3, a.getPaintingArray().size());
     }
 
+    @Test
     public void testToManyJointOverlappingQualifierWithInnerJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
@@ -97,6 +100,7 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
         assertEquals(3, a.getPaintingArray().size());
     }
 
+    @Test
     public void testToManyJointOverlappingQualifierWithOuterJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 

@@ -25,6 +25,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -36,7 +37,8 @@ public class QueryCacheIT extends ServerCase {
     
     @Inject
     private ObjectContext context2;
-    
+
+    @Test
     public void testLocalCache() {
         
         Artist a = context1.newObject(Artist.class);

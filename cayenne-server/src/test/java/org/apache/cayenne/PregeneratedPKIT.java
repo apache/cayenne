@@ -27,6 +27,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * This test case ensures that PK pre-generated for the entity manually before commit is
@@ -55,6 +56,7 @@ public class PregeneratedPKIT extends ServerCase {
         dbHelper.deleteAll("GALLERY");
     }
 
+    @Test
     public void testLongPk() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");

@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -47,7 +48,8 @@ public class DataContextCharTypeIT extends ServerCase {
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("TYPES_MAPPING_TEST1");
     }
-    
+
+    @Test
     public void testCharTrimming() {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap1 map1 = context.newObject(ReturnTypesMap1.class);

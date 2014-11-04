@@ -28,6 +28,7 @@ import org.apache.cayenne.tx.CayenneTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Connection;
 
@@ -40,6 +41,7 @@ public class UserTransactionIT extends ServerCase {
     @Inject
     private JdbcEventLogger logger;
 
+    @Test
     public void testCommit() throws Exception {
 
         Artist a = context.newObject(Artist.class);

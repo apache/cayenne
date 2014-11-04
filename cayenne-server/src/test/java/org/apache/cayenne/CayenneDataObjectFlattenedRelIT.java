@@ -32,6 +32,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -92,6 +93,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
         tArtistGroup.insert(33001, 1);
     }
 
+    @Test
     public void testReadFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
@@ -101,6 +103,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
         assertEquals(0, groupList.size());
     }
 
+    @Test
     public void testReadFlattenedRelationship2() throws Exception {
 
         create1Artist1ArtGroup1ArtistGroupDataSet();
@@ -113,6 +116,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
         assertEquals("g1", groupList.get(0).getName());
     }
 
+    @Test
     public void testAddToFlattenedRelationship() throws Exception {
 
         create1Artist1ArtGroupDataSet();
@@ -150,6 +154,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
     }
 
     // Test case to show up a bug in committing more than once
+    @Test
     public void testDoubleCommitAddToFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
@@ -183,6 +188,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
     }
 
+    @Test
     public void testRemoveFromFlattenedRelationship() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
@@ -205,6 +211,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
     // Demonstrates a possible bug in ordering of deletes, when a flattened relationships
     // link record is deleted at the same time (same transaction) as one of the record to
     // which it links.
+    @Test
     public void testRemoveFlattenedRelationshipAndRootRecord() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
@@ -223,6 +230,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
         }
     }
 
+    @Test
     public void testAddRemoveFlattenedRelationship1() throws Exception {
         create1Artist1ArtGroupDataSet();
 
@@ -246,6 +254,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
         });
     }
 
+    @Test
     public void testAddRemoveFlattenedRelationship2() throws Exception {
         create1Artist2ArtGroupDataSet();
 

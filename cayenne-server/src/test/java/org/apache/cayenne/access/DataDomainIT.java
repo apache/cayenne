@@ -36,6 +36,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ public class DataDomainIT extends ServerCase {
     @Inject
     private JdbcEventLogger logger;
 
+    @Test
     public void testName() throws Exception {
         DataDomain domain = new DataDomain("some name");
         assertEquals("some name", domain.getName());
@@ -57,6 +59,7 @@ public class DataDomainIT extends ServerCase {
         assertEquals("tst_name", domain.getName());
     }
 
+    @Test
     public void testLookupDataNode() {
 
         DataDomain domain = new DataDomain("test");
@@ -83,6 +86,7 @@ public class DataDomainIT extends ServerCase {
         }
     }
 
+    @Test
     public void testLookupDataNode_Default() {
 
         DataDomain domain = new DataDomain("test");
@@ -104,6 +108,7 @@ public class DataDomainIT extends ServerCase {
         assertSame(n1, domain.lookupDataNode(new DataMap("m3")));
     }
 
+    @Test
     public void testNodes() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         assertEquals(0, domain.getDataNodes().size());
@@ -117,6 +122,7 @@ public class DataDomainIT extends ServerCase {
         assertEquals(2, domain.getDataNodes().size());
     }
 
+    @Test
     public void testNodeMaps() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         assertNull(domain.getDataMap("map"));
@@ -129,6 +135,7 @@ public class DataDomainIT extends ServerCase {
         assertNotNull(domain.getDataMap("map"));
     }
 
+    @Test
     public void testMaps() throws Exception {
         DataDomain d1 = new DataDomain("dom1");
 
@@ -140,6 +147,7 @@ public class DataDomainIT extends ServerCase {
         assertNull(d1.getDataMap(m1.getName()));
     }
 
+    @Test
     public void testEntityResolverRefresh() throws Exception {
         DataDomain domain = new DataDomain("dom1");
         org.apache.cayenne.map.EntityResolver resolver = domain.getEntityResolver();
@@ -154,6 +162,7 @@ public class DataDomainIT extends ServerCase {
         assertSame(entity, resolver.getObjEntity("TestEntity"));
     }
 
+    @Test
     public void testEntityResolver() {
         assertNotNull(runtime.getDataDomain().getEntityResolver());
 
@@ -161,6 +170,7 @@ public class DataDomainIT extends ServerCase {
         assertNotNull(domain.getEntityResolver());
     }
 
+    @Test
     public void testInitDataDomainWithSharedCache() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.TRUE.toString());
@@ -169,6 +179,7 @@ public class DataDomainIT extends ServerCase {
         assertTrue(domain.isSharedCacheEnabled());
     }
 
+    @Test
     public void testInitDataDomainWithDedicatedCache() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
@@ -177,6 +188,7 @@ public class DataDomainIT extends ServerCase {
         assertFalse(domain.isSharedCacheEnabled());
     }
 
+    @Test
     public void testInitDataDomainValidation() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.TRUE.toString());
@@ -185,6 +197,7 @@ public class DataDomainIT extends ServerCase {
         assertTrue(domain.isValidatingObjectsOnCommit());
     }
 
+    @Test
     public void testInitDataDomainNoValidation() throws Exception {
         Map<Object, Object> properties = new HashMap<Object, Object>();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.FALSE.toString());
@@ -193,6 +206,7 @@ public class DataDomainIT extends ServerCase {
         assertFalse(domain.isValidatingObjectsOnCommit());
     }
 
+    @Test
     public void testShutdownCache() {
         DataDomain domain = new DataDomain("X");
 
@@ -212,6 +226,7 @@ public class DataDomainIT extends ServerCase {
         assertTrue(cacheShutdown[0]);
     }
 
+    @Test
     public void testAddListener() {
 
         DataDomain domain = runtime.getDataDomain();

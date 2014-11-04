@@ -20,14 +20,36 @@ package org.apache.cayenne.remote;
 
 import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtLifecycles;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(value=Parameterized.class)
 public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleListener {
     private int added, loaded, prePersisted, postPersisted, preRemoved, postRemoved, preUpdated, postUpdated;
-    
+
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION},
+        });
+    }
+
+    public RemoteCallbacksIT(int serializationPolicy) {
+        super.serializationPolicy = serializationPolicy;
+    }
+
     @Override
     public void setUpAfterInjection() throws Exception {
         super.setUpAfterInjection();
@@ -41,7 +63,8 @@ public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleLis
         preUpdated = 0;
         postUpdated = 0;
     }
-    
+
+    @Test
     public void testDefault() throws InterruptedException {
         ObjectContext context = createROPContext();
         context.getEntityResolver().getCallbackRegistry().addListener(ClientMtLifecycles.class, this);

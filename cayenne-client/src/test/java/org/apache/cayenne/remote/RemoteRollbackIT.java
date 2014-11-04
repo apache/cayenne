@@ -19,17 +19,40 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * This is a test primarily for CAY-1103
  */
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(value=Parameterized.class)
 public class RemoteRollbackIT extends RemoteCayenneCase {
-    
+
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION},
+        });
+    }
+
+    public RemoteRollbackIT(int serializationPolicy) {
+        super.serializationPolicy = serializationPolicy;
+    }
+
+    @Test
     public void testRollbackNew() {
         ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
         o1.setGlobalAttribute1("a");
@@ -60,6 +83,7 @@ public class RemoteRollbackIT extends RemoteCayenneCase {
         // assertEquals(0, o1.getClientMtTable2Array().size());
     }
 
+    @Test
     public void testRollbackNewObject() {
         String o1Name = "revertTestClientMtTable1";
         ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
@@ -74,6 +98,7 @@ public class RemoteRollbackIT extends RemoteCayenneCase {
     // Catches a bug where new objects were unregistered within an object iterator, thus
     // modifying the
     // collection the iterator was iterating over (ConcurrentModificationException)
+    @Test
     public void testRollbackWithMultipleNewObjects() {
         String o1Name = "rollbackTestClientMtTable1";
         String o2Title = "rollbackTestClientMtTable2";
@@ -95,6 +120,7 @@ public class RemoteRollbackIT extends RemoteCayenneCase {
         assertEquals(PersistenceState.TRANSIENT, o1.getPersistenceState());
     }
 
+    @Test
     public void testRollbackRelationshipModification() {
         String o1Name = "relationshipModClientMtTable1";
         String o2Title = "relationshipTestClientMtTable2";
@@ -116,6 +142,7 @@ public class RemoteRollbackIT extends RemoteCayenneCase {
         assertEquals(o1, o2.getTable1());
     }
 
+    @Test
     public void testRollbackDeletedObject() {
         String o1Name = "deleteTestClientMtTable1";
         ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
@@ -130,6 +157,7 @@ public class RemoteRollbackIT extends RemoteCayenneCase {
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
     }
 
+    @Test
     public void testRollbackModifiedObject() {
         String o1Name = "initialTestClientMtTable1";
         ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);

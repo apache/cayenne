@@ -21,6 +21,7 @@ package org.apache.cayenne.tx;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.when;
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DefaultTransactionManagerIT extends ServerCase {
 
+    @Test
     public void testPerformInTransaction_NoTx() {
 
         final BaseTransaction tx = mock(BaseTransaction.class);
@@ -47,6 +49,7 @@ public class DefaultTransactionManagerIT extends ServerCase {
         assertSame(expectedResult, result);
     }
 
+    @Test
     public void testPerformInTransaction_ExistingTx() {
 
         final BaseTransaction tx1 = mock(BaseTransaction.class);

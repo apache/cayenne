@@ -28,6 +28,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.ValidationDelegate;
 import org.apache.cayenne.validation.ValidationResult;
+import org.junit.Test;
 
 /**
  */
@@ -50,6 +51,7 @@ public class DataContextValidationIT extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testValidatingObjectsOnCommitProperty() throws Exception {
         context.setValidatingObjectsOnCommit(true);
         assertTrue(context.isValidatingObjectsOnCommit());
@@ -58,6 +60,7 @@ public class DataContextValidationIT extends ServerCase {
         assertFalse(context.isValidatingObjectsOnCommit());
     }
 
+    @Test
     public void testValidatingObjectsOnCommit() throws Exception {
         // test that validation is called properly
 
@@ -74,6 +77,7 @@ public class DataContextValidationIT extends ServerCase {
         assertFalse(a2.isValidateForSaveCalled());
     }
 
+    @Test
     public void testValidationModifyingContext() throws Exception {
 
         ValidationDelegate delegate = new ValidationDelegate() {

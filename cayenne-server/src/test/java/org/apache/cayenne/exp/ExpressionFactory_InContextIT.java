@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 	@Inject
 	private ObjectContext context;
 
+    @Test
 	public void testExpressionOfBadType() throws Exception {
 
 		// non existing type
@@ -51,6 +53,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		}
 	}
 
+    @Test
 	public void testBetweenExp() throws Exception {
 		Object v1 = new Object();
 		Object v2 = new Object();
@@ -61,6 +64,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.OBJ_PATH, path.getType());
 	}
 
+    @Test
 	public void testBetweenDbExp() throws Exception {
 		Object v1 = new Object();
 		Object v2 = new Object();
@@ -71,6 +75,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.DB_PATH, path.getType());
 	}
 
+    @Test
 	public void testNotBetweenExp() throws Exception {
 		Object v1 = new Object();
 		Object v2 = new Object();
@@ -81,6 +86,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.OBJ_PATH, path.getType());
 	}
 
+    @Test
 	public void testNotBetweenDbExp() throws Exception {
 		Object v1 = new Object();
 		Object v2 = new Object();
@@ -91,12 +97,14 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.DB_PATH, path.getType());
 	}
 
+    @Test
 	public void testGreaterExp() throws Exception {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterExp("abc", v);
 		assertEquals(Expression.GREATER_THAN, exp.getType());
 	}
 
+    @Test
 	public void testGreaterDbExp() throws Exception {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterDbExp("abc", v);
@@ -106,12 +114,14 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.DB_PATH, path.getType());
 	}
 
+    @Test
 	public void testGreaterOrEqualExp() throws Exception {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterOrEqualExp("abc", v);
 		assertEquals(Expression.GREATER_THAN_EQUAL_TO, exp.getType());
 	}
 
+    @Test
 	public void testGreaterOrEqualDbExp() throws Exception {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.greaterOrEqualDbExp("abc", v);
@@ -121,12 +131,14 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.DB_PATH, path.getType());
 	}
 
+    @Test
 	public void testLessExp() throws Exception {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessExp("abc", v);
 		assertEquals(Expression.LESS_THAN, exp.getType());
 	}
 
+    @Test
 	public void testLessDbExp() throws Exception {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessDbExp("abc", v);
@@ -136,6 +148,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.DB_PATH, path.getType());
 	}
 
+    @Test
 	public void testLessOrEqualExp() throws Exception {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessOrEqualExp("abc", v);
@@ -145,6 +158,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.OBJ_PATH, path.getType());
 	}
 
+    @Test
 	public void testLessOrEqualDbExp() throws Exception {
 		Object v = new Object();
 		Expression exp = ExpressionFactory.lessOrEqualDbExp("abc", v);
@@ -154,11 +168,13 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.DB_PATH, path.getType());
 	}
 
+    @Test
 	public void testInExp1() throws Exception {
 		Expression exp = ExpressionFactory.inExp("abc", "a", "b");
 		assertEquals(Expression.IN, exp.getType());
 	}
 
+    @Test
 	public void testInExp2() throws Exception {
 		List<Object> v = new ArrayList<Object>();
 		v.add("a");
@@ -167,12 +183,14 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.IN, exp.getType());
 	}
 
+    @Test
 	public void testInExp3() throws Exception {
 		List<Object> v = new ArrayList<Object>();
 		Expression exp = ExpressionFactory.inExp("abc", v);
 		assertEquals(Expression.FALSE, exp.getType());
 	}
 
+    @Test
 	public void testLikeExp() throws Exception {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeExp("abc", v);
@@ -182,6 +200,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.OBJ_PATH, path.getType());
 	}
 
+    @Test
 	public void testLikeDbExp() throws Exception {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeDbExp("abc", v);
@@ -191,6 +210,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.DB_PATH, path.getType());
 	}
 
+    @Test
 	public void testLikeExpEscape() throws Exception {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeExp("=abc", v, '=');
@@ -202,6 +222,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.OBJ_PATH, path.getType());
 	}
 
+    @Test
 	public void testLikeIgnoreCaseExp() throws Exception {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseExp("abc", v);
@@ -212,6 +233,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.OBJ_PATH, path.getType());
 	}
 
+    @Test
 	public void testLikeIgnoreCaseExpEscape() throws Exception {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseExp("=abc", v, '=');
@@ -222,6 +244,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.OBJ_PATH, path.getType());
 	}
 
+    @Test
 	public void testLikeIgnoreCaseDbExp() throws Exception {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeIgnoreCaseDbExp("abc", v);
@@ -231,6 +254,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertEquals(Expression.DB_PATH, path.getType());
 	}
 
+    @Test
 	public void testNotLikeIgnoreCaseExp() throws Exception {
 		String v = "abc";
 		Expression exp = ExpressionFactory.notLikeIgnoreCaseExp("abc", v);
@@ -238,6 +262,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 	}
 
 	// testing CAY-941 bug
+    @Test
 	public void testLikeExpNull() throws Exception {
 		Expression exp = ExpressionFactory.likeExp("abc", null);
 		assertEquals(Expression.LIKE, exp.getType());
@@ -248,6 +273,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 	}
 
 	// CAY-416
+    @Test
 	public void testCollectionMatch() {
 		Artist artist = context.newObject(Artist.class);
 		artist.setArtistName("artist");
@@ -284,6 +310,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertFalse(ExpressionFactory.notInExp("paintingTitle", "p3").match(p3));
 	}
 
+    @Test
 	public void testIn() {
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("a1");
@@ -298,6 +325,7 @@ public class ExpressionFactory_InContextIT extends ServerCase {
 		assertTrue(in.match(a1));
 	}
 
+    @Test
 	public void testEscapeCharacter() {
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("A_1");

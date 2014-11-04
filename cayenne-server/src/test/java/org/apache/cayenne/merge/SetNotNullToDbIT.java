@@ -18,14 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.sql.Types;
-
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.sql.Types;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SetNotNullToDbIT extends MergeCase {
@@ -43,6 +44,7 @@ public class SetNotNullToDbIT extends MergeCase {
         dbHelper.deleteAll("PAINTING");
     }
 
+    @Test
     public void test() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);

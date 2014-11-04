@@ -25,6 +25,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime("cayenne-small-testmap.xml")
 public class CDOOne2OneDepIT extends CayenneDOTestBase {
@@ -32,6 +33,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
     @Inject
     private ObjectContext context1;
 
+    @Test
     public void testRollbackDependent() {
         Artist a1 = newArtist();
         Painting p1 = newPainting();
@@ -50,6 +52,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
         assertNull(p1.getToPaintingInfo());
     }
 
+    @Test
     public void test2Null() throws Exception {
         Artist a1 = newArtist();
         Painting p1 = newPainting();
@@ -66,6 +69,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
         assertNull(p2.getToPaintingInfo());
     }
 
+    @Test
     public void testReplaceNull() throws Exception {
         Artist a1 = newArtist();
         Painting p1 = newPainting();
@@ -84,6 +88,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
         assertNull(p2.getToPaintingInfo());
     }
 
+    @Test
     public void testNewAdd() throws Exception {
         Artist a1 = newArtist();
         PaintingInfo pi1 = newPaintingInfo();
@@ -110,6 +115,7 @@ public class CDOOne2OneDepIT extends CayenneDOTestBase {
         assertEquals(textReview, pi2.getTextReview());
     }
 
+    @Test
     public void testTakeObjectSnapshotDependentFault() throws Exception {
         // prepare data
         Artist a1 = newArtist();

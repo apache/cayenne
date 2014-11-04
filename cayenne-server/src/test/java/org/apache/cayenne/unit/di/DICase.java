@@ -18,22 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Injector;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 
 /**
  * A unit test superclass that supports injection of members based on the standard unit
  * test container.
  */
-public abstract class DICase extends TestCase {
+public abstract class DICase extends Assert {
 
     protected abstract Injector getUnitTestInjector();
 
-    @Override
-    protected final void setUp() throws Exception {
+    @Before
+    public final void setUp() throws Exception {
         getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).setUp(this);
-
         try {
             setUpAfterInjection();
         }
@@ -56,8 +56,8 @@ public abstract class DICase extends TestCase {
         }
     }
 
-    @Override
-    protected final void tearDown() throws Exception {
+    @After
+    public final void tearDown() throws Exception {
 
         try {
             tearDownBeforeInjection();

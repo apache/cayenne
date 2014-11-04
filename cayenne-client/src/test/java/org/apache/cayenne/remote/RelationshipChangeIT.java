@@ -18,17 +18,40 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * This is a test primarily for CAY-1118
  */
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(value=Parameterized.class)
 public class RelationshipChangeIT extends RemoteCayenneCase {
 
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION},
+        });
+    }
+
+    public RelationshipChangeIT(int serializationPolicy) {
+        super.serializationPolicy = serializationPolicy;
+    }
+
+    @Test
     public void testNullify() {
         ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable2 o2 = clientContext.newObject(ClientMtTable2.class);
@@ -41,7 +64,8 @@ public class RelationshipChangeIT extends RemoteCayenneCase {
         o2.setTable1(null);
         assertEquals(0, o1.getTable2Array().size());
     }
-    
+
+    @Test
     public void testChange() {
         ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable2 o2 = clientContext.newObject(ClientMtTable2.class);

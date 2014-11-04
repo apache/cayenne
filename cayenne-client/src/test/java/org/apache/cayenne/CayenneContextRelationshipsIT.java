@@ -28,6 +28,9 @@ import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextRelationshipsIT extends ClientCase {
@@ -59,6 +62,7 @@ public class CayenneContextRelationshipsIT extends ClientCase {
         tMtTable2.setColumns("TABLE2_ID", "TABLE1_ID", "GLOBAL_ATTRIBUTE");
     }
 
+    @Test
     public void testLostUncommittedToOneModifications_Client() throws Exception {
 
         tMtTable1.insert(1, "G1", "S1");
@@ -79,6 +83,7 @@ public class CayenneContextRelationshipsIT extends ClientCase {
         assertSame(r2, o.getTable1());
     }
 
+    @Test
     public void testLostUncommittedToOneModifications_Server() throws Exception {
 
         tMtTable1.insert(1, "G1", "S1");

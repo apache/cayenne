@@ -26,6 +26,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Connection;
 
@@ -53,10 +54,12 @@ public class QueryAssemblerIT extends ServerCase {
         connection.close();
     }
 
+    @Test
     public void testGetQuery() throws Exception {
         assertNotNull(qa.getQuery());
     }
 
+    @Test
     public void testAddToParamList() throws Exception {
 
         assertEquals(0, qa.getAttributes().size());
@@ -67,6 +70,7 @@ public class QueryAssemblerIT extends ServerCase {
         assertEquals(1, qa.getValues().size());
     }
 
+    @Test
     public void testCreateStatement() throws Exception {
         assertNotNull(qa.createStatement());
     }

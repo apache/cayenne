@@ -33,6 +33,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataDomainCallbacksIT extends ServerCase {
@@ -60,6 +61,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         dbHelper.deleteAll("GALLERY");
     }
 
+    @Test
     public void testPostLoad() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -114,6 +116,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostLoad_MixedResult() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -137,6 +140,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostLoad_Relationship() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -171,6 +175,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostLoad_Prefetch() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -200,6 +205,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostLoad_LocalObject() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -226,6 +232,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a2, listener.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostLoad_ThatModifiesObject() {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
 
@@ -266,7 +273,8 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
-    
+
+    @Test
     public void testPreUpdate() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
@@ -303,6 +311,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a1, listener2.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostUpdate() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
@@ -341,6 +350,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a1, listener2.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostRemove() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
@@ -367,6 +377,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a1, listener2.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostRemove_UpdatedDeleted() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
@@ -398,6 +409,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertSame(a1, listener1.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostRemove_InsertedUpdatedDeleted() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
@@ -433,6 +445,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertNull(listener2.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPostPersist() {
 
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();

@@ -24,6 +24,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class StatementFetchSizeIT extends ServerCase {
@@ -31,6 +32,7 @@ public class StatementFetchSizeIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    @Test
     public void test() {
         SelectQuery query = new SelectQuery(Artist.class);
         query.setStatementFetchSize(10);

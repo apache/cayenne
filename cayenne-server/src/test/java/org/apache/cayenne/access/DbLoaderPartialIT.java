@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collection;
 
@@ -67,6 +68,7 @@ public class DbLoaderPartialIT extends ServerCase {
      * ARTIST and GALLERY should remain unmodified, and all PAINTING relationships should
      * be loaded.
      */
+    @Test
     public void testPartialLoad() throws Exception {
 
         DataMap map = new DataMap();

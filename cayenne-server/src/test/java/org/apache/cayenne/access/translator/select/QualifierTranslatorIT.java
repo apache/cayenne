@@ -37,6 +37,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Connection;
 
@@ -61,6 +62,7 @@ public class QualifierTranslatorIT extends ServerCase {
         connection.close();
     }
 
+    @Test
     public void testNonQualifiedQuery() throws Exception {
         TstQueryAssembler qa = new TstQueryAssembler(new MockQuery(), node, connection);
 
@@ -72,6 +74,7 @@ public class QualifierTranslatorIT extends ServerCase {
         }
     }
 
+    @Test
     public void testNullQualifier() throws Exception {
         TstQueryAssembler qa = new TstQueryAssembler(new SelectQuery<Object>(), node, connection);
 
@@ -80,18 +83,22 @@ public class QualifierTranslatorIT extends ServerCase {
         assertEquals(0, out.length());
     }
 
+    @Test
     public void testUnary() throws Exception {
         doExpressionTest(new TstUnaryExpSuite());
     }
 
+    @Test
     public void testBinary() throws Exception {
         doExpressionTest(new TstBinaryExpSuite());
     }
 
+    @Test
     public void testTernary() throws Exception {
         doExpressionTest(new TstTernaryExpSuite());
     }
 
+    @Test
     public void testExtras() throws Exception {
         ObjectId oid1 = new ObjectId("Gallery", "GALLERY_ID", 1);
         ObjectId oid2 = new ObjectId("Gallery", "GALLERY_ID", 2);

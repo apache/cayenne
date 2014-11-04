@@ -35,6 +35,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -112,6 +113,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
     /**
      * CAY-899: Checks that aggregate results do not cause callbacks execution.
      */
+    @Test
     public void testSelectAggregatePostLoadCallback() throws Exception {
 
         createFourArtistsTwoPaintings();
@@ -143,6 +145,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectAggregate() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -159,6 +162,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         AssertExtras.assertEquals(new BigDecimal(8000d), aggregates[3], 0.01);
     }
 
+    @Test
     public void testSelectAggregateNull() throws Exception {
 
         if (!accessStackAdapter.supportNullRowForAggregateFunctions()) {
@@ -178,6 +182,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(null, aggregates[2]);
     }
 
+    @Test
     public void testSelectEntityPathsScalarResult() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -192,6 +197,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals("P1", data.get(1));
     }
 
+    @Test
     public void testSelectEntityPathsArrayResult() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -215,6 +221,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals("AA2", row1[1]);
     }
 
+    @Test
     public void testSimpleSelect() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -227,6 +234,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertTrue(((Artist) artists.get(0)).getPersistenceState() == PersistenceState.COMMITTED);
     }
 
+    @Test
     public void testFetchLimit() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -238,6 +246,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(2, artists.size());
     }
 
+    @Test
     public void testSelectFromWhereEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -249,6 +258,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals("AA2", ((Artist) artists.get(0)).getArtistName());
     }
 
+    @Test
     public void testSelectFromWhereEqualReverseOrder() throws Exception {
         if (!accessStackAdapter.supportsReverseComparison()) {
             return;
@@ -264,6 +274,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals("AA2", ((Artist) artists.get(0)).getArtistName());
     }
 
+    @Test
     public void testSelectFromWhereNot() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -279,6 +290,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectFromWhereNotEquals() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -294,6 +306,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectFromWhereOrEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -313,6 +326,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertTrue(names.contains("BB1"));
     }
 
+    @Test
     public void testSelectFromWhereAndEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -328,6 +342,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         AssertExtras.assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
     }
 
+    @Test
     public void testSelectFromWhereBetween() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -342,6 +357,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         AssertExtras.assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
     }
 
+    @Test
     public void testSelectFromWhereNotBetween() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -356,6 +372,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         AssertExtras.assertEquals(new BigDecimal(5000d), p.getEstimatedPrice(), 0.01);
     }
 
+    @Test
     public void testSelectFromWhereGreater() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -370,6 +387,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         AssertExtras.assertEquals(new BigDecimal(5000d), p.getEstimatedPrice(), 0.01);
     }
 
+    @Test
     public void testSelectFromWhereGreaterOrEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -380,6 +398,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(2, ps.size());
     }
 
+    @Test
     public void testSelectFromWhereLess() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -394,6 +413,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         AssertExtras.assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
     }
 
+    @Test
     public void testSelectFromWhereLessOrEqual() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -404,6 +424,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(2, ps.size());
     }
 
+    @Test
     public void testSelectFromWhereDecimalNumber() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -414,6 +435,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(2, ps.size());
     }
 
+    @Test
     public void testSelectFromWhereDecimalNumberPositional() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -425,6 +447,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(2, ps.size());
     }
 
+    @Test
     public void testSelectFromWhereDecimalNumberNamed() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -436,6 +459,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(2, ps.size());
     }
 
+    @Test
     public void testSelectFromWhereMatchOnObject() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -452,6 +476,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testSelectFromWhereMatchRelationshipAndScalar() throws Exception {
         createFourArtistsTwoPaintings();
 
@@ -465,6 +490,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testSelectFromWhereMatchOnMultiColumnObject() throws Exception {
         createTwoCompoundPKTwoFK();
 
@@ -487,6 +513,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject(o1));
     }
 
+    @Test
     public void testSelectFromWhereMatchOnMultiColumnObjectReverse() throws Exception {
         if (!accessStackAdapter.supportsReverseComparison()) {
             return;
@@ -513,6 +540,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject(o1));
     }
 
+    @Test
     public void testSelectFromWhereNoMatchOnMultiColumnObject() throws Exception {
         createTwoCompoundPKTwoFK();
 

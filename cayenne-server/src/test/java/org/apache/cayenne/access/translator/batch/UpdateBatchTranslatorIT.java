@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,12 +54,14 @@ public class UpdateBatchTranslatorIT extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         UpdateBatchTranslator builder = new UpdateBatchTranslator(mock(UpdateBatchQuery.class), adapter, null);
         assertSame(adapter, builder.adapter);
     }
 
+    @Test
     public void testCreateSqlString() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -76,6 +79,7 @@ public class UpdateBatchTranslatorIT extends ServerCase {
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithNulls() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -97,6 +101,7 @@ public class UpdateBatchTranslatorIT extends ServerCase {
                 generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -125,6 +130,7 @@ public class UpdateBatchTranslatorIT extends ServerCase {
         }
     }
 
+    @Test
     public void testCreateSqlStringWithNullsWithIdentifiersQuote() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();

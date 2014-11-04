@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextCallbacksIT extends ServerCase {
@@ -56,6 +57,7 @@ public class DataContextCallbacksIT extends ServerCase {
         resolver.getCallbackRegistry().clear();
     }
 
+    @Test
     public void testPostAddCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()
@@ -92,6 +94,7 @@ public class DataContextCallbacksIT extends ServerCase {
         assertSame(a3, listener2.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPrePersistCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()
@@ -130,6 +133,7 @@ public class DataContextCallbacksIT extends ServerCase {
         assertSame(a3, listener2.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPreRemoveCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()

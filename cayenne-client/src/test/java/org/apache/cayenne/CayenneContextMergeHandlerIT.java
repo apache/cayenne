@@ -24,8 +24,9 @@ import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mock;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextMergeHandlerIT extends ClientCase {
@@ -33,6 +34,7 @@ public class CayenneContextMergeHandlerIT extends ClientCase {
     @Inject
     protected CayenneContext context;
 
+    @Test
     public void testShouldProcessEvent() {
 
         CayenneContextMergeHandler handler = new CayenneContextMergeHandler(context);
@@ -63,6 +65,7 @@ public class CayenneContextMergeHandlerIT extends ClientCase {
         assertFalse(handler.shouldProcessEvent(e4));
     }
 
+    @Test
     public void testNodePropertyChanged() {
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);

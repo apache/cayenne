@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Calendar;
-import java.util.List;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
@@ -38,6 +33,12 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Calendar;
+import java.util.List;
 
 // TODO: renamed as it fails on DB's like Derby. See CAY-1480. 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -65,6 +66,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         dbHelper.deleteAll("DATE_TEST");
     }
 
+    @Test
     public void testCURRENT_DATE() {
 
         Calendar cal = Calendar.getInstance();
@@ -87,6 +89,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(o2));
     }
 
+    @Test
     public void testCURRENT_TIME() {
 
         Calendar cal = Calendar.getInstance();
@@ -109,6 +112,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(o1));
     }
 
+    @Test
     public void testCURRENT_TIMESTAMP() {
 
         Calendar cal = Calendar.getInstance();
@@ -133,6 +137,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(o1));
     }
 
+    @Test
     public void testABS() {
 
         BigDecimalEntity o1 = context.newObject(BigDecimalEntity.class);
@@ -150,6 +155,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(o2));
     }
 
+    @Test
     public void testSQRT() {
 
         BigDecimalEntity o1 = context.newObject(BigDecimalEntity.class);
@@ -167,6 +173,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(o2));
     }
 
+    @Test
     public void testMOD() {
 
         BigIntegerEntity o1 = context.newObject(BigIntegerEntity.class);
@@ -184,6 +191,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(o2));
     }
 
+    @Test
     public void testSIZE() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -215,6 +223,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         // assertTrue(objects2.contains(a1));
     }
 
+    @Test
     public void testCONCAT() {
 
         Painting a1 = context.newObject(Painting.class);
@@ -231,6 +240,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(a1));
     }
 
+    @Test
     public void testSUBSTRING() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -247,6 +257,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(a2));
     }
 
+    @Test
     public void testLOWER() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -268,6 +279,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(a2));
     }
 
+    @Test
     public void testUPPER() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -289,6 +301,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(a2));
     }
 
+    @Test
     public void testLENGTH() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -309,6 +322,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(a2));
     }
 
+    @Test
     public void testLOCATE() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -325,6 +339,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
         assertTrue(objects.contains(a2));
     }
 
+    @Test
     public void testTRIM() {
 
         // insert via a SQL template to prevent adapter trimming and such...
@@ -369,6 +384,7 @@ public class DataContextEJBQLFunctionalExpressions extends ServerCase {
 
     }
 
+    @Test
     public void testTRIMChar() {
 
         if (!accessStackAdapter.supportsTrimChar()) {

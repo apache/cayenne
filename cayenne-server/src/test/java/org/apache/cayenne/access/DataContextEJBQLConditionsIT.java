@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -108,6 +109,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         tPainting.insert(33014, null, "C", 5000);
     }
 
+    @Test
     public void testDateParameter() throws Exception {
         createCollectionDataSet();
 
@@ -128,6 +130,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertSame(allArtists.get(0), objects.get(0));
     }
 
+    @Test
     public void testArithmetics() throws Exception {
         createLikeDataSet();
 
@@ -153,6 +156,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         // assertTrue(ids.contains(new Integer(33002)));
     }
 
+    @Test
     public void testLike1() throws Exception {
         createLikeDataSet();
 
@@ -172,6 +176,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33001)));
     }
 
+    @Test
     public void testNotLike() throws Exception {
         createLikeDataSet();
 
@@ -191,6 +196,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertFalse(ids.contains(new Integer(33001)));
     }
 
+    @Test
     public void testLike2() throws Exception {
         createLikeDataSet();
 
@@ -212,6 +218,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33005)));
     }
 
+    @Test
     public void testLikeEscape() throws Exception {
         createLikeDataSet();
 
@@ -231,6 +238,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33005)));
     }
 
+    @Test
     public void testLikeEscape_LikeParameter() throws Exception {
         createLikeDataSet();
 
@@ -252,6 +260,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33005)));
     }
 
+    @Test
     public void testLikeNullParameter() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a1");
@@ -269,6 +278,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertNotNull(Cayenne.objectForQuery(context, eq2));
     }
 
+    @Test
     public void testIn() throws Exception {
         createInDataSet();
 
@@ -289,6 +299,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33007)));
     }
 
+    @Test
     public void testNotIn() throws Exception {
         createInDataSet();
 
@@ -308,6 +319,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33008)));
     }
 
+    @Test
     public void testInSubquery() throws Exception {
         createInSubqueryDataSet();
 
@@ -330,6 +342,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(new Integer(33014)));
     }
 
+    @Test
     public void testCollectionEmpty() throws Exception {
         createCollectionDataSet();
 
@@ -349,6 +362,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(new Long(33003)));
     }
 
+    @Test
     public void testCollectionNotEmpty() throws Exception {
         createCollectionDataSet();
 
@@ -369,6 +383,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(33002l));
     }
 
+    @Test
     public void testCollectionNotEmptyExplicitDistinct() throws Exception {
         createCollectionDataSet();
 
@@ -389,6 +404,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(33002l));
     }
 
+    @Test
     public void testCollectionMemberOfParameter() throws Exception {
         createCollectionDataSet();
 
@@ -409,6 +425,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(33001l));
     }
 
+    @Test
     public void testGreaterOrEquals() throws Exception {
         createGreaterThanDataSet();
 
@@ -420,6 +437,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertEquals(4, objects.size());
     }
 
+    @Test
     public void testLessOrEquals() throws Exception {
         createGreaterThanDataSet();
 
@@ -431,6 +449,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertEquals(2, objects.size());
     }
 
+    @Test
     public void testCollectionNotMemberOfParameter() throws Exception {
         createCollectionDataSet();
 
@@ -452,6 +471,7 @@ public class DataContextEJBQLConditionsIT extends ServerCase {
         assertTrue(ids.contains(33003l));
     }
 
+    @Test
     public void testCollectionMemberOfThetaJoin() throws Exception {
         createCollectionDataSet();
 

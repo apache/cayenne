@@ -33,6 +33,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class ClientChannelServerDiffsIT extends ClientCase {
     @Inject
     private ClientConnection connection;
 
+    @Test
     public void testReturnIdDiff() {
 
         final Object[] ids = new Object[2];
@@ -91,6 +93,7 @@ public class ClientChannelServerDiffsIT extends ClientCase {
         assertFalse(((ObjectId) ids[1]).isTemporary());
     }
 
+    @Test
     public void testReturnDiffInPrePersist() {
 
         final List<GenericDiff> diffs = new ArrayList<GenericDiff>();
@@ -167,6 +170,7 @@ public class ClientChannelServerDiffsIT extends ClientCase {
         }
     }
 
+    @Test
     public void testReturnDiffClientArcChanges() {
 
         final NoopGraphChangeHandler diffReader = new NoopGraphChangeHandler();

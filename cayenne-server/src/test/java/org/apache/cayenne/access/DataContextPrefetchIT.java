@@ -43,6 +43,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -149,6 +150,7 @@ public class DataContextPrefetchIT extends ServerCase {
         tArtistExhibit.insert(101, 4);
     }
 
+    @Test
     public void testPrefetchToMany_ViaProperty() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -177,6 +179,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchToMany_WithQualfier() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -216,6 +219,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchToManyNoQualifier() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -248,6 +252,7 @@ public class DataContextPrefetchIT extends ServerCase {
      * Test that a to-many relationship is initialized when a target entity has
      * a compound PK only partially involved in relationship.
      */
+    @Test
     public void testPrefetchToMany_OnJoinTableDisjoinedPrefetch() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -288,6 +293,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchToManyOnJoinTableJoinedPrefetch_ViaProperty() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
@@ -332,6 +338,7 @@ public class DataContextPrefetchIT extends ServerCase {
      * Test that a to-many relationship is initialized when a target entity has
      * a compound PK only partially involved in relationship.
      */
+    @Test
     public void testPrefetchToManyOnJoinTableJoinedPrefetch() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
@@ -376,6 +383,7 @@ public class DataContextPrefetchIT extends ServerCase {
      * Test that a to-many relationship is initialized when there is no inverse
      * relationship
      */
+    @Test
     public void testPrefetch_ToManyNoReverse() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -403,6 +411,7 @@ public class DataContextPrefetchIT extends ServerCase {
         }
     }
 
+    @Test
     public void testPrefetch_ToManyNoReverseWithQualifier() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -434,6 +443,7 @@ public class DataContextPrefetchIT extends ServerCase {
         }
     }
 
+    @Test
     public void testPrefetch_ToOne() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -459,6 +469,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetch_ToOne_DbPath() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -471,6 +482,7 @@ public class DataContextPrefetchIT extends ServerCase {
         assertEquals(1, results.size());
     }
 
+    @Test
     public void testPrefetch_ToOne_ObjPath() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -482,6 +494,7 @@ public class DataContextPrefetchIT extends ServerCase {
         assertEquals(1, results.size());
     }
 
+    @Test
     public void testPrefetch_ReflexiveRelationship() throws Exception {
         ArtGroup parent = (ArtGroup) context.newObject("ArtGroup");
         parent.setName("parent");
@@ -508,6 +521,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetch_ToOneWithQualifierOverlappingPrefetchPath() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -530,7 +544,8 @@ public class DataContextPrefetchIT extends ServerCase {
             }
         });
     }
-    
+
+    @Test
     public void testPrefetch_ToOneWith_OuterJoinFlattenedQualifier() throws Exception {
 
         tArtGroup.insert(1, "AG");
@@ -564,6 +579,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetch9() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -595,6 +611,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetch_OneToOneWithQualifier() throws Exception {
         createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
@@ -629,6 +646,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchToMany_DateInQualifier() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -642,6 +660,7 @@ public class DataContextPrefetchIT extends ServerCase {
         context.performQuery(q);
     }
 
+    @Test
     public void testPrefetchingToOneNull() throws Exception {
 
         tPainting.insert(6, "p_Xty", null, 1000);
@@ -662,6 +681,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchToOneSharedCache() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -697,6 +717,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchToOneLocalCache() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -732,6 +753,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchToOneWithBackRelationship() throws Exception {
         createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
@@ -754,6 +776,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchPaintingOverToOneAndToMany() throws Exception {
         createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
@@ -777,6 +800,7 @@ public class DataContextPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchToOneWithBackRelationship_Joint() throws Exception {
         createArtistWithTwoPaintingsAndTwoInfosDataSet();
 

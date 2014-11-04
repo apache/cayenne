@@ -27,9 +27,10 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
-import java.util.List;
+import java.util.List;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextInheritanceIT extends ClientCase {
@@ -59,6 +60,7 @@ public class CayenneContextInheritanceIT extends ClientCase {
                 Types.VARCHAR);
     }
 
+    @Test
     public void testInsertSubclass() throws Exception {
 
         ClientMtTable1Subclass1 object = context.newObject(ClientMtTable1Subclass1.class);
@@ -74,6 +76,7 @@ public class CayenneContextInheritanceIT extends ClientCase {
         assertEquals("suba1", tMtTable1.getString("SUBCLASS_ATTRIBUTE1"));
     }
 
+    @Test
     public void testPerformQueryInheritanceLeaf() throws Exception {
 
         tMtTable1.insert(1, "xxx", "yyy", null);
@@ -87,6 +90,7 @@ public class CayenneContextInheritanceIT extends ClientCase {
         assertEquals("sa1", objects.get(0).getSubclass1Attribute1());
     }
 
+    @Test
     public void testPerformQueryInheritanceSuper() throws Exception {
 
         tMtTable1.insert(1, "a", "yyy", null);
@@ -116,6 +120,7 @@ public class CayenneContextInheritanceIT extends ClientCase {
         assertEquals(2, checkedFields);
     }
 
+    @Test
     public void testPerformQueryWithQualifierInheritanceSuper() throws Exception {
 
         tMtTable1.insert(1, "a", "XX", null);

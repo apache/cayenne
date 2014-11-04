@@ -27,6 +27,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.List;
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DropColumnToModelIT extends MergeCase {
 
+    @Test
     public void testSimpleColumn() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 
@@ -91,6 +93,7 @@ public class DropColumnToModelIT extends MergeCase {
         assertTokensAndExecute(0, 0);
     }
 
+    @Test
     public void testRemoveFKColumnWithoutRelationshipInDb() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         dropTableIfPresent("NEW_TABLE2");

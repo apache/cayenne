@@ -18,17 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.velocity;
 
-import java.sql.Connection;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
@@ -46,6 +35,18 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Tests BindDirective for passed null parameters and for not passed parameters
@@ -80,6 +81,7 @@ public class BindDirectiveIT extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testBindTimestamp() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
@@ -97,6 +99,7 @@ public class BindDirectiveIT extends ServerCase {
         assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
     }
 
+    @Test
     public void testBindSQLDate() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
@@ -114,6 +117,7 @@ public class BindDirectiveIT extends ServerCase {
         assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
     }
 
+    @Test
     public void testBindUtilDate() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
@@ -131,6 +135,7 @@ public class BindDirectiveIT extends ServerCase {
         assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
     }
 
+    @Test
     public void testBindingForCollection() throws Exception {
 
         // insert 3 artists
@@ -157,6 +162,7 @@ public class BindDirectiveIT extends ServerCase {
         assertEquals(2, result.size());
     }
 
+    @Test
     public void testBindForPassedNullParam() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
@@ -172,6 +178,7 @@ public class BindDirectiveIT extends ServerCase {
         assertNull(row.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testBindWithJDBCForPassedNullParam() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
@@ -187,6 +194,7 @@ public class BindDirectiveIT extends ServerCase {
         assertNull(row.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testBindForNotPassedParam() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
@@ -201,6 +209,7 @@ public class BindDirectiveIT extends ServerCase {
         assertNull(row.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testBindWithJDBCForNotPassedParam() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));

@@ -49,6 +49,7 @@ import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -120,7 +121,8 @@ public class SelectQueryIT extends ServerCase {
         tNumerics.insert(4, 3);
         tNumerics.insert(5, 4);
     }
-    
+
+    @Test
     public void testSetQualifier() {
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         assertNull(query.getQualifier());
@@ -131,6 +133,7 @@ public class SelectQueryIT extends ServerCase {
         assertSame(qual, query.getQualifier());
     }
 
+    @Test
     public void testAndQualifier() {
     	SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         assertNull(query.getQualifier());
@@ -144,6 +147,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(Expression.AND, query.getQualifier().getType());
     }
 
+    @Test
     public void testOrQualifier() {
     	SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         assertNull(query.getQualifier());
@@ -157,6 +161,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(Expression.OR, query.getQualifier().getType());
     }
 
+    @Test
     public void testFetchLimit() throws Exception {
         createArtistsDataSet();
 
@@ -168,6 +173,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(7, objects.size());
     }
 
+    @Test
     public void testFetchOffset() throws Exception {
 
         createArtistsDataSet();
@@ -183,6 +189,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals("artist6", results.get(0).getArtistName());
     }
 
+    @Test
     public void testDbEntityRoot() throws Exception {
 
         createArtistsDataSet();
@@ -195,6 +202,7 @@ public class SelectQueryIT extends ServerCase {
         assertTrue(results.get(0) instanceof DataRow);
     }
 
+    @Test
     public void testFetchLimitWithOffset() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -207,6 +215,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals("artist16", results.get(0).getArtistName());
     }
 
+    @Test
     public void testFetchOffsetWithQualifier() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -223,6 +232,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(size, sizeAll - 5);
     }
 
+    @Test
     public void testFetchLimitWithQualifier() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -232,6 +242,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(7, objects.size());
     }
 
+    @Test
     public void testSelectAllObjectsRootEntityName() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>("Artist");
@@ -239,6 +250,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(20, objects.size());
     }
 
+    @Test
     public void testSelectAllObjectsRootClass() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -246,6 +258,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(20, objects.size());
     }
 
+    @Test
     public void testSelectAllObjectsRootObjEntity() throws Exception {
         createArtistsDataSet();
         ObjEntity artistEntity = context.getEntityResolver().getObjEntity(Artist.class);
@@ -255,6 +268,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(20, objects.size());
     }
 
+    @Test
     public void testSelectLikeExactMatch() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -264,6 +278,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(1, objects.size());
     }
 
+    @Test
     public void testSelectNotLikeSingleWildcardMatch() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -273,6 +288,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(19, objects.size());
     }
 
+    @Test
     public void testSelectNotLikeIgnoreCaseSingleWildcardMatch() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -282,6 +298,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(19, objects.size());
     }
 
+    @Test
     public void testSelectLikeCaseSensitive() throws Exception {
         if (!accessStackAdapter.supportsCaseSensitiveLike()) {
             return;
@@ -295,6 +312,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(0, objects.size());
     }
 
+    @Test
     public void testSelectLikeSingleWildcardMatch() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -304,6 +322,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(1, objects.size());
     }
 
+    @Test
     public void testSelectLikeSingleWildcardMatchAndEscape() throws Exception {
 
         createArtistsWildcardDataSet();
@@ -315,6 +334,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(1, objects.size());
     }
 
+    @Test
     public void testSelectLikeMultipleWildcardMatch() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -327,6 +347,7 @@ public class SelectQueryIT extends ServerCase {
     /**
      * Test how "like ignore case" works when using uppercase parameter.
      */
+    @Test
     public void testSelectLikeIgnoreCaseObjects1() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -337,6 +358,7 @@ public class SelectQueryIT extends ServerCase {
     }
 
     /** Test how "like ignore case" works when using lowercase parameter. */
+    @Test
     public void testSelectLikeIgnoreCaseObjects2() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
@@ -347,6 +369,7 @@ public class SelectQueryIT extends ServerCase {
     }
 
     /** Test how "like ignore case" works when using uppercase parameter. */
+    @Test
     public void testSelectLikeIgnoreCaseClob() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
@@ -358,6 +381,7 @@ public class SelectQueryIT extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectFetchLimit_Offset_DistinctClob() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
@@ -376,6 +400,7 @@ public class SelectQueryIT extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
@@ -387,6 +412,7 @@ public class SelectQueryIT extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectNotEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
@@ -398,6 +424,7 @@ public class SelectQueryIT extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectIn() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -407,6 +434,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(2, objects.size());
     }
 
+    @Test
     public void testSelectParameterizedIn() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -417,6 +445,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(2, objects.size());
     }
 
+    @Test
     public void testSelectParameterizedEmptyIn() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -427,6 +456,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(0, objects.size());
     }
 
+    @Test
     public void testSelectParameterizedEmptyNotIn() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -437,6 +467,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(20, objects.size());
     }
 
+    @Test
     public void testSelectEmptyIn() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -446,6 +477,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(0, objects.size());
     }
 
+    @Test
     public void testSelectEmptyNotIn() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -455,6 +487,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(20, objects.size());
     }
 
+    @Test
     public void testSelectBooleanTrue() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -465,6 +498,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(1, objects.size());
     }
 
+    @Test
     public void testSelectBitwiseNot() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
@@ -487,6 +521,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(2, objects.size());
     }
 
+    @Test
     public void testSelectBitwiseOr() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
@@ -510,6 +545,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(2, objects.size());
     }
 
+    @Test
     public void testSelectBitwiseAnd() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
@@ -533,6 +569,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(3, objects.size());
     }
 
+    @Test
     public void testSelectBitwiseXor() throws Exception {
 
         if (!accessStackAdapter.supportsBitwiseOps()) {
@@ -557,6 +594,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(4, objects.get(0).getIntegerColumn().intValue());
     }
 
+    @Test
     public void testSelectBooleanNotTrueOr() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -568,6 +606,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(1, objects.size());
     }
 
+    @Test
     public void testSelectBooleanFalse() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -578,6 +617,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(0, objects.size());
     }
 
+    @Test
     public void testSelectBooleanFalseOr() throws Exception {
         createArtistsDataSet();
         SelectQuery query = new SelectQuery(Artist.class);
@@ -592,6 +632,7 @@ public class SelectQueryIT extends ServerCase {
      * Tests that all queries specified in prefetch are executed in a more
      * complex prefetch scenario.
      */
+    @Test
     public void testRouteWithPrefetches() {
         EntityResolver resolver = context.getEntityResolver();
         MockQueryRouter router = new MockQueryRouter();
@@ -626,6 +667,7 @@ public class SelectQueryIT extends ServerCase {
      * Tests that all queries specified in prefetch are executed in a more
      * complex prefetch scenario with no reverse obj relationships.
      */
+    @Test
     public void testRouteQueryWithPrefetchesNoReverse() {
 
         EntityResolver resolver = context.getEntityResolver();
@@ -667,6 +709,7 @@ public class SelectQueryIT extends ServerCase {
      * Test prefetching with qualifier on the root query being the path to the
      * prefetch.
      */
+    @Test
     public void testRouteQueryWithPrefetchesPrefetchExpressionPath() {
 
         // find the painting not matching the artist (this is the case where
@@ -686,6 +729,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(2, router.getQueryCount());
     }
 
+    @Test
     public void testLeftJoinAndPrefetchToMany() throws Exception {
         createArtistsDataSet();
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class, ExpressionFactory.matchExp(
@@ -694,6 +738,7 @@ public class SelectQueryIT extends ServerCase {
         context.performQuery(query);
     }
 
+    @Test
     public void testLeftJoinAndPrefetchToOne() throws Exception {
         createArtistsDataSet();
         SelectQuery<Painting> query = new SelectQuery<Painting>(Painting.class, ExpressionFactory.matchExp(
@@ -702,6 +747,7 @@ public class SelectQueryIT extends ServerCase {
         context.select(query);
     }
 
+    @Test
     public void testSelect_MatchObject() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -732,6 +778,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(query.getQualifier(), ExpressionFactory.matchAnyExp(Arrays.asList(a1, a3)));
     }
 
+    @Test
     public void testSelect_WithOrdering() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -755,6 +802,7 @@ public class SelectQueryIT extends ServerCase {
     /**
      * Tests INs with more than 1000 elements
      */
+    @Test
     public void testSelectLongIn() {
         // not all adapters strip INs, so we just make sure query with such
         // qualifier
@@ -769,6 +817,7 @@ public class SelectQueryIT extends ServerCase {
         context.performQuery(query);
     }
 
+    @Test
     public void testCacheOffsetAndLimit() throws Exception {
         createArtistsDataSet();
 

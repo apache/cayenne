@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -28,22 +25,31 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.RemoteCayenneCase;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTooneDep;
 import org.apache.cayenne.testdo.mt.ClientMtTooneMaster;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Tests nested object contexts
  */
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(value=Parameterized.class)
 public class NestedCayenneContextIT extends RemoteCayenneCase {
 
     @Inject
@@ -55,6 +61,19 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
     @Inject
     private DataChannelInterceptor queryInterceptor;
 
+    @Parameters
+    public static Collection data() {
+        return Arrays.asList(new Object[][]{
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION},
+        });
+    }
+
+    public NestedCayenneContextIT(int serializationPolicy) {
+        super.serializationPolicy = serializationPolicy;
+    }
+
     @Override
     public void setUpAfterInjection() throws Exception {
         super.setUpAfterInjection();
@@ -63,6 +82,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         dbHelper.deleteAll("MT_TABLE1");
     }
 
+    @Test
     public void testChannels() {
         ObjectContext child = runtime.newContext(clientContext);
 
@@ -76,6 +96,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         assertSame(child, grandchild.getChannel());
     }
 
+    @Test
     public void testSelect() throws Exception {
         ObjectContext child = runtime.newContext(clientContext);
 
@@ -113,6 +134,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         }
     }
 
+    @Test
     public void testPrefetchingToOne() throws Exception {
         final ClientMtTable1 mt11 = clientContext.newObject(ClientMtTable1.class);
         clientContext.newObject(ClientMtTable1.class);
@@ -151,6 +173,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         });
     }
 
+    @Test
     public void testPrefetchingToMany() throws Exception {
         ClientMtTable1 mt11 = clientContext.newObject(ClientMtTable1.class);
         mt11.setGlobalAttribute1("1");
@@ -204,6 +227,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         });
     }
 
+    @Test
     public void testDeleteNew() throws Exception {
         ObjectContext child = runtime.newContext(clientContext);
 
@@ -228,6 +252,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
     /**
      * A test case for CAY-698 bug.
      */
+    @Test
     public void testNullifyToOne() throws Exception {
         ClientMtTable1 a = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable2 b = clientContext.newObject(ClientMtTable2.class);
@@ -304,6 +329,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         });
     }
 
+    @Test
     public void testCommitChangesToParent() throws Exception {
         clientContext.newObject(ClientMtTable1.class);
         clientContext.newObject(ClientMtTable1.class);
@@ -426,6 +452,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         });
     }
 
+    @Test
     public void testCommitChangesToParentDeleted() throws Exception {
         clientContext.newObject(ClientMtTable1.class);
         clientContext.newObject(ClientMtTable1.class);
@@ -468,6 +495,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
     /*
      * was added for CAY-1636
      */
+    @Test
     public void testCAY1636() throws Exception {
 
         ClientMtTooneMaster A = clientContext.newObject(ClientMtTooneMaster.class);
@@ -506,6 +534,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 
     }
 
+    @Test
     public void testCAY1636_2() throws Exception {
 
         ClientMtTooneMaster A = clientContext.newObject(ClientMtTooneMaster.class);
@@ -552,6 +581,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 
     }
 
+    @Test
     public void testCommitChanges() throws Exception {
         clientContext.newObject(ClientMtTable1.class);
         clientContext.newObject(ClientMtTable1.class);
@@ -623,6 +653,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         assertNotNull(parentHollow);
     }
 
+    @Test
     public void testAddRemove() throws Exception {
         ObjectContext child = runtime.newContext(clientContext);
 
@@ -647,6 +678,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 
     }
 
+    @Test
     public void testChangeRel() throws Exception {
         ObjectContext child = runtime.newContext(clientContext);
 
@@ -679,6 +711,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         assertEquals(0, parentA.getTable2Array().size());
     }
 
+    @Test
     public void testCAY1183() throws Exception {
         ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
         clientContext.commitChanges();
@@ -701,6 +734,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
     /**
      * CAY1714
      */
+    @Test
     public void testQueriesOnTemporaryObject() throws Exception {
         ObjectContext clientContext = runtime.newContext((DataChannel) this.clientContext);
         ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
@@ -717,6 +751,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         assertNull(childMt2.getTable3());
     }
 
+    @Test
     public void testCAY1194() throws Exception {
         ClientMtTable1 parentMt = clientContext.newObject(ClientMtTable1.class);
         ObjectContext child = runtime.newContext(clientContext);
@@ -740,6 +775,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         assertEquals(parentMt.getTable2Array().get(0).getObjectContext(), clientContext);
     }
 
+    @Test
     public void testCommitChangesToParentOneToMany() throws Exception {
         ObjectContext child = runtime.newContext(clientContext);
 
@@ -801,6 +837,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
         assertEquals(2, arcDiffs[0]);
     }
 
+    @Test
     public void testCommitChangesToParentOneToOne() throws Exception {
         ObjectContext child = runtime.newContext(clientContext);
 

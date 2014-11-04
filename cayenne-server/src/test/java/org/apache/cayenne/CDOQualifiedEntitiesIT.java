@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.qualified.Qualified2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -85,6 +86,7 @@ public class CDOQualifiedEntitiesIT extends ServerCase {
         tQualified2.insert(1, "OY1", null, 2);
     }
 
+    @Test
     public void testReadToMany() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 
@@ -107,6 +109,7 @@ public class CDOQualifiedEntitiesIT extends ServerCase {
         }
     }
 
+    @Test
     public void testReadToOne() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 

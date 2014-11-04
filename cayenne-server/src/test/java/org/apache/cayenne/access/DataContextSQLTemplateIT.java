@@ -40,6 +40,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -121,6 +122,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         tCompoundFkTest.insert(7, "b1", "b2");
     }
 
+    @Test
     public void testSQLResultSetMappingMixed() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -163,7 +165,8 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(new Integer(0), array4[1]);
         assertTrue("Unexpected DataObject: " + array1[0], array1[0] instanceof Artist);
     }
-    
+
+    @Test
     public void testRootless_DataNodeName() throws Exception {
         createFourArtists();
         
@@ -171,13 +174,15 @@ public class DataContextSQLTemplateIT extends ServerCase {
         query.setDataNodeName("tstmap");
         assertEquals(4, context.performQuery(query).size());
     }
-    
+
+    @Test
     public void testRootless_DefaultDataNode() throws Exception {
         createFourArtists();
         SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
         assertEquals(4, context.performQuery(query).size());
     }
 
+    @Test
     public void testSQLResultSetMappingScalar() throws Exception {
         createFourArtists();
 
@@ -205,6 +210,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(4, ((Number) o).intValue());
     }
 
+    @Test
     public void testSQLResultSetMappingScalarArray() throws Exception {
         createFourArtists();
 
@@ -238,6 +244,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(77, ((Number) row[1]).intValue());
     }
 
+    @Test
     public void testColumnNamesCapitalization() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -269,6 +276,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertTrue(row4.containsKey("ARTIST_ID"));
     }
 
+    @Test
     public void testFetchDataRows() throws Exception {
         createFourArtists();
 
@@ -288,6 +296,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(new Integer(101), new Integer(id.toString()));
     }
 
+    @Test
     public void testFetchObjects() throws Exception {
         createFourArtists();
 
@@ -306,6 +315,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals("artist3", artist2.getArtistName());
     }
 
+    @Test
     public void testBindObjectEqualShort() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -324,6 +334,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(7, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testBindObjectNotEqualShort() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -345,6 +356,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(6, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testBindObjectEqualFull() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -363,6 +375,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(7, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testBindObjectEqualFullNonArray() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -381,6 +394,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(7, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testBindObjectEqualNull() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -397,6 +411,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(8, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testBindObjectNotEqualFull() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -417,6 +432,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(6, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testBindObjectEqualCompound() throws Exception {
         createTwoCompoundPKsAndCompoundFKsDataSet();
 
@@ -442,6 +458,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(6, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testBindObjectNotEqualCompound() throws Exception {
         createTwoCompoundPKsAndCompoundFKsDataSet();
 
@@ -467,6 +484,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(7, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testBindObjectNotEqualNull() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -486,6 +504,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(7, Cayenne.intPKForObject(p2));
     }
 
+    @Test
     public void testBindEqualNull() throws Exception {
         createFourArtistsAndThreePaintingsDataSet();
 
@@ -502,6 +521,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals(8, Cayenne.intPKForObject(p));
     }
 
+    @Test
     public void testFetchLimit() throws Exception {
         createFourArtists();
 
@@ -520,6 +540,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertTrue(objects.get(0) instanceof Artist);
     }
 
+    @Test
     public void testFetchOffset() throws Exception {
         createFourArtists();
 
@@ -538,6 +559,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertTrue(objects.get(0) instanceof Artist);
     }
 
+    @Test
     public void testFetchOffsetFetchLimit() throws Exception {
         createFourArtists();
 
@@ -553,6 +575,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertTrue(objects.get(0) instanceof Artist);
     }
 
+    @Test
     public void testPageSize() throws Exception {
         createFourArtists();
 
@@ -588,6 +611,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         assertEquals("artist" + (pageSize + 2), artist.getArtistName());
     }
 
+    @Test
     public void testIteratedQuery() throws Exception {
         createFourArtists();
 
@@ -616,6 +640,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
         }
     }
 
+    @Test
     public void testQueryWithLineBreakAfterMacro() throws Exception {
         createFourArtists();
 

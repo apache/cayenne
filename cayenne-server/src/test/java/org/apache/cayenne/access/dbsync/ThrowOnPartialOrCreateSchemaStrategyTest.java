@@ -18,20 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import static org.mockito.Mockito.mock;
-
-import java.util.Collections;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.Map;
+
+import static org.mockito.Mockito.mock;
 
 @UseServerRuntime(ServerCase.SUS_PROJECT)
 public class ThrowOnPartialOrCreateSchemaStrategyTest extends SchemaUpdateStrategyBase {
 
+    @Test
 	public void testMixedStrategyTableExist() throws Exception {
 
 		createOneTable("SUS1");
@@ -44,6 +46,7 @@ public class ThrowOnPartialOrCreateSchemaStrategyTest extends SchemaUpdateStrate
 		node.performQueries(Collections.singletonList(query), mock(OperationObserver.class));
 	}
 
+    @Test
 	public void testMixedStrategyTableNoExist() throws Exception {
 
 		String template = "SELECT #result('id' 'int') FROM SUS1";
@@ -60,6 +63,7 @@ public class ThrowOnPartialOrCreateSchemaStrategyTest extends SchemaUpdateStrate
 		assertEquals(2, existingTables().size());
 	}
 
+    @Test
 	public void testMixedStrategyWithOneTable() throws Exception {
 		createOneTable("SUS1");
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);

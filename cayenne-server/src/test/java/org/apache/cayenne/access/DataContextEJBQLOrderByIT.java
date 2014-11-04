@@ -27,6 +27,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -86,6 +87,7 @@ public class DataContextEJBQLOrderByIT extends ServerCase {
         tPainting.insert(33006, 33002, "C", 500);
     }
 
+    @Test
     public void testOrderByDefault() throws Exception {
 
         createThreePaintings();
@@ -111,6 +113,7 @@ public class DataContextEJBQLOrderByIT extends ServerCase {
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(2)));
     }
 
+    @Test
     public void testOrderByAsc() throws Exception {
 
         createThreePaintings();
@@ -136,6 +139,7 @@ public class DataContextEJBQLOrderByIT extends ServerCase {
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(2)));
     }
 
+    @Test
     public void testOrderByDesc() throws Exception {
         createThreePaintings();
 
@@ -160,6 +164,7 @@ public class DataContextEJBQLOrderByIT extends ServerCase {
         assertEquals(33003, Cayenne.intPKForObject((Persistent) results2.get(2)));
     }
 
+    @Test
     public void testOrderByQualified() throws Exception {
         createThreePaintings();
 
@@ -182,6 +187,7 @@ public class DataContextEJBQLOrderByIT extends ServerCase {
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results2.get(1)));
     }
 
+    @Test
     public void testOrderByMultiple() throws Exception {
         createFourPaintings();
 
@@ -197,6 +203,7 @@ public class DataContextEJBQLOrderByIT extends ServerCase {
         assertEquals(33001, Cayenne.intPKForObject((Persistent) results1.get(3)));
     }
 
+    @Test
     public void testOrderByPath() throws Exception {
         createTwoArtistsTwoPaintings();
 

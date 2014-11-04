@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -84,6 +85,7 @@ public class DeleteObjectIT extends ServerCase {
         tPainting.insert(3, "painting3", 1);
     }
 
+    @Test
     public void testDeleteObject() throws Exception {
         createObjectDataSet();
 
@@ -96,6 +98,7 @@ public class DeleteObjectIT extends ServerCase {
         assertNull(artist.getObjectContext());
     }
 
+    @Test
     public void testDeleteObjects1() throws Exception {
         createObjectsDataSet();
 
@@ -115,6 +118,7 @@ public class DeleteObjectIT extends ServerCase {
 
     // Similar to testDeleteObjects2, but extract ObjectContext instead of
     // DataContext.
+    @Test
     public void testDeleteObjects2() throws Exception {
         createObjectsDataSet();
 
@@ -138,6 +142,7 @@ public class DeleteObjectIT extends ServerCase {
         }
     }
 
+    @Test
     public void testDeleteObjectsRelationshipCollection() throws Exception {
         createObjectsRelationshipCollectionDataSet();
 
@@ -167,6 +172,7 @@ public class DeleteObjectIT extends ServerCase {
         }
     }
 
+    @Test
     public void testDeleteObjectInIterator() throws Exception {
         createObjectsRelationshipCollectionDataSet();
 
@@ -198,6 +204,7 @@ public class DeleteObjectIT extends ServerCase {
         }
     }
 
+    @Test
     public void testDeleteHollow() throws Exception {
         createHollowDataSet();
 
@@ -211,6 +218,7 @@ public class DeleteObjectIT extends ServerCase {
         assertEquals(PersistenceState.DELETED, a.getPersistenceState());
     }
 
+    @Test
     public void testDeleteNew() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("a");

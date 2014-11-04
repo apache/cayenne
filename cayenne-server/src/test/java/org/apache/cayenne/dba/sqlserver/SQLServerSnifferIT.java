@@ -27,6 +27,7 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,6 +44,7 @@ public class SQLServerSnifferIT extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testCreateAdapter() throws Exception {
 
         SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);

@@ -30,6 +30,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class LifecycleCallbackRegistryIT extends ServerCase {
@@ -37,6 +38,7 @@ public class LifecycleCallbackRegistryIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    @Test
     public void testAddListener_PostAdd() {
         LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
                 .getEntityResolver());
@@ -61,6 +63,7 @@ public class LifecycleCallbackRegistryIT extends ServerCase {
         assertEquals("e:Painting;", listener.getAndReset());
     }
 
+    @Test
     public void testAddListener_PostAdd_InheritedListenerMethods() {
         LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
                 .getEntityResolver());

@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -93,6 +94,7 @@ public class DataContextObjectTrackingIT extends ServerCase {
         tPainting.insert(33003, 33003, "P_artist3", 3000);
     }
 
+    @Test
     public void testUnregisterObject() {
 
         DataRow row = new DataRow(10);
@@ -115,6 +117,7 @@ public class DataContextObjectTrackingIT extends ServerCase {
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
     }
 
+    @Test
     public void testInvalidateObjects_Vararg() {
 
         DataRow row = new DataRow(10);

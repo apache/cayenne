@@ -29,6 +29,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -58,6 +59,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 
+    @Test
     public void testDoubleRegistration() {
 
         DataObject object = new Artist();
@@ -85,6 +87,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         }
     }
 
+    @Test
     public void testCommitChangesInBatch() {
 
         Artist a1 = context.newObject(Artist.class);
@@ -102,6 +105,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals(3, artists.size());
     }
 
+    @Test
     public void testSetObjectId() {
 
         Artist o1 = new Artist();
@@ -111,6 +115,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertNotNull(o1.getObjectId());
     }
 
+    @Test
     public void testStateTransToNew() {
 
         Artist o1 = new Artist();
@@ -120,6 +125,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals(PersistenceState.NEW, o1.getPersistenceState());
     }
 
+    @Test
     public void testStateNewToCommitted() {
 
         Artist o1 = new Artist();
@@ -132,6 +138,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
     }
 
+    @Test
     public void testStateCommittedToModified() {
 
         Artist o1 = new Artist();
@@ -144,6 +151,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
     }
 
+    @Test
     public void testStateModifiedToCommitted() {
 
         Artist o1 = context.newObject(Artist.class);
@@ -157,6 +165,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
     }
 
+    @Test
     public void testStateCommittedToDeleted() {
 
         Artist o1 = new Artist();
@@ -169,6 +178,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals(PersistenceState.DELETED, o1.getPersistenceState());
     }
 
+    @Test
     public void testStateDeletedToTransient() {
 
         Artist o1 = context.newObject(Artist.class);
@@ -184,6 +194,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertNull(o1.getObjectContext());
     }
 
+    @Test
     public void testSetContext() {
 
         Artist o1 = new Artist();
@@ -193,6 +204,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertSame(context, o1.getObjectContext());
     }
 
+    @Test
     public void testFetchByAttribute() throws Exception {
 
         tArtist.insert(7, "m6");
@@ -208,6 +220,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals("m6", o1.getArtistName());
     }
 
+    @Test
     public void testUniquing() throws Exception {
 
         tArtist.insert(7, "m6");
@@ -225,6 +238,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertSame(a1, a2);
     }
 
+    @Test
     public void testSnapshotVersion1() {
 
         Artist artist = context.newObject(Artist.class);
@@ -242,6 +256,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals(cachedSnapshot.getVersion(), artist.getSnapshotVersion());
     }
 
+    @Test
     public void testSnapshotVersion2() throws Exception {
 
         tArtist.insert(7, "m6");
@@ -258,6 +273,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
                 .getVersion(), artist.getSnapshotVersion());
     }
 
+    @Test
     public void testSnapshotVersion3() {
 
         Artist artist = context.newObject(Artist.class);
@@ -282,6 +298,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
      * setting replacement. This is demonstrated here -
      * http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0210.html
      */
+    @Test
     public void testObjectsCommittedManualOID() {
 
         Artist object = context.newObject(Artist.class);

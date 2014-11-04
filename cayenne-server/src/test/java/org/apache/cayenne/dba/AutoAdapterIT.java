@@ -28,6 +28,7 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,6 +39,7 @@ public class AutoAdapterIT extends ServerCase {
     @Inject
     private DataNode dataNode;
 
+    @Test
     public void testGetAdapter_Proxy() throws Exception {
         Provider<DbAdapter> adapterProvider = mock(Provider.class);
         when(adapterProvider.get()).thenReturn(dataNode.getAdapter());
@@ -47,6 +49,7 @@ public class AutoAdapterIT extends ServerCase {
         assertSame(dataNode.getAdapter(), detected);
     }
 
+    @Test
     public void testCreateSQLTemplateAction() {
 
         Provider<DbAdapter> adapterProvider = mock(Provider.class);

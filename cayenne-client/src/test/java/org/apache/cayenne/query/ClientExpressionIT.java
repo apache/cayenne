@@ -31,11 +31,12 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.List;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientExpressionIT extends ClientCase {
@@ -68,7 +69,8 @@ public class ClientExpressionIT extends ClientCase {
             tMtTable2.insert(i + 10, i, "2_global" + (i + 10));
         }
     }
-    
+
+    @Test
     public void testPersistentValueInExpression() throws Exception {
         ClientMtTable1 t1 = context.newObject(ClientMtTable1.class);
         ClientMtTable1 t2 = context.newObject(ClientMtTable1.class);
@@ -82,7 +84,8 @@ public class ClientExpressionIT extends ClientCase {
         assertEquals(t1.getObjectId(), ((ASTEqual)list.getOperand(0)).getOperand(1));
         assertEquals(t2.getObjectId(), ((ASTEqual)list.getOperand(1)).getOperand(1));
     }
-    
+
+    @Test
     public void testListInASTList() throws Exception {
         ClientMtTable1 t1 = context.newObject(ClientMtTable1.class);
         ClientMtTable1 t2 = context.newObject(ClientMtTable1.class);
@@ -109,7 +112,8 @@ public class ClientExpressionIT extends ClientCase {
         assertNotSame(t1.getObjectId(), values[0]);
         assertNotSame(t2.getObjectId(), values[1]);
     }
-    
+
+    @Test
     public void testArrayInASTList() throws Exception {
         ClientMtTable1 t1 = context.newObject(ClientMtTable1.class);
         ClientMtTable1 t2 = context.newObject(ClientMtTable1.class);
@@ -140,7 +144,8 @@ public class ClientExpressionIT extends ClientCase {
         assertNotSame(t1.getObjectId(), values[0]);
         assertNotSame(t2.getObjectId(), values[1]);
     }
-    
+
+    @Test
     public void testExpressionFactoryMatch() throws Exception {
         createDataSet();
         
@@ -167,7 +172,8 @@ public class ClientExpressionIT extends ClientCase {
         assertNotNull(table2List);
         assertEquals(2, table2List.size());
     }
-    
+
+    @Test
     public void testExpressionFactoryMatchAll() throws Exception {
         createDataSet();
         
@@ -186,7 +192,8 @@ public class ClientExpressionIT extends ClientCase {
         
         assertEquals(1, table1List.size());
     }
-    
+
+    @Test
     public void testExpressionFactoryMatchAny() throws Exception {
         createDataSet();
         
@@ -203,7 +210,8 @@ public class ClientExpressionIT extends ClientCase {
         
         assertEquals(2, table2List.size());
     }
-    
+
+    @Test
     public void testExpressionFactoryIn() throws Exception {
         createDataSet();
         
@@ -228,7 +236,8 @@ public class ClientExpressionIT extends ClientCase {
         
         assertEquals(4, table2List.size());
     }
-    
+
+    @Test
     public void testExpressionFactoryBetween() throws Exception {
         createDataSet();
         
@@ -253,7 +262,8 @@ public class ClientExpressionIT extends ClientCase {
         
         assertEquals(6, table2List.size());
     }
-    
+
+    @Test
     public void testExpressionFactoryOperators() throws Exception {
         createDataSet();
         
@@ -291,7 +301,8 @@ public class ClientExpressionIT extends ClientCase {
         
         assertEquals(14, table2List.size());
     }
-    
+
+    @Test
     public void testExpressionWithParameters() throws Exception {
         createDataSet();
         

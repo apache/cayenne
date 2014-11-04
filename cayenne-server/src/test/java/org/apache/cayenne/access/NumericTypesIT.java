@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -42,6 +38,11 @@ import org.apache.cayenne.testdo.testmap.SmallintTestEntity;
 import org.apache.cayenne.testdo.testmap.TinyintTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.List;
 
 /**
  */
@@ -87,6 +88,7 @@ public class NumericTypesIT extends ServerCase {
         tTinyintTest.insert(2, 50);
     }
 
+    @Test
     public void testLong() throws Exception {
 
         LongEntity test = context.newObject(LongEntity.class);
@@ -104,6 +106,7 @@ public class NumericTypesIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testBigInteger() throws Exception {
 
         BigIntegerEntity test = context.newObject(BigIntegerEntity.class);
@@ -121,6 +124,7 @@ public class NumericTypesIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testBigDecimal() throws Exception {
 
         BigDecimalEntity test = context.newObject(BigDecimalEntity.class);
@@ -138,6 +142,7 @@ public class NumericTypesIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testShortInQualifier() throws Exception {
         createShortDataSet();
 
@@ -152,6 +157,7 @@ public class NumericTypesIT extends ServerCase {
         assertEquals(new Short("9999"), object.getSmallintCol());
     }
 
+    @Test
     public void testShortInInsert() throws Exception {
         SmallintTestEntity object = (SmallintTestEntity) (context)
                 .newObject("SmallintTestEntity");
@@ -159,6 +165,7 @@ public class NumericTypesIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testTinyintInQualifier() throws Exception {
         createTinyintDataSet();
 
@@ -173,6 +180,7 @@ public class NumericTypesIT extends ServerCase {
         assertEquals(new Byte((byte) 81), object.getTinyintCol());
     }
 
+    @Test
     public void testTinyintInInsert() throws Exception {
         TinyintTestEntity object = (TinyintTestEntity) (context)
                 .newObject("TinyintTestEntity");
@@ -180,6 +188,7 @@ public class NumericTypesIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testBooleanBit() throws Exception {
 
         BitTestEntity trueObject = (BitTestEntity) context.newObject("BitTestEntity");
@@ -218,6 +227,7 @@ public class NumericTypesIT extends ServerCase {
         assertSame(Boolean.FALSE, falseRefetched.getBitColumn());
     }
 
+    @Test
     public void testBooleanBoolean() throws Exception {
 
         // populate (testing insert as well)
@@ -260,6 +270,7 @@ public class NumericTypesIT extends ServerCase {
         assertSame(Boolean.FALSE, falseRefetched.getBooleanColumn());
     }
 
+    @Test
     public void testDecimalPK() throws Exception {
 
         // populate (testing insert as well)
@@ -279,6 +290,7 @@ public class NumericTypesIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testDecimalPK1() throws Exception {
 
         // populate (testing insert as well)

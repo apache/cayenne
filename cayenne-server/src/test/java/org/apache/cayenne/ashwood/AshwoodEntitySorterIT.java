@@ -28,6 +28,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -60,6 +61,7 @@ public class AshwoodEntitySorterIT extends ServerCase {
                 .setColumnTypes(Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.VARCHAR);
     }
 
+    @Test
     public void testSortObjectsForEntityReflexiveWithFaults() throws Exception {
 
         tRelationshipHelper.insert(1, "rh1");

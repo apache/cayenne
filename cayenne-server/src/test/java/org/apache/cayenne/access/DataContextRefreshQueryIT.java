@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.List;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
@@ -36,6 +34,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+import java.util.List;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextRefreshQueryIT extends ServerCase {
@@ -89,6 +90,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
         tPainting.delete().where("PAINTING_ID", 33001).execute();
     }
 
+    @Test
     public void testRefreshCollection() throws Exception {
         createRefreshCollectionDataSet();
 
@@ -132,6 +134,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
                 .isFault());
     }
 
+    @Test
     public void testRefreshCollectionToOne() throws Exception {
         createRefreshCollectionDataSet();
 
@@ -176,6 +179,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
         assertEquals("b", p1.getToArtist().getArtistName());
     }
 
+    @Test
     public void testRefreshSingleObject() throws Exception {
         createRefreshCollectionDataSet();
 
@@ -206,6 +210,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
                 .isFault());
     }
 
+    @Test
     public void testRefreshObjectToMany() throws Exception {
         createRefreshObjectToManyDataSet();
 
@@ -220,6 +225,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
         assertEquals(1, a.getPaintingArray().size());
     }
 
+    @Test
     public void testRefreshQueryResultsLocalCache() throws Exception {
         createRefreshCollectionDataSet();
 
@@ -274,6 +280,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
         assertEquals("b", p2.getToArtist().getArtistName());
     }
 
+    @Test
     public void testRefreshQueryResultsSharedCache() throws Exception {
         createRefreshCollectionDataSet();
 
@@ -328,6 +335,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
         assertEquals("b", p2.getToArtist().getArtistName());
     }
 
+    @Test
     public void testRefreshQueryResultGroupLocal() throws Exception {
         createRefreshCollectionDataSet();
 
@@ -383,6 +391,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
         assertEquals("b", p2.getToArtist().getArtistName());
     }
 
+    @Test
     public void testRefreshAll() throws Exception {
         createRefreshCollectionDataSet();
 

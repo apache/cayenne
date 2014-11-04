@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.BinaryPKTest2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextBinaryPKIT extends ServerCase {
@@ -52,6 +53,7 @@ public class DataContextBinaryPKIT extends ServerCase {
         }
     }
 
+    @Test
     public void testInsertBinaryPK() throws Exception {
         if (accessStackAdapter.supportsBinaryPK()) {
 
@@ -67,6 +69,7 @@ public class DataContextBinaryPKIT extends ServerCase {
         }
     }
 
+    @Test
     public void testFetchRelationshipBinaryPK() throws Exception {
         if (accessStackAdapter.supportsBinaryPK()) {
 

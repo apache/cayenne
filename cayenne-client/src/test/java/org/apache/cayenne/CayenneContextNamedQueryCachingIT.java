@@ -27,9 +27,10 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.List;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextNamedQueryCachingIT extends ClientCase {
@@ -60,6 +61,7 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
         tMtTable1.insert(3, "g3", "s3");
     }
 
+    @Test
     public void testLocalCache() throws Exception {
         createThreeMtTable1sDataSet();
 
@@ -83,6 +85,7 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
         assertEquals(3, result3.size());
     }
 
+    @Test
     public void testLocalCacheParameterized() throws Exception {
         createThreeMtTable1sDataSet();
 
@@ -121,7 +124,8 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
         });
     
     }
-    
+
+    @Test
     public void testParameterizedMappedToEJBQLQueries() throws Exception {
         
         createThreeMtTable1sDataSet();

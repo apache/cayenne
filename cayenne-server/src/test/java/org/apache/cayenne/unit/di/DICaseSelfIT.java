@@ -25,6 +25,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.junit.Test;
 
 public class DICaseSelfIT extends DICase {
 
@@ -62,6 +63,7 @@ public class DICaseSelfIT extends DICase {
         return injector;
     }
 
+    @Test
     public void testInjection() throws Exception {
 
         Object testScoped = this.testScoped;

@@ -30,6 +30,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.PEOPLE_PROJECT)
 public class DeepMergeOperationInheritanceIT extends ServerCase {
@@ -43,6 +44,7 @@ public class DeepMergeOperationInheritanceIT extends ServerCase {
     @Inject
     protected DataChannelInterceptor queryInterceptor;
 
+    @Test
     public void testDeepMergeExistingSubclass() {
 
         final Department d1 = context.newObject(Department.class);
@@ -93,6 +95,7 @@ public class DeepMergeOperationInheritanceIT extends ServerCase {
 
     }
 
+    @Test
     public void testDeepMergeNonExistentSubclass() {
 
         final Department d1 = context.newObject(Department.class);

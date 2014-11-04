@@ -23,6 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Collections;
 
@@ -32,6 +33,7 @@ public class EntityResolverGenericStackIT extends ServerCase {
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testObjEntityLookupDuplicates() {
 
         DataMap generic = resolver.getDataMap("generic");

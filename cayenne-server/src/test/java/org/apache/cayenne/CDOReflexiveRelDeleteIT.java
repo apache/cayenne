@@ -23,6 +23,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime("cayenne-small-testmap.xml")
 public class CDOReflexiveRelDeleteIT extends ServerCase {
@@ -61,6 +62,7 @@ public class CDOReflexiveRelDeleteIT extends ServerCase {
     // ones below fairly well
     // encompass the various orders that might be a problem. Add more if additional
     // problems come to light
+    @Test
     public void testReflexiveRelationshipDelete1() {
         context.deleteObjects(parentGroup);
         context.deleteObjects(childGroup1);
@@ -69,6 +71,7 @@ public class CDOReflexiveRelDeleteIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testReflexiveRelationshipDelete2() {
         context.deleteObjects(childGroup1);
         context.deleteObjects(parentGroup);
@@ -77,6 +80,7 @@ public class CDOReflexiveRelDeleteIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testReflexiveRelationshipDelete3() {
         context.deleteObjects(childGroup1);
         context.deleteObjects(childGroup3);
@@ -85,6 +89,7 @@ public class CDOReflexiveRelDeleteIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testReflexiveRelationshipDelete4() {
         context.deleteObjects(childGroup3);
         context.deleteObjects(parentGroup);

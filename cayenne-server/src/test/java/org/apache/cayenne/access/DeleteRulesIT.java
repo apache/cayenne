@@ -35,6 +35,7 @@ import org.apache.cayenne.testdo.relationship.DeleteRuleTest2;
 import org.apache.cayenne.testdo.relationship.DeleteRuleTest3;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +60,7 @@ public class DeleteRulesIT extends ServerCase {
         dbHelper.deleteAll("DELETE_RULE_FLATA");
     }
 
+    @Test
     public void testDenyToOne() {
 
         DeleteRuleTest1 test1 = context.newObject(DeleteRuleTest1.class);
@@ -76,6 +78,7 @@ public class DeleteRulesIT extends ServerCase {
 
     }
 
+    @Test
     public void testNoActionToOne() {
         DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
         DeleteRuleTest3 test3 = context.newObject(DeleteRuleTest3.class);
@@ -87,6 +90,7 @@ public class DeleteRulesIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testNoActionToMany() {
         DeleteRuleTest2 test2 = context.newObject(DeleteRuleTest2.class);
         DeleteRuleTest3 test3 = context.newObject(DeleteRuleTest3.class);
@@ -99,6 +103,7 @@ public class DeleteRulesIT extends ServerCase {
         // don't commit, since this will cause a constraint exception
     }
 
+    @Test
     public void testNoActionFlattened() {
         // temporarily set delete rule to NOACTION...
         int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
@@ -125,6 +130,7 @@ public class DeleteRulesIT extends ServerCase {
         }
     }
 
+    @Test
     public void testNoActionFlattenedNoReverse() {
         // temporarily set delete rule to NOACTION...
         int oldRule = changeDeleteRule(DeleteRule.NO_ACTION);
@@ -151,6 +157,7 @@ public class DeleteRulesIT extends ServerCase {
         }
     }
 
+    @Test
     public void testCascadeFlattened() {
         // temporarily set delete rule to CASCADE...
         int oldRule = changeDeleteRule(DeleteRule.CASCADE);
@@ -175,6 +182,7 @@ public class DeleteRulesIT extends ServerCase {
         }
     }
 
+    @Test
     public void testCascadeFlattenedNoReverse() {
         // temporarily set delete rule to CASCADE...
         int oldRule = changeDeleteRule(DeleteRule.CASCADE);
@@ -200,6 +208,7 @@ public class DeleteRulesIT extends ServerCase {
         }
     }
 
+    @Test
     public void testNullifyFlattened() {
         // temporarily set delete rule to NULLIFY...
         int oldRule = changeDeleteRule(DeleteRule.NULLIFY);
@@ -224,6 +233,7 @@ public class DeleteRulesIT extends ServerCase {
         }
     }
 
+    @Test
     public void testNullifyFlattenedNoReverse() {
         // temporarily set delete rule to NULLIFY...
         int oldRule = changeDeleteRule(DeleteRule.NULLIFY);
@@ -249,6 +259,7 @@ public class DeleteRulesIT extends ServerCase {
         }
     }
 
+    @Test
     public void testDenyFlattened() {
         // temporarily set delete rule to DENY...
         int oldRule = changeDeleteRule(DeleteRule.DENY);
@@ -271,6 +282,7 @@ public class DeleteRulesIT extends ServerCase {
         }
     }
 
+    @Test
     public void testDenyFlattenedNoReverse() {
         // temporarily set delete rule to DENY...
         int oldRule = changeDeleteRule(DeleteRule.DENY);

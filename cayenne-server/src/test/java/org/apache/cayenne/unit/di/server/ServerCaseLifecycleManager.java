@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.spi.DefaultScope;
@@ -35,7 +33,7 @@ public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager 
     }
 
     @Override
-    public <T extends TestCase> void setUp(T testCase) {
+    public <T> void setUp(T testCase) {
 
         // init current runtime
         UseServerRuntime runtimeName = testCase.getClass().getAnnotation(

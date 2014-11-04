@@ -34,6 +34,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.HashSet;
@@ -116,6 +117,7 @@ public class FlattenedPrefetchIT extends ServerCase {
         tPainting.insert(33003, "P_artist21", 33002, 3000);
     }
 
+    @Test
     public void testManyToMany() throws Exception {
         createPrefetchDataSet1();
 
@@ -150,6 +152,7 @@ public class FlattenedPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testMultiPrefetch() throws Exception {
         createPrefetchDataSet2();
 
@@ -187,6 +190,7 @@ public class FlattenedPrefetchIT extends ServerCase {
         });
     }
 
+    @Test
     public void testJointManyToMany() throws Exception {
         createPrefetchDataSet1();
 
@@ -223,6 +227,7 @@ public class FlattenedPrefetchIT extends ServerCase {
 
     }
 
+    @Test
     public void testJointMultiPrefetch() throws Exception {
         createPrefetchDataSet2();
 

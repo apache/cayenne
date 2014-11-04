@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.relationship.MapToMany;
 import org.apache.cayenne.testdo.relationship.MapToManyTarget;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.Map;
 
@@ -85,6 +86,7 @@ public class CDOMapRelationshipIT extends ServerCase {
         tIdMapToManyTarget.insert(4, 2);
     }
 
+    @Test
     public void testReadToMany() throws Exception {
         createTestDataSet();
 
@@ -105,6 +107,7 @@ public class CDOMapRelationshipIT extends ServerCase {
         assertEquals(3, Cayenne.intPKForObject((Persistent) targets.get("C")));
     }
 
+    @Test
     public void testReadToManyId() throws Exception {
         createTestIdDataSet();
 
@@ -125,6 +128,7 @@ public class CDOMapRelationshipIT extends ServerCase {
         assertEquals(3, Cayenne.intPKForObject((Persistent) targets.get(new Integer(3))));
     }
 
+    @Test
     public void testReadToManyPrefetching() throws Exception {
         createTestDataSet();
 
@@ -144,6 +148,7 @@ public class CDOMapRelationshipIT extends ServerCase {
         assertNotNull(targets.get("C"));
     }
 
+    @Test
     public void testAddToMany() throws Exception {
         createTestDataSet();
 
@@ -169,6 +174,7 @@ public class CDOMapRelationshipIT extends ServerCase {
         assertEquals(4, o1.getTargets().size());
     }
 
+    @Test
     public void testRemoveToMany() throws Exception {
         createTestDataSet();
 
@@ -192,6 +198,7 @@ public class CDOMapRelationshipIT extends ServerCase {
         assertNotNull(o1.getTargets().get("C"));
     }
 
+    @Test
     public void testAddToManyViaReverse() throws Exception {
         createTestDataSet();
 
@@ -217,6 +224,7 @@ public class CDOMapRelationshipIT extends ServerCase {
         assertEquals(4, o1.getTargets().size());
     }
 
+    @Test
     public void testModifyToManyKey() throws Exception {
         createTestDataSet();
 

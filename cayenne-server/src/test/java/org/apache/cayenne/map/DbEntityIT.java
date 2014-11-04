@@ -25,6 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
 import java.util.Collection;
 
@@ -34,6 +35,7 @@ public class DbEntityIT extends ServerCase {
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testSerializability() throws Exception {
         DbEntity entity = new DbEntity("entity");
 
@@ -62,16 +64,19 @@ public class DbEntityIT extends ServerCase {
         assertTrue(d2.getGeneratedAttributes().contains(generated2));
     }
 
+    @Test
     public void testConstructor1() {
         DbEntity ent = new DbEntity();
         assertNull(ent.getName());
     }
 
+    @Test
     public void testConstructor2() {
         DbEntity ent = new DbEntity("abc");
         assertEquals("abc", ent.getName());
     }
 
+    @Test
     public void testCatalog() {
         String tstName = "tst_name";
         DbEntity ent = new DbEntity("abc");
@@ -79,6 +84,7 @@ public class DbEntityIT extends ServerCase {
         assertEquals(tstName, ent.getCatalog());
     }
 
+    @Test
     public void testSchema() {
         String tstName = "tst_name";
         DbEntity ent = new DbEntity("abc");
@@ -86,6 +92,7 @@ public class DbEntityIT extends ServerCase {
         assertEquals(tstName, ent.getSchema());
     }
 
+    @Test
     public void testFullyQualifiedName() {
 
         DbEntity e1 = new DbEntity("e1");
@@ -108,6 +115,7 @@ public class DbEntityIT extends ServerCase {
         assertEquals("c4.e4", e4.getFullyQualifiedName());
     }
 
+    @Test
     public void testGetPrimaryKey() {
         DbEntity ent = new DbEntity("abc");
 
@@ -127,6 +135,7 @@ public class DbEntityIT extends ServerCase {
         assertSame(a2, pk.iterator().next());
     }
 
+    @Test
     public void testAddPKAttribute() {
         DbEntity ent = new DbEntity("abc");
 
@@ -139,6 +148,7 @@ public class DbEntityIT extends ServerCase {
         assertTrue(ent.getPrimaryKeys().isEmpty());
     }
 
+    @Test
     public void testChangeAttributeToPK() {
         DbEntity ent = new DbEntity("abc");
 
@@ -152,6 +162,7 @@ public class DbEntityIT extends ServerCase {
         assertTrue(ent.getPrimaryKeys().contains(a1));
     }
 
+    @Test
     public void testChangePKAttribute() {
         DbEntity ent = new DbEntity("abc");
 
@@ -165,6 +176,7 @@ public class DbEntityIT extends ServerCase {
         assertFalse(ent.getPrimaryKeys().contains(a1));
     }
 
+    @Test
     public void testRemoveAttribute() {
         DbEntity ent = new DbEntity("abc");
 
@@ -207,6 +219,7 @@ public class DbEntityIT extends ServerCase {
         assertEquals(0, rel.getJoins().size());
     }
 
+    @Test
     public void testTranslateToRelatedEntityIndependentPath() {
         DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
@@ -215,6 +228,7 @@ public class DbEntityIT extends ServerCase {
         assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray"), translated);
     }
 
+    @Test
     public void testTranslateToRelatedEntityTrimmedPath() {
         DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
@@ -224,6 +238,7 @@ public class DbEntityIT extends ServerCase {
                 translated);
     }
 
+    @Test
     public void testTranslateToRelatedEntitySplitHalfWay() {
         DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
@@ -233,6 +248,7 @@ public class DbEntityIT extends ServerCase {
                 Expression.fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
     }
 
+    @Test
     public void testTranslateToRelatedEntityMatchingPath() {
         DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
@@ -243,6 +259,7 @@ public class DbEntityIT extends ServerCase {
                 Expression.fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
     }
 
+    @Test
     public void testTranslateToRelatedEntityToOne() {
         DbEntity paintingE = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
 

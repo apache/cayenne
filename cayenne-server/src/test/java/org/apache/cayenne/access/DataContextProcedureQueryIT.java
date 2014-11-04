@@ -35,6 +35,7 @@ import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
@@ -75,6 +76,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testUpdate() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -111,6 +113,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
+    @Test
     public void testUpdateNoParam() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -146,6 +149,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
+    @Test
     public void testSelect1() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -171,6 +175,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
+    @Test
     public void testSelect2() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -197,6 +202,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
+    @Test
     public void testSelect3() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -225,6 +231,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
+    @Test
     public void testFetchLimit() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -244,6 +251,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(2, artists.size());
     }
 
+    @Test
     public void testFetchOffset() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -263,6 +271,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(1, artists.size());
     }
 
+    @Test
     public void testColumnNameCapitalization() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -290,6 +299,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
 
     }
 
+    @Test
     public void testOutParams() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -310,6 +320,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(40, price.intValue());
     }
 
+    @Test
     public void testSelectDataObject() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
@@ -338,6 +349,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         assertEquals(1101.01, p.getEstimatedPrice().doubleValue(), 0.02);
     }
 
+    @Test
     public void testSelectWithRowDescriptor() throws Exception {
 
         if (!accessStackAdapter.supportsStoredProcedures()) {

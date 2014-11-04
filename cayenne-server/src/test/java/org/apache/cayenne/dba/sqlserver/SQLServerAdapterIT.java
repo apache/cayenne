@@ -24,6 +24,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 
@@ -32,7 +33,8 @@ public class SQLServerAdapterIT extends ServerCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;
-    
+
+    @Test
     public void testCreateTableWithFloatAttributeWithScale () {
         SQLServerAdapter adapter = objectFactory.newInstance(
                 SQLServerAdapter.class, 

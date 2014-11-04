@@ -29,6 +29,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
+import org.junit.Test;
 
 import java.sql.Date;
 import java.util.Collections;
@@ -69,6 +70,7 @@ public class DataNodeQueriesIT extends ServerCase {
         tArtist.insert(3001, "artist5");
     }
 
+    @Test
     public void testCreatePkSupportForMapEntities() throws Exception {
 
         DbEntity artistEnt = node.getEntityResolver().getDbEntity("ARTIST");
@@ -82,6 +84,7 @@ public class DataNodeQueriesIT extends ServerCase {
                 exhibitEnt.getPrimaryKeys().iterator().next()));
     }
 
+    @Test
     public void testPerfomQueriesSQLTemplate() throws Exception {
         String template = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
@@ -105,6 +108,7 @@ public class DataNodeQueriesIT extends ServerCase {
         assertEquals("a1", tArtist.getString("ARTIST_NAME").trim());
     }
 
+    @Test
     public void testPerfomQueriesSelectingSQLTemplate1() throws Exception {
         createFourArtists();
 
@@ -121,6 +125,7 @@ public class DataNodeQueriesIT extends ServerCase {
         assertEquals(201, row.get("ARTIST_ID"));
     }
 
+    @Test
     public void testPerfomQueriesSelectingSQLTemplate2() throws Exception {
         createFourArtists();
 
@@ -141,6 +146,7 @@ public class DataNodeQueriesIT extends ServerCase {
         assertEquals(201, id.intValue());
     }
 
+    @Test
     public void testPerfomQueriesSelectingSQLTemplateAlias() throws Exception {
         createFourArtists();
 
@@ -157,6 +163,7 @@ public class DataNodeQueriesIT extends ServerCase {
         assertEquals(201, row.get("A"));
     }
 
+    @Test
     public void testRunMultiLineSQLTemplateUNIX() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\n"
@@ -167,6 +174,7 @@ public class DataNodeQueriesIT extends ServerCase {
                 new MockOperationObserver());
     }
 
+    @Test
     public void testRunMultiLineSQLTemplateWindows() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r\n"
@@ -177,6 +185,7 @@ public class DataNodeQueriesIT extends ServerCase {
                 new MockOperationObserver());
     }
 
+    @Test
     public void testRunMultiLineSQLTemplateMac() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r"

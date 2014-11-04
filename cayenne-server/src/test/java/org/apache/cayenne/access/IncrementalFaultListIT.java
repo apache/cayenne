@@ -24,6 +24,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class IncrementalFaultListIT extends ServerCase {
@@ -31,6 +32,7 @@ public class IncrementalFaultListIT extends ServerCase {
 	@Inject
 	protected DataContext context;
 
+    @Test
 	public void testSerialization() throws Exception {
 		SelectQuery query = new SelectQuery(Artist.class);
 		query.setPageSize(10);

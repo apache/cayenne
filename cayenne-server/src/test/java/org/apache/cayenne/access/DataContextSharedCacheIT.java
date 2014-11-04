@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -40,6 +34,13 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
+import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
@@ -84,6 +85,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * Test case to prove that refreshing snapshots as a result of the database fetch will
      * be propagated across DataContexts.
      */
+    @Test
     public void testSnapshotChangePropagationOnSelect() throws Exception {
         String originalName = artist.getArtistName();
         final String newName = "version2";
@@ -136,6 +138,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * to the database will be reflected in the peer ObjectStore using the same
      * DataRowCache.
      */
+    @Test
     public void testSnapshotChangePropagation() throws Exception {
         String originalName = artist.getArtistName();
         final String newName = "version2";
@@ -179,6 +182,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testSnapshotChangePropagationToModifiedObjects() throws Exception {
         String originalName = artist.getArtistName();
         Date originalDate = artist.getDateOfBirth();
@@ -228,6 +232,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * database will be reflected in the peer ObjectStore using the same DataRowCache. By
      * default COMMITTED objects will be changed to TRANSIENT.
      */
+    @Test
     public void testSnapshotDeletePropagationToCommitted() throws Exception {
 
         // make sure we have a fully resolved copy of an artist object
@@ -267,6 +272,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testSnapshotDeletePropagationToHollow() throws Exception {
 
         final Artist altArtist = context1.localObject(artist);
@@ -302,6 +308,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * database will be reflected in the peer ObjectStore using the same DataRowCache. By
      * default MODIFIED objects will be changed to NEW.
      */
+    @Test
     public void testSnapshotDeletePropagationToModified() throws Exception {
 
         // make sure we have a fully resolved copy of an artist object
@@ -354,6 +361,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testSnapshotDeletePropagationToDeleted() throws Exception {
 
         // make sure we have a fully resolved copy of an artist object
@@ -395,6 +403,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * database will be reflected in the peer ObjectStore using the same DataRowCache,
      * including proper processing of deleted object being held in to-many collections.
      */
+    @Test
     public void testSnapshotDeletePropagationToManyRefresh() throws Exception {
 
         Painting painting1 = (Painting) context.newObject("Painting");
@@ -465,6 +474,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testSnapshotInsertPropagationToManyRefresh() throws Exception {
 
         Painting painting1 = (Painting) context.newObject("Painting");
@@ -514,6 +524,7 @@ public class DataContextSharedCacheIT extends ServerCase {
      * Checks that cache is refreshed when a query "refreshingObjects" property is set to
      * true.
      */
+    @Test
     public void testCacheRefreshingOnSelect() throws Exception {
         String originalName = artist.getArtistName();
         final String newName = "version2";
@@ -557,6 +568,7 @@ public class DataContextSharedCacheIT extends ServerCase {
         assertEquals(newName, artist.getArtistName());
     }
 
+    @Test
     public void testSnapshotEvictedForHollow() throws Exception {
         String originalName = artist.getArtistName();
 
@@ -577,6 +589,7 @@ public class DataContextSharedCacheIT extends ServerCase {
         assertEquals(originalName, freshSnapshot.get("ARTIST_NAME"));
     }
 
+    @Test
     public void testSnapshotEvictedAndObjectsHollowedForInvalidate() throws Exception {
         String originalName = artist.getArtistName();
 
@@ -619,6 +632,7 @@ public class DataContextSharedCacheIT extends ServerCase {
 
     }
 
+    @Test
     public void testSnapshotEvictedForCommitted() throws Exception {
         String newName = "version2";
 
@@ -643,6 +657,7 @@ public class DataContextSharedCacheIT extends ServerCase {
         assertEquals(newName, freshSnapshot.get("ARTIST_NAME"));
     }
 
+    @Test
     public void testSnapshotEvictedForModified() throws Exception {
         String newName = "version2";
 
@@ -668,6 +683,7 @@ public class DataContextSharedCacheIT extends ServerCase {
         assertEquals(newName, freshSnapshot.get("ARTIST_NAME"));
     }
 
+    @Test
     public void testSnapshotEvictedAndChangedForModified() throws Exception {
         String originalName = artist.getArtistName();
         String newName = "version2";
@@ -705,6 +721,7 @@ public class DataContextSharedCacheIT extends ServerCase {
         assertEquals(newName, freshSnapshot.get("ARTIST_NAME"));
     }
 
+    @Test
     public void testSnapshotEvictedForDeleted() throws Exception {
         // remember ObjectId
         ObjectId id = artist.getObjectId();

@@ -24,6 +24,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class PersistenceByReachabilityIT extends ServerCase {
@@ -34,6 +35,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
     @Inject
     private ObjectContext context1;
 
+    @Test
     public void testToOneTargetTransient() throws Exception {
         Painting persistentDO = context.newObject(Painting.class);
 
@@ -43,6 +45,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }
 
+    @Test
     public void testToOneTargetPersistent() throws Exception {
         Painting transientDO = context.newObject(Painting.class);
 
@@ -52,6 +55,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }
 
+    @Test
     public void testToOneTargetDifferentContext() throws Exception {
 
         Painting doC1 = context.newObject(Painting.class);
@@ -68,6 +72,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
         }
     }
 
+    @Test
     public void testToManyTargetDifferentContext() throws Exception {
         Painting doC1 = context.newObject(Painting.class);
         Artist doC2 = context1.newObject(Artist.class);
@@ -83,6 +88,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
         }
     }
 
+    @Test
     public void testToManyTargetTransient() throws Exception {
         Painting transientDO = context.newObject(Painting.class);
 
@@ -92,6 +98,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }
 
+    @Test
     public void testToManyTargetPersistent() throws Exception {
         Painting persistentDO = context.newObject(Painting.class);
 

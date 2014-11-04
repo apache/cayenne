@@ -28,9 +28,10 @@ import org.apache.cayenne.testdo.mt.MtTablePrimitives;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
-import java.util.List;
+import java.util.List;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextPrimitiveIT extends ClientCase {
@@ -64,6 +65,7 @@ public class CayenneContextPrimitiveIT extends ClientCase {
         tMtTablePrimitives.insert(2, accessStackAdapter.supportsBoolean() ? false : 0, 5);
     }
 
+    @Test
     public void testSelectPrimitives() throws Exception {
         createTwoPrimitivesDataSet();
 
@@ -78,6 +80,7 @@ public class CayenneContextPrimitiveIT extends ClientCase {
         assertEquals(5, results.get(1).getIntColumn());
     }
 
+    @Test
     public void testCommitChangesPrimitives() throws Exception {
 
         ClientMtTablePrimitives object = context.newObject(ClientMtTablePrimitives.class);

@@ -28,6 +28,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class GenericMappingIT extends ServerCase {
         dbHelper.deleteAll("GENERIC1");
     }
 
+    @Test
     public void testInsertSingle() {
         DataObject g1 = (DataObject) context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
@@ -53,6 +55,7 @@ public class GenericMappingIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testInsertRelated() {
         DataObject g1 = (DataObject) context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
@@ -64,6 +67,7 @@ public class GenericMappingIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSelect() {
         context.performNonSelectingQuery(new SQLTemplate(
                 "Generic1",
@@ -82,6 +86,7 @@ public class GenericMappingIT extends ServerCase {
         assertEquals(1, result.size());
     }
 
+    @Test
     public void testUpdateRelated() {
         DataObject g1 = (DataObject) context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");

@@ -18,15 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.server.ServerCaseLifecycleManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientCaseLifecycleManager extends ServerCaseLifecycleManager {
 
@@ -38,7 +36,7 @@ public class ClientCaseLifecycleManager extends ServerCaseLifecycleManager {
     }
 
     @Override
-    public <T extends TestCase> void setUp(T testCase) {
+    public <T> void setUp(T testCase) {
 
         Map<String, String> map = new HashMap<String, String>();
 

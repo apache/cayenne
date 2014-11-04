@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;import static org.junit.Assert.*;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextServerDiffsIT extends ClientCase {
@@ -38,6 +39,7 @@ public class CayenneContextServerDiffsIT extends ClientCase {
     @Inject
     private CayenneContext context;
 
+    @Test
     public void testReturnDiffInPrePersist() {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
@@ -65,6 +67,7 @@ public class CayenneContextServerDiffsIT extends ClientCase {
         }
     }
 
+    @Test
     public void testReturnDiffInPreUpdate() {
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
                 .getEntityResolver()
@@ -96,6 +99,7 @@ public class CayenneContextServerDiffsIT extends ClientCase {
         }
     }
 
+    @Test
     public void testReturnDiffClientArcChanges() {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
@@ -123,6 +127,7 @@ public class CayenneContextServerDiffsIT extends ClientCase {
         }
     }
 
+    @Test
     public void testReturnDiffServerArcChanges() {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel

@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextCommitIT extends ServerCase {
@@ -48,6 +49,7 @@ public class DataContextCommitIT extends ServerCase {
         dbHelper.deleteAll("NULL_TEST");
     }
 
+    @Test
     public void testFlushToParent_Commit() {
 
         // commit new object

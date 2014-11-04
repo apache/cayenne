@@ -26,6 +26,7 @@ import org.apache.cayenne.unit.di.DataChannelSyncStats;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextGraphDiffCompressorIT extends ClientCase {
@@ -36,6 +37,7 @@ public class CayenneContextGraphDiffCompressorIT extends ClientCase {
     @Inject
     protected CayenneContext context;
 
+    @Test
     public void testMultipleSimpleProperties() {
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
@@ -54,6 +56,7 @@ public class CayenneContextGraphDiffCompressorIT extends ClientCase {
         assertEquals(1, stats.nodesCreated);
     }
 
+    @Test
     public void testComplimentaryArcs() {
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
@@ -75,6 +78,7 @@ public class CayenneContextGraphDiffCompressorIT extends ClientCase {
         assertEquals(0, stats.arcsDeleted);
     }
 
+    @Test
     public void testDelete() {
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);

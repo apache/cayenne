@@ -31,6 +31,7 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataObjectDescriptorFactoryIT extends ServerCase {
@@ -38,6 +39,7 @@ public class DataObjectDescriptorFactoryIT extends ServerCase {
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testVisitDeclaredProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
@@ -74,6 +76,7 @@ public class DataObjectDescriptorFactoryIT extends ServerCase {
 
     }
 
+    @Test
     public void testVisitProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(

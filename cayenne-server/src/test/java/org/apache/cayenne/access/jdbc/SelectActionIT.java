@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.testmap.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class SelectActionIT extends ServerCase {
         }
     }
 
+    @Test
     public void testFetchLimit_DistinctResultIterator() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
 

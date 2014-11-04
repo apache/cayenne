@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 
@@ -34,6 +35,7 @@ public class HSQLDBAdapterIT extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testCreateTableIgnoresDoublePrecision() {
         HSQLDBAdapter adapter = objectFactory.newInstance(
                 HSQLDBAdapter.class, 
@@ -51,7 +53,8 @@ public class HSQLDBAdapterIT extends ServerCase {
         assertTrue(sql.indexOf("DOUBLE") > 0);
         assertEquals(-1, sql.indexOf("DOUBLE(22)"));
     }
-    
+
+    @Test
     public void testCreateTableAddsCachedKeyword() {
         HSQLDBAdapter adapter = objectFactory.newInstance(
                 HSQLDBAdapter.class, 

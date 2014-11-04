@@ -29,6 +29,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
@@ -86,6 +87,7 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
         }
     }
 
+    @Test
     public void testDeleteNoIdVar() throws Exception {
         createPaintingsDataSet();
 
@@ -100,6 +102,7 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
         assertEquals(2, count[0]);
     }
 
+    @Test
     public void testDeleteNoQualifier() throws Exception {
         createPaintingsDataSet();
 
@@ -114,6 +117,7 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
         assertEquals(2, count[0]);
     }
 
+    @Test
     public void testDeleteSameEntityQualifier() throws Exception {
         createPaintingsDataSet();
 
@@ -133,6 +137,7 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
         assertNull(Cayenne.objectForPK(freshContext, Painting.class, 33002));
     }
 
+    @Test
     public void testDeleteIdVar() throws Exception {
 
         createMeaningfulPKDataSet();

@@ -23,6 +23,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Some more tests regarding reflexive relationships, especially related to delete rules
@@ -34,6 +35,7 @@ public class CDOReflexiveRelIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    @Test
     public void testAddDeleteNoCommit() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
@@ -45,6 +47,7 @@ public class CDOReflexiveRelIT extends ServerCase {
         context.deleteObjects(parentGroup);
     }
 
+    @Test
     public void testAddDeleteWithCommit() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
@@ -58,6 +61,7 @@ public class CDOReflexiveRelIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testReplaceDeleteNoCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
@@ -74,6 +78,7 @@ public class CDOReflexiveRelIT extends ServerCase {
         context.deleteObjects(parentGroup2);
     }
 
+    @Test
     public void testReplaceDeleteWithCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
@@ -91,6 +96,7 @@ public class CDOReflexiveRelIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCommitReplaceCommit() {
         ArtGroup parentGroup1 = context.newObject(ArtGroup.class);
         parentGroup1.setName("parent1");
@@ -105,6 +111,7 @@ public class CDOReflexiveRelIT extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testComplexInsertUpdateOrdering() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");
