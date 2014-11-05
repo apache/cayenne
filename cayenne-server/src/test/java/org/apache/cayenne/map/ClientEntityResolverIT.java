@@ -30,6 +30,11 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 @UseServerRuntime(ServerCase.MULTI_TIER_PROJECT)
 public class ClientEntityResolverIT extends ServerCase {
 

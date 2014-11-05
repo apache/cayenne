@@ -34,6 +34,8 @@ import java.sql.Types;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 @UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
 public class AshwoodEntitySorterIT extends ServerCase {
 

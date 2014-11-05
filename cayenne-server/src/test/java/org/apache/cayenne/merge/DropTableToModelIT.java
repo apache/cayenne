@@ -29,6 +29,11 @@ import org.junit.Test;
 import java.sql.Types;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DropTableToModelIT extends MergeCase {
 

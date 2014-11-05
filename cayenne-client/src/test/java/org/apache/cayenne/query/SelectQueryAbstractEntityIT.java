@@ -32,6 +32,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class SelectQueryAbstractEntityIT extends ServerCase {
     

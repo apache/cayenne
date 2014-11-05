@@ -27,6 +27,11 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientEntityResolverIT extends ClientCase {
 

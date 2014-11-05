@@ -30,6 +30,8 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static org.junit.Assert.assertNull;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 @RunWith(value=Parameterized.class)
 public class CayenneContextDeletionIT extends RemoteCayenneCase {

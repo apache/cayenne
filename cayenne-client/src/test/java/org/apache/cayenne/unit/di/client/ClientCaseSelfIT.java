@@ -24,6 +24,10 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ClientCaseSelfIT extends ClientCase {
 

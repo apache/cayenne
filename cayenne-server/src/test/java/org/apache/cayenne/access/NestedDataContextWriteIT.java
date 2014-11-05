@@ -46,6 +46,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime("cayenne-small-testmap.xml")
 public class NestedDataContextWriteIT extends ServerCase {
 

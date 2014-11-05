@@ -30,6 +30,9 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextPaginatedQueryIT extends ServerCase {
 

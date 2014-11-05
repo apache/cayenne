@@ -28,6 +28,8 @@ import org.junit.Test;
 
 import java.sql.Types;
 
+import static org.junit.Assert.assertNotNull;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SetNotNullToDbIT extends MergeCase {
 

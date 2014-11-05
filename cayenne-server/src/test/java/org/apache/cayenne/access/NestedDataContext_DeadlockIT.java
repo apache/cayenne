@@ -33,6 +33,8 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Random;
 
+import static org.junit.Assert.assertFalse;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContext_DeadlockIT extends ServerCase {
 

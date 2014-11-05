@@ -32,6 +32,9 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextLocalCacheIT extends ServerCase {
 

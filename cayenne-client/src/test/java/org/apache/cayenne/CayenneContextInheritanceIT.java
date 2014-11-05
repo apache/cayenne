@@ -32,6 +32,8 @@ import org.junit.Test;
 import java.sql.Types;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextInheritanceIT extends ClientCase {
 

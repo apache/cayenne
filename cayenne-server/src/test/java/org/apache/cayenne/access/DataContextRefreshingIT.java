@@ -37,6 +37,11 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+
 /**
  * Test suite covering possible scenarios of refreshing updated objects. This includes
  * refreshing relationships and attributes changed outside of Cayenne with and without

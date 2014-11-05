@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.remote;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
@@ -37,6 +33,16 @@ import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class RemoteIncrementalFaultListIT extends ClientCase {

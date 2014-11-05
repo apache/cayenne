@@ -32,6 +32,9 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SQLServerSnifferIT extends ServerCase {
 

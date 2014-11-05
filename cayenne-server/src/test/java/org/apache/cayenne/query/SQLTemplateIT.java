@@ -35,6 +35,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SQLTemplateIT extends ServerCase {
 

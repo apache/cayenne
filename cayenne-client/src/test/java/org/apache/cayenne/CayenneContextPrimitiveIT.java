@@ -33,6 +33,10 @@ import org.junit.Test;
 import java.sql.Types;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextPrimitiveIT extends ClientCase {
 

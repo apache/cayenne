@@ -31,6 +31,8 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * This is a test primarily for CAY-1118
  */

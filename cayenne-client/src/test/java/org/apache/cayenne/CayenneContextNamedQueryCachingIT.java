@@ -32,6 +32,10 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextNamedQueryCachingIT extends ClientCase {
 

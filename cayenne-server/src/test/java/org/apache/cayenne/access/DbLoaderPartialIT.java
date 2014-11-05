@@ -31,6 +31,9 @@ import org.junit.Test;
 
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DbLoaderPartialIT extends ServerCase {
 

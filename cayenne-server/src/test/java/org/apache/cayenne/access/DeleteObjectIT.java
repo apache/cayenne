@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DeleteObjectIT extends ServerCase {
 

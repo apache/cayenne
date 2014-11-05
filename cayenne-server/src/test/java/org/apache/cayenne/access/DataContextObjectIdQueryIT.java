@@ -32,6 +32,10 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Date;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextObjectIdQueryIT extends ServerCase {
 

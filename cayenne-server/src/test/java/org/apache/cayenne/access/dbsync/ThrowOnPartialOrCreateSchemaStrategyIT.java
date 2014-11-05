@@ -28,10 +28,13 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 @UseServerRuntime(ServerCase.SUS_PROJECT)
-public class ThrowOnPartialOrCreateSchemaStrategyTest extends SchemaUpdateStrategyBase {
+public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test
 	public void testMixedStrategyTableExist() throws Exception {

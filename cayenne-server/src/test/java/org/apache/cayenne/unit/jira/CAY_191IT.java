@@ -31,6 +31,9 @@ import org.junit.Test;
 
 import java.sql.Types;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
 public class CAY_191IT extends ServerCase {
     

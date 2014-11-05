@@ -33,6 +33,11 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.ONEWAY_PROJECT)
 public class OneWayRelationshipsIT extends ServerCase {
 

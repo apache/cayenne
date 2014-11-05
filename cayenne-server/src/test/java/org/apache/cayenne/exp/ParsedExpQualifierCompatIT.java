@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ParsedExpQualifierCompatIT extends ServerCase {
 

@@ -33,6 +33,11 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextNoPkIT extends ServerCase {
 

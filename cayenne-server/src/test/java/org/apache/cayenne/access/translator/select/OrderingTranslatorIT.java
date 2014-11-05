@@ -32,6 +32,8 @@ import org.junit.Test;
 
 import java.sql.Connection;
 
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class OrderingTranslatorIT extends ServerCase {
 

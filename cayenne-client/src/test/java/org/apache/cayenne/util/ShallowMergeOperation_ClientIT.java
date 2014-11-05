@@ -36,6 +36,10 @@ import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class ShallowMergeOperation_ClientIT extends ClientCase {
 

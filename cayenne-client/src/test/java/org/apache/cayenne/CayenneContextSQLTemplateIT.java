@@ -26,6 +26,9 @@ import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextSQLTemplateIT extends ClientCase {
 

@@ -33,6 +33,10 @@ import org.junit.Test;
 
 import java.lang.reflect.Array;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class MiscTypesIT extends ServerCase {
 

@@ -26,6 +26,8 @@ import org.junit.Test;
 
 import java.sql.Connection;
 
+import static org.junit.Assert.assertEquals;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class PoolManagerIT extends ServerCase {
 

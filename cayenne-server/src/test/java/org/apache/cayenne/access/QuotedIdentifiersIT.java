@@ -39,6 +39,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 @UseServerRuntime(ServerCase.QUOTED_IDENTIFIERS_PROJECT)
 public class QuotedIdentifiersIT extends ServerCase {
 

@@ -29,6 +29,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertNotSame;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class QueryCacheIT extends ServerCase {
 

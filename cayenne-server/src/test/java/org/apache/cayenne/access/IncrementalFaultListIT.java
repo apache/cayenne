@@ -26,6 +26,9 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class IncrementalFaultListIT extends ServerCase {
 

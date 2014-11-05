@@ -34,6 +34,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  */
 @UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)

@@ -30,6 +30,9 @@ import org.junit.Test;
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class JNDIDataSourceFactoryIT extends ServerCase {
     

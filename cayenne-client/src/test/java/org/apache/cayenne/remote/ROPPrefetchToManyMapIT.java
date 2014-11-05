@@ -38,6 +38,8 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
+
 @UseServerRuntime("cayenne-multi-tier.xml")
 @RunWith(value=Parameterized.class)
 public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {

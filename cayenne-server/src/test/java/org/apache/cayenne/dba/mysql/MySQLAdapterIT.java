@@ -27,6 +27,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class MySQLAdapterIT extends ServerCase {
     

@@ -44,6 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextPerformQueryAPIIT extends ServerCase {
 

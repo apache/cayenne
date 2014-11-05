@@ -27,6 +27,10 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+
 public class DICaseSelfIT extends DICase {
 
     private static final Injector injector;

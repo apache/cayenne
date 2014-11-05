@@ -30,6 +30,9 @@ import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextRelationshipsIT extends ClientCase {
 

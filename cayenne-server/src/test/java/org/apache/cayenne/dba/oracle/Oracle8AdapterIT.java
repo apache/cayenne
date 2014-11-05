@@ -28,6 +28,10 @@ import org.junit.Test;
 import java.net.URL;
 import java.sql.Types;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class Oracle8AdapterIT extends ServerCase {
     

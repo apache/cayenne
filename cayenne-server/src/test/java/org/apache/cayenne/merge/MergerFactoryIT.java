@@ -33,6 +33,10 @@ import org.junit.Test;
 
 import java.sql.Types;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class MergerFactoryIT extends MergeCase {
 

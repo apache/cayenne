@@ -31,6 +31,8 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class JdbcPkGeneratorIT extends ServerCase {
 

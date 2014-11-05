@@ -29,6 +29,10 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at
 // partial solution
 @UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)

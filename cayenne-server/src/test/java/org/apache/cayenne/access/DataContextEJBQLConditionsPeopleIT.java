@@ -36,6 +36,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.PEOPLE_PROJECT)
 public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
 

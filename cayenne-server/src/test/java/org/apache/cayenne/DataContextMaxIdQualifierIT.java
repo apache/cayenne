@@ -38,6 +38,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextMaxIdQualifierIT extends ServerCase {
 

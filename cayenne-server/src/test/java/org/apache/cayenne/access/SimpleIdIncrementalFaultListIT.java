@@ -37,6 +37,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class SimpleIdIncrementalFaultListIT extends ServerCase {
 

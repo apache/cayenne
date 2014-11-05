@@ -31,6 +31,8 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class ServerRuntimeBuilder_InAction_IT extends ServerCase {
 

@@ -36,6 +36,8 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.util.List;
 
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataDomainQueryActionIT extends ServerCase {
 

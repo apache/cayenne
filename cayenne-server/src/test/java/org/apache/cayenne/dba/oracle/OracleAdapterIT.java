@@ -30,6 +30,11 @@ import org.junit.Test;
 
 import java.sql.Types;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class OracleAdapterIT extends ServerCase {
 

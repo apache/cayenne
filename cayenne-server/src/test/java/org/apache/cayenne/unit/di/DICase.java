@@ -20,14 +20,13 @@ package org.apache.cayenne.unit.di;
 
 import org.apache.cayenne.di.Injector;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 
 /**
  * A unit test superclass that supports injection of members based on the standard unit
  * test container.
  */
-public abstract class DICase extends Assert {
+public abstract class DICase {
 
     protected abstract Injector getUnitTestInjector();
 

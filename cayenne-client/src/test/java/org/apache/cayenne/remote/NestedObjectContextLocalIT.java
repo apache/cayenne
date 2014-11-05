@@ -36,6 +36,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
 @UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
 @RunWith(value=Parameterized.class)
 public class NestedObjectContextLocalIT extends RemoteCayenneCase {
