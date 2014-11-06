@@ -25,10 +25,11 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.mt.ClientMtMapToMany;
-import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
+import org.apache.cayenne.testdo.map_to_many.ClientIdMapToMany;
+import org.apache.cayenne.testdo.map_to_many.ClientIdMapToManyTarget;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime("cayenne-multi-tier.xml")
+@UseServerRuntime(ClientCase.MAP_TO_MANY_PROJECT)
 @RunWith(value=Parameterized.class)
 public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
     
@@ -65,25 +66,25 @@ public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
 
     @Override
     public void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_MAP_TO_MANY_TARGET");
-        dbHelper.deleteAll("MT_MAP_TO_MANY");        
+        dbHelper.deleteAll("ID_MAP_TO_MANY_TARGET");
+        dbHelper.deleteAll("ID_MAP_TO_MANY");
     }
 
     @Test
     public void test() throws Exception {
         ObjectContext context = createROPContext();
         
-        ClientMtMapToMany map = context.newObject(ClientMtMapToMany.class);
-        ClientMtMapToManyTarget target = context.newObject(ClientMtMapToManyTarget.class);
+        ClientIdMapToMany map = context.newObject(ClientIdMapToMany.class);
+        ClientIdMapToManyTarget target = context.newObject(ClientIdMapToManyTarget.class);
         target.setMapToMany(map);
         context.commitChanges();
         
         context.performQuery(new RefreshQuery());
         
-        SelectQuery<ClientMtMapToMany> query = new SelectQuery<ClientMtMapToMany>(ClientMtMapToMany.class);
+        SelectQuery<ClientIdMapToMany> query = new SelectQuery<ClientIdMapToMany>(ClientIdMapToMany.class);
         query.addPrefetch("targets");
         
-        final ClientMtMapToMany mapToMany = (ClientMtMapToMany) Cayenne.objectForQuery(context, query);
+        final ClientIdMapToMany mapToMany = (ClientIdMapToMany) Cayenne.objectForQuery(context, query);
         
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
             

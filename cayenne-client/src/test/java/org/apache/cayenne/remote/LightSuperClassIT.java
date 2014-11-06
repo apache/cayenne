@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Test for entites that are implemented in same class on client and server
  */
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(ClientCase.PERSISTENT_PROJECT)
 @RunWith(value=Parameterized.class)
 public class LightSuperClassIT extends RemoteCayenneCase {
 

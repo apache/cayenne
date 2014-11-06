@@ -32,11 +32,8 @@ import org.apache.cayenne.remote.RemoteIncrementalFaultList;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
-import org.apache.cayenne.testdo.mt.ClientMtMeaningfulPk;
-import org.apache.cayenne.testdo.mt.ClientMtReflexive;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
-import org.apache.cayenne.testdo.mt.MtReflexive;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
@@ -74,8 +71,6 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     private TableHelper tMtTable1;
     private TableHelper tMtTable2;
 
-    private TableHelper tMtMeaningfulPK;
-
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("MT_TABLE2");
@@ -87,15 +82,6 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         tMtTable2 = new TableHelper(dbHelper, "MT_TABLE2");
         tMtTable2.setColumns("TABLE2_ID", "TABLE1_ID", "GLOBAL_ATTRIBUTE").setColumnTypes(
                 Types.INTEGER, Types.INTEGER, Types.VARCHAR);
-
-        tMtMeaningfulPK = new TableHelper(dbHelper, "MT_MEANINGFUL_PK");
-        tMtMeaningfulPK.setColumns("PK");
-    }
-
-    private void deleteAndCreateTwoMeaningfulPKsDataSet() throws Exception {
-        tMtMeaningfulPK.deleteAll();
-        tMtMeaningfulPK.insert("A");
-        tMtMeaningfulPK.insert("B");
     }
 
     private void createTwoMtTable1sAnd2sDataSet() throws Exception {
@@ -304,60 +290,6 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     }
 
     @Test
-    public void testCAY830() throws Exception {
-
-        // an exception was triggered within POST_LOAD callback
-        LifecycleCallbackRegistry callbackRegistry = clientServerChannel
-                .getEntityResolver()
-                .getCallbackRegistry();
-
-        try {
-            callbackRegistry.addListener(MtReflexive.class, new LifecycleListener() {
-
-                public void postLoad(Object entity) {
-                }
-
-                public void postPersist(Object entity) {
-                }
-
-                public void postRemove(Object entity) {
-                }
-
-                public void postUpdate(Object entity) {
-                }
-
-                public void postAdd(Object entity) {
-                }
-
-                public void preRemove(Object entity) {
-                }
-
-                public void preUpdate(Object entity) {
-                }
-
-                public void prePersist(Object entity) {
-                }
-            });
-
-            ClientMtReflexive o1 = clientContext.newObject(ClientMtReflexive.class);
-            o1.setName("parent");
-
-            ClientMtReflexive o2 = clientContext.newObject(ClientMtReflexive.class);
-            o2.setName("child");
-            o2.setToParent(o1);
-            clientContext.commitChanges();
-
-            clientContext.deleteObjects(o1);
-            clientContext.deleteObjects(o2);
-            clientContext.commitChanges();
-            // per CAY-830 an exception is thrown here
-        }
-        finally {
-            callbackRegistry.clear();
-        }
-    }
-
-    @Test
     public void testRollbackChanges() throws Exception {
 
         ClientMtTable1 o = clientContext.newObject(ClientMtTable1.class);
@@ -414,17 +346,6 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         catch (FaultFailureException e) {
             // expected
         }
-    }
-
-    @Test
-    public void testMeaningfulPK() throws Exception {
-        deleteAndCreateTwoMeaningfulPKsDataSet();
-
-        SelectQuery query = new SelectQuery(ClientMtMeaningfulPk.class);
-        query.addOrdering(ClientMtMeaningfulPk.PK_PROPERTY, SortOrder.DESCENDING);
-
-        List<?> results = clientContext.performQuery(query);
-        assertEquals(2, results.size());
     }
 
     @Test

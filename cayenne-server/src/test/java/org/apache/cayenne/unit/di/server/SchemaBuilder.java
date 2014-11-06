@@ -19,19 +19,6 @@
 
 package org.apache.cayenne.unit.di.server;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
@@ -55,6 +42,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
 
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.ListIterator;
+
 /**
  * Default implementation of the AccessStack that has a single DataNode per
  * DataMap.
@@ -70,6 +70,8 @@ public class SchemaBuilder {
 
     private static String[] MAPS_REQUIRING_SCHEMA_SETUP = { "tstmap.map.xml", "people.map.xml",
             "locking.map.xml", "relationships.map.xml", "relationships1.map.xml", "multi-tier.map.xml",
+            "persistent.map.xml", "reflexive.map.xml", "delete-rules.map.xml", "lifecycles.map.xml",
+            "map-to-many.map.xml", "toone.map.xml", "meaningful-pk.map.xml", "table-primitives.map.xml",
             "generic.map.xml", "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml",
             "quoted-identifiers.map.xml", "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml",
             "oneway-rels.map.xml" };

@@ -23,9 +23,9 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.mt.ClientMtMapToMany;
-import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
-import org.apache.cayenne.testdo.mt.MtMapToMany;
+import org.apache.cayenne.testdo.map_to_many.ClientIdMapToMany;
+import org.apache.cayenne.testdo.map_to_many.ClientIdMapToManyTarget;
+import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(ClientCase.MAP_TO_MANY_PROJECT)
 public class CayenneContextMapRelationshipIT extends ClientCase {
 
     @Inject
@@ -46,36 +46,36 @@ public class CayenneContextMapRelationshipIT extends ClientCase {
     @Inject
     private DBHelper dbHelper;
 
-    private TableHelper tMtMapToMany;
-    private TableHelper tMtMapToManyTarget;
+    private TableHelper tMapToMany;
+    private TableHelper tMapToManyTarget;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_MAP_TO_MANY_TARGET");
-        dbHelper.deleteAll("MT_MAP_TO_MANY");
+        dbHelper.deleteAll("ID_MAP_TO_MANY_TARGET");
+        dbHelper.deleteAll("ID_MAP_TO_MANY");
 
-        tMtMapToMany = new TableHelper(dbHelper, "MT_MAP_TO_MANY");
-        tMtMapToMany.setColumns("ID");
+        tMapToMany = new TableHelper(dbHelper, "ID_MAP_TO_MANY");
+        tMapToMany.setColumns("ID");
 
-        tMtMapToManyTarget = new TableHelper(dbHelper, "MT_MAP_TO_MANY_TARGET");
-        tMtMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID");
+        tMapToManyTarget = new TableHelper(dbHelper, "ID_MAP_TO_MANY_TARGET");
+        tMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID");
     }
 
     private void createTwoMapToManysWithTargetsDataSet() throws Exception {
-        tMtMapToMany.insert(1).insert(2);
-        tMtMapToManyTarget.insert(1, 1).insert(2, 1).insert(3, 1).insert(4, 2);
+        tMapToMany.insert(1).insert(2);
+        tMapToManyTarget.insert(1, 1).insert(2, 1).insert(3, 1).insert(4, 2);
     }
 
     @Test
     public void testReadToMany() throws Exception {
         createTwoMapToManysWithTargetsDataSet();
 
-        ObjectId id = new ObjectId("MtMapToMany", MtMapToMany.ID_PK_COLUMN, 1);
-        ClientMtMapToMany o1 = (ClientMtMapToMany) Cayenne.objectForQuery(
+        ObjectId id = new ObjectId("IdMapToMany", IdMapToMany.ID_PK_COLUMN, 1);
+        ClientIdMapToMany o1 = (ClientIdMapToMany) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(id));
 
-        Map<Object, ClientMtMapToManyTarget> targets = o1.getTargets();
+        Map<Object, ClientIdMapToManyTarget> targets = o1.getTargets();
 
         assertTrue(((ValueHolder) targets).isFault());
 
@@ -90,17 +90,17 @@ public class CayenneContextMapRelationshipIT extends ClientCase {
     public void testAddToMany() throws Exception {
         createTwoMapToManysWithTargetsDataSet();
 
-        ObjectId id = new ObjectId("MtMapToMany", MtMapToMany.ID_PK_COLUMN, 1);
-        ClientMtMapToMany o1 = (ClientMtMapToMany) Cayenne.objectForQuery(
+        ObjectId id = new ObjectId("IdMapToMany", IdMapToMany.ID_PK_COLUMN, 1);
+        ClientIdMapToMany o1 = (ClientIdMapToMany) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(id));
 
-        Map<Object, ClientMtMapToManyTarget> targets = o1.getTargets();
+        Map<Object, ClientIdMapToManyTarget> targets = o1.getTargets();
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        ClientMtMapToManyTarget newTarget = o1.getObjectContext().newObject(
-                ClientMtMapToManyTarget.class);
+        ClientIdMapToManyTarget newTarget = o1.getObjectContext().newObject(
+                ClientIdMapToManyTarget.class);
 
         o1.addToTargets(newTarget);
         assertEquals(4, targets.size());

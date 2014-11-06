@@ -23,8 +23,8 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.mt.ClientMtTablePrimitives;
-import org.apache.cayenne.testdo.mt.MtTablePrimitives;
+import org.apache.cayenne.testdo.table_primitives.ClientTablePrimitives;
+import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(ClientCase.TABLE_PRIMITIVES_PROJECT)
 public class CayenneContextPrimitiveIT extends ClientCase {
 
     @Inject
@@ -49,34 +49,34 @@ public class CayenneContextPrimitiveIT extends ClientCase {
     @Inject
     private DBHelper dbHelper;
 
-    private TableHelper tMtTablePrimitives;
+    private TableHelper tTablePrimitives;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE_PRIMITIVES");
+        dbHelper.deleteAll("TABLE_PRIMITIVES");
 
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
         
-        tMtTablePrimitives = new TableHelper(dbHelper, "MT_TABLE_PRIMITIVES");
-        tMtTablePrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN").setColumnTypes(
+        tTablePrimitives = new TableHelper(dbHelper, "TABLE_PRIMITIVES");
+        tTablePrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN").setColumnTypes(
                 Types.INTEGER,
                 bool,
                 Types.INTEGER);
     }
 
     private void createTwoPrimitivesDataSet() throws Exception {
-        tMtTablePrimitives.insert(1, accessStackAdapter.supportsBoolean() ? true : 1, 0);
-        tMtTablePrimitives.insert(2, accessStackAdapter.supportsBoolean() ? false : 0, 5);
+        tTablePrimitives.insert(1, accessStackAdapter.supportsBoolean() ? true : 1, 0);
+        tTablePrimitives.insert(2, accessStackAdapter.supportsBoolean() ? false : 0, 5);
     }
 
     @Test
     public void testSelectPrimitives() throws Exception {
         createTwoPrimitivesDataSet();
 
-        SelectQuery query = new SelectQuery(ClientMtTablePrimitives.class);
-        query.addOrdering("db:" + MtTablePrimitives.ID_PK_COLUMN, SortOrder.ASCENDING);
+        SelectQuery query = new SelectQuery(ClientTablePrimitives.class);
+        query.addOrdering("db:" + TablePrimitives.ID_PK_COLUMN, SortOrder.ASCENDING);
 
-        List<ClientMtTablePrimitives> results = context.performQuery(query);
+        List<ClientTablePrimitives> results = context.performQuery(query);
         assertTrue(results.get(0).isBooleanColumn());
         assertFalse(results.get(1).isBooleanColumn());
 
@@ -87,21 +87,21 @@ public class CayenneContextPrimitiveIT extends ClientCase {
     @Test
     public void testCommitChangesPrimitives() throws Exception {
 
-        ClientMtTablePrimitives object = context.newObject(ClientMtTablePrimitives.class);
+        ClientTablePrimitives object = context.newObject(ClientTablePrimitives.class);
 
         object.setBooleanColumn(true);
         object.setIntColumn(3);
 
         context.commitChanges();
 
-        assertTrue(tMtTablePrimitives.getBoolean("BOOLEAN_COLUMN"));
-        assertEquals(3, tMtTablePrimitives.getInt("INT_COLUMN"));
+        assertTrue(tTablePrimitives.getBoolean("BOOLEAN_COLUMN"));
+        assertEquals(3, tTablePrimitives.getInt("INT_COLUMN"));
 
         object.setBooleanColumn(false);
         object.setIntColumn(8);
         context.commitChanges();
 
-        assertFalse(tMtTablePrimitives.getBoolean("BOOLEAN_COLUMN"));
-        assertEquals(8, tMtTablePrimitives.getInt("INT_COLUMN"));
+        assertFalse(tTablePrimitives.getBoolean("BOOLEAN_COLUMN"));
+        assertEquals(8, tTablePrimitives.getInt("INT_COLUMN"));
     }
 }

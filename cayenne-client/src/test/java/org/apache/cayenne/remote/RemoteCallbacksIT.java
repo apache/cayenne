@@ -21,7 +21,7 @@ package org.apache.cayenne.remote;
 import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.remote.service.LocalConnection;
-import org.apache.cayenne.testdo.mt.ClientMtLifecycles;
+import org.apache.cayenne.testdo.lifecycles.ClientLifecycles;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(ClientCase.LIFECYCLES_PROJECT)
 @RunWith(value=Parameterized.class)
 public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleListener {
     private int added, loaded, prePersisted, postPersisted, preRemoved, postRemoved, preUpdated, postUpdated;
@@ -69,10 +69,10 @@ public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleLis
     @Test
     public void testDefault() throws InterruptedException {
         ObjectContext context = createROPContext();
-        context.getEntityResolver().getCallbackRegistry().addListener(ClientMtLifecycles.class, this);
+        context.getEntityResolver().getCallbackRegistry().addListener(ClientLifecycles.class, this);
         
         assertAll(0, 0, 0, 0, 0, 0, 0, 0);
-        ClientMtLifecycles l1 = context.newObject(ClientMtLifecycles.class);
+        ClientLifecycles l1 = context.newObject(ClientLifecycles.class);
         
         assertAll(1, 0, 0, 0, 0, 0, 0, 0);
         l1.setName("x");

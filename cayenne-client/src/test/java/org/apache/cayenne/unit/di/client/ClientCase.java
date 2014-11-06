@@ -30,6 +30,14 @@ public class ClientCase extends DICase {
     public static final String ROP_CLIENT_KEY = "client";
 
     public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";
+    public static final String PERSISTENT_PROJECT = "cayenne-persistent.xml";
+    public static final String REFLEXIVE_PROJECT = "cayenne-reflexive.xml";
+    public static final String DELETE_RULES_PROJECT = "cayenne-delete-rules.xml";
+    public static final String LIFECYCLES_PROJECT = "cayenne-lifecycles.xml";
+    public static final String MAP_TO_MANY_PROJECT = "cayenne-map-to-many.xml";
+    public static final String TOONE_PROJECT = "cayenne-toone.xml";
+    public static final String MEANINGFUL_PK_PROJECT = "cayenne-meaningful-pk.xml";
+    public static final String TABLE_PRIMITIVES_PROJECT = "cayenne-table-primitives.xml";
 
     private static final Injector injector;
 

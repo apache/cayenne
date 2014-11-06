@@ -41,6 +41,7 @@ public class ServerCase extends DICase {
 	public static final String MULTINODE_PROJECT = "cayenne-multinode.xml";
 	public static final String ONEWAY_PROJECT = "cayenne-oneway-rels.xml";
 	public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";
+    public static final String MAP_TO_MANY_PROJECT = "cayenne-map-to-many.xml";
 	public static final String SUS_PROJECT = "cayenne-sus.xml";
 
 	private static final Injector injector;

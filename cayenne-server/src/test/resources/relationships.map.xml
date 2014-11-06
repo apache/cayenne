@@ -82,21 +82,6 @@
 		<db-attribute name="FT4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 	</db-entity>
-	<db-entity name="ID_MAP_TO_MANY">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="ID_MAP_TO_MANY_TARGET">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
-	</db-entity>
-	<db-entity name="MAP_TO_MANY">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="MAP_TO_MANY_TARGET">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-	</db-entity>
 	<db-entity name="MASTER">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
@@ -180,15 +165,6 @@
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="FlattenedTest4" className="org.apache.cayenne.testdo.relationship.FlattenedTest4" dbEntityName="FLATTENED_TEST_4">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="IdMapToMany" className="org.apache.cayenne.testdo.relationship.IdMapToMany" dbEntityName="ID_MAP_TO_MANY">
-	</obj-entity>
-	<obj-entity name="IdMapToManyTarget" className="org.apache.cayenne.testdo.relationship.IdMapToManyTarget" dbEntityName="ID_MAP_TO_MANY_TARGET">
-	</obj-entity>
-	<obj-entity name="MapToMany" className="org.apache.cayenne.testdo.relationship.MapToMany" dbEntityName="MAP_TO_MANY">
-	</obj-entity>
-	<obj-entity name="MapToManyTarget" className="org.apache.cayenne.testdo.relationship.MapToManyTarget" dbEntityName="MAP_TO_MANY_TARGET">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="Master" className="org.apache.cayenne.testdo.relationship.Master" dbEntityName="MASTER">
@@ -309,18 +285,6 @@
 	<db-relationship name="toFT3" source="FLATTENED_TEST_4" target="FLATTENED_TEST_3" toMany="false">
 		<db-attribute-pair source="FT3_ID" target="FT3_ID"/>
 	</db-relationship>
-	<db-relationship name="targets" source="ID_MAP_TO_MANY" target="ID_MAP_TO_MANY_TARGET" toMany="true">
-		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
-	</db-relationship>
-	<db-relationship name="mapToMany" source="ID_MAP_TO_MANY_TARGET" target="ID_MAP_TO_MANY" toMany="false">
-		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="targets" source="MAP_TO_MANY" target="MAP_TO_MANY_TARGET" toMany="true">
-		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
-	</db-relationship>
-	<db-relationship name="mapToMany" source="MAP_TO_MANY_TARGET" target="MAP_TO_MANY" toMany="false">
-		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
-	</db-relationship>
 	<db-relationship name="children" source="MASTER" target="CHILD" toMany="true">
 		<db-attribute-pair source="ID" target="MASTER_ID"/>
 	</db-relationship>
@@ -393,10 +357,6 @@
 	<obj-relationship name="toFT1" source="FlattenedTest3" target="FlattenedTest1" db-relationship-path="toFT2.toFT1"/>
 	<obj-relationship name="toFT2" source="FlattenedTest3" target="FlattenedTest2" db-relationship-path="toFT2"/>
 	<obj-relationship name="toFT3" source="FlattenedTest4" target="FlattenedTest3" db-relationship-path="toFT3"/>
-	<obj-relationship name="targets" source="IdMapToMany" target="IdMapToManyTarget" collection-type="java.util.Map" db-relationship-path="targets"/>
-	<obj-relationship name="mapToMany" source="IdMapToManyTarget" target="IdMapToMany" db-relationship-path="mapToMany"/>
-	<obj-relationship name="targets" source="MapToMany" target="MapToManyTarget" collection-type="java.util.Map" map-key="name" db-relationship-path="targets"/>
-	<obj-relationship name="mapToMany" source="MapToManyTarget" target="MapToMany" db-relationship-path="mapToMany"/>
 	<obj-relationship name="children" source="Master" target="Child" deleteRule="Deny" db-relationship-path="children"/>
 	<obj-relationship name="toRelationshipHelper" source="MeaningfulFK" target="RelationshipHelper" db-relationship-path="toRelationshipHelper"/>
 	<obj-relationship name="children" source="ReflexiveAndToOne" target="ReflexiveAndToOne" db-relationship-path="children"/>

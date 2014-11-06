@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/7/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/7/modelMap http://cayenne.apache.org/schema/7/modelMap.xsd"
+          project-version="7">
+    <property name="defaultPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
+    <property name="clientSupported" value="true"/>
+    <property name="defaultClientPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
+    <db-entity name="MEANINGFUL_PK">
+        <db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
+    </db-entity>
+    <obj-entity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" clientClassName="org.apache.cayenne.testdo.meaningful_pk.ClientMeaningfulPk" dbEntityName="MEANINGFUL_PK">
+        <obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
+    </obj-entity>
+</data-map>

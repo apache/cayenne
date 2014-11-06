@@ -29,8 +29,6 @@ import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
-import org.apache.cayenne.testdo.mt.ClientMtTooneDep;
-import org.apache.cayenne.testdo.mt.ClientMtTooneMaster;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
@@ -499,102 +497,6 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 		assertEquals("DDD", parentDeleted.getGlobalAttribute1());
 	}
 
-	/*
-	 * was added for CAY-1636
-	 */
-	@Test
-	public void testCAY1636() throws Exception {
-
-		ClientMtTooneMaster A = clientContext
-				.newObject(ClientMtTooneMaster.class);
-		clientContext.commitChanges();
-
-		ClientMtTooneDep B = clientContext.newObject(ClientMtTooneDep.class);
-		A.setToDependent(B);
-		clientContext.commitChanges();
-
-		ObjectContext child = runtime.newContext(clientContext);
-
-		SelectQuery<ClientMtTooneMaster> query = new SelectQuery<ClientMtTooneMaster>(
-				ClientMtTooneMaster.class);
-		List<ClientMtTooneMaster> objects = child.select(query);
-
-		assertEquals(1, objects.size());
-
-		ClientMtTooneMaster childDeleted = (ClientMtTooneMaster) objects.get(0);
-
-		child.deleteObjects(childDeleted);
-
-		child.commitChangesToParent();
-
-		ClientMtTooneMaster parentDeleted = (ClientMtTooneMaster) clientContext
-				.getGraphManager().getNode(childDeleted.getObjectId());
-
-		assertNotNull(parentDeleted);
-		assertEquals(PersistenceState.DELETED,
-				parentDeleted.getPersistenceState());
-
-		clientContext.commitChanges();
-
-		SelectQuery<ClientMtTooneMaster> query2 = new SelectQuery<ClientMtTooneMaster>(
-				ClientMtTooneMaster.class);
-		List<ClientMtTooneMaster> objects2 = child.select(query2);
-
-		assertEquals(0, objects2.size());
-
-	}
-
-	@Test
-	public void testCAY1636_2() throws Exception {
-
-		ClientMtTooneMaster A = clientContext
-				.newObject(ClientMtTooneMaster.class);
-		clientContext.commitChanges();
-
-		ClientMtTooneDep B = clientContext.newObject(ClientMtTooneDep.class);
-		A.setToDependent(B);
-		clientContext.commitChanges();
-
-		ObjectContext child = runtime.newContext(clientContext);
-
-		SelectQuery<ClientMtTooneDep> queryB = new SelectQuery<ClientMtTooneDep>(
-				ClientMtTooneDep.class);
-		List<?> objectsB = child.performQuery(queryB);
-
-		assertEquals(1, objectsB.size());
-
-		ClientMtTooneDep childBDeleted = (ClientMtTooneDep) objectsB.get(0);
-		child.deleteObjects(childBDeleted);
-
-		SelectQuery<ClientMtTooneMaster> query = new SelectQuery<ClientMtTooneMaster>(
-				ClientMtTooneMaster.class);
-		List<ClientMtTooneMaster> objects = child.select(query);
-
-		assertEquals(1, objects.size());
-
-		ClientMtTooneMaster childDeleted = objects.get(0);
-
-		child.deleteObjects(childDeleted);
-
-		child.commitChangesToParent();
-
-		ClientMtTooneMaster parentDeleted = (ClientMtTooneMaster) clientContext
-				.getGraphManager().getNode(childDeleted.getObjectId());
-
-		assertNotNull(parentDeleted);
-		assertEquals(PersistenceState.DELETED,
-				parentDeleted.getPersistenceState());
-
-		clientContext.commitChanges();
-
-		SelectQuery<ClientMtTooneMaster> query2 = new SelectQuery<ClientMtTooneMaster>(
-				ClientMtTooneMaster.class);
-		List<ClientMtTooneMaster> objects2 = child.select(query2);
-
-		assertEquals(0, objects2.size());
-
-	}
-
 	@Test
 	public void testCommitChanges() throws Exception {
 		clientContext.newObject(ClientMtTable1.class);
@@ -853,62 +755,4 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 		assertEquals(2, arcDiffs[0]);
 	}
 
-	@Test
-	public void testCommitChangesToParentOneToOne() throws Exception {
-		ObjectContext child = runtime.newContext(clientContext);
-
-		ClientMtTooneMaster master = child.newObject(ClientMtTooneMaster.class);
-		ClientMtTooneDep dep = child.newObject(ClientMtTooneDep.class);
-		master.setToDependent(dep);
-
-		child.commitChangesToParent();
-
-		ClientMtTooneMaster masterParent = (ClientMtTooneMaster) clientContext
-				.getGraphManager().getNode(master.getObjectId());
-		ClientMtTooneDep depParent = (ClientMtTooneDep) clientContext
-				.getGraphManager().getNode(dep.getObjectId());
-
-		assertNotNull(masterParent);
-		assertNotNull(depParent);
-
-		assertSame(masterParent, depParent.getToMaster());
-		assertSame(depParent, masterParent.getToDependent());
-
-		// check that arc changes got recorded in the parent context
-		GraphDiff diffs = clientContext.internalGraphManager().getDiffs();
-
-		final int[] arcDiffs = new int[1];
-		final int[] newNodes = new int[1];
-
-		diffs.apply(new GraphChangeHandler() {
-
-			public void arcCreated(Object nodeId, Object targetNodeId,
-					Object arcId) {
-				arcDiffs[0]++;
-			}
-
-			public void arcDeleted(Object nodeId, Object targetNodeId,
-					Object arcId) {
-				arcDiffs[0]--;
-			}
-
-			public void nodeCreated(Object nodeId) {
-				newNodes[0]++;
-			}
-
-			public void nodeIdChanged(Object nodeId, Object newId) {
-			}
-
-			public void nodePropertyChanged(Object nodeId, String property,
-					Object oldValue, Object newValue) {
-			}
-
-			public void nodeRemoved(Object nodeId) {
-				newNodes[0]--;
-			}
-		});
-
-		assertEquals(2, newNodes[0]);
-		assertEquals(2, arcDiffs[0]);
-	}
 }
