@@ -588,11 +588,8 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * 
 	 * @since 4.0
 	 */
-	public PrefetchTreeNode addPrefetch(PrefetchTreeNode prefetchElement) {
-		String path = prefetchElement.getPath();
-		int semantics = prefetchElement.getSemantics();
-
-		return metaData.addPrefetch(path, semantics);
+	public void addPrefetch(PrefetchTreeNode prefetchElement) {
+		 metaData.mergePrefetch(prefetchElement);
 	}
 
 	/**

@@ -347,6 +347,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+        	@Override
             public void execute() {
                 assertFalse(result.isEmpty());
 
