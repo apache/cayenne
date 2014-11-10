@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Special test cases per CAY-1378, CAY-1379.
  */
-@UseServerRuntime(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
+@UseServerRuntime(ServerCase.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class SingleTableInheritance1IT extends ServerCase {
 
     @Inject

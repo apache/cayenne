@@ -32,7 +32,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
+@UseServerRuntime(ServerCase.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class DataObjectDescriptorFactory_InheritanceMapsIT extends ServerCase {
 
     @Inject

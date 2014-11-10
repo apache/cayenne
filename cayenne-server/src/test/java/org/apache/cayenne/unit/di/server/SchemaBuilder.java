@@ -68,7 +68,7 @@ public class SchemaBuilder {
 
     public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
 
-    private static String[] MAPS_REQUIRING_SCHEMA_SETUP = { "tstmap.map.xml", "people.map.xml",
+    private static String[] MAPS_REQUIRING_SCHEMA_SETUP = { "tstmap.map.xml", "people.map.xml", "inheritance.map.xml",
             "locking.map.xml", "soft-delete.map.xml", "relationships.map.xml", "relationships1.map.xml", "multi-tier.map.xml",
             "persistent.map.xml", "reflexive.map.xml", "delete-rules.map.xml", "lifecycles.map.xml",
             "map-to-many.map.xml", "toone.map.xml", "meaningful-pk.map.xml", "table-primitives.map.xml",

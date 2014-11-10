@@ -34,7 +34,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
+@UseServerRuntime(ServerCase.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class LifecycleCallbackRegistry_InheritanceIT extends ServerCase {
 
     @Inject

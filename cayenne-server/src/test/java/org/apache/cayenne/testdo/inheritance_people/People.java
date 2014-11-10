@@ -16,21 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.testdo.inheritance_people;
 
-package org.apache.cayenne.unit.jira;
+import org.apache.cayenne.testdo.inheritance_people.auto._People;
 
-import org.apache.cayenne.testdo.inheritance_people.Manager;
+public class People extends _People {
 
-/**
- */
-public class CAY_207Manager1 extends Manager {
+    private static People instance;
 
-    public void setClientContactType(CAY_207String1 clientContactType) {
-        writeProperty("clientContactType", clientContactType);
+    private People() {}
+
+    public static People getInstance() {
+        if(instance == null) {
+            instance = new People();
+        }
+
+        return instance;
     }
-
-    public CAY_207String1 getClientContactType() {
-        return (CAY_207String1) readProperty("clientContactType");
-    }
-
 }

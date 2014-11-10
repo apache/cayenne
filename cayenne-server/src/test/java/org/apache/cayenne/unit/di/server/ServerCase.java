@@ -30,8 +30,9 @@ public class ServerCase extends DICase {
 	// can define their own on the fly (TODO: how would that work with the
 	// global schema
 	// setup?)
-	public static final String INHERTITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
-	public static final String INHERTITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
+	public static final String INHERITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
+	public static final String INHERITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
+	public static final String INHERITANCE_PROJECT = "cayenne-inheritance.xml";
 	public static final String LOCKING_PROJECT = "cayenne-locking.xml";
 	public static final String SOFT_DELETE_PROJECT = "cayenne-soft-delete.xml";
 	public static final String QUOTED_IDENTIFIERS_PROJECT = "cayenne-quoted-identifiers.xml";

@@ -16,21 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.testdo.inheritance_vertical;
 
-package org.apache.cayenne.unit.jira;
+import org.apache.cayenne.testdo.inheritance_vertical.auto._InheritanceVertical;
 
-import org.apache.cayenne.testdo.inheritance_people.Manager;
+public class InheritanceVertical extends _InheritanceVertical {
 
-/**
- */
-public class CAY_207Manager1 extends Manager {
+    private static InheritanceVertical instance;
 
-    public void setClientContactType(CAY_207String1 clientContactType) {
-        writeProperty("clientContactType", clientContactType);
+    private InheritanceVertical() {}
+
+    public static InheritanceVertical getInstance() {
+        if(instance == null) {
+            instance = new InheritanceVertical();
+        }
+
+        return instance;
     }
-
-    public CAY_207String1 getClientContactType() {
-        return (CAY_207String1) readProperty("clientContactType");
-    }
-
 }

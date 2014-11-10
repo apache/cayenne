@@ -28,17 +28,14 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.inherit.AbstractPerson;
-import org.apache.cayenne.testdo.inherit.Address;
-import org.apache.cayenne.testdo.inherit.BaseEntity;
-import org.apache.cayenne.testdo.inherit.ClientCompany;
-import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
-import org.apache.cayenne.testdo.inherit.Department;
-import org.apache.cayenne.testdo.inherit.Employee;
-import org.apache.cayenne.testdo.inherit.Manager;
-import org.apache.cayenne.testdo.inherit.PersonNotes;
-import org.apache.cayenne.testdo.inherit.RelatedEntity;
-import org.apache.cayenne.testdo.inherit.SubEntity;
+import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
+import org.apache.cayenne.testdo.inheritance_people.Address;
+import org.apache.cayenne.testdo.inheritance_people.ClientCompany;
+import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
+import org.apache.cayenne.testdo.inheritance_people.Department;
+import org.apache.cayenne.testdo.inheritance_people.Employee;
+import org.apache.cayenne.testdo.inheritance_people.Manager;
+import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -480,64 +477,6 @@ public class SingleTableInheritanceIT extends ServerCase {
         assertEquals(1, countObjectOfClass(abstractPpl, CustomerRepresentative.class));
         assertEquals(5, countObjectOfClass(abstractPpl, Employee.class));
         assertEquals(2, countObjectOfClass(abstractPpl, Manager.class));
-    }
-
-    /**
-     * Test for CAY-1008: Reverse relationships may not be correctly set if inheritance is
-     * used.
-     */
-    @Test
-    public void testCAY1008() {
-        RelatedEntity related = context.newObject(RelatedEntity.class);
-
-        BaseEntity base = context.newObject(BaseEntity.class);
-        base.setToRelatedEntity(related);
-
-        assertEquals(1, related.getBaseEntities().size());
-        assertEquals(0, related.getSubEntities().size());
-
-        SubEntity sub = context.newObject(SubEntity.class);
-        sub.setToRelatedEntity(related);
-
-        assertEquals(2, related.getBaseEntities().size());
-
-        // TODO: andrus 2008/03/28 - this fails...
-        // assertEquals(1, related.getSubEntities().size());
-    }
-
-    /**
-     * Test for CAY-1009: Bogus runtime relationships can mess up commit.
-     */
-    @Test
-    public void testCAY1009() {
-
-        // We should have only one relationship. DirectToSubEntity -> SubEntity.
-
-        // this fails as a result of 'EntityResolver().applyObjectLayerDefaults()'
-        // creating incorrect relationships
-        // assertEquals(1, context
-        // .getEntityResolver()
-        // .getObjEntity("DirectToSubEntity")
-        // .getRelationships()
-        // .size());
-
-        // We should still just have the one mapped relationship, but we in fact now have
-        // two:
-        // DirectToSubEntity -> BaseEntity and DirectToSubEntity -> SubEntity.
-
-        // TODO: andrus 2008/03/28 - this fails...
-        // assertEquals(1, context.getEntityResolver().getObjEntity("DirectToSubEntity")
-        // .getRelationships().size());
-        //
-        // DirectToSubEntity direct = context.newObject(DirectToSubEntity.class);
-        //
-        // SubEntity sub = context.newObject(SubEntity.class);
-        // sub.setToDirectToSubEntity(direct);
-        //
-        // assertEquals(1, direct.getSubEntities().size());
-        //
-        // context.deleteObject(sub);
-        // assertEquals(0, direct.getSubEntities().size());
     }
 
     /**

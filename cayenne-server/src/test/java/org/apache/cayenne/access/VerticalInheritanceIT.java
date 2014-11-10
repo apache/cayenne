@@ -23,14 +23,14 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.inheritance.vertical.Iv1Root;
-import org.apache.cayenne.testdo.inheritance.vertical.Iv1Sub1;
-import org.apache.cayenne.testdo.inheritance.vertical.Iv2Sub1;
-import org.apache.cayenne.testdo.inheritance.vertical.Iv2X;
-import org.apache.cayenne.testdo.inheritance.vertical.IvRoot;
-import org.apache.cayenne.testdo.inheritance.vertical.IvSub1;
-import org.apache.cayenne.testdo.inheritance.vertical.IvSub1Sub1;
-import org.apache.cayenne.testdo.inheritance.vertical.IvSub2;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv1Root;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv1Sub1;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
+import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
+import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
+import org.apache.cayenne.testdo.inheritance_vertical.IvSub1Sub1;
+import org.apache.cayenne.testdo.inheritance_vertical.IvSub2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.INHERTITANCE_VERTICAL_PROJECT)
+@UseServerRuntime(ServerCase.INHERITANCE_VERTICAL_PROJECT)
 public class VerticalInheritanceIT extends ServerCase {
 
 	@Inject
