@@ -38,6 +38,15 @@ public class ServerCase extends DICase {
 	public static final String QUOTED_IDENTIFIERS_PROJECT = "cayenne-quoted-identifiers.xml";
 	public static final String PEOPLE_PROJECT = "cayenne-people.xml";
 	public static final String RELATIONSHIPS_PROJECT = "cayenne-relationships.xml";
+	public static final String RELATIONSHIPS_ACTIVITY_PROJECT = "cayenne-relationships-activity.xml";
+	public static final String RELATIONSHIPS_DELETE_RULES_PROJECT = "cayenne-relationships-delete-rules.xml";
+	public static final String RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT = "cayenne-relationships-collection-to-many.xml";
+	public static final String RELATIONSHIPS_CHILD_MASTER_PROJECT = "cayenne-relationships-child-master.xml";
+	public static final String RELATIONSHIPS_CLOB_PROJECT = "cayenne-relationships-clob.xml";
+	public static final String RELATIONSHIPS_FLATTENED_PROJECT = "cayenne-relationships-flattened.xml";
+	public static final String RELATIONSHIPS_SET_TO_MANY_PROJECT = "cayenne-relationships-set-to-many.xml";
+	public static final String RELATIONSHIPS_TO_MANY_FK_PROJECT = "cayenne-relationships-to-many-fk.xml";
+	public static final String RELATIONSHIPS_TO_ONE_FK_PROJECT = "cayenne-relationships-to-one-fk.xml";
 	public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
 	public static final String DEFAULT_PROJECT = "cayenne-default.xml";
 	public static final String MULTINODE_PROJECT = "cayenne-multinode.xml";

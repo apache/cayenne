@@ -23,8 +23,8 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.relationship.ToOneFK1;
-import org.apache.cayenne.testdo.relationship.ToOneFK2;
+import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
+import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the behavior of one-to-one relationship where to-one is pointing to an FK.
  */
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(ServerCase.RELATIONSHIPS_TO_ONE_FK_PROJECT)
 public class CDOOneToOneFKIT extends ServerCase {
 
     @Inject
@@ -52,8 +52,8 @@ public class CDOOneToOneFKIT extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("TO_ONEFK1");
-        dbHelper.deleteAll("TO_ONEFK2");
+        dbHelper.deleteAll("TO_ONE_FK1");
+        dbHelper.deleteAll("TO_ONE_FK2");
     }
 
     @Test

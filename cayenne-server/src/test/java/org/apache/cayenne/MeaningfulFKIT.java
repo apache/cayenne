@@ -21,8 +21,8 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.relationship.MeaningfulFK;
-import org.apache.cayenne.testdo.relationship.RelationshipHelper;
+import org.apache.cayenne.testdo.relationships.MeaningfulFK;
+import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationResult;

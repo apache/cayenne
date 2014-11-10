@@ -20,15 +20,15 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.r1.Activity;
-import org.apache.cayenne.testdo.r1.ActivityResult;
+import org.apache.cayenne.testdo.relationships_activity.Activity;
+import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import java.sql.Date;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(ServerCase.RELATIONSHIPS_ACTIVITY_PROJECT)
 public class ManyToManyNoJoinIT extends ServerCase {
 
     @Inject

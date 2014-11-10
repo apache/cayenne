@@ -26,7 +26,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.relationship.ClobMaster;
+import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  */
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(ServerCase.RELATIONSHIPS_CLOB_PROJECT)
 public class CAY_115IT extends ServerCase {
 
     @Inject

@@ -22,9 +22,9 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.relationship.ToManyFkDep;
-import org.apache.cayenne.testdo.relationship.ToManyFkRoot;
-import org.apache.cayenne.testdo.relationship.ToManyRoot2;
+import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep;
+import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot;
+import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertSame;
 
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at
 // partial solution
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(ServerCase.RELATIONSHIPS_TO_MANY_FK_PROJECT)
 public class CDOOneToManyFKIT extends ServerCase {
 
     @Inject
@@ -46,8 +46,9 @@ public class CDOOneToManyFKIT extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("TO_ONEFK2");
-        dbHelper.deleteAll("TO_ONEFK1");
+        dbHelper.deleteAll("TO_MANY_FKDEP");
+        dbHelper.deleteAll("TO_MANY_FKROOT");
+        dbHelper.deleteAll("TO_MANY_ROOT2");
     }
 
     @Test

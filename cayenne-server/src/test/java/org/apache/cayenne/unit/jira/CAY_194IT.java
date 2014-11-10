@@ -26,7 +26,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
+import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -59,7 +59,6 @@ public class CAY_194IT extends ServerCase {
         tReflexive.update().set("PARENT_ID", null, Types.INTEGER).execute();
 
         dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
-        dbHelper.deleteAll("TO_ONEFK1");
     }
 
     @Test
