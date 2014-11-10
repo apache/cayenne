@@ -1,4 +1,4 @@
-package org.apache.cayenne.testdo.locking.auto;
+package org.apache.cayenne.testdo.soft_delete.auto;
 
 import org.apache.cayenne.CayenneDataObject;
 

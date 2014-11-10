@@ -33,6 +33,7 @@ public class ServerCase extends DICase {
 	public static final String INHERTITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
 	public static final String INHERTITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
 	public static final String LOCKING_PROJECT = "cayenne-locking.xml";
+	public static final String SOFT_DELETE_PROJECT = "cayenne-soft-delete.xml";
 	public static final String QUOTED_IDENTIFIERS_PROJECT = "cayenne-quoted-identifiers.xml";
 	public static final String PEOPLE_PROJECT = "cayenne-people.xml";
 	public static final String RELATIONSHIPS_PROJECT = "cayenne-relationships.xml";
