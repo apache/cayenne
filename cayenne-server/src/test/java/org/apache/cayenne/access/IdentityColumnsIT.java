@@ -30,13 +30,13 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.GeneratedColumnCompKey;
-import org.apache.cayenne.testdo.testmap.GeneratedColumnCompMaster;
-import org.apache.cayenne.testdo.testmap.GeneratedColumnDep;
-import org.apache.cayenne.testdo.testmap.GeneratedColumnTest2;
-import org.apache.cayenne.testdo.testmap.GeneratedColumnTestEntity;
-import org.apache.cayenne.testdo.testmap.GeneratedF1;
-import org.apache.cayenne.testdo.testmap.GeneratedF2;
+import org.apache.cayenne.testdo.generated.GeneratedColumnCompKey;
+import org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster;
+import org.apache.cayenne.testdo.generated.GeneratedColumnDep;
+import org.apache.cayenne.testdo.generated.GeneratedColumnTest2;
+import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
+import org.apache.cayenne.testdo.generated.GeneratedF1;
+import org.apache.cayenne.testdo.generated.GeneratedF2;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.GENERATED_PROJECT)
 public class IdentityColumnsIT extends ServerCase {
 
     @Inject

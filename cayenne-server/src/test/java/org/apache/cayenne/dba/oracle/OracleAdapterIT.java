@@ -35,7 +35,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.LOB_PROJECT)
 public class OracleAdapterIT extends ServerCase {
 
     @Inject
@@ -46,13 +46,13 @@ public class OracleAdapterIT extends ServerCase {
 
     @Test
     public void testUpdatesLOBColumns() throws Exception {
-        DataMap map = runtime.getDataDomain().getDataMap("tstmap");
+        DataMap map = runtime.getDataDomain().getDataMap("lob");
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
                 .getDbEntity("BLOB_TEST"), 1)));
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
                 .getDbEntity("CLOB_TEST"), 1)));
         assertFalse(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
-                .getDbEntity("ARTIST"), 1)));
+                .getDbEntity("TEST"), 1)));
     }
 
     @Test

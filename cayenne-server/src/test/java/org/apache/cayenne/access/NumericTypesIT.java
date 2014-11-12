@@ -27,15 +27,15 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.BigDecimalEntity;
-import org.apache.cayenne.testdo.testmap.BigIntegerEntity;
-import org.apache.cayenne.testdo.testmap.BitTestEntity;
-import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
-import org.apache.cayenne.testdo.testmap.DecimalPKTest1;
-import org.apache.cayenne.testdo.testmap.DecimalPKTestEntity;
-import org.apache.cayenne.testdo.testmap.LongEntity;
-import org.apache.cayenne.testdo.testmap.SmallintTestEntity;
-import org.apache.cayenne.testdo.testmap.TinyintTestEntity;
+import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
+import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
+import org.apache.cayenne.testdo.numeric_types.BitTestEntity;
+import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
+import org.apache.cayenne.testdo.numeric_types.DecimalPKTest1;
+import org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity;
+import org.apache.cayenne.testdo.numeric_types.LongEntity;
+import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
+import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -51,7 +51,7 @@ import static org.junit.Assert.assertSame;
 
 /**
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.NUMERIC_TYPES_PROJECT)
 public class NumericTypesIT extends ServerCase {
 
     @Inject

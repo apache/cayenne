@@ -36,7 +36,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.testdo.testmap.StringET1ExtendedType;
+import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,10 +68,11 @@ public class SchemaBuilder {
 
     public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
 
-    private static String[] MAPS_REQUIRING_SCHEMA_SETUP = { "tstmap.map.xml", "people.map.xml", "inheritance.map.xml",
+    private static String[] MAPS_REQUIRING_SCHEMA_SETUP = {"testmap.map.xml", "compound.map.xml", "misc-types.map.xml", "things.map.xml", "numeric-types.map.xml", "binary-pk.map.xml", "no-pk.map.xml",
+            "lob.map.xml", "date-time.map.xml", "enum.map.xml", "extended-type.map.xml", "generated.map.xml", "mixed-persistence-strategy.map.xml", "people.map.xml", "primitive.map.xml", "inheritance.map.xml",
             "locking.map.xml", "soft-delete.map.xml", "relationships.map.xml", "relationships-activity.map.xml", "relationships-delete-rules.map.xml",
             "relationships-collection-to-many.map.xml", "relationships-child-master.map.xml", "relationships-clob.map.xml",
-            "relationships-flattened.map.xml", "relationships-set-to-many.map.xml", "relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml",
+            "relationships-flattened.map.xml", "relationships-set-to-many.map.xml", "relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml", "return-types.map.xml", "uuid.map.xml",
             "multi-tier.map.xml", "persistent.map.xml", "reflexive.map.xml", "delete-rules.map.xml", "lifecycles.map.xml",
             "map-to-many.map.xml", "toone.map.xml", "meaningful-pk.map.xml", "table-primitives.map.xml",
             "generic.map.xml", "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml",

@@ -29,8 +29,6 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.junit.AssertExtras;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
-import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -39,11 +37,9 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -64,8 +60,6 @@ public class DataContextEJBQLQueryIT extends ServerCase {
 
     private TableHelper tArtist;
     private TableHelper tPainting;
-    private TableHelper tCompoundPk;
-    private TableHelper tCompoundFk;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -74,8 +68,6 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("COMPOUND_FK_TEST");
-        dbHelper.deleteAll("COMPOUND_PK_TEST");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -90,12 +82,6 @@ public class DataContextEJBQLQueryIT extends ServerCase {
                 Types.BIGINT,
                 Types.VARCHAR,
                 Types.DECIMAL);
-
-        tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
-        tCompoundPk.setColumns("KEY1", "KEY2");
-
-        tCompoundFk = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
-        tCompoundFk.setColumns("PKEY", "F_KEY1", "F_KEY2");
     }
 
     private void createFourArtistsTwoPaintings() throws Exception {
@@ -105,13 +91,6 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         tArtist.insert(33004, "BB2");
         tPainting.insert(33001, 33001, "P1", 3000);
         tPainting.insert(33002, 33002, "P2", 5000);
-    }
-
-    private void createTwoCompoundPKTwoFK() throws Exception {
-        tCompoundPk.insert("a1", "a2");
-        tCompoundPk.insert("b1", "b2");
-        tCompoundFk.insert(33001, "a1", "a2");
-        tCompoundFk.insert(33002, "b1", "b2");
     }
 
     /**
@@ -494,76 +473,4 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject(p));
     }
 
-    @Test
-    public void testSelectFromWhereMatchOnMultiColumnObject() throws Exception {
-        createTwoCompoundPKTwoFK();
-
-        Map<String, String> key1 = new HashMap<String, String>();
-        key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
-        key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = Cayenne.objectForPK(
-                context,
-                CompoundPkTestEntity.class,
-                key1);
-
-        String ejbql = "select e from CompoundFkTestEntity e WHERE e.toCompoundPk = :param";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter("param", a);
-
-        List<?> ps = context.performQuery(query);
-        assertEquals(1, ps.size());
-
-        CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
-        assertEquals(33002, Cayenne.intPKForObject(o1));
-    }
-
-    @Test
-    public void testSelectFromWhereMatchOnMultiColumnObjectReverse() throws Exception {
-        if (!accessStackAdapter.supportsReverseComparison()) {
-            return;
-        }
-
-        createTwoCompoundPKTwoFK();
-
-        Map<String, String> key1 = new HashMap<String, String>();
-        key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
-        key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = Cayenne.objectForPK(
-                context,
-                CompoundPkTestEntity.class,
-                key1);
-
-        String ejbql = "select e from CompoundFkTestEntity e WHERE :param = e.toCompoundPk";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter("param", a);
-
-        List<?> ps = context.performQuery(query);
-        assertEquals(1, ps.size());
-
-        CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
-        assertEquals(33002, Cayenne.intPKForObject(o1));
-    }
-
-    @Test
-    public void testSelectFromWhereNoMatchOnMultiColumnObject() throws Exception {
-        createTwoCompoundPKTwoFK();
-
-        Map<String, String> key1 = new HashMap<String, String>();
-        key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
-        key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity a = Cayenne.objectForPK(
-                context,
-                CompoundPkTestEntity.class,
-                key1);
-
-        String ejbql = "select e from CompoundFkTestEntity e WHERE e.toCompoundPk <> :param";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter("param", a);
-
-        List<?> ps = context.performQuery(query);
-        assertEquals(1, ps.size());
-
-        CompoundFkTestEntity o1 = (CompoundFkTestEntity) ps.get(0);
-        assertEquals(33001, Cayenne.intPKForObject(o1));
-    }
 }

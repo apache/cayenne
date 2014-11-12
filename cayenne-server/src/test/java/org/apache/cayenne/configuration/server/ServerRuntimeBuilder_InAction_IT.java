@@ -62,7 +62,7 @@ public class ServerRuntimeBuilder_InAction_IT extends ServerCase {
         tArtist.insert(33001, "AA1");
         tArtist.insert(33002, "AA2");
 
-        this.dataSource = runtime.getDataSource("tstmap");
+        this.dataSource = runtime.getDataSource("testmap");
     }
 
     @Test

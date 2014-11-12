@@ -20,12 +20,12 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.PrimitivesTestEntity;
+import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.PRIMITIVE_PROJECT)
 public class PrimitiveAttributesIT extends ServerCase {
 
     @Inject

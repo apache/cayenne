@@ -85,7 +85,7 @@ public abstract class MergeCase extends ServerCase {
         // this map can't be safely modified in this test, as it is reset by DI
         // container
         // on every test
-        map = runtime.getDataDomain().getDataMap("tstmap");
+        map = runtime.getDataDomain().getDataMap("testmap");
 
         filterDataMap();
 

@@ -44,7 +44,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Test for Result directive to check if we could use ResultDitrective
+ * Test for Result directive to check if we could use ResultDirective
  * optionally.
  */
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)

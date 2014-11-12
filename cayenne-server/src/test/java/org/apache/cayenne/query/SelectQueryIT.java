@@ -25,14 +25,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.parser.ASTBitwiseAnd;
-import org.apache.cayenne.exp.parser.ASTBitwiseNot;
-import org.apache.cayenne.exp.parser.ASTBitwiseOr;
-import org.apache.cayenne.exp.parser.ASTBitwiseXor;
-import org.apache.cayenne.exp.parser.ASTEqual;
-import org.apache.cayenne.exp.parser.ASTGreater;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -41,11 +33,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
-import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -81,22 +71,6 @@ public class SelectQueryIT extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("CLOB_TEST_RELATION");
-        dbHelper.deleteAll("TYPES_MAPPING_TEST1");
-
-        if (accessStackAdapter.supportsLobs()) {
-            dbHelper.deleteAll("CLOB_TEST");
-        }
-    }
-
-    protected void createClobDataSet() throws Exception {
-        TableHelper tClobTest = new TableHelper(dbHelper, "CLOB_TEST");
-        tClobTest.setColumns("CLOB_TEST_ID", "CLOB_COL");
-
-        tClobTest.deleteAll();
-
-        tClobTest.insert(1, "clob1");
-        tClobTest.insert(2, "clob2");
     }
 
     protected void createArtistsDataSet() throws Exception {
@@ -116,17 +90,6 @@ public class SelectQueryIT extends ServerCase {
 
         tArtist.insert(1, "_X");
         tArtist.insert(2, "Y_");
-    }
-
-    protected void createNumericsDataSet() throws Exception {
-        TableHelper tNumerics = new TableHelper(dbHelper, "TYPES_MAPPING_TEST1");
-        tNumerics.setColumns("AAAID", "INTEGER_COLUMN");
-
-        tNumerics.insert(1, 0);
-        tNumerics.insert(2, 1);
-        tNumerics.insert(3, 2);
-        tNumerics.insert(4, 3);
-        tNumerics.insert(5, 4);
     }
 
     @Test
@@ -375,62 +338,6 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(20, objects.size());
     }
 
-    /** Test how "like ignore case" works when using uppercase parameter. */
-    @Test
-    public void testSelectLikeIgnoreCaseClob() throws Exception {
-        if (accessStackAdapter.supportsLobs()) {
-            createClobDataSet();
-            SelectQuery<ClobTestEntity> query = new SelectQuery<ClobTestEntity>(ClobTestEntity.class);
-            Expression qual = ExpressionFactory.likeIgnoreCaseExp("clobCol", "clob%");
-            query.setQualifier(qual);
-            List<?> objects = context.performQuery(query);
-            assertEquals(2, objects.size());
-        }
-    }
-
-    @Test
-    public void testSelectFetchLimit_Offset_DistinctClob() throws Exception {
-        if (accessStackAdapter.supportsLobs()) {
-            createClobDataSet();
-
-            // see CAY-1539... CLOB column causes suppression of DISTINCT in
-            // SQL, and hence the offset processing is done in memory
-            SelectQuery<ClobTestEntity> query = new SelectQuery<ClobTestEntity>(ClobTestEntity.class);
-            query.addOrdering("db:" + ClobTestEntity.CLOB_TEST_ID_PK_COLUMN, SortOrder.ASCENDING);
-            query.setFetchLimit(1);
-            query.setFetchOffset(1);
-            query.setDistinct(true);
-
-            List<ClobTestEntity> objects = context.performQuery(query);
-            assertEquals(1, objects.size());
-            assertEquals(2, Cayenne.intPKForObject(objects.get(0)));
-        }
-    }
-
-    @Test
-    public void testSelectEqualsClob() throws Exception {
-        if (accessStackAdapter.supportsLobComparisons()) {
-            createClobDataSet();
-            SelectQuery<ClobTestEntity> query = new SelectQuery<ClobTestEntity>(ClobTestEntity.class);
-            Expression qual = ExpressionFactory.matchExp("clobCol", "clob1");
-            query.setQualifier(qual);
-            List<?> objects = context.performQuery(query);
-            assertEquals(1, objects.size());
-        }
-    }
-
-    @Test
-    public void testSelectNotEqualsClob() throws Exception {
-        if (accessStackAdapter.supportsLobComparisons()) {
-            createClobDataSet();
-            SelectQuery query = new SelectQuery(ClobTestEntity.class);
-            Expression qual = ExpressionFactory.noMatchExp("clobCol", "clob1");
-            query.setQualifier(qual);
-            List<?> objects = context.performQuery(query);
-            assertEquals(1, objects.size());
-        }
-    }
-
     @Test
     public void testSelectIn() throws Exception {
         createArtistsDataSet();
@@ -503,102 +410,6 @@ public class SelectQueryIT extends ServerCase {
         query.setQualifier(qual);
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
-    }
-
-    @Test
-    public void testSelectBitwiseNot() throws Exception {
-
-        if (!accessStackAdapter.supportsBitwiseOps()) {
-            return;
-        }
-
-        createNumericsDataSet();
-
-        // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseNot(new ASTBitwiseNot(new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY)));
-        Expression right = new ASTScalar(2);
-        Expression greater = new ASTGreater();
-        greater.setOperand(0, left);
-        greater.setOperand(1, right);
-
-        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
-        query.setQualifier(greater);
-
-        List<ReturnTypesMap1> objects = context.performQuery(query);
-        assertEquals(2, objects.size());
-    }
-
-    @Test
-    public void testSelectBitwiseOr() throws Exception {
-
-        if (!accessStackAdapter.supportsBitwiseOps()) {
-            return;
-        }
-
-        createNumericsDataSet();
-
-        // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseOr(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
-                new ASTScalar(1) });
-        Expression right = new ASTScalar(1);
-        Expression equal = new ASTEqual();
-        equal.setOperand(0, left);
-        equal.setOperand(1, right);
-
-        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
-        query.setQualifier(equal);
-
-        List<ReturnTypesMap1> objects = context.performQuery(query);
-        assertEquals(2, objects.size());
-    }
-
-    @Test
-    public void testSelectBitwiseAnd() throws Exception {
-
-        if (!accessStackAdapter.supportsBitwiseOps()) {
-            return;
-        }
-
-        createNumericsDataSet();
-
-        // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseAnd(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
-                new ASTScalar(1) });
-        Expression right = new ASTScalar(0);
-        Expression equal = new ASTEqual();
-        equal.setOperand(0, left);
-        equal.setOperand(1, right);
-
-        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
-        query.setQualifier(equal);
-
-        List<ReturnTypesMap1> objects = context.performQuery(query);
-        assertEquals(3, objects.size());
-    }
-
-    @Test
-    public void testSelectBitwiseXor() throws Exception {
-
-        if (!accessStackAdapter.supportsBitwiseOps()) {
-            return;
-        }
-
-        createNumericsDataSet();
-
-        // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseXor(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
-                new ASTScalar(1) });
-        Expression right = new ASTScalar(5);
-        Expression equal = new ASTEqual();
-        equal.setOperand(0, left);
-        equal.setOperand(1, right);
-
-        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
-        query.setQualifier(equal);
-
-        List<ReturnTypesMap1> objects = context.performQuery(query);
-        assertEquals(1, objects.size());
-        assertEquals(4, objects.get(0).getIntegerColumn().intValue());
     }
 
     @Test

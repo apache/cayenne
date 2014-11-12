@@ -28,11 +28,11 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.Bag;
-import org.apache.cayenne.testdo.testmap.Ball;
-import org.apache.cayenne.testdo.testmap.Box;
-import org.apache.cayenne.testdo.testmap.BoxInfo;
-import org.apache.cayenne.testdo.testmap.Thing;
+import org.apache.cayenne.testdo.things.Bag;
+import org.apache.cayenne.testdo.things.Ball;
+import org.apache.cayenne.testdo.things.Box;
+import org.apache.cayenne.testdo.things.BoxInfo;
+import org.apache.cayenne.testdo.things.Thing;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -50,7 +50,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.THINGS_PROJECT)
 public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
 
     @Inject
@@ -65,11 +65,6 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     @Inject
     protected DataChannelInterceptor queryInterceptor;
 
-    protected TableHelper tBag;
-    protected TableHelper tBox;
-    protected TableHelper tBoxInfo;
-    protected TableHelper tBall;
-    protected TableHelper tThing;
     protected TableHelper tBoxThing;
 
     @Override

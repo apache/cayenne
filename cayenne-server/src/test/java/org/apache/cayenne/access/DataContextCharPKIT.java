@@ -23,7 +23,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
+import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.COMPOUND_PROJECT)
 public class DataContextCharPKIT extends ServerCase {
 
     @Inject

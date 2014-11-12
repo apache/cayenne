@@ -65,7 +65,7 @@ public class SQLTemplateIT extends ServerCase {
 
     @Test
 	public void testSQLTemplateForDataMap() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
 		List<DataRow> result = context.performQuery(q1);
 		assertEquals(0, result.size());
@@ -73,7 +73,7 @@ public class SQLTemplateIT extends ServerCase {
 
     @Test
 	public void testSQLTemplateForDataMapWithInsert() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
 		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
 		context.performNonSelectingQuery(q1);
@@ -85,7 +85,7 @@ public class SQLTemplateIT extends ServerCase {
 
     @Test
 	public void testSQLTemplateForDataMapWithInsertException() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
 		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
 		context.performNonSelectingQuery(q1);
@@ -97,7 +97,7 @@ public class SQLTemplateIT extends ServerCase {
 		} catch (CayenneRuntimeException e) {
 			gotRuntimeException = true;
 		}
-		assertTrue("If fetchingDataRows is false and ObjectEntity not set, shoulb be thrown exception",
+		assertTrue("If fetchingDataRows is false and ObjectEntity not set, should be thrown exception",
 				gotRuntimeException);
 	}
 

@@ -28,13 +28,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.GeneratedColumnTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
@@ -53,14 +51,10 @@ public class BatchActionIT extends ServerCase {
         // test with adapter that supports keys
         JdbcAdapter adapter = buildAdapter(true);
 
-        InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
-                .getDbEntity(), 5);
         DataNode node = new DataNode();
         node.setAdapter(adapter);
         node.setEntityResolver(resolver);
         node.setRowReaderFactory(mock(RowReaderFactory.class));
-
-        assertTrue(new BatchAction(batch1, node, false).hasGeneratedKeys());
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch2, node, false).hasGeneratedKeys());
@@ -73,15 +67,10 @@ public class BatchActionIT extends ServerCase {
         // test with adapter that does not support keys...
         JdbcAdapter adapter = buildAdapter(false);
 
-        InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
-                .getDbEntity(), 5);
-
         DataNode node = new DataNode();
         node.setAdapter(adapter);
         node.setEntityResolver(resolver);
         node.setRowReaderFactory(mock(RowReaderFactory.class));
-
-        assertFalse(new BatchAction(batch1, node, false).hasGeneratedKeys());
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch2, node, false).hasGeneratedKeys());

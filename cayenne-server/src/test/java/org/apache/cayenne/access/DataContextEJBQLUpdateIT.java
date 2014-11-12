@@ -26,15 +26,11 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
-import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import java.sql.Types;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -50,19 +46,14 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
 
     private TableHelper tArtist;
     private TableHelper tPainting;
-    private TableHelper tCompoundPk;
-    private TableHelper tCompoundFk;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("BOOLEAN_TEST");
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("COMPOUND_FK_TEST");
-        dbHelper.deleteAll("COMPOUND_PK_TEST");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -78,11 +69,6 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
                 Types.VARCHAR,
                 Types.DECIMAL);
 
-        tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
-        tCompoundPk.setColumns("KEY1", "KEY2");
-
-        tCompoundFk = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
-        tCompoundFk.setColumns("PKEY", "F_KEY1", "F_KEY2");
     }
 
     private void createThreeArtistsTwoPaintings() throws Exception {
@@ -91,13 +77,6 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         tArtist.insert(33003, "BB1");
         tPainting.insert(33001, 33001, "P1", 3000);
         tPainting.insert(33002, 33002, "P2", 5000);
-    }
-
-    private void createTwoCompoundPKTwoFK() throws Exception {
-        tCompoundPk.insert("a1", "a2");
-        tCompoundPk.insert("b1", "b2");
-        tCompoundFk.insert(33001, "a1", "a2");
-        tCompoundFk.insert(33002, "b1", "b2");
     }
 
     @Test
@@ -247,40 +226,6 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
     }
 
     @Test
-    public void testUpdateNoQualifierBoolean() throws Exception {
-
-        BooleanTestEntity o1 = context.newObject(BooleanTestEntity.class);
-        o1.setBooleanColumn(Boolean.TRUE);
-
-        BooleanTestEntity o2 = context.newObject(BooleanTestEntity.class);
-        o2.setBooleanColumn(Boolean.FALSE);
-
-        BooleanTestEntity o3 = context.newObject(BooleanTestEntity.class);
-        o3.setBooleanColumn(Boolean.FALSE);
-
-        context.commitChanges();
-
-        EJBQLQuery check = new EJBQLQuery("select count(p) from BooleanTestEntity p "
-                + "WHERE p.booleanColumn = true");
-
-        Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(1l), notUpdated);
-
-        String ejbql = "UPDATE BooleanTestEntity AS p SET p.booleanColumn = true";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-
-        QueryResponse result = context.performGenericQuery(query);
-
-        int[] count = result.firstUpdateCount();
-        assertNotNull(count);
-        assertEquals(1, count.length);
-        assertEquals(3, count[0]);
-
-        notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(3l), notUpdated);
-    }
-
-    @Test
     public void testUpdateNoQualifierToOne() throws Exception {
         createThreeArtistsTwoPaintings();
 
@@ -296,40 +241,6 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         String ejbql = "UPDATE Painting AS p SET p.toArtist = :artist";
         EJBQLQuery query = new EJBQLQuery(ejbql);
         query.setParameter("artist", object);
-
-        QueryResponse result = context.performGenericQuery(query);
-
-        int[] count = result.firstUpdateCount();
-        assertNotNull(count);
-        assertEquals(1, count.length);
-        assertEquals(2, count[0]);
-
-        notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(0l), notUpdated);
-    }
-
-    @Test
-    public void testUpdateNoQualifierToOneCompoundPK() throws Exception {
-        createTwoCompoundPKTwoFK();
-
-        Map<String, String> key1 = new HashMap<String, String>();
-        key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
-        key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
-        CompoundPkTestEntity object = Cayenne.objectForPK(
-                context,
-                CompoundPkTestEntity.class,
-                key1);
-
-        EJBQLQuery check = new EJBQLQuery(
-                "select count(e) from CompoundFkTestEntity e WHERE e.toCompoundPk <> :param");
-        check.setParameter("param", object);
-
-        Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(1l), notUpdated);
-
-        String ejbql = "UPDATE CompoundFkTestEntity e SET e.toCompoundPk = :param";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter("param", object);
 
         QueryResponse result = context.performGenericQuery(query);
 

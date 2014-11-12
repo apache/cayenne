@@ -27,8 +27,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.MeaningfulPKDep;
-import org.apache.cayenne.testdo.testmap.MeaningfulPKTest1;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.MEANINGFUL_PK_PROJECT)
 public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
 
     @Inject

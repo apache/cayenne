@@ -32,7 +32,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import java.sql.Types;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -52,8 +51,6 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
 
     protected TableHelper tPainting;
 
-    protected TableHelper tMeaningfulPKTest1Table;
-
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
@@ -61,8 +58,6 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("MEANINGFUL_PK_DEP");
-        dbHelper.deleteAll("MEANINGFUL_PK_TEST1");
 
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
@@ -74,21 +69,11 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
                 Types.BIGINT,
                 Types.VARCHAR,
                 Types.DECIMAL);
-
-        tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
-        tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR");
     }
 
     protected void createPaintingsDataSet() throws Exception {
         tPainting.insert(33001, null, "P1", 3000);
         tPainting.insert(33002, null, "P2", 5000);
-    }
-
-    protected void createMeaningfulPKDataSet() throws Exception {
-
-        for (int i = 1; i <= 33; i++) {
-            tMeaningfulPKTest1Table.insert(i, "a" + i);
-        }
     }
 
     @Test
@@ -141,24 +126,4 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
         assertNull(Cayenne.objectForPK(freshContext, Painting.class, 33002));
     }
 
-    @Test
-    public void testDeleteIdVar() throws Exception {
-
-        createMeaningfulPKDataSet();
-
-        EJBQLQuery q = new EJBQLQuery("select m.pkAttribute from MeaningfulPKTest1 m");
-
-        List<Integer> id = context.performQuery(q);
-
-        String ejbql = "delete from MeaningfulPKTest1 m WHERE m.pkAttribute in (:id)";
-
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter("id", id);
-        QueryResponse result = context.performGenericQuery(query);
-
-        int[] count = result.firstUpdateCount();
-        assertNotNull(count);
-        assertEquals(1, count.length);
-        assertEquals(33, count[0]);
-    }
 }

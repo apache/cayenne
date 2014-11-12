@@ -99,7 +99,7 @@
 		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TEXT_REVIEW" type="LONGVARCHAR"/>
 	</db-entity>
-	<obj-entity name="ArraysEntity" className="org.apache.cayenne.testdo.testmap.ArraysEntity" dbEntityName="ARRAYS_ENTITY">
+	<obj-entity name="ArraysEntity" className="org.apache.cayenne.testdo.misc_types.ArraysEntity" dbEntityName="ARRAYS_ENTITY">
 		<obj-attribute name="byteArray" type="byte[]" db-attribute-path="BYTE_ARRAY"/>
 		<obj-attribute name="byteWrapperArray" type="java.lang.Byte[]" db-attribute-path="BYTE_WRAPPER_ARRAY"/>
 		<obj-attribute name="charArray" type="char[]" db-attribute-path="CHAR_ARRAY"/>
@@ -114,16 +114,16 @@
 	</obj-entity>
 	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
 	</obj-entity>
-	<obj-entity name="CharacterEntity" className="org.apache.cayenne.testdo.testmap.CharacterEntity" dbEntityName="CHARACTER_ENTITY">
+	<obj-entity name="CharacterEntity" className="org.apache.cayenne.testdo.misc_types.CharacterEntity" dbEntityName="CHARACTER_ENTITY">
 		<obj-attribute name="characterField" type="java.lang.Character" db-attribute-path="CHARACTER_FIELD"/>
 	</obj-entity>
-	<obj-entity name="DateTestEntity" className="org.apache.cayenne.testdo.testmap.DateTestEntity" dbEntityName="DATE_TEST">
+	<obj-entity name="DateTestEntity" className="org.apache.cayenne.testdo.date_time.DateTestEntity" dbEntityName="DATE_TEST">
 		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
 		<obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
 		<obj-attribute name="timestampColumn" type="java.util.Date" db-attribute-path="TIMESTAMP_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.testmap.EnumEntity" dbEntityName="ENUM_ENTITY">
-		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.testmap.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
+	<obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.enum_test.EnumEntity" dbEntityName="ENUM_ENTITY">
+		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
 	</obj-entity>
 	<obj-entity name="Exhibit" className="org.apache.cayenne.testdo.testmap.Exhibit" dbEntityName="EXHIBIT">
 		<obj-attribute name="closingDate" type="java.util.Date" db-attribute-path="CLOSING_DATE"/>

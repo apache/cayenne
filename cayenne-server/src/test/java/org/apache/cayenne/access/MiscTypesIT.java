@@ -23,9 +23,9 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.ArraysEntity;
-import org.apache.cayenne.testdo.testmap.CharacterEntity;
-import org.apache.cayenne.testdo.testmap.SerializableEntity;
+import org.apache.cayenne.testdo.misc_types.ArraysEntity;
+import org.apache.cayenne.testdo.misc_types.CharacterEntity;
+import org.apache.cayenne.testdo.misc_types.SerializableEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.MISC_TYPES_PROJECT)
 public class MiscTypesIT extends ServerCase {
 
     @Inject

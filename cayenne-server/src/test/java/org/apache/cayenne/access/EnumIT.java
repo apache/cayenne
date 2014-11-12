@@ -27,8 +27,8 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.Enum1;
-import org.apache.cayenne.testdo.testmap.EnumEntity;
+import org.apache.cayenne.testdo.enum_test.Enum1;
+import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -36,7 +36,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.ENUM_PROJECT)
 public class EnumIT extends ServerCase {
 
     @Inject

@@ -23,10 +23,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.DateTestEntity;
-import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
-import org.apache.cayenne.testdo.testmap.ReturnTypesMap2;
-import org.apache.cayenne.testdo.testmap.ReturnTypesMapLobs1;
+import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
+import org.apache.cayenne.testdo.return_types.ReturnTypesMap2;
+import org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -45,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test Types mapping for selected columns
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.RETURN_TYPES_PROJECT)
 public class ReturnTypesMappingIT extends ServerCase {
 
     @Inject
@@ -64,7 +63,6 @@ public class ReturnTypesMappingIT extends ServerCase {
             dbHelper.deleteAll("TYPES_MAPPING_TEST2");
         }
         dbHelper.deleteAll("TYPES_MAPPING_TEST1");
-        dbHelper.deleteAll("DATE_TEST");
     }
 
     /*
@@ -735,28 +733,6 @@ public class ReturnTypesMappingIT extends ServerCase {
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
         assertEquals(timeValue.toString(), new Time(columnValue.getTime()).toString());
-    }
-
-    @Test
-    public void testSQLTemplateTime() throws Exception {
-        DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
-
-        Calendar cal = Calendar.getInstance();
-        cal.clear();
-        cal.set(2003, 1, 1, 1, 20, 30);
-
-        // most databases fail millisecond accuracy
-        // cal.set(Calendar.MILLISECOND, 55);
-
-        Time now = new Time(cal.getTime().getTime());
-        test.setTimeColumn(now);
-        context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectDateTest");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
-        Date columnValue = (Date) testRead.get("TIME_COLUMN");
-        assertNotNull(testRead.toString(), columnValue);
-        assertEquals(now.toString(), new Time(columnValue.getTime()).toString());
     }
 
     @Test

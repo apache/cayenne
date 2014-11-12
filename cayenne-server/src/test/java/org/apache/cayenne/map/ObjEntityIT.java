@@ -124,7 +124,7 @@ public class ObjEntityIT extends ServerCase {
         assertNull(clientPk.getEntity());
         assertFalse(clientArtistE.getAttributes().contains(pk));
 
-        ObjEntity meaningfulPKE = runtime.getDataDomain().getEntityResolver().getObjEntity("MeaningfulPKTest1");
+        ObjEntity meaningfulPKE = runtime.getDataDomain().getEntityResolver().getObjEntity("MeaningfulGeneratedColumnTestEntity");
         Collection<ObjAttribute> mpks = meaningfulPKE.getPrimaryKeys();
         assertEquals(1, mpks.size());
 

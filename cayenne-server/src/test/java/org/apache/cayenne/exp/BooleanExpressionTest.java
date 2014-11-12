@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
+import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

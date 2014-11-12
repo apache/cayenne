@@ -24,8 +24,8 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
-import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
+import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
+import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Testing relationships with compound keys.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.COMPOUND_PROJECT)
 public class DataContextCompoundRelIT extends ServerCase {
 
     @Inject

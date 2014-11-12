@@ -24,8 +24,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.CalendarEntity;
-import org.apache.cayenne.testdo.testmap.DateTestEntity;
+import org.apache.cayenne.testdo.date_time.CalendarEntity;
+import org.apache.cayenne.testdo.date_time.DateTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests Date handling in Cayenne.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.DATE_TIME_PROJECT)
 public class DateTimeTypesIT extends ServerCase {
 
     @Inject
@@ -203,6 +203,7 @@ public class DateTimeTypesIT extends ServerCase {
         NamedQuery q = new NamedQuery("SelectDateTest");
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Date columnValue = (Date) testRead.get("TIME_COLUMN");
+        assertNotNull(testRead.toString(), columnValue);
         assertNotNull(columnValue);
         assertEquals(now.toString(), new Time(columnValue.getTime()).toString());
     }

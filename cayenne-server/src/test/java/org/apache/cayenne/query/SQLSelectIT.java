@@ -68,7 +68,7 @@ public class SQLSelectIT extends ServerCase {
 
 		createArtistsDataSet();
 
-		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("tstmap", "SELECT * FROM ARTIST");
+		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("testmap", "SELECT * FROM ARTIST");
 		assertTrue(q1.isFetchingDataRows());
 
 		List<DataRow> result = context.select(q1);

@@ -31,10 +31,10 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.CharFkTestEntity;
-import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
-import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
-import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
+import org.apache.cayenne.testdo.compound.CharFkTestEntity;
+import org.apache.cayenne.testdo.compound.CharPkTestEntity;
+import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
+import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -50,7 +50,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test prefetching of various obscure cases.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.COMPOUND_PROJECT)
 public class DataContextPrefetchExtrasIT extends ServerCase {
 
     @Inject

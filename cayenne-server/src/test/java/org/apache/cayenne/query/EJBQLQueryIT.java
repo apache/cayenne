@@ -29,7 +29,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.BigIntegerEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
@@ -67,22 +66,17 @@ public class EJBQLQueryIT extends ServerCase {
 
     private TableHelper tArtist;
     private TableHelper tPainting;
-    private TableHelper tBigIntegerEntity;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("BIGINTEGER_ENTITY");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
-
-        tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
-        tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }
 
     protected void createArtistsDataSet() throws Exception {
@@ -99,29 +93,6 @@ public class EJBQLQueryIT extends ServerCase {
         tPainting.insert(33001, 33001, "title0");
         tPainting.insert(33002, 33002, "title1");
         tPainting.insert(33003, 33002, "%%?_title%%_");
-    }
-
-    protected void createBigIntegerEntitiesDataSet() throws Exception {
-        tBigIntegerEntity.insert(44001, new Long(744073709551715l));
-    }
-
-    @Test
-    public void testLongParameter() throws Exception {
-        createBigIntegerEntitiesDataSet();
-        String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > ?1";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter(1,744073709551615l);
-        List<BigIntegerEntity> result = context.performQuery(query);
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    public void testLongLiteral() throws Exception {
-        createBigIntegerEntitiesDataSet();
-        String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > 744073709551615";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<BigIntegerEntity> result = context.performQuery(query);
-        assertEquals(1, result.size());
     }
 
     @Test

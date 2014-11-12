@@ -51,10 +51,10 @@ import static org.junit.Assert.assertTrue;
 @UseServerRuntime(ServerCase.TESTMAP_PROJECT)
 public class DataContextProcedureQueryIT extends ServerCase {
 
-    public static final String UPDATE_STORED_PROCEDURE = "cayenne_tst_upd_proc";
-    public static final String UPDATE_STORED_PROCEDURE_NOPARAM = "cayenne_tst_upd_proc2";
-    public static final String SELECT_STORED_PROCEDURE = "cayenne_tst_select_proc";
-    public static final String OUT_STORED_PROCEDURE = "cayenne_tst_out_proc";
+    public static final String UPDATE_STORED_PROCEDURE = "cayenne_test_upd_proc";
+    public static final String UPDATE_STORED_PROCEDURE_NOPARAM = "cayenne_test_upd_proc2";
+    public static final String SELECT_STORED_PROCEDURE = "cayenne_test_select_proc";
+    public static final String OUT_STORED_PROCEDURE = "cayenne_test_out_proc";
 
     @Inject
     private DataContext context;

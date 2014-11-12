@@ -23,8 +23,8 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.BinaryPKTest1;
-import org.apache.cayenne.testdo.testmap.BinaryPKTest2;
+import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
+import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -33,7 +33,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.BINARY_PK_PROJECT)
 public class DataContextBinaryPKIT extends ServerCase {
 
     @Inject

@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.unit;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
+
+import java.sql.Connection;
 
 public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
 
@@ -52,7 +52,7 @@ public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
 
     @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
-        if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
+        if (map.getProcedureMap().containsKey("cayenne_test_select_proc")) {
             executeDDL(con, "hsqldb", "create-sp-aliases.sql");
         }
     }

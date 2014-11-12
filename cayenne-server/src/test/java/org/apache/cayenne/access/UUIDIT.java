@@ -24,8 +24,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.UuidPkEntity;
-import org.apache.cayenne.testdo.testmap.UuidTestEntity;
+import org.apache.cayenne.testdo.uuid.UuidPkEntity;
+import org.apache.cayenne.testdo.uuid.UuidTestEntity;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -35,7 +35,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.UUID_PROJECT)
 public class UUIDIT extends ServerCase {
 
     @Inject

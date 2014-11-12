@@ -26,8 +26,8 @@ import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.testmap.ExtendedTypeEntity;
-import org.apache.cayenne.testdo.testmap.StringET1;
+import org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity;
+import org.apache.cayenne.testdo.extended_type.StringET1;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -36,7 +36,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(ServerCase.EXTENDED_TYPE_PROJECT)
 public class DataContextExtendedTypeOperationsIT extends ServerCase {
 
     @Inject

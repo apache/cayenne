@@ -91,11 +91,11 @@ public class MapLoaderLoadTest {
     @Test
     public void testLoadTestMap() throws Exception {
         MapLoader mapLoader = new MapLoader();
-        DataMap map = mapLoader.loadDataMap(getMapXml("tstmap.map.xml"));
+        DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
         assertNotNull(map);
 
         // test procedures
-        Procedure procedure = map.getProcedure("cayenne_tst_upd_proc");
+        Procedure procedure = map.getProcedure("cayenne_test_upd_proc");
         assertNotNull(procedure);
         List<ProcedureParameter> params = procedure.getCallParameters();
         assertNotNull(params);
@@ -124,7 +124,7 @@ public class MapLoaderLoadTest {
     public void testEncodeAsXML() throws FileNotFoundException {
         // load map
         MapLoader mapLoader = new MapLoader();
-        DataMap map = mapLoader.loadDataMap(getMapXml("tstmap.map.xml"));
+        DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
         assertNotNull(map);
 
         // encode map
