@@ -196,8 +196,9 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
 
         TestJoin testJoin = new TestJoin(this);
         for (DbRelationship rel : target.getRelationships()) {
-            if (rel.getTargetEntity() != src)
+            if (rel.getTargetEntity() != src) {
                 continue;
+            }
 
             List<DbJoin> otherJoins = rel.getJoins();
             if (otherJoins.size() != joins.size()) {
@@ -273,7 +274,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         }
 
         DbRelationship revRel = getReverseRelationship();
-        return (revRel != null) ? revRel.isToDependentPK() : false;
+        return revRel != null && revRel.isToDependentPK();
     }
     
     /**
@@ -315,7 +316,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
             DbAttribute target = join.getTarget();
             DbAttribute source = join.getSource();
 
-            if ((target != null && !target.isPrimaryKey()) || (source != null && !source.isPrimaryKey())) {
+            if (target != null && !target.isPrimaryKey() || source != null && !source.isPrimaryKey()) {
                 return false;
             }
         }
@@ -390,8 +391,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         // handle generic case: numJoins > 1
         else {
             idMap = new HashMap<String, Object>(numJoins * 2);
-            for (int i = 0; i < numJoins; i++) {
-                DbJoin join = joins.get(i);
+            for (DbJoin join : joins) {
                 DbAttribute source = join.getSource();
                 Object val = srcSnapshot.get(join.getSourceName());
 
@@ -437,8 +437,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
 
         // general case
         Map<String, Object> idMap = new HashMap<String, Object>(len * 2);
-        for (int i = 0; i < len; i++) {
-            DbJoin join = joins.get(i);
+        for (DbJoin join : joins) {
             Object val = targetSnapshot.get(join.getTargetName());
             idMap.put(join.getSourceName(), val);
         }
@@ -468,8 +467,10 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * relationship is "to one".
      */
     public Map<String, Object> srcPkSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
-        if (!isToMany())
+        if (!isToMany()) {
             throw new CayenneRuntimeException("Only 'to many' relationships support this method.");
+        }
+
         return srcSnapshotWithTargetSnapshot(targetSnapshot);
     }
 
@@ -491,7 +492,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         return false;
     }
 
-    final static class JoinTransformers {
+    static final class JoinTransformers {
 
         static final Transformer targetExtractor = new Transformer() {
 
@@ -509,7 +510,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
     }
 
     // a join used for comparison
-    final static class TestJoin extends DbJoin {
+    static final class TestJoin extends DbJoin {
 
         TestJoin(DbRelationship relationship) {
             super(relationship);

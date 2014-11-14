@@ -1,21 +1,21 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.access.DbLoader;
@@ -67,7 +67,8 @@ public class DbImportAction {
     private final DbAdapterFactory adapterFactory;
     private final MapLoader mapLoader;
 
-    public DbImportAction(@Inject Log logger, @Inject ProjectSaver projectSaver,
+    public DbImportAction(@Inject Log logger,
+                          @Inject ProjectSaver projectSaver,
                           @Inject DataSourceFactory dataSourceFactory,
                           @Inject DbAdapterFactory adapterFactory,
                           @Inject MapLoader mapLoader) {
@@ -78,30 +79,29 @@ public class DbImportAction {
         this.mapLoader = mapLoader;
     }
 
-    public void execute(DbImportConfiguration parameters) throws Exception {
+    public void execute(DbImportConfiguration config) throws Exception {
 
         if (logger.isInfoEnabled()) {
-            logger.debug(String.format("DB connection - [driver: %s, url: %s, username: %s, password: %s]",
-                    parameters.getDriver(), parameters.getUrl(), parameters.getUsername(), "XXXXX"));
+            logger.debug("DB connection: " + config.getDataSourceInfo());
         }
 
         if (logger.isDebugEnabled()) {
-            parameters.log();
+            logger.debug(config);
         }
 
-        DataNodeDescriptor dataNodeDescriptor = parameters.createDataNodeDescriptor();
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
 
-        DataMap loadedFomDb = load(parameters, adapter, dataSource.getConnection());
+        DataMap loadedFomDb = load(config, adapter, dataSource.getConnection());
         if (loadedFomDb == null) {
             logger.info("Nothing was loaded from db.");
             return;
         }
 
-        DataMap existing = loadExistingDataMap(parameters.getDataMapFile());
+        DataMap existing = loadExistingDataMap(config.getDataMapFile());
         if (existing == null) {
-            saveLoaded(loadedFomDb);
+            saveLoaded(config.initializeDataMap(loadedFomDb));
         } else {
             MergerFactory mergerFactory = adapter.mergerFactory();
 
@@ -111,7 +111,7 @@ public class DbImportAction {
                 return;
             }
 
-            saveLoaded(execute(parameters.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens))));
+            saveLoaded(execute(config.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens))));
         }
     }
 
@@ -184,18 +184,13 @@ public class DbImportAction {
         projectSaver.save(project);
     }
 
-    private DataMap load(DbImportConfiguration parameters, DbAdapter adapter, Connection connection) throws Exception {
-        DataMap dataMap = parameters.createDataMap();
+    private DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
+        DataMap dataMap = config.createDataMap();
 
         try {
-            DbLoader loader = parameters.createLoader(adapter, connection, parameters.createLoaderDelegate());
+            DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
 
-            String[] types = loader.getDefaultTableTypes();
-            loader.load(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getTablePattern(), types);
-
-            if (parameters.isImportProcedures()) {
-                loader.loadProcedures(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getProcedurePattern());
-            }
+            dataMap = loader.load(config.getDbLoaderConfig());
         } finally {
             if (connection != null) {
                 connection.close();

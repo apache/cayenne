@@ -16,39 +16,43 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access;
-
-import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+package org.apache.cayenne.tools.dbimport.config;
 
 /**
  * @since 3.2.
  */
-public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
+public class Schema extends FilterContainer {
 
-    @Override
-    public boolean overwriteDbEntity(DbEntity entity) throws CayenneException {
-        return false;
+    private String name;
+
+    public Schema() {
     }
 
-    @Override
-    public void dbEntityAdded(DbEntity entity) {
-
+    public Schema(String name) {
+        this.name = name;
     }
 
-    @Override
-    public void dbEntityRemoved(DbEntity entity) {
-
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public void objEntityAdded(ObjEntity entity) {
-
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Override
-    public void objEntityRemoved(ObjEntity entity) {
+    public void set(String name) {
+        setName(name);
+    }
 
+    public void addConfiguredName(AntNestedElement name) {
+        setName(name.getName());
+    }
+
+    public void addText(String name) {
+        if (name.trim().isEmpty()) {
+            return;
+        }
+
+        setName(name);
     }
 }

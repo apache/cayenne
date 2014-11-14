@@ -49,12 +49,7 @@ public class DefaultUniqueNameGenerator implements UniqueNameGenerator {
             generator = new DefaultUniqueNameGenerator(NameCheckers.embeddable, pattern) {
                 @Override
                 public String generate(Object namingContext, String nameBase) {
-                    String name = super.generate(namingContext, nameBase);
-                    DataMap map = (DataMap) namingContext;
-                    if (map.getDefaultPackage() != null) {
-                        return map.getDefaultPackage() + "." + name;
-                    }
-                    return name;
+                    return ((DataMap) namingContext).getNameWithDefaultPackage(super.generate(namingContext, nameBase));
                 }
             };
         } else {

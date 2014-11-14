@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -98,7 +99,7 @@ public abstract class MergeCase extends ServerCase {
     }
 
     protected DbMerger createMerger(MergerFactory mergerFactory, ValueForNullProvider valueForNullProvider) {
-        return new DbMerger(mergerFactory, valueForNullProvider, null) {
+        return new DbMerger(mergerFactory, valueForNullProvider) {
 
             @Override
             public boolean includeTableName(String tableName) {
@@ -108,7 +109,7 @@ public abstract class MergeCase extends ServerCase {
     }
 
     protected List<MergerToken> createMergeTokens() {
-        return createMerger(node.getAdapter().mergerFactory()).createMergeTokens(node, map);
+        return createMerger(node.getAdapter().mergerFactory()).createMergeTokens(node, map, new DbLoaderConfiguration());
     }
 
     /**
