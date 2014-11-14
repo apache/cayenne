@@ -64,7 +64,9 @@ public class ServerCase extends DICase {
 	public static final String UUID_PROJECT = "cayenne-uuid.xml";
 	public static final String COMPOUND_PROJECT = "cayenne-compound.xml";
 	public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
-	public static final String DEFAULT_PROJECT = "cayenne-default.xml";
+	public static final String EMBEDDABLE_PROJECT = "cayenne-embeddable.xml";
+	public static final String GENERIC_PROJECT = "cayenne-generic.xml";
+	public static final String QUALIFIED_PROJECT = "cayenne-qualified.xml";
 	public static final String MULTINODE_PROJECT = "cayenne-multinode.xml";
 	public static final String ONEWAY_PROJECT = "cayenne-oneway-rels.xml";
 	public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";

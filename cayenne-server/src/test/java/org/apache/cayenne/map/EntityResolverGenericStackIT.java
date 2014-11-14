@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
+@UseServerRuntime(ServerCase.GENERIC_PROJECT)
 public class EntityResolverGenericStackIT extends ServerCase {
 
     @Inject

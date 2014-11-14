@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
+@UseServerRuntime(ServerCase.GENERIC_PROJECT)
 public class GenericMappingIT extends ServerCase {
 
     @Inject

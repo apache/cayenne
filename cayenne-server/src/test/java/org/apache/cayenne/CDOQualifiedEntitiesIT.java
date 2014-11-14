@@ -35,7 +35,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
+@UseServerRuntime(ServerCase.QUALIFIED_PROJECT)
 public class CDOQualifiedEntitiesIT extends ServerCase {
 
     @Inject

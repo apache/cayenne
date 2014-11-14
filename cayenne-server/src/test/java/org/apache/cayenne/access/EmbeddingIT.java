@@ -38,7 +38,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
+@UseServerRuntime(ServerCase.EMBEDDABLE_PROJECT)
 public class EmbeddingIT extends ServerCase {
     
     @Inject
