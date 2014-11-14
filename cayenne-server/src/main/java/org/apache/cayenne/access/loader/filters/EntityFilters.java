@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import static org.apache.cayenne.access.loader.filters.FilterFactory.*;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * @since 3.2.
@@ -321,6 +322,10 @@ public class EntityFilters {
         }
 
         public Builder includeTables(String tableFilters) {
+            if (isBlank(tableFilters)) {
+                return this;
+            }
+
             for (String pattern : tableFilters.split(",")) {
                 this.tableFilters = this.tableFilters.join(include(pattern));
             }
@@ -329,6 +334,10 @@ public class EntityFilters {
         }
 
         public Builder includeColumns(String columnFilters) {
+            if (isBlank(columnFilters)) {
+                return this;
+            }
+
             for (String pattern : columnFilters.split(",")) {
                 this.columnFilters = this.columnFilters.join(include(pattern));
             }
@@ -337,6 +346,10 @@ public class EntityFilters {
         }
 
         public Builder includeProcedures(String proceduresFilters) {
+            if (isBlank(proceduresFilters)) {
+                return this;
+            }
+
             for (String pattern : proceduresFilters.split(",")) {
                 this.proceduresFilters = this.proceduresFilters.join(include(pattern));
             }
@@ -345,6 +358,10 @@ public class EntityFilters {
         }
 
         public Builder excludeTables(String tableFilters) {
+            if (isBlank(tableFilters)) {
+                return this;
+            }
+
             for (String pattern : tableFilters.split(",")) {
                 this.tableFilters = this.tableFilters.join(exclude(pattern));
             }
@@ -353,6 +370,10 @@ public class EntityFilters {
         }
 
         public Builder excludeColumns(String columnFilters) {
+            if (isBlank(columnFilters)) {
+                return this;
+            }
+
             for (String pattern : columnFilters.split(",")) {
                 this.columnFilters = this.columnFilters.join(exclude(pattern));
             }
@@ -361,6 +382,10 @@ public class EntityFilters {
         }
 
         public Builder excludeProcedures(String proceduresFilters) {
+            if (isBlank(proceduresFilters)) {
+                return this;
+            }
+
             for (String pattern : proceduresFilters.split(",")) {
                 this.proceduresFilters = this.proceduresFilters.join(exclude(pattern));
             }

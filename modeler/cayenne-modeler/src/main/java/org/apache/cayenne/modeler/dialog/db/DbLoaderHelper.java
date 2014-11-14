@@ -53,6 +53,8 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
+import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
@@ -412,7 +414,8 @@ public class DbLoaderHelper {
                 }
 
                 DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-                configuration.setFiltersConfig(new FiltersConfig(filterBuilder.build()));
+                configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
+                        .add(filterBuilder.build()).filtersConfig());
                 loader.load(dataMap, configuration, types);
 
                 /**

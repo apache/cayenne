@@ -398,12 +398,15 @@ public class DbLoader {
 
                 DbAttribute attr = loadDbAttribute(rs);
                 attr.setEntity(dbEntity);
-                if (!filters.filter(new DbPath(dbEntity.getCatalog(), dbEntity.getSchema(), tableName))
-                        .columnFilter().isInclude(attr)) {
-
+                DbPath path = new DbPath(dbEntity.getCatalog(), dbEntity.getSchema(), tableName);
+                Filter<DbAttribute> filter = filters.filter(path).columnFilter();
+                if (!filter.isInclude(attr)) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Importing: attribute '" + attr.getEntity().getName() + "." + attr.getName()
+                                + "' is skipped (Path: " + path + "; Filter: " + filter + ")");
+                    }
                     continue;
                 }
-
 
                 dbEntity.addAttribute(attr);
             }
@@ -499,8 +502,6 @@ public class DbLoader {
     }
 
     protected void loadDbRelationships(DataMap map, DbEntity entity, DbLoaderConfiguration config) throws SQLException {
-        String pkEntName = entity.getName();
-
         // Get all the foreign keys referencing this table
         ResultSet rs;
 
@@ -508,23 +509,19 @@ public class DbLoader {
             rs = getMetaData().getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName());
         } catch (SQLException cay182Ex) {
             // Sybase-specific - the line above blows on VIEWS, see CAY-182.
-            LOGGER.info("Error getting relationships for '" + pkEntName + "', ignoring.");
+            LOGGER.info("Error getting relationships for '" + entity.getName() + "', ignoring.");
             return;
         }
 
         try {
-            if (!rs.next()) {
-                return;
-            }
-
             // these will be initialized every time a new target entity is found
             // in the result set (which should be ordered by table name among other things)
             DbRelationship forwardRelationship = null;
             DbRelationshipDetected reverseRelationship = null;
             DbEntity fkEntity = null;
-            ExportedKey key;
+            ExportedKey key = null;
 
-            do {
+            while (rs.next()) {
                 key = ExportedKey.extractData(rs);
 
                 short keySeq = rs.getShort("KEY_SEQ");
@@ -537,7 +534,6 @@ public class DbLoader {
 
                     // start new entity
                     String fkEntityName = key.getFKTableName();
-                    String fkName = key.getFKName();
 
                     fkEntity = map.getDbEntity(fkEntityName);
                     DbPath path = new DbPath(entity.getCatalog(), entity.getSchema(), entity.getName());
@@ -552,19 +548,13 @@ public class DbLoader {
                         continue;
                     } else {
                         // init relationship
-                        String forwardPreferredName = nameGenerator.createDbRelationshipName(key, true);
-                        forwardRelationship = new DbRelationship(DefaultUniqueNameGenerator
-                                .generate(NameCheckers.dbRelationship, entity, forwardPreferredName));
-
+                        forwardRelationship = new DbRelationship(generateName(entity, key, true));
                         forwardRelationship.setSourceEntity(entity);
                         forwardRelationship.setTargetEntity(fkEntity);
                         entity.addRelationship(forwardRelationship);
 
-                        String reversePreferredName = nameGenerator.createDbRelationshipName(key, false);
-                        reverseRelationship = new DbRelationshipDetected(DefaultUniqueNameGenerator
-                                .generate(NameCheckers.dbRelationship, fkEntity, reversePreferredName));
-
-                        reverseRelationship.setFkName(fkName);
+                        reverseRelationship = new DbRelationshipDetected(generateName(fkEntity, key, false));
+                        reverseRelationship.setFkName(key.getFKName());
                         reverseRelationship.setToMany(false);
                         reverseRelationship.setSourceEntity(fkEntity);
                         reverseRelationship.setTargetEntity(entity);
@@ -598,7 +588,7 @@ public class DbLoader {
                     }
 
                 }
-            } while (rs.next());
+            }
 
             if (forwardRelationship != null) {
                 postProcessMasterDbRelationship(forwardRelationship, key);
@@ -608,6 +598,12 @@ public class DbLoader {
         } finally {
             rs.close();
         }
+    }
+
+    private String generateName(DbEntity entity, ExportedKey key, boolean toMany) {
+        String forwardPreferredName = nameGenerator.createDbRelationshipName(key, toMany);
+        return DefaultUniqueNameGenerator
+                .generate(NameCheckers.dbRelationship, entity, forwardPreferredName);
     }
 
     /**
