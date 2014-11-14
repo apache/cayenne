@@ -72,6 +72,7 @@ public class DbLoader {
     private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
 
     public static final String WILDCARD = "%";
+    public static final String WILDCARD_PATTERN = ".*";
 
     /**
      * CAY-479 - need to track which entities which are skipped during loading from db since it it already present in
