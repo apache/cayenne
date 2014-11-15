@@ -44,7 +44,7 @@ import org.apache.cayenne.util.XMLSerializable;
 class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable {
 
 	private static final long serialVersionUID = 5129792493303459115L;
-	
+
 	int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
 	int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
 

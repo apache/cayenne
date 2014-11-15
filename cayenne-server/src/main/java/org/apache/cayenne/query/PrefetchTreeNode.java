@@ -63,6 +63,21 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	protected Collection<PrefetchTreeNode> children;
 
 	/**
+	 * Creates and returns a prefetch tree spanning a single path. The tree is
+	 * made of phantom nodes, up to the leaf node, which is non-phantom and has
+	 * specified semantics.
+	 * 
+	 * @since 4.0
+	 */
+	public static PrefetchTreeNode withPath(String path, int semantics) {
+		PrefetchTreeNode root = new PrefetchTreeNode();
+		PrefetchTreeNode node = root.addPath(path);
+		node.setPhantom(false);
+		node.setSemantics(semantics);
+		return root;
+	}
+
+	/**
 	 * Creates a root node of the prefetch tree. Children can be added to the
 	 * parent by calling "addPath".
 	 */

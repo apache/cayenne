@@ -66,6 +66,7 @@ CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
 CAY-1953 Redo ResultIteratorCallback to handle single row callback instead of iterator
 CAY-1954 Make Cayenne class constructor protected
 CAY-1958 SelectById - a new full-featured select query to get objects by id
+CAY-1959 Chainable API for SelectQuery
 CAY-1960 ExpressionFactory.exp(..) , and(..), or(..)
 CAY-1962 Implement CayenneTable column resize on double-click on the header separator
 CAY-1965 Change version from 3.2 to 4.0
