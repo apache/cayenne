@@ -333,7 +333,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 	 * @since 3.0
 	 */
 	void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
-		this.cacheStrategy = cacheStrategy;
+		this.cacheStrategy = cacheStrategy != null ? cacheStrategy : QueryCacheStrategy.getDefaultStrategy();
 	}
 
 	/**
