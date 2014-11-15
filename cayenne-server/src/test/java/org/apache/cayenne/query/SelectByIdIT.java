@@ -22,6 +22,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -51,6 +52,9 @@ public class SelectByIdIT extends ServerCase {
 
 	@Inject
 	private ObjectContext context;
+
+	@Inject
+	private EntityResolver resolver;
 
 	@Override
 	protected void setUpAfterInjection() throws Exception {
@@ -129,13 +133,13 @@ public class SelectByIdIT extends ServerCase {
 	@Test
 	public void testMetadataCacheKey() throws Exception {
 		SelectById<Painting> q1 = SelectById.query(Painting.class, 4).useLocalCache();
-		QueryMetadata md1 = q1.getMetaData(context.getEntityResolver());
+		QueryMetadata md1 = q1.getMetaData(resolver);
 		assertNotNull(md1);
 		assertNotNull(md1.getCacheKey());
 
 		SelectById<Painting> q2 = SelectById.query(Painting.class, singletonMap(Painting.PAINTING_ID_PK_COLUMN, 4))
 				.useLocalCache();
-		QueryMetadata md2 = q2.getMetaData(context.getEntityResolver());
+		QueryMetadata md2 = q2.getMetaData(resolver);
 		assertNotNull(md2);
 		assertNotNull(md2.getCacheKey());
 
@@ -144,20 +148,20 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals(md1.getCacheKey(), md2.getCacheKey());
 
 		SelectById<Painting> q3 = SelectById.query(Painting.class, 5).useLocalCache();
-		QueryMetadata md3 = q3.getMetaData(context.getEntityResolver());
+		QueryMetadata md3 = q3.getMetaData(resolver);
 		assertNotNull(md3);
 		assertNotNull(md3.getCacheKey());
 		assertNotEquals(md1.getCacheKey(), md3.getCacheKey());
 
 		SelectById<Artist> q4 = SelectById.query(Artist.class, 4).useLocalCache();
-		QueryMetadata md4 = q4.getMetaData(context.getEntityResolver());
+		QueryMetadata md4 = q4.getMetaData(resolver);
 		assertNotNull(md4);
 		assertNotNull(md4.getCacheKey());
 		assertNotEquals(md1.getCacheKey(), md4.getCacheKey());
 
 		SelectById<Painting> q5 = SelectById.query(Painting.class,
 				new ObjectId("Painting", Painting.PAINTING_ID_PK_COLUMN, 4)).useLocalCache();
-		QueryMetadata md5 = q5.getMetaData(context.getEntityResolver());
+		QueryMetadata md5 = q5.getMetaData(resolver);
 		assertNotNull(md5);
 		assertNotNull(md5.getCacheKey());
 
