@@ -72,7 +72,7 @@ public class SelectByIdIT extends ServerCase {
 		tArtist.insert(3, "artist3");
 	}
 
-    @Test
+	@Test
 	public void testIntPk() throws Exception {
 		createTwoArtists();
 
@@ -85,7 +85,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals("artist2", a2.getArtistName());
 	}
 
-    @Test
+	@Test
 	public void testMapPk() throws Exception {
 		createTwoArtists();
 
@@ -98,7 +98,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals("artist2", a2.getArtistName());
 	}
 
-    @Test
+	@Test
 	public void testObjectIdPk() throws Exception {
 		createTwoArtists();
 
@@ -113,7 +113,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals("artist2", a2.getArtistName());
 	}
 
-    @Test
+	@Test
 	public void testDataRowIntPk() throws Exception {
 		createTwoArtists();
 
@@ -126,14 +126,15 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
 
-    @Test
+	@Test
 	public void testMetadataCacheKey() throws Exception {
-		SelectById<Painting> q1 = SelectById.query(Painting.class, 4);
+		SelectById<Painting> q1 = SelectById.query(Painting.class, 4).useLocalCache();
 		QueryMetadata md1 = q1.getMetaData(context.getEntityResolver());
 		assertNotNull(md1);
 		assertNotNull(md1.getCacheKey());
 
-		SelectById<Painting> q2 = SelectById.query(Painting.class, singletonMap(Painting.PAINTING_ID_PK_COLUMN, 4));
+		SelectById<Painting> q2 = SelectById.query(Painting.class, singletonMap(Painting.PAINTING_ID_PK_COLUMN, 4))
+				.useLocalCache();
 		QueryMetadata md2 = q2.getMetaData(context.getEntityResolver());
 		assertNotNull(md2);
 		assertNotNull(md2.getCacheKey());
@@ -142,20 +143,20 @@ public class SelectByIdIT extends ServerCase {
 		// cache entry
 		assertEquals(md1.getCacheKey(), md2.getCacheKey());
 
-		SelectById<Painting> q3 = SelectById.query(Painting.class, 5);
+		SelectById<Painting> q3 = SelectById.query(Painting.class, 5).useLocalCache();
 		QueryMetadata md3 = q3.getMetaData(context.getEntityResolver());
 		assertNotNull(md3);
 		assertNotNull(md3.getCacheKey());
 		assertNotEquals(md1.getCacheKey(), md3.getCacheKey());
 
-		SelectById<Artist> q4 = SelectById.query(Artist.class, 4);
+		SelectById<Artist> q4 = SelectById.query(Artist.class, 4).useLocalCache();
 		QueryMetadata md4 = q4.getMetaData(context.getEntityResolver());
 		assertNotNull(md4);
 		assertNotNull(md4.getCacheKey());
 		assertNotEquals(md1.getCacheKey(), md4.getCacheKey());
 
-		SelectById<Painting> q5 = SelectById.query(Painting.class, new ObjectId("Painting",
-				Painting.PAINTING_ID_PK_COLUMN, 4));
+		SelectById<Painting> q5 = SelectById.query(Painting.class,
+				new ObjectId("Painting", Painting.PAINTING_ID_PK_COLUMN, 4)).useLocalCache();
 		QueryMetadata md5 = q5.getMetaData(context.getEntityResolver());
 		assertNotNull(md5);
 		assertNotNull(md5.getCacheKey());
@@ -165,7 +166,7 @@ public class SelectByIdIT extends ServerCase {
 		assertEquals(md1.getCacheKey(), md5.getCacheKey());
 	}
 
-    @Test
+	@Test
 	public void testLocalCache() throws Exception {
 		createTwoArtists();
 
