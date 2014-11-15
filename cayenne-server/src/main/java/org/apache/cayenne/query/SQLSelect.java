@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -246,15 +247,14 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * running the query. This is a short-hand notation for:
 	 * 
 	 * <pre>
-	 * query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
+	 * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
 	 * </pre>
-	 * 
-	 * @since 4.0
 	 */
-	public void useLocalCache(String... cacheGroups) {
+	public SQLSelect<T> localCache(String... cacheGroups) {
 		cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 		cacheGroups(cacheGroups);
+
+		return this;
 	}
 
 	/**
@@ -262,11 +262,10 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * running the query. This is a short-hand notation for:
 	 * 
 	 * <pre>
-	 * query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
+	 * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
 	 * </pre>
 	 */
-	public SQLSelect<T> useSharedCache(String... cacheGroups) {
+	public SQLSelect<T> sharedCache(String... cacheGroups) {
 		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE).cacheGroups(cacheGroups);
 	}
 
@@ -274,13 +273,13 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		return cacheStrategy;
 	}
 
-	public SQLSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
+	public SQLSelect<T> cacheStrategy(QueryCacheStrategy strategy, String... cacheGroups) {
 		if (this.cacheStrategy != strategy) {
 			this.cacheStrategy = strategy;
 			this.replacementQuery = null;
 		}
 
-		return this;
+		return cacheGroups(cacheGroups);
 	}
 
 	public String[] getCacheGroups() {
@@ -288,9 +287,19 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	public SQLSelect<T> cacheGroups(String... cacheGroups) {
-		this.cacheGroups = cacheGroups;
+		this.cacheGroups = cacheGroups != null && cacheGroups.length > 0 ? cacheGroups : null;
 		this.replacementQuery = null;
 		return this;
+	}
+
+	public SQLSelect<T> cacheGroups(Collection<String> cacheGroups) {
+
+		if (cacheGroups == null) {
+			return cacheGroups((String) null);
+		}
+
+		String[] array = new String[cacheGroups.size()];
+		return cacheGroups(cacheGroups.toArray(array));
 	}
 
 	/**

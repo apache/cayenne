@@ -71,6 +71,7 @@ CAY-1962 Implement CayenneTable column resize on double-click on the header sepa
 CAY-1965 Change version from 3.2 to 4.0
 CAY-1966 SQLTemplate/SQLSelect positional parameter binding
 CAY-1967 Deprecate SQLTemplate parameter batches
+CAY-1968 SQLSelect cleanup and omissions
 
 Bug Fixes:
 
