@@ -621,9 +621,6 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * Returns <code>true</code> if this query should produce a list of data
 	 * rows as opposed to DataObjects, <code>false</code> for DataObjects. This
 	 * is a hint to QueryEngine executing this query.
-	 * 
-	 * @deprecated since 4.0, use {@link #dataRowQuery(Class, Expression)} to
-	 *             create DataRow query instead.
 	 */
 	public boolean isFetchingDataRows() {
 		return (root instanceof DbEntity) || metaData.isFetchingDataRows();
