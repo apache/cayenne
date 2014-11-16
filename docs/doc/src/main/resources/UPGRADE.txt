@@ -9,6 +9,10 @@ UPGRADING TO 4.0.M2
 * Note that 3.2 line of development was renamed to 4.0. So 4.0.M2 is a straight descendant of
   3.2M1.
 
+* org.apache.cayenne.map.naming.SmartNamingStrategy was replaced with org.apache.cayenne.map.naming.DefaultNameGenerator. If you
+  mentioned SmartNamingStrategy explicitly in your Maven or Ant configs, make sure you rename it. Since this was/is the default,
+  chances are that you didn't.
+
 * Minimal required JDK version is now 1.6 (both for modeler and runtime). This is a pretty conservative 
   requirement, considering that Java 1.6 has been EOL'd by Oracle on Feb 2013.
 
