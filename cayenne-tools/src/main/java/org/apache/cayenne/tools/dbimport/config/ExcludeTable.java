@@ -16,39 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access;
-
-import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+package org.apache.cayenne.tools.dbimport.config;
 
 /**
- * @since 4.0.
+ * @since 3.2.
  */
-public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
-
-    @Override
-    public boolean overwriteDbEntity(DbEntity entity) throws CayenneException {
-        return false;
+public class ExcludeTable extends PatternParam {
+    public ExcludeTable() {
     }
 
-    @Override
-    public void dbEntityAdded(DbEntity entity) {
-
-    }
-
-    @Override
-    public void dbEntityRemoved(DbEntity entity) {
-
-    }
-
-    @Override
-    public void objEntityAdded(ObjEntity entity) {
-
-    }
-
-    @Override
-    public void objEntityRemoved(ObjEntity entity) {
-
+    public ExcludeTable(String pattern) {
+        super(pattern);
     }
 }
