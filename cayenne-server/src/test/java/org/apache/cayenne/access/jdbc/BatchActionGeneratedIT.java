@@ -28,6 +28,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -36,7 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(ServerCase.GENERATED_PROJECT)
+@UseServerRuntime(CayenneProjects.GENERATED_PROJECT)
 public class BatchActionGeneratedIT extends ServerCase {
 
     @Inject

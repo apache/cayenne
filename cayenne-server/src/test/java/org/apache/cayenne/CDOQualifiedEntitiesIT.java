@@ -25,8 +25,10 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.testdo.qualified.Qualified2;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -35,7 +37,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@UseServerRuntime(ServerCase.QUALIFIED_PROJECT)
+@UseServerRuntime(CayenneProjects.QUALIFIED_PROJECT)
 public class CDOQualifiedEntitiesIT extends ServerCase {
 
     @Inject
@@ -50,11 +52,8 @@ public class CDOQualifiedEntitiesIT extends ServerCase {
     private TableHelper tQualified1;
     private TableHelper tQualified2;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("TEST_QUALIFIED2");
-        dbHelper.deleteAll("TEST_QUALIFIED1");
-
+    @Before
+    public void testSetUp() throws Exception {
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
         tQualified1 = new TableHelper(dbHelper, "TEST_QUALIFIED1");

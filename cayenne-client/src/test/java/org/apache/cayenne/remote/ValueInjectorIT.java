@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass1;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +39,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 @RunWith(value=Parameterized.class)
 public class ValueInjectorIT extends RemoteCayenneCase {
 

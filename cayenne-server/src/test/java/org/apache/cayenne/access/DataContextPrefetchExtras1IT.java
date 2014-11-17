@@ -26,6 +26,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -38,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * A test case for CAY-788.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextPrefetchExtras1IT extends ServerCase {
 
     @Inject
@@ -46,15 +47,6 @@ public class DataContextPrefetchExtras1IT extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-    }
 
     protected void createDataSet() throws Exception {
 

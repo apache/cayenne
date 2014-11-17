@@ -21,8 +21,10 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -33,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbRelationshipIT extends ServerCase {
 
     @Inject
@@ -43,8 +45,8 @@ public class DbRelationshipIT extends ServerCase {
     protected DbEntity paintingEnt;
     protected DbEntity galleryEnt;
 
-    @Override
-    public void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         artistEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
         paintingEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
         galleryEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("GALLERY");

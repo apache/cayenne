@@ -30,9 +30,12 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -46,7 +49,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextSerializationIT extends ServerCase {
 
     @Inject
@@ -63,15 +66,9 @@ public class DataContextSerializationIT extends ServerCase {
 
     protected TableHelper tArtist;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         CayenneRuntime.bindThreadInjector(runtime.getInjector());
-
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
@@ -81,8 +78,8 @@ public class DataContextSerializationIT extends ServerCase {
         tArtist.insert(33001, "aaa");
     }
 
-    @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    @After
+    public void testTearDown() throws Exception {
         CayenneRuntime.bindThreadInjector(null);
     }
 

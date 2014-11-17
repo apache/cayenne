@@ -28,9 +28,9 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataDomainCallbacksIT extends ServerCase {
 
     @Inject
@@ -52,20 +52,6 @@ public class DataDomainCallbacksIT extends ServerCase {
 
     @Inject
     private ObjectContext context1;
-    
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT");
-        dbHelper.deleteAll("GALLERY");
-    }
 
     @Test
     public void testPostLoad() throws Exception {

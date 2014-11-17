@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting1;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOMany2OneNoRevIT extends ServerCase {
 
     @Inject

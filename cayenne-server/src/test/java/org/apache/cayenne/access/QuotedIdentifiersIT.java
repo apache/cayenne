@@ -28,11 +28,12 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -41,19 +42,14 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.QUOTED_IDENTIFIERS_PROJECT)
+@UseServerRuntime(CayenneProjects.QUOTED_IDENTIFIERS_PROJECT)
 public class QuotedIdentifiersIT extends ServerCase {
 
     @Inject
     private ObjectContext context;
 
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("quote Person");
-        dbHelper.deleteAll("QUOTED_ADDRESS");
+    @Before
+    public void testSetUp() throws Exception {
 
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");

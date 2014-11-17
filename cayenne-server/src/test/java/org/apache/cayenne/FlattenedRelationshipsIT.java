@@ -31,8 +31,10 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -46,7 +48,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test case for objects with flattened relationships.
  */
-@UseServerRuntime(ServerCase.RELATIONSHIPS_FLATTENED_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
 public class FlattenedRelationshipsIT extends ServerCase {
 
     @Inject
@@ -65,16 +67,8 @@ public class FlattenedRelationshipsIT extends ServerCase {
     private TableHelper tFlattenedCircular;
     private TableHelper tFlattenedCircularJoin;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("COMPLEX_JOIN");
-        dbHelper.deleteAll("FLATTENED_TEST_4");
-        dbHelper.deleteAll("FLATTENED_TEST_3");
-        dbHelper.deleteAll("FLATTENED_TEST_2");
-        dbHelper.deleteAll("FLATTENED_TEST_1");
-        dbHelper.deleteAll("FLATTENED_CIRCULAR_JOIN");
-        dbHelper.deleteAll("FLATTENED_CIRCULAR");
-
+    @Before
+    public void testSetUp() throws Exception {
         tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");
 

@@ -23,9 +23,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Testing relationships with compound keys.
  */
-@UseServerRuntime(ServerCase.COMPOUND_PROJECT)
+@UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class DataContextCompoundRelIT extends ServerCase {
 
     @Inject
@@ -45,15 +45,6 @@ public class DataContextCompoundRelIT extends ServerCase {
 
     @Inject
     private DataContext context1;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("COMPOUND_FK_TEST");
-        dbHelper.deleteAll("COMPOUND_PK_TEST");
-    }
 
     @Test
     public void testInsert() {

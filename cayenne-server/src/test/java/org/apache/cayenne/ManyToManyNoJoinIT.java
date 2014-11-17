@@ -19,29 +19,20 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationships_activity.Activity;
 import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import java.sql.Date;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_ACTIVITY_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_ACTIVITY_PROJECT)
 public class ManyToManyNoJoinIT extends ServerCase {
 
     @Inject
     private ObjectContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ACTIVITY");
-        dbHelper.deleteAll("RESULT");
-    }
 
     @Test
     public void testValidateForSave1() throws Exception {

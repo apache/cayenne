@@ -19,66 +19,27 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.DICase;
 
 public class ServerCase extends DICase {
 
-	// known runtimes... unit tests may reuse these with @UseServerRuntime
-	// annotation or
-	// can define their own on the fly (TODO: how would that work with the
-	// global schema
-	// setup?)
-	public static final String INHERITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
-	public static final String INHERITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
-	public static final String INHERITANCE_PROJECT = "cayenne-inheritance.xml";
-	public static final String LOCKING_PROJECT = "cayenne-locking.xml";
-	public static final String SOFT_DELETE_PROJECT = "cayenne-soft-delete.xml";
-	public static final String QUOTED_IDENTIFIERS_PROJECT = "cayenne-quoted-identifiers.xml";
-	public static final String PEOPLE_PROJECT = "cayenne-people.xml";
-	public static final String RELATIONSHIPS_PROJECT = "cayenne-relationships.xml";
-	public static final String RELATIONSHIPS_ACTIVITY_PROJECT = "cayenne-relationships-activity.xml";
-	public static final String RELATIONSHIPS_DELETE_RULES_PROJECT = "cayenne-relationships-delete-rules.xml";
-	public static final String RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT = "cayenne-relationships-collection-to-many.xml";
-	public static final String RELATIONSHIPS_CHILD_MASTER_PROJECT = "cayenne-relationships-child-master.xml";
-	public static final String RELATIONSHIPS_CLOB_PROJECT = "cayenne-relationships-clob.xml";
-	public static final String RELATIONSHIPS_FLATTENED_PROJECT = "cayenne-relationships-flattened.xml";
-	public static final String RELATIONSHIPS_SET_TO_MANY_PROJECT = "cayenne-relationships-set-to-many.xml";
-	public static final String RELATIONSHIPS_TO_MANY_FK_PROJECT = "cayenne-relationships-to-many-fk.xml";
-	public static final String RELATIONSHIPS_TO_ONE_FK_PROJECT = "cayenne-relationships-to-one-fk.xml";
-	public static final String MISC_TYPES_PROJECT = "cayenne-misc-types.xml";
-	public static final String THINGS_PROJECT = "cayenne-things.xml";
-	public static final String NUMERIC_TYPES_PROJECT = "cayenne-numeric-types.xml";
-	public static final String BINARY_PK_PROJECT = "cayenne-binary-pk.xml";
-	public static final String NO_PK_PROJECT = "cayenne-no-pk.xml";
-	public static final String LOB_PROJECT = "cayenne-lob.xml";
-	public static final String DATE_TIME_PROJECT = "cayenne-date-time.xml";
-	public static final String ENUM_PROJECT = "cayenne-enum.xml";
-	public static final String EXTENDED_TYPE_PROJECT = "cayenne-extended-type.xml";
-	public static final String GENERATED_PROJECT = "cayenne-generated.xml";
-	public static final String MEANINGFUL_PK_PROJECT = "cayenne-meaningful-pk.xml";
-	public static final String MIXED_PERSISTENCE_STRATEGY_PROJECT = "cayenne-mixed-persistence-strategy.xml";
-	public static final String PRIMITIVE_PROJECT = "cayenne-primitive.xml";
-	public static final String RETURN_TYPES_PROJECT = "cayenne-return-types.xml";
-	public static final String UUID_PROJECT = "cayenne-uuid.xml";
-	public static final String COMPOUND_PROJECT = "cayenne-compound.xml";
-	public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
-	public static final String EMBEDDABLE_PROJECT = "cayenne-embeddable.xml";
-	public static final String GENERIC_PROJECT = "cayenne-generic.xml";
-	public static final String QUALIFIED_PROJECT = "cayenne-qualified.xml";
-	public static final String MULTINODE_PROJECT = "cayenne-multinode.xml";
-	public static final String ONEWAY_PROJECT = "cayenne-oneway-rels.xml";
-	public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";
-    public static final String MAP_TO_MANY_PROJECT = "cayenne-map-to-many.xml";
-	public static final String SUS_PROJECT = "cayenne-sus.xml";
-
 	private static final Injector injector;
+
+	@Inject
+	private DBCleaner dbCleaner;
 
 	static {
 		DefaultScope testScope = new DefaultScope();
 		injector = DIBootstrap.createInjector(new ServerCaseModule(testScope));
 		injector.getInstance(SchemaBuilder.class).rebuildSchema();
+	}
+
+	@Override
+	protected void setUpAfterInjection() throws Exception {
+		dbCleaner.clean();
 	}
 
 	@Override

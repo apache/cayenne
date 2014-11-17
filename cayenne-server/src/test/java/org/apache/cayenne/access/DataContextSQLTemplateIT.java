@@ -35,9 +35,11 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -48,7 +50,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextSQLTemplateIT extends ServerCase {
 
     @Inject
@@ -66,14 +68,8 @@ public class DataContextSQLTemplateIT extends ServerCase {
     protected TableHelper tPainting;
     protected TableHelper tArtist;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-
+    @Before
+    public void testSetUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

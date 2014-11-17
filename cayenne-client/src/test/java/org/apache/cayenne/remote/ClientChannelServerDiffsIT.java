@@ -32,6 +32,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
@@ -44,7 +45,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class ClientChannelServerDiffsIT extends ClientCase {
 
     @Inject

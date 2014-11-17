@@ -23,9 +23,12 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -33,7 +36,7 @@ import java.sql.Connection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class QueryAssemblerIT extends ServerCase {
 
     @Inject
@@ -46,14 +49,14 @@ public class QueryAssemblerIT extends ServerCase {
 
     private TstQueryAssembler qa;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
         this.qa = new TstQueryAssembler(new SelectQuery<Object>(), dataNode, connection);
     }
 
-    @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    @After
+    public void testTearDown() throws Exception {
         connection.close();
     }
 

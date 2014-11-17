@@ -21,9 +21,9 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@UseServerRuntime(ServerCase.LOB_PROJECT)
+@UseServerRuntime(CayenneProjects.LOB_PROJECT)
 public class DataContextClobIT extends ServerCase {
 
     @Inject
@@ -47,16 +47,6 @@ public class DataContextClobIT extends ServerCase {
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        if (accessStackAdapter.supportsLobs()) {
-            dbHelper.deleteAll("CLOB_TEST");
-        }
-    }
 
     private boolean skipTests() {
         return !accessStackAdapter.supportsLobs();

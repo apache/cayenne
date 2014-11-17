@@ -22,10 +22,10 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.BINARY_PK_PROJECT)
+@UseServerRuntime(CayenneProjects.BINARY_PK_PROJECT)
 public class DataContextBinaryPKIT extends ServerCase {
 
     @Inject
@@ -44,17 +44,6 @@ public class DataContextBinaryPKIT extends ServerCase {
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        if (accessStackAdapter.supportsBinaryPK()) {
-            dbHelper.deleteAll("BINARY_PK_TEST2");
-            dbHelper.deleteAll("BINARY_PK_TEST1");
-        }
-    }
 
     @Test
     public void testInsertBinaryPK() throws Exception {

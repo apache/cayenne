@@ -23,9 +23,9 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.date_time.CalendarEntity;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -41,20 +41,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests Date handling in Cayenne.
  */
-@UseServerRuntime(ServerCase.DATE_TIME_PROJECT)
+@UseServerRuntime(CayenneProjects.DATE_TIME_PROJECT)
 public class DateTimeTypesIT extends ServerCase {
 
     @Inject
     private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("CALENDAR_TEST");
-        dbHelper.deleteAll("DATE_TEST");
-    }
 
     @Test
     public void testCalendar() throws Exception {

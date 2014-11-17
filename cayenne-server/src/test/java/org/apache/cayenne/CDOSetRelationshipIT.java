@@ -26,8 +26,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Set;
@@ -39,7 +41,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_SET_TO_MANY_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT)
 public class CDOSetRelationshipIT extends ServerCase {
 
     @Inject
@@ -51,11 +53,8 @@ public class CDOSetRelationshipIT extends ServerCase {
     protected TableHelper tSetToMany;
     protected TableHelper tSetToManyTarget;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("SET_TO_MANY_TARGET");
-        dbHelper.deleteAll("SET_TO_MANY");
-
+    @Before
+    public void testSetUp() throws Exception {
         tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
         tSetToMany.setColumns("ID");
 

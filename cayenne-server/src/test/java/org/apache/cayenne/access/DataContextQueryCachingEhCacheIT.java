@@ -20,23 +20,19 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.cache.EhCacheQueryCache;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
+import org.junit.Before;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextQueryCachingEhCacheIT extends DataContextQueryCachingIT {
     
     protected EhCacheQueryCache domainCache;
     protected EhCacheQueryCache contextCache;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-
+    @Before
+    public void testSetUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
@@ -56,8 +52,8 @@ public class DataContextQueryCachingEhCacheIT extends DataContextQueryCachingIT 
         context.setQueryCache(contextCache);
     }
     
-    @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    @After
+    public void testTearDown() throws Exception {
         domainCache.shutdown();
         contextCache.shutdown();
     }

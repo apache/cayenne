@@ -26,8 +26,10 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -36,7 +38,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class AshwoodEntitySorterIT extends ServerCase {
 
     @Inject
@@ -48,13 +50,8 @@ public class AshwoodEntitySorterIT extends ServerCase {
     protected TableHelper tRelationshipHelper;
     protected TableHelper tReflexiveAndToOne;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
-        dbHelper.deleteAll("FK_OF_DIFFERENT_TYPE");
-        dbHelper.deleteAll("MEANINGFUL_FK");
-        dbHelper.deleteAll("RELATIONSHIP_HELPER");
-
+    @Before
+    public void testSetUp() throws Exception {
         tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
         tRelationshipHelper.setColumns("RELATIONSHIP_HELPER_ID", "NAME");
 

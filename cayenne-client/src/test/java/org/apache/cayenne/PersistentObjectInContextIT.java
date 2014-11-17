@@ -28,8 +28,10 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.PersistentObjectHolder;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -40,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class PersistentObjectInContextIT extends ClientCase {
 
     @Inject
@@ -52,11 +54,8 @@ public class PersistentObjectInContextIT extends ClientCase {
     private TableHelper tMtTable1;
     private TableHelper tMtTable2;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE2");
-        dbHelper.deleteAll("MT_TABLE1");
-
+    @Before
+    public void testSetUp() throws Exception {
         tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
 

@@ -20,10 +20,10 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationException;
 import org.junit.Test;
@@ -32,20 +32,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class CayenneContextValidationIT extends ClientCase {
 
     @Inject
-    private DBHelper dbHelper;
-
-    @Inject
     private CayenneContext context;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE2");
-        dbHelper.deleteAll("MT_TABLE1");
-    }
 
     @Test
     public void testValidate() throws Exception {

@@ -25,16 +25,17 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass1;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass2;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class SelectQueryAbstractEntityIT extends ServerCase {
     
     @Inject
@@ -44,11 +45,9 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
     private DBHelper dbHelper;
     
     private TableHelper mtTable;
-    
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE1");
-        
+
+    @Before
+    public void testSetUp() throws Exception {
         mtTable = new TableHelper(dbHelper, "MT_TABLE1");
         mtTable.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1", "SUBCLASS_ATTRIBUTE1");
     }

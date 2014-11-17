@@ -25,10 +25,11 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.testdo.reflexive.ClientReflexive;
 import org.apache.cayenne.testdo.reflexive.Reflexive;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(ClientCase.REFLEXIVE_PROJECT)
+@UseServerRuntime(CayenneProjects.REFLEXIVE_PROJECT)
 public class CayenneContextReflexiveIT extends ClientCase {
 
     @Inject

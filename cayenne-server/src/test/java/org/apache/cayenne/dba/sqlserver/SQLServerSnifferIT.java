@@ -24,6 +24,7 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -35,7 +36,7 @@ import java.sql.SQLException;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLServerSnifferIT extends ServerCase {
 
     @Inject

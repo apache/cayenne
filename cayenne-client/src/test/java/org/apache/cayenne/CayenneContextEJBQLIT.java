@@ -24,7 +24,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -32,7 +34,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class CayenneContextEJBQLIT extends ClientCase {
 
     @Inject
@@ -43,11 +45,8 @@ public class CayenneContextEJBQLIT extends ClientCase {
 
     private TableHelper tMtTable1;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE2");
-        dbHelper.deleteAll("MT_TABLE1");
-
+    @Before
+    public void testSetUp() throws Exception {
         tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }

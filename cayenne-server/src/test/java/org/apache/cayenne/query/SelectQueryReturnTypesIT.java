@@ -34,6 +34,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -42,7 +43,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.RETURN_TYPES_PROJECT)
+@UseServerRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
 public class SelectQueryReturnTypesIT extends ServerCase {
 
     @Inject
@@ -53,11 +54,6 @@ public class SelectQueryReturnTypesIT extends ServerCase {
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("TYPES_MAPPING_TEST1");
-    }
 
     protected void createNumericsDataSet() throws Exception {
         TableHelper tNumerics = new TableHelper(dbHelper, "TYPES_MAPPING_TEST1");

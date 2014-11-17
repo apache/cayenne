@@ -21,11 +21,13 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
-@UseServerRuntime("cayenne-small-testmap.xml")
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CDOReflexiveRelDeleteIT extends ServerCase {
 
     @Inject
@@ -36,9 +38,8 @@ public class CDOReflexiveRelDeleteIT extends ServerCase {
     private ArtGroup childGroup2;
     private ArtGroup childGroup3;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        super.setUpAfterInjection();
+    @Before
+    public void testSetUp() throws Exception {
 
         parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");

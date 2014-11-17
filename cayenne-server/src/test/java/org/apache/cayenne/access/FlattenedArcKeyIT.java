@@ -25,6 +25,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_FLATTENED_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
 public class FlattenedArcKeyIT extends ServerCase {
 
     @Inject

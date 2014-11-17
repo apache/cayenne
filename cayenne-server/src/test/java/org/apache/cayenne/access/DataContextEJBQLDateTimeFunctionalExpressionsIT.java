@@ -22,8 +22,8 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -34,19 +34,11 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.DATE_TIME_PROJECT)
+@UseServerRuntime(CayenneProjects.DATE_TIME_PROJECT)
 public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends ServerCase {
 
     @Inject
-    protected DBHelper dbHelper;
-
-    @Inject
     private ObjectContext context;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("DATE_TEST");
-    }
 
     @Test
     public void testCURRENT_DATE() {

@@ -27,8 +27,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests conflicts between field and map-based persistence.
  */
-@UseServerRuntime(ServerCase.MIXED_PERSISTENCE_STRATEGY_PROJECT)
+@UseServerRuntime(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT)
 public class MixedPersistenceStrategyIT extends ServerCase {
 
     @Inject
@@ -49,11 +51,8 @@ public class MixedPersistenceStrategyIT extends ServerCase {
     protected TableHelper tMixedPersistenceStrategy;
     protected TableHelper tMixedPersistenceStrategy2;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MIXED_PERSISTENCE_STRATEGY2");
-        dbHelper.deleteAll("MIXED_PERSISTENCE_STRATEGY");
-
+    @Before
+    public void testSetUp() throws Exception {
         tMixedPersistenceStrategy = new TableHelper(
                 dbHelper,
                 "MIXED_PERSISTENCE_STRATEGY");

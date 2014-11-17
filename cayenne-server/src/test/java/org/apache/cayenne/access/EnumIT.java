@@ -29,6 +29,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -36,7 +37,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(ServerCase.ENUM_PROJECT)
+@UseServerRuntime(CayenneProjects.ENUM_PROJECT)
 public class EnumIT extends ServerCase {
 
     @Inject
@@ -44,12 +45,6 @@ public class EnumIT extends ServerCase {
 
     @Inject
     private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ENUM_ENTITY");
-
-    }
 
     private void createDataSet() throws Exception {
         TableHelper tEnumEntity = new TableHelper(dbHelper, "ENUM_ENTITY");

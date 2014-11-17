@@ -25,12 +25,13 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.DataChannelSyncStats;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class CayenneContextGraphDiffCompressorIT extends ClientCase {
 
     @Inject(ClientCase.ROP_CLIENT_KEY)

@@ -19,14 +19,12 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.service.LocalConnection;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.persistent.Continent;
 import org.apache.cayenne.testdo.persistent.Country;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,14 +37,11 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test for entites that are implemented in same class on client and server
+ * Test for entities that are implemented in same class on client and server
  */
-@UseServerRuntime(ClientCase.PERSISTENT_PROJECT)
+@UseServerRuntime(CayenneProjects.PERSISTENT_PROJECT)
 @RunWith(value=Parameterized.class)
 public class LightSuperClassIT extends RemoteCayenneCase {
-
-    @Inject
-    private DBHelper dbHelper;
 
     private boolean server;
 
@@ -63,14 +58,6 @@ public class LightSuperClassIT extends RemoteCayenneCase {
     public LightSuperClassIT(int serializationPolicy, boolean server) {
         super.serializationPolicy = serializationPolicy;
         this.server = server;
-    }
-
-    @Override
-    public void setUpAfterInjection() throws Exception {
-        super.setUpAfterInjection();
-
-        dbHelper.deleteAll("CONTINENT");
-        dbHelper.deleteAll("COUNTRY");
     }
 
     private ObjectContext createContext() {

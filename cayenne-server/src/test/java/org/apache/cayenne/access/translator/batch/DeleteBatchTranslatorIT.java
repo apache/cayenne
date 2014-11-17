@@ -29,6 +29,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -43,7 +44,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+@UseServerRuntime(CayenneProjects.LOCKING_PROJECT)
 public class DeleteBatchTranslatorIT extends ServerCase {
 
     @Inject

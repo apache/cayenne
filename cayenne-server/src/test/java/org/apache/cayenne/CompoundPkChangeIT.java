@@ -21,15 +21,15 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.COMPOUND_PROJECT)
+@UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class CompoundPkChangeIT extends ServerCase {
 
     private static final String key1v1 = "-key1-v1-";
@@ -41,15 +41,6 @@ public class CompoundPkChangeIT extends ServerCase {
 
     @Inject
     private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("COMPOUND_FK_TEST");
-        dbHelper.deleteAll("COMPOUND_PK_TEST");
-    }
 
     @Test
     public void testCompoundPkChangeSingleElement() throws Exception {

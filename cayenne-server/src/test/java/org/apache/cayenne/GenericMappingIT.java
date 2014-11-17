@@ -25,7 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -36,20 +36,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.GENERIC_PROJECT)
+@UseServerRuntime(CayenneProjects.GENERIC_PROJECT)
 public class GenericMappingIT extends ServerCase {
 
     @Inject
     private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("GENERIC2");
-        dbHelper.deleteAll("GENERIC1");
-    }
 
     @Test
     public void testInsertSingle() {

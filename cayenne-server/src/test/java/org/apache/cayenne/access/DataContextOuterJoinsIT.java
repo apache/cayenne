@@ -29,8 +29,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -38,7 +40,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextOuterJoinsIT extends ServerCase {
 
     @Inject
@@ -52,9 +54,8 @@ public class DataContextOuterJoinsIT extends ServerCase {
     protected TableHelper artgroupHelper;
     protected TableHelper artistGroupHelper;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-
+    @Before
+    public void testSetUp() throws Exception {
         artistHelper = new TableHelper(dbHelper, "ARTIST", "ARTIST_ID", "ARTIST_NAME");
         paintingHelper = new TableHelper(
                 dbHelper,

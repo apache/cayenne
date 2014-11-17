@@ -30,8 +30,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -42,7 +45,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextQueryCachingIT extends ServerCase {
 
     @Inject
@@ -61,14 +64,8 @@ public class DataContextQueryCachingIT extends ServerCase {
         return this.domain.getDataNodes().iterator().next();
     }
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-
+    @Before
+    public void testSetUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
@@ -85,8 +82,8 @@ public class DataContextQueryCachingIT extends ServerCase {
         context.setQueryCache(new MapQueryCache(50));
     }
 
-    @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    @After
+    public void testTearDown() throws Exception {
         domain.setQueryCache(oldCache);
     }
 

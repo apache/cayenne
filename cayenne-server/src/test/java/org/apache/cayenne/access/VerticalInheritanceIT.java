@@ -31,6 +31,7 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub1Sub1;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub2;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.INHERITANCE_VERTICAL_PROJECT)
+@UseServerRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
 public class VerticalInheritanceIT extends ServerCase {
 
 	@Inject
@@ -54,22 +55,6 @@ public class VerticalInheritanceIT extends ServerCase {
 
 	@Inject
 	protected DBHelper dbHelper;
-
-	@Override
-	protected void setUpAfterInjection() throws Exception {
-
-		dbHelper.deleteAll("IV_SUB1_SUB1");
-		dbHelper.deleteAll("IV_SUB1");
-		dbHelper.deleteAll("IV_SUB2");
-		dbHelper.deleteAll("IV_ROOT");
-
-		dbHelper.deleteAll("IV1_SUB1");
-		dbHelper.deleteAll("IV1_ROOT");
-
-		dbHelper.deleteAll("IV2_SUB1");
-		dbHelper.deleteAll("IV2_ROOT");
-		dbHelper.deleteAll("IV2_X");
-	}
 
     @Test
 	public void testInsert_Root() throws Exception {

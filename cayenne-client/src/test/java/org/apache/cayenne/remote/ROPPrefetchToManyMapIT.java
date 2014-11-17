@@ -24,12 +24,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.service.LocalConnection;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.map_to_many.ClientIdMapToMany;
 import org.apache.cayenne.testdo.map_to_many.ClientIdMapToManyTarget;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,12 +40,9 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ClientCase.MAP_TO_MANY_PROJECT)
+@UseServerRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
 @RunWith(value=Parameterized.class)
 public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
-    
-    @Inject
-    private DBHelper dbHelper;
     
     @Inject
     private DataChannelInterceptor queryInterceptor;
@@ -62,12 +58,6 @@ public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
 
     public ROPPrefetchToManyMapIT(int serializationPolicy) {
         super.serializationPolicy = serializationPolicy;
-    }
-
-    @Override
-    public void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ID_MAP_TO_MANY_TARGET");
-        dbHelper.deleteAll("ID_MAP_TO_MANY");
     }
 
     @Test

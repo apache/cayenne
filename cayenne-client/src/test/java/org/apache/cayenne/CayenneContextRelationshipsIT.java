@@ -27,13 +27,15 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class CayenneContextRelationshipsIT extends ClientCase {
 
     @Inject
@@ -48,14 +50,8 @@ public class CayenneContextRelationshipsIT extends ClientCase {
     private TableHelper tMtTable1;
     private TableHelper tMtTable2;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE2");
-        dbHelper.deleteAll("MT_TABLE1");
-        dbHelper.deleteAll("MT_JOIN45");
-        dbHelper.deleteAll("MT_TABLE4");
-        dbHelper.deleteAll("MT_TABLE5");
-
+    @Before
+    public void testSetUp() throws Exception {
         tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
 

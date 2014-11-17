@@ -37,8 +37,10 @@ import org.apache.cayenne.testdo.generated.GeneratedColumnTest2;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 import org.apache.cayenne.testdo.generated.GeneratedF1;
 import org.apache.cayenne.testdo.generated.GeneratedF2;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -48,7 +50,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.GENERATED_PROJECT)
+@UseServerRuntime(CayenneProjects.GENERATED_PROJECT)
 public class IdentityColumnsIT extends ServerCase {
 
     @Inject
@@ -65,15 +67,8 @@ public class IdentityColumnsIT extends ServerCase {
 
     protected TableHelper joinTable;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        // TODO: extract in a separate DataMap?
-        dbHelper.deleteAll("GENERATED_JOIN");
-        dbHelper.deleteAll("GENERATED_F1");
-        dbHelper.deleteAll("GENERATED_F2");
-        dbHelper.deleteAll("GENERATED_COLUMN_DEP");
-        dbHelper.deleteAll("GENERATED_COLUMN_TEST");
-
+    @Before
+    public void testSetUp() throws Exception {
         joinTable = new TableHelper(dbHelper, "GENERATED_JOIN");
     }
 

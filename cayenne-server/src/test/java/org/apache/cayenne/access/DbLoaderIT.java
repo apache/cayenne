@@ -30,9 +30,12 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -45,7 +48,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbLoaderIT extends ServerCase {
 
     @Inject
@@ -62,13 +65,13 @@ public class DbLoaderIT extends ServerCase {
 
     private DbLoader loader;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         loader = new DbLoader(dataSourceFactory.getSharedDataSource().getConnection(), adapter, null);
     }
 
-    @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    @After
+    public void testTearDown() throws Exception {
         loader.getConnection().close();
     }
 

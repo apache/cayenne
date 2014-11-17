@@ -24,8 +24,10 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -33,7 +35,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ServerRuntimeBuilder_InAction_IT extends ServerCase {
 
     @Inject
@@ -47,17 +49,8 @@ public class ServerRuntimeBuilder_InAction_IT extends ServerCase {
 
     private DataSource dataSource;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT");
-        dbHelper.deleteAll("GALLERY");
-
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+    @Before
+    public void testSetUp() throws Exception { TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(33001, "AA1");
         tArtist.insert(33002, "AA2");

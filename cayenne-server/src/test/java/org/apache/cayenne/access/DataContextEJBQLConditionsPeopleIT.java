@@ -26,8 +26,10 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.Address;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -39,7 +41,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
 
     @Inject
@@ -48,8 +50,8 @@ public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
 
         TableHelper tPerson = new TableHelper(dbHelper, "PERSON");
         tPerson.setColumns(
@@ -62,12 +64,6 @@ public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
 
         // manually break circular deps
         tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-
-        dbHelper.deleteAll("ADDRESS");
-        dbHelper.deleteAll("DEPARTMENT");
-        dbHelper.deleteAll("PERSON_NOTES");
-        dbHelper.deleteAll("PERSON");
-        dbHelper.deleteAll("CLIENT_COMPANY");
 
         // TODO: use TableHelper to create test data
 

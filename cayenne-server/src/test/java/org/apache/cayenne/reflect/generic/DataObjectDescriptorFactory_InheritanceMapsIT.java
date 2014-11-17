@@ -28,11 +28,12 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(ServerCase.INHERITANCE_SINGLE_TABLE1_PROJECT)
+@UseServerRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class DataObjectDescriptorFactory_InheritanceMapsIT extends ServerCase {
 
     @Inject

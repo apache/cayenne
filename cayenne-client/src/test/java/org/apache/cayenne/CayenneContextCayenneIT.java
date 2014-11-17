@@ -20,29 +20,20 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class CayenneContextCayenneIT extends ClientCase {
 
     @Inject
-    private DBHelper dbHelper;
-
-    @Inject
     private CayenneContext context;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE2");
-        dbHelper.deleteAll("MT_TABLE1");
-    }
 
     @Test
     public void testObjectForPK() throws Exception {

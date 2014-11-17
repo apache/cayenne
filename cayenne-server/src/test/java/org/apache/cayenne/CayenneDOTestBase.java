@@ -19,17 +19,15 @@ package org.apache.cayenne;
  *  under the License.
  ****************************************************************/
 
-import java.util.List;
-import java.sql.Types;
-
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.server.ServerCase;
+
+import java.util.List;
 
 public abstract class CayenneDOTestBase extends ServerCase {
 
@@ -44,20 +42,6 @@ public abstract class CayenneDOTestBase extends ServerCase {
 
     @Inject
     protected ObjectContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("PAINTING1");
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT");
-        dbHelper.deleteAll("GALLERY");
-    }
 
     protected Artist newArtist() {
         Artist a1 = context.newObject(Artist.class);

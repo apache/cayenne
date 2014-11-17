@@ -23,9 +23,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.remote.service.LocalConnection;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,13 +39,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 @RunWith(value=Parameterized.class)
 public class NestedObjectContextParentEventsIT extends RemoteCayenneCase {
 
-    @Inject
-    private DBHelper dbHelper;
-    
     @Inject
     private ClientRuntime runtime;
 
@@ -61,14 +57,6 @@ public class NestedObjectContextParentEventsIT extends RemoteCayenneCase {
 
     public NestedObjectContextParentEventsIT(int serializationPolicy) {
         super.serializationPolicy = serializationPolicy;
-    }
-
-    @Override
-    public void setUpAfterInjection() throws Exception {
-        super.setUpAfterInjection();
-
-        dbHelper.deleteAll("MT_TABLE2");
-        dbHelper.deleteAll("MT_TABLE1");
     }
 
     @Test

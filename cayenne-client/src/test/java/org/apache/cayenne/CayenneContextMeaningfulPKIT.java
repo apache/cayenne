@@ -26,14 +26,16 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.meaningful_pk.ClientMeaningfulPk;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ClientCase.MEANINGFUL_PK_PROJECT)
+@UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 public class CayenneContextMeaningfulPKIT extends ClientCase {
 
     @Inject
@@ -44,10 +46,8 @@ public class CayenneContextMeaningfulPKIT extends ClientCase {
 
     private TableHelper tMeaningfulPK;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MEANINGFUL_PK");
-
+    @Before
+    public void testSetUp() throws Exception {
         tMeaningfulPK = new TableHelper(dbHelper, "MEANINGFUL_PK");
         tMeaningfulPK.setColumns("PK");
     }

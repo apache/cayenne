@@ -31,7 +31,9 @@ import org.apache.cayenne.testdo.mt.ClientMtTable4;
 import org.apache.cayenne.testdo.mt.ClientMtTable5;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.client.ClientRuntimeProperty;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests peer context synchronization via ClientChannel events.
  */
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 @ClientRuntimeProperty({
         Constants.ROP_CHANNEL_EVENTS_PROPERTY, "true"
 })
@@ -62,14 +64,8 @@ public class CayenneContextClientChannelEventsIT extends ClientCase {
     private TableHelper tMtTable5;
     private TableHelper tMtJoin45;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE2");
-        dbHelper.deleteAll("MT_TABLE1");
-        dbHelper.deleteAll("MT_JOIN45");
-        dbHelper.deleteAll("MT_TABLE4");
-        dbHelper.deleteAll("MT_TABLE5");
-
+    @Before
+    public void testSetUp() throws Exception {
         tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
 

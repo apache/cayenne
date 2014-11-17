@@ -23,8 +23,10 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PkGeneratorIT extends ServerCase {
 
     @Inject
@@ -46,9 +48,8 @@ public class PkGeneratorIT extends ServerCase {
     private PkGenerator pkGenerator;
     private DbEntity paintingEntity;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-
+    @Before
+    public void testSetUp() throws Exception {
         pkGenerator = node.getAdapter().getPkGenerator();
         paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
 

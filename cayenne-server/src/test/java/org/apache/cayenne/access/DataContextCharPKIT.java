@@ -22,8 +22,8 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -33,20 +33,11 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.COMPOUND_PROJECT)
+@UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class DataContextCharPKIT extends ServerCase {
 
     @Inject
     private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("CHAR_FK_TEST");
-        dbHelper.deleteAll("CHAR_PK_TEST");
-    }
 
     @Test
     public void testInsert() throws Exception {

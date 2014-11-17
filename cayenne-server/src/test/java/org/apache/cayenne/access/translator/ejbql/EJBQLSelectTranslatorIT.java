@@ -26,6 +26,7 @@ import org.apache.cayenne.ejbql.EJBQLParser;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -37,7 +38,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EJBQLSelectTranslatorIT extends ServerCase {
 
     @Inject

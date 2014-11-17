@@ -26,10 +26,14 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.unit.UnitLocalConnection;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.DBCleaner;
 
 public abstract class RemoteCayenneCase extends ClientCase {
 
     protected CayenneContext clientContext;
+
+    @Inject
+    private DBCleaner dbCleaner;
 
     @Inject
     protected DataContext serverContext;
@@ -41,6 +45,7 @@ public abstract class RemoteCayenneCase extends ClientCase {
 
     @Override
     public void setUpAfterInjection() throws Exception {
+        dbCleaner.clean();
         clientContext = createROPContext();
     }
 

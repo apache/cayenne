@@ -20,9 +20,9 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationResult;
@@ -32,19 +32,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class MeaningfulFKIT extends ServerCase {
 
     @Inject
     private ObjectContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MEANINGFUL_FK");
-    }
 
     @Test
     public void testValidateForSave1() throws Exception {

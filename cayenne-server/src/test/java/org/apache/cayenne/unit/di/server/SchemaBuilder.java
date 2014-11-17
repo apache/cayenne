@@ -70,7 +70,7 @@ public class SchemaBuilder {
 
     private static String[] MAPS_REQUIRING_SCHEMA_SETUP = {"testmap.map.xml", "compound.map.xml", "misc-types.map.xml", "things.map.xml", "numeric-types.map.xml", "binary-pk.map.xml", "no-pk.map.xml",
             "lob.map.xml", "date-time.map.xml", "enum.map.xml", "extended-type.map.xml", "generated.map.xml", "mixed-persistence-strategy.map.xml", "people.map.xml", "primitive.map.xml", "inheritance.map.xml",
-            "locking.map.xml", "soft-delete.map.xml", "relationships.map.xml", "relationships-activity.map.xml", "relationships-delete-rules.map.xml",
+            "locking.map.xml", "soft-delete.map.xml", "empty.map.xml", "relationships.map.xml", "relationships-activity.map.xml", "relationships-delete-rules.map.xml",
             "relationships-collection-to-many.map.xml", "relationships-child-master.map.xml", "relationships-clob.map.xml",
             "relationships-flattened.map.xml", "relationships-set-to-many.map.xml", "relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml", "return-types.map.xml", "uuid.map.xml",
             "multi-tier.map.xml", "persistent.map.xml", "reflexive.map.xml", "delete-rules.map.xml", "lifecycles.map.xml",

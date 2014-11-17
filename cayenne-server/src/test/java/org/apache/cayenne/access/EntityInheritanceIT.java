@@ -23,13 +23,14 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.inheritance.BaseEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
 import org.apache.cayenne.testdo.inheritance.SubEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.INHERITANCE_PROJECT)
+@UseServerRuntime(CayenneProjects.INHERITANCE_PROJECT)
 public class EntityInheritanceIT extends ServerCase {
 
     @Inject

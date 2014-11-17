@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ServerCaseSelfIT extends ServerCase {
 
     @Inject
@@ -44,7 +44,7 @@ public class ServerCaseSelfIT extends ServerCase {
     public void testSetup_TearDown_Runtime() throws Exception {
 
         assertNotNull(properties);
-        assertEquals(ServerCase.TESTMAP_PROJECT, properties.getConfigurationLocation());
+        assertEquals(CayenneProjects.TESTMAP_PROJECT, properties.getConfigurationLocation());
 
         ServerRuntime local = this.runtime;
         assertNotNull(local);

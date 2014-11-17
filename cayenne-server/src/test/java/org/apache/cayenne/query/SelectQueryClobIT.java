@@ -28,6 +28,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -36,7 +37,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.LOB_PROJECT)
+@UseServerRuntime(CayenneProjects.LOB_PROJECT)
 public class SelectQueryClobIT extends ServerCase {
 
     @Inject
@@ -47,15 +48,6 @@ public class SelectQueryClobIT extends ServerCase {
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("CLOB_TEST_RELATION");
-
-        if (accessStackAdapter.supportsLobs()) {
-            dbHelper.deleteAll("CLOB_TEST");
-        }
-    }
 
     protected void createClobDataSet() throws Exception {
         TableHelper tClobTest = new TableHelper(dbHelper, "CLOB_TEST");

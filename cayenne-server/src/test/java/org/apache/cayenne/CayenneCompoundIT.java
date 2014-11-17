@@ -25,8 +25,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -38,7 +40,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ServerCase.COMPOUND_PROJECT)
+@UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class CayenneCompoundIT extends ServerCase {
 
     @Inject
@@ -50,12 +52,8 @@ public class CayenneCompoundIT extends ServerCase {
     protected TableHelper tCompoundPKTest;
     protected TableHelper tCharPKTest;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("COMPOUND_FK_TEST");
-        dbHelper.deleteAll("COMPOUND_PK_TEST");
-        dbHelper.deleteAll("CHAR_PK_TEST");
-
+    @Before
+    public void testSetUp() throws Exception {
         tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
 

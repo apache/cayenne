@@ -35,8 +35,10 @@ import org.apache.cayenne.testdo.things.BoxInfo;
 import org.apache.cayenne.testdo.things.Thing;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.THINGS_PROJECT)
+@UseServerRuntime(CayenneProjects.THINGS_PROJECT)
 public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
 
     @Inject
@@ -67,15 +69,8 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
 
     protected TableHelper tBoxThing;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("BALL");
-        dbHelper.deleteAll("BOX_THING");
-        dbHelper.deleteAll("THING");
-        dbHelper.deleteAll("BOX_INFO");
-        dbHelper.deleteAll("BOX");
-        dbHelper.deleteAll("BAG");
-
+    @Before
+    public void testSetUp() throws Exception {
         tBoxThing = new TableHelper(dbHelper, "BOX_THING");
         tBoxThing.setColumns("BOX_ID", "THING_WEIGHT", "THING_VOLUME");
     }

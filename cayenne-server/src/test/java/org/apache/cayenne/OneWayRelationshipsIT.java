@@ -26,8 +26,10 @@ import org.apache.cayenne.testdo.oneway.OnewayTable1;
 import org.apache.cayenne.testdo.oneway.OnewayTable2;
 import org.apache.cayenne.testdo.oneway.OnewayTable3;
 import org.apache.cayenne.testdo.oneway.OnewayTable4;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -38,7 +40,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.ONEWAY_PROJECT)
+@UseServerRuntime(CayenneProjects.ONEWAY_PROJECT)
 public class OneWayRelationshipsIT extends ServerCase {
 
     @Inject
@@ -52,14 +54,8 @@ public class OneWayRelationshipsIT extends ServerCase {
     private TableHelper t3Helper;
     private TableHelper t4Helper;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-
-        dbHelper.deleteAll("oneway_table2");
-        dbHelper.deleteAll("oneway_table1");
-        dbHelper.deleteAll("oneway_table4");
-        dbHelper.deleteAll("oneway_table3");
-
+    @Before
+    public void testSetUp() throws Exception {
         t1Helper = new TableHelper(dbHelper, "oneway_table1");
         t1Helper.setColumns("ID");
         t2Helper = new TableHelper(dbHelper, "oneway_table2");

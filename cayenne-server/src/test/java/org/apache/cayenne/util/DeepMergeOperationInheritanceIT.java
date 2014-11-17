@@ -28,6 +28,7 @@ import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -37,7 +38,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class DeepMergeOperationInheritanceIT extends ServerCase {
 
     @Inject

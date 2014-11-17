@@ -28,13 +28,14 @@ import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 import org.apache.cayenne.testdo.testmap.annotations.Tag2;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.INHERITANCE_SINGLE_TABLE1_PROJECT)
+@UseServerRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class LifecycleCallbackRegistry_InheritanceIT extends ServerCase {
 
     @Inject

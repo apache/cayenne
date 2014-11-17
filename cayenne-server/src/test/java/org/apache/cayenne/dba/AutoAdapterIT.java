@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -36,7 +37,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class AutoAdapterIT extends ServerCase {
 
     @Inject

@@ -25,6 +25,7 @@ import org.apache.cayenne.testdo.deleterules.ClientDeleteDeny;
 import org.apache.cayenne.testdo.deleterules.ClientDeleteNullify;
 import org.apache.cayenne.testdo.deleterules.ClientDeleteRule;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ClientCase.DELETE_RULES_PROJECT)
+@UseServerRuntime(CayenneProjects.DELETE_RULES_PROJECT)
 public class CayenneContextDeleteRulesIT extends ClientCase {
 
     @Inject

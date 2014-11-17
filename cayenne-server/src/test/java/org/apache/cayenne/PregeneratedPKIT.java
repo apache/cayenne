@@ -23,8 +23,8 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -39,25 +39,11 @@ import static org.junit.Assert.assertNotNull;
 // TODO: 1/16/2006 - the algorithm used to generate the PK may be included in
 // DataObjectUtils to pull the PK on demand. A caveat - we need to analyze DataObject in
 // question to see if a PK is numeric and not propagated.
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PregeneratedPKIT extends ServerCase {
 
     @Inject
     private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT");
-        dbHelper.deleteAll("GALLERY");
-    }
 
     @Test
     public void testLongPk() throws Exception {

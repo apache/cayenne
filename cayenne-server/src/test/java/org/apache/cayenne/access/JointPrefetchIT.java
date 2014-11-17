@@ -42,8 +42,10 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Date;
@@ -63,7 +65,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests joint prefetch handling by Cayenne access stack.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class JointPrefetchIT extends ServerCase {
 
     @Inject
@@ -82,14 +84,8 @@ public class JointPrefetchIT extends ServerCase {
     protected TableHelper tGallery;
     protected TableHelper tPainting;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT"); // table artist_exhibit depends on artist and exhibit
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT"); // table exhibit depends on gallery
-        dbHelper.deleteAll("GALLERY");
-
+    @Before
+    public void testSetUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

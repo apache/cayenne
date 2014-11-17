@@ -22,11 +22,11 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.NamedQuery;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap2;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -44,26 +44,14 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test Types mapping for selected columns
  */
-@UseServerRuntime(ServerCase.RETURN_TYPES_PROJECT)
+@UseServerRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
 public class ReturnTypesMappingIT extends ServerCase {
 
     @Inject
     private DataContext context;
     
     @Inject
-    private DBHelper dbHelper;
-    
-    @Inject
     private UnitDbAdapter unitDbAdapter;
-    
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        if (unitDbAdapter.supportsLobs()) {
-            dbHelper.deleteAll("TYPES_MAPPING_LOBS_TEST1");
-            dbHelper.deleteAll("TYPES_MAPPING_TEST2");
-        }
-        dbHelper.deleteAll("TYPES_MAPPING_TEST1");
-    }
 
     /*
      * TODO: olga: We need divided TYPES_MAPPING_TES2 to 2 schemas with lobs columns and not lobs columns 

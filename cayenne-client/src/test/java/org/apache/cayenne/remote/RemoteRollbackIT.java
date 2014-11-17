@@ -22,7 +22,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ import static org.junit.Assert.fail;
 /**
  * This is a test primarily for CAY-1103
  */
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 @RunWith(value=Parameterized.class)
 public class RemoteRollbackIT extends RemoteCayenneCase {
 

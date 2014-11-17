@@ -27,12 +27,12 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextProcedureQueryIT extends ServerCase {
 
     public static final String UPDATE_STORED_PROCEDURE = "cayenne_test_upd_proc";
@@ -63,23 +63,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
     private UnitDbAdapter accessStackAdapter;
 
     @Inject
-    protected DBHelper dbHelper;
-
-    @Inject
     private JdbcEventLogger jdbcEventLogger;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        if (!accessStackAdapter.supportsStoredProcedures()) {
-            return;
-        }
-
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-    }
 
     @Test
     public void testUpdate() throws Exception {

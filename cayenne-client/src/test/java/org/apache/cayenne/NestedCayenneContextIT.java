@@ -26,12 +26,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.RemoteCayenneCase;
 import org.apache.cayenne.remote.service.LocalConnection;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,15 +51,12 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests nested object contexts
  */
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 @RunWith(value = Parameterized.class)
 public class NestedCayenneContextIT extends RemoteCayenneCase {
 
 	@Inject
 	private ClientRuntime runtime;
-
-	@Inject
-	private DBHelper dbHelper;
 
 	@Inject
 	private DataChannelInterceptor queryInterceptor;
@@ -75,14 +71,6 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 
 	public NestedCayenneContextIT(int serializationPolicy) {
 		super.serializationPolicy = serializationPolicy;
-	}
-
-	@Override
-	public void setUpAfterInjection() throws Exception {
-		super.setUpAfterInjection();
-
-		dbHelper.deleteAll("MT_TABLE2");
-		dbHelper.deleteAll("MT_TABLE1");
 	}
 
 	@Test

@@ -29,8 +29,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -38,7 +40,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.EMBEDDABLE_PROJECT)
+@UseServerRuntime(CayenneProjects.EMBEDDABLE_PROJECT)
 public class EmbeddingIT extends ServerCase {
     
     @Inject
@@ -48,11 +50,9 @@ public class EmbeddingIT extends ServerCase {
     protected DBHelper dbHelper;
     
     protected TableHelper tEmbedEntity1;
-    
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("EMBED_ENTITY1");
-        
+
+    @Before
+    public void testSetUp() throws Exception {
         tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
         tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
     }

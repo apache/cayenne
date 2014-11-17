@@ -27,8 +27,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -40,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+@UseServerRuntime(CayenneProjects.LOCKING_PROJECT)
 public class OptimisticLockingIT extends ServerCase {
 
     @Inject
@@ -53,12 +55,8 @@ public class OptimisticLockingIT extends ServerCase {
     protected TableHelper tRelLockingTest;
     protected TableHelper tLockingHelper;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("LOCKING_HELPER");
-        dbHelper.deleteAll("REL_LOCKING_TEST");
-        dbHelper.deleteAll("SIMPLE_LOCKING_TEST");
-
+    @Before
+    public void testSetUp() throws Exception {
         tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
         tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR);

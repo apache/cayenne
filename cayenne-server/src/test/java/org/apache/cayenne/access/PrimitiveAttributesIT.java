@@ -19,25 +19,17 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(ServerCase.PRIMITIVE_PROJECT)
+@UseServerRuntime(CayenneProjects.PRIMITIVE_PROJECT)
 public class PrimitiveAttributesIT extends ServerCase {
 
     @Inject
     private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PRIMITIVES_TEST");
-    }
 
     @Test
     public void testCommit() {

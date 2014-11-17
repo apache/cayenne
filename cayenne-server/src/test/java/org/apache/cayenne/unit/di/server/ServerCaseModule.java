@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
@@ -101,6 +98,9 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class ServerCaseModule implements Module {
 
@@ -228,6 +228,8 @@ public class ServerCaseModule implements Module {
                 .withoutScope();
 
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(
+                testScope);
+        binder.bind(DBCleaner.class).toProvider(DBCleanerProvider.class).in(
                 testScope);
     }
 }

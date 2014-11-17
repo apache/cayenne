@@ -28,8 +28,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -38,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  */
-@UseServerRuntime(ServerCase.RELATIONSHIPS_CLOB_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_CLOB_PROJECT)
 public class CAY_115IT extends ServerCase {
 
     @Inject
@@ -52,12 +54,9 @@ public class CAY_115IT extends ServerCase {
     
     protected TableHelper tClobMaster;
     protected TableHelper tClobDetail;
-    
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("CLOB_DETAIL");
-        dbHelper.deleteAll("CLOB_MASTER");
-        
+
+    @Before
+    public void testSetUp() throws Exception {
         tClobMaster = new TableHelper(dbHelper, "CLOB_MASTER");
         tClobMaster.setColumns("CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
         

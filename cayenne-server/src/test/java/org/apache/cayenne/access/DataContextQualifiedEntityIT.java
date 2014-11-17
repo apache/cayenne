@@ -28,8 +28,10 @@ import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -39,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  */
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class DataContextQualifiedEntityIT extends ServerCase {
 
     @Inject
@@ -50,17 +52,11 @@ public class DataContextQualifiedEntityIT extends ServerCase {
 
     protected TableHelper tPerson;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         // manually break circular deps
         dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
 
-        dbHelper.deleteAll("ADDRESS");
-        dbHelper.deleteAll("DEPARTMENT");
-        dbHelper.deleteAll("PERSON_NOTES");
-        dbHelper.deleteAll("PERSON");
-        dbHelper.deleteAll("CLIENT_COMPANY");
-        
         tPerson = new TableHelper(dbHelper, "PERSON");
         tPerson.setColumns(
                 "CLIENT_COMPANY_ID",

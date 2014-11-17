@@ -36,8 +36,10 @@ import org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity;
 import org.apache.cayenne.testdo.numeric_types.LongEntity;
 import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
 import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -51,7 +53,7 @@ import static org.junit.Assert.assertSame;
 
 /**
  */
-@UseServerRuntime(ServerCase.NUMERIC_TYPES_PROJECT)
+@UseServerRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
 public class NumericTypesIT extends ServerCase {
 
     @Inject
@@ -69,13 +71,8 @@ public class NumericTypesIT extends ServerCase {
     protected TableHelper tSmallintTest;
     protected TableHelper tTinyintTest;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("BOOLEAN_TEST");
-        dbHelper.deleteAll("SMALLINT_TEST");
-        dbHelper.deleteAll("TINYINT_TEST");
-        dbHelper.deleteAll("DECIMAL_PK_TST");
-
+    @Before
+    public void testSetUp() throws Exception {
         tSmallintTest = new TableHelper(dbHelper, "SMALLINT_TEST");
         tSmallintTest.setColumns("ID", "SMALLINT_COL");
 

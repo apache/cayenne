@@ -22,8 +22,9 @@ import org.apache.cayenne.LifecycleListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.lifecycles.ClientLifecycles;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,7 +35,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ClientCase.LIFECYCLES_PROJECT)
+@UseServerRuntime(CayenneProjects.LIFECYCLES_PROJECT)
 @RunWith(value=Parameterized.class)
 public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleListener {
     private int added, loaded, prePersisted, postPersisted, preRemoved, postRemoved, preUpdated, postUpdated;
@@ -52,8 +53,8 @@ public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleLis
         super.serializationPolicy = serializationPolicy;
     }
 
-    @Override
-    public void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         super.setUpAfterInjection();
         
         added = 0;

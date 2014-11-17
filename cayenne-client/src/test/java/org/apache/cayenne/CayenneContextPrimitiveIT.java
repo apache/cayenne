@@ -27,7 +27,9 @@ import org.apache.cayenne.testdo.table_primitives.ClientTablePrimitives;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -37,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ClientCase.TABLE_PRIMITIVES_PROJECT)
+@UseServerRuntime(CayenneProjects.TABLE_PRIMITIVES_PROJECT)
 public class CayenneContextPrimitiveIT extends ClientCase {
 
     @Inject
@@ -51,10 +53,8 @@ public class CayenneContextPrimitiveIT extends ClientCase {
 
     private TableHelper tTablePrimitives;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("TABLE_PRIMITIVES");
-
+    @Before
+    public void testSetUp() throws Exception {
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
         
         tTablePrimitives = new TableHelper(dbHelper, "TABLE_PRIMITIVES");

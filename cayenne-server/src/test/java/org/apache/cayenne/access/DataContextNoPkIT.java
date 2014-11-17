@@ -26,8 +26,10 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.no_pk.NoPkTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -38,7 +40,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ServerCase.NO_PK_PROJECT)
+@UseServerRuntime(CayenneProjects.NO_PK_PROJECT)
 public class DataContextNoPkIT extends ServerCase {
 
     @Inject
@@ -47,8 +49,8 @@ public class DataContextNoPkIT extends ServerCase {
     @Inject
     protected DBHelper dbHelper;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         TableHelper noPkTestTable = new TableHelper(dbHelper, "NO_PK_TEST", "ATTRIBUTE1");
         noPkTestTable.deleteAll();
 

@@ -27,12 +27,12 @@ import org.apache.cayenne.graph.NodeDiff;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatA;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatB;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -47,24 +47,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_DELETE_RULES_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_DELETE_RULES_PROJECT)
 public class DeleteRulesIT extends ServerCase {
 
     @Inject
     private DataContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("DELETE_RULE_TEST3");
-        dbHelper.deleteAll("DELETE_RULE_TEST1");
-        dbHelper.deleteAll("DELETE_RULE_TEST2");
-        dbHelper.deleteAll("DELETE_RULE_JOIN");
-        dbHelper.deleteAll("DELETE_RULE_FLATB");
-        dbHelper.deleteAll("DELETE_RULE_FLATA");
-    }
 
     @Test
     public void testDenyToOne() {

@@ -31,7 +31,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -44,7 +46,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class RemoteIncrementalFaultListIT extends ClientCase {
 
 	private static final int COUNT = 25;
@@ -59,11 +61,8 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 
 	private RemoteIncrementalFaultList list;
 
-	@Override
-	protected void setUpAfterInjection() throws Exception {
-		dbHelper.deleteAll("MT_TABLE2");
-		dbHelper.deleteAll("MT_TABLE1");
-
+	@Before
+	public void testSetUp() throws Exception {
 		tMTTable = new TableHelper(dbHelper, "MT_TABLE1");
 		tMTTable.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1",
 				"SERVER_ATTRIBUTE1");

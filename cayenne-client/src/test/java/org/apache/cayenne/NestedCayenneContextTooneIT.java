@@ -29,7 +29,7 @@ import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.toone.ClientTooneDep;
 import org.apache.cayenne.testdo.toone.ClientTooneMaster;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(ClientCase.TOONE_PROJECT)
+@UseServerRuntime(CayenneProjects.TOONE_PROJECT)
 @RunWith(value = Parameterized.class)
 public class NestedCayenneContextTooneIT extends RemoteCayenneCase {
 

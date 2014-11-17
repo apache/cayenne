@@ -28,6 +28,7 @@ import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -40,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@UseServerRuntime(ServerCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class EntityResolverClassDescriptorIT extends ServerCase {
 
     @Inject

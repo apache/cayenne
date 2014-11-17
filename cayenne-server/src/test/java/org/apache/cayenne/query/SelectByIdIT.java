@@ -28,8 +28,10 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import static java.util.Collections.singletonMap;
@@ -38,7 +40,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SelectByIdIT extends ServerCase {
 
 	@Inject
@@ -52,17 +54,8 @@ public class SelectByIdIT extends ServerCase {
 	@Inject
 	private ObjectContext context;
 
-	@Override
-	protected void setUpAfterInjection() throws Exception {
-		dbHelper.deleteAll("PAINTING_INFO");
-		dbHelper.deleteAll("PAINTING");
-		dbHelper.deleteAll("ARTIST_EXHIBIT");
-		dbHelper.deleteAll("ARTIST_GROUP");
-		dbHelper.deleteAll("ARTIST");
-		dbHelper.deleteAll("COMPOUND_FK_TEST");
-		dbHelper.deleteAll("COMPOUND_PK_TEST");
-		dbHelper.deleteAll("CHAR_PK_TEST");
-
+	@Before
+	public void testSetUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 	}

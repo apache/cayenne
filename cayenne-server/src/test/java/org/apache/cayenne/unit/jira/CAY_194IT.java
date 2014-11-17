@@ -27,8 +27,10 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -42,7 +44,7 @@ import static org.junit.Assert.assertSame;
  */
 // TODO: this is really a qualifier translator general test... need to
 // find an appropriate place in unit tests..
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class CAY_194IT extends ServerCase {
 
     @Inject
@@ -51,8 +53,8 @@ public class CAY_194IT extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
         tReflexive.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
 

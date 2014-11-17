@@ -38,8 +38,10 @@ import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -51,7 +53,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class SingleTableInheritanceIT extends ServerCase {
 
     @Inject
@@ -71,8 +73,8 @@ public class SingleTableInheritanceIT extends ServerCase {
     private TableHelper tClientCompany;
     private TableHelper tDepartment;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         tPerson = new TableHelper(dbHelper, "PERSON");
         tPerson.setColumns(
                 "PERSON_ID",
@@ -99,12 +101,6 @@ public class SingleTableInheritanceIT extends ServerCase {
 
         // manually break circular deps
         tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-
-        dbHelper.deleteAll("ADDRESS");
-        dbHelper.deleteAll("DEPARTMENT");
-        dbHelper.deleteAll("PERSON_NOTES");
-        dbHelper.deleteAll("PERSON");
-        dbHelper.deleteAll("CLIENT_COMPANY");
     }
 
     private void create2PersonDataSet() throws Exception {

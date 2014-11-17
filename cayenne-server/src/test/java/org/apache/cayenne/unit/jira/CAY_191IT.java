@@ -25,16 +25,16 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.FkOfDifferentType;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Types;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class CAY_191IT extends ServerCase {
     
     @Inject
@@ -45,14 +45,9 @@ public class CAY_191IT extends ServerCase {
     
     protected TableHelper tRelationshipHelper;
     protected TableHelper tFkOfDifferentType;
-    
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("FK_OF_DIFFERENT_TYPE");
-        dbHelper.update("REFLEXIVE_AND_TO_ONE").set("PARENT_ID", null, Types.INTEGER).execute();
-        dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
-        dbHelper.deleteAll("RELATIONSHIP_HELPER");
-        
+
+    @Before
+    public void testSetUp() throws Exception {
         tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
         tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
         

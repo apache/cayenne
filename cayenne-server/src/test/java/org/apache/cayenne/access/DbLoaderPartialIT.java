@@ -24,9 +24,12 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -34,7 +37,7 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbLoaderPartialIT extends ServerCase {
 
     @Inject
@@ -45,8 +48,8 @@ public class DbLoaderPartialIT extends ServerCase {
 
     private DbLoader loader;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         loader = new DbLoader(
                 dataSourceFactory.getSharedDataSource().getConnection(),
                 adapter,
@@ -59,8 +62,8 @@ public class DbLoaderPartialIT extends ServerCase {
                 });
     }
 
-    @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    @After
+    public void testTearDown() throws Exception {
         loader.getConnection().close();
     }
 

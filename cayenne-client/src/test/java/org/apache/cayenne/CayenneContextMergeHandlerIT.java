@@ -23,6 +23,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class CayenneContextMergeHandlerIT extends ClientCase {
 
     @Inject

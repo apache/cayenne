@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.qualified.Qualified1;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime("cayenne-qualified.xml")
+@UseServerRuntime(CayenneProjects.QUALIFIED_PROJECT)
 public class ConcurrentPkGeneratorIT extends ServerCase {
 
     @Inject

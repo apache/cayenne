@@ -35,8 +35,10 @@ import org.apache.cayenne.testdo.compound.CharFkTestEntity;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -50,7 +52,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test prefetching of various obscure cases.
  */
-@UseServerRuntime(ServerCase.COMPOUND_PROJECT)
+@UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class DataContextPrefetchExtrasIT extends ServerCase {
 
     @Inject
@@ -64,14 +66,8 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
     protected TableHelper tCompoundPkTest;
     protected TableHelper tCompoundFkTest;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("CHAR_FK_TEST");
-        dbHelper.deleteAll("CHAR_PK_TEST");
-
-        dbHelper.deleteAll("COMPOUND_FK_TEST");
-        dbHelper.deleteAll("COMPOUND_PK_TEST");
-
+    @Before
+    public void testSetUp() throws Exception {
         tCharPkTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
         tCharPkTest.setColumns("PK_COL", "OTHER_COL");
 

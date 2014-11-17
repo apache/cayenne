@@ -26,9 +26,9 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -41,23 +41,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.MEANINGFUL_PK_PROJECT)
+@UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
 
     @Inject
     private DataContext context;
 
-    @Inject
-    private DBHelper dbHelper;
 
     @Inject
     private ServerRuntime runtime;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MEANINGFUL_PK_DEP");
-        dbHelper.deleteAll("MEANINGFUL_PK_TEST1");
-    }
 
     @Test
     public void testInsertWithMeaningfulPK() throws Exception {

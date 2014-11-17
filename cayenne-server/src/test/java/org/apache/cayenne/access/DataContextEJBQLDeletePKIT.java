@@ -25,8 +25,10 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -34,7 +36,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.MEANINGFUL_PK_PROJECT)
+@UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 public class DataContextEJBQLDeletePKIT extends ServerCase {
 
     @Inject
@@ -45,11 +47,8 @@ public class DataContextEJBQLDeletePKIT extends ServerCase {
 
     protected TableHelper tMeaningfulPKTest1Table;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MEANINGFUL_PK_DEP");
-        dbHelper.deleteAll("MEANINGFUL_PK_TEST1");
-
+    @Before
+    public void testSetUp() throws Exception {
         tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
         tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR");
     }

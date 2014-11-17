@@ -26,8 +26,10 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -40,7 +42,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_FLATTENED_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
 public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
 
     @Inject
@@ -54,15 +56,8 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
     protected TableHelper ft3Helper;
     protected TableHelper ft4Helper;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-
-        dbHelper.deleteAll("COMPLEX_JOIN");
-        dbHelper.deleteAll("FLATTENED_TEST_4");
-        dbHelper.deleteAll("FLATTENED_TEST_3");
-        dbHelper.deleteAll("FLATTENED_TEST_2");
-        dbHelper.deleteAll("FLATTENED_TEST_1");
-
+    @Before
+    public void testSetUp() throws Exception {
         ft1Helper = new TableHelper(dbHelper, "FLATTENED_TEST_1", "FT1_ID", "NAME");
 
         ft2Helper = new TableHelper(dbHelper, "FLATTENED_TEST_2");

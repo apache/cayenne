@@ -26,8 +26,10 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -35,7 +37,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class DataContextEJBQLInheritanceIT extends ServerCase {
 
     @Inject
@@ -44,17 +46,10 @@ public class DataContextEJBQLInheritanceIT extends ServerCase {
     @Inject
     protected DBHelper dbHelper;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-
+    @Before
+    public void testSetUp() throws Exception {
         // manually break circular deps
         dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-
-        dbHelper.deleteAll("ADDRESS");
-        dbHelper.deleteAll("DEPARTMENT");
-        dbHelper.deleteAll("PERSON_NOTES");
-        dbHelper.deleteAll("PERSON");
-        dbHelper.deleteAll("CLIENT_COMPANY");
 
         TableHelper person = new TableHelper(dbHelper, "PERSON");
         person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY").setColumnTypes(Types.INTEGER, Types.VARCHAR,

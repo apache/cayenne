@@ -24,13 +24,15 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class OraclePkGeneratorIT extends ServerCase {
     
     @Inject
@@ -41,8 +43,8 @@ public class OraclePkGeneratorIT extends ServerCase {
 
     private OraclePkGenerator pkGenerator;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         OracleAdapter adapter = objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName());
         pkGenerator = new OraclePkGenerator(adapter);
     }

@@ -32,6 +32,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -69,18 +70,9 @@ public abstract class MergeCase extends ServerCase {
     private static List<String> TABLE_NAMES = Arrays.asList("ARTIST",
             "PAINTING", "NEW_TABLE", "NEW_TABLE2");
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-
-        dbHelper.deleteAll("ARTIST_GROUP");
+    @Before
+    public void testSetUp() throws Exception {
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
-        dbHelper.deleteAll("ARTGROUP");
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT");
-        dbHelper.deleteAll("GALLERY");
 
         // this map can't be safely modified in this test, as it is reset by DI
         // container

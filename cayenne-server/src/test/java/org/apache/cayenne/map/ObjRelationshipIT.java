@@ -26,10 +26,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.PrintWriter;
@@ -46,7 +48,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjRelationshipIT extends ServerCase {
 
     @Inject
@@ -58,8 +60,8 @@ public class ObjRelationshipIT extends ServerCase {
     private DbEntity paintingDbEntity;
     private DbEntity galleryDBEntity;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void testSetUp() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         artistDBEntity = resolver.getDbEntity("ARTIST");

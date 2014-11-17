@@ -23,10 +23,10 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -36,23 +36,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * Special test cases per CAY-1378, CAY-1379.
  */
-@UseServerRuntime(ServerCase.INHERITANCE_SINGLE_TABLE1_PROJECT)
+@UseServerRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class SingleTableInheritance1IT extends ServerCase {
 
     @Inject
     private ObjectContext context;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-
-        dbHelper.deleteAll("GROUP_MEMBERS");
-        dbHelper.deleteAll("USER_PROPERTIES");
-        dbHelper.deleteAll("GROUP_PROPERTIES");
-        dbHelper.deleteAll("ROLES");
-    }
 
     @Test
     public void testGroupActions() throws Exception {

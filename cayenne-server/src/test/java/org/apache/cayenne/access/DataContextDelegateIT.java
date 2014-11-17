@@ -23,11 +23,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -42,26 +43,14 @@ import static org.junit.Assert.assertTrue;
  * Tests various DataContextDelegate methods invocation and consequences on DataContext
  * behavior.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextDelegateIT extends ServerCase {
 
     @Inject
     private DataContext context;
 
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT");
-        dbHelper.deleteAll("GALLERY");
-
+    @Before
+    public void testSetUp() throws Exception {
         // prepare a single gallery record
         Gallery gallery = (Gallery) context.newObject("Gallery");
         gallery.setGalleryName("version1");

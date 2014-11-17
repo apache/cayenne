@@ -22,7 +22,7 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.SUS_PROJECT)
+@UseServerRuntime(CayenneProjects.SUS_PROJECT)
 public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test

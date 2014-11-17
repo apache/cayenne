@@ -21,7 +21,7 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(ServerCase.SUS_PROJECT)
+@UseServerRuntime(CayenneProjects.SUS_PROJECT)
 public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test

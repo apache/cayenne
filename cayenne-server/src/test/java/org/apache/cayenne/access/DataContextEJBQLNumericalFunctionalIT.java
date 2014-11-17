@@ -29,8 +29,10 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -41,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.NUMERIC_TYPES_PROJECT)
+@UseServerRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
 public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
 
     @Inject
@@ -52,12 +54,8 @@ public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
 
     private TableHelper tBigIntegerEntity;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("BIGDECIMAL_ENTITY");
-        dbHelper.deleteAll("BIGINTEGER_ENTITY");
-        dbHelper.deleteAll("BOOLEAN_TEST");
-
+    @Before
+    public void testSetUp() throws Exception {
         tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
         tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }

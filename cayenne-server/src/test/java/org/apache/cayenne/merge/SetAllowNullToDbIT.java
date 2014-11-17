@@ -20,7 +20,7 @@ package org.apache.cayenne.merge;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ import java.sql.Types;
 
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SetAllowNullToDbIT extends MergeCase {
 
     @Test

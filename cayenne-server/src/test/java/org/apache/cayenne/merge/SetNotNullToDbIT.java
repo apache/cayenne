@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
@@ -30,21 +28,8 @@ import java.sql.Types;
 
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SetNotNullToDbIT extends MergeCase {
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        super.setUpAfterInjection();
-
-        // must cleanup the tables as changing NULL column to NOT NULL may require that no
-        // nullable data is stored in the column
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-    }
 
     @Test
     public void test() throws Exception {

@@ -26,8 +26,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.uuid.UuidPkEntity;
 import org.apache.cayenne.testdo.uuid.UuidTestEntity;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -35,7 +37,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(ServerCase.UUID_PROJECT)
+@UseServerRuntime(CayenneProjects.UUID_PROJECT)
 public class UUIDIT extends ServerCase {
 
     @Inject
@@ -46,11 +48,8 @@ public class UUIDIT extends ServerCase {
 
     private TableHelper uuidPkEntity;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("UUID_TEST");
-        dbHelper.deleteAll("UUID_PK_ENTITY");
-
+    @Before
+    public void testSetUp() throws Exception {
         uuidPkEntity = new TableHelper(dbHelper, "UUID_PK_ENTITY", "ID");
     }
 

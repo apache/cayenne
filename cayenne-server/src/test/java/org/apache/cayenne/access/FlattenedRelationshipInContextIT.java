@@ -28,8 +28,10 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -38,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_FLATTENED_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
 public class FlattenedRelationshipInContextIT extends ServerCase {
 
     @Inject
@@ -51,14 +53,8 @@ public class FlattenedRelationshipInContextIT extends ServerCase {
     private TableHelper tFlattenedTest2;
     private TableHelper tFlattenedTest3;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("COMPLEX_JOIN");
-        dbHelper.deleteAll("FLATTENED_TEST_4");
-        dbHelper.deleteAll("FLATTENED_TEST_3");
-        dbHelper.deleteAll("FLATTENED_TEST_2");
-        dbHelper.deleteAll("FLATTENED_TEST_1");
-
+    @Before
+    public void testSetUp() throws Exception {
         tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");
 

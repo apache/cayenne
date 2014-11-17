@@ -27,8 +27,10 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToManyTarget;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Map;
@@ -40,7 +42,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.MAP_TO_MANY_PROJECT)
+@UseServerRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
 public class CDOMapRelationshipIT extends ServerCase {
 
     @Inject
@@ -54,14 +56,8 @@ public class CDOMapRelationshipIT extends ServerCase {
     protected TableHelper tIdMapToMany;
     protected TableHelper tIdMapToManyTarget;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MAP_TO_MANY_TARGET");
-        dbHelper.deleteAll("MAP_TO_MANY");
-
-        dbHelper.deleteAll("ID_MAP_TO_MANY_TARGET");
-        dbHelper.deleteAll("ID_MAP_TO_MANY");
-
+    @Before
+    public void testSetUp() throws Exception {
         tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
         tMapToMany.setColumns("ID");
 

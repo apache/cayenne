@@ -22,11 +22,11 @@ import org.apache.cayenne.MockSerializable;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.misc_types.ArraysEntity;
 import org.apache.cayenne.testdo.misc_types.CharacterEntity;
 import org.apache.cayenne.testdo.misc_types.SerializableEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(ServerCase.MISC_TYPES_PROJECT)
+@UseServerRuntime(CayenneProjects.MISC_TYPES_PROJECT)
 public class MiscTypesIT extends ServerCase {
 
     @Inject
@@ -46,19 +46,6 @@ public class MiscTypesIT extends ServerCase {
     @Inject
     private UnitDbAdapter accessStackAdapter;
     
-    @Inject 
-    private DBHelper dbHelper;
-    
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        if(accessStackAdapter.supportsLobs()) {
-            dbHelper.deleteAll("SERIALIZABLE_ENTITY");
-        }
-        
-        dbHelper.deleteAll("ARRAYS_ENTITY");
-        dbHelper.deleteAll("CHARACTER_ENTITY");
-    }
-
     @Test
     public void testSerializable() throws Exception {
         

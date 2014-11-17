@@ -26,8 +26,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMany;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToManyTarget;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -39,7 +41,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT)
+@UseServerRuntime(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT)
 public class CDOCollectionRelationshipIT extends ServerCase {
 
     @Inject
@@ -48,11 +50,8 @@ public class CDOCollectionRelationshipIT extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("COLLECTION_TO_MANY_TARGET");
-        dbHelper.deleteAll("COLLECTION_TO_MANY");
-
+    @Before
+    public void testSetUp() throws Exception {
         TableHelper tCollectionToMany = new TableHelper(dbHelper, "COLLECTION_TO_MANY");
         tCollectionToMany.setColumns("ID");
 
