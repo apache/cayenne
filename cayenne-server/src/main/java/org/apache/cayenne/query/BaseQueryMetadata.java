@@ -43,6 +43,8 @@ import org.apache.cayenne.util.XMLSerializable;
  */
 class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable {
 
+	private static final long serialVersionUID = 5129792493303459115L;
+
 	int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
 	int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
 
@@ -156,7 +158,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 	void initWithProperties(Map<String, ?> properties) {
 		// must init defaults even if properties are empty
 		if (properties == null) {
-			properties = Collections.EMPTY_MAP;
+			properties = Collections.emptyMap();
 		}
 
 		Object fetchOffset = properties.get(QueryMetadata.FETCH_OFFSET_PROPERTY);
@@ -331,7 +333,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 	 * @since 3.0
 	 */
 	void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
-		this.cacheStrategy = cacheStrategy;
+		this.cacheStrategy = cacheStrategy != null ? cacheStrategy : QueryCacheStrategy.getDefaultStrategy();
 	}
 
 	/**

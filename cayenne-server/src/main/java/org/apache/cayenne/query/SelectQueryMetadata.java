@@ -33,131 +33,138 @@ import org.apache.cayenne.map.ObjEntity;
  */
 class SelectQueryMetadata extends BaseQueryMetadata {
 
-    Map<String, String> pathSplitAliases;
+	private static final long serialVersionUID = 7465922769303943945L;
+	
+	Map<String, String> pathSplitAliases;
 
-    @Override
-    void copyFromInfo(QueryMetadata info) {
-        super.copyFromInfo(info);
-        this.pathSplitAliases = new HashMap<String, String>(info.getPathSplitAliases());
-    }
+	@Override
+	void copyFromInfo(QueryMetadata info) {
+		super.copyFromInfo(info);
+		this.pathSplitAliases = new HashMap<String, String>(info.getPathSplitAliases());
+	}
 
-    <T> boolean resolve(Object root, EntityResolver resolver, SelectQuery<T> query) {
+	<T> boolean resolve(Object root, EntityResolver resolver, SelectQuery<T> query) {
 
-        if (super.resolve(root, resolver, null)) {
+		if (super.resolve(root, resolver, null)) {
 
-            // generate unique cache key...
-            if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
+			// generate unique cache key, but only if we are caching..
 
-            } else {
-                // create a unique key based on entity, qualifier, ordering and
-                // fetch offset and limit
+			if (cacheStrategy != null && cacheStrategy != QueryCacheStrategy.NO_CACHE) {
+				this.cacheKey = makeCacheKey(query);
+			}
 
-                StringBuilder key = new StringBuilder();
+			resolveAutoAliases(query);
 
-                ObjEntity entity = getObjEntity();
-                if (entity != null) {
-                    key.append(entity.getName());
-                } else if (dbEntity != null) {
-                    key.append("db:").append(dbEntity.getName());
-                }
+			return true;
+		}
 
-                if (query.getQualifier() != null) {
-                    key.append('/');
-                    try {
-                        query.getQualifier().appendAsString(key);
-                    } catch (IOException e) {
-                        throw new CayenneRuntimeException("Unexpected IO Exception appending to StringBuilder", e);
-                    }
-                }
+		return false;
+	}
 
-                if (!query.getOrderings().isEmpty()) {
-                    for (Ordering o : query.getOrderings()) {
-                        key.append('/').append(o.getSortSpecString());
-                        if (!o.isAscending()) {
-                            key.append(":d");
-                        }
+	private String makeCacheKey(SelectQuery<?> query) {
 
-                        if (o.isCaseInsensitive()) {
-                            key.append(":i");
-                        }
-                    }
-                }
+		// create a unique key based on entity, qualifier, ordering and
+		// fetch offset and limit
 
-                if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
-                    key.append('/');
-                    if (query.getFetchOffset() > 0) {
-                        key.append('o').append(query.getFetchOffset());
-                    }
-                    if (query.getFetchLimit() > 0) {
-                        key.append('l').append(query.getFetchLimit());
-                    }
-                }
+		StringBuilder key = new StringBuilder();
 
-                this.cacheKey = key.toString();
-            }
+		ObjEntity entity = getObjEntity();
+		if (entity != null) {
+			key.append(entity.getName());
+		} else if (dbEntity != null) {
+			key.append("db:").append(dbEntity.getName());
+		}
 
-            resolveAutoAliases(query);
+		if (query.getQualifier() != null) {
+			key.append('/');
+			try {
+				query.getQualifier().appendAsString(key);
+			} catch (IOException e) {
+				throw new CayenneRuntimeException("Unexpected IO Exception appending to StringBuilder", e);
+			}
+		}
 
-            return true;
-        }
+		if (!query.getOrderings().isEmpty()) {
+			for (Ordering o : query.getOrderings()) {
+				key.append('/').append(o.getSortSpecString());
+				if (!o.isAscending()) {
+					key.append(":d");
+				}
 
-        return false;
-    }
+				if (o.isCaseInsensitive()) {
+					key.append(":i");
+				}
+			}
+		}
 
-    private <T> void resolveAutoAliases(SelectQuery<T> query) {
-        Expression qualifier = query.getQualifier();
-        if (qualifier != null) {
-            resolveAutoAliases(qualifier);
-        }
+		if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
+			key.append('/');
+			if (query.getFetchOffset() > 0) {
+				key.append('o').append(query.getFetchOffset());
+			}
+			if (query.getFetchLimit() > 0) {
+				key.append('l').append(query.getFetchLimit());
+			}
+		}
 
-        // TODO: include aliases in prefetches? flattened attributes?
-    }
+		return key.toString();
 
-    private void resolveAutoAliases(Expression expression) {
-        Map<String, String> aliases = expression.getPathAliases();
-        if (!aliases.isEmpty()) {
-            if (pathSplitAliases == null) {
-                pathSplitAliases = new HashMap<String, String>();
-            }
+	}
 
-            pathSplitAliases.putAll(aliases);
-        }
+	private <T> void resolveAutoAliases(SelectQuery<T> query) {
+		Expression qualifier = query.getQualifier();
+		if (qualifier != null) {
+			resolveAutoAliases(qualifier);
+		}
 
-        int len = expression.getOperandCount();
-        for (int i = 0; i < len; i++) {
-            Object operand = expression.getOperand(i);
-            if (operand instanceof Expression) {
-                resolveAutoAliases((Expression) operand);
-            }
-        }
-    }
+		// TODO: include aliases in prefetches? flattened attributes?
+	}
 
-    /**
-     * @since 3.0
-     */
-    @Override
-    public Map<String, String> getPathSplitAliases() {
-        return pathSplitAliases != null ? pathSplitAliases : Collections.<String, String> emptyMap();
-    }
+	private void resolveAutoAliases(Expression expression) {
+		Map<String, String> aliases = expression.getPathAliases();
+		if (!aliases.isEmpty()) {
+			if (pathSplitAliases == null) {
+				pathSplitAliases = new HashMap<String, String>();
+			}
 
-    /**
-     * @since 3.0
-     */
-    public void addPathSplitAliases(String path, String... aliases) {
-        if (aliases == null) {
-            throw new NullPointerException("Null aliases");
-        }
+			pathSplitAliases.putAll(aliases);
+		}
 
-        if (aliases.length == 0) {
-            throw new IllegalArgumentException("No aliases specified");
-        }
+		int len = expression.getOperandCount();
+		for (int i = 0; i < len; i++) {
+			Object operand = expression.getOperand(i);
+			if (operand instanceof Expression) {
+				resolveAutoAliases((Expression) operand);
+			}
+		}
+	}
 
-        if (pathSplitAliases == null) {
-            pathSplitAliases = new HashMap<String, String>();
-        }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public Map<String, String> getPathSplitAliases() {
+		return pathSplitAliases != null ? pathSplitAliases : Collections.<String, String> emptyMap();
+	}
 
-        for (String alias : aliases) {
-            pathSplitAliases.put(alias, path);
-        }
-    }
+	/**
+	 * @since 3.0
+	 */
+	public void addPathSplitAliases(String path, String... aliases) {
+		if (aliases == null) {
+			throw new NullPointerException("Null aliases");
+		}
+
+		if (aliases.length == 0) {
+			throw new IllegalArgumentException("No aliases specified");
+		}
+
+		if (pathSplitAliases == null) {
+			pathSplitAliases = new HashMap<String, String>();
+		}
+
+		for (String alias : aliases) {
+			pathSplitAliases.put(alias, path);
+		}
+	}
 }

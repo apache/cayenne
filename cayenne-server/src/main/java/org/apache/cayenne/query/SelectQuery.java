@@ -20,6 +20,7 @@
 package org.apache.cayenne.query;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ import org.apache.cayenne.util.XMLSerializable;
 public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery, XMLSerializable, Select<T> {
 
 	private static final long serialVersionUID = 5486418811888197559L;
-	
+
 	public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
 	public static final boolean DISTINCT_DEFAULT = false;
 
@@ -500,11 +501,12 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * Adds a list of orderings.
 	 */
-	public void addOrderings(List<? extends Ordering> orderings) {
+	public void addOrderings(Collection<? extends Ordering> orderings) {
 		// If the supplied list of orderings is null, do not attempt to add
 		// to the collection (addAll() will NPE otherwise).
-		if (orderings != null)
+		if (orderings != null) {
 			nonNullOrderings().addAll(orderings);
+		}
 	}
 
 	/**
@@ -589,7 +591,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @since 4.0
 	 */
 	public void addPrefetch(PrefetchTreeNode prefetchElement) {
-		 metaData.mergePrefetch(prefetchElement);
+		metaData.mergePrefetch(prefetchElement);
 	}
 
 	/**
@@ -621,9 +623,6 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * Returns <code>true</code> if this query should produce a list of data
 	 * rows as opposed to DataObjects, <code>false</code> for DataObjects. This
 	 * is a hint to QueryEngine executing this query.
-	 * 
-	 * @deprecated since 4.0, use {@link #dataRowQuery(Class, Expression)} to
-	 *             create DataRow query instead.
 	 */
 	public boolean isFetchingDataRows() {
 		return (root instanceof DbEntity) || metaData.isFetchingDataRows();

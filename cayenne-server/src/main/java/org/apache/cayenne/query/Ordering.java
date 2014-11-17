@@ -37,339 +37,371 @@ import org.apache.cayenne.util.XMLSerializable;
 import org.apache.commons.collections.ComparatorUtils;
 
 /**
- * Defines object sorting criteria, used either for in-memory sorting of object lists or
- * as a specification for building <em>ORDER BY</em> clause of a SelectQuery query. Note
- * that in case of in-memory sorting, Ordering can be used with any JavaBeans, not just
- * DataObjects.
+ * Defines object sorting criteria, used either for in-memory sorting of object
+ * lists or as a specification for building <em>ORDER BY</em> clause of a
+ * SelectQuery query. Note that in case of in-memory sorting, Ordering can be
+ * used with any JavaBeans, not just DataObjects.
  */
 public class Ordering implements Comparator<Object>, Serializable, XMLSerializable {
 
-    protected String sortSpecString;
-    protected transient Expression sortSpec;
-    protected SortOrder sortOrder;
-    protected boolean pathExceptionSuppressed = false;
-    protected boolean nullSortedFirst = true;
+	private static final long serialVersionUID = -9167074787055881422L;
 
-    /**
-     * Orders a given list of objects, using a List of Orderings applied according the
-     * default iteration order of the Orderings list. I.e. each Ordering with lower index
-     * is more significant than any other Ordering with higher index. List being ordered
-     * is modified in place.
-     */
-    public static void orderList(List<?> objects, List<? extends Ordering> orderings) {
-        Collections.sort(objects, ComparatorUtils.chainedComparator(orderings));
-    }
+	protected String sortSpecString;
+	protected transient Expression sortSpec;
+	protected SortOrder sortOrder;
+	protected boolean pathExceptionSuppressed = false;
+	protected boolean nullSortedFirst = true;
 
-    public Ordering() {
-    }
+	/**
+	 * Orders a given list of objects, using a List of Orderings applied
+	 * according the default iteration order of the Orderings list. I.e. each
+	 * Ordering with lower index is more significant than any other Ordering
+	 * with higher index. List being ordered is modified in place.
+	 */
+	public static void orderList(List<?> objects, List<? extends Ordering> orderings) {
+		Collections.sort(objects, ComparatorUtils.chainedComparator(orderings));
+	}
 
-    /**
-     * @since 3.0
-     */
-    public Ordering(String sortPathSpec, SortOrder sortOrder) {
-        setSortSpecString(sortPathSpec);
-        setSortOrder(sortOrder);
-    }
+	public Ordering() {
+	}
 
-    /**
-     * Sets sortSpec to be an expression represented by string argument.
-     * 
-     * @since 1.1
-     */
-    public void setSortSpecString(String sortSpecString) {
-        if (!Util.nullSafeEquals(this.sortSpecString, sortSpecString)) {
-            this.sortSpecString = sortSpecString;
-            this.sortSpec = null;
-        }
-    }
+	/**
+	 * Create an ordering instance with a provided path and ascending sorting
+	 * strategy.
+	 * 
+	 * @since 4.0
+	 */
+	public Ordering(String sortPathSpec) {
+		this(sortPathSpec, SortOrder.ASCENDING);
+	}
 
-    /**
-     * Sets sort order for whether nulls are at the top or bottom of the resulting list.
-     * Default is true.
-     * 
-     * @param nullSortedFirst true sorts nulls to the top of the list, false sorts nulls
-     *            to the bottom
-     */
-    public void setNullSortedFirst(boolean nullSortedFirst) {
-        this.nullSortedFirst = nullSortedFirst;
-    }
+	/**
+	 * @since 3.0
+	 */
+	public Ordering(String sortPathSpec, SortOrder sortOrder) {
+		setSortSpecString(sortPathSpec);
+		setSortOrder(sortOrder);
+	}
 
-    /**
-     * Get sort order for nulls.
-     * 
-     * @return true if nulls are sorted to the top of the list, false if sorted to the
-     *         bottom
-     */
-    public boolean isNullSortedFirst() {
-        return nullSortedFirst;
-    }
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
 
-    /**
-     * Sets whether a path with a null in the middle is ignored. For example, a sort from
-     * <code>painting</code> on <code>artist.name</code> would by default throw an
-     * exception if the artist was null. If set to true, then this is treated just like a
-     * null value. Default is false.
-     * 
-     * @param pathExceptionSuppressed true to suppress exceptions and sort as null
-     */
-    public void setPathExceptionSupressed(boolean pathExceptionSuppressed) {
-        this.pathExceptionSuppressed = pathExceptionSuppressed;
-    }
+		if (!(object instanceof Ordering)) {
+			return false;
+		}
 
-    /**
-     * Is a path with a null in the middle is ignored.
-     * 
-     * @return true is exception is suppressed and sorted as null
-     */
-    public boolean isPathExceptionSuppressed() {
-        return pathExceptionSuppressed;
-    }
+		Ordering o = (Ordering) object;
 
-    /**
-     * Returns sortSpec string representation.
-     * 
-     * @since 1.1
-     */
-    public String getSortSpecString() {
-        return sortSpecString;
-    }
+		if (!Util.nullSafeEquals(sortSpecString, o.sortSpecString)) {
+			return false;
+		}
 
-    /**
-     * Sets the sort order for this ordering.
-     * 
-     * @since 3.0
-     */
-    public void setSortOrder(SortOrder order) {
-        this.sortOrder = order;
-    }
+		if (sortOrder != o.sortOrder) {
+			return false;
+		}
 
-    /** Returns true if sorting is done in ascending order. */
-    public boolean isAscending() {
-        return sortOrder == null
-                || sortOrder == SortOrder.ASCENDING
-                || sortOrder == SortOrder.ASCENDING_INSENSITIVE;
-    }
+		if (pathExceptionSuppressed != o.pathExceptionSuppressed) {
+			return false;
+		}
 
-    /**
-     * Returns true if the sorting is done in descending order.
-     * 
-     * @since 3.0
-     */
-    public boolean isDescending() {
-        return !isAscending();
-    }
+		if (nullSortedFirst != o.nullSortedFirst) {
+			return false;
+		}
 
-    /**
-     * If the sort order is DESCENDING or DESCENDING_INSENSITIVE, sets the sort order to
-     * ASCENDING or ASCENDING_INSENSITIVE, respectively.
-     * 
-     * @since 3.0
-     */
-    public void setAscending() {
-        if (sortOrder == null || sortOrder == SortOrder.DESCENDING)
-            setSortOrder(SortOrder.ASCENDING);
-        else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE)
-            setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
-    }
+		return true;
+	}
 
-    /**
-     * If the sort order is ASCENDING or ASCENDING_INSENSITIVE, sets the sort order to
-     * DESCENDING or DESCENDING_INSENSITIVE, respectively.
-     * 
-     * @since 3.0
-     */
-    public void setDescending() {
-        if (sortOrder == null || sortOrder == SortOrder.ASCENDING)
-            setSortOrder(SortOrder.DESCENDING);
-        else if (sortOrder == SortOrder.ASCENDING_INSENSITIVE)
-            setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
-    }
+	/**
+	 * Sets sortSpec to be an expression represented by string argument.
+	 * 
+	 * @since 1.1
+	 */
+	public void setSortSpecString(String sortSpecString) {
+		if (!Util.nullSafeEquals(this.sortSpecString, sortSpecString)) {
+			this.sortSpecString = sortSpecString;
+			this.sortSpec = null;
+		}
+	}
 
-    /** Returns true if the sorting is case insensitive */
-    public boolean isCaseInsensitive() {
-        return !isCaseSensitive();
-    }
+	/**
+	 * Sets sort order for whether nulls are at the top or bottom of the
+	 * resulting list. Default is true.
+	 * 
+	 * @param nullSortedFirst
+	 *            true sorts nulls to the top of the list, false sorts nulls to
+	 *            the bottom
+	 */
+	public void setNullSortedFirst(boolean nullSortedFirst) {
+		this.nullSortedFirst = nullSortedFirst;
+	}
 
-    /**
-     * Returns true if the sorting is case sensitive.
-     * 
-     * @since 3.0
-     */
-    public boolean isCaseSensitive() {
-        return sortOrder == null
-                || sortOrder == SortOrder.ASCENDING
-                || sortOrder == SortOrder.DESCENDING;
-    }
+	/**
+	 * Get sort order for nulls.
+	 * 
+	 * @return true if nulls are sorted to the top of the list, false if sorted
+	 *         to the bottom
+	 */
+	public boolean isNullSortedFirst() {
+		return nullSortedFirst;
+	}
 
-    /**
-     * If the sort order is ASCENDING or DESCENDING, sets the sort order to
-     * ASCENDING_INSENSITIVE or DESCENDING_INSENSITIVE, respectively.
-     * 
-     * @since 3.0
-     */
-    public void setCaseInsensitive() {
-        if (sortOrder == null || sortOrder == SortOrder.ASCENDING)
-            setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
-        else if (sortOrder == SortOrder.DESCENDING)
-            setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
-    }
+	/**
+	 * Sets whether a path with a null in the middle is ignored. For example, a
+	 * sort from <code>painting</code> on <code>artist.name</code> would by
+	 * default throw an exception if the artist was null. If set to true, then
+	 * this is treated just like a null value. Default is false.
+	 * 
+	 * @param pathExceptionSuppressed
+	 *            true to suppress exceptions and sort as null
+	 */
+	public void setPathExceptionSupressed(boolean pathExceptionSuppressed) {
+		this.pathExceptionSuppressed = pathExceptionSuppressed;
+	}
 
-    /**
-     * If the sort order is ASCENDING_INSENSITIVE or DESCENDING_INSENSITIVE, sets the sort
-     * order to ASCENDING or DESCENDING, respectively.
-     * 
-     * @since 3.0
-     */
-    public void setCaseSensitive() {
-        if (sortOrder == null || sortOrder == SortOrder.ASCENDING_INSENSITIVE)
-            setSortOrder(SortOrder.ASCENDING);
-        else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE)
-            setSortOrder(SortOrder.DESCENDING);
-    }
+	/**
+	 * Is a path with a null in the middle is ignored.
+	 * 
+	 * @return true is exception is suppressed and sorted as null
+	 */
+	public boolean isPathExceptionSuppressed() {
+		return pathExceptionSuppressed;
+	}
 
-    /**
-     * Returns the expression defining a ordering Java Bean property.
-     */
-    public Expression getSortSpec() {
-        if (sortSpecString == null) {
-            return null;
-        }
+	/**
+	 * Returns sortSpec string representation.
+	 * 
+	 * @since 1.1
+	 */
+	public String getSortSpecString() {
+		return sortSpecString;
+	}
 
-        // compile on demand .. since orderings can only be paths, avoid the overhead of
-        // Expression.fromString, and parse them manually
-        if (sortSpec == null) {
+	/**
+	 * Sets the sort order for this ordering.
+	 * 
+	 * @since 3.0
+	 */
+	public void setSortOrder(SortOrder order) {
+		this.sortOrder = order;
+	}
 
-            if (sortSpecString.startsWith(ASTDbPath.DB_PREFIX)) {
-                sortSpec = new ASTDbPath(sortSpecString.substring(ASTDbPath.DB_PREFIX
-                        .length()));
-            }
-            else if (sortSpecString.startsWith(ASTObjPath.OBJ_PREFIX)) {
-                sortSpec = new ASTObjPath(sortSpecString.substring(ASTObjPath.OBJ_PREFIX
-                        .length()));
-            }
-            else {
-                sortSpec = new ASTObjPath(sortSpecString);
-            }
-        }
+	/** Returns true if sorting is done in ascending order. */
+	public boolean isAscending() {
+		return sortOrder == null || sortOrder == SortOrder.ASCENDING || sortOrder == SortOrder.ASCENDING_INSENSITIVE;
+	}
 
-        return sortSpec;
-    }
+	/**
+	 * Returns true if the sorting is done in descending order.
+	 * 
+	 * @since 3.0
+	 */
+	public boolean isDescending() {
+		return !isAscending();
+	}
 
-    /**
-     * Sets the expression defining a ordering Java Bean property.
-     */
-    public void setSortSpec(Expression sortSpec) {
-        this.sortSpec = sortSpec;
-        this.sortSpecString = (sortSpec != null) ? sortSpec.toString() : null;
-    }
+	/**
+	 * If the sort order is DESCENDING or DESCENDING_INSENSITIVE, sets the sort
+	 * order to ASCENDING or ASCENDING_INSENSITIVE, respectively.
+	 * 
+	 * @since 3.0
+	 */
+	public void setAscending() {
+		if (sortOrder == null || sortOrder == SortOrder.DESCENDING)
+			setSortOrder(SortOrder.ASCENDING);
+		else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE)
+			setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
+	}
 
-    /**
-     * Orders the given list of objects according to the ordering that this object
-     * specifies. List is modified in-place.
-     * 
-     * @param objects a List of objects to be sorted
-     */
-    public void orderList(List<?> objects) {
-        Collections.sort(objects, this);
-    }
+	/**
+	 * If the sort order is ASCENDING or ASCENDING_INSENSITIVE, sets the sort
+	 * order to DESCENDING or DESCENDING_INSENSITIVE, respectively.
+	 * 
+	 * @since 3.0
+	 */
+	public void setDescending() {
+		if (sortOrder == null || sortOrder == SortOrder.ASCENDING)
+			setSortOrder(SortOrder.DESCENDING);
+		else if (sortOrder == SortOrder.ASCENDING_INSENSITIVE)
+			setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
+	}
 
-    /**
-     * Comparable interface implementation. Can compare two Java Beans based on the stored
-     * expression.
-     */
-    public int compare(Object o1, Object o2) {
-        Expression exp = getSortSpec();
-        Object value1 = null;
-        Object value2 = null;
-        try {
-            value1 = exp.evaluate(o1);
-        }
-        catch (ExpressionException e) {
-            if (pathExceptionSuppressed
-                    && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
-                // do nothing, we expect this
-            }
-            else {
-                // re-throw
-                throw e;
-            }
-        }
+	/** Returns true if the sorting is case insensitive */
+	public boolean isCaseInsensitive() {
+		return !isCaseSensitive();
+	}
 
-        try {
-            value2 = exp.evaluate(o2);
-        }
-        catch (ExpressionException e) {
-            if (pathExceptionSuppressed
-                    && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
-                // do nothing, we expect this
-            }
-            else {
-                // rethrow
-                throw e;
-            }
-        }
+	/**
+	 * Returns true if the sorting is case sensitive.
+	 * 
+	 * @since 3.0
+	 */
+	public boolean isCaseSensitive() {
+		return sortOrder == null || sortOrder == SortOrder.ASCENDING || sortOrder == SortOrder.DESCENDING;
+	}
 
-        if (value1 == null && value2 == null) {
-            return 0;
-        }
-        else if (value1 == null) {
-            return nullSortedFirst ? -1 : 1;
-        }
-        else if (value2 == null) {
-            return nullSortedFirst ? 1 : -1;
-        }
+	/**
+	 * If the sort order is ASCENDING or DESCENDING, sets the sort order to
+	 * ASCENDING_INSENSITIVE or DESCENDING_INSENSITIVE, respectively.
+	 * 
+	 * @since 3.0
+	 */
+	public void setCaseInsensitive() {
+		if (sortOrder == null || sortOrder == SortOrder.ASCENDING)
+			setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
+		else if (sortOrder == SortOrder.DESCENDING)
+			setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
+	}
 
-        if (isCaseInsensitive()) {
-            // TODO: to upper case should probably be defined as a separate expression
-            // type
-            value1 = ConversionUtil.toUpperCase(value1);
-            value2 = ConversionUtil.toUpperCase(value2);
-        }
+	/**
+	 * If the sort order is ASCENDING_INSENSITIVE or DESCENDING_INSENSITIVE,
+	 * sets the sort order to ASCENDING or DESCENDING, respectively.
+	 * 
+	 * @since 3.0
+	 */
+	public void setCaseSensitive() {
+		if (sortOrder == null || sortOrder == SortOrder.ASCENDING_INSENSITIVE)
+			setSortOrder(SortOrder.ASCENDING);
+		else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE)
+			setSortOrder(SortOrder.DESCENDING);
+	}
 
-        int compareResult = ConversionUtil.toComparable(value1).compareTo(
-                ConversionUtil.toComparable(value2));
-        return (isAscending()) ? compareResult : -compareResult;
-    }
+	/**
+	 * Returns the expression defining a ordering Java Bean property.
+	 */
+	public Expression getSortSpec() {
+		if (sortSpecString == null) {
+			return null;
+		}
 
-    /**
-     * Encodes itself as a query ordering.
-     * 
-     * @since 1.1
-     */
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<ordering");
+		// compile on demand .. since orderings can only be paths, avoid the
+		// overhead of
+		// Expression.fromString, and parse them manually
+		if (sortSpec == null) {
 
-        if (isDescending()) {
-            encoder.print(" descending=\"true\"");
-        }
+			if (sortSpecString.startsWith(ASTDbPath.DB_PREFIX)) {
+				sortSpec = new ASTDbPath(sortSpecString.substring(ASTDbPath.DB_PREFIX.length()));
+			} else if (sortSpecString.startsWith(ASTObjPath.OBJ_PREFIX)) {
+				sortSpec = new ASTObjPath(sortSpecString.substring(ASTObjPath.OBJ_PREFIX.length()));
+			} else {
+				sortSpec = new ASTObjPath(sortSpecString);
+			}
+		}
 
-        if (isCaseInsensitive()) {
-            encoder.print(" ignore-case=\"true\"");
-        }
+		return sortSpec;
+	}
 
-        encoder.print(">");
-        if (getSortSpec() != null) {
-            getSortSpec().encodeAsXML(encoder);
-        }
-        encoder.println("</ordering>");
-    }
+	/**
+	 * Sets the expression defining a ordering Java Bean property.
+	 */
+	public void setSortSpec(Expression sortSpec) {
+		this.sortSpec = sortSpec;
+		this.sortSpecString = (sortSpec != null) ? sortSpec.toString() : null;
+	}
 
-    @Override
-    public String toString() {
-        StringWriter buffer = new StringWriter();
-        PrintWriter pw = new PrintWriter(buffer);
-        XMLEncoder encoder = new XMLEncoder(pw);
-        encodeAsXML(encoder);
-        pw.close();
-        buffer.flush();
-        return buffer.toString();
-    }
-    
-    /**
-     * Returns sort order for this ordering
-     * @since 3.1
-     */
-    public SortOrder getSortOrder() {
-        return sortOrder;
-    }
+	/**
+	 * Orders the given list of objects according to the ordering that this
+	 * object specifies. List is modified in-place.
+	 * 
+	 * @param objects
+	 *            a List of objects to be sorted
+	 */
+	public void orderList(List<?> objects) {
+		Collections.sort(objects, this);
+	}
+
+	/**
+	 * Comparable interface implementation. Can compare two Java Beans based on
+	 * the stored expression.
+	 */
+	public int compare(Object o1, Object o2) {
+		Expression exp = getSortSpec();
+		Object value1 = null;
+		Object value2 = null;
+		try {
+			value1 = exp.evaluate(o1);
+		} catch (ExpressionException e) {
+			if (pathExceptionSuppressed && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
+				// do nothing, we expect this
+			} else {
+				// re-throw
+				throw e;
+			}
+		}
+
+		try {
+			value2 = exp.evaluate(o2);
+		} catch (ExpressionException e) {
+			if (pathExceptionSuppressed && e.getCause() instanceof org.apache.cayenne.reflect.UnresolvablePathException) {
+				// do nothing, we expect this
+			} else {
+				// rethrow
+				throw e;
+			}
+		}
+
+		if (value1 == null && value2 == null) {
+			return 0;
+		} else if (value1 == null) {
+			return nullSortedFirst ? -1 : 1;
+		} else if (value2 == null) {
+			return nullSortedFirst ? 1 : -1;
+		}
+
+		if (isCaseInsensitive()) {
+			// TODO: to upper case should probably be defined as a separate
+			// expression
+			// type
+			value1 = ConversionUtil.toUpperCase(value1);
+			value2 = ConversionUtil.toUpperCase(value2);
+		}
+
+		int compareResult = ConversionUtil.toComparable(value1).compareTo(ConversionUtil.toComparable(value2));
+		return (isAscending()) ? compareResult : -compareResult;
+	}
+
+	/**
+	 * Encodes itself as a query ordering.
+	 * 
+	 * @since 1.1
+	 */
+	public void encodeAsXML(XMLEncoder encoder) {
+		encoder.print("<ordering");
+
+		if (isDescending()) {
+			encoder.print(" descending=\"true\"");
+		}
+
+		if (isCaseInsensitive()) {
+			encoder.print(" ignore-case=\"true\"");
+		}
+
+		encoder.print(">");
+		if (getSortSpec() != null) {
+			getSortSpec().encodeAsXML(encoder);
+		}
+		encoder.println("</ordering>");
+	}
+
+	@Override
+	public String toString() {
+		StringWriter buffer = new StringWriter();
+		PrintWriter pw = new PrintWriter(buffer);
+		XMLEncoder encoder = new XMLEncoder(pw);
+		encodeAsXML(encoder);
+		pw.close();
+		buffer.flush();
+		return buffer.toString();
+	}
+
+	/**
+	 * Returns sort order for this ordering
+	 * 
+	 * @since 3.1
+	 */
+	public SortOrder getSortOrder() {
+		return sortOrder;
+	}
 }

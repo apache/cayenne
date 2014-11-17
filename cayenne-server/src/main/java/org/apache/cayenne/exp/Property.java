@@ -385,9 +385,7 @@ public class Property<E> {
 	 * prefetch semantics.
 	 */
 	public PrefetchTreeNode joint() {
-		PrefetchTreeNode node = prefetch();
-		node.setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-		return node.getRoot();
+		return PrefetchTreeNode.withPath(name, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 	}
 
 	/**
@@ -396,9 +394,7 @@ public class Property<E> {
 	 * "disjoint" prefetch semantics.
 	 */
 	public PrefetchTreeNode disjoint() {
-		PrefetchTreeNode node = prefetch();
-		node.setSemantics(PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-		return node.getRoot();
+		return PrefetchTreeNode.withPath(name, PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
 	}
 
 	/**
@@ -407,16 +403,7 @@ public class Property<E> {
 	 * "disjoint by id" prefetch semantics.
 	 */
 	public PrefetchTreeNode disjointById() {
-		PrefetchTreeNode node = prefetch();
-		node.setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
-		return node.getRoot();
-	}
-
-	PrefetchTreeNode prefetch() {
-		PrefetchTreeNode root = new PrefetchTreeNode();
-		PrefetchTreeNode node = root.addPath(name);
-		node.setPhantom(false);
-		return node;
+		return PrefetchTreeNode.withPath(name, PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 	}
 
 	/**

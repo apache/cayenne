@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -156,8 +157,8 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
     }
 
     @Override
-    public void addOrderings(List orderings) {
-        query.addOrderings(orderings);
+    public void addOrderings(Collection<? extends Ordering> orderings) {
+    	query.addOrderings(orderings);
     }
 
     @Override
