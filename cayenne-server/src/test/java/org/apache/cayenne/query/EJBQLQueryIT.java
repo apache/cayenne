@@ -23,6 +23,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
+import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
@@ -50,6 +51,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EJBQLQueryIT extends ServerCase {
@@ -188,6 +190,29 @@ public class EJBQLQueryIT extends ServerCase {
                 .getEntityResolver());
         assertNotNull(parsed);
         assertEquals(ejbql, parsed.getSource());
+    }
+
+    /**
+     * <p>If an expression has an 'entity variable' used in the SELECT clause then there should be a
+     * corresponding definition for the 'entity variable' in the FROM clause.  This did, at some
+     * point throw an NPE.</p>
+     */
+
+    @Test
+    public void testMissingEntityBeanVariable() {
+       String ejbql = "SELECT b FROM Artist a";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        try {
+            context.performQuery(query);
+            fail("expected an instance of " + EJBQLException.class.getSimpleName() + " to have been thrown.");
+        }
+        catch(EJBQLException e) {
+            assertEquals("the entity variable 'b' does not refer to any entity in the FROM clause", e.getUnlabeledMessage());
+        }
+        catch(Throwable th) {
+            fail("expected an instance of " + EJBQLException.class.getSimpleName() + " to have been thrown.");
+        }
     }
 
     @Test
