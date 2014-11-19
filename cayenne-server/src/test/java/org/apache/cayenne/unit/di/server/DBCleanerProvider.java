@@ -32,9 +32,12 @@ public class DBCleanerProvider implements Provider<DBCleaner> {
     @Inject
     protected Provider<ServerCaseProperties> propertiesProvider;
 
+    @Inject
+    private SchemaBuilder schemaBuilder;
+
     @Override
     public DBCleaner get() throws ConfigurationException {
-        return new DBCleaner((FlavoredDBHelper) dbHelper, propertiesProvider.get().getConfigurationLocation());
+        return new DBCleaner((FlavoredDBHelper) dbHelper, schemaBuilder.getDomain(), propertiesProvider.get().getConfigurationLocation());
     }
 
 }

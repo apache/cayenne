@@ -42,11 +42,15 @@ import org.apache.cayenne.access.types.TimestampType;
 import org.apache.cayenne.access.types.UUIDType;
 import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.access.types.VoidType;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -208,6 +212,8 @@ public class ServerCaseModule implements Module {
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
+        binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+        binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
         // test-scoped objects
         binder.bind(EntityResolver.class).toProvider(

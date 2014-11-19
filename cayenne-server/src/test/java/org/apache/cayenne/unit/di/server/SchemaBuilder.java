@@ -366,4 +366,9 @@ public class SchemaBuilder {
 
         return queries;
     }
+
+    protected DataDomain getDomain() {
+        return domain;
+    }
+
 }
