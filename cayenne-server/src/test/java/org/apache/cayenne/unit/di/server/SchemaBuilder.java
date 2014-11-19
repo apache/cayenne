@@ -203,6 +203,23 @@ public class SchemaBuilder {
     private List<DbEntity> dbEntitiesInInsertOrder(DataNode node, DataMap map) {
         List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
 
+        dbEntitiesFilter(entities);
+
+        domain.getEntitySorter().sortDbEntities(entities, false);
+        return entities;
+    }
+
+    protected List<DbEntity> dbEntitiesInDeleteOrder(DataMap dataMap) {
+        DataMap map = domain.getDataMap(dataMap.getName());
+        List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
+
+        dbEntitiesFilter(entities);
+
+        domain.getEntitySorter().sortDbEntities(entities, true);
+        return entities;
+    }
+
+    private void dbEntitiesFilter(List<DbEntity> entities) {
         // filter various unsupported tests...
 
         // LOBs
@@ -258,9 +275,6 @@ public class SchemaBuilder {
 
             entities = filtered;
         }
-
-        domain.getEntitySorter().sortDbEntities(entities, false);
-        return entities;
     }
 
     private void dropSchema(DataNode node, DataMap map) throws Exception {
@@ -365,10 +379,6 @@ public class SchemaBuilder {
         }
 
         return queries;
-    }
-
-    protected DataDomain getDomain() {
-        return domain;
     }
 
 }
