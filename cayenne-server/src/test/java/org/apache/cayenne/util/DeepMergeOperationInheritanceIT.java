@@ -50,6 +50,10 @@ public class DeepMergeOperationInheritanceIT extends ServerCase {
     @Inject
     protected DataChannelInterceptor queryInterceptor;
 
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+    }
+
     @Test
     public void testDeepMergeExistingSubclass() {
 

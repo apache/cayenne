@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.inheritance_people.Address;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.DBCleaner;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
@@ -50,6 +51,13 @@ public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    @Inject
+    protected DBCleaner dbCleaner;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+    }
+
     @Before
     public void testSetUp() throws Exception {
 
@@ -64,6 +72,7 @@ public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
 
         // manually break circular deps
         tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+        dbCleaner.clean();
 
         // TODO: use TableHelper to create test data
 

@@ -27,6 +27,7 @@ import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.DBCleaner;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
@@ -46,10 +47,19 @@ public class DataContextEJBQLInheritanceIT extends ServerCase {
     @Inject
     protected DBHelper dbHelper;
 
+    @Inject
+    protected DBCleaner dbCleaner;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+    }
+
     @Before
     public void testSetUp() throws Exception {
         // manually break circular deps
         dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+
+        dbCleaner.clean();
 
         TableHelper person = new TableHelper(dbHelper, "PERSON");
         person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY").setColumnTypes(Types.INTEGER, Types.VARCHAR,

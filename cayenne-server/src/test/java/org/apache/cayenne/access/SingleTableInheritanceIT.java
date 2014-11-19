@@ -39,6 +39,7 @@ import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.DBCleaner;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
@@ -60,6 +61,9 @@ public class SingleTableInheritanceIT extends ServerCase {
     private DBHelper dbHelper;
 
     @Inject
+    private DBCleaner dbCleaner;
+
+    @Inject
     private DataContext context;
 
     @Inject
@@ -72,6 +76,10 @@ public class SingleTableInheritanceIT extends ServerCase {
     private TableHelper tAddress;
     private TableHelper tClientCompany;
     private TableHelper tDepartment;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+    }
 
     @Before
     public void testSetUp() throws Exception {
@@ -101,6 +109,7 @@ public class SingleTableInheritanceIT extends ServerCase {
 
         // manually break circular deps
         tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+        dbCleaner.clean();
     }
 
     private void create2PersonDataSet() throws Exception {
