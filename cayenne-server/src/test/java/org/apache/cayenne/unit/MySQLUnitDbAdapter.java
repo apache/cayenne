@@ -91,7 +91,7 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
     @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
 
-        if (map.getProcedureMap().containsKey("cayenne_test_select_proc")) {
+        if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "mysql", "create-select-sp.sql");
             executeDDL(con, "mysql", "create-update-sp.sql");
             executeDDL(con, "mysql", "create-update-sp2.sql");
@@ -105,7 +105,7 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
             DataMap map,
             Collection<String> tablesToDrop) throws Exception {
 
-        Procedure proc = map.getProcedure("cayenne_test_select_proc");
+        Procedure proc = map.getProcedure("cayenne_tst_select_proc");
         if (proc != null && proc.getDataMap() == map) {
             executeDDL(conn, "mysql", "drop-select-sp.sql");
             executeDDL(conn, "mysql", "drop-update-sp.sql");

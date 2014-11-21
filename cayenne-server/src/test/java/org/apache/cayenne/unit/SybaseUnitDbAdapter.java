@@ -55,7 +55,7 @@ public class SybaseUnitDbAdapter extends UnitDbAdapter {
 
     @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
-        Procedure proc = map.getProcedure("cayenne_test_select_proc");
+        Procedure proc = map.getProcedure("cayenne_tst_select_proc");
         if (proc != null && proc.getDataMap() == map) {
             executeDDL(con, "sybase", "create-select-sp.sql");
             executeDDL(con, "sybase", "create-update-sp.sql");
@@ -116,7 +116,7 @@ public class SybaseUnitDbAdapter extends UnitDbAdapter {
     }
 
     protected void dropProcedures(Connection con, DataMap map) throws Exception {
-        Procedure proc = map.getProcedure("cayenne_test_select_proc");
+        Procedure proc = map.getProcedure("cayenne_tst_select_proc");
         if (proc != null && proc.getDataMap() == map) {
             executeDDL(con, "sybase", "drop-select-sp.sql");
             executeDDL(con, "sybase", "drop-update-sp.sql");

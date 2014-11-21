@@ -54,7 +54,7 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
 
     @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
-        if (map.getProcedureMap().containsKey("cayenne_test_select_proc")) {
+        if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "postgresql", "create-select-sp.sql");
             executeDDL(con, "postgresql", "create-update-sp.sql");
             executeDDL(con, "postgresql", "create-update-sp2.sql");

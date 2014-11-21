@@ -95,7 +95,7 @@ public class MapLoaderLoadTest {
         assertNotNull(map);
 
         // test procedures
-        Procedure procedure = map.getProcedure("cayenne_test_upd_proc");
+        Procedure procedure = map.getProcedure("cayenne_tst_upd_proc");
         assertNotNull(procedure);
         List<ProcedureParameter> params = procedure.getCallParameters();
         assertNotNull(params);

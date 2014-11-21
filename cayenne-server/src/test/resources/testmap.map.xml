@@ -8,18 +8,18 @@
 	<property name="clientSupported" value="true"/>
 	<property name="defaultClientPackage" value="test.client"/>
 	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
-	<procedure name="cayenne_test_out_proc">
+	<procedure name="cayenne_tst_out_proc">
 		<procedure-parameter name="in_param" type="INTEGER" direction="in"/>
 		<procedure-parameter name="out_param" type="INTEGER" direction="out"/>
 	</procedure>
-	<procedure name="cayenne_test_select_proc">
+	<procedure name="cayenne_tst_select_proc">
 		<procedure-parameter name="aName" type="VARCHAR" length="254" direction="in"/>
 		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
 	</procedure>
-	<procedure name="cayenne_test_upd_proc">
+	<procedure name="cayenne_tst_upd_proc">
 		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
 	</procedure>Ï
-	<procedure name="cayenne_test_upd_proc2">
+	<procedure name="cayenne_tst_upd_proc2">
 	</procedure>
 	<db-entity name="ARTGROUP">
 		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -271,7 +271,7 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 		<qualifier><![CDATA[artistName like $name]]></qualifier>
 	</query>
-	<query name="ProcedureQuery" factory="org.apache.cayenne.map.ProcedureQueryBuilder" root="procedure" root-name="cayenne_test_select_proc" result-entity="Artist">
+	<query name="ProcedureQuery" factory="org.apache.cayenne.map.ProcedureQueryBuilder" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist">
 	</query>
 	<query name="QueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Artist">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>

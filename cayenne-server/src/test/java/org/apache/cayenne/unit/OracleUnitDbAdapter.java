@@ -80,7 +80,7 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
 
     @Override
     public void createdTables(Connection con, DataMap map) throws Exception {
-        if (map.getProcedureMap().containsKey("cayenne_test_select_proc")) {
+        if (map.getProcedureMap().containsKey("cayenne_tst_select_proc")) {
             executeDDL(con, "oracle", "create-types-pkg.sql");
             executeDDL(con, "oracle", "create-select-sp.sql");
             executeDDL(con, "oracle", "create-update-sp.sql");
