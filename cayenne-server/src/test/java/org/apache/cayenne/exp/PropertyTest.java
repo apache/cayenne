@@ -172,4 +172,24 @@ public class PropertyTest {
         assertEquals("xyz+", outer.outer().getName());
     }
     
+    @Test
+    public void testLike() {
+    	Property<String> p = new Property<String>("prop");
+    	Expression e = p.like("abc");
+    	assertEquals("prop like \"abc\"", e.toString());
+    }
+    
+    @Test
+    public void testLikeIgnoreCase() {
+    	Property<String> p = new Property<String>("prop");
+    	Expression e = p.likeInsensitive("abc");
+    	assertEquals("prop likeIgnoreCase \"abc\"", e.toString());
+    }
+    
+    @Test
+    public void testLike_NoEscape() {
+    	Property<String> p = new Property<String>("prop");
+    	Expression e = p.like("ab%c");
+    	assertEquals("prop like \"ab%c\"", e.toString());
+    }
 }
