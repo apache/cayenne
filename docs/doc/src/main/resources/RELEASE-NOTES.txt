@@ -73,6 +73,7 @@ CAY-1965 Change version from 3.2 to 4.0
 CAY-1966 SQLTemplate/SQLSelect positional parameter binding
 CAY-1967 Deprecate SQLTemplate parameter batches
 CAY-1968 SQLSelect cleanup and omissions
+CAY-1971 Variants of Property.like(..) : contains(..), startsWith(..), endsWith(..)
 
 Bug Fixes:
 
