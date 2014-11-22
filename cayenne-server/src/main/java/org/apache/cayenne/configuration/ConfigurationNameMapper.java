@@ -25,24 +25,23 @@ import org.apache.cayenne.resource.Resource;
  */
 public interface ConfigurationNameMapper {
 
-    /**
-     * Returns the name of a configuration resource based on a naming convention for a
-     * given node type.
-     */
-    String configurationLocation(ConfigurationNode node);
+	/**
+	 * Returns the name of a configuration resource based on a naming convention
+	 * for a given node type.
+	 */
+	String configurationLocation(ConfigurationNode node);
 
-    /**
-     * Returns the name of a configuration resource based on a naming convention for a
-     * given node type.
-     */
-    String configurationLocation(Class<? extends ConfigurationNode> type, String nodeName);
+	/**
+	 * Returns the name of a configuration resource based on a naming convention
+	 * for a given node type.
+	 */
+	String configurationLocation(Class<? extends ConfigurationNode> type, String nodeName);
 
-    /**
-     * Returns a node name for a given configuration type and a configuration resource.
-     * This operation is the opposite of the {@link #configurationLocation(Class, String)}
-     * . May return null if the resource name is not following the expected naming format.
-     */
-    String configurationNodeName(
-            Class<? extends ConfigurationNode> type,
-            Resource resource);
+	/**
+	 * Returns a node name for a given configuration type and a configuration
+	 * resource. This operation is the opposite of the
+	 * {@link #configurationLocation(Class, String)} . May return null if the
+	 * resource name is not following the expected naming format.
+	 */
+	String configurationNodeName(Class<? extends ConfigurationNode> type, Resource resource);
 }
