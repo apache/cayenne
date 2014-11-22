@@ -42,7 +42,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class Expression_InContextIT extends ServerCase {
+public class ExpressionIT extends ServerCase {
 
 	@Inject
 	private ObjectContext context;
