@@ -65,7 +65,7 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertEquals(20, result.size());
 		assertThat(result.get(0), instanceOf(Artist.class));
 
-		Artist a = ObjectSelect.query(Artist.class).exp(Artist.ARTIST_NAME.eq("artist14")).selectOne(context);
+		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist14")).selectOne(context);
 		assertNotNull(a);
 		assertEquals("artist14", a.getArtistName());
 	}
@@ -79,7 +79,7 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertEquals(20, result.size());
 		assertThat(result.get(0), instanceOf(DataRow.class));
 
-		DataRow a = ObjectSelect.dataRowQuery(Artist.class).exp(Artist.ARTIST_NAME.eq("artist14")).selectOne(context);
+		DataRow a = ObjectSelect.dataRowQuery(Artist.class).where(Artist.ARTIST_NAME.eq("artist14")).selectOne(context);
 		assertNotNull(a);
 		assertEquals("artist14", a.get("ARTIST_NAME"));
 	}

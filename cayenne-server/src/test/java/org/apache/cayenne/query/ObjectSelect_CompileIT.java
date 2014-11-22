@@ -74,7 +74,7 @@ public class ObjectSelect_CompileIT extends ServerCase {
 
 		// add all possible attributes to the query and make sure they got
 		// propagated
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).exp(Artist.ARTIST_NAME.eq("me"))
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("me"))
 				.orderBy(Artist.DATE_OF_BIRTH.asc(), Artist.ARTIST_NAME.desc()).prefetch(Artist.PAINTING_ARRAY.joint())
 				.localCache("cg2", "cg1").limit(46).offset(9).pageSize(6).statementFetchSize(789);
 

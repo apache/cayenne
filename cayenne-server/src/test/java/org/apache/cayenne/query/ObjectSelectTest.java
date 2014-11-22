@@ -54,7 +54,7 @@ public class ObjectSelectTest {
 	public void testQuery_RootType() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		assertNotNull(q);
-		assertNull(q.getExp());
+		assertNull(q.getWhere());
 		assertFalse(q.isFetchingDataRows());
 
 		assertEquals(Artist.class, q.getEntityType());
@@ -66,7 +66,7 @@ public class ObjectSelectTest {
 	public void testQuery_RootType_WithQualifier() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, ExpressionFactory.matchExp("a", "A"));
 		assertNotNull(q);
-		assertEquals("a = \"A\"", q.getExp().toString());
+		assertEquals("a = \"A\"", q.getWhere().toString());
 		assertFalse(q.isFetchingDataRows());
 
 		assertEquals(Artist.class, q.getEntityType());
@@ -97,15 +97,15 @@ public class ObjectSelectTest {
 	}
 
 	@Test
-	public void testExp() {
+	public void testWhere() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.exp(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("a", 3));
+		assertEquals("a = 3", q.getWhere().toString());
 
-		q.exp(ExpressionFactory.matchExp("b", 4));
-		assertEquals("b = 4", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("b", 4));
+		assertEquals("b = 4", q.getWhere().toString());
 	}
 
 	@Test
@@ -113,11 +113,11 @@ public class ObjectSelectTest {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.exp(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("a", 3));
+		assertEquals("a = 3", q.getWhere().toString());
 
 		q.and(ExpressionFactory.matchExp("b", 4), ExpressionFactory.greaterExp("c", 5));
-		assertEquals("(a = 3) and (b = 4) and (c > 5)", q.getExp().toString());
+		assertEquals("(a = 3) and (b = 4) and (c > 5)", q.getWhere().toString());
 	}
 
 	@Test
@@ -125,14 +125,14 @@ public class ObjectSelectTest {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.exp(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("a", 3));
+		assertEquals("a = 3", q.getWhere().toString());
 
 		Collection<Expression> exps = Arrays.asList(ExpressionFactory.matchExp("b", 4),
 				ExpressionFactory.greaterExp("c", 5));
 
 		q.and(exps);
-		assertEquals("(a = 3) and (b = 4) and (c > 5)", q.getExp().toString());
+		assertEquals("(a = 3) and (b = 4) and (c > 5)", q.getWhere().toString());
 	}
 
 	@Test
@@ -140,11 +140,11 @@ public class ObjectSelectTest {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.exp(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("a", 3));
+		assertEquals("a = 3", q.getWhere().toString());
 
 		q.and();
-		assertEquals("a = 3", q.getExp().toString());
+		assertEquals("a = 3", q.getWhere().toString());
 	}
 
 	@Test
@@ -152,11 +152,11 @@ public class ObjectSelectTest {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.exp(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("a", 3));
+		assertEquals("a = 3", q.getWhere().toString());
 
 		q.and(new Expression[0]);
-		assertEquals("a = 3", q.getExp().toString());
+		assertEquals("a = 3", q.getWhere().toString());
 	}
 
 	@Test
@@ -164,11 +164,11 @@ public class ObjectSelectTest {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.exp(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("a", 3));
+		assertEquals("a = 3", q.getWhere().toString());
 
 		q.and(Collections.<Expression> emptyList());
-		assertEquals("a = 3", q.getExp().toString());
+		assertEquals("a = 3", q.getWhere().toString());
 	}
 
 	@Test
@@ -176,11 +176,11 @@ public class ObjectSelectTest {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.exp(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("a", 3));
+		assertEquals("a = 3", q.getWhere().toString());
 
 		q.or(ExpressionFactory.matchExp("b", 4), ExpressionFactory.greaterExp("c", 5));
-		assertEquals("(a = 3) or (b = 4) or (c > 5)", q.getExp().toString());
+		assertEquals("(a = 3) or (b = 4) or (c > 5)", q.getWhere().toString());
 	}
 
 	@Test
@@ -188,14 +188,14 @@ public class ObjectSelectTest {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.exp(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getExp().toString());
+		q.where(ExpressionFactory.matchExp("a", 3));
+		assertEquals("a = 3", q.getWhere().toString());
 
 		Collection<Expression> exps = Arrays.asList(ExpressionFactory.matchExp("b", 4),
 				ExpressionFactory.greaterExp("c", 5));
 
 		q.or(exps);
-		assertEquals("(a = 3) or (b = 4) or (c > 5)", q.getExp().toString());
+		assertEquals("(a = 3) or (b = 4) or (c > 5)", q.getWhere().toString());
 	}
 
 	@Test

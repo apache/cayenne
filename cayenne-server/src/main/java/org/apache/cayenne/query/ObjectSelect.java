@@ -48,7 +48,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	private Class<?> entityType;
 	private String entityName;
 	private String dbEntityName;
-	private Expression exp;
+	private Expression where;
 	private Collection<Ordering> orderings;
 	private PrefetchTreeNode prefetches;
 	private int limit;
@@ -70,7 +70,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	 * and uses provided expression for its qualifier.
 	 */
 	public static <T> ObjectSelect<T> query(Class<T> entityType, Expression expression) {
-		return new ObjectSelect<T>().entityType(entityType).exp(expression);
+		return new ObjectSelect<T>().entityType(entityType).where(expression);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	 * and uses provided expression for its qualifier.
 	 */
 	public static <T> ObjectSelect<T> query(Class<T> entityType, Expression expression, List<Ordering> orderings) {
-		return new ObjectSelect<T>().entityType(entityType).exp(expression).orderBy(orderings);
+		return new ObjectSelect<T>().entityType(entityType).where(expression).orderBy(orderings);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	 * qualifier.
 	 */
 	public static ObjectSelect<DataRow> dataRowQuery(Class<?> entityType, Expression expression) {
-		return query(entityType).fetchDataRows().exp(expression);
+		return query(entityType).fetchDataRows().where(expression);
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	 * @return this object
 	 */
 	public static ObjectSelect<DataRow> dbQuery(String dbEntityName, Expression expression) {
-		return new ObjectSelect<Object>().fetchDataRows().dbEntityName(dbEntityName).exp(expression);
+		return new ObjectSelect<Object>().fetchDataRows().dbEntityName(dbEntityName).where(expression);
 	}
 
 	protected ObjectSelect() {
@@ -163,7 +163,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		}
 
 		replacement.setFetchingDataRows(fetchingDataRows);
-		replacement.setQualifier(exp);
+		replacement.setQualifier(where);
 		replacement.addOrderings(orderings);
 		replacement.setPrefetchTree(prefetches);
 		replacement.setCacheStrategy(cacheStrategy);
@@ -232,8 +232,8 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	 * 
 	 * @return this object
 	 */
-	public ObjectSelect<T> exp(Expression expression) {
-		this.exp = expression;
+	public ObjectSelect<T> where(Expression expression) {
+		this.where = expression;
 		return this;
 	}
 
@@ -243,13 +243,13 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	 * 
 	 * @return this object
 	 */
-	public ObjectSelect<T> exp(String expressionString, Object... parameters) {
-		this.exp = ExpressionFactory.exp(expressionString, parameters);
+	public ObjectSelect<T> where(String expressionString, Object... parameters) {
+		this.where = ExpressionFactory.exp(expressionString, parameters);
 		return this;
 	}
 
 	/**
-	 * AND's provided expressions to the existing qualifier expression.
+	 * AND's provided expressions to the existing WHERE clause expression.
 	 * 
 	 * @return this object
 	 */
@@ -262,7 +262,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * AND's provided expressions to the existing qualifier expression.
+	 * AND's provided expressions to the existing WHERE clause expression.
 	 * 
 	 * @return this object
 	 */
@@ -274,20 +274,20 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 
 		Collection<Expression> all;
 
-		if (exp != null) {
+		if (where != null) {
 			all = new ArrayList<Expression>(expressions.size() + 1);
-			all.add(exp);
+			all.add(where);
 			all.addAll(expressions);
 		} else {
 			all = expressions;
 		}
 
-		exp = ExpressionFactory.and(all);
+		where = ExpressionFactory.and(all);
 		return this;
 	}
 
 	/**
-	 * OR's provided expressions to the existing qualifier expression.
+	 * OR's provided expressions to the existing WHERE clause expression.
 	 * 
 	 * @return this object
 	 */
@@ -300,7 +300,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * OR's provided expressions to the existing qualifier expression.
+	 * OR's provided expressions to the existing WHERE clause expression.
 	 * 
 	 * @return this object
 	 */
@@ -311,15 +311,15 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 
 		Collection<Expression> all;
 
-		if (exp != null) {
+		if (where != null) {
 			all = new ArrayList<Expression>(expressions.size() + 1);
-			all.add(exp);
+			all.add(where);
 			all.addAll(expressions);
 		} else {
 			all = expressions;
 		}
 
-		exp = ExpressionFactory.or(all);
+		where = ExpressionFactory.or(all);
 		return this;
 	}
 
@@ -637,8 +637,11 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		return dbEntityName;
 	}
 
-	public Expression getExp() {
-		return exp;
+	/**
+	 * Returns a WHERE clause Expression of this query.
+	 */
+	public Expression getWhere() {
+		return where;
 	}
 
 	public Collection<Ordering> getOrderings() {
