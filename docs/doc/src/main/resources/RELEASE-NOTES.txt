@@ -74,6 +74,7 @@ CAY-1966 SQLTemplate/SQLSelect positional parameter binding
 CAY-1967 Deprecate SQLTemplate parameter batches
 CAY-1968 SQLSelect cleanup and omissions
 CAY-1971 Variants of Property.like(..) : contains(..), startsWith(..), endsWith(..)
+CAY-1972 A property to override DataSources of multi-module projects 
 
 Bug Fixes:
 

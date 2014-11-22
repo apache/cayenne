@@ -18,8 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -32,15 +34,29 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
+import org.junit.After;
 import org.junit.Test;
 
 public class ServerRuntimeBuilderTest {
+
+	private ServerRuntime runtime;
+
+	@After
+	public void stopRuntime() {
+
+		// even though we don't supply real configs here, we sometimes access
+		// DataDomain, and this starts EventManager threads that need to be
+		// shutdown
+		if (runtime != null) {
+			runtime.shutdown();
+		}
+	}
 
 	@Test
 	public void test_NoLocation() {
 
 		// this is meaningless (no DataSource), but should work...
-		ServerRuntime runtime = new ServerRuntimeBuilder().build();
+		runtime = new ServerRuntimeBuilder().build();
 
 		List<?> locations = runtime.getInjector().getInstance(
 				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
@@ -49,14 +65,14 @@ public class ServerRuntimeBuilderTest {
 		assertTrue(runtime.getModule() instanceof ModuleCollection);
 
 		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(1, modules.size());
-		assertTrue(modules.iterator().next() instanceof ServerModule);
+		assertEquals(2, modules.size());
+		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
 	}
 
 	@Test
 	public void test_SingleLocation() {
 
-		ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").build();
+		runtime = new ServerRuntimeBuilder().addConfig("xxxx").build();
 
 		List<?> locations = runtime.getInjector().getInstance(
 				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
@@ -65,14 +81,14 @@ public class ServerRuntimeBuilderTest {
 
 		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
 		assertEquals(1, modules.size());
-		assertTrue(modules.iterator().next() instanceof ServerModule);
+		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
 
 	}
 
 	@Test
 	public void test_MultipleLocations() {
 
-		ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").addConfig("yyyy").build();
+		runtime = new ServerRuntimeBuilder().addConfigs("xxxx", "yyyy").build();
 
 		List<?> locations = runtime.getInjector().getInstance(
 				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
@@ -80,8 +96,8 @@ public class ServerRuntimeBuilderTest {
 		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 
 		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(1, modules.size());
-		assertTrue(modules.iterator().next() instanceof ServerModule);
+		assertEquals(2, modules.size());
+		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
 	}
 
 	@Test
@@ -89,15 +105,30 @@ public class ServerRuntimeBuilderTest {
 
 		Module m = mock(Module.class);
 
-		ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").addModule(m).build();
+		runtime = new ServerRuntimeBuilder().addModule(m).build();
 
 		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(2, modules.size());
+		assertEquals(3, modules.size());
 
 		Iterator<Module> it = modules.iterator();
 
-		assertTrue(it.next() instanceof ServerModule);
+		assertThat(it.next(), instanceOf(ServerModule.class));
+
+		// rewind - this module is name fix module
+		it.next();
+		
 		assertSame(m, it.next());
 	}
 
+	@Test
+	public void test_UnnamedDomain_NoLocation() {
+		runtime = new ServerRuntimeBuilder().build();
+		assertEquals("cayenne", runtime.getDataDomain().getName());
+	}
+
+	@Test
+	public void test_NamedDomain_NoLocation() {
+		runtime = new ServerRuntimeBuilder("myd").build();
+		assertEquals("myd", runtime.getDataDomain().getName());
+	}
 }

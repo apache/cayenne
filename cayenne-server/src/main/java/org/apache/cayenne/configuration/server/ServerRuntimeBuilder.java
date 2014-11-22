@@ -19,6 +19,7 @@
 package org.apache.cayenne.configuration.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -40,6 +41,12 @@ import org.apache.cayenne.di.Module;
  */
 public class ServerRuntimeBuilder {
 
+	/**
+	 * @since 4.0
+	 */
+	static final String DEFAULT_NAME = "cayenne";
+
+	private String name;
 	private Collection<String> configs;
 	private List<Module> modules;
 	private DataSourceFactory dataSourceFactory;
@@ -54,17 +61,18 @@ public class ServerRuntimeBuilder {
 	 * Creates an empty builder.
 	 */
 	public ServerRuntimeBuilder() {
-		this.configs = new LinkedHashSet<String>();
-		this.modules = new ArrayList<Module>();
+		this(null);
 	}
 
 	/**
-	 * An equivalent to creating builder with default constructor and calling
-	 * {@link #addConfig(String)}.
+	 * Creates a builder with a fixed name of the DataDomain of the resulting
+	 * ServerRuntime. Specifying explicit name is often needed for consistency
+	 * in runtimes merged from multiple configs, each having its own name.
 	 */
-	public ServerRuntimeBuilder(String configurationLocation) {
-		this();
-		addConfig(configurationLocation);
+	public ServerRuntimeBuilder(String name) {
+		this.configs = new LinkedHashSet<String>();
+		this.modules = new ArrayList<Module>();
+		this.name = name;
 	}
 
 	/**
@@ -134,6 +142,13 @@ public class ServerRuntimeBuilder {
 		return this;
 	}
 
+	public ServerRuntimeBuilder addConfigs(String... configurationLocations) {
+		if (configurationLocations != null) {
+			configs.addAll(Arrays.asList(configurationLocations));
+		}
+		return this;
+	}
+
 	public ServerRuntimeBuilder addConfigs(Collection<String> configurationLocations) {
 		configs.addAll(configurationLocations);
 		return this;
@@ -159,6 +174,28 @@ public class ServerRuntimeBuilder {
 	}
 
 	private void buildModules() {
+
+		String nameOverride = name;
+
+		if (nameOverride == null) {
+			// check if we need to force the default name ... we do when no
+			// configs or multiple configs are supplied.
+			if (configs.size() != 1) {
+				nameOverride = DEFAULT_NAME;
+			}
+		}
+
+		if (nameOverride != null) {
+
+			final String finalNameOverride = nameOverride;
+			prepend(new Module() {
+				@Override
+				public void configure(Binder binder) {
+					binder.bindMap(Constants.PROPERTIES_MAP).put(Constants.SERVER_DOMAIN_NAME_PROPERTY,
+							finalNameOverride);
+				}
+			});
+		}
 
 		if (dataSourceFactory != null) {
 
@@ -196,6 +233,7 @@ public class ServerRuntimeBuilder {
 					if (jdbcMaxConnections > 0) {
 						props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
 					}
+
 				}
 			});
 		}
