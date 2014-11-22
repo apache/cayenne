@@ -103,4 +103,23 @@ public class ExpressionFactoryIT extends ServerCase {
 		artists = context.select(q2);
 		assertEquals(1, artists.size());
 	}
+	
+	@Test
+	public void testContains_Escape() {
+		Artist a1 = context.newObject(Artist.class);
+		a1.setArtistName("MA_1X");
+		Artist a2 = context.newObject(Artist.class);
+		a2.setArtistName("CA%2Y");
+		context.commitChanges();
+
+		Expression ex1 = ExpressionFactory.containsExp(Artist.ARTIST_NAME.getName(), "A_1");
+		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class, ex1);
+		List<Artist> artists = context.select(q1);
+		assertEquals(1, artists.size());
+
+		Expression ex2 = ExpressionFactory.containsExp(Artist.ARTIST_NAME.getName(), "A%2");
+		SelectQuery<Artist> q2 = new SelectQuery<Artist>(Artist.class, ex2);
+		artists = context.select(q2);
+		assertEquals(1, artists.size());
+	}
 }
