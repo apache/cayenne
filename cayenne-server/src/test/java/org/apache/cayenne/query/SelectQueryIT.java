@@ -330,6 +330,20 @@ public class SelectQueryIT extends ServerCase {
 	}
 
 	@Test
+	public void testSelectLike_WildcardMatchAndEscapeMulti_AndOtherCriteria() throws Exception {
+
+		tArtist.insert(1, "_X_", null);
+		tArtist.insert(2, "_X", null);
+
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		query.andQualifier(ExpressionFactory.likeExp("artistName", "#_%#_", '#'));
+		query.andQualifier(Artist.ARTIST_NAME.eq("_X_"));
+
+		List<?> objects = context.performQuery(query);
+		assertEquals(1, objects.size());
+	}
+
+	@Test
 	public void testSelectLikeMultiple_WildcardMatch() throws Exception {
 		createArtistsDataSet();
 		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
