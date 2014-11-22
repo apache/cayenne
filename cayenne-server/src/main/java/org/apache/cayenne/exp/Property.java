@@ -194,7 +194,7 @@ public class Property<E> {
 	/**
 	 * @return An expression for a case insensitive "LIKE" query.
 	 */
-	public Expression likeInsensitive(String pattern) {
+	public Expression likeIgnoreCase(String pattern) {
 		return ExpressionFactory.likeIgnoreCaseExp(getName(), pattern);
 	}
 
