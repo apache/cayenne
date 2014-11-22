@@ -125,8 +125,13 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Selects a single object using provided context. Essentially the inversion
-	 * of "ObjectContext.selectOne(Select)".
+	 * Selects a single object using provided context. The query is expected to
+	 * match zero or one object. It returns null if no objects were matched. If
+	 * query matched more than one object, {@link CayenneRuntimeException} is
+	 * thrown. Since we are selecting by ID, multiple matched objects likely
+	 * indicate a database referential integrity problem.
+	 * <p>
+	 * Essentially the inversion of "ObjectContext.selectOne(Select)".
 	 */
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);

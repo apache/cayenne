@@ -661,11 +661,32 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Selects a single object using provided context. Essentially the inversion
-	 * of "ObjectContext.selectOne(Select)".
+	 * Selects a single object using provided context. The query is expected to
+	 * match zero or one object. It returns null if no objects were matched. If
+	 * query matched more than one object, {@link CayenneRuntimeException} is
+	 * thrown.
+	 * <p>
+	 * Essentially the inversion of "ObjectContext.selectOne(Select)".
 	 */
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
+	}
+
+	/**
+	 * Selects a single object using provided context. The query itself can
+	 * match any number of objects, but will return only the first one. It
+	 * returns null if no objects were matched.
+	 * <p>
+	 * If it matched more than one object, the first object from the list is
+	 * returned. This makes 'selectFirst' different from
+	 * {@link #selectOne(ObjectContext)}, which would throw in this situation.
+	 * 'selectFirst' is useful e.g. when the query is ordered and we only want
+	 * to see the first object (e.g. "most recent news article"), etc.
+	 * <p>
+	 * This method is equivalent to calling "limit(1).selectOne(context)".
+	 */
+	public T selectFirst(ObjectContext context) {
+		return limit(1).selectOne(context);
 	}
 
 }
