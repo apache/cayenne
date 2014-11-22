@@ -208,7 +208,7 @@ public class Property<E> {
 	/**
 	 * @return An expression for a case insensitive "NOT LIKE" query.
 	 */
-	public Expression nlikeInsensitive(String value) {
+	public Expression nlikeIgnoreCase(String value) {
 		return ExpressionFactory.notLikeIgnoreCaseExp(getName(), value);
 	}
 
