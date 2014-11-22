@@ -255,7 +255,7 @@ public class Property<E> {
 	 * Same as {@link #contains(String)}, only using case-insensitive
 	 * comparison.
 	 */
-	public Expression icontains(String value) {
+	public Expression containsIgnoreCase(String value) {
 		return ExpressionFactory.containsIgnoreCaseExp(getName(), value);
 	}
 
@@ -263,7 +263,7 @@ public class Property<E> {
 	 * Same as {@link #startsWith(String)}, only using case-insensitive
 	 * comparison.
 	 */
-	public Expression istartsWith(String value) {
+	public Expression startsWithIgnoreCase(String value) {
 		return ExpressionFactory.startsWithIgnoreCaseExp(getName(), value);
 	}
 
@@ -271,7 +271,7 @@ public class Property<E> {
 	 * Same as {@link #endsWith(String)}, only using case-insensitive
 	 * comparison.
 	 */
-	public Expression iendsWith(String value) {
+	public Expression endsWithIgnoreCase(String value) {
 		return ExpressionFactory.endsWithIgnoreCaseExp(getName(), value);
 	}
 
