@@ -112,6 +112,22 @@ query.addPrefetch("paintings").setSemantics(
                 application server and the database, and more data processing that needs to be done
                 on the Cayenne side.</para>
         </section>
+        <section xml:id="prefetching-with-ejbql">
+            <title>Similar Behaviours Using EJBQL</title>
+            <para>It is possible to achieve similar behaviours with
+            <link linkend="ejbqlquery">EJBQLQuery</link> queries by employing the &quot;FETCH&quot;
+                keyword.</para>
+
+            <screen>SELECT a FROM Artist a LEFT JOIN FETCH a.paintings</screen>
+
+            <para>
+                In this case, the Paintings that exist for the Artist will be obtained at the same time
+                as the Artists are fetched.  Refer to third-party query language documentation for further
+                detail on this mechanism.
+            </para>
+
+        </section>
+
     </section>
     <section xml:id="datarows">
         <title>Data Rows</title>
@@ -145,6 +161,26 @@ for(DataRow row : rows) {
     }
 }</programlisting></para>
     </section>
+
+    <section xml:id="specific-attributes-with-ejbql">
+        <title>Specific Attributes and Relationships with EJBQL</title>
+        <para>
+            It is possible to fetch specific attributes and relationships from a model
+            using <link linkend="ejbqlquery">EJBQLQuery</link>.
+            The following example would return a java.util.List of String objects;
+        </para>
+
+        <screen>SELECT a.name FROM Artist a</screen>
+
+        <para>The following will yield a java.util.List containing Object[] instances, each of which
+            would contain the name followed by the dateOfBirth value.</para>
+
+        <screen>SELECT a.name, a.dateOfBirth FROM Artist a</screen>
+
+        <para>Refer to third-party query language documentation for further
+            detail on this mechanism.</para>
+    </section>
+
     <section xml:id="iterated-queries">
         <title>Iterated Queries</title>
         <para>While contemporary hardware may easily allow applications to fetch hundreds of
