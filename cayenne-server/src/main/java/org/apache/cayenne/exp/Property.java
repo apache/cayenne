@@ -165,31 +165,114 @@ public class Property<E> {
 	}
 
 	/**
-	 * @return An expression for a Database "Like" query.
+	 * @param pattern
+	 *            a pattern matching property value. Pattern may include "_" and
+	 *            "%" wildcard symbols to match any single character or a
+	 *            sequence of characters. To prevent "_" and "%" from being
+	 *            treated as wildcards, they need to be escaped and escape char
+	 *            passed with {@link #like(String, char)} method.
+	 * @return An expression for a Database "LIKE" query.
 	 */
-	public Expression like(E value) {
-		return ExpressionFactory.likeExp(getName(), value);
+	public Expression like(String pattern) {
+		return ExpressionFactory.likeExp(getName(), pattern);
 	}
 
 	/**
-	 * @return An expression for a case insensitive "Like" query.
+	 * @param pattern
+	 *            a properly escaped pattern matching property value. Pattern
+	 *            may include "_" and "%" wildcard symbols to match any single
+	 *            character or a sequence of characters.
+	 * @param escapeChar
+	 *            an escape character used in the pattern to escape "%" and "_".
+	 * 
+	 * @return An expression for a Database "LIKE" query.
 	 */
-	public Expression likeInsensitive(E value) {
-		return ExpressionFactory.likeIgnoreCaseExp(getName(), value);
+	public Expression like(String pattern, char escapeChar) {
+		return ExpressionFactory.likeExp(getName(), pattern, escapeChar);
+	}
+
+	/**
+	 * @return An expression for a case insensitive "LIKE" query.
+	 */
+	public Expression likeInsensitive(String pattern) {
+		return ExpressionFactory.likeIgnoreCaseExp(getName(), pattern);
 	}
 
 	/**
 	 * @return An expression for a Database "NOT LIKE" query.
 	 */
-	public Expression nlike(E value) {
+	public Expression nlike(String value) {
 		return ExpressionFactory.notLikeExp(getName(), value);
 	}
 
 	/**
 	 * @return An expression for a case insensitive "NOT LIKE" query.
 	 */
-	public Expression nlikeInsensitive(E value) {
+	public Expression nlikeInsensitive(String value) {
 		return ExpressionFactory.notLikeIgnoreCaseExp(getName(), value);
+	}
+
+	/**
+	 * Creates an expression for a database "LIKE" query with the value
+	 * converted to a pattern matching anywhere in the String.
+	 * 
+	 * @param substring
+	 *            a String to match against property value. "_" and "%" symbols
+	 *            are NOT treated as wildcards and are escaped when converted to
+	 *            a LIKE expression.
+	 */
+	public Expression contains(String substring) {
+		return ExpressionFactory.containsExp(getName(), substring);
+	}
+
+	/**
+	 * Creates an expression for a database "LIKE" query with the value
+	 * converted to a pattern matching the beginning of a String.
+	 * 
+	 * @param substring
+	 *            a String to match against property value. "_" and "%" symbols
+	 *            are NOT treated as wildcards and are escaped when converted to
+	 *            a LIKE expression.
+	 */
+	public Expression startsWith(String value) {
+		return ExpressionFactory.startsWithExp(getName(), value);
+	}
+
+	/**
+	 * Creates an expression for a database "LIKE" query with the value
+	 * converted to a pattern matching the tail of a String.
+	 * 
+	 * @param substring
+	 *            a String to match against property value. "_" and "%" symbols
+	 *            are NOT treated as wildcards and are escaped when converted to
+	 *            a LIKE expression.
+	 */
+	public Expression endsWith(String value) {
+		return ExpressionFactory.endsWithExp(getName(), value);
+	}
+
+	/**
+	 * Same as {@link #contains(String)}, only using case-insensitive
+	 * comparison.
+	 */
+	public Expression icontains(String value) {
+		return ExpressionFactory.containsIgnoreCaseExp(getName(), value);
+	}
+
+	/**
+	 * Same as {@link #startsWith(String)}, only using case-insensitive
+	 * comparison.
+	 */
+	public Expression istartsWith(String value) {
+		return ExpressionFactory.startsWithIgnoreCaseExp(getName(), value);
+	}
+
+	/**
+	 * Same as {@link #endsWith(String)}, only using case-insensitive
+	 * comparison.
+	 */
+	public Expression iendsWith(String value) {
+		return ExpressionFactory.endsWithIgnoreCaseExp(getName(), value);
 	}
 
 	/**

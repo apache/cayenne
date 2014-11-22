@@ -192,4 +192,25 @@ public class PropertyTest {
     	Expression e = p.like("ab%c");
     	assertEquals("prop like \"ab%c\"", e.toString());
     }
+    
+    @Test
+    public void testContains() {
+    	Property<String> p = new Property<String>("prop");
+    	Expression e = p.contains("abc");
+    	assertEquals("prop like \"%abc%\"", e.toString());
+    }
+    
+    @Test
+    public void testStartsWith() {
+    	Property<String> p = new Property<String>("prop");
+    	Expression e = p.startsWith("abc");
+    	assertEquals("prop like \"abc%\"", e.toString());
+    }
+    
+    @Test
+    public void testEndsWith() {
+    	Property<String> p = new Property<String>("prop");
+    	Expression e = p.endsWith("abc");
+    	assertEquals("prop like \"%abc\"", e.toString());
+    }
 }
