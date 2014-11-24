@@ -791,6 +791,10 @@
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.9.1</version>
+					<configuration>
+						<!-- Java 8 is too strict about Javadoc omissions --> 
+       					<additionalparam>-Xdoclint:none</additionalparam>
+      				</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
