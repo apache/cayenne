@@ -26,6 +26,7 @@ import org.apache.cayenne.unit.di.DICase;
 import org.apache.cayenne.unit.di.server.DBCleaner;
 import org.apache.cayenne.unit.di.server.SchemaBuilder;
 import org.apache.cayenne.unit.di.server.ServerCaseModule;
+import org.junit.Before;
 
 public class ClientCase extends DICase {
 
@@ -45,8 +46,8 @@ public class ClientCase extends DICase {
         injector.getInstance(SchemaBuilder.class).rebuildSchema();
     }
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Before
+    public void cleanUpDB() throws Exception {
         dbCleaner.clean();
     }
 

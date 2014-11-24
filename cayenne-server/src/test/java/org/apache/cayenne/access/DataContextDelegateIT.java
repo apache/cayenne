@@ -50,7 +50,7 @@ public class DataContextDelegateIT extends ServerCase {
     private DataContext context;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         // prepare a single gallery record
         Gallery gallery = (Gallery) context.newObject("Gallery");
         gallery.setGalleryName("version1");

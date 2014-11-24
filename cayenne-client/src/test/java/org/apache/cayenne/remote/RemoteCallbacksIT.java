@@ -54,9 +54,7 @@ public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleLis
     }
 
     @Before
-    public void testSetUp() throws Exception {
-        super.setUpAfterInjection();
-        
+    public void setUp() throws Exception {
         added = 0;
         loaded = 0;
         prePersisted = 0;

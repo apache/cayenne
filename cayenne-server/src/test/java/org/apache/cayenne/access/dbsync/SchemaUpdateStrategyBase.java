@@ -48,8 +48,7 @@ public class SchemaUpdateStrategyBase extends ServerCase {
 	protected DbAdapter adapter;
 
 	@Override
-	protected void setUpAfterInjection() throws Exception {
-
+	public void cleanUpDB() throws Exception {
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
 		for (String name : existingTables()) {
 

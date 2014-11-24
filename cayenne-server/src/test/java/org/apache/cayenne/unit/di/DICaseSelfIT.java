@@ -76,8 +76,8 @@ public class DICaseSelfIT extends DICase {
         Object singletonScoped = this.singletonScoped;
         assertNotNull(singletonScoped);
 
-        tearDown();
-        setUp();
+        tearDownLifecycleManager();
+        setUpLifecycleManager();
 
         assertNotSame(testScoped, this.testScoped);
         assertNotNull(this.testScoped);

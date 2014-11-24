@@ -79,12 +79,12 @@ public class SelectTranslatorIT extends ServerCase {
     private Connection connection;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
 
     @After
-    public void testTearDown() throws Exception {
+    public void tearDown() throws Exception {
         connection.close();
     }
 

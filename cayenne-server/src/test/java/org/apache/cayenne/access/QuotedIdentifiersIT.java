@@ -49,7 +49,7 @@ public class QuotedIdentifiersIT extends ServerCase {
     private ObjectContext context;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
 
         QuoteAdress quoteAdress = context.newObject(QuoteAdress.class);
         quoteAdress.setCity("city");

@@ -53,7 +53,7 @@ public class CDOQualifiedEntitiesIT extends ServerCase {
     private TableHelper tQualified2;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
         tQualified1 = new TableHelper(dbHelper, "TEST_QUALIFIED1");

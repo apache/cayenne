@@ -23,6 +23,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
@@ -31,7 +32,10 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
 import org.junit.Test;
+
+import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -50,8 +54,12 @@ public class DeepMergeOperationInheritanceIT extends ServerCase {
     @Inject
     protected DataChannelInterceptor queryInterceptor;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Inject
+    private DBHelper dbHelper;
+
+    @After
+    public void tearDown() throws SQLException {
+        dbHelper.deleteAll("PERSON");
     }
 
     @Test
@@ -106,7 +114,7 @@ public class DeepMergeOperationInheritanceIT extends ServerCase {
     }
 
     @Test
-    public void testDeepMergeNonExistentSubclass() {
+    public void testDeepMergeNonExistentSubclass() throws SQLException {
 
         final Department d1 = context.newObject(Department.class);
         d1.setName("D1");

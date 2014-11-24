@@ -52,7 +52,7 @@ public class MixedPersistenceStrategyIT extends ServerCase {
     protected TableHelper tMixedPersistenceStrategy2;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tMixedPersistenceStrategy = new TableHelper(
                 dbHelper,
                 "MIXED_PERSISTENCE_STRATEGY");

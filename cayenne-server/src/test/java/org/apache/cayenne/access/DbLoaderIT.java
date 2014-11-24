@@ -66,12 +66,12 @@ public class DbLoaderIT extends ServerCase {
     private DbLoader loader;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         loader = new DbLoader(dataSourceFactory.getSharedDataSource().getConnection(), adapter, null);
     }
 
     @After
-    public void testTearDown() throws Exception {
+    public void tearDown() throws Exception {
         loader.getConnection().close();
     }
 

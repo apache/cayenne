@@ -56,7 +56,7 @@ public class CAY_115IT extends ServerCase {
     protected TableHelper tClobDetail;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tClobMaster = new TableHelper(dbHelper, "CLOB_MASTER");
         tClobMaster.setColumns("CLOB_MASTER_ID", "CLOB_COLUMN", "NAME");
         

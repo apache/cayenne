@@ -49,7 +49,7 @@ public class DataDomainQueryActionIT extends ServerCase {
     private ServerRuntime runtime;
 
     @After
-    public void testTearDown() {
+    public void tearDown() {
         runtime.getDataDomain().resetProperties();
     }
 

@@ -50,13 +50,13 @@ public class QueryAssemblerIT extends ServerCase {
     private TstQueryAssembler qa;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
         this.qa = new TstQueryAssembler(new SelectQuery<Object>(), dataNode, connection);
     }
 
     @After
-    public void testTearDown() throws Exception {
+    public void tearDown() throws Exception {
         connection.close();
     }
 

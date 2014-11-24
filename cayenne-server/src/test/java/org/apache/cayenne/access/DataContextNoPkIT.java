@@ -50,7 +50,7 @@ public class DataContextNoPkIT extends ServerCase {
     protected DBHelper dbHelper;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         TableHelper noPkTestTable = new TableHelper(dbHelper, "NO_PK_TEST", "ATTRIBUTE1");
         noPkTestTable.deleteAll();
 

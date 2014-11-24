@@ -46,7 +46,7 @@ public class DbRelationshipIT extends ServerCase {
     protected DbEntity galleryEnt;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         artistEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
         paintingEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
         galleryEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("GALLERY");

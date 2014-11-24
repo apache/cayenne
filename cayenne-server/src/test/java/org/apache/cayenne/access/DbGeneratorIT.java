@@ -51,7 +51,7 @@ public class DbGeneratorIT extends ServerCase {
     private DbGenerator generator;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         generator = new DbGenerator(adapter, runtime
                 .getDataDomain()
                 .getDataMap("testmap"), logger);

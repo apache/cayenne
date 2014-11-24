@@ -60,7 +60,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
     private DataContext c2;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         DataRowStore cache = new DataRowStore(
                 "cacheTest",
                 Collections.EMPTY_MAP,

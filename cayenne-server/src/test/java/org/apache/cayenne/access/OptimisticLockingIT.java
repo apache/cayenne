@@ -56,7 +56,7 @@ public class OptimisticLockingIT extends ServerCase {
     protected TableHelper tLockingHelper;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
         tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION")
                 .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR);

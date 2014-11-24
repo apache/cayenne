@@ -52,7 +52,7 @@ public class CayenneContextMapRelationshipIT extends ClientCase {
     private TableHelper tMapToManyTarget;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tMapToMany = new TableHelper(dbHelper, "ID_MAP_TO_MANY");
         tMapToMany.setColumns("ID");
 

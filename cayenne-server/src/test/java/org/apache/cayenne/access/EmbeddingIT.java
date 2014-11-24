@@ -52,7 +52,7 @@ public class EmbeddingIT extends ServerCase {
     protected TableHelper tEmbedEntity1;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
         tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
     }

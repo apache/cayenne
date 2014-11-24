@@ -55,7 +55,7 @@ public class DataContextOuterJoinsIT extends ServerCase {
     protected TableHelper artistGroupHelper;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         artistHelper = new TableHelper(dbHelper, "ARTIST", "ARTIST_ID", "ARTIST_NAME");
         paintingHelper = new TableHelper(
                 dbHelper,

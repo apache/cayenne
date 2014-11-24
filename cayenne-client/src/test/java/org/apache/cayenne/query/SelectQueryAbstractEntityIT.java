@@ -47,7 +47,7 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
     private TableHelper mtTable;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         mtTable = new TableHelper(dbHelper, "MT_TABLE1");
         mtTable.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1", "SUBCLASS_ATTRIBUTE1");
     }

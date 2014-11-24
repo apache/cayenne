@@ -27,6 +27,7 @@ import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.unit.UnitLocalConnection;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.DBCleaner;
+import org.junit.Before;
 
 public abstract class RemoteCayenneCase extends ClientCase {
 
@@ -43,9 +44,8 @@ public abstract class RemoteCayenneCase extends ClientCase {
      */
     protected int serializationPolicy;
 
-    @Override
-    public void setUpAfterInjection() throws Exception {
-        dbCleaner.clean();
+    @Before
+    public void setUpClientContext() throws Exception {
         clientContext = createROPContext();
     }
 

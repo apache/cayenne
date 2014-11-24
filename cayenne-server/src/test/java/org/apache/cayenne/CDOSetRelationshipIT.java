@@ -54,7 +54,7 @@ public class CDOSetRelationshipIT extends ServerCase {
     protected TableHelper tSetToManyTarget;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tSetToMany = new TableHelper(dbHelper, "SET_TO_MANY");
         tSetToMany.setColumns("ID");
 

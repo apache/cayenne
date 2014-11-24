@@ -53,7 +53,7 @@ public class DataContextSQLTemplateCompoundIT extends ServerCase {
     protected TableHelper tCompoundFkTest;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tCompoundPkTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPkTest.setColumns("KEY1", "KEY2");
 

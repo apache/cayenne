@@ -55,12 +55,7 @@ public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
     protected DBCleaner dbCleaner;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
-    }
-
-    @Before
-    public void testSetUp() throws Exception {
-
+    public void cleanUpDB() throws Exception {
         TableHelper tPerson = new TableHelper(dbHelper, "PERSON");
         tPerson.setColumns(
                 "PERSON_ID",
@@ -73,7 +68,10 @@ public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
         // manually break circular deps
         tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
         dbCleaner.clean();
+    }
 
+    @Before
+    public void setUp() {
         // TODO: use TableHelper to create test data
 
         Department d1 = context.newObject(Department.class);

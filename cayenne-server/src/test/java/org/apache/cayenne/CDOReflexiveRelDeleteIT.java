@@ -39,7 +39,7 @@ public class CDOReflexiveRelDeleteIT extends ServerCase {
     private ArtGroup childGroup3;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
 
         parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");

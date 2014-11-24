@@ -78,11 +78,7 @@ public class SingleTableInheritanceIT extends ServerCase {
     private TableHelper tDepartment;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
-    }
-
-    @Before
-    public void testSetUp() throws Exception {
+    public void cleanUpDB() throws Exception {
         tPerson = new TableHelper(dbHelper, "PERSON");
         tPerson.setColumns(
                 "PERSON_ID",
@@ -98,6 +94,13 @@ public class SingleTableInheritanceIT extends ServerCase {
                 Types.INTEGER,
                 Types.INTEGER);
 
+        // manually break circular deps
+        tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+        dbCleaner.clean();
+    }
+
+    @Before
+    public void setUp() {
         tAddress = new TableHelper(dbHelper, "ADDRESS");
         tAddress.setColumns("ADDRESS_ID", "CITY", "PERSON_ID");
 
@@ -106,10 +109,6 @@ public class SingleTableInheritanceIT extends ServerCase {
 
         tDepartment = new TableHelper(dbHelper, "DEPARTMENT");
         tDepartment.setColumns("DEPARTMENT_ID", "NAME");
-
-        // manually break circular deps
-        tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-        dbCleaner.clean();
     }
 
     private void create2PersonDataSet() throws Exception {

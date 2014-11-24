@@ -54,7 +54,7 @@ public class CayenneContextPrimitiveIT extends ClientCase {
     private TableHelper tTablePrimitives;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
         
         tTablePrimitives = new TableHelper(dbHelper, "TABLE_PRIMITIVES");

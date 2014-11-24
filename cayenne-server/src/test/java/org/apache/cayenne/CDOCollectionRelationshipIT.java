@@ -51,7 +51,7 @@ public class CDOCollectionRelationshipIT extends ServerCase {
     private DBHelper dbHelper;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         TableHelper tCollectionToMany = new TableHelper(dbHelper, "COLLECTION_TO_MANY");
         tCollectionToMany.setColumns("ID");
 

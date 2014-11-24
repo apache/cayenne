@@ -57,7 +57,7 @@ public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
     protected TableHelper ft4Helper;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         ft1Helper = new TableHelper(dbHelper, "FLATTENED_TEST_1", "FT1_ID", "NAME");
 
         ft2Helper = new TableHelper(dbHelper, "FLATTENED_TEST_2");

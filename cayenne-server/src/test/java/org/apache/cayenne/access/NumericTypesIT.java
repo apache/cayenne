@@ -72,7 +72,7 @@ public class NumericTypesIT extends ServerCase {
     protected TableHelper tTinyintTest;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tSmallintTest = new TableHelper(dbHelper, "SMALLINT_TEST");
         tSmallintTest.setColumns("ID", "SMALLINT_COL");
 

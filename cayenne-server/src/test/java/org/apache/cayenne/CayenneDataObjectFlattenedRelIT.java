@@ -66,7 +66,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
     private TableHelper tArtistGroup;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

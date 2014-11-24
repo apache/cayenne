@@ -65,7 +65,7 @@ public class CayenneContextClientChannelEventsIT extends ClientCase {
     private TableHelper tMtJoin45;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
 

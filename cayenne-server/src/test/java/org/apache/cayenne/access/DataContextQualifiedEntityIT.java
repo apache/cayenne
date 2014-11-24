@@ -53,7 +53,7 @@ public class DataContextQualifiedEntityIT extends ServerCase {
     protected TableHelper tPerson;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         // manually break circular deps
         dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
 

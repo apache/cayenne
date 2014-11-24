@@ -56,7 +56,7 @@ public class DataContextEJBQLQueryCompoundIT extends ServerCase {
     private TableHelper tCompoundFk;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPk.setColumns("KEY1", "KEY2");
 

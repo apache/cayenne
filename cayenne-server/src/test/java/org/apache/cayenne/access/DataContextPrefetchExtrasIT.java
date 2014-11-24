@@ -67,7 +67,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
     protected TableHelper tCompoundFkTest;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tCharPkTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
         tCharPkTest.setColumns("PK_COL", "OTHER_COL");
 

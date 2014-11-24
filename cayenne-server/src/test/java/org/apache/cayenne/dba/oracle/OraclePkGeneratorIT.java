@@ -44,7 +44,7 @@ public class OraclePkGeneratorIT extends ServerCase {
     private OraclePkGenerator pkGenerator;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         OracleAdapter adapter = objectFactory.newInstance(OracleAdapter.class, OracleAdapter.class.getName());
         pkGenerator = new OraclePkGenerator(adapter);
     }
