@@ -19,36 +19,27 @@
 
 package org.apache.cayenne.access;
 
+import static org.junit.Assert.assertEquals;
+
+import java.sql.Types;
+import java.util.List;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
-/**
- */
-@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
-public class DataContextQualifiedEntityIT extends ServerCase {
+public class DataContextQualifiedEntityIT extends PeopleProjectCase {
 
     @Inject
     protected ObjectContext context;
-
-    @Inject
-    protected DBHelper dbHelper;
 
     protected TableHelper tPerson;
 

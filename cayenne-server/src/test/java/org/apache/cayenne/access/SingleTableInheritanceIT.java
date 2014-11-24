@@ -19,6 +19,15 @@
 
 package org.apache.cayenne.access;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -26,7 +35,6 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.Address;
@@ -38,30 +46,11 @@ import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.DBCleaner;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
-public class SingleTableInheritanceIT extends ServerCase {
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @Inject
-    private DBCleaner dbCleaner;
+public class SingleTableInheritanceIT extends PeopleProjectCase {
 
     @Inject
     private DataContext context;
@@ -77,39 +66,21 @@ public class SingleTableInheritanceIT extends ServerCase {
     private TableHelper tClientCompany;
     private TableHelper tDepartment;
 
-    @Override
-    public void cleanUpDB() throws Exception {
-        tPerson = new TableHelper(dbHelper, "PERSON");
-        tPerson.setColumns(
-                "PERSON_ID",
-                "NAME",
-                "PERSON_TYPE",
-                "SALARY",
-                "CLIENT_COMPANY_ID",
-                "DEPARTMENT_ID").setColumnTypes(
-                Types.INTEGER,
-                Types.VARCHAR,
-                Types.CHAR,
-                Types.FLOAT,
-                Types.INTEGER,
-                Types.INTEGER);
-
-        // manually break circular deps
-        tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-        dbCleaner.clean();
-    }
-
     @Before
-    public void setUp() {
-        tAddress = new TableHelper(dbHelper, "ADDRESS");
-        tAddress.setColumns("ADDRESS_ID", "CITY", "PERSON_ID");
+	public void setUp() {
+		tAddress = new TableHelper(dbHelper, "ADDRESS");
+		tAddress.setColumns("ADDRESS_ID", "CITY", "PERSON_ID");
 
-        tClientCompany = new TableHelper(dbHelper, "CLIENT_COMPANY");
-        tClientCompany.setColumns("CLIENT_COMPANY_ID", "NAME");
+		tClientCompany = new TableHelper(dbHelper, "CLIENT_COMPANY");
+		tClientCompany.setColumns("CLIENT_COMPANY_ID", "NAME");
 
-        tDepartment = new TableHelper(dbHelper, "DEPARTMENT");
-        tDepartment.setColumns("DEPARTMENT_ID", "NAME");
-    }
+		tDepartment = new TableHelper(dbHelper, "DEPARTMENT");
+		tDepartment.setColumns("DEPARTMENT_ID", "NAME");
+
+		tPerson = new TableHelper(dbHelper, "PERSON").setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY",
+				"CLIENT_COMPANY_ID", "DEPARTMENT_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.CHAR,
+				Types.FLOAT, Types.INTEGER, Types.INTEGER);
+	}
 
     private void create2PersonDataSet() throws Exception {
         tPerson.insert(1, "E1", "EE", null, null, null);

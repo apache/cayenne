@@ -18,22 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.sql.Types;
 
-/**
- * Used to annotate unit test classes to indicate which runtime should be in the backend
- * of injected ObjectContext and other Cayenne objects.
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface UseServerRuntime {
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 
-    String value();
+@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
+public class PeopleProjectCase extends ServerCase {
+
+	@Inject
+	protected DBHelper dbHelper;
+
+	@Override
+	public void cleanUpDB() throws Exception {
+		// manually break circular deps
+		dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+		super.cleanUpDB();
+	}
 }

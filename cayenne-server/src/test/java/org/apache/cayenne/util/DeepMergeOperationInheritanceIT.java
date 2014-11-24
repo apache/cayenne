@@ -19,31 +19,26 @@
 
 package org.apache.cayenne.util;
 
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.testdo.inheritance_people.Department;
-import org.apache.cayenne.testdo.inheritance_people.Employee;
-import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.After;
-import org.junit.Test;
-
-import java.sql.SQLException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
-public class DeepMergeOperationInheritanceIT extends ServerCase {
+import java.sql.SQLException;
+
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.inheritance_people.Department;
+import org.apache.cayenne.testdo.inheritance_people.Employee;
+import org.apache.cayenne.testdo.inheritance_people.Manager;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.UnitTestClosure;
+import org.apache.cayenne.unit.di.server.PeopleProjectCase;
+import org.junit.Test;
+
+public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
 
     @Inject
     private DataContext context;
@@ -53,14 +48,6 @@ public class DeepMergeOperationInheritanceIT extends ServerCase {
 
     @Inject
     protected DataChannelInterceptor queryInterceptor;
-
-    @Inject
-    private DBHelper dbHelper;
-
-    @After
-    public void tearDown() throws SQLException {
-        dbHelper.deleteAll("PERSON");
-    }
 
     @Test
     public void testDeepMergeExistingSubclass() {

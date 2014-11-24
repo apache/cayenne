@@ -18,57 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.inheritance_people.Address;
-import org.apache.cayenne.testdo.inheritance_people.Department;
-import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.DBCleaner;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.sql.Types;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.testdo.inheritance_people.Address;
+import org.apache.cayenne.testdo.inheritance_people.Department;
+import org.apache.cayenne.testdo.inheritance_people.Manager;
+import org.apache.cayenne.unit.di.server.PeopleProjectCase;
+import org.junit.Before;
+import org.junit.Test;
 
-@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
-public class DataContextEJBQLConditionsPeopleIT extends ServerCase {
-
-    @Inject
-    private DBHelper dbHelper;
+public class DataContextEJBQLConditionsPeopleIT extends PeopleProjectCase {
 
     @Inject
     private ObjectContext context;
-
-    @Inject
-    protected DBCleaner dbCleaner;
-
-    @Override
-    public void cleanUpDB() throws Exception {
-        TableHelper tPerson = new TableHelper(dbHelper, "PERSON");
-        tPerson.setColumns(
-                "PERSON_ID",
-                "NAME",
-                "PERSON_TYPE",
-                "SALARY",
-                "CLIENT_COMPANY_ID",
-                "DEPARTMENT_ID");
-
-        // manually break circular deps
-        tPerson.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-        dbCleaner.clean();
-    }
 
     @Before
     public void setUp() {

@@ -19,19 +19,16 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
-public class EntityResolverInheritanceIT extends ServerCase {
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.di.server.PeopleProjectCase;
+import org.junit.Test;
+
+public class EntityResolverInheritanceIT extends PeopleProjectCase {
 
     @Inject
     private EntityResolver resolver;

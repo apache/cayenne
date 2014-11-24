@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import static org.junit.Assert.assertEquals;
+
+import java.sql.Types;
+import java.util.List;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
@@ -26,36 +31,14 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.DBCleaner;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
-@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
-public class DataContextEJBQLInheritanceIT extends ServerCase {
+public class DataContextEJBQLInheritanceIT extends PeopleProjectCase {
 
     @Inject
     protected ObjectContext context;
-
-    @Inject
-    protected DBHelper dbHelper;
-
-    @Inject
-    protected DBCleaner dbCleaner;
-
-    @Override
-    public void cleanUpDB() throws Exception {
-        // manually break circular deps
-        dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-        dbCleaner.clean();
-    }
 
     @Before
     public void setUp() throws Exception {
