@@ -55,7 +55,7 @@ public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
     private TableHelper tBigIntegerEntity;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tBigIntegerEntity = new TableHelper(dbHelper, "BIGINTEGER_ENTITY");
         tBigIntegerEntity.setColumns("ID", "BIG_INTEGER_FIELD");
     }

@@ -50,9 +50,9 @@ public class ServerCaseSelfIT extends ServerCase {
         assertNotNull(local);
         assertSame(local, runtimeProvider.get());
 
-        tearDown();
+        tearDownLifecycleManager();
 
-        setUp();
+        setUpLifecycleManager();
         assertNotSame(local, this.runtime);
     }
 

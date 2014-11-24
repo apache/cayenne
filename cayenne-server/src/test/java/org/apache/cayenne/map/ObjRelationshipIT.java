@@ -61,7 +61,7 @@ public class ObjRelationshipIT extends ServerCase {
     private DbEntity galleryDBEntity;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
         artistDBEntity = resolver.getDbEntity("ARTIST");

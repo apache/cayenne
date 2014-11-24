@@ -60,7 +60,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     private SimpleIdIncrementalFaultList<?> list;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         createArtistsDataSet();

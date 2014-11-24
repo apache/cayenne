@@ -58,7 +58,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
     protected TableHelper tArtist;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }

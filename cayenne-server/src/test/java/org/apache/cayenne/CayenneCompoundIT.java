@@ -53,7 +53,7 @@ public class CayenneCompoundIT extends ServerCase {
     protected TableHelper tCharPKTest;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
         tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
 

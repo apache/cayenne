@@ -57,7 +57,7 @@ public class CDOMapRelationshipIT extends ServerCase {
     protected TableHelper tIdMapToManyTarget;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
         tMapToMany.setColumns("ID");
 

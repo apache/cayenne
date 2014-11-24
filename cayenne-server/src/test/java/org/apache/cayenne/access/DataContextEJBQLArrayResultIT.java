@@ -47,7 +47,7 @@ public class DataContextEJBQLArrayResultIT extends ServerCase {
     protected DBHelper dbHelper;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(33001, "AA1");

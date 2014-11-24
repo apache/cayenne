@@ -66,7 +66,7 @@ public class FlattenedPrefetchIT extends ServerCase {
     protected TableHelper tArtistGroup;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
 
         tArtist = new TableHelper(dbHelper, "ARTIST");

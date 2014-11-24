@@ -62,7 +62,7 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 	private RemoteIncrementalFaultList list;
 
 	@Before
-	public void testSetUp() throws Exception {
+	public void setUp() throws Exception {
 		tMTTable = new TableHelper(dbHelper, "MT_TABLE1");
 		tMTTable.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1",
 				"SERVER_ATTRIBUTE1");

@@ -23,6 +23,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.DICase;
+import org.junit.Before;
 
 public class ServerCase extends DICase {
 
@@ -37,8 +38,8 @@ public class ServerCase extends DICase {
 		injector.getInstance(SchemaBuilder.class).rebuildSchema();
 	}
 
-	@Override
-	protected void setUpAfterInjection() throws Exception {
+	@Before
+	public void cleanUpDB() throws Exception {
 		dbCleaner.clean();
 	}
 

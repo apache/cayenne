@@ -47,7 +47,7 @@ public class CayenneContextMeaningfulPKIT extends ClientCase {
     private TableHelper tMeaningfulPK;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tMeaningfulPK = new TableHelper(dbHelper, "MEANINGFUL_PK");
         tMeaningfulPK.setColumns("PK");
     }

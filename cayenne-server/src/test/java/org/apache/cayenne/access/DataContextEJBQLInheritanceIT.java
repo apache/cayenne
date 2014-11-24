@@ -51,16 +51,14 @@ public class DataContextEJBQLInheritanceIT extends ServerCase {
     protected DBCleaner dbCleaner;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void cleanUpDB() throws Exception {
+        // manually break circular deps
+        dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+        dbCleaner.clean();
     }
 
     @Before
-    public void testSetUp() throws Exception {
-        // manually break circular deps
-        dbHelper.update("PERSON").set("DEPARTMENT_ID", null, Types.INTEGER).execute();
-
-        dbCleaner.clean();
-
+    public void setUp() throws Exception {
         TableHelper person = new TableHelper(dbHelper, "PERSON");
         person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY").setColumnTypes(Types.INTEGER, Types.VARCHAR,
                 Types.CHAR, Types.FLOAT);

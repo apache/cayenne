@@ -47,7 +47,7 @@ public class DataContextCallbacksIT extends ServerCase {
     private ServerRuntime runtime;
 
     @After
-    public void testTearDown() throws Exception {
+    public void tearDown() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getCallbackRegistry().clear();
     }

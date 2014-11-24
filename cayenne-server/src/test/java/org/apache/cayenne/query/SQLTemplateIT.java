@@ -53,7 +53,7 @@ public class SQLTemplateIT extends ServerCase {
 	private TableHelper tPainting;
 
 	@Before
-	public void testSetUp() throws Exception {
+	public void setUp() throws Exception {
 		tPainting = new TableHelper(dbHelper, "PAINTING");
 		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
 				Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);

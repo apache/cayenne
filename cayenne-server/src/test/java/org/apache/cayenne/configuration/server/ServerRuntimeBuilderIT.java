@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Inject;
@@ -36,6 +30,11 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ServerRuntimeBuilderIT extends ServerCase {
@@ -64,7 +63,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 	}
 
 	@Before
-	public void testSetUp() throws Exception {
+	public void setUp() throws Exception {
 		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 		tArtist.insert(33001, "AA1");

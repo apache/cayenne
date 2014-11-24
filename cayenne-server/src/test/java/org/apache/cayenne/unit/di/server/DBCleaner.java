@@ -37,7 +37,6 @@ public class DBCleaner {
 
     private FlavoredDBHelper dbHelper;
     private String location;
-    private XMLDataChannelDescriptorLoader loader;
 
     @Inject
     private SchemaBuilder schemaBuilder;
@@ -54,7 +53,7 @@ public class DBCleaner {
     }
 
     public void clean() throws SQLException {
-        loader = new XMLDataChannelDescriptorLoader();
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
         URL url = getClass().getClassLoader().getResource(location);

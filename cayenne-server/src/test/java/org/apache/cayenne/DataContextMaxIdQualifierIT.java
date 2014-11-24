@@ -61,7 +61,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
     private TableHelper tPainting;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 

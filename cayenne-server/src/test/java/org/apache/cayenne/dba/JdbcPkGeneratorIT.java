@@ -49,12 +49,12 @@ public class JdbcPkGeneratorIT extends ServerCase {
     private SchemaBuilder schemaBuilder;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         schemaBuilder.dropPKSupport();
     }
     
     @After
-    public void testTearDown() throws Exception {
+    public void tearDown() throws Exception {
 
         if (JdbcPkGenerator.class.isAssignableFrom(adapter.getPkGenerator().getClass())) {
             // reset PK gen properly before updating PKs in DB

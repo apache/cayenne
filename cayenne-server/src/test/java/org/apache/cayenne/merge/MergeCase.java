@@ -71,7 +71,7 @@ public abstract class MergeCase extends ServerCase {
             "PAINTING", "NEW_TABLE", "NEW_TABLE2");
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
 
         // this map can't be safely modified in this test, as it is reset by DI

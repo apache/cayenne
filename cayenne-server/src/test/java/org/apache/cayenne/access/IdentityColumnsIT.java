@@ -68,7 +68,7 @@ public class IdentityColumnsIT extends ServerCase {
     protected TableHelper joinTable;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         joinTable = new TableHelper(dbHelper, "GENERATED_JOIN");
     }
 

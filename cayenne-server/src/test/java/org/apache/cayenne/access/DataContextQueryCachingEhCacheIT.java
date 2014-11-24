@@ -32,7 +32,7 @@ public class DataContextQueryCachingEhCacheIT extends DataContextQueryCachingIT 
     protected EhCacheQueryCache contextCache;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
@@ -53,7 +53,7 @@ public class DataContextQueryCachingEhCacheIT extends DataContextQueryCachingIT 
     }
     
     @After
-    public void testTearDown() throws Exception {
+    public void tearDown() throws Exception {
         domainCache.shutdown();
         contextCache.shutdown();
     }

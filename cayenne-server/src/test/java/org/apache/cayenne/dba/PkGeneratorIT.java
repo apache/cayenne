@@ -49,7 +49,7 @@ public class PkGeneratorIT extends ServerCase {
     private DbEntity paintingEntity;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         pkGenerator = node.getAdapter().getPkGenerator();
         paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
 

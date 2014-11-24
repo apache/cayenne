@@ -58,7 +58,7 @@ public class DataContextDeleteRulesIT extends ServerCase {
     private DBHelper dbHelper;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
     }
 

@@ -51,7 +51,7 @@ public class DataContextDelegateSharedCacheIT extends ServerCase {
     private Artist artist;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
 
         // prepare a single artist record
         artist = (Artist) context.newObject("Artist");

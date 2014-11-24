@@ -54,7 +54,7 @@ public class FlattenedRelationshipInContextIT extends ServerCase {
     private TableHelper tFlattenedTest3;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tFlattenedTest1 = new TableHelper(dbHelper, "FLATTENED_TEST_1");
         tFlattenedTest1.setColumns("FT1_ID", "NAME");
 

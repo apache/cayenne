@@ -55,7 +55,7 @@ public class OneWayRelationshipsIT extends ServerCase {
     private TableHelper t4Helper;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         t1Helper = new TableHelper(dbHelper, "oneway_table1");
         t1Helper.setColumns("ID");
         t2Helper = new TableHelper(dbHelper, "oneway_table2");

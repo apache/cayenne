@@ -49,7 +49,7 @@ public class UUIDIT extends ServerCase {
     private TableHelper uuidPkEntity;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         uuidPkEntity = new TableHelper(dbHelper, "UUID_PK_ENTITY", "ID");
     }
 

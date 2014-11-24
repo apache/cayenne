@@ -47,7 +47,7 @@ public class CAY_191IT extends ServerCase {
     protected TableHelper tFkOfDifferentType;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
         tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
         

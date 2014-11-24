@@ -67,7 +67,7 @@ public class DataContextSerializationIT extends ServerCase {
     protected TableHelper tArtist;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         CayenneRuntime.bindThreadInjector(runtime.getInjector());
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
@@ -79,7 +79,7 @@ public class DataContextSerializationIT extends ServerCase {
     }
 
     @After
-    public void testTearDown() throws Exception {
+    public void tearDown() throws Exception {
         CayenneRuntime.bindThreadInjector(null);
     }
 

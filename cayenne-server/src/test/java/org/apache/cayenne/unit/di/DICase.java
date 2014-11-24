@@ -31,47 +31,13 @@ public abstract class DICase {
     protected abstract Injector getUnitTestInjector();
 
     @Before
-    public final void setUp() throws Exception {
+    public final void setUpLifecycleManager() throws Exception {
         getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).setUp(this);
-        try {
-            setUpAfterInjection();
-        }
-        catch (Exception e) {
-
-            // must stop the lifecycle manager (do the same thing we'd normally do in
-            // 'tearDown' ), otherwise following tests will end up in
-            // a bad state
-
-            try {
-                getUnitTestInjector()
-                        .getInstance(UnitTestLifecycleManager.class)
-                        .tearDown(this);
-            }
-            catch (Exception x) {
-                // swallow...
-            }
-
-            throw e;
-        }
     }
 
     @After
-    public final void tearDown() throws Exception {
-
-        try {
-            tearDownBeforeInjection();
-        }
-        finally {
-            getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).tearDown(
-                    this);
-        }
+    public final void tearDownLifecycleManager() throws Exception {
+        getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).tearDown(this);
     }
 
-    protected void setUpAfterInjection() throws Exception {
-        // noop
-    }
-
-    protected void tearDownBeforeInjection() throws Exception {
-        // noop
-    }
 }

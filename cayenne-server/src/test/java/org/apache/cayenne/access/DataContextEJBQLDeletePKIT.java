@@ -48,7 +48,7 @@ public class DataContextEJBQLDeletePKIT extends ServerCase {
     protected TableHelper tMeaningfulPKTest1Table;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
         tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR");
     }

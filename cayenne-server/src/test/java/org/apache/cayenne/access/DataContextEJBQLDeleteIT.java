@@ -54,7 +54,7 @@ public class DataContextEJBQLDeleteIT extends ServerCase {
     protected TableHelper tPainting;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",

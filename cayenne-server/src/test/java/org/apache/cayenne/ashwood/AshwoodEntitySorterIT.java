@@ -51,7 +51,7 @@ public class AshwoodEntitySorterIT extends ServerCase {
     protected TableHelper tReflexiveAndToOne;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
         tRelationshipHelper.setColumns("RELATIONSHIP_HELPER_ID", "NAME");
 

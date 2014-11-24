@@ -70,7 +70,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     protected TableHelper tBoxThing;
 
     @Before
-    public void testSetUp() throws Exception {
+    public void setUp() throws Exception {
         tBoxThing = new TableHelper(dbHelper, "BOX_THING");
         tBoxThing.setColumns("BOX_ID", "THING_WEIGHT", "THING_VOLUME");
     }
