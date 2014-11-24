@@ -33,11 +33,14 @@ UPGRADING TO 4.0.M2
 
 * Transaction management was refactored significantly:
 
-* External transactions are no longer configured in the Modeler. Instead they are provided as a DI property
-  defined in Constants.SERVER_EXTERNAL_TX_PROPERTY.
+  * External transactions are no longer configured in the Modeler. Instead they are provided as a DI property
+    defined in Constants.SERVER_EXTERNAL_TX_PROPERTY.
 
-* TransactionDelegate is no longer present. Similar functionality can be achieved by writing a decorator for 
-  Transaction interface and using a custom TransactionFactory to decorate standard transactions.
+  * TransactionDelegate is no longer present. Similar functionality can be achieved by writing a decorator for 
+    Transaction interface and using a custom TransactionFactory to decorate standard transactions.
+
+  * If your code relied on static methods Transaction.externalTransaction() or Transaction.internalTransaction() for
+    manual tx management, use constructors of ExternalTransaction and CayenneTransaction classes instead.
 
 * When switching to ServerRuntimeBuilder, users of multi-config projects may erroneously assume it has the same 
   behavior as 3.1 ServerRuntime in assigning domain name to the resulting merged project. Which is to use the 
