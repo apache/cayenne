@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.tools.dbimport.config;
 
+import org.apache.cayenne.tools.ExcludeTable;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -106,4 +108,9 @@ public class FilterContainer {
         this.excludeProcedures.add(excludeProcedure);
     }
 
+    public boolean isEmptyContainer() {
+        return includeColumns.isEmpty()    && excludeColumns.isEmpty()
+            && includeTables.isEmpty()     && excludeTables.isEmpty()
+            && includeProcedures.isEmpty() && excludeProcedures.isEmpty();
+    }
 }

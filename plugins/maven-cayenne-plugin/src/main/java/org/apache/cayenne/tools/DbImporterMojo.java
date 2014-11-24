@@ -19,13 +19,14 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
 import org.apache.cayenne.tools.dbimport.config.Catalog;
 import org.apache.cayenne.tools.dbimport.config.ExcludeColumn;
 import org.apache.cayenne.tools.dbimport.config.ExcludeProcedure;
-import org.apache.cayenne.tools.dbimport.config.ExcludeTable;
 import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
 import org.apache.cayenne.tools.dbimport.config.IncludeColumn;
 import org.apache.cayenne.tools.dbimport.config.IncludeProcedure;
@@ -146,9 +147,14 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private boolean usePrimitives;
 
-    private final ReverseEngineering reverseEngineering = new ReverseEngineering();
-
     private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
+
+    /**
+     * If true, would use primitives instead of numeric and boolean classes.
+     *
+     * @parameter expression="${cdbimport.reverseEngineering}"
+     */
+    private ReverseEngineering reverseEngineering = new ReverseEngineering();
 
     /**
      * DB schema to use for DB importing.
@@ -156,6 +162,8 @@ public class DbImporterMojo extends AbstractMojo {
      * @parameter expression="${cdbimport.schemaName}"
      * @deprecated since 4.0 renamed to "schema"
      */
+    private String schemaName;
+
     private void setSchemaName(String schemaName) {
         getLog().warn("'schemaName' property is deprecated. Use 'schema' instead");
 
@@ -165,21 +173,17 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * DB schema to use for DB importing.
      *
-     * @parameter expression="${cdbimport.catalog}"
-     * @since 4.0
-     */
-    private void setCatalog(String catalog) {
-        filterBuilder.catalog(catalog);
-    }
-
-    /**
-     * DB schema to use for DB importing.
-     *
      * @parameter expression="${cdbimport.schema}"
      * @since 4.0
      */
-    private void setSchema(String schema) {
-        filterBuilder.schema(schema);
+    private Schema schema;
+
+    public void setSchema(Schema schema) {
+        if (schema.isEmptyContainer()) {
+            filterBuilder.schema(schema.getName());
+        } else {
+            reverseEngineering.addSchema(schema);
+        }
     }
 
     /**
@@ -189,7 +193,9 @@ public class DbImporterMojo extends AbstractMojo {
      *
      * @parameter expression="${cdbimport.tablePattern}"
      */
-    private void setTablePattern(String tablePattern) {
+    private String tablePattern;
+
+    public void setTablePattern(String tablePattern) {
         filterBuilder.includeTables(tablePattern);
     }
 
@@ -201,7 +207,9 @@ public class DbImporterMojo extends AbstractMojo {
      * @parameter expression="${cdbimport.importProcedures}"
      *            default-value="false"
      */
-    private void setImportProcedures(boolean importProcedures) {
+    private String importProcedures;
+
+    public void setImportProcedures(boolean importProcedures) {
         filterBuilder.setProceduresFilters(importProcedures ? FilterFactory.TRUE : FilterFactory.NULL);
     }
 
@@ -213,7 +221,9 @@ public class DbImporterMojo extends AbstractMojo {
      *
      * @parameter expression="${cdbimport.procedurePattern}"
      */
-    private void setProcedurePattern(String procedurePattern) {
+    private String procedurePattern;
+
+    public void setProcedurePattern(String procedurePattern) {
         filterBuilder.includeProcedures(procedurePattern);
     }
 
@@ -226,6 +236,8 @@ public class DbImporterMojo extends AbstractMojo {
      * @parameter expression="${cdbimport.meaningfulPk}" default-value="false"
      * @deprecated since 4.0 use meaningfulPkTables
      */
+    private boolean meaningfulPk;
+
     public void setMeaningfulPk(boolean meaningfulPk) {
         getLog().warn("'meaningfulPk' property is deprecated. Use 'meaningfulPkTables' pattern instead");
 
@@ -273,10 +285,6 @@ public class DbImporterMojo extends AbstractMojo {
         return config;
     }
 
-    private String getSchema() {
-        return filterBuilder.schema();
-    }
-
     public File getMap() {
         return map;
     }
@@ -301,39 +309,58 @@ public class DbImporterMojo extends AbstractMojo {
         this.url = url;
     }
 
-    public void addIncludeColumn(IncludeColumn includeColumn) {
-        reverseEngineering.addIncludeColumn(includeColumn);
+
+    /**
+     * A comma-separated list of Perl5 regex that defines tables that should be
+     * included in import.
+     *
+     * @parameter expression="${cdbimport.includeTables}"
+     */
+    private String includeTables;
+
+    public void setIncludeTables(String includeTables) {
+        filterBuilder.includeTables(includeTables);
     }
 
-    public void addExcludeColumn(ExcludeColumn excludeColumn) {
-        reverseEngineering.addExcludeColumn(excludeColumn);
-    }
+    /**
+     * A comma-separated list of Perl5 regex that defines tables that should be
+     * skipped from import.
+     *
+     * @parameter expression="${cdbimport.excludeTables}"
+     */
+    private String excludeTables;
 
-    public void addIncludeTable(IncludeTable includeTable) {
-        reverseEngineering.addIncludeTable(includeTable);
-    }
-
-    public void addExcludeTable(ExcludeTable excludeTable) {
-        reverseEngineering.addExcludeTable(excludeTable);
-    }
-
-    public void addIncludeProcedure(IncludeProcedure includeProcedure) {
-        reverseEngineering.addIncludeProcedure(includeProcedure);
-    }
-
-    public void addExcludeProcedure(ExcludeProcedure excludeProcedure) {
-        reverseEngineering.addExcludeProcedure(excludeProcedure);
+    public void setExcludeTables(String excludeTables) {
+        filterBuilder.excludeTables(excludeTables);
     }
 
     public void addSchema(Schema schema) {
         reverseEngineering.addSchema(schema);
     }
 
+    /**
+     * DB schema to use for DB importing.
+     *
+     * @parameter expression="${cdbimport.catalog}"
+     * @since 4.0
+     */
+    private Catalog catalog[];
+
     public void addCatalog(Catalog catalog) {
-        reverseEngineering.addCatalog(catalog);
+        if (catalog != null) {
+            if (catalog.isEmptyContainer()) {
+                filterBuilder.catalog(catalog.getName());
+            } else {
+                reverseEngineering.addCatalog(catalog);
+            }
+        }
     }
 
     public ReverseEngineering getReverseEngineering() {
         return reverseEngineering;
+    }
+
+    public void setReverseEngineering(ReverseEngineering reverseEngineering) {
+        this.reverseEngineering = reverseEngineering;
     }
 }

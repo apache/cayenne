@@ -29,65 +29,68 @@
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <configuration>
                     <map>target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml</map>
-                    <catalog>catalog-name-01</catalog>
 
-                    <catalog>
-                        <name>catalog-name-02</name>
+                    <reverseEngineering>
+                        <catalog>catalog-name-01</catalog>
 
-                        <schema>schema-name-01</schema>
+                        <catalog>
+                            <name>catalog-name-02</name>
+
+                            <schema>schema-name-01</schema>
+
+                            <schema>
+                                <name>schema-name-02</name>
+
+                                <includeTable>incTable-01</includeTable>
+                                <excludeTable>excTable-01</excludeTable>
+
+                                <includeTable>
+                                    <pattern>incTable-02</pattern>
+
+                                    <includeColumn>includeColumn-01</includeColumn>
+                                    <excludeColumn>excludeColumn-01</excludeColumn>
+                                </includeTable>
+
+                                <includeColumn>includeColumn-02</includeColumn>
+                                <excludeColumn>excludeColumn-02</excludeColumn>
+                            </schema>
+
+                            <includeColumn>includeColumn-03</includeColumn>
+                            <excludeColumn>excludeColumn-03</excludeColumn>
+                        </catalog>
+
+                        <schema>schema-name-03</schema>
 
                         <schema>
-                            <name>schema-name-02</name>
+                            <name>schema-name-04</name>
 
-                            <includeTable>incTable-01</includeTable>
-                            <excludeTable>excTable-01</excludeTable>
+                            <includeTable>incTable-04</includeTable>
+                            <excludeTable>excTable-04</excludeTable>
 
                             <includeTable>
-                                <pattern>incTable-02</pattern>
+                                <pattern>incTable-05</pattern>
 
-                                <includeColumn>includeColumn-01</includeColumn>
-                                <excludeColumn>excludeColumn-01</excludeColumn>
+                                <includeColumn>includeColumn-04</includeColumn>
+                                <excludeColumn>excludeColumn-04</excludeColumn>
                             </includeTable>
-
-                            <includeColumn>includeColumn-02</includeColumn>
-                            <excludeColumn>excludeColumn-02</excludeColumn>
-                        </schema>
-
-                        <includeColumn>includeColumn-03</includeColumn>
-                        <excludeColumn>excludeColumn-03</excludeColumn>
-                    </catalog>
-
-                    <schema>schema-name-03</schema>
-
-                    <schema>
-                        <name>schema-name-04</name>
-
-                        <includeTable>incTable-04</includeTable>
-                        <excludeTable>excTable-04</excludeTable>
-
-                        <includeTable>
-                            <pattern>incTable-05</pattern>
 
                             <includeColumn>includeColumn-04</includeColumn>
                             <excludeColumn>excludeColumn-04</excludeColumn>
+                        </schema>
+
+                        <includeTable>incTable-06</includeTable>
+                        <excludeTable>excTable-06</excludeTable>
+
+                        <includeTable>
+                            <pattern>incTable-07</pattern>
+
+                            <includeColumn>includeColumn-06</includeColumn>
+                            <excludeColumn>excludeColumn-06</excludeColumn>
                         </includeTable>
 
-                        <includeColumn>includeColumn-04</includeColumn>
-                        <excludeColumn>excludeColumn-04</excludeColumn>
-                    </schema>
-
-                    <includeTable>incTable-06</includeTable>
-                    <excludeTable>excTable-06</excludeTable>
-
-                    <includeTable>
-                        <pattern>incTable-07</pattern>
-
-                        <includeColumn>includeColumn-06</includeColumn>
-                        <excludeColumn>excludeColumn-06</excludeColumn>
-                    </includeTable>
-
-                    <includeColumn>includeColumn-05</includeColumn>
-                    <excludeColumn>excludeColumn-05</excludeColumn>
+                        <includeColumn>includeColumn-05</includeColumn>
+                        <excludeColumn>excludeColumn-05</excludeColumn>
+                    </reverseEngineering>
                 </configuration>
             </plugin>
         </plugins>

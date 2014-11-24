@@ -27,8 +27,6 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.tools.dbimport.config.Catalog;
 import org.apache.cayenne.tools.dbimport.config.ExcludeColumn;
 import org.apache.cayenne.tools.dbimport.config.ExcludeProcedure;
-import org.apache.cayenne.tools.dbimport.config.ExcludeTable;
-import org.apache.cayenne.tools.dbimport.config.FilterContainer;
 import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
 import org.apache.cayenne.tools.dbimport.config.IncludeColumn;
 import org.apache.cayenne.tools.dbimport.config.IncludeProcedure;

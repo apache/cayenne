@@ -36,7 +36,7 @@
                         <name>SCHEMA_01</name>
                     </schema>
 
-                    <excludeTable>Child</excludeTable>
+                    <excludeTables>Child</excludeTables>
 				</configuration>
 			</plugin>
 		</plugins>

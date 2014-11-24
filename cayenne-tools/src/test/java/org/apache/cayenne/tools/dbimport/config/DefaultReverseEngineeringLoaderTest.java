@@ -20,6 +20,7 @@
 package org.apache.cayenne.tools.dbimport.config;
 
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.tools.ExcludeTable;
 import org.junit.Test;
 
 import java.io.File;
@@ -43,6 +44,10 @@ public class DefaultReverseEngineeringLoaderTest {
         assertEquals("catalog-name-01", catalogs.next().getName());
         assertEquals("catalog-name-02", catalogs.next().getName());
 
+        assertCatalog(catalogs);
+    }
+
+    public static void assertCatalog(Iterator<Catalog> catalogs) {
         Catalog catalog = catalogs.next();
         assertEquals("catalog-name-03", catalog.getName());
 

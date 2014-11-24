@@ -22,6 +22,7 @@ package org.apache.cayenne.tools.dbimport.config;
 import org.apache.cayenne.access.loader.filters.DbPath;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.tools.ExcludeTable;
 import org.junit.Test;
 
 import static org.apache.cayenne.access.loader.filters.FilterFactory.*;

@@ -32,7 +32,7 @@
                     <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
                     <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
 
-                    <includeTable>Parent</includeTable>
+                    <tablePattern>Parent</tablePattern>
 				</configuration>
 			</plugin>
 		</plugins>

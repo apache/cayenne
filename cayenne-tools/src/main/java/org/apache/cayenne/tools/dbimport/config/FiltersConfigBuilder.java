@@ -46,8 +46,10 @@ public final class FiltersConfigBuilder {
     }
 
     public FiltersConfigBuilder add(EntityFilters filter) {
-        if (!filter.getDbPath().equals(new DbPath()) && !filter.isEmpty()) {
+        if (!filter.isEmpty()) {
             this.filters.add(filter);
+        } else if (!filter.getDbPath().equals(new DbPath())) {
+            this.filters.add(defaultFilter(filter.getDbPath()));
         }
 
         return this;

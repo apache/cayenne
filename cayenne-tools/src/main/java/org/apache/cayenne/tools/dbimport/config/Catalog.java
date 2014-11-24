@@ -78,5 +78,21 @@ public class Catalog extends FilterContainer {
         return this;
     }
 
+    @Override
+    public boolean isEmptyContainer() {
+        if (!super.isEmptyContainer()) {
+            return false;
+        }
 
+        if (schemas.isEmpty()) {
+            return true;
+        }
+
+        for (Schema schema : schemas) {
+            if (!schema.isEmptyContainer()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

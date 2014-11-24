@@ -19,6 +19,9 @@
 package org.apache.cayenne.tools;
 
 import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
+import static org.junit.Assert.assertEquals;
+
+import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
@@ -29,12 +32,15 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
     @Test
     public void testLoadCatalog() throws Exception {
-        assertCatalog(getCdbImport("pom-catalog.xml").getReverseEngineering());
+        assertCatalog(getCdbImport("pom-catalog.xml").getReverseEngineering().getCatalogs().iterator());
     }
 
     @Test
     public void testLoadSchema() throws Exception {
-        assertSchema(getCdbImport("pom-schema.xml").getReverseEngineering());
+        Schema schema = getCdbImport("pom-schema.xml").getReverseEngineering().getSchemas().iterator().next();
+        assertEquals("schema-name-03", schema.getName());
+
+        assertSchemaContent(schema);
     }
 
     @Test

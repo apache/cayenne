@@ -300,8 +300,8 @@ public class EntityFilters {
         private String catalog;
         private String schema;
 
-        private Filter<String> tableFilters = NULL;
-        private Filter<String> columnFilters = NULL;
+        private Filter<String> tableFilters = TRUE;
+        private Filter<String> columnFilters = TRUE;
         private Filter<String> proceduresFilters = NULL;
 
         public Builder() {
