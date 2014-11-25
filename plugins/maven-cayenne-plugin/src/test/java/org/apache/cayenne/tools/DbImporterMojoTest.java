@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -33,9 +36,6 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.xml.sax.SAXException;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertNotNull;
 
 public class DbImporterMojoTest extends AbstractMojoTestCase {
 
@@ -136,14 +136,14 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         // Get a connection
         Statement stmt = DriverManager.getConnection(dbImportConfiguration.getUrl()).createStatement();
 
-        for (String sql : FileUtils.fileRead(getPackagePath() + "/dbimport/" + sqlFile + ".sql").split(";")) {
+        for (String sql : FileUtils.fileRead(sqlFile(sqlFile + ".sql")).split(";")) {
             stmt.execute(sql);
         }
     }
 
-    private String getPackagePath() {
-        return getClass().getClassLoader().getResource(getClass().getPackage().getName().replace('.', '/')).getPath();
-    }
-
-
+	private File sqlFile(String name) throws URISyntaxException {
+		URL url = DbImporterMojoTest.class.getResource("dbimport/" + name);
+		assertNotNull("Can't find resource: " + name);
+		return new File(url.toURI());
+	}
 }
