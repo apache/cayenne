@@ -793,8 +793,8 @@
 					<version>2.9.1</version>
 					<configuration>
 						<!-- Java 8 is too strict about Javadoc omissions --> 
-       					<additionalparam>-Xdoclint:none</additionalparam>
-      				</configuration>
+						<additionalparam>${javadoc.doclint.none}</additionalparam>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -1366,6 +1366,15 @@
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
+		</profile>
+		<profile>
+			<id>java8-disable-strict-javadoc</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<properties>
+				<javadoc.doclint.none>-Xdoclint:none</javadoc.doclint.none>
+			</properties>
 		</profile>
 	</profiles>
 
