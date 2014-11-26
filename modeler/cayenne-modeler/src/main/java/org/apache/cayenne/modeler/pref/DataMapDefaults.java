@@ -74,7 +74,7 @@ public class DataMapDefaults extends RenamedPreferences {
         }
 
         if (DEFAULT_SUPERCLASS_PACKAGE_SUFFIX.equals(getSuperclassPackage())) {
-            setSuperclassPackage("");
+            setSuperclassPackage(null);
         }
     }
 
