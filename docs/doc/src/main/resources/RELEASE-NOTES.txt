@@ -16,6 +16,7 @@ Changes/New Features Since 3.1
 Bug Fixes Since 3.1:
 
 CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
+CAY-1973 error while generating classes
 
 ----------------------------------
 Release: 3.1-final
