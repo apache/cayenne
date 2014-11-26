@@ -102,6 +102,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         test("testSchemasAndTableExclude");
     }
 
+    public void testViewsExclude() throws Exception {
+        test("testViewsExclude");
+    }
+
     private void test(String name) throws Exception {
         DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
         File mapFile = cdbImport.getMap();
@@ -128,6 +132,13 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         // Get a connection
         Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl());
         Statement stmt = connection.createStatement();
+
+        ResultSet views = connection.getMetaData().getTables(null, null, null, new String[]{"VIEW"});
+        while (views.next()) {
+            String schema = views.getString("TABLE_SCHEM");
+            System.out.println("DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
+            stmt.execute("DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
+        }
 
         ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
         while (tables.next()) {

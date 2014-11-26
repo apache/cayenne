@@ -326,10 +326,7 @@ public class EntityFilters {
                 return this;
             }
 
-            for (String pattern : tableFilters.split(",")) {
-                this.tableFilters = this.tableFilters.join(include(pattern));
-            }
-
+            this.tableFilters = includeFilter(tableFilters, this.tableFilters);
             return this;
         }
 
@@ -338,10 +335,7 @@ public class EntityFilters {
                 return this;
             }
 
-            for (String pattern : columnFilters.split(",")) {
-                this.columnFilters = this.columnFilters.join(include(pattern));
-            }
-
+            this.columnFilters = includeFilter(columnFilters, this.columnFilters);
             return this;
         }
 
@@ -350,11 +344,16 @@ public class EntityFilters {
                 return this;
             }
 
-            for (String pattern : proceduresFilters.split(",")) {
-                this.proceduresFilters = this.proceduresFilters.join(include(pattern));
+            this.proceduresFilters = includeFilter(proceduresFilters, this.proceduresFilters);
+            return this;
+        }
+
+        private Filter<String> includeFilter(String tableFilters, Filter<String> filter) {
+            for (String pattern : tableFilters.split(",")) {
+                filter = filter.join(include(transform(pattern)));
             }
 
-            return this;
+            return filter;
         }
 
         public Builder excludeTables(String tableFilters) {
@@ -362,10 +361,7 @@ public class EntityFilters {
                 return this;
             }
 
-            for (String pattern : tableFilters.split(",")) {
-                this.tableFilters = this.tableFilters.join(exclude(pattern));
-            }
-
+            this.tableFilters = excludeFilter(tableFilters, this.tableFilters);
             return this;
         }
 
@@ -374,10 +370,7 @@ public class EntityFilters {
                 return this;
             }
 
-            for (String pattern : columnFilters.split(",")) {
-                this.columnFilters = this.columnFilters.join(exclude(pattern));
-            }
-
+            this.columnFilters = excludeFilter(columnFilters, this.columnFilters);
             return this;
         }
 
@@ -386,11 +379,20 @@ public class EntityFilters {
                 return this;
             }
 
-            for (String pattern : proceduresFilters.split(",")) {
-                this.proceduresFilters = this.proceduresFilters.join(exclude(pattern));
+            this.proceduresFilters = excludeFilter(proceduresFilters, this.proceduresFilters);
+            return this;
+        }
+
+        private Filter<String> excludeFilter(String tableFilters, Filter<String> filter) {
+            for (String pattern : tableFilters.split(",")) {
+                filter = filter.join(exclude(transform(pattern)));
             }
 
-            return this;
+            return filter;
+        }
+
+        private static String transform(String pattern) {
+            return "^" + pattern.replaceAll("[*?]", ".$0") + "$";
         }
 
         public Filter<String> tableFilters() {
