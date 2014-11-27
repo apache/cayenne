@@ -61,6 +61,7 @@ CAY-1936 ServerRuntime.getDataSource() returning DataSource of a default DataNod
 CAY-1937 Make Transaction an interface
 CAY-1938 Create a DI factory for transactions, get rid of TransactionDelegate and modeler config for tx policies
 CAY-1939 DataDomain must use injectable TransactionManager
+CAY-1946 CDbimport improvements
 CAY-1949 Search in configuration fields (Catalog, Schema) in DbEntity
 CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
 CAY-1953 Redo ResultIteratorCallback to handle single row callback instead of iterator
