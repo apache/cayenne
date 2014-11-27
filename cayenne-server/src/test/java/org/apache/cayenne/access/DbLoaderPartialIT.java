@@ -19,7 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Collection;
+
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -31,11 +37,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbLoaderPartialIT extends ServerCase {

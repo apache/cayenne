@@ -1,0 +1,14 @@
+
+CREATE TABLE Person (
+  id INTEGER NOT NULL,
+  COL2 CHAR(25),
+  COL3 DECIMAL(10,2),
+  COL4 VARCHAR(25),
+  COL5 DATE,
+
+  PRIMARY KEY (id),
+  UNIQUE (COL3)
+);
+
+CREATE VIEW girl (id) AS SELECT id FROM Person;
+CREATE VIEW v_vview (id) AS SELECT id FROM Person;

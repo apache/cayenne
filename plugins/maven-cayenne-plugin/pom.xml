@@ -128,15 +128,37 @@
 			<scope>test</scope>
 		</dependency>
 
+       <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-server</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-tools</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
     </dependencies>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <build>
         <plugins>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <!--<configuration>
-                    <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
-                </configuration>-->
             </plugin>
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>

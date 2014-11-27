@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.tools;
 
+import java.io.File;
+
+import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -203,8 +206,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 		CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
 		filterAction.setClient(client);
-		filterAction.setNameFilter(new NamePatternMatcher(logger,
-				includeEntities, excludeEntities));
+		filterAction.setNameFilter(NamePatternMatcher.build(logger, includeEntities, excludeEntities));
 
 		try {
 			loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());

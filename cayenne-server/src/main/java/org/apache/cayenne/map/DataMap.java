@@ -1356,4 +1356,39 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		clearQueries();
 		clearResultSets();
 	}
+
+    /**
+     *
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public String getNameWithDefaultPackage(String name) {
+        return getNameWithPackage(defaultPackage, name);
+    }
+
+    /**
+     *
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public static String getNameWithPackage(String pack, String name) {
+        if (Util.isEmptyString(pack)) {
+            return name;
+        } else {
+            return pack + (pack.endsWith(".") ? ""  : ".") + name;
+        }
+    }
+
+    /**
+     *
+     * @param name
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public String getNameWithDefaultClientPackage(String name) {
+        return getNameWithPackage(defaultClientPackage, name);
+    }
 }

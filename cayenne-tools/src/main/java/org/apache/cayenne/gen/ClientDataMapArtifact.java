@@ -42,22 +42,11 @@ public class ClientDataMapArtifact extends DataMapArtifact {
     @Override
     public String getQualifiedClassName() {
         String clientPrefix = "";
-
-        if (Util.nullSafeEquals(dataMap.getDefaultClientPackage(), dataMap
-                .getDefaultPackage())) {
+        if (Util.nullSafeEquals(dataMap.getDefaultClientPackage(), dataMap.getDefaultPackage())) {
             clientPrefix = "Client_";
         }
 
-        String pkg = dataMap.getDefaultClientPackage();
-        if (pkg == null) {
-            pkg = "";
-        }
-        else {
-            pkg = pkg + '.';
-        }
-
-        return pkg
-                + NameConverter.underscoredToJava(clientPrefix
-                        + NameConverter.specialCharsToJava(dataMap.getName()), true);
+        return dataMap.getNameWithDefaultClientPackage(NameConverter
+                .underscoredToJava(clientPrefix + NameConverter.specialCharsToJava(dataMap.getName()), true));
     }
 }
