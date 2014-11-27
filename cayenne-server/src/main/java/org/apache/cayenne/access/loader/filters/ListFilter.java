@@ -28,8 +28,7 @@ import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
 import static org.apache.cayenne.access.loader.filters.FilterFactory.TRUE;
 
 /**
- * @since 3.2.
- * @Immutable
+ * @since 4.0
  */
 public class ListFilter<T> implements Filter<T> {
 

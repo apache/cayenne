@@ -19,8 +19,7 @@
 package org.apache.cayenne.access.loader.filters;
 
 /**
- * @since 3.2.
- * @Immutable
+ * @since 4.0
  */
 public interface Filter<T> {
 

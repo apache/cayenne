@@ -27,8 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * @since 3.2.
- * @Immutable
+ * @since 4.0
  */
 public class DbType implements Comparable<DbType> {
 

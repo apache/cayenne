@@ -31,7 +31,6 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * @since 3.2.
- * @Immutable
  */
 public class EntityFilters {
 
@@ -151,7 +150,6 @@ public class EntityFilters {
     }
 
     /**
-     * @Immutable
      * @param <T>
      */
     private abstract static class EntityFilter<T> implements Filter<T> {

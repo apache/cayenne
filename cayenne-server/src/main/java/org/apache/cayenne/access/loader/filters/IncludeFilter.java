@@ -21,8 +21,7 @@ package org.apache.cayenne.access.loader.filters;
 import java.util.regex.Pattern;
 
 /**
- * @since 3.2.
- * @Immutable
+ * @since 4.0
  */
 public class IncludeFilter implements Filter<String> {
 

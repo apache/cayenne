@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 /**
  * @since 4.0
- * @Immutable
  */
 public class ExcludeFilter extends IncludeFilter {
 
