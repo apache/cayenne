@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @since 3.2.
- * @Immutable
+ * @since 4.0
  */
 public class FiltersConfig {
 

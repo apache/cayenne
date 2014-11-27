@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.test.file.FileUtil;
+import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
@@ -34,6 +36,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -42,6 +45,7 @@ import java.sql.Statement;
 
 import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class DbImporterTaskTest {
@@ -78,7 +82,10 @@ public class DbImporterTaskTest {
 
     private DbImporterTask getCdbImport(String buildFile) {
         Project project = new Project();
-        ProjectHelper.configureProject(project, new File(getPackagePath() + "/" + buildFile));
+
+        File map = distDir(buildFile);
+        ResourceUtil.copyResourceToFile(getPackagePath() + "/" + buildFile, map);
+        ProjectHelper.configureProject(project, map);
 
         UnknownElement task = (UnknownElement) project.getTargets().get("dist").getTasks()[0];
         task.maybeConfigure();
@@ -86,14 +93,35 @@ public class DbImporterTaskTest {
         return (DbImporterTask) task.getRealThing();
     }
 
+    private static File distDir(String name) {
+        File distDir = new File(FileUtil.baseTestDirectory(), "cdbImport");
+        File file = new File(distDir, name);
+        distDir = file.getParentFile();
+        // prepare destination directory
+        if (!distDir.exists()) {
+            assertTrue(distDir.mkdirs());
+        }
+        return file;
+    }
+
     private String getPackagePath() {
-        return getClass().getClassLoader().getResource(getClass().getPackage().getName().replace('.', '/')).getPath();
+        return getClass().getPackage().getName().replace('.', '/');
     }
 
     private void test(String name) throws Exception {
         DbImporterTask cdbImport = getCdbImport("dbimport/" + name);
         File mapFile = cdbImport.getMap();
-        File mapFileCopy = new File(mapFile.getParentFile(), "copy-" + mapFile.getName());
+        URL mapUrl = this.getClass().getResource("dbimport/" + mapFile.getName());
+        if (mapUrl != null && new File(mapUrl.toURI()).exists()) {
+            ResourceUtil.copyResourceToFile(mapUrl, mapFile);
+        }
+
+        URL mapUrlRes = this.getClass().getResource("dbimport/" + mapFile.getName() + "-result");
+        if (mapUrlRes != null && new File(mapUrlRes.toURI()).exists()) {
+            ResourceUtil.copyResourceToFile(mapUrlRes, new File(mapFile.getParentFile(), mapFile.getName() + "-result"));
+        }
+
+        File mapFileCopy = distDir("copy-" + mapFile.getName());
         if (mapFile.exists()) {
             FileUtils.getFileUtils().copyFile(mapFile, mapFileCopy);
             cdbImport.setMap(mapFileCopy);
@@ -160,7 +188,12 @@ public class DbImporterTaskTest {
         // Get a connection
         Statement stmt = DriverManager.getConnection(dbImportConfiguration.getUrl()).createStatement();
 
-        for (String sql : FileUtils.readFully(new FileReader(getPackagePath() + "/dbimport/" + sqlFile + ".sql")).split(";")) {
+
+        String name = "dbimport/" + sqlFile + ".sql";
+        File file = distDir(name);
+        ResourceUtil.copyResourceToFile(getPackagePath() + "/" + name, file);
+
+        for (String sql : FileUtils.readFully(new FileReader(file)).split(";")) {
             stmt.execute(sql);
         }
     }

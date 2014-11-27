@@ -794,9 +794,7 @@ public class DbLoader {
      * </p>
      * 
      * @since 1.1
-     * @deprecated since 4.0 use
-     *             {@link #loadProcedures(DataMap, String, String, String)} that
-     *             supports "catalog" pattern.
+     * @deprecated since 4.0 use loadProcedures(DataMap, String, String, String) that supports "catalog" pattern.
      */
     @Deprecated
     public void loadProceduresFromDB(String schemaPattern, String namePattern, DataMap dataMap) throws SQLException {
