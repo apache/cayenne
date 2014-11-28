@@ -34,7 +34,7 @@ public class DefaultReverseEngineeringLoaderTest {
     @Test
     public void testLoadCatalog() throws Exception {
         ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("/reverseEngineering-catalog.xml"));
+                .load(getResource("reverseEngineering-catalog.xml"));
 
         assertCatalog(engineering);
     }
@@ -87,7 +87,7 @@ public class DefaultReverseEngineeringLoaderTest {
     @Test
     public void testLoadSchema() throws Exception {
         ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("/reverseEngineering-schema.xml"));
+                .load(getResource("reverseEngineering-schema.xml"));
 
         assertSchema(engineering);
     }
@@ -140,7 +140,7 @@ public class DefaultReverseEngineeringLoaderTest {
     @Test
     public void testLoadCatalogAndSchema() throws Exception {
         ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("/reverseEngineering-catalog-and-schema.xml"));
+                .load(getResource("reverseEngineering-catalog-and-schema.xml"));
 
         assertCatalogAndSchema(engineering);
     }
@@ -158,7 +158,7 @@ public class DefaultReverseEngineeringLoaderTest {
     @Test
     public void testLoadFlat() throws Exception {
         ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("/reverseEngineering-flat.xml"));
+                .load(getResource("reverseEngineering-flat.xml"));
 
         assertFlat(engineering);
     }
@@ -198,11 +198,7 @@ public class DefaultReverseEngineeringLoaderTest {
     }
 
     protected URLResource getResource(String file) throws MalformedURLException {
-        return new URLResource(new File(getPackagePath() + file).toURI().toURL());
-    }
-
-    private String getPackagePath() {
-        return getClass().getClassLoader().getResource(getClass().getPackage().getName().replace('.', '/')).getPath();
-    }
+		return new URLResource(getClass().getResource(file));
+	}
 
 }
