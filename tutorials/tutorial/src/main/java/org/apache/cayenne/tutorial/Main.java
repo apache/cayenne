@@ -18,8 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.tutorial;
 
+import static org.apache.cayenne.exp.ExpressionFactory.exp;
+
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -80,15 +81,14 @@ public class Main {
         SelectQuery<Painting> select1 = SelectQuery.query(Painting.class, null);
         List<Painting> paintings1 = context.select(select1);
 
-        Expression qualifier2 = Painting.NAME.likeInsensitive("gi%");
+        Expression qualifier2 = Painting.NAME.likeIgnoreCase("gi%");
         SelectQuery<Painting> select2 = SelectQuery.query(Painting.class, qualifier2);
         List<Painting> paintings2 = context.select(select2);
 
         Calendar c = new GregorianCalendar();
         c.set(c.get(Calendar.YEAR) - 100, 0, 1, 0, 0, 0);
 
-        Expression qualifier3 = Expression.fromString("artist.dateOfBirth < $date");
-        qualifier3 = qualifier3.expWithParameters(Collections.singletonMap("date", c.getTime()));
+        Expression qualifier3 = exp("artist.dateOfBirth < $date", c.getTime());
         SelectQuery<Painting> select3 = SelectQuery.query(Painting.class, qualifier3);
         List<Painting> paintings3 = context.select(select3);
     }
