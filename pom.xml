@@ -61,6 +61,7 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
+		<module>cayenne-java8</module>
 	</modules>
 	<issueManagement>
 		<system>jira</system>
