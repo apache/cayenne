@@ -489,6 +489,10 @@ public class ProjectController extends CayenneController {
         }
     }
 
+    public DataChannelDescriptor getCurrentDataChanel() {
+        return currentState.domain;
+    }
+
     public DataNodeDescriptor getCurrentDataNode() {
         return currentState.node;
     }
@@ -1678,6 +1682,8 @@ public class ProjectController extends CayenneController {
             return getCurrentDataMap();
         } else if (getCurrentDataNode() != null) {
             return getCurrentDataNode();
+        } else if (getCurrentDataChanel() != null) {
+            return getCurrentDataChanel();
         } else if (getCurrentPaths() != null) { // multiple objects
             Object[] paths = getCurrentPaths();
             List<Object> result = new Vector<Object>();
