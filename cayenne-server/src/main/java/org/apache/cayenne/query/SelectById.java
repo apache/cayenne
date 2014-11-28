@@ -53,6 +53,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	boolean fetchingDataRows;
 	QueryCacheStrategy cacheStrategy;
 	String[] cacheGroups;
+	PrefetchTreeNode prefetches;
 
 	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
 		SelectById<T> q = new SelectById<T>();
@@ -185,6 +186,70 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return fetchingDataRows;
 	}
 
+	/**
+	 * Resets internal prefetches to the new value, which is a single prefetch
+	 * with specified semantics.
+	 * 
+	 * @return this object
+	 */
+	public SelectById<T> prefetch(String path, int semantics) {
+		this.prefetches = PrefetchTreeNode.withPath(path, semantics);
+		return this;
+	}
+
+	/**
+	 * Resets internal prefetches to the new value.
+	 * 
+	 * @return this object
+	 */
+	public SelectById<T> prefetch(PrefetchTreeNode prefetch) {
+		this.prefetches = prefetch;
+		return this;
+	}
+
+	/**
+	 * Merges prefetch into the query prefetch tree.
+	 * 
+	 * @return this object
+	 */
+	public SelectById<T> addPrefetch(PrefetchTreeNode prefetch) {
+
+		if (prefetch == null) {
+			return this;
+		}
+
+		if (prefetches == null) {
+			prefetches = new PrefetchTreeNode();
+		}
+
+		prefetches.merge(prefetch);
+		return this;
+	}
+
+	/**
+	 * Merges a prefetch path with specified semantics into the query prefetch
+	 * tree.
+	 * 
+	 * @return this object
+	 */
+	public SelectById<T> addPrefetch(String path, int semantics) {
+
+		if (path == null) {
+			return this;
+		}
+
+		if (prefetches == null) {
+			prefetches = new PrefetchTreeNode();
+		}
+
+		prefetches.addPath(path).setSemantics(semantics);
+		return this;
+	}
+	
+	public PrefetchTreeNode getPrefetches() {
+		return prefetches;
+	}
+
 	@Override
 	protected Query createReplacementQuery(EntityResolver resolver) {
 
@@ -201,6 +266,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		// optimally - object cache may have an object, but query cache will not
 		query.setCacheGroups(cacheGroups);
 		query.setCacheStrategy(cacheStrategy);
+		query.setPrefetchTree(prefetches);
 
 		return query;
 	}

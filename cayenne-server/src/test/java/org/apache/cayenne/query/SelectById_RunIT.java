@@ -18,6 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import static java.util.Collections.singletonMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
+import java.sql.Types;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -35,14 +43,8 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SelectByIdIT extends ServerCase {
+public class SelectById_RunIT extends ServerCase {
 
 	@Inject
 	private DataChannelInterceptor interceptor;
@@ -51,6 +53,7 @@ public class SelectByIdIT extends ServerCase {
 	private DBHelper dbHelper;
 
 	private TableHelper tArtist;
+	private TableHelper tPainting;
 
 	@Inject
 	private ObjectContext context;
@@ -60,8 +63,9 @@ public class SelectByIdIT extends ServerCase {
 
 	@Before
 	public void setUp() throws Exception {
-		tArtist = new TableHelper(dbHelper, "ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+		tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME");
+		tPainting = new TableHelper(dbHelper, "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
+				.setColumnTypes(Types.INTEGER, Types.BIGINT, Types.VARCHAR);
 	}
 
 	private void createTwoArtists() throws Exception {
@@ -197,5 +201,27 @@ public class SelectByIdIT extends ServerCase {
 				SelectById.query(Artist.class, 3).useLocalCache("g1").selectOne(context);
 			}
 		}));
+	}
+
+	@Test
+	public void testPrefetch() throws Exception {
+		createTwoArtists();
+		tPainting.insert(45, 3, "One");
+		tPainting.insert(48, 3, "Two");
+
+		final Artist a3 = SelectById.query(Artist.class, 3).prefetch(Artist.PAINTING_ARRAY.joint()).selectOne(context);
+
+		interceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+			@Override
+			public void execute() {
+				assertNotNull(a3);
+				assertEquals("artist3", a3.getArtistName());
+				assertEquals(2, a3.getPaintingArray().size());
+				
+				a3.getPaintingArray().get(0).getPaintingTitle();
+				a3.getPaintingArray().get(1).getPaintingTitle();
+			}
+		});
 	}
 }
