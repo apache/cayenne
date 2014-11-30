@@ -23,7 +23,9 @@
     <section xml:id="java-version">
         <title>Java Version</title>
         <para>Minimal required JDK verision is 1.6 or newer. Cayenne 4.0 is fully tested with Java
-            1.6,  1.7, 1.8.</para>
+            1.6, 1.7, 1.8. </para>
+        <para>The examples below often use Java 8 syntax. But those same examples should work
+            withour lambdas just as well.</para>
     </section>
     <section xml:id="cayenne-configuration">
         <title>Cayenne Configuration</title>
@@ -38,6 +40,12 @@
         .addModule(binder -> binder.bind(JdbcEventLogger.class).toInstance(myLogger))
         .dataSource(myDataSource)
         .build();</programlisting></para>
+        </section>
+        <section>
+            <title>Mapping-free ServerRuntime</title>
+            <para>ServerRuntime can now be started without any ORM mapping at all. This is useful
+                e.g. in situations when Cayenne is used as a stack to execute raw SQL, in unit
+                tests, etc.</para>
         </section>
     </section>
     <section xml:id="framework-api">
@@ -90,6 +98,47 @@
                 variables generated from the model. These metadata objects make possible to create
                 type-safe Expressions and other query parts.</para>
         </section>
+        <section>
+            <title>Positional Parameter Bindings </title>
+            <para>Expressions and SQLTemplate always supported binding of parameters by name as a
+                map. Cayenne 4.0 introduces a very easy form of positional bindings. It works with
+                the same named template format, only parameters are bound left-to-right,
+                disregarding the
+                names:<programlisting>// two distinct names, 3 positional parameters
+Expression e = ExpressionFactory.exp(
+     "price = $price or averagePrice = $price and maxPrice = $maxPrice", 23, 25, 50);</programlisting>This
+                API is supported in Expressions, SQLTemplate as well as new SQLSelect and can be
+                used interchnageably with named parameters with a single template flavor.</para>
+        </section>
+        <section>
+            <title>Improved Transaction API</title>
+            <para>Transaction factory is now setup via DI (instead of being configured in the
+                Modeler). There's a utility method on ServerRuntime to perform multiple operations
+                as one
+                transaction:<programlisting>runtime.performInTransaction(() -> {
+	// ... do some changes
+	context.commitChanges();
+
+	// ... do more changes
+	context.commitChanges();
+
+	return true;
+});</programlisting></para>
+        </section>
+        <section>
+            <title>Transparent Database Cryptography with "cayenne-crypto" Module</title>
+            <para>Cayenne includes a new module called "cayenne-crypto" that enables transparent
+                cryptography for designated data columns. This is a pretty cool feature that allows
+                to enable encryption/decryption of your sensitive data pretty much declaratively
+                using your regular DB storage. Encrypted values can be stored in (VAR)BINARY and
+                (VAR)CHAR columns. Currently "cayenne-crypto" supports AES/CBC/PKCS5Padding
+                encryption (though other cyphers can be added). It also supports encrypted data
+                compression. Here is an example of building a crypto DI module that can be added to
+                ServerRuntime:<programlisting>Module cryptoExtensions = new CryptoModuleBuilder()
+	.keyStore("file:///mykeystore", "keystorepassword".toCharArray(), "keyalias")
+	.compress()
+	.build();</programlisting></para>
+        </section>
     </section>
     <section xml:id="cayenne-modeler">
         <title>CayenneModeler</title>
@@ -113,7 +162,16 @@
         <title>Build Tools</title>
         <section>
             <title>cdbimport</title>
-            <para>"cdbimport" has evolved from </para>
+            <para>"cdbimport" has evolved from an experiment to a full-featured production tool that
+                significantly reduces (and sometimes eliminates) the need for manual maintenance of
+                the DataMaps in CayenneModeler. The two improvements made it possible. First, smart
+                merge algorithm that will ensure that custom chnages to the model are not overridden
+                on subsequent runs of "cdbimport". Second, the mechanism for specifing DB
+                reverse-engineering parameters, such as name filtering, is made much more powerful
+                with many new options. E.g. we started supporting filters by catalogs and schemas,
+                table name filters can be added per catalog/schema or at the top level, etc. Also
+                configuration can be "inlined" in a Maven pom.xml or specified as a separate
+                file.</para>
         </section>
         <section>
             <title>cgen</title>
