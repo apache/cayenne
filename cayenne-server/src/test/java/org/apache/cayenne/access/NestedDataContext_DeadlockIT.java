@@ -90,7 +90,7 @@ public class NestedDataContext_DeadlockIT extends ServerCase {
 					assertFalse("Deadlocked thread", threads[i].isAlive());
 				}
 			}
-		}.runTest(20000);
+		}.runTest(40000);
 
 	}
 
