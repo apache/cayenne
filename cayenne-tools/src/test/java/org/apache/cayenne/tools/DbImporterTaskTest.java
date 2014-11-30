@@ -18,7 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchema;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.apache.cayenne.test.file.FileUtil;
+import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.tools.ant.Project;
@@ -30,22 +50,6 @@ import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 // TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
 // based on "cayenneTestConnection", like we do in cayenne-server, etc.
@@ -183,13 +187,10 @@ public class DbImporterTaskTest {
 		}
 	}
 
-	private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration)
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException,
-			URISyntaxException {
+	private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
 
-		String name = "dbimport/" + sqlFile + ".sql";
-		File file = distDir(name);
-		ResourceUtil.copyResourceToFile(getPackagePath() + "/" + name, file);
+		URL sqlUrl = getClass().getResource("dbimport/" + sqlFile + ".sql");
+		assertNotNull(sqlUrl);
 
 		Class.forName(dbImportConfiguration.getDriver()).newInstance();
 
@@ -198,8 +199,18 @@ public class DbImporterTaskTest {
 
 			Statement stmt = c.createStatement();
 
+			// TODO: move parsing SQL files to a common utility (DBHelper?) .
+			// ALso see UnitDbApater.executeDDL - this should use the same
+			// utility
+
 			try {
-				for (String sql : FileUtils.readFully(new FileReader(file)).split(";")) {
+				for (String sql : SQLReader.statements(sqlUrl, ";")) {
+
+					// skip comments
+					if (sql.startsWith("-- ")) {
+						continue;
+					}
+
 					stmt.execute(sql);
 				}
 			} finally {

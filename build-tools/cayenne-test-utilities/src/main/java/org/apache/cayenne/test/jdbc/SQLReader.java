@@ -37,11 +37,11 @@ import java.util.Collection;
  */
 public class SQLReader {
 
-	public Collection<String> statements(URL sqlSource) throws Exception {
+	public static Collection<String> statements(URL sqlSource) throws Exception {
 		return statements(sqlSource, null);
 	}
 
-	public Collection<String> statements(URL sqlSource, String separator) throws Exception {
+	public static Collection<String> statements(URL sqlSource, String separator) throws Exception {
 
 		Collection<String> statements = new ArrayList<String>();
 
@@ -68,7 +68,7 @@ public class SQLReader {
 		return statements;
 	}
 
-	private boolean appendLine(StringBuilder statement, String line, String separator) {
+	private static boolean appendLine(StringBuilder statement, String line, String separator) {
 		if (line.startsWith("-- ")) {
 			return false;
 		}
