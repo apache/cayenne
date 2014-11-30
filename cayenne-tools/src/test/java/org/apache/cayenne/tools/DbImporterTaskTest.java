@@ -48,154 +48,156 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+// TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
+// based on "cayenneTestConnection", like we do in cayenne-server, etc.
 public class DbImporterTaskTest {
 
-    static {
-        XMLUnit.setIgnoreWhitespace(true);
-    }
+	static {
+		XMLUnit.setIgnoreWhitespace(true);
+	}
 
-    @Test
-    public void testLoadCatalog() throws Exception {
-        assertCatalog(getCdbImport("build-catalog.xml").getReverseEngineering());
-    }
+	@Test
+	public void testLoadCatalog() throws Exception {
+		assertCatalog(getCdbImport("build-catalog.xml").getReverseEngineering());
+	}
 
-    @Test
-    public void testLoadSchema() throws Exception {
-        assertSchema(getCdbImport("build-schema.xml").getReverseEngineering());
-    }
+	@Test
+	public void testLoadSchema() throws Exception {
+		assertSchema(getCdbImport("build-schema.xml").getReverseEngineering());
+	}
 
-    @Test
-    public void testLoadCatalogAndSchema() throws Exception {
-        assertCatalogAndSchema(getCdbImport("build-catalog-and-schema.xml").getReverseEngineering());
-    }
+	@Test
+	public void testLoadCatalogAndSchema() throws Exception {
+		assertCatalogAndSchema(getCdbImport("build-catalog-and-schema.xml").getReverseEngineering());
+	}
 
-    @Test
-    public void testLoadFlat() throws Exception {
-        assertFlat(getCdbImport("build-flat.xml").getReverseEngineering());
-    }
+	@Test
+	public void testLoadFlat() throws Exception {
+		assertFlat(getCdbImport("build-flat.xml").getReverseEngineering());
+	}
 
-    @Test
-    public void testIncludeTable() throws Exception {
-        test("build-include-table.xml");
-    }
+	@Test
+	public void testIncludeTable() throws Exception {
+		test("build-include-table.xml");
+	}
 
+	private DbImporterTask getCdbImport(String buildFile) {
+		Project project = new Project();
 
-    private DbImporterTask getCdbImport(String buildFile) {
-        Project project = new Project();
+		File map = distDir(buildFile);
+		ResourceUtil.copyResourceToFile(getPackagePath() + "/" + buildFile, map);
+		ProjectHelper.configureProject(project, map);
 
-        File map = distDir(buildFile);
-        ResourceUtil.copyResourceToFile(getPackagePath() + "/" + buildFile, map);
-        ProjectHelper.configureProject(project, map);
+		UnknownElement task = (UnknownElement) project.getTargets().get("dist").getTasks()[0];
+		task.maybeConfigure();
 
-        UnknownElement task = (UnknownElement) project.getTargets().get("dist").getTasks()[0];
-        task.maybeConfigure();
+		return (DbImporterTask) task.getRealThing();
+	}
 
-        return (DbImporterTask) task.getRealThing();
-    }
+	private static File distDir(String name) {
+		File distDir = new File(FileUtil.baseTestDirectory(), "cdbImport");
+		File file = new File(distDir, name);
+		distDir = file.getParentFile();
+		// prepare destination directory
+		if (!distDir.exists()) {
+			assertTrue(distDir.mkdirs());
+		}
+		return file;
+	}
 
-    private static File distDir(String name) {
-        File distDir = new File(FileUtil.baseTestDirectory(), "cdbImport");
-        File file = new File(distDir, name);
-        distDir = file.getParentFile();
-        // prepare destination directory
-        if (!distDir.exists()) {
-            assertTrue(distDir.mkdirs());
-        }
-        return file;
-    }
+	private String getPackagePath() {
+		return getClass().getPackage().getName().replace('.', '/');
+	}
 
-    private String getPackagePath() {
-        return getClass().getPackage().getName().replace('.', '/');
-    }
+	private void test(String name) throws Exception {
+		DbImporterTask cdbImport = getCdbImport("dbimport/" + name);
+		File mapFile = cdbImport.getMap();
+		URL mapUrl = this.getClass().getResource("dbimport/" + mapFile.getName());
+		if (mapUrl != null && new File(mapUrl.toURI()).exists()) {
+			ResourceUtil.copyResourceToFile(mapUrl, mapFile);
+		}
 
-    private void test(String name) throws Exception {
-        DbImporterTask cdbImport = getCdbImport("dbimport/" + name);
-        File mapFile = cdbImport.getMap();
-        URL mapUrl = this.getClass().getResource("dbimport/" + mapFile.getName());
-        if (mapUrl != null && new File(mapUrl.toURI()).exists()) {
-            ResourceUtil.copyResourceToFile(mapUrl, mapFile);
-        }
+		URL mapUrlRes = this.getClass().getResource("dbimport/" + mapFile.getName() + "-result");
+		if (mapUrlRes != null && new File(mapUrlRes.toURI()).exists()) {
+			ResourceUtil
+					.copyResourceToFile(mapUrlRes, new File(mapFile.getParentFile(), mapFile.getName() + "-result"));
+		}
 
-        URL mapUrlRes = this.getClass().getResource("dbimport/" + mapFile.getName() + "-result");
-        if (mapUrlRes != null && new File(mapUrlRes.toURI()).exists()) {
-            ResourceUtil.copyResourceToFile(mapUrlRes, new File(mapFile.getParentFile(), mapFile.getName() + "-result"));
-        }
+		File mapFileCopy = distDir("copy-" + mapFile.getName());
+		if (mapFile.exists()) {
+			FileUtils.getFileUtils().copyFile(mapFile, mapFileCopy);
+			cdbImport.setMap(mapFileCopy);
+		} else {
+			mapFileCopy = mapFile;
+		}
 
-        File mapFileCopy = distDir("copy-" + mapFile.getName());
-        if (mapFile.exists()) {
-            FileUtils.getFileUtils().copyFile(mapFile, mapFileCopy);
-            cdbImport.setMap(mapFileCopy);
-        } else {
-            mapFileCopy = mapFile;
-        }
+		prepareDatabase(name, cdbImport.toParameters());
 
-        prepareDatabase(name, cdbImport.toParameters());
+		try {
+			cdbImport.execute();
+			verifyResult(mapFile, mapFileCopy);
+		} finally {
+			cleanDb(cdbImport.toParameters());
+		}
+	}
 
-        try {
-            cdbImport.execute();
-            verifyResult(mapFile, mapFileCopy);
-        } finally {
-            cleanDb(cdbImport.toParameters());
-        }
-    }
+	private void cleanDb(DbImportConfiguration dbImportConfiguration) throws ClassNotFoundException,
+			IllegalAccessException, InstantiationException, SQLException {
+		Class.forName(dbImportConfiguration.getDriver()).newInstance();
+		// Get a connection
+		Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl());
+		Statement stmt = connection.createStatement();
 
-    private void cleanDb(DbImportConfiguration dbImportConfiguration) throws ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
-        Class.forName(dbImportConfiguration.getDriver()).newInstance();
-        // Get a connection
-        Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl());
-        Statement stmt = connection.createStatement();
+		ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[] { "TABLE" });
+		while (tables.next()) {
+			String schema = tables.getString("TABLE_SCHEM");
+			System.out.println("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
+			stmt.execute("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
+		}
 
-        ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-        while (tables.next()) {
-            String schema = tables.getString("TABLE_SCHEM");
-            System.out.println("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
-            stmt.execute("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
-        }
+		ResultSet schemas = connection.getMetaData().getSchemas();
+		while (schemas.next()) {
+			String schem = schemas.getString("TABLE_SCHEM");
+			if (schem.startsWith("SCHEMA")) {
+				System.out.println("DROP SCHEMA " + schem);
+				stmt.execute("DROP SCHEMA " + schem + " RESTRICT");
+			}
+		}
+	}
 
-        ResultSet schemas = connection.getMetaData().getSchemas();
-        while (schemas.next()) {
-            String schem = schemas.getString("TABLE_SCHEM");
-            if (schem.startsWith("SCHEMA")) {
-                System.out.println("DROP SCHEMA " + schem);
-                stmt.execute("DROP SCHEMA " + schem + " RESTRICT");
-            }
-        }
-    }
+	private void verifyResult(File map, File mapFileCopy) {
+		try {
+			FileReader control = new FileReader(map.getAbsolutePath() + "-result");
+			FileReader test = new FileReader(mapFileCopy);
 
-    private void verifyResult(File map, File mapFileCopy) {
-        try {
-            FileReader control = new FileReader(map.getAbsolutePath() + "-result");
-            FileReader test = new FileReader(mapFileCopy);
+			DetailedDiff diff = new DetailedDiff(new Diff(control, test));
+			if (!diff.similar()) {
+				fail(diff.toString());
+			}
 
-            DetailedDiff diff = new DetailedDiff(new Diff(control, test));
-            if (!diff.similar()) {
-                System.out.println(" >>>> " + map.getAbsolutePath() + "-result");
-                System.out.println(" >>>> " + mapFileCopy);
-                fail(diff.toString());
-            }
+		} catch (SAXException e) {
+			e.printStackTrace();
+			fail();
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
 
-        } catch (SAXException e) {
-            e.printStackTrace();
-            fail();
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-        }
-    }
+	private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException,
+			URISyntaxException {
+		Class.forName(dbImportConfiguration.getDriver()).newInstance();
+		// Get a connection
+		Statement stmt = DriverManager.getConnection(dbImportConfiguration.getUrl()).createStatement();
 
-    private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException, URISyntaxException {
-        Class.forName(dbImportConfiguration.getDriver()).newInstance();
-        // Get a connection
-        Statement stmt = DriverManager.getConnection(dbImportConfiguration.getUrl()).createStatement();
+		String name = "dbimport/" + sqlFile + ".sql";
+		File file = distDir(name);
+		ResourceUtil.copyResourceToFile(getPackagePath() + "/" + name, file);
 
-
-        String name = "dbimport/" + sqlFile + ".sql";
-        File file = distDir(name);
-        ResourceUtil.copyResourceToFile(getPackagePath() + "/" + name, file);
-
-        for (String sql : FileUtils.readFully(new FileReader(file)).split(";")) {
-            stmt.execute(sql);
-        }
-    }
+		for (String sql : FileUtils.readFully(new FileReader(file)).split(";")) {
+			stmt.execute(sql);
+		}
+	}
 
 }
