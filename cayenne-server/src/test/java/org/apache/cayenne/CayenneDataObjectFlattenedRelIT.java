@@ -36,6 +36,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -64,6 +65,12 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
     private TableHelper tArtGroup;
 
     private TableHelper tArtistGroup;
+    
+	@Override
+	public void cleanUpDB() throws Exception {
+		dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
+		super.cleanUpDB();
+	}
 
     @Before
     public void setUp() throws Exception {

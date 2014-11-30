@@ -18,44 +18,41 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;
-
 import java.sql.Types;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.junit.Test;
+
 public class SetPrimaryKeyToDbIT extends MergeCase {
 
-    @Test
-    public void test() throws Exception {
-        dropTableIfPresent("NEW_TABLE");
-        assertTokensAndExecute(0, 0);
+	@Test
+	public void test() throws Exception {
+		dropTableIfPresent("NEW_TABLE");
+		assertTokensAndExecute(0, 0);
 
-        DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
+		DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
 
-        DbAttribute e1col1 = new DbAttribute("ID1", Types.INTEGER, dbEntity1);
-        e1col1.setMandatory(true);
-        e1col1.setPrimaryKey(true);
-        dbEntity1.addAttribute(e1col1);
-        map.addDbEntity(dbEntity1);
+		DbAttribute e1col1 = new DbAttribute("ID1", Types.INTEGER, dbEntity1);
+		e1col1.setMandatory(true);
+		e1col1.setPrimaryKey(true);
+		dbEntity1.addAttribute(e1col1);
+		map.addDbEntity(dbEntity1);
 
-        assertTokensAndExecute(1, 0);
-        assertTokensAndExecute(0, 0);
+		assertTokensAndExecute(1, 0);
+		assertTokensAndExecute(0, 0);
 
-        DbAttribute e1col2 = new DbAttribute("ID2", Types.INTEGER, dbEntity1);
-        e1col2.setMandatory(true);
-        dbEntity1.addAttribute(e1col2);
+		DbAttribute e1col2 = new DbAttribute("ID2", Types.INTEGER, dbEntity1);
+		e1col2.setMandatory(true);
+		dbEntity1.addAttribute(e1col2);
 
-        assertTokensAndExecute(2, 0);
-        assertTokensAndExecute(0, 0);
+		assertTokensAndExecute(2, 0);
+		assertTokensAndExecute(0, 0);
 
-        e1col1.setPrimaryKey(false);
-        e1col2.setPrimaryKey(true);
+		e1col1.setPrimaryKey(false);
+		e1col2.setPrimaryKey(true);
 
-        assertTokensAndExecute(1, 0);
-        assertTokensAndExecute(0, 0);
-    }
+		assertTokensAndExecute(1, 0);
+		assertTokensAndExecute(0, 0);
+	}
 }
