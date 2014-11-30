@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.File;
 import java.io.FileReader;
@@ -32,18 +32,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.config.Catalog;
 import org.apache.cayenne.tools.dbimport.config.IncludeTable;
 import org.apache.cayenne.tools.dbimport.config.Schema;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.xml.sax.SAXException;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class DbImporterMojoTest extends AbstractMojoTestCase {
 
