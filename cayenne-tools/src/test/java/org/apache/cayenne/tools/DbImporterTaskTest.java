@@ -187,16 +187,27 @@ public class DbImporterTaskTest {
 	private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException,
 			URISyntaxException {
-		Class.forName(dbImportConfiguration.getDriver()).newInstance();
-		// Get a connection
-		Statement stmt = DriverManager.getConnection(dbImportConfiguration.getUrl()).createStatement();
 
 		String name = "dbimport/" + sqlFile + ".sql";
 		File file = distDir(name);
 		ResourceUtil.copyResourceToFile(getPackagePath() + "/" + name, file);
 
-		for (String sql : FileUtils.readFully(new FileReader(file)).split(";")) {
-			stmt.execute(sql);
+		Class.forName(dbImportConfiguration.getDriver()).newInstance();
+
+		Connection c = DriverManager.getConnection(dbImportConfiguration.getUrl());
+		try {
+
+			Statement stmt = c.createStatement();
+
+			try {
+				for (String sql : FileUtils.readFully(new FileReader(file)).split(";")) {
+					stmt.execute(sql);
+				}
+			} finally {
+				stmt.close();
+			}
+		} finally {
+			c.close();
 		}
 	}
 
