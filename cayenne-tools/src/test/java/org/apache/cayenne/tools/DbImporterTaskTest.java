@@ -189,7 +189,7 @@ public class DbImporterTaskTest {
 
 	private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
 
-		URL sqlUrl = getClass().getResource("dbimport/" + sqlFile + ".sql");
+		URL sqlUrl = ResourceUtil.getResource(getClass(), "dbimport/" + sqlFile + ".sql");
 		assertNotNull(sqlUrl);
 
 		Class.forName(dbImportConfiguration.getDriver()).newInstance();
