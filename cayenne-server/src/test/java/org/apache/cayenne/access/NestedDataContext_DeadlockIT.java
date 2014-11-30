@@ -122,6 +122,9 @@ public class NestedDataContext_DeadlockIT extends ServerCase {
                 }
 
                 nestedContext.commitChanges();
+                
+                // ensure other threads get a chance to run too
+                Thread.yield();
             }
         }
     }
