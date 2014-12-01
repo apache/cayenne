@@ -408,15 +408,11 @@ public class DbLoaderHelper {
             loadStatusNote = "Importing tables...";
             try {
                 loader.setCreatingMeaningfulPK(meaningfulPk);
-                String[] types = loader.getDefaultTableTypes();
-                if (types.length == 0) {
-                    throw new SQLException("No supported table types found.");
-                }
-
+               
                 DbLoaderConfiguration configuration = new DbLoaderConfiguration();
                 configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
                         .add(filterBuilder.build()).filtersConfig());
-                loader.load(dataMap, configuration, types);
+                loader.load(dataMap, configuration);
 
                 /**
                  * Update default rules for relationships

@@ -18,22 +18,6 @@
  */
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
-import org.apache.cayenne.access.loader.NameFilter;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DetectedDbEntity;
-
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -44,6 +28,22 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DetectedDbEntity;
 
 /**
  * Traverse a {@link DataNode} and a {@link DataMap} and create a group of
@@ -153,7 +153,7 @@ public class DbMerger {
     private DataMap loadDataMapFromDb(DbLoader dbLoader, DbLoaderConfiguration config) {
         DataMap detectedDataMap = new DataMap();
         try {
-            dbLoader.load(detectedDataMap, config, (String[]) null);
+            dbLoader.load(detectedDataMap, config);
         } catch (SQLException e) {
             // TODO log
         }

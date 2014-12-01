@@ -24,7 +24,7 @@ import org.apache.cayenne.access.loader.filters.FilterFactory;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
 
 /**
- * @since 3.2.
+ * @since 4.0
  */
 public class DbLoaderConfiguration {
 

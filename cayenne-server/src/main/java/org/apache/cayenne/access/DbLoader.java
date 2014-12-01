@@ -703,19 +703,15 @@ public class DbLoader {
      *             method that supports catalogs.
      */
     @Deprecated
-    public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, DataMap dataMap) throws SQLException {
+	public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, DataMap dataMap) throws SQLException {
 
-        String[] types = getDefaultTableTypes();
-        if (types.length == 0) {
-            throw new SQLException("No supported table types found.");
-        }
+		DbLoaderConfiguration configuration = new DbLoaderConfiguration();
+		configuration.setFiltersConfig(new FiltersConfig(new EntityFilters(new DbPath(null, schemaPattern),
+				include(tablePattern), TRUE, NULL)));
 
-        DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-        configuration.setFiltersConfig(new FiltersConfig(new EntityFilters(
-                new DbPath(null, schemaPattern), include(tablePattern), TRUE, NULL)));
-        load(dataMap, configuration, types);
-        return dataMap;
-    }
+		load(dataMap, configuration);
+		return dataMap;
+	}
 
     /**
      * Performs database reverse engineering and generates DataMap object that
@@ -734,8 +730,9 @@ public class DbLoader {
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(new FiltersConfig(new EntityFilters(
                 new DbPath(null, schemaPattern), transformPatternToFilter(tablePattern), TRUE, NULL)));
-
-        load(dataMap, config, tableTypes);
+        config.setTableTypes(tableTypes);
+        
+        load(dataMap, config);
         return dataMap;
     }
 
@@ -750,42 +747,27 @@ public class DbLoader {
     }
 
     /**
-     * Performs database reverse engineering to match the specified catalog,
-     * schema, table name and table type patterns and fills the specified
-     * DataMap object with DB and object mapping info.
-     * 
-     * @since 4.0
-     */
-    public void load(DataMap dataMap, DbLoaderConfiguration config, String... tableTypes) throws SQLException {
-
-        List<DbEntity> entities = loadDbEntities(dataMap, config, getTables(config, tableTypes));
-
-        if (entities != null) {
-            loadDbRelationships(dataMap, config, entities);
-            loadObjEntities(dataMap, config, entities);
-
-            flattenManyToManyRelationships(dataMap);
-            fireObjEntitiesAddedEvents(dataMap);
-        }
-    }
-
-    /**
-     * Performs database reverse engineering to match the specified catalog,
-     * schema, table name and table type patterns and fills the specified
+     * Performs database reverse engineering based on the specified config 
+     * and fills the specified
      * DataMap object with DB and object mapping info.
      *
-     * @since 3.2
+     * @since 4.0
      */
-    public DataMap load(DbLoaderConfiguration config) throws SQLException {
+	public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
 
-        DataMap dataMap = new DataMap();
-        String[] tableTypes = config.getTableTypes() == null ? this.getDefaultTableTypes() : config.getTableTypes();
+		String[] tableTypes = config.getTableTypes() == null ? this.getDefaultTableTypes() : config.getTableTypes();
+		List<DbEntity> entities = loadDbEntities(dataMap, config, getTables(config, tableTypes));
 
-        load(dataMap, config, tableTypes);
-        loadProcedures(dataMap, config);
+		if (entities != null) {
+			loadDbRelationships(dataMap, config, entities);
+			loadObjEntities(dataMap, config, entities);
 
-        return dataMap;
-    }
+			flattenManyToManyRelationships(dataMap);
+			fireObjEntitiesAddedEvents(dataMap);
+		}
+
+		loadProcedures(dataMap, config);
+	}
 
     /**
      * Loads database stored procedures into the DataMap.

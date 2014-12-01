@@ -107,6 +107,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 	public void testViewsExclude() throws Exception {
 		test("testViewsExclude");
 	}
+	
+	public void testDefaultPackage() throws Exception {
+		test("testDefaultPackage");
+	}
 
 	private void test(String name) throws Exception {
 		DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");

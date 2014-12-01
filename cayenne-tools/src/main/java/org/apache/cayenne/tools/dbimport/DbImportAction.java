@@ -81,7 +81,7 @@ public class DbImportAction {
 
     public void execute(DbImportConfiguration config) throws Exception {
 
-        if (logger.isInfoEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug("DB connection: " + config.getDataSourceInfo());
         }
 
@@ -184,19 +184,18 @@ public class DbImportAction {
         projectSaver.save(project);
     }
 
-    private DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
-        DataMap dataMap = config.createDataMap();
+	private DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
+		DataMap dataMap = config.createDataMap();
 
-        try {
-            DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
+		try {
+			DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
+			loader.load(dataMap, config.getDbLoaderConfig());
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
 
-            dataMap = loader.load(config.getDbLoaderConfig());
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
-        }
-
-        return dataMap;
-    }
+		return dataMap;
+	}
 }

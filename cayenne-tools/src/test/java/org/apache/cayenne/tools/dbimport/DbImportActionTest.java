@@ -18,10 +18,36 @@
  */
 package org.apache.cayenne.tools.dbimport;
 
+import static org.apache.cayenne.merge.builders.ObjectMother.dbAttr;
+import static org.apache.cayenne.merge.builders.ObjectMother.dbEntity;
+import static org.apache.cayenne.merge.builders.ObjectMother.objAttr;
+import static org.apache.cayenne.merge.builders.ObjectMother.objEntity;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
@@ -43,16 +69,6 @@ import org.apache.commons.logging.Log;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 
-import javax.sql.DataSource;
-import java.io.File;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import static org.apache.cayenne.merge.builders.ObjectMother.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 public class DbImportActionTest {
 
     public static final File FILE_STUB = new File("") {
@@ -72,8 +88,8 @@ public class DbImportActionTest {
 
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public DataMap load(DbLoaderConfiguration config) throws SQLException {
-                return new DataMapBuilder(new DataMap()).withDbEntities(2).build();
+            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+                 new DataMapBuilder(dataMap).withDbEntities(2).build();
             }
 
             @Override
@@ -113,8 +129,7 @@ public class DbImportActionTest {
     public void testImportWithFieldChanged() throws Exception {
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public DataMap load(DbLoaderConfiguration config) throws SQLException {
-                DataMap dataMap = new DataMap("dataMap");
+            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
                 new DataMapBuilder(dataMap).with(
                         dbEntity("ARTGROUP").attributes(
                                 dbAttr("GROUP_ID").typeInt().primaryKey(),
@@ -125,8 +140,6 @@ public class DbImportActionTest {
                         objEntity("org.apache.cayenne.testdo.testmap", "ArtGroup", "ARTGROUP").attributes(
                                 objAttr("name").type(String.class).dbPath("NAME")
                 ));
-
-                return dataMap;
             }
 
             @Override
@@ -185,13 +198,11 @@ public class DbImportActionTest {
     public void testImportWithoutChanges() throws Exception {
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public DataMap load(DbLoaderConfiguration config) throws SQLException {
-                DataMap dataMap = new DataMap("dataMap");
+            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
                 new DataMapBuilder(dataMap).with(
                         dbEntity("ARTGROUP").attributes(
                                 dbAttr("NAME").typeVarchar(100).mandatory()
                         ));
-                return dataMap;
             }
 
             @Override
@@ -248,7 +259,12 @@ public class DbImportActionTest {
 
         DbImportAction action = buildDbImportAction(projectSaver, mapLoader);
 
-        action.execute(params);
+		try {
+			action.execute(params);
+			fail();
+		} catch (SQLException e) {
+			// expected
+		}
 
         verify(projectSaver, never()).save(any(Project.class));
         verify(mapLoader, never()).loadDataMap(any(InputSource.class));

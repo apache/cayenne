@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
-import static org.junit.Assert.assertEquals;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchemaContent;
 
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
-/**
- * @since 3.2.
- */
 public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
     @Test
@@ -47,6 +47,12 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     public void testLoadCatalogAndSchema() throws Exception {
         assertCatalogAndSchema(getCdbImport("pom-catalog-and-schema.xml").getReverseEngineering());
     }
+    
+	@Test
+	public void testDefaultPackage() throws Exception {
+		DbImportConfiguration config = getCdbImport("pom-default-package.xml").toParameters();
+		assertEquals("com.example.test", config.getDefaultPackage());
+	}
 
     @Test
     public void testLoadFlat() throws Exception {
