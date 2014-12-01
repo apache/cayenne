@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.test.resource;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -30,83 +32,91 @@ import java.net.URL;
 
 public class ResourceUtil {
 
-    /**
-     * Copies resources to a file, thus making it available to the caller as File.
-     */
-    public static void copyResourceToFile(String resourceName, File file) {
-        URL in = getResource(resourceName);
+	/**
+	 * Copies resources to a file, thus making it available to the caller as
+	 * File.
+	 */
+	public static void copyResourceToFile(String resourceName, File file) {
+		URL in = getResource(resourceName);
 
-        if (!copyResourceToFile(in, file)) {
-            throw new RuntimeException("Error copying resource to file : " + file);
-        }
-    }
+		if (!copyResourceToFile(in, file)) {
+			throw new RuntimeException("Error copying resource to file : " + file);
+		}
+	}
 
-    /**
-     * Returns a guaranteed non-null resource for a given name.
-     */
-    public static URL getResource(String name) {
-        URL in = Thread.currentThread().getContextClassLoader().getResource(name);
-        
-        if (in == null) {
-            throw new RuntimeException("Resource not found: " + name);
-        }
+	/**
+	 * Returns a guaranteed non-null resource for a given name.
+	 */
+	public static URL getResource(Class<?> relativeTo, String name) {
+		URL in = relativeTo.getResource(name);
+		assertNotNull("Resource not found: " + name, in);
+		return getResource(in);
+	}
 
-        // Fix for the issue described at https://issues.apache.org/struts/browse/SB-35
-        // Basically, spaces in filenames make maven cry.
-        try {
-            in = new URL(in.toExternalForm().replaceAll(" ", "%20"));
-        }
-        catch (MalformedURLException e) {
-            throw new RuntimeException("Error constructing URL.", e);
-        }
+	/**
+	 * Returns a guaranteed non-null resource for a given name.
+	 */
+	public static URL getResource(String name) {
+		URL in = Thread.currentThread().getContextClassLoader().getResource(name);
+		assertNotNull("Resource not found: " + name, in);
+		return getResource(in);
+	}
 
-        return in;
-    }
+	/**
+	 * Returns a guaranteed non-null resource for a given name.
+	 */
+	private static URL getResource(URL classloaderUrl) {
 
-    public static boolean copyResourceToFile(URL from, File to) {
-        BufferedInputStream urlin = null;
-        BufferedOutputStream fout = null;
-        try {
-            int bufSize = 8 * 1024;
-            urlin = new BufferedInputStream(
-                    from.openConnection().getInputStream(),
-                    bufSize);
-            fout = new BufferedOutputStream(new FileOutputStream(to), bufSize);
-            copyPipe(urlin, fout, bufSize);
-        }
-        catch (IOException ioex) {
-            return false;
-        }
-        catch (SecurityException sx) {
-            return false;
-        }
-        finally {
-            if (urlin != null) {
-                try {
-                    urlin.close();
-                }
-                catch (IOException cioex) {
-                }
-            }
-            if (fout != null) {
-                try {
-                    fout.close();
-                }
-                catch (IOException cioex) {
-                }
-            }
-        }
-        return true;
-    }
+		if (classloaderUrl == null) {
+			throw new NullPointerException("null URL");
+		}
 
-    private static void copyPipe(InputStream in, OutputStream out, int bufSizeHint)
-            throws IOException {
-        int read = -1;
-        byte[] buf = new byte[bufSizeHint];
-        while ((read = in.read(buf, 0, bufSizeHint)) >= 0) {
-            out.write(buf, 0, read);
-        }
-        out.flush();
-    }
+		// Fix for the issue described at
+		// https://issues.apache.org/struts/browse/SB-35
+		// Basically, spaces in filenames make maven cry.
+		try {
+			return new URL(classloaderUrl.toExternalForm().replaceAll(" ", "%20"));
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("Error constructing URL.", e);
+		}
+	}
+
+	public static boolean copyResourceToFile(URL from, File to) {
+		BufferedInputStream urlin = null;
+		BufferedOutputStream fout = null;
+		try {
+			int bufSize = 8 * 1024;
+			urlin = new BufferedInputStream(from.openConnection().getInputStream(), bufSize);
+			fout = new BufferedOutputStream(new FileOutputStream(to), bufSize);
+			copyPipe(urlin, fout, bufSize);
+		} catch (IOException ioex) {
+			return false;
+		} catch (SecurityException sx) {
+			return false;
+		} finally {
+			if (urlin != null) {
+				try {
+					urlin.close();
+				} catch (IOException cioex) {
+				}
+			}
+			if (fout != null) {
+				try {
+					fout.close();
+				} catch (IOException cioex) {
+				}
+			}
+		}
+		return true;
+	}
+
+	private static void copyPipe(InputStream in, OutputStream out, int bufSizeHint) throws IOException {
+		int read = -1;
+		byte[] buf = new byte[bufSizeHint];
+		while ((read = in.read(buf, 0, bufSizeHint)) >= 0) {
+			out.write(buf, 0, read);
+		}
+		out.flush();
+	}
 
 }

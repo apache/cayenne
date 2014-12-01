@@ -183,7 +183,7 @@ public class PropertyTest {
 	@Test
 	public void testLikeIgnoreCase() {
 		Property<String> p = new Property<String>("prop");
-		Expression e = p.likeInsensitive("abc");
+		Expression e = p.likeIgnoreCase("abc");
 		assertEquals("prop likeIgnoreCase \"abc\"", e.toString());
 	}
 

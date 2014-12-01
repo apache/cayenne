@@ -61,6 +61,7 @@ CAY-1936 ServerRuntime.getDataSource() returning DataSource of a default DataNod
 CAY-1937 Make Transaction an interface
 CAY-1938 Create a DI factory for transactions, get rid of TransactionDelegate and modeler config for tx policies
 CAY-1939 DataDomain must use injectable TransactionManager
+CAY-1946 CDbimport improvements
 CAY-1949 Search in configuration fields (Catalog, Schema) in DbEntity
 CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
 CAY-1953 Redo ResultIteratorCallback to handle single row callback instead of iterator
@@ -103,6 +104,7 @@ CAY-1905 Multi-step prefetching NPE : 1..N..1 with absent N and root with no qua
 CAY-1943 XML file not deleted when a DataMap is deleted from the project
 CAY-1961 Fix RemoveAction for DataMaps in ProjectTree
 CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
+CAY-1973 error while generating classes
 
 ----------------------------------
 Release: 3.2M1

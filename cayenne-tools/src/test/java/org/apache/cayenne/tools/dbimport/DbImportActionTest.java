@@ -1,25 +1,26 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
@@ -69,16 +70,10 @@ public class DbImportActionTest {
     @Test
     public void testNewDataMapImport() throws Exception {
 
-        final boolean[] haveWeTriedToLoadProcedures = {false};
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public void load(DataMap dataMap, String catalogPattern, String schemaPattern, String tablePattern, String... tableTypes) throws SQLException {
-                new DataMapBuilder(dataMap).withDbEntities(2);
-            }
-
-            @Override
-            public void loadProcedures(DataMap dataMap, String catalogPattern, String schemaPattern, String namePattern) throws SQLException {
-                haveWeTriedToLoadProcedures[0] = true;
+            public DataMap load(DbLoaderConfiguration config) throws SQLException {
+                return new DataMapBuilder(new DataMap()).withDbEntities(2).build();
             }
 
             @Override
@@ -93,7 +88,10 @@ public class DbImportActionTest {
 
         when(params.createDataMap()).thenReturn(new DataMap("testImport"));
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
-        when(params.isImportProcedures()).thenReturn(true);
+        when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
+
+        final DataMap DATA_MAP = new DataMap();
+        when(params.initializeDataMap(any(DataMap.class))).thenReturn(DATA_MAP);
 
         final boolean[] haveWeTriedToSave = {false};
         DbImportAction action = buildDbImportAction(new FileProjectSaver() {
@@ -102,14 +100,12 @@ public class DbImportActionTest {
                 haveWeTriedToSave[0] = true;
 
                 // Validation phase
-                DataMap rootNode = (DataMap) project.getRootNode();
-                assertEquals(2, rootNode.getDbEntityMap().size());
+                assertEquals(DATA_MAP, project.getRootNode());
             }
         }, null);
 
         action.execute(params);
 
-        assertTrue("We should try to load procedures.", haveWeTriedToLoadProcedures[0]);
         assertTrue("We should try to save.", haveWeTriedToSave[0]);
     }
 
@@ -117,7 +113,8 @@ public class DbImportActionTest {
     public void testImportWithFieldChanged() throws Exception {
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public void load(DataMap dataMap, String catalogPattern, String schemaPattern, String tablePattern, String... tableTypes) throws SQLException {
+            public DataMap load(DbLoaderConfiguration config) throws SQLException {
+                DataMap dataMap = new DataMap("dataMap");
                 new DataMapBuilder(dataMap).with(
                         dbEntity("ARTGROUP").attributes(
                                 dbAttr("GROUP_ID").typeInt().primaryKey(),
@@ -128,6 +125,8 @@ public class DbImportActionTest {
                         objEntity("org.apache.cayenne.testdo.testmap", "ArtGroup", "ARTGROUP").attributes(
                                 objAttr("name").type(String.class).dbPath("NAME")
                 ));
+
+                return dataMap;
             }
 
             @Override
@@ -143,6 +142,7 @@ public class DbImportActionTest {
         when(params.createDataMap()).thenReturn(new DataMap("testImport"));
         when(params.getDataMapFile()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
+        when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
         final boolean[] haveWeTriedToSave = {false};
         DbImportAction action = buildDbImportAction(new FileProjectSaver() {
@@ -185,11 +185,13 @@ public class DbImportActionTest {
     public void testImportWithoutChanges() throws Exception {
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public void load(DataMap dataMap, String catalogPattern, String schemaPattern, String tablePattern, String... tableTypes) throws SQLException {
+            public DataMap load(DbLoaderConfiguration config) throws SQLException {
+                DataMap dataMap = new DataMap("dataMap");
                 new DataMapBuilder(dataMap).with(
                         dbEntity("ARTGROUP").attributes(
                                 dbAttr("NAME").typeVarchar(100).mandatory()
                         ));
+                return dataMap;
             }
 
             @Override
@@ -205,6 +207,7 @@ public class DbImportActionTest {
         when(params.createDataMap()).thenReturn(new DataMap("testImport"));
         when(params.getDataMapFile()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
+        when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
         Log log = mock(Log.class);
         when(log.isDebugEnabled()).thenReturn(false);
@@ -231,7 +234,7 @@ public class DbImportActionTest {
     public void testImportWithDbError() throws Exception {
         DbLoader dbLoader = mock(DbLoader.class);
         when(dbLoader.getDefaultTableTypes()).thenReturn(null);
-        doThrow(new SQLException()).when(dbLoader).load(any(DataMap.class), anyString(), anyString(), anyString());
+        doThrow(new SQLException()).when(dbLoader).load(any(DataMap.class), any(DbLoaderConfiguration.class));
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
         when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))

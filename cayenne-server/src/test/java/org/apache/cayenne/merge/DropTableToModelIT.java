@@ -18,80 +18,77 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;
-
-import java.sql.Types;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+import java.sql.Types;
+import java.util.List;
+
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.junit.Test;
+
 public class DropTableToModelIT extends MergeCase {
 
-    @Test
-    public void testDropTable() throws Exception {
-        dropTableIfPresent("NEW_TABLE");
-        assertTokensAndExecute(0, 0);
+	@Test
+	public void testDropTable() throws Exception {
+		dropTableIfPresent("NEW_TABLE");
+		assertTokensAndExecute(0, 0);
 
-        DbEntity dbEntity = new DbEntity("NEW_TABLE");
+		DbEntity dbEntity = new DbEntity("NEW_TABLE");
 
-        DbAttribute column1 = new DbAttribute("ID", Types.INTEGER, dbEntity);
-        column1.setMandatory(true);
-        column1.setPrimaryKey(true);
-        dbEntity.addAttribute(column1);
+		DbAttribute column1 = new DbAttribute("ID", Types.INTEGER, dbEntity);
+		column1.setMandatory(true);
+		column1.setPrimaryKey(true);
+		dbEntity.addAttribute(column1);
 
-        DbAttribute column2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity);
-        column2.setMaxLength(10);
-        column2.setMandatory(false);
-        dbEntity.addAttribute(column2);
+		DbAttribute column2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity);
+		column2.setMaxLength(10);
+		column2.setMandatory(false);
+		dbEntity.addAttribute(column2);
 
-        map.addDbEntity(dbEntity);
+		map.addDbEntity(dbEntity);
 
-        assertTokensAndExecute(1, 0);
-        assertTokensAndExecute(0, 0);
+		assertTokensAndExecute(1, 0);
+		assertTokensAndExecute(0, 0);
 
-        ObjEntity objEntity = new ObjEntity("NewTable");
-        objEntity.setDbEntity(dbEntity);
-        ObjAttribute oatr1 = new ObjAttribute("name");
-        oatr1.setDbAttributePath(column2.getName());
-        oatr1.setType("java.lang.String");
-        objEntity.addAttribute(oatr1);
-        map.addObjEntity(objEntity);
+		ObjEntity objEntity = new ObjEntity("NewTable");
+		objEntity.setDbEntity(dbEntity);
+		ObjAttribute oatr1 = new ObjAttribute("name");
+		oatr1.setDbAttributePath(column2.getName());
+		oatr1.setType("java.lang.String");
+		objEntity.addAttribute(oatr1);
+		map.addObjEntity(objEntity);
 
-        // force drop table in db
-        MergerToken token = mergerFactory().createDropTableToDb(dbEntity);
-        execute(token);
+		// force drop table in db
+		MergerToken token = mergerFactory().createDropTableToDb(dbEntity);
+		execute(token);
 
-        List<MergerToken> tokens = createMergeTokens();
-        assertEquals(1, tokens.size());
-        token = tokens.get(0);
-        if (token.getDirection().isToDb()) {
-            token = token.createReverse(mergerFactory());
-        }
-        assertTrue(token instanceof DropTableToModel);
-        execute(token);
-        resolver.refreshMappingCache();
-        assertNull(map.getDbEntity(dbEntity.getName()));
-        assertNull(map.getObjEntity(objEntity.getName()));
+		List<MergerToken> tokens = createMergeTokens();
+		assertEquals(1, tokens.size());
+		token = tokens.get(0);
+		if (token.getDirection().isToDb()) {
+			token = token.createReverse(mergerFactory());
+		}
+		assertTrue(token instanceof DropTableToModel);
+		execute(token);
+		resolver.refreshMappingCache();
+		assertNull(map.getDbEntity(dbEntity.getName()));
+		assertNull(map.getObjEntity(objEntity.getName()));
 
-        // clear up
-        map.removeObjEntity(objEntity.getName(), true);
-        map.removeDbEntity(dbEntity.getName(), true);
-        resolver.refreshMappingCache();
-        assertNull(map.getObjEntity(objEntity.getName()));
-        assertNull(map.getDbEntity(dbEntity.getName()));
-        assertFalse(map.getDbEntities().contains(dbEntity));
+		// clear up
+		map.removeObjEntity(objEntity.getName(), true);
+		map.removeDbEntity(dbEntity.getName(), true);
+		resolver.refreshMappingCache();
+		assertNull(map.getObjEntity(objEntity.getName()));
+		assertNull(map.getDbEntity(dbEntity.getName()));
+		assertFalse(map.getDbEntities().contains(dbEntity));
 
-        assertTokensAndExecute(0, 0);
-    }
+		assertTokensAndExecute(0, 0);
+	}
 
 }

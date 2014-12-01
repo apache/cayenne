@@ -163,9 +163,9 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
             boolean shouldLoadProcedures) {
 
         this.choice = CANCEL;
-        this.tableNamePatternField.setText(DbLoader.WILDCARD);
+        this.tableNamePatternField.setText(DbLoader.WILDCARD_PATTERN);
         this.loadProcedures.setSelected(shouldLoadProcedures);
-        this.procNamePatternField.setText(DbLoader.WILDCARD);
+        this.procNamePatternField.setText(DbLoader.WILDCARD_PATTERN);
         this.procNamePatternField.setEnabled(shouldLoadProcedures);
         this.procedureLabel.setEnabled(shouldLoadProcedures);
 

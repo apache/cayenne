@@ -33,7 +33,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.tools.NamePatternMatcher;
+import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.commons.logging.Log;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;

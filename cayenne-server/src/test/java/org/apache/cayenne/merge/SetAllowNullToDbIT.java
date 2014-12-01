@@ -18,53 +18,49 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
 
 import java.sql.Types;
 
-import static org.junit.Assert.assertNotNull;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.junit.Test;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SetAllowNullToDbIT extends MergeCase {
 
-    @Test
-    public void test() throws Exception {
-        DbEntity dbEntity = map.getDbEntity("PAINTING");
-        assertNotNull(dbEntity);
+	@Test
+	public void test() throws Exception {
+		DbEntity dbEntity = map.getDbEntity("PAINTING");
+		assertNotNull(dbEntity);
 
-        // create and add new column to model and db
-        DbAttribute column = new DbAttribute("NEWCOL2", Types.VARCHAR, dbEntity);
+		// create and add new column to model and db
+		DbAttribute column = new DbAttribute("NEWCOL2", Types.VARCHAR, dbEntity);
 
-        try {
+		try {
 
-            column.setMandatory(true);
-            column.setMaxLength(10);
-            dbEntity.addAttribute(column);
-            assertTokensAndExecute(2, 0);
+			column.setMandatory(true);
+			column.setMaxLength(10);
+			dbEntity.addAttribute(column);
+			assertTokensAndExecute(2, 0);
 
-            // check that is was merged
-            assertTokensAndExecute(0, 0);
+			// check that is was merged
+			assertTokensAndExecute(0, 0);
 
-            // set null
-            column.setMandatory(false);
+			// set null
+			column.setMandatory(false);
 
-            // merge to db
-            assertTokensAndExecute(1, 0);
+			// merge to db
+			assertTokensAndExecute(1, 0);
 
-            // check that is was merged
-            assertTokensAndExecute(0, 0);
+			// check that is was merged
+			assertTokensAndExecute(0, 0);
 
-            // clean up
-        }
-        finally {
-            dbEntity.removeAttribute(column.getName());
-            assertTokensAndExecute(1, 0);
-            assertTokensAndExecute(0, 0);
-        }
-    }
+			// clean up
+		} finally {
+			dbEntity.removeAttribute(column.getName());
+			assertTokensAndExecute(1, 0);
+			assertTokensAndExecute(0, 0);
+		}
+	}
 
 }

@@ -15,21 +15,24 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.cayenne</groupId>
+	<parent>
+		<groupId>org.apache.cayenne.tutorials</groupId>
+		<artifactId>cayenne-tutorials-parent</artifactId>
+		<version>4.0.M2-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>tutorial-rop-client</artifactId>
 	<name>Cayenne ROP Client Tutorial</name>
-	<version>4.0.M2-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-client</artifactId>
-			<version>4.0.M2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.caucho</groupId>
 			<artifactId>resin-hessian</artifactId>
-			<version>3.1.6</version>
 		</dependency>
 	</dependencies>
 	
@@ -37,37 +40,12 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.5</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-	
-	<repositories>
-		<repository>
-			<id>objectstyle</id>
-			<name>ObjectStyle Repository</name>
-			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
 
 </project>

@@ -16,33 +16,43 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access;
+package org.apache.cayenne.tools.dbimport.config;
 
 /**
- * @since 4.0.
+ * @since 3.2.
  */
-public class DbLoaderConfiguration {
+public class Schema extends FilterContainer {
 
-    private String catalog;
+    private String name;
 
-    private String schema;
-
-
-    public String getCatalog() {
-        return catalog;
+    public Schema() {
     }
 
-    public void setCatalog(String catalog) {
-        this.catalog = catalog;
+    public Schema(String name) {
+        this.name = name;
     }
 
-    public String getSchema() {
-        return schema;
+    public String getName() {
+        return name;
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
+    public void setName(String name) {
+        this.name = name;
     }
 
+    public void set(String name) {
+        setName(name);
+    }
 
+    public void addConfiguredName(AntNestedElement name) {
+        setName(name.getName());
+    }
+
+    public void addText(String name) {
+        if (name.trim().isEmpty()) {
+            return;
+        }
+
+        setName(name);
+    }
 }

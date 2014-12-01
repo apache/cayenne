@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access;
+package org.apache.cayenne.access.loader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +28,17 @@ import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
 import org.apache.cayenne.map.naming.ExportedKey;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Class represent ObjEntity that may be optimized using flattened relationships
  * as many to many table
  */
-class ManyToManyCandidateEntity {
+public class ManyToManyCandidateEntity {
+
+    private static final Log LOG = LogFactory.getLog(ManyToManyCandidateEntity.class);
+
     private final ObjEntity joinEntity;
 
     private final DbRelationship dbRel1;
@@ -82,14 +87,24 @@ class ManyToManyCandidateEntity {
     private boolean isManyToMany() {
         boolean isNotHaveAttributes = joinEntity.getAttributes().size() == 0;
 
-        return isNotHaveAttributes && reverseRelationship1.isToDependentPK() && reverseRelationship2.isToDependentPK()
+        return isNotHaveAttributes
+                && reverseRelationship1.isToDependentPK()
+                && reverseRelationship2.isToDependentPK()
                 && !entity1.equals(entity2);
     }
 
     private void addFlattenedRelationship(ObjectNameGenerator nameGenerator, ObjEntity srcEntity, ObjEntity dstEntity,
                                           DbRelationship rel1, DbRelationship rel2) {
 
-        ExportedKey key = new ExportedKey(rel1.getSourceEntity().getName(),
+        if (rel1.getSourceAttributes().isEmpty() && rel2.getTargetAttributes().isEmpty()) {
+            LOG.warn("Wrong call ManyToManyCandidateEntity.addFlattenedRelationship(... , " + srcEntity.getName()
+                    + ", " + dstEntity.getName() + ", ...)");
+
+            return;
+        }
+
+        ExportedKey key = new ExportedKey(
+                rel1.getSourceEntity().getName(),
                 rel1.getSourceAttributes().iterator().next().getName(),
                 null,
                 rel2.getTargetEntity().getName(),
