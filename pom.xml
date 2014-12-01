@@ -61,7 +61,6 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
-		<module>cayenne-java8</module>
 	</modules>
 	<issueManagement>
 		<system>jira</system>
@@ -1376,6 +1375,15 @@
 			<properties>
 				<javadoc.doclint.none>-Xdoclint:none</javadoc.doclint.none>
 			</properties>
+		</profile>
+		<profile>
+			<id>cayenne-java8-module-to-build</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<modules>
+				<module>cayenne-java8</module>
+			</modules>
 		</profile>
 	</profiles>
 

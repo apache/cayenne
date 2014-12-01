@@ -28,6 +28,9 @@ import org.apache.cayenne.java8.access.types.LocalTimeType;
 
 public class CayenneJava8Module implements Module {
 
+    public CayenneJava8Module() {
+    }
+
     @Override
     public void configure(Binder binder) {
         binder

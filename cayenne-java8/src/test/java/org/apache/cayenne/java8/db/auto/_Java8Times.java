@@ -8,5 +8,5 @@ package org.apache.cayenne.java8.db.auto;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public class _Java8 {
+public class _Java8Times {
 }

@@ -19,6 +19,20 @@
 
 package org.apache.cayenne.modeler.util;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ModelerConstants;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.action.MultipleObjectsAction;
+import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.util.CayenneMapEntry;
+
+import javax.swing.Action;
+import javax.swing.ImageIcon;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
@@ -39,21 +53,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ModelerConstants;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.action.MultipleObjectsAction;
-import org.apache.cayenne.reflect.PropertyUtils;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Various unorganized utility methods used by CayenneModeler.
@@ -136,6 +135,9 @@ public final class ModelerUtil {
         nonPrimitives.add(Serializable.class.getName());
         nonPrimitives.add("java.lang.Character[]");
         nonPrimitives.add("java.lang.Byte[]");
+        nonPrimitives.add("java.time.LocalDate");
+        nonPrimitives.add("java.time.LocalTime");
+        nonPrimitives.add("java.time.LocalDateTime");
 
         String[] nonPrimitivesNames = new String[nonPrimitives.size()];
         nonPrimitives.toArray(nonPrimitivesNames);
