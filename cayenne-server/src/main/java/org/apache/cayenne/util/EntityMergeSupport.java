@@ -317,19 +317,26 @@ public class EntityMergeSupport {
         return missing;
     }
 
-    private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {
-        Collection<DbRelationship> incoming = new ArrayList<DbRelationship>();
+	private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {
+		Collection<DbRelationship> incoming = new ArrayList<DbRelationship>();
 
-        for (DbEntity nextEntity : entity.getDataMap().getDbEntities()) {
-            for (DbRelationship relationship : nextEntity.getRelationships()) {
-                if (entity == relationship.getTargetEntity()) {
-                    incoming.add(relationship);
-                }
-            }
-        }
+		for (DbEntity nextEntity : entity.getDataMap().getDbEntities()) {
+			for (DbRelationship relationship : nextEntity.getRelationships()) {
 
-        return incoming;
-    }
+				// TODO: PERFORMANCE 'getTargetEntity' is generally slow, called
+				// in this iterator it is showing (e.g. in YourKit profiles)..
+				// perhaps use cheaper 'getTargetEntityName()' or even better -
+				// pre-cache all relationships by target entity to avoid O(n)
+				// search ?
+				// (need to profile to prove the difference)
+				if (entity == relationship.getTargetEntity()) {
+					incoming.add(relationship);
+				}
+			}
+		}
+
+		return incoming;
+	}
 
     protected List<DbRelationship> getRelationshipsToAdd(ObjEntity objEntity) {
         List<DbRelationship> missing = new ArrayList<DbRelationship>();

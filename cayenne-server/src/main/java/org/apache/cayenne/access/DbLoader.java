@@ -466,11 +466,14 @@ public class DbLoader {
         for (DbEntity dbEntity : entities) {
 
             // check if there are existing entities
-            Collection<ObjEntity> existing = map.getMappedEntities(dbEntity);
-            if (!existing.isEmpty()) {
-                loadedEntities.addAll(existing);
-                continue;
-            }
+        	
+			// TODO: performance. This is an O(n^2) search and it shows on
+			// YourKit profiles. Pre-cache mapped entities perhaps (?)
+			Collection<ObjEntity> existing = map.getMappedEntities(dbEntity);
+			if (!existing.isEmpty()) {
+				loadedEntities.addAll(existing);
+				continue;
+			}
 
             String objEntityName = DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, map,
                     nameGenerator.createObjEntityName(dbEntity));
