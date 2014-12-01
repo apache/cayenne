@@ -19,9 +19,14 @@
 package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
@@ -41,7 +46,10 @@ abstract class Evaluator {
     private static final Evaluator DEFAULT_EVALUATOR;
     private static final Evaluator PERSISTENT_EVALUATOR;
     private static final Evaluator BIG_DECIMAL_EVALUATOR;
+    private static final Evaluator NUMBER_EVALUATOR;
     private static final Evaluator COMPAREABLE_EVALUATOR;
+	
+    static double EPSILON = 0.0000001;
 
     /**
      * A decorator of an evaluator that presumes non-null 'lhs' argument and
@@ -160,6 +168,137 @@ abstract class Evaluator {
             }
         });
 
+        NUMBER_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
+
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            @Override
+            Integer compare(Object lhs, Object rhs) {
+                return compareNumbers((Number)lhs, rhs);
+            }
+
+            @Override
+            boolean eq(Object lhs, Object rhs) {
+                return equalNumbers((Number)lhs, (Number)rhs);
+            }
+            
+            private final List WHOLE_NUMBER_CLASSES = Arrays.asList(Byte.class, Short.class, Integer.class, AtomicInteger.class, Long.class, AtomicLong.class, BigInteger.class);
+            private final List FLOATING_POINT_CLASSES = Arrays.asList(Float.class, Double.class);
+
+            /**
+             * Returns the widest primitive wrapper class given the two operands, used in preparation for 
+             * comparing two boxed numbers of different types, like java.lang.Short and java.lang.Integer.
+             * 
+             * @param lhs
+             * @param rhs
+             * @return
+             */
+            Class<?> widestNumberType(Number lhs, Number rhs) {
+            	if (lhs.getClass().equals(rhs.getClass())) return lhs.getClass();
+            	
+            	int lhsIndex = WHOLE_NUMBER_CLASSES.indexOf(lhs.getClass());
+            	int rhsIndex = WHOLE_NUMBER_CLASSES.indexOf(rhs.getClass());
+
+            	Class<?> widestClass;
+            	if (lhsIndex != -1 && rhsIndex != -1) {
+            		widestClass = (Class<?>) WHOLE_NUMBER_CLASSES.get(Math.max(lhsIndex, rhsIndex));
+            		
+            	} else if (lhsIndex == -1 && rhsIndex == -1) {
+            		widestClass = Double.class; // must be one float and one double;
+            		
+            	} else if (lhsIndex != -1 || rhsIndex != -1){ // must be whole number and a float or double
+            		widestClass = Double.class;
+            		
+            	} else {
+            		widestClass = null;
+            	}
+            	
+            	return widestClass;
+            }
+            
+            /**
+             * Enables equality tests for two boxed numbers of different types, like java.lang.Short and java.lang.Integer.
+             * @param lhs
+             * @param _rhs
+             * @return
+             */
+            boolean equalNumbers(Number lhs, Object _rhs) {
+            	if (!Number.class.isAssignableFrom(_rhs.getClass())) {
+            		return lhs.equals(_rhs);
+            	}
+            	
+            	Number rhs = (Number) _rhs;
+            	
+            	Class<?> widestClass = widestNumberType(lhs, rhs);
+            	
+            	if (Integer.class.equals(widestClass) || AtomicInteger.class.equals(widestClass)) {
+            		return lhs.intValue() == rhs.intValue();
+            		
+            	} else if (Long.class.equals(widestClass) || AtomicLong.class.equals(widestClass)) {
+            		return lhs.longValue() == rhs.longValue();
+            		
+            	} else if (Double.class.equals(widestClass)) {
+            		return Math.abs(lhs.doubleValue() - rhs.doubleValue()) < EPSILON;
+            		
+            	} else if (Short.class.equals(widestClass)) {
+                	return lhs.shortValue() == rhs.shortValue();
+                	
+            	} else if (BigInteger.class.equals(widestClass)) {
+            		return lhs.toString().equals(rhs.toString());
+            		
+            	} else {
+            		return lhs.equals(rhs);
+            	}
+            }
+            
+            /**
+             * Enables comparison of two boxed numbers of different types, like java.lang.Short and java.lang.Integer.
+             * @param lhs
+             * @param _rhs
+             * @return
+             */
+            Integer compareNumbers(Number lhs, Object _rhs) {
+            	if (!Number.class.isAssignableFrom(_rhs.getClass())) {
+            		return null;
+            	}
+            	
+            	Number rhs = (Number) _rhs;
+            	
+            	Class widestClass = widestNumberType(lhs, rhs);
+            	
+            	if (Integer.class.equals(widestClass) || AtomicInteger.class.equals(widestClass)) {
+            		return Integer.valueOf(lhs.intValue()).compareTo(rhs.intValue());
+            		
+            	} else if (Long.class.equals(widestClass) || AtomicLong.class.equals(widestClass)) {
+            		return Long.valueOf(lhs.longValue()).compareTo(rhs.longValue());
+            		
+            	} else if (Double.class.equals(widestClass)) {
+            		boolean areEqual = Math.abs(lhs.doubleValue() - rhs.doubleValue()) < EPSILON;
+            		return areEqual ? 0 : Double.compare(lhs.doubleValue(), rhs.doubleValue());
+            		
+            	} else if (Float.class.equals(widestClass)) {
+            		boolean areEqual = Math.abs(lhs.floatValue() - rhs.floatValue()) < EPSILON;
+            		return areEqual ? 0 : Float.compare(lhs.floatValue(), rhs.floatValue());
+            		
+            	} else if (Short.class.equals(widestClass)) {
+                	return Short.valueOf(lhs.shortValue()).compareTo(rhs.shortValue());
+                	
+            	} else if (Byte.class.equals(widestClass)) {
+                	return Byte.valueOf(lhs.byteValue()).compareTo(rhs.byteValue());
+                	
+            	} else if (BigInteger.class.equals(widestClass)) {
+            		BigInteger left = lhs instanceof BigInteger ? (BigInteger)lhs : new BigInteger(lhs.toString());
+            		BigInteger right = rhs instanceof BigInteger ? (BigInteger)rhs : new BigInteger(rhs.toString());
+            		return left.compareTo(right);
+            		
+            	} else if (Comparable.class.isAssignableFrom(lhs.getClass())) {
+                    return ((Comparable)lhs).compareTo(rhs);
+                    
+                } else {
+            		return null;
+            	}
+            }
+        });
+        
         COMPAREABLE_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -210,6 +349,10 @@ abstract class Evaluator {
             return BIG_DECIMAL_EVALUATOR;
         }
 
+        if (Number.class.isAssignableFrom(lhsType)) {
+            return NUMBER_EVALUATOR;
+        }
+        
         if (Comparable.class.isAssignableFrom(lhsType)) {
             return COMPAREABLE_EVALUATOR;
         }

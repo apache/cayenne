@@ -55,7 +55,7 @@ public interface OperationObserver extends OperationHints {
      * 
      * @since 3.0
      */
-    void nextRows(Query q, ResultIterator it);
+    void nextRows(Query q, ResultIterator<?> it);
 
     /**
      * Callback method invoked after each batch of generated values is read during an
@@ -63,7 +63,7 @@ public interface OperationObserver extends OperationHints {
      * 
      * @since 4.0
      */
-    void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate);
+    void nextGeneratedRows(Query query, ResultIterator<?> keys, ObjectId idToUpdate);
 
     /**
      * Callback method invoked on exceptions that happen during an execution of a specific

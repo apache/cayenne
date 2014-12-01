@@ -20,8 +20,6 @@
 package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;

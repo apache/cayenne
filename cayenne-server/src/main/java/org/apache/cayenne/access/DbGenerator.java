@@ -36,7 +36,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;

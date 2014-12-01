@@ -22,8 +22,8 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
+import org.apache.cayenne.access.loader.NameFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -36,12 +36,11 @@ import org.apache.cayenne.map.ObjEntity;
  */
 class CayenneGeneratorEntityFilterAction {
 
-    private NamePatternMatcher nameFilter;
+    private NameFilter nameFilter;
     private boolean client;
 
     Collection<Embeddable> getFilteredEmbeddables(DataMap mainDataMap) {
-        List<Embeddable> embeddables = new ArrayList<Embeddable>(mainDataMap
-                .getEmbeddables());
+        Collection<Embeddable> embeddables = new ArrayList<Embeddable>(mainDataMap.getEmbeddables());
 
         // filter out excluded entities...
         Iterator<Embeddable> it = embeddables.iterator();
@@ -62,20 +61,13 @@ class CayenneGeneratorEntityFilterAction {
     Collection<ObjEntity> getFilteredEntities(DataMap mainDataMap)
             throws MalformedURLException {
 
-        List<ObjEntity> entities = new ArrayList<ObjEntity>(mainDataMap.getObjEntities());
+        Collection<ObjEntity> entities = new ArrayList<ObjEntity>(mainDataMap.getObjEntities());
 
         // filter out excluded entities...
         Iterator<ObjEntity> it = entities.iterator();
-
         while (it.hasNext()) {
             ObjEntity e = it.next();
-            if (e.isGeneric()) {
-                it.remove();
-            }
-            else if (client && !e.isClientAllowed()) {
-                it.remove();
-            }
-            else if (!nameFilter.isIncluded(e.getName())) {
+            if (e.isGeneric() || client && !e.isClientAllowed() || !nameFilter.isIncluded(e.getName())) {
                 it.remove();
             }
         }
@@ -87,7 +79,7 @@ class CayenneGeneratorEntityFilterAction {
         this.client = client;
     }
 
-    public void setNameFilter(NamePatternMatcher nameFilter) {
+    public void setNameFilter(NameFilter nameFilter) {
         this.nameFilter = nameFilter;
     }
 }

@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
@@ -35,6 +33,12 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A query that selects persistent objects of a certain type or "raw data" (aka
@@ -304,7 +308,38 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 		this.setQualifier(qualifier);
 	}
 
-	/**
+    @Override
+    public <T> List<T> select(ObjectContext context) {
+        return context.performQuery(this);
+    }
+
+    @Override
+    public T selectOne(ObjectContext context) {
+        return context.selectOne(this);
+    }
+
+    @Override
+    public T selectFirst(ObjectContext context) {
+        setFetchLimit(1);
+        return context.selectFirst(this);
+    }
+
+    @Override
+    public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+        context.iterate((Select<T>) this, callback);
+    }
+
+    @Override
+    public ResultIterator<T> iterator(ObjectContext context) {
+        return context.iterator(this);
+    }
+
+    @Override
+    public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+        return context.batchIterator(this, size);
+    }
+
+    /**
 	 * @since 1.2
 	 */
 	@Override

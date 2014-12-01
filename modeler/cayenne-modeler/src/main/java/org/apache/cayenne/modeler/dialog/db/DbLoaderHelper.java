@@ -1,44 +1,36 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
+import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -49,10 +41,22 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
+import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Stateful helper class that encapsulates access to DbLoader.
@@ -67,23 +71,20 @@ public class DbLoaderHelper {
     // preferences...
     private static final Collection<String> EXCLUDED_TABLES = Arrays.asList("AUTO_PK_SUPPORT", "auto_pk_support");
 
-    static DbLoaderMergeDialog mergeDialog;
-
-    protected boolean overwritePreferenceSet;
-    protected boolean overwritingEntities;
     protected boolean stoppingReverseEngineering;
     protected boolean existingMap;
 
     protected ProjectController mediator;
     protected String dbUserName;
+    protected String dbCatalog;
     protected DbLoader loader;
     protected DataMap dataMap;
-    protected String schemaName;
-    protected String tableNamePattern;
-    protected boolean loadProcedures;
     protected boolean meaningfulPk;
-    protected String procedureNamePattern;
     protected List<String> schemas;
+    protected List<String> catalogs;
+    protected DbAdapter adapter;
+
+    private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
 
     protected String loadStatusNote;
 
@@ -92,38 +93,20 @@ public class DbLoaderHelper {
      */
     protected List<ObjEntity> addedObjEntities;
 
-    static DbLoaderMergeDialog getMergeDialogInstance() {
-        if (mergeDialog == null) {
-            mergeDialog = new DbLoaderMergeDialog(Application.getFrame());
-        }
-
-        return mergeDialog;
-    }
-
     public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter, String dbUserName) {
         this.dbUserName = dbUserName;
         this.mediator = mediator;
+        try {
+            this.dbCatalog = connection.getCatalog();
+        } catch (SQLException e) {
+            logObj.warn("Error getting catalog.", e);
+        }
+        this.adapter = adapter;
         this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
-    }
-
-    public void setOverwritingEntities(boolean overwritePreference) {
-        this.overwritingEntities = overwritePreference;
-    }
-
-    public void setOverwritePreferenceSet(boolean overwritePreferenceSet) {
-        this.overwritePreferenceSet = overwritePreferenceSet;
     }
 
     public void setStoppingReverseEngineering(boolean stopReverseEngineering) {
         this.stoppingReverseEngineering = stopReverseEngineering;
-    }
-
-    public boolean isOverwritePreferenceSet() {
-        return overwritePreferenceSet;
-    }
-
-    public boolean isOverwritingEntities() {
-        return overwritingEntities;
     }
 
     public boolean isStoppingReverseEngineering() {
@@ -138,19 +121,28 @@ public class DbLoaderHelper {
     public void execute() {
         stoppingReverseEngineering = false;
 
+        // load catalogs...
+        if (adapter.supportsCatalogsOnReverseEngineering()) {
+            LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
+            loadCatalogsTask.startAndWait();
+        }
+
+        if (stoppingReverseEngineering) {
+            return;
+        }
+
         // load schemas...
         LongRunningTask loadSchemasTask = new LoadSchemasTask(Application.getFrame(), "Loading Schemas");
-
         loadSchemasTask.startAndWait();
 
         if (stoppingReverseEngineering) {
             return;
         }
 
-        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, dbUserName, false);
+        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, catalogs, dbUserName, dbCatalog, false);
 
         try {
-            // since we are not inside EventDisptahcer Thread, must run it via
+            // since we are not inside EventDispatcher Thread, must run it via
             // SwingUtilities
             SwingUtilities.invokeAndWait(new Runnable() {
 
@@ -168,11 +160,13 @@ public class DbLoaderHelper {
             return;
         }
 
-        this.schemaName = dialog.getSelectedSchema();
-        this.tableNamePattern = dialog.getTableNamePattern();
-        this.loadProcedures = dialog.isLoadingProcedures();
+        this.filterBuilder.catalog(dialog.getSelectedCatalog());
+        this.filterBuilder.schema(dialog.getSelectedSchema());
+        this.filterBuilder.includeTables(dialog.getTableNamePattern());
+        this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures());
+        this.filterBuilder.includeProcedures(dialog.getProcedureNamePattern());
+
         this.meaningfulPk = dialog.isMeaningfulPk();
-        this.procedureNamePattern = dialog.getProcedureNamePattern();
         this.addedObjEntities = new ArrayList<ObjEntity>();
 
         this.loader.setNameGenerator(dialog.getNamingStrategy());
@@ -205,26 +199,9 @@ public class DbLoaderHelper {
         }
     }
 
-    final class LoaderDelegate implements DbLoaderDelegate {
+    private final class LoaderDelegate extends DefaultDbLoaderDelegate {
 
-        public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
-            checkCanceled();
-
-            if (!overwritePreferenceSet) {
-                DbLoaderMergeDialog dialog = DbLoaderHelper.getMergeDialogInstance();
-                dialog.initFromModel(DbLoaderHelper.this, ent.getName());
-                dialog.centerWindow();
-                dialog.setVisible(true);
-                dialog.setVisible(false);
-            }
-
-            if (stoppingReverseEngineering) {
-                throw new CayenneException("Should stop DB import.");
-            }
-
-            return overwritingEntities;
-        }
-
+        @Override
         public void dbEntityAdded(DbEntity entity) {
             checkCanceled();
 
@@ -240,6 +217,7 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void objEntityAdded(ObjEntity entity) {
             checkCanceled();
 
@@ -251,6 +229,7 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void dbEntityRemoved(DbEntity entity) {
             checkCanceled();
 
@@ -259,12 +238,31 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void objEntityRemoved(ObjEntity entity) {
             checkCanceled();
 
             if (existingMap) {
                 mediator.fireObjEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
             }
+        }
+
+        @Override
+        public boolean dbRelationship(DbEntity entity) {
+            checkCanceled();
+
+            loadStatusNote = "Load relationships for '" + entity.getName() + "'...";
+
+            return true;
+        }
+
+        @Override
+        public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
+            checkCanceled();
+
+            loadStatusNote = "Load relationship: '" + entity.getName() + "'; '" + relationship.getName() + "'...";
+
+            return true;
         }
 
         void checkCanceled() {
@@ -330,6 +328,24 @@ public class DbLoaderHelper {
         }
     }
 
+    final class LoadCatalogsTask extends DbLoaderTask {
+
+        public LoadCatalogsTask(JFrame frame, String title) {
+            super(frame, title);
+        }
+
+        @Override
+        protected void execute() {
+            loadStatusNote = "Loading available catalogs...";
+
+            try {
+                catalogs = loader.getCatalogs();
+            } catch (Throwable th) {
+                processException(th, "Error Loading Catalogs");
+            }
+        }
+    }
+
     final class LoadDataMapTask extends DbLoaderTask {
 
         public LoadDataMapTask(JFrame frame, String title) {
@@ -347,41 +363,16 @@ public class DbLoaderHelper {
             if (!existingMap) {
                 dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap));
                 dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, mediator.getProject().getRootNode()));
-                dataMap.setDefaultSchema(schemaName);
+                dataMap.setDefaultCatalog(filterBuilder.catalog());
+                dataMap.setDefaultSchema(filterBuilder.schema());
             }
 
             if (isCanceled()) {
                 return;
             }
 
-            loadStatusNote = "Importing tables...";
-
-            try {
-                loader.setCreatingMeaningfulPK(meaningfulPk);
-                loader.loadDataMapFromDB(schemaName, tableNamePattern, dataMap);
-
-                /**
-                 * Update default rules for relationships
-                 */
-                for (ObjEntity addedObjEntity : addedObjEntities) {
-                    DeleteRuleUpdater.updateObjEntity(addedObjEntity);
-                }
-            } catch (Throwable th) {
-                if (!isCanceled()) {
-                    processException(th, "Error Reengineering Database");
-                }
-            }
-
-            if (loadProcedures) {
-                loadStatusNote = "Importing procedures...";
-                try {
-                    loader.loadProceduresFromDB(schemaName, procedureNamePattern, dataMap);
-                } catch (Throwable th) {
-                    if (!isCanceled()) {
-                        processException(th, "Error Reengineering Database");
-                    }
-                }
-            }
+            importingTables();
+            importingProcedures();
 
             cleanup();
 
@@ -398,10 +389,53 @@ public class DbLoaderHelper {
                 // this will be new data map so need to set configuration source
                 // for it
                 if (baseResource != null) {
-                    Resource dataMapResource = baseResource.getRelativeResource(dataMap.getName());
+                    DefaultConfigurationNameMapper nameMapper = new DefaultConfigurationNameMapper();
+                    Resource dataMapResource = baseResource.getRelativeResource(nameMapper.configurationLocation(dataMap));
                     dataMap.setConfigurationSource(dataMapResource);
                 }
                 mediator.addDataMap(Application.getFrame(), dataMap);
+            }
+        }
+
+        private void importingProcedures() {
+            if (!filterBuilder.isLoadProcedures()) {
+                return;
+            }
+
+            loadStatusNote = "Importing procedures...";
+            try {
+                DbLoaderConfiguration configuration = new DbLoaderConfiguration();
+                configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
+                        .add(filterBuilder).filtersConfig());
+
+                loader.loadProcedures(dataMap, new DbLoaderConfiguration());
+            } catch (Throwable th) {
+                if (!isCanceled()) {
+                    processException(th, "Error Reengineering Database");
+                }
+            }
+        }
+
+        private void importingTables() {
+            loadStatusNote = "Importing tables...";
+            try {
+                loader.setCreatingMeaningfulPK(meaningfulPk);
+               
+                DbLoaderConfiguration configuration = new DbLoaderConfiguration();
+                configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
+                        .add(filterBuilder).filtersConfig());
+                loader.load(dataMap, configuration);
+
+                /**
+                 * Update default rules for relationships
+                 */
+                for (ObjEntity addedObjEntity : addedObjEntities) {
+                    DeleteRuleUpdater.updateObjEntity(addedObjEntity);
+                }
+            } catch (Throwable th) {
+                if (!isCanceled()) {
+                    processException(th, "Error Reengineering Database");
+                }
             }
         }
     }

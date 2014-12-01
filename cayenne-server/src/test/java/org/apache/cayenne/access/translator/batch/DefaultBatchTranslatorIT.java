@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -54,13 +55,13 @@ public class DefaultBatchTranslatorIT extends ServerCase {
             }
 
             @Override
-            protected BatchParameterBinding[] createBindings() {
-                return new BatchParameterBinding[0];
+            protected ParameterBinding[] createBindings() {
+                return new ParameterBinding[0];
             }
 
             @Override
-            protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
-                return new BatchParameterBinding[0];
+            protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new ParameterBinding[0];
             }
         };
 
@@ -80,13 +81,13 @@ public class DefaultBatchTranslatorIT extends ServerCase {
             }
 
             @Override
-            protected BatchParameterBinding[] createBindings() {
-                return new BatchParameterBinding[0];
+            protected ParameterBinding[] createBindings() {
+                return new ParameterBinding[0];
             }
 
             @Override
-            protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
-                return new BatchParameterBinding[0];
+            protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new ParameterBinding[0];
             }
         };
 
@@ -115,13 +116,13 @@ public class DefaultBatchTranslatorIT extends ServerCase {
             }
 
             @Override
-            protected BatchParameterBinding[] createBindings() {
-                return new BatchParameterBinding[0];
+            protected ParameterBinding[] createBindings() {
+                return new ParameterBinding[0];
             }
 
             @Override
-            protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
-                return new BatchParameterBinding[0];
+            protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new ParameterBinding[0];
             }
         };
 

@@ -39,7 +39,6 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -119,52 +118,25 @@ public class DerbyAdapter extends JdbcAdapter {
             String entityName = column.getEntity() != null ? ((DbEntity) column
                     .getEntity()).getFullyQualifiedName() : "<null>";
             throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + entityName
-                    + "."
-                    + column.getName()
-                    + "': "
-                    + column.getType());
+                    + entityName + "." + column.getName() + "': " + column.getType());
         }
+
+
+
+        sqlBuffer.append(quotingStrategy.quotedName(column));
+        sqlBuffer.append(' ');
 
         String type = types[0];
-
-        String length = "";
-        if (typeSupportsLength(column.getType())) {
-            int len = column.getMaxLength();
-            int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
-
-            // sanity check
-            if (scale > len) {
-                scale = -1;
-            }
-
-            if (len > 0) {
-                length = " (" + len;
-
-                if (scale >= 0) {
-                    length += ", " + scale;
-                }
-
-                length += ")";
-            }
-        }
+        String length = sizeAndPrecision(this, column);
 
         // assemble...
         // note that max length for types like XYZ FOR BIT DATA must be entered in the
         // middle of type name, e.g. VARCHAR (100) FOR BIT DATA.
-
-        sqlBuffer.append(quotingStrategy.quotedName(column));
-
-        sqlBuffer.append(' ');
-        if (length.length() > 0 && type.endsWith(FOR_BIT_DATA_SUFFIX)) {
-            sqlBuffer.append(type.substring(
-                    0,
-                    type.length() - FOR_BIT_DATA_SUFFIX.length()));
-            sqlBuffer.append(length);
-            sqlBuffer.append(FOR_BIT_DATA_SUFFIX);
-        }
-        else {
-            sqlBuffer.append(type).append(length);
+        int suffixIndex = type.indexOf(FOR_BIT_DATA_SUFFIX);
+        if (!length.isEmpty() && suffixIndex > 0) {
+            sqlBuffer.append(type.substring(0, suffixIndex)).append(length).append(FOR_BIT_DATA_SUFFIX);
+        } else {
+            sqlBuffer.append(type).append(" ").append(length);
         }
 
         if (column.isMandatory()) {
@@ -182,6 +154,7 @@ public class DerbyAdapter extends JdbcAdapter {
         switch (type) {
             case Types.BLOB:
             case Types.CLOB:
+            case Types.NCLOB:
                 return true;
             default:
                 return super.typeSupportsLength(type);
@@ -225,9 +198,20 @@ public class DerbyAdapter extends JdbcAdapter {
 
         if (object == null && sqlType == 0) {
             statement.setNull(pos, Types.VARCHAR);
+        } else {
+            super.bindParameter(statement, object, pos, convertNTypes(sqlType), precision);
         }
-        else {
-            super.bindParameter(statement, object, pos, sqlType, precision);
+    }
+
+    private int convertNTypes(int sqlType) {
+        switch (sqlType) {
+            case Types.NCHAR: return Types.CHAR;
+            case Types.NVARCHAR: return Types.VARCHAR;
+            case Types.LONGNVARCHAR: return Types.LONGVARCHAR;
+            case Types.NCLOB: return Types.CLOB;
+
+            default:
+                return sqlType;
         }
     }
 

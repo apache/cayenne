@@ -36,7 +36,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
@@ -53,6 +52,8 @@ import org.apache.cayenne.resource.ResourceLocator;
  * </pre>
  */
 public class FirebirdAdapter extends JdbcAdapter {
+
+    private static final String NCHAR_SUFFIX = " CHARACTER SET UNICODE_FSS";
 
     public FirebirdAdapter(@Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -91,31 +92,17 @@ public class FirebirdAdapter extends JdbcAdapter {
                     + "': " + column.getType());
         }
 
-        String type = types[0];
         sqlBuffer.append(quotingStrategy.quotedName(column));
-        sqlBuffer.append(' ').append(type);
+        sqlBuffer.append(' ');
 
-        // append size and precision (if applicable)s
-        if (typeSupportsLength(column.getType())) {
-            int len = column.getMaxLength();
+        String type = types[0];
+        String length = sizeAndPrecision(this, column);
 
-            int scale = TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT ? column
-                    .getScale() : -1;
-
-            // sanity check
-            if (scale > len) {
-                scale = -1;
-            }
-
-            if (len > 0) {
-                sqlBuffer.append('(').append(len);
-
-                if (scale >= 0) {
-                    sqlBuffer.append(", ").append(scale);
-                }
-
-                sqlBuffer.append(')');
-            }
+        int suffixIndex = type.indexOf(NCHAR_SUFFIX);
+        if (!length.isEmpty() && suffixIndex > 0) {
+            sqlBuffer.append(type.substring(0, suffixIndex)).append(length).append(NCHAR_SUFFIX);
+        } else {
+            sqlBuffer.append(type).append(" ").append(length);
         }
 
         sqlBuffer.append(column.isMandatory() ? " NOT NULL" : "");

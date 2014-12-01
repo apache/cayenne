@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.PatternFilter;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -42,15 +41,12 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbLoaderIT extends ServerCase {
 
+    public static final DbLoaderConfiguration CONFIG = new DbLoaderConfiguration();
     @Inject
     private ServerRuntime runtime;
 
@@ -98,13 +94,14 @@ public class DbLoaderIT extends ServerCase {
 
         String tableLabel = adapter.tableTypeForTable();
 
-        List<DbEntity> tables = loader.getTables(null, null, "%", new String[] { tableLabel });
+        List<DetectedDbEntity> tables = loader.createTableLoader(null, null, TableFilter.everything())
+                .getDbEntities(TableFilter.everything(), new String[]{tableLabel});
 
         assertNotNull(tables);
 
         boolean foundArtist = false;
 
-        for (DbEntity table : tables) {
+        for (DetectedDbEntity table : tables) {
             if ("ARTIST".equalsIgnoreCase(table.getName())) {
                 foundArtist = true;
                 break;
@@ -115,23 +112,50 @@ public class DbLoaderIT extends ServerCase {
     }
 
     @Test
+    public void testGetTablesWithWrongCatalog() throws Exception {
+
+        DbLoaderConfiguration config = new DbLoaderConfiguration();
+        config.setFiltersConfig(
+                FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
+        List<DetectedDbEntity> tables = loader
+                .createTableLoader("WRONG", null, TableFilter.everything())
+                    .getDbEntities(TableFilter.everything(), new String[]{adapter.tableTypeForTable()});
+
+        assertNotNull(tables);
+        assertTrue(tables.isEmpty());
+    }
+
+    @Test
+    public void testGetTablesWithWrongSchema() throws Exception {
+
+        DbLoaderConfiguration config = new DbLoaderConfiguration();
+        config.setFiltersConfig(
+                FiltersConfig.create(null, "WRONG", TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
+        List<DetectedDbEntity> tables = loader
+                .createTableLoader(null, "WRONG", TableFilter.everything())
+                .getDbEntities(TableFilter.everything(), new String[]{adapter.tableTypeForTable()});
+
+        assertNotNull(tables);
+        assertTrue(tables.isEmpty());
+    }
+
+    @Test
     public void testLoadWithMeaningfulPK() throws Exception {
 
         DataMap map = new DataMap();
-        String tableLabel = adapter.tableTypeForTable();
+        String[] tableLabel = { adapter.tableTypeForTable() };
 
         loader.setCreatingMeaningfulPK(true);
 
-        List<DbEntity> testLoader = loader.getTables(null, null, "artist", new String[] { tableLabel });
-        if (testLoader.size() == 0) {
-            testLoader = loader.getTables(null, null, "ARTIST", new String[] { tableLabel });
-        }
+        List<DbEntity> entities = loader
+                .createTableLoader(null, null, TableFilter.everything())
+                .loadDbEntities(map, CONFIG, tableLabel);
 
-        loader.loadDbEntities(map, testLoader);
+        loader.loadObjEntities(map, CONFIG, entities);
 
-        loader.loadObjEntities(map);
         ObjEntity artist = map.getObjEntity("Artist");
         assertNotNull(artist);
+
         ObjAttribute id = artist.getAttribute("artistId");
         assertNotNull(id);
     }
@@ -155,7 +179,10 @@ public class DbLoaderIT extends ServerCase {
         String tableLabel = adapter.tableTypeForTable();
 
         // *** TESTING THIS ***
-        loader.loadDbEntities(map, loader.getTables(null, null, "%", new String[] { tableLabel }));
+        List<DbEntity> entities = loader
+                .createTableLoader(null, null, TableFilter.everything())
+                .loadDbEntities(map, CONFIG, new String[]{adapter.tableTypeForTable()});
+
 
         assertDbEntities(map);
 
@@ -164,12 +191,12 @@ public class DbLoaderIT extends ServerCase {
         }
 
         // *** TESTING THIS ***
-        loader.loadDbRelationships(map);
+        loader.loadDbRelationships(CONFIG, null, null, entities);
 
         if (supportsFK) {
             Collection<DbRelationship> rels = getDbEntity(map, "ARTIST").getRelationships();
             assertNotNull(rels);
-            assertTrue(rels.size() > 0);
+            assertTrue(!rels.isEmpty());
 
             // test one-to-one
             rels = getDbEntity(map, "PAINTING").getRelationships();
@@ -196,7 +223,7 @@ public class DbLoaderIT extends ServerCase {
 
         // *** TESTING THIS ***
         loader.setCreatingMeaningfulPK(false);
-        loader.loadObjEntities(map);
+        loader.loadObjEntities(map, CONFIG, entities);
 
         assertObjEntities(map);
 
@@ -228,19 +255,14 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull("Null 'ARTIST' entity, other DbEntities: " + map.getDbEntityMap(), dae);
         assertEquals("ARTIST", dae.getName().toUpperCase());
 
-        if (accessStackAdapter.supportsCatalogs()) {
-            assertNotNull(dae.getCatalog());
-            assertEquals("CAYENNE", dae.getCatalog().toUpperCase());
-        }
-
         DbAttribute a = getDbAttribute(dae, "ARTIST_ID");
         assertNotNull(a);
         assertTrue(a.isPrimaryKey());
         assertFalse(a.isGenerated());
 
         if (adapter.supportsGeneratedKeys()) {
-            DbEntity bag = getDbEntity(map, "BAG");
-            DbAttribute id = bag.getAttribute("ID");
+            DbEntity bag = getDbEntity(map, "GENERATED_COLUMN_TEST");
+            DbAttribute id = bag.getAttribute("GENERATED_COLUMN");
             assertTrue(id.isPrimaryKey());
             assertTrue(id.isGenerated());
         }
@@ -278,12 +300,22 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull(blobAttr);
         assertTrue(msgForTypeMismatch(Types.BLOB, blobAttr), Types.BLOB == blobAttr.getType()
                 || Types.LONGVARBINARY == blobAttr.getType());
+
         DbEntity clobEnt = getDbEntity(map, "CLOB_TEST");
         assertNotNull(clobEnt);
         DbAttribute clobAttr = getDbAttribute(clobEnt, "CLOB_COL");
         assertNotNull(clobAttr);
         assertTrue(msgForTypeMismatch(Types.CLOB, clobAttr), Types.CLOB == clobAttr.getType()
                 || Types.LONGVARCHAR == clobAttr.getType());
+
+/*
+        DbEntity nclobEnt = getDbEntity(map, "NCLOB_TEST");
+        assertNotNull(nclobEnt);
+        DbAttribute nclobAttr = getDbAttribute(nclobEnt, "NCLOB_COL");
+        assertNotNull(nclobAttr);
+        assertTrue(msgForTypeMismatch(Types.NCLOB, nclobAttr), Types.NCLOB == nclobAttr.getType()
+                || Types.LONGVARCHAR == nclobAttr.getType());
+*/
     }
 
     private void assertLobObjEntities(DataMap map) {
@@ -291,14 +323,24 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull(blobEnt);
         // BLOBs should be mapped as byte[]
         ObjAttribute blobAttr = blobEnt.getAttribute("blobCol");
-        assertNotNull("BlobTest.blobCol failed to load", blobAttr);
+        assertNotNull("BlobTest.blobCol failed to doLoad", blobAttr);
         assertEquals("byte[]", blobAttr.getType());
+
+
         ObjEntity clobEnt = map.getObjEntity("ClobTest");
         assertNotNull(clobEnt);
         // CLOBs should be mapped as Strings by default
         ObjAttribute clobAttr = clobEnt.getAttribute("clobCol");
         assertNotNull(clobAttr);
         assertEquals(String.class.getName(), clobAttr.getType());
+
+
+        ObjEntity nclobEnt = map.getObjEntity("NclobTest");
+        assertNotNull(nclobEnt);
+        // CLOBs should be mapped as Strings by default
+        ObjAttribute nclobAttr = nclobEnt.getAttribute("nclobCol");
+        assertNotNull(nclobAttr);
+        assertEquals(String.class.getName(), nclobAttr.getType());
     }
 
     private DbEntity getDbEntity(DataMap map, String name) {
@@ -373,19 +415,17 @@ public class DbLoaderIT extends ServerCase {
         }
     }
 
-    private String msgForTypeMismatch(DbAttribute origAttr, DbAttribute newAttr) {
+    private static String msgForTypeMismatch(DbAttribute origAttr, DbAttribute newAttr) {
         return msgForTypeMismatch(origAttr.getType(), newAttr);
     }
 
-    private String msgForTypeMismatch(int origType, DbAttribute newAttr) {
+    private static String msgForTypeMismatch(int origType, DbAttribute newAttr) {
         String nt = TypesMapping.getSqlNameByType(newAttr.getType());
         String ot = TypesMapping.getSqlNameByType(origType);
         return attrMismatch(newAttr.getName(), "expected type: <" + ot + ">, but was <" + nt + ">");
     }
 
-    private String attrMismatch(String attrName, String msg) {
-        StringBuffer buf = new StringBuffer();
-        buf.append("[Error loading attribute '").append(attrName).append("': ").append(msg).append("]");
-        return buf.toString();
+    private static String attrMismatch(String attrName, String msg) {
+        return "[Error loading attribute '" + attrName + "': " + msg + "]";
     }
 }

@@ -1,21 +1,21 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.access.DbLoader;
@@ -25,15 +25,8 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.merge.DbMerger;
-import org.apache.cayenne.merge.ExecutingMergerContext;
-import org.apache.cayenne.merge.MergerContext;
-import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.ModelMergeDelegate;
+import org.apache.cayenne.map.*;
+import org.apache.cayenne.merge.*;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
@@ -48,10 +41,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * A thin wrapper around {@link DbLoader} that encapsulates DB import logic for
@@ -67,7 +59,8 @@ public class DbImportAction {
     private final DbAdapterFactory adapterFactory;
     private final MapLoader mapLoader;
 
-    public DbImportAction(@Inject Log logger, @Inject ProjectSaver projectSaver,
+    public DbImportAction(@Inject Log logger,
+                          @Inject ProjectSaver projectSaver,
                           @Inject DataSourceFactory dataSourceFactory,
                           @Inject DbAdapterFactory adapterFactory,
                           @Inject MapLoader mapLoader) {
@@ -78,44 +71,109 @@ public class DbImportAction {
         this.mapLoader = mapLoader;
     }
 
-    public void execute(DbImportConfiguration parameters) throws Exception {
+    public void execute(DbImportConfiguration config) throws Exception {
 
-        if (logger.isInfoEnabled()) {
-            logger.debug(String.format("DB connection - [driver: %s, url: %s, username: %s, password: %s]",
-                    parameters.getDriver(), parameters.getUrl(), parameters.getUsername(), "XXXXX"));
+        if (logger.isDebugEnabled()) {
+            logger.debug("DB connection: " + config.getDataSourceInfo());
         }
 
         if (logger.isDebugEnabled()) {
-            parameters.log();
+            logger.debug(config);
         }
 
-        DataNodeDescriptor dataNodeDescriptor = parameters.createDataNodeDescriptor();
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
 
-        DataMap loadedFomDb = load(parameters, adapter, dataSource.getConnection());
+        DataMap loadedFomDb = load(config, adapter, dataSource.getConnection());
         if (loadedFomDb == null) {
             logger.info("Nothing was loaded from db.");
             return;
         }
 
-        DataMap existing = loadExistingDataMap(parameters.getDataMapFile());
+        DataMap existing = loadExistingDataMap(config.getDataMapFile());
         if (existing == null) {
-            saveLoaded(loadedFomDb);
+            logger.info("");
+            File file = config.getDataMapFile();
+            logger.info("Map file does not exist. Loaded db model will be saved into '"
+                    + (file == null ? "null" : file.getAbsolutePath() + "'"));
+
+            saveLoaded(config.initializeDataMap(loadedFomDb));
         } else {
             MergerFactory mergerFactory = adapter.mergerFactory();
 
-            List<MergerToken> mergeTokens = new DbMerger(mergerFactory).createMergeTokens(existing, loadedFomDb);
+            List<MergerToken> mergeTokens = new DbMerger(mergerFactory)
+                    .createMergeTokens(existing, loadedFomDb, config.getDbLoaderConfig());
             if (mergeTokens.isEmpty()) {
-                logger.info("No changes to import.");
+                logger.info("");
+                logger.info("Detected changes: No changes to import.");
                 return;
             }
 
-            saveLoaded(execute(parameters.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens))));
+            if (!isBlank(config.getDefaultPackage())) {
+                existing.setDefaultPackage(config.getDefaultPackage());
+            }
+
+            final Collection<ObjEntity> loadedObjEntities = new LinkedList<ObjEntity>();
+            DataMap executed = execute(new ProxyModelMergeDelegate(config.createMergeDelegate()) {
+                @Override
+                public void objEntityAdded(ObjEntity ent) {
+                    loadedObjEntities.add(ent);
+
+                    super.objEntityAdded(ent);
+                }
+
+            }, existing, log(sort(reverse(mergerFactory, mergeTokens))));
+
+            DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, config.getNameGenerator());
+
+            relationshipsSanity(executed);
+
+
+            saveLoaded(executed);
         }
     }
 
+    private void relationshipsSanity(DataMap executed) {
+        for (ObjEntity objEntity : executed.getObjEntities()) {
+
+            List<ObjRelationship> rels = new LinkedList<ObjRelationship>(objEntity.getRelationships());
+            for (ObjRelationship rel : rels) {
+                if (rel.getSourceEntity() == null || rel.getTargetEntity() == null) {
+                    logger.error("Incorrect obj relationship source or target entity is null: " + rel);
+
+                    objEntity.removeRelationship(rel.getName());
+                }
+            }
+        }
+    }
+
+    protected static List<MergerToken> sort(List<MergerToken> reverse) {
+        Collections.sort(reverse, new Comparator<MergerToken>() {
+            @Override
+            public int compare(MergerToken o1, MergerToken o2) {
+                if (o1 instanceof AddRelationshipToDb && o2 instanceof AddRelationshipToDb) {
+                    return 0;
+                }
+
+                if (!(o1 instanceof AddRelationshipToDb || o2 instanceof AddRelationshipToDb)) {
+                    return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
+                }
+
+                return o1 instanceof AddRelationshipToDb ? 1 : -1;
+            }
+        });
+
+        return reverse;
+    }
+
     private Collection<MergerToken> log(List<MergerToken> tokens) {
+        logger.info("");
+        if (tokens.isEmpty()) {
+            logger.info("Detected changes: No changes to import.");
+            return tokens;
+        }
+
         logger.info("Detected changes: ");
         for (MergerToken token : tokens) {
             logger.info(String.format("    %-20s %s", token.getTokenName(), token.getTokenValue()));
@@ -140,6 +198,9 @@ public class DbImportAction {
     private List<MergerToken> reverse(MergerFactory mergerFactory, Iterable<MergerToken> mergeTokens) throws IOException {
         List<MergerToken> tokens = new LinkedList<MergerToken>();
         for (MergerToken token : mergeTokens) {
+            if (token instanceof AbstractToModelToken) {
+                continue;
+            }
             tokens.add(token.createReverse(mergerFactory));
         }
         return tokens;
@@ -148,7 +209,7 @@ public class DbImportAction {
     /**
      * Performs configured schema operations via DbGenerator.
      */
-    public DataMap execute(ModelMergeDelegate mergeDelegate, DataMap dataMap, Collection<MergerToken> tokens) {
+    private DataMap execute(ModelMergeDelegate mergeDelegate, DataMap dataMap, Collection<MergerToken> tokens) {
         MergerContext mergerContext = new ExecutingMergerContext(
                 dataMap, null, null, mergeDelegate);
 
@@ -178,24 +239,22 @@ public class DbImportAction {
         return dataMap;
     }
 
+    private DbLoader getLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        return config.createLoader(adapter, connection, config.createLoaderDelegate());
+    }
+
     void saveLoaded(DataMap dataMap) throws FileNotFoundException {
         ConfigurationTree<DataMap> projectRoot = new ConfigurationTree<DataMap>(dataMap);
         Project project = new Project(projectRoot);
         projectSaver.save(project);
     }
 
-    private DataMap load(DbImportConfiguration parameters, DbAdapter adapter, Connection connection) throws Exception {
-        DataMap dataMap = parameters.createDataMap();
+    private DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
+        DataMap dataMap = config.createDataMap();
 
         try {
-            DbLoader loader = parameters.createLoader(adapter, connection, parameters.createLoaderDelegate());
-
-            String[] types = loader.getDefaultTableTypes();
-            loader.load(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getTablePattern(), types);
-
-            if (parameters.isImportProcedures()) {
-                loader.loadProcedures(dataMap, parameters.getCatalog(), parameters.getSchema(), parameters.getProcedurePattern());
-            }
+            DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
+            loader.load(dataMap, config.getDbLoaderConfig());
         } finally {
             if (connection != null) {
                 connection.close();

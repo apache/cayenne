@@ -18,53 +18,88 @@
  ****************************************************************/
 package org.apache.cayenne.map.naming;
 
+import org.apache.cayenne.util.EqualsBuilder;
+import org.apache.cayenne.util.HashCodeBuilder;
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  * ExportedKey is an representation of relationship between two tables 
  * in database. It can be used for creating names for relationships
+ *
+ * Example:
+ *  Table A with primary key ID
+ *  Table B with primary key ID and foreign key A_ID
+ *
+ *  In that case ExportedKey will be:
+ *      pkTable:  A
+ *      pkColumn: A.ID
+ *      fkTable:  B
+ *      fkColumn: B.A_ID
+ *      fkName:   name of foreign key
+ *      pkName:
+ *      keySeq: TODO
  * 
  */
-public class ExportedKey {
+public class ExportedKey implements Comparable {
+
+    public final String pkCatalog;
+    public final String pkSchema;
     /**
      * Name of source table
      */
-    String pkTable;
-    
+    public final String pkTable;
+
     /**
      * Name of source column
      */
-    String pkColumn;
-    
+    public final String pkColumn;
+
+    public final String fkCatalog;
+    public final String fkSchema;
     /**
      * Name of destination table
      */
-    String fkTable;
+    public final String fkTable;
     
     /**
      * Name of destination column
      */
-    String fkColumn;
+    public final String fkColumn;
     
     /**
      * Name of foreign key (might be null)
      */
-    String fkName;
-    
+    public final String fkName;
+
     /**
      * Name of primary key (might be null)
      */
-    String pkName;
-    
+    public final String pkName;
+
+
+    public final short keySeq;
+
     public ExportedKey(String pkTable, String pkColumn, String pkName,
-            String fkTable, String fkColumn, String fkName) {
+                       String fkTable, String fkColumn, String fkName, short keySeq) {
+        this(null, null, pkTable, pkColumn, pkName, null, null, fkTable, fkColumn, fkName, keySeq);
+    }
+
+    public ExportedKey(String pkCatalog, String pkSchema, String pkTable, String pkColumn, String pkName,
+                       String fkCatalog, String fkSchema, String fkTable, String fkColumn, String fkName, short keySeq) {
+       this.pkCatalog  = pkCatalog;
+       this.pkSchema  = pkSchema;
        this.pkTable  = pkTable;
        this.pkColumn = pkColumn;
        this.pkName   = pkName;
+       this.fkCatalog  = fkCatalog;
+       this.fkSchema  = fkSchema;
        this.fkTable  = fkTable;
        this.fkColumn = fkColumn;
        this.fkName   = fkName;
+       this.keySeq = keySeq;
     }
     
     /**
@@ -75,18 +110,38 @@ public class ExportedKey {
      * DataBaseMetaData.getExportedKeys(...) 
      */
     public static ExportedKey extractData(ResultSet rs) throws SQLException {
-        ExportedKey key = new ExportedKey(
+        return new ExportedKey(
+                rs.getString("PKTABLE_CAT"),
+                rs.getString("PKTABLE_SCHEM"),
                 rs.getString("PKTABLE_NAME"),
                 rs.getString("PKCOLUMN_NAME"),
                 rs.getString("PK_NAME"),
+                rs.getString("FKTABLE_CAT"),
+                rs.getString("FKTABLE_SCHEM"),
                 rs.getString("FKTABLE_NAME"),
                 rs.getString("FKCOLUMN_NAME"),
-                rs.getString("FK_NAME")
+                rs.getString("FK_NAME"),
+                rs.getShort("KEY_SEQ")
         );
-        
-        return key;
     }
-    
+
+
+    public String getPkCatalog() {
+        return pkCatalog;
+    }
+
+    public String getPkSchema() {
+        return pkSchema;
+    }
+
+    public String getFkCatalog() {
+        return fkCatalog;
+    }
+
+    public String getFkSchema() {
+        return fkSchema;
+    }
+
     /**
      * @return source table name
      */
@@ -127,5 +182,89 @@ public class ExportedKey {
      */
     public String getFKName() {
         return fkName;
+    }
+
+    public short getKeySeq() {
+        return keySeq;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        ExportedKey rhs = (ExportedKey) obj;
+        return new EqualsBuilder()
+                .append(this.pkCatalog, rhs.pkCatalog)
+                .append(this.pkSchema, rhs.pkSchema)
+                .append(this.pkTable, rhs.pkTable)
+                .append(this.pkColumn, rhs.pkColumn)
+                .append(this.fkCatalog, rhs.fkCatalog)
+                .append(this.fkSchema, rhs.fkSchema)
+                .append(this.fkTable, rhs.fkTable)
+                .append(this.fkColumn, rhs.fkColumn)
+                .append(this.fkName, rhs.fkName)
+                .append(this.pkName, rhs.pkName)
+                .append(this.keySeq, rhs.keySeq)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(pkCatalog)
+                .append(pkSchema)
+                .append(pkTable)
+                .append(pkColumn)
+                .append(fkCatalog)
+                .append(fkSchema)
+                .append(fkTable)
+                .append(fkColumn)
+                .append(fkName)
+                .append(pkName)
+                .append(keySeq)
+                .toHashCode();
+    }
+
+    @Override
+    public int compareTo(Object obj) {
+        if (obj == null || !obj.getClass().equals(getClass())) {
+            throw new IllegalArgumentException();
+        }
+        if (obj == this) {
+            return 0;
+        }
+
+        ExportedKey rhs = (ExportedKey) obj;
+        return new CompareToBuilder()
+                .append(pkCatalog, rhs.pkCatalog)
+                .append(pkSchema, rhs.pkSchema)
+                .append(pkTable, rhs.pkTable)
+                .append(pkName, rhs.pkName)
+                .append(fkCatalog, rhs.fkCatalog)
+                .append(fkSchema, rhs.fkSchema)
+                .append(fkTable, rhs.fkTable)
+                .append(fkName, rhs.fkName)
+                .append(keySeq, rhs.keySeq)
+                .append(pkColumn, rhs.pkColumn)
+                .append(fkColumn, rhs.fkColumn)
+                .toComparison();
+    }
+
+    @Override
+    public String toString() {
+        return getStrKey() + " # " + keySeq;
+    }
+
+    public String getStrKey() {
+        return pkCatalog + "." + pkSchema + "." + pkTable + "." + pkColumn
+                + " <- " + fkCatalog + "." + fkSchema + "." + fkTable + "." + fkColumn;
     }
 }

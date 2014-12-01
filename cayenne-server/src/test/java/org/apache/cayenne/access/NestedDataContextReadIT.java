@@ -186,6 +186,20 @@ public class NestedDataContextReadIT extends ServerCase {
     }
 
     @Test
+    public void testPageableSelect() throws Exception {
+        createArtistsDataSet();
+        ObjectContext child = runtime.newContext(context);
+
+        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
+        query.addOrdering(Artist.ARTIST_NAME.desc());
+        query.setPageSize(1);
+        IncrementalFaultList<Artist> records = (IncrementalFaultList) child.performQuery(query);
+
+        assertEquals(4, records.size());
+        assertEquals(1, records.getPageSize());
+    }
+
+    @Test
     public void testReadToOneRelationship() throws Exception {
         createRelationshipDataSet();
 

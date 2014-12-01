@@ -290,4 +290,29 @@ public class DbAttribute extends Attribute implements ConfigurationNode {
     public void setScale(int scale) {
         this.scale = scale;
     }
+
+    @Override
+    public String toString() {
+        String res = "DbAttr: ";
+        String type = TypesMapping.getSqlNameByType(getType());
+
+        res += type != null ? type : "type(" + getType() + ")";
+        res += " " + name;
+
+        if (scale > -1 || attributePrecision > -1) {
+            res += "[" + scale + ", " + attributePrecision + "]";
+        }
+
+        if (maxLength > -1) {
+            res += "[" + maxLength + "]";
+        }
+
+        if (primaryKey) {
+            res += " Primary Key ";
+        } else if (mandatory) {
+            res += " Mandatory ";
+        }
+
+        return res;
+    }
 }

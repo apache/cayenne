@@ -18,11 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Types;
+import java.util.List;
+
 import junit.framework.AssertionFailedError;
+
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.access.jdbc.SQLParameterBinding;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -31,102 +39,90 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ValueForNullIT extends MergeCase {
 
-    private static final String DEFAULT_VALUE_STRING = "DEFSTRING";
+	private static final String DEFAULT_VALUE_STRING = "DEFSTRING";
 
-    @Inject
-    private DataContext context;
+	@Inject
+	private DataContext context;
 
-    @Test
-    public void test() throws Exception {
-        DbEntity dbEntity = map.getDbEntity("PAINTING");
-        assertNotNull(dbEntity);
-        ObjEntity objEntity = map.getObjEntity("Painting");
-        assertNotNull(objEntity);
+	@Test
+	public void test() throws Exception {
+		DbEntity dbEntity = map.getDbEntity("PAINTING");
+		assertNotNull(dbEntity);
+		ObjEntity objEntity = map.getObjEntity("Painting");
+		assertNotNull(objEntity);
 
-        // insert some rows before adding "not null" column
-        final int nrows = 10;
-        for (int i = 0; i < nrows; i++) {
-            DataObject o = (DataObject) context.newObject("Painting");
-            o.writeProperty("paintingTitle", "ptitle" + i);
-        }
-        context.commitChanges();
+		// insert some rows before adding "not null" column
+		final int nrows = 10;
+		for (int i = 0; i < nrows; i++) {
+			DataObject o = (DataObject) context.newObject("Painting");
+			o.writeProperty("paintingTitle", "ptitle" + i);
+		}
+		context.commitChanges();
 
-        // create and add new column to model and db
-        DbAttribute column = new DbAttribute("NEWCOL2", Types.VARCHAR, dbEntity);
+		// create and add new column to model and db
+		DbAttribute column = new DbAttribute("NEWCOL2", Types.VARCHAR, dbEntity);
 
-        column.setMandatory(false);
-        column.setMaxLength(10);
-        dbEntity.addAttribute(column);
-        assertTrue(dbEntity.getAttributes().contains(column));
-        assertEquals(column, dbEntity.getAttribute(column.getName()));
-        assertTokensAndExecute(1, 0);
+		column.setMandatory(false);
+		column.setMaxLength(10);
+		dbEntity.addAttribute(column);
+		assertTrue(dbEntity.getAttributes().contains(column));
+		assertEquals(column, dbEntity.getAttribute(column.getName()));
+		assertTokensAndExecute(1, 0);
 
-        // need obj attr to be able to query
-        ObjAttribute objAttr = new ObjAttribute("newcol2");
-        objAttr.setDbAttributePath(column.getName());
-        objEntity.addAttribute(objAttr);
+		// need obj attr to be able to query
+		ObjAttribute objAttr = new ObjAttribute("newcol2");
+		objAttr.setDbAttributePath(column.getName());
+		objEntity.addAttribute(objAttr);
 
-        // check that is was merged
-        assertTokensAndExecute(0, 0);
+		// check that is was merged
+		assertTokensAndExecute(0, 0);
 
-        // set not null
-        column.setMandatory(true);
+		// set not null
+		column.setMandatory(true);
 
-        // merge to db
-        assertTokensAndExecute(2, 0);
+		// merge to db
+		assertTokensAndExecute(2, 0);
 
-        // check that is was merged
-        assertTokensAndExecute(0, 0);
+		// check that is was merged
+		assertTokensAndExecute(0, 0);
 
-        // check values for null
-        Expression qual = ExpressionFactory.matchExp(
-                objAttr.getName(),
-                DEFAULT_VALUE_STRING);
-        SelectQuery query = new SelectQuery("Painting", qual);
-        List<Persistent> rows = context.performQuery(query);
-        assertEquals(nrows, rows.size());
+		// check values for null
+		Expression qual = ExpressionFactory.matchExp(objAttr.getName(), DEFAULT_VALUE_STRING);
+		SelectQuery query = new SelectQuery("Painting", qual);
+		List<Persistent> rows = context.performQuery(query);
+		assertEquals(nrows, rows.size());
 
-        // clean up
-        dbEntity.removeAttribute(column.getName());
-        assertTokensAndExecute(1, 0);
-        assertTokensAndExecute(0, 0);
-    }
+		// clean up
+		dbEntity.removeAttribute(column.getName());
+		assertTokensAndExecute(1, 0);
+		assertTokensAndExecute(0, 0);
+	}
 
-    @Override
-    protected DbMerger createMerger(MergerFactory mergerFactory, final ValueForNullProvider valueForNullProvider) {
-        return super.createMerger(mergerFactory, new DefaultValueForNullProvider() {
+	@Override
+	protected DbMerger createMerger(MergerFactory mergerFactory, final ValueForNullProvider valueForNullProvider) {
+		return super.createMerger(mergerFactory, new DefaultValueForNullProvider() {
 
-            @Override
-            protected ParameterBinding get(DbEntity entity, DbAttribute column) {
-                int type = column.getType();
-                switch (type) {
-                    case Types.VARCHAR:
-                        return new ParameterBinding(DEFAULT_VALUE_STRING, type, -1);
-                    default:
-                        throw new AssertionFailedError("should not get here");
-                }
-            }
+			@Override
+			protected SQLParameterBinding get(DbEntity entity, DbAttribute column) {
+				int type = column.getType();
+				switch (type) {
+				case Types.VARCHAR:
+					return new SQLParameterBinding(DEFAULT_VALUE_STRING, type, -1);
+				default:
+					throw new AssertionFailedError("should not get here");
+				}
+			}
 
-            @Override
-            public boolean hasValueFor(DbEntity entity, DbAttribute column) {
-                return true;
-            }
+			@Override
+			public boolean hasValueFor(DbEntity entity, DbAttribute column) {
+				return true;
+			}
 
-        });
-    }
+		});
+	}
 
 }

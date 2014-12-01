@@ -26,7 +26,7 @@ public class DropRelationshipToModel extends AbstractToModelToken.Entity {
     private final DbRelationship rel;
 
     public DropRelationshipToModel(DbEntity entity, DbRelationship rel) {
-        super("Drop Relationship", entity);
+        super("Drop db-relationship ", entity);
         this.rel = rel;
     }
 
@@ -40,7 +40,7 @@ public class DropRelationshipToModel extends AbstractToModelToken.Entity {
 
     @Override
     public String getTokenValue() {
-        return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
+        return AddRelationshipToModel.getTokenValue(rel);
     }
     
     public DbRelationship getRelationship() {

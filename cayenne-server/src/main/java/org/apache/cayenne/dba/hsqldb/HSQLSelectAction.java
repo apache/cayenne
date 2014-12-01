@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.hsqldb;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -30,17 +28,17 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class HSQLSelectAction extends SelectAction {
 
-    <T> HSQLSelectAction(SelectQuery<T> query, DataNode dataNode) {
-        super(query, dataNode);
-    }
+	<T> HSQLSelectAction(SelectQuery<T> query, DataNode dataNode) {
+		super(query, dataNode);
+	}
 
-    @Override
-    protected int getInMemoryOffset(int queryOffset) {
-        return 0;
-    }
+	@Override
+	protected int getInMemoryOffset(int queryOffset) {
+		return 0;
+	}
 
-    @Override
-    protected SelectTranslator createTranslator(Connection connection) {
-        return new HSQLSelectTranslator(query, dataNode, connection);
-    }
+	@Override
+	protected SelectTranslator createTranslator() {
+		return new HSQLSelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
+	}
 }

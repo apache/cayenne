@@ -1,21 +1,21 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 
 package org.apache.cayenne.modeler.dialog.db;
 
@@ -34,6 +34,10 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.filters.TableFilter;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.PatternFilter;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -64,6 +68,9 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
+import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
+import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.cayenne.validation.ValidationResult;
 
 public class MergerOptions extends CayenneController {
@@ -161,14 +168,18 @@ public class MergerOptions extends CayenneController {
      */
     protected void prepareMigrator() {
         try {
-            adapter = (JdbcAdapter) connectionInfo.makeAdapter(getApplication()
-                    .getClassLoadingService());
+            adapter = (JdbcAdapter) connectionInfo.makeAdapter(getApplication().getClassLoadingService());
             tokens.setMergerFactory(adapter.mergerFactory());
-            merger = new DbMerger(adapter.mergerFactory(), defaultSchema);
+            merger = new DbMerger(adapter.mergerFactory());
+
+            DbLoaderConfiguration config = new DbLoaderConfiguration();
+            config.setFiltersConfig(FiltersConfig.create(null, defaultSchema, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
+
             List<MergerToken> mergerTokens = merger.createMergeTokens(
-                    connectionInfo.makeDataSource(getApplication()
-                            .getClassLoadingService()), adapter,
-                    dataMap);
+                    connectionInfo.makeDataSource(getApplication().getClassLoadingService()),
+                    adapter,
+                    dataMap,
+                    config);
             tokens.setTokens(mergerTokens);
         }
         catch (Exception ex) {
@@ -181,15 +192,12 @@ public class MergerOptions extends CayenneController {
      */
     protected void createSQL() {
         // convert them to string representation for display
-        final StringBuilder buf = new StringBuilder();
+        StringBuilder buf = new StringBuilder();
 
         Iterator<MergerToken> it = tokens.getSelectedTokens().iterator();
         String batchTerminator = adapter.getBatchTerminator();
 
-        final String lineEnd = (batchTerminator != null) ? "\n"
-                + batchTerminator
-                + "\n\n" : "\n\n";
-
+        String lineEnd = batchTerminator != null ? "\n" + batchTerminator + "\n\n" : "\n\n";
         while (it.hasNext()) {
             MergerToken token = it.next();
 
@@ -267,7 +275,7 @@ public class MergerOptions extends CayenneController {
                 .getRootNode();
         final DataNodeDescriptor node = getProjectController().getCurrentDataNode();
 
-        final ModelMergeDelegate delegate = new ModelMergeDelegate() {
+        ModelMergeDelegate delegate = new ModelMergeDelegate() {
 
             public void dbAttributeAdded(DbAttribute att) {
                 if (c.getCurrentDbEntity() == att.getEntity()) {

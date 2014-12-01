@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.sql.Types;
+
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -27,17 +33,8 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import java.sql.Types;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class MergerFactoryIT extends MergeCase {
 
     @Inject
@@ -190,19 +187,9 @@ public class MergerFactoryIT extends MergeCase {
 
         DbEntity dbEntity = new DbEntity("NEW_TABLE");
 
-        DbAttribute column1 = new DbAttribute("ID", Types.INTEGER, dbEntity);
-        column1.setMandatory(true);
-        column1.setPrimaryKey(true);
-        dbEntity.addAttribute(column1);
-
-        DbAttribute column2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity);
-        column2.setMaxLength(10);
-        column2.setMandatory(false);
-        dbEntity.addAttribute(column2);
-
-        DbAttribute column3 = new DbAttribute("ARTIST_ID", Types.BIGINT, dbEntity);
-        column3.setMandatory(false);
-        dbEntity.addAttribute(column3);
+        attr(dbEntity, "ID", Types.INTEGER, true, true);
+        attr(dbEntity, "NAME", Types.VARCHAR, false, false).setMaxLength(10);
+        attr(dbEntity, "ARTIST_ID", Types.BIGINT, false, false);
 
         map.addDbEntity(dbEntity);
 
@@ -212,7 +199,7 @@ public class MergerFactoryIT extends MergeCase {
         // relation from new_table to artist
         DbRelationship r1 = new DbRelationship("toArtistR1");
         r1.setSourceEntity(dbEntity);
-        r1.setTargetEntity(artistDbEntity);
+        r1.setTargetEntityName(artistDbEntity);
         r1.setToMany(false);
         r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
         dbEntity.addRelationship(r1);
@@ -220,7 +207,7 @@ public class MergerFactoryIT extends MergeCase {
         // relation from artist to new_table
         DbRelationship r2 = new DbRelationship("toNewTableR2");
         r2.setSourceEntity(artistDbEntity);
-        r2.setTargetEntity(dbEntity);
+        r2.setTargetEntityName(dbEntity);
         r2.setToMany(true);
         r2.addJoin(new DbJoin(r2, "ARTIST_ID", "ARTIST_ID"));
         artistDbEntity.addRelationship(r2);
@@ -232,6 +219,10 @@ public class MergerFactoryIT extends MergeCase {
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
         resolver.refreshMappingCache();
+        /*
+         * Db -Rel 'toArtistR1' - NEW_TABLE 1 -> 1 ARTIST"
+r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE"
+         * */
         assertTokensAndExecute(1, 1);
         assertTokensAndExecute(0, 0);
 
@@ -254,20 +245,9 @@ public class MergerFactoryIT extends MergeCase {
         assertTokensAndExecute(0, 0);
 
         DbEntity dbEntity = new DbEntity("NEW_TABLE");
-
-        DbAttribute column1 = new DbAttribute("ID", Types.INTEGER, dbEntity);
-        column1.setMandatory(true);
-        column1.setPrimaryKey(true);
-        dbEntity.addAttribute(column1);
-
-        DbAttribute column2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity);
-        column2.setMaxLength(10);
-        column2.setMandatory(false);
-        dbEntity.addAttribute(column2);
-
-        DbAttribute column3 = new DbAttribute("ARTIST_ID", Types.BIGINT, dbEntity);
-        column3.setMandatory(false);
-        dbEntity.addAttribute(column3);
+        attr(dbEntity, "ID", Types.INTEGER, true, true);
+        attr(dbEntity, "NAME", Types.VARCHAR, false, false).setMaxLength(10);
+        attr(dbEntity, "ARTIST_ID", Types.BIGINT, false, false);
 
         map.addDbEntity(dbEntity);
 
@@ -280,7 +260,7 @@ public class MergerFactoryIT extends MergeCase {
         // relation from new_table to artist
         DbRelationship r1 = new DbRelationship("toArtistR1");
         r1.setSourceEntity(dbEntity);
-        r1.setTargetEntity(artistDbEntity);
+        r1.setTargetEntityName(artistDbEntity);
         r1.setToMany(false);
         r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
         dbEntity.addRelationship(r1);
@@ -288,7 +268,7 @@ public class MergerFactoryIT extends MergeCase {
         // relation from artist to new_table
         DbRelationship r2 = new DbRelationship("toNewTableR2");
         r2.setSourceEntity(artistDbEntity);
-        r2.setTargetEntity(dbEntity);
+        r2.setTargetEntityName(dbEntity);
         r2.setToMany(true);
         r2.addJoin(new DbJoin(r2, "ARTIST_ID", "ARTIST_ID"));
         artistDbEntity.addRelationship(r2);
@@ -300,6 +280,10 @@ public class MergerFactoryIT extends MergeCase {
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
         resolver.refreshMappingCache();
+        /*
+        * Add Relationship ARTIST->NEW_TABLE To Model
+        * Drop Relationship NEW_TABLE->ARTIST To DB
+        * */
         assertTokensAndExecute(1, 1);
         assertTokensAndExecute(0, 0);
 
@@ -313,5 +297,14 @@ public class MergerFactoryIT extends MergeCase {
 
         assertTokensAndExecute(1, 0);
         assertTokensAndExecute(0, 0);
+    }
+
+    private static DbAttribute attr(DbEntity dbEntity, String name, int type, boolean mandatory, boolean primaryKey) {
+        DbAttribute column1 = new DbAttribute(name, type, dbEntity);
+        column1.setMandatory(mandatory);
+        column1.setPrimaryKey(primaryKey);
+
+        dbEntity.addAttribute(column1);
+        return column1;
     }
 }

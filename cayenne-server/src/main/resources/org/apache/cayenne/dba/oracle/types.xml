@@ -25,6 +25,9 @@ Oracle types mapping
 
 <types>
    <jdbc-type name="ARRAY"/>
+   <jdbc-type name="ROWID">
+       <db-type name="ROWID"/>
+   </jdbc-type>
    <jdbc-type name="BIGINT">
        <db-type name="NUMBER"/>
    </jdbc-type>
@@ -43,8 +46,14 @@ Oracle types mapping
    <jdbc-type name="CHAR">
        <db-type name="CHAR"/>
    </jdbc-type>
+   <jdbc-type name="NCHAR">
+       <db-type name="NCHAR"/>
+   </jdbc-type>
    <jdbc-type name="CLOB">
        <db-type name="CLOB"/>
+   </jdbc-type>
+   <jdbc-type name="NCLOB">
+       <db-type name="NCLOB"/>
    </jdbc-type>
    <jdbc-type name="DATALINK"/>
    <jdbc-type name="DATE">
@@ -69,6 +78,9 @@ Oracle types mapping
    <jdbc-type name="LONGVARCHAR">
        <db-type name="LONG VARCHAR"/>
    </jdbc-type>
+    <jdbc-type name="LONGNVARCHAR">
+        <db-type name="NCLOB"/>
+    </jdbc-type>
    <jdbc-type name="NUMERIC">
        <db-type name="NUMBER"/>
    </jdbc-type>
@@ -95,5 +107,11 @@ Oracle types mapping
    </jdbc-type>
    <jdbc-type name="VARCHAR">
        <db-type name="VARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="NVARCHAR">
+       <db-type name="NVARCHAR2"/>
+   </jdbc-type>
+   <jdbc-type name="SQLXML">
+       <db-type name="XMLType"/>
    </jdbc-type>
 </types>

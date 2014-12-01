@@ -19,99 +19,56 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.tools.ant.Task;
-import org.junit.Test;
-
+import static org.apache.cayenne.access.loader.NamePatternMatcher.replaceWildcardInStringWithString;
 import static org.junit.Assert.assertEquals;
+
+import org.apache.cayenne.access.loader.NamePatternMatcher;
+import org.junit.Test;
 
 public class NamePatternMatcherTest {
 
-    /**
-     * Test pattern expansion.
-     */
-    @Test
-    public void testReplaceWildcardInStringWithString() throws Exception {
-        assertEquals(null, NamePatternMatcher.replaceWildcardInStringWithString(
-                "*",
-                null,
-                "Entity"));
-        assertEquals("*.java", NamePatternMatcher.replaceWildcardInStringWithString(
-                null,
-                "*.java",
-                "Entity"));
-        assertEquals("Entity.java", NamePatternMatcher.replaceWildcardInStringWithString(
-                "*",
-                "*.java",
-                "Entity"));
-        assertEquals("java.Entity", NamePatternMatcher.replaceWildcardInStringWithString(
-                "*",
-                "java.*",
-                "Entity"));
-        assertEquals("Entity.Entity", NamePatternMatcher
-                .replaceWildcardInStringWithString("*", "*.*", "Entity"));
-        assertEquals("EntityEntity", NamePatternMatcher
-                .replaceWildcardInStringWithString("*", "**", "Entity"));
-        assertEquals("EditEntityReport.vm", NamePatternMatcher
-                .replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
-        assertEquals("Entity", NamePatternMatcher.replaceWildcardInStringWithString(
-                "*",
-                "*",
-                "Entity"));
-    }
+	/**
+	 * Test pattern expansion.
+	 */
+	@Test
+	public void testReplaceWildcardInStringWithString() throws Exception {
+		assertEquals(null, replaceWildcardInStringWithString("*", null, "Entity"));
+		assertEquals("*.java", replaceWildcardInStringWithString(null, "*.java", "Entity"));
+		assertEquals("Entity.java", replaceWildcardInStringWithString("*", "*.java", "Entity"));
+		assertEquals("java.Entity", replaceWildcardInStringWithString("*", "java.*", "Entity"));
+		assertEquals("Entity.Entity", replaceWildcardInStringWithString("*", "*.*", "Entity"));
+		assertEquals("EntityEntity", replaceWildcardInStringWithString("*", "**", "Entity"));
+		assertEquals("EditEntityReport.vm", replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
+		assertEquals("Entity", replaceWildcardInStringWithString("*", "*", "Entity"));
+	}
 
-    /**
-     * Test tokenizing
-     */
-    @Test
-    public void testTokenizer() {
-        Task parentTask = new Task() {
+	/**
+	 * Test tokenizing
+	 */
+	@Test
+	public void testTokenizer() {
 
-            @Override
-            public void log(String msg, int msgLevel) {
-                System.out.println(String.valueOf(msgLevel) + ": " + msg);
-            }
-        };
+		String[] nullFilters = NamePatternMatcher.tokenizePattern(null);
+		assertEquals(0, nullFilters.length);
 
-        String includePattern = "billing_*,user?";
-        String excludePattern = null;
-        NamePatternMatcher namePatternMatcher = new NamePatternMatcher(
-                new AntLogger(parentTask),
-                includePattern,
-                excludePattern);
+		String[] filters = NamePatternMatcher.tokenizePattern("billing_*,user?");
+		assertEquals(2, filters.length);
+		assertEquals("^billing_.*$", filters[0]);
+		assertEquals("^user.?$", filters[1]);
+	}
 
-        String[] nullFilters = namePatternMatcher.tokenizePattern(null);
-        assertEquals(0, nullFilters.length);
+	/**
+	 * Test tokenizing
+	 */
+	@Test
+	public void testTokenizerEntities() {
 
-        String[] filters = namePatternMatcher.tokenizePattern("billing_*,user?");
-        assertEquals(2, filters.length);
-        assertEquals("^billing_.*$", filters[0]);
-        assertEquals("^user.?$", filters[1]);
-    }
+		String includePattern = "Organization,SecGroup,SecIndividual";
 
-    /**
-     * Test tokenizing
-     */
-    @Test
-    public void testTokenizerEntities() {
-        Task parentTask = new Task() {
-
-            @Override
-            public void log(String msg, int msgLevel) {
-                System.out.println(String.valueOf(msgLevel) + ": " + msg);
-            }
-        };
-
-        String includePattern = "Organization,SecGroup,SecIndividual";
-        String excludePattern = null;
-        NamePatternMatcher namePatternMatcher = new NamePatternMatcher(
-                new AntLogger(parentTask),
-                includePattern,
-                excludePattern);
-
-        String[] filters = namePatternMatcher.tokenizePattern(includePattern);
-        assertEquals(3, filters.length);
-        assertEquals("^Organization$", filters[0]);
-        assertEquals("^SecGroup$", filters[1]);
-        assertEquals("^SecIndividual$", filters[2]);
-    }
+		String[] filters = NamePatternMatcher.tokenizePattern(includePattern);
+		assertEquals(3, filters.length);
+		assertEquals("^Organization$", filters[0]);
+		assertEquals("^SecGroup$", filters[1]);
+		assertEquals("^SecIndividual$", filters[2]);
+	}
 }

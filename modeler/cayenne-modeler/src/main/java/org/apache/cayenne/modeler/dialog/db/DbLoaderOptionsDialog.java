@@ -19,12 +19,16 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.Vector;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -37,18 +41,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ClassLoadingService;
-import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.Vector;
 
 /**
  * Dialog for selecting database reverse-engineering parameters.
@@ -60,6 +58,8 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     public static final int CANCEL = 0;
     public static final int SELECT = 1;
 
+    protected JLabel catalogLabel;
+    protected JComboBox catalogSelector;
     protected JLabel schemaLabel;
     protected JComboBox schemaSelector;
     protected JTextField tableNamePatternField;
@@ -82,13 +82,13 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     /**
      * Creates and initializes new ChooseSchemaDialog.
      */
-    public DbLoaderOptionsDialog(Collection<String> schemas, String dbUserName,
-            boolean loadProcedures) {
+    public DbLoaderOptionsDialog(Collection<String> schemas, Collection<String> catalogs, String dbUserName,
+            String dbCatalog, boolean loadProcedures) {
         super(Application.getFrame(), "Reengineer DB Schema: Select Options");
 
         init();
         initController();
-        initFromModel(schemas, dbUserName, loadProcedures);
+        initFromModel(schemas, catalogs, dbUserName, dbCatalog, loadProcedures);
 
         pack();
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -102,6 +102,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         // create widgets...
         selectButton = new JButton("Continue");
         cancelButton = new JButton("Cancel");
+        catalogSelector = new JComboBox();
         schemaSelector = new JComboBox();
         tableNamePatternField = new JTextField();
         procNamePatternField = new JTextField();
@@ -117,6 +118,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
+        catalogLabel = builder.append("Select Catalog:", catalogSelector);
         schemaLabel = builder.append("Select Schema:", schemaSelector);
         builder.append("Table Name Pattern:", tableNamePatternField);
         builder.append("Load Procedures:", loadProcedures);
@@ -159,13 +161,15 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
 
     protected void initFromModel(
             Collection<String> schemas,
+            Collection<String> catalogs,
             String dbUserName,
+            String dbCatalog,
             boolean shouldLoadProcedures) {
 
         this.choice = CANCEL;
-        this.tableNamePatternField.setText(DbLoader.WILDCARD);
+        this.tableNamePatternField.setText(DbLoader.WILDCARD_PATTERN);
         this.loadProcedures.setSelected(shouldLoadProcedures);
-        this.procNamePatternField.setText(DbLoader.WILDCARD);
+        this.procNamePatternField.setText(DbLoader.WILDCARD_PATTERN);
         this.procNamePatternField.setEnabled(shouldLoadProcedures);
         this.procedureLabel.setEnabled(shouldLoadProcedures);
 
@@ -192,6 +196,24 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
                 }
             }
         }
+
+        boolean showCatalogSelector = catalogs != null && !catalogs.isEmpty();
+        catalogSelector.setVisible(showCatalogSelector);
+        catalogLabel.setVisible(showCatalogSelector);
+
+        if (showCatalogSelector) {
+            catalogSelector.setModel(new DefaultComboBoxModel(catalogs.toArray()));
+
+            if (dbCatalog != null && !dbCatalog.isEmpty()) {
+                for (String catalog : catalogs) {
+                    if (dbCatalog.equalsIgnoreCase(catalog)) {
+                        catalogSelector.setSelectedItem(catalog);
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 
     public int getChoice() {
@@ -235,6 +257,14 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     private void processCancel() {
         choice = CANCEL;
         setVisible(false);
+    }
+
+    /**
+     * Returns selected catalog.
+     */
+    public String getSelectedCatalog() {
+        String catalog = (String) catalogSelector.getSelectedItem();
+        return "".equals(catalog) ? null : catalog;
     }
 
     /**

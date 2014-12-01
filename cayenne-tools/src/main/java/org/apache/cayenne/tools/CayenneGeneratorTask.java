@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
+import foundrylogic.vpp.VPPConfig;
+import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
@@ -28,7 +28,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.velocity.VelocityContext;
 
-import foundrylogic.vpp.VPPConfig;
+import java.io.File;
 
 /**
  * An Ant task to perform class generation based on CayenneDataMap.
@@ -58,6 +58,7 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String querytemplate;
     protected String querysupertemplate;
     protected boolean usepkgpath;
+    protected boolean createpropertynames;
 
     public CayenneGeneratorTask() {
         this.makepairs = true;
@@ -72,16 +73,9 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     protected ClassGenerationAction createGeneratorAction() {
-        ClassGenerationAction action;
-        if (client) {
-            action = new ClientClassGenerationAction();
-            action.setContext(getVppContext());
-        }
-        else {
-            action = new ClassGenerationAction();
-            action.setContext(getVppContext());
-        }
+        ClassGenerationAction action = client ? new ClientClassGenerationAction() : new ClassGenerationAction();
 
+        action.setContext(getVppContext());
         action.setDestDir(destDir);
         action.setEncoding(encoding);
         action.setMakePairs(makepairs);
@@ -96,6 +90,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setQueryTemplate(querytemplate);
         action.setQuerySuperTemplate(querysupertemplate);
         action.setUsePkgPath(usepkgpath);
+        action.setCreatePropertyNames(createpropertynames);
 
         return action;
     }
@@ -115,10 +110,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
         CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
         filterAction.setClient(client);
-        filterAction.setNameFilter(new NamePatternMatcher(
-                logger,
-                includeEntitiesPattern,
-                excludeEntitiesPattern));
+        filterAction.setNameFilter(NamePatternMatcher.build(logger, includeEntitiesPattern, excludeEntitiesPattern));
 
         try {
 
@@ -275,6 +267,13 @@ public class CayenneGeneratorTask extends CayenneTask {
      */
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    /**
+     * Sets <code>createpropertynames</code> property.
+     */
+    public void setCreatepropertynames(boolean createpropertynames) {
+        this.createpropertynames = createpropertynames;
     }
 
     public void setEmbeddabletemplate(String embeddabletemplate) {

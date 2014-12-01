@@ -41,6 +41,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
     protected JCheckBox overwrite;
     protected JCheckBox usePackagePath;
     protected JTextField outputPattern;
+    protected JCheckBox createPropertyNames;
 
     private DefaultFormBuilder builder;
 
@@ -55,6 +56,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.overwrite = new JCheckBox();
         this.usePackagePath = new JCheckBox();
         this.outputPattern = new JTextField();
+        this.createPropertyNames = new JCheckBox();
         this.manageTemplatesLink = new ActionLink("Customize Templates...");
         manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
 
@@ -90,10 +92,13 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.append("Make Pairs:", pairs);
         builder.nextLine();
 
+        builder.append("Use Package Path:", usePackagePath);
+        builder.nextLine();
+
         builder.append("Overwrite Subclasses:", overwrite);
         builder.nextLine();
 
-        builder.append("Use Package Path:", usePackagePath);
+        builder.append("Create Property Names:", createPropertyNames);
         builder.nextLine();
 
         setLayout(new BorderLayout());
@@ -144,4 +149,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         return outputPattern;
     }
 
+    public JCheckBox getCreatePropertyNames() {
+        return createPropertyNames;
+    }
 }

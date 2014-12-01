@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.dba.openbase;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -33,18 +31,18 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class OpenBaseActionBuilder extends JdbcActionBuilder {
 
-    OpenBaseActionBuilder(DataNode dataNode) {
-        super(dataNode);
-    }
+	OpenBaseActionBuilder(DataNode dataNode) {
+		super(dataNode);
+	}
 
-    @Override
-    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SelectAction(query, dataNode) {
+	@Override
+	public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
+		return new SelectAction(query, dataNode) {
 
-            @Override
-            protected SelectTranslator createTranslator(Connection connection) {
-                return new OpenBaseSelectTranslator(query, dataNode, connection);
-            }
-        };
-    }
+			@Override
+			protected SelectTranslator createTranslator() {
+				return new OpenBaseSelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
+			}
+		};
+	}
 }

@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.merge.builders;
 
+import org.apache.cayenne.datafactory.DictionaryValueProvider;
+import org.apache.cayenne.datafactory.ValueProvider;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -27,6 +29,13 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
  * @since 4.0.
  */
 public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
+
+    private static final ValueProvider<String> TYPES_RANDOM = new DictionaryValueProvider<String>(ValueProvider.RANDOM) {
+        @Override
+        protected String[] values() {
+            return TypesMapping.getDatabaseTypes();
+        }
+    };
 
     public DbAttributeBuilder() {
         super(new DbAttribute());
@@ -43,7 +52,7 @@ public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
     }
 
     public DbAttributeBuilder type() {
-        return type(dataFactory.getItem(TypesMapping.getDatabaseTypes()));
+        return type(TYPES_RANDOM.randomValue());
     }
 
     public DbAttributeBuilder type(String item) {
@@ -54,6 +63,10 @@ public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
 
     public DbAttributeBuilder typeInt() {
         return type(TypesMapping.SQL_INTEGER);
+    }
+
+    public DbAttributeBuilder typeBigInt() {
+        return type(TypesMapping.SQL_BIGINT);
     }
 
     public DbAttributeBuilder typeVarchar(int length) {

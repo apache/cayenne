@@ -35,7 +35,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -55,10 +55,10 @@ class Oracle8LOBBatchAction implements SQLAction {
     private DbAdapter adapter;
     private JdbcEventLogger logger;
 
-    private static void bind(DbAdapter adapter, PreparedStatement statement, BatchParameterBinding[] bindings)
+    private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
             throws SQLException, Exception {
 
-        for (BatchParameterBinding b : bindings) {
+        for (ParameterBinding b : bindings) {
             adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
                     .getAttribute().getScale());
         }
@@ -104,7 +104,7 @@ class Oracle8LOBBatchAction implements SQLAction {
             PreparedStatement statement = connection.prepareStatement(updateStr);
             try {
 
-                BatchParameterBinding[] bindings = translator.updateBindings(row);
+                ParameterBinding[] bindings = translator.updateBindings(row);
                 logger.logQueryParameters("bind", bindings);
 
                 bind(adapter, statement, bindings);

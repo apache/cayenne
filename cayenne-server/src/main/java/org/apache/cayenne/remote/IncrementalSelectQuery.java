@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.IncrementalFaultList;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DataMap;
@@ -41,6 +41,10 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A SelectQuery decorator that overrides the metadata to ensure that query result is
@@ -339,5 +343,35 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
     @Override
     public String toString() {
         return query.toString();
+    }
+
+    @Override
+    public <T> List<T> select(ObjectContext context) {
+        return query.select(context);
+    }
+
+    @Override
+    public T selectOne(ObjectContext context) {
+        return query.selectOne(context);
+    }
+
+    @Override
+    public T selectFirst(ObjectContext context) {
+        return query.selectFirst(context);
+    }
+
+    @Override
+    public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+        query.iterate(context, callback);
+    }
+
+    @Override
+    public ResultIterator<T> iterator(ObjectContext context) {
+        return query.iterator(context);
+    }
+
+    @Override
+    public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+        return query.batchIterator(context, size);
     }
 }

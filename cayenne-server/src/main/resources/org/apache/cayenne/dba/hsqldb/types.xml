@@ -45,7 +45,13 @@ HSQLDB types mapping
    <jdbc-type name="CHAR">
        <db-type name="CHAR"/>
    </jdbc-type>
+   <jdbc-type name="NCHAR">
+       <db-type name="CHAR"/>
+   </jdbc-type>
    <jdbc-type name="CLOB">
+       <db-type name="LONGVARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="NCLOB">
        <db-type name="LONGVARCHAR"/>
    </jdbc-type>
    <jdbc-type name="DATALINK">
@@ -73,6 +79,9 @@ HSQLDB types mapping
        <db-type name="LONGVARBINARY"/>
    </jdbc-type>
    <jdbc-type name="LONGVARCHAR">
+       <db-type name="LONGVARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="LONGNVARCHAR">
        <db-type name="LONGVARCHAR"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
@@ -106,6 +115,9 @@ HSQLDB types mapping
        <db-type name="VARBINARY"/>
    </jdbc-type>
    <jdbc-type name="VARCHAR">
+       <db-type name="VARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="NVARCHAR">
        <db-type name="VARCHAR"/>
    </jdbc-type>
 </types>

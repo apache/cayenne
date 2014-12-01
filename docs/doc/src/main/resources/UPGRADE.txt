@@ -4,10 +4,33 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+UPGRADING TO 4.0.M3
+
+* Adding @Deprecated annotation to String property names was stopped. Instead of this, String property names inclusion
+  became optional, controlled with "createPropertyNames" flag in cgen ("false" by default). Also a similar option
+  was added to Advanced Type of CayenneModeler class generation dialog.
+  Note if you have references to @Deprecated String properties and you run cgen without "createPropertyNames" flag,
+  there will be errors. Reference Jira: CAY-1991
+
+* Per CAY-2010 DataSource building methods were refactored out of ServerRuntimeBuilder and into a standalone 
+  org.apache.cayenne.datasource.DataSourceBuilder. So creating a DataSource in runtime may look like this:
+
+  DataSource ds = DataSourceBuilder.url(dbUrl).driver(dbDriver).build();
+  ServerRuntime runtime = ServerRuntimeBuilder.builder().dataSource(ds).build();
+
+* Per CAY-2008, CAY-2009 we got rid of org.apache.cayenne.conn.PoolManager and associated classes that made up a 
+  pooling DataSource. A replacement is non-blocking DataSource under org.apache.cayenne.datasource (PoolingDataSource, ManagedPoolingDataSource),
+  best assembled using org.apache.cayenne.datasource.DataSourceBuilder.
+
+
 UPGRADING TO 4.0.M2
 
 * Note that 3.2 line of development was renamed to 4.0. So 4.0.M2 is a straight descendant of
   3.2M1.
+
+* org.apache.cayenne.map.naming.SmartNamingStrategy was replaced with org.apache.cayenne.map.naming.DefaultNameGenerator. If you
+  mentioned SmartNamingStrategy explicitly in your Maven or Ant configs, make sure you rename it. Since this was/is the default,
+  chances are that you didn't.
 
 * Minimal required JDK version is now 1.6 (both for modeler and runtime). This is a pretty conservative 
   requirement, considering that Java 1.6 has been EOL'd by Oracle on Feb 2013.

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,68 +32,65 @@ import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.commons.collections.Transformer;
 
 /**
- * Oracle qualifier translator. In particular, trims INs with more than 1000 elements to
- * an OR-set of INs with &lt;= 1000 elements
+ * Oracle qualifier translator. In particular, trims INs with more than 1000
+ * elements to an OR-set of INs with &lt;= 1000 elements
  */
 public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
 
-    public OracleQualifierTranslator(QueryAssembler queryAssembler) {
-        super(queryAssembler, OracleAdapter.TRIM_FUNCTION);
-    }
+	public OracleQualifierTranslator(QueryAssembler queryAssembler) {
+		super(queryAssembler, OracleAdapter.TRIM_FUNCTION);
+	}
 
-    @Override
-    protected void doAppendPart(Expression rootNode) throws IOException {
-        if (rootNode == null) {
-            return;
-        }
-        rootNode = rootNode.transform(new INTrimmer());
-        rootNode.traverse(this);
-    }
+	@Override
+	protected void doAppendPart(Expression rootNode) {
+		if (rootNode == null) {
+			return;
+		}
+		rootNode = rootNode.transform(new INTrimmer());
+		rootNode.traverse(this);
+	}
 
-    public static class INTrimmer implements Transformer {
+	public static class INTrimmer implements Transformer {
 
-        public Expression trimmedInExpression(Expression exp, int maxInSize) {
-            Expression list = (Expression) exp.getOperand(1);
-            Object[] objects = (Object[]) list.evaluate(null);
+		public Expression trimmedInExpression(Expression exp, int maxInSize) {
+			Expression list = (Expression) exp.getOperand(1);
+			Object[] objects = (Object[]) list.evaluate(null);
 
-            if (objects.length <= maxInSize) {
-                return exp;
-            }
+			if (objects.length <= maxInSize) {
+				return exp;
+			}
 
-            Expression trimmed = trimmedInExpression(
-                    (ASTPath) exp.getOperand(0),
-                    objects,
-                    maxInSize);
-            if (exp instanceof ASTNotIn) {
-                return new ASTNegate(trimmed);
-            }
-            return trimmed;
-        }
+			Expression trimmed = trimmedInExpression((ASTPath) exp.getOperand(0), objects, maxInSize);
+			if (exp instanceof ASTNotIn) {
+				return new ASTNegate(trimmed);
+			}
+			return trimmed;
+		}
 
-        Expression trimmedInExpression(ASTPath path, Object[] values, int maxInSize) {
-            Expression res = null;
+		Expression trimmedInExpression(ASTPath path, Object[] values, int maxInSize) {
+			Expression res = null;
 
-            List<Object> in = new ArrayList<Object>(maxInSize);
-            for (Object v : values) {
-                in.add(v);
-                if (in.size() == maxInSize) {
-                    Expression inExp = new ASTIn(path, new ASTList(in));
-                    res = res != null ? res.orExp(inExp) : inExp;
-                    in = new ArrayList<Object>(maxInSize);
-                }
-            }
-            if (in.size() > 0) {
-                Expression inExp = new ASTIn(path, new ASTList(in));
-                res = res != null ? res.orExp(inExp) : inExp;
-            }
-            return res;
-        }
+			List<Object> in = new ArrayList<Object>(maxInSize);
+			for (Object v : values) {
+				in.add(v);
+				if (in.size() == maxInSize) {
+					Expression inExp = new ASTIn(path, new ASTList(in));
+					res = res != null ? res.orExp(inExp) : inExp;
+					in = new ArrayList<Object>(maxInSize);
+				}
+			}
+			if (in.size() > 0) {
+				Expression inExp = new ASTIn(path, new ASTList(in));
+				res = res != null ? res.orExp(inExp) : inExp;
+			}
+			return res;
+		}
 
-        public Object transform(Object input) {
-            if (input instanceof ASTIn || input instanceof ASTNotIn) {
-                return trimmedInExpression((Expression) input, 1000);
-            }
-            return input;
-        }
-    }
+		public Object transform(Object input) {
+			if (input instanceof ASTIn || input instanceof ASTNotIn) {
+				return trimmedInExpression((Expression) input, 1000);
+			}
+			return input;
+		}
+	}
 }

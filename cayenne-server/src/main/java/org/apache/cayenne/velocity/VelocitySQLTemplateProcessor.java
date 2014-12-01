@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.access.jdbc.SQLParameterBinding;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.exp.ExpressionException;
@@ -64,19 +64,19 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 		@Override
 		public Object visit(ASTReference node, Object data) {
 
-			if (i >= positionalParams.size()) {
-				throw new ExpressionException("Too few parameters to bind template: " + positionalParams.size());
-			}
-
 			// strip off leading "$"
 			String paramName = node.getFirstToken().image.substring(1);
-			VelocityParamSequence sequence = (VelocityParamSequence) params.get(paramName);
-			if (sequence == null) {
-				sequence = new VelocityParamSequence();
-				params.put(paramName, sequence);
-			}
 
-			sequence.add(positionalParams.get(i++));
+			// only consider the first instance of each named parameter
+			if (!params.containsKey(paramName)) {
+
+				if (i >= positionalParams.size()) {
+					throw new ExpressionException("Too few parameters to bind template: " + positionalParams.size());
+				}
+
+				params.put(paramName, positionalParams.get(i));
+				i++;
+			}
 
 			return data;
 		}
@@ -152,7 +152,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 	}
 
 	SQLStatement processTemplate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters) {
-		List<ParameterBinding> bindings = new ArrayList<ParameterBinding>();
+		List<SQLParameterBinding> bindings = new ArrayList<SQLParameterBinding>();
 		List<ColumnDescriptor> results = new ArrayList<ColumnDescriptor>();
 		parameters.put(BINDINGS_LIST_KEY, bindings);
 		parameters.put(RESULT_COLUMNS_LIST_KEY, results);
@@ -165,7 +165,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 			throw new CayenneRuntimeException("Error processing Velocity template", e);
 		}
 
-		ParameterBinding[] bindingsArray = new ParameterBinding[bindings.size()];
+		SQLParameterBinding[] bindingsArray = new SQLParameterBinding[bindings.size()];
 		bindings.toArray(bindingsArray);
 
 		ColumnDescriptor[] resultsArray = new ColumnDescriptor[results.size()];

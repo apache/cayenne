@@ -22,9 +22,10 @@
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
-		<version>4.0.M2-SNAPSHOT</version>
+		<version>4.0.M3-SNAPSHOT</version>
 	</parent>
-	<groupId>org.apache.cayenne.parents</groupId>
+	
+	<groupId>org.apache.cayenne.tutorials</groupId>
 	<artifactId>cayenne-tutorials-parent</artifactId>
 	<name>Cayenne Tutorials</name>
 	<packaging>pom</packaging>

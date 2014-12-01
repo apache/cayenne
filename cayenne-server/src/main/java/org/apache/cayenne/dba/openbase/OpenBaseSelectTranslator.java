@@ -19,36 +19,35 @@
 
 package org.apache.cayenne.dba.openbase;
 
-import java.sql.Connection;
-
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.access.translator.select.JoinStack;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
  */
-class OpenBaseSelectTranslator extends SelectTranslator {
+class OpenBaseSelectTranslator extends DefaultSelectTranslator {
 
-    /**
-     * @since 4.0
-     */
-    public OpenBaseSelectTranslator(Query query, DataNode dataNode, Connection connection) {
-        super(query, dataNode, connection);
-    }
-    
-    @Override
-    protected JoinStack createJoinStack() {
-        return new OpenBaseJoinStack(getAdapter(), queryMetadata.getDataMap(), this);
-    }
+	/**
+	 * @since 4.0
+	 */
+	public OpenBaseSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		super(query, adapter, entityResolver);
+	}
 
-    @Override
-    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        int limit = queryMetadata.getFetchLimit();
-        if (limit > 0) {
-            buffer.append(" RETURN RESULTS ").append(limit);
-        }
-    }
+	@Override
+	protected JoinStack createJoinStack() {
+		return new OpenBaseJoinStack(getAdapter(), queryMetadata.getDataMap(), this);
+	}
+
+	@Override
+	protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+		int limit = queryMetadata.getFetchLimit();
+		if (limit > 0) {
+			buffer.append(" RETURN RESULTS ").append(limit);
+		}
+	}
 
 }

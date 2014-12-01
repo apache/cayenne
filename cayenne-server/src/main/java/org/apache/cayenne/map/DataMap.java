@@ -19,18 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import static java.util.Collections.emptyList;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -47,6 +35,18 @@ import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Stores a collection of related mapping objects that describe database and
@@ -982,6 +982,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 					}
 				}
 			}
+
+			MappingNamespace ns = getNamespace();
+			if (ns instanceof EntityResolver) {
+				((EntityResolver) ns).refreshMappingCache();
+			}
 		}
 	}
 
@@ -1012,6 +1017,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 						ent.removeRelationship(relationship.getName());
 					}
 				}
+			}
+
+			MappingNamespace ns = getNamespace();
+			if (ns instanceof EntityResolver) {
+				((EntityResolver) ns).refreshMappingCache();
 			}
 		}
 	}
@@ -1356,4 +1366,39 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		clearQueries();
 		clearResultSets();
 	}
+
+    /**
+     *
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 4.0
+     */
+    public String getNameWithDefaultPackage(String name) {
+        return getNameWithPackage(defaultPackage, name);
+    }
+
+    /**
+     *
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 4.0
+     */
+    public static String getNameWithPackage(String pack, String name) {
+        if (Util.isEmptyString(pack)) {
+            return name;
+        } else {
+            return pack + (pack.endsWith(".") ? ""  : ".") + name;
+        }
+    }
+
+    /**
+     *
+     * @param name
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 4.0
+     */
+    public String getNameWithDefaultClientPackage(String name) {
+        return getNameWithPackage(defaultClientPackage, name);
+    }
 }

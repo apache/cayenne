@@ -45,8 +45,14 @@ H2 types mapping
    <jdbc-type name="CHAR">
        <db-type name="CHAR"/>
    </jdbc-type>
+   <jdbc-type name="NCHAR">
+       <db-type name="NCHAR"/>
+   </jdbc-type>
    <jdbc-type name="CLOB">
        <db-type name="CLOB"/>
+   </jdbc-type>
+   <jdbc-type name="NCLOB">
+       <db-type name="NCLOB"/>
    </jdbc-type>
    <jdbc-type name="DATALINK">
        <db-type name="DATALINK"/>
@@ -74,6 +80,9 @@ H2 types mapping
    </jdbc-type>
    <jdbc-type name="LONGVARCHAR">
        <db-type name="CLOB"/>
+   </jdbc-type>
+   <jdbc-type name="LONGNVARCHAR">
+       <db-type name="NCLOB"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
        <db-type name="NUMERIC"/>
@@ -107,5 +116,11 @@ H2 types mapping
    </jdbc-type>
    <jdbc-type name="VARCHAR">
        <db-type name="VARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="NVARCHAR">
+       <db-type name="NVARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="SQLXML">
+       <db-type name="NCLOB"/>
    </jdbc-type>
 </types>

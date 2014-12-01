@@ -18,19 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.dba.ingres;
 
-import java.sql.Connection;
-
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
-public class IngresSelectTranslator extends SelectTranslator {
+public class IngresSelectTranslator extends DefaultSelectTranslator {
     
     /**
      * @since 4.0
      */
-    public IngresSelectTranslator(Query query, DataNode dataNode, Connection connection) {
-        super(query, dataNode, connection);
+    public IngresSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+        super(query, adapter, entityResolver);
     }
 
     @Override

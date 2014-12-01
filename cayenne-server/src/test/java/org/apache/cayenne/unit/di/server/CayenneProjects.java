@@ -74,6 +74,7 @@ public class CayenneProjects {
     public static final String TESTMAP_PROJECT = "cayenne-testmap.xml";
     public static final String THINGS_PROJECT = "cayenne-things.xml";
     public static final String TOONE_PROJECT = "cayenne-toone.xml";
+    public static final String UNSUPPORTED_DISTINCT_TYPES_PROJECT = "cayenne-unsupported-distinct-types.xml";
     public static final String UUID_PROJECT = "cayenne-uuid.xml";
 
 }

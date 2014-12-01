@@ -1,27 +1,29 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 package org.apache.cayenne.merge;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.DefaultDbLoaderDelegate;
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.LoggingDbLoaderDelegate;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
@@ -30,6 +32,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DetectedDbEntity;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -51,68 +55,43 @@ import java.util.Set;
  */
 public class DbMerger {
 
+    private static final Log LOGGER = LogFactory.getLog(DbMerger.class);
+
     private final MergerFactory factory;
     
     private final ValueForNullProvider valueForNull;
-
-    private final String schema;
 
     public DbMerger(MergerFactory factory) {
         this(factory, null);
     }
 
-    public DbMerger(MergerFactory factory, String schema) {
-        this(factory,  null, schema);
-    }
-
-    public DbMerger(MergerFactory factory, ValueForNullProvider valueForNull, String schema) {
+    public DbMerger(MergerFactory factory, ValueForNullProvider valueForNull) {
         this.factory = factory;
         this.valueForNull = valueForNull == null ? new EmptyValueForNullProvider() : valueForNull;
-        this.schema = schema;
-    }
-
-    /**
-     * A method that return true if the given table name should be included. The default
-     * implementation include all tables.
-     */
-    public boolean includeTableName(String tableName) {
-        return true;
     }
 
     /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataNode dataNode, DataMap existing) {
-        return createMergeTokens(dataNode.getDataSource(), dataNode.getAdapter(), existing);
+    public List<MergerToken> createMergeTokens(DataSource dataSource, DbAdapter adapter, DataMap existingDataMap, DbLoaderConfiguration config) {
+        return createMergeTokens(
+                existingDataMap,
+                loadDataMapFromDb(dataSource, adapter, config),
+                config
+        );
     }
 
     /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DbLoader dbLoader, DataMap existing) {
-        return createMergeTokens(existing, loadDataMapFromDb(dbLoader));
-    }
-
-    /**
-     * Create and return a {@link List} of {@link MergerToken}s to alter the given
-     * {@link DataNode} to match the given {@link DataMap}
-     */
-    public List<MergerToken> createMergeTokens(DataSource dataSource, DbAdapter adapter, DataMap existingDataMap) {
-        return createMergeTokens(existingDataMap, loadDataMapFromDb(dataSource, adapter));
-    }
-
-    /**
-     * Create and return a {@link List} of {@link MergerToken}s to alter the given
-     * {@link DataNode} to match the given {@link DataMap}
-     */
-    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb) {
+    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb, DbLoaderConfiguration config) {
 
         loadedFomDb.setQuotingSQLIdentifiers(existing.isQuotingSQLIdentifiers());
 
-        List<MergerToken> tokens = createMergeTokens(existing.getDbEntities(), loadedFomDb.getDbEntities());
-
+        List<MergerToken> tokens
+                = createMergeTokens(filter(existing, config.getFiltersConfig()), loadedFomDb.getDbEntities(), config);
 
         // sort. use a custom Comparator since only toDb tokens are comparable by now
         Collections.sort(tokens, new Comparator<MergerToken>() {
@@ -120,9 +99,8 @@ public class DbMerger {
             public int compare(MergerToken o1, MergerToken o2) {
                 if (o1 instanceof AbstractToDbToken
                         && o2 instanceof AbstractToDbToken) {
-                    AbstractToDbToken d1 = (AbstractToDbToken) o1;
-                    AbstractToDbToken d2 = (AbstractToDbToken) o2;
-                    return d1.compareTo(d2);
+
+                    return ((AbstractToDbToken) o1).compareTo(o2);
                 }
                 return 0;
             }
@@ -131,67 +109,42 @@ public class DbMerger {
         return tokens;
     }
 
-    private DataMap loadDataMapFromDb(DataSource dataSource, DbAdapter adapter) {
+    private Collection<DbEntity> filter(DataMap existing, FiltersConfig filtersConfig) {
+        Collection<DbEntity> existingFiltered = new LinkedList<DbEntity>();
+        for (DbEntity entity : existing.getDbEntities()) {
+            if (filtersConfig.tableFilter(entity.getCatalog(), entity.getSchema()).isIncludeTable(entity.getName()) != null) {
+                existingFiltered.add(entity);
+            }
+        }
+        return existingFiltered;
+    }
+
+    private DataMap loadDataMapFromDb(DataSource dataSource, DbAdapter adapter, DbLoaderConfiguration config) {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
 
-            final DbMerger merger = this;
-
-            // TODO pass naming strategy
-            DbLoader dbLoader = new DbLoader(conn, adapter, new DefaultDbLoaderDelegate()) {
-
-                @Override
-                public boolean includeTableName(String tableName) {
-                    return merger.includeTableName(tableName);
-                }
-            };
-
-            return loadDataMapFromDb(dbLoader);
-        }
-        catch (SQLException e) {
-            throw new CayenneRuntimeException("Can't load dataMap from db.", e);
-        }
-        finally {
+            return new DbLoader(conn, adapter, new LoggingDbLoaderDelegate(LOGGER)).load(config);
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
+        } finally {
             if (conn != null) {
                 try {
                     conn.close();
-                }
-                catch (SQLException e) {
+                } catch (SQLException e) {
                     // Do nothing.
                 }
             }
         }
     }
 
-    private DataMap loadDataMapFromDb(DbLoader dbLoader) {
-        DataMap detectedDataMap = new DataMap();
-        try {
-            dbLoader.load(detectedDataMap, null, schema, null, (String[]) null);
-        } catch (SQLException e) {
-            // TODO log
-        }
-
-        return detectedDataMap;
-    }
-
-    /**
-     *
-     *
-     * @param existing
-     * @param loadedFromDb
-     * @return
-     */
-    public List<MergerToken> createMergeTokens(Collection<DbEntity> existing, Collection<DbEntity> loadedFromDb) {
+    public List<MergerToken> createMergeTokens(Collection<DbEntity> existing, Collection<DbEntity> loadedFromDb,
+                                               DbLoaderConfiguration config) {
         Collection<DbEntity> dbEntitiesToDrop = new LinkedList<DbEntity>(loadedFromDb);
 
         List<MergerToken> tokens = new LinkedList<MergerToken>();
         for (DbEntity dbEntity : existing) {
             String tableName = dbEntity.getName();
-
-            if (!includeTableName(tableName)) {
-                continue;
-            }
 
             // look for table
             DbEntity detectedEntity = findDbEntity(loadedFromDb, tableName);
@@ -207,23 +160,29 @@ public class DbMerger {
             dbEntitiesToDrop.remove(detectedEntity);
 
             tokens.addAll(checkRelationshipsToDrop(dbEntity, detectedEntity));
-            tokens.addAll(checkRelationshipsToAdd(dbEntity, detectedEntity));
+            if (!config.isSkipRelationshipsLoading()) {
+                tokens.addAll(checkRelationshipsToAdd(dbEntity, detectedEntity));
+            }
             tokens.addAll(checkRows(dbEntity, detectedEntity));
 
-            MergerToken token = checkPrimaryKeyChange(dbEntity, detectedEntity);
-            if (token != null) {
-                tokens.add(token);
+            if (!config.isSkipPrimaryKeyLoading()) {
+                MergerToken token = checkPrimaryKeyChange(dbEntity, detectedEntity);
+                if (token != null) {
+                    tokens.add(token);
+                }
             }
         }
 
         // drop table
         // TODO: support drop table. currently, too many tables are marked for drop
         for (DbEntity e : dbEntitiesToDrop) {
-            if (!includeTableName(e.getName())) {
-                continue;
-            }
-
             tokens.add(factory.createDropTableToDb(e));
+            for (DbRelationship relationship : e.getRelationships()) {
+                DbEntity detectedEntity = findDbEntity(existing, relationship.getTargetEntityName());
+                if (detectedEntity != null) {
+                    tokens.add(factory.createDropRelationshipToDb(detectedEntity, relationship.getReverseRelationship()));
+                }
+            }
         }
 
         return tokens;
@@ -300,7 +259,7 @@ public class DbMerger {
                 }
 
                 detected.setSourceEntity(dbEntity);
-                detected.setTargetEntity(targetEntity);
+                detected.setTargetEntityName(targetEntity);
 
                 // manipulate the joins to match the DbAttributes in the model
                 for (DbJoin join : detected.getJoins()) {
@@ -332,10 +291,6 @@ public class DbMerger {
         List<MergerToken> tokens = new LinkedList<MergerToken>();
 
         for (DbRelationship rel : dbEntity.getRelationships()) {
-            if (!includeTableName(rel.getTargetEntityName())) {
-                continue;
-            }
-            
             if (findDbRelationship(detectedEntity, rel) == null) {
                 AddRelationshipToDb token = (AddRelationshipToDb)
                         factory.createAddRelationshipToDb(dbEntity, rel);
@@ -359,20 +314,15 @@ public class DbMerger {
         Collection<DbAttribute> primaryKeyNew = dbEntity.getPrimaryKeys();
 
         String primaryKeyName = null;
-        if ((detectedEntity instanceof DetectedDbEntity)) {
+        if (detectedEntity instanceof DetectedDbEntity) {
             primaryKeyName = ((DetectedDbEntity) detectedEntity).getPrimaryKeyName();
         }
 
-        if (upperCaseEntityNames(primaryKeyOriginal).equals(
-                upperCaseEntityNames(primaryKeyNew))) {
+        if (upperCaseEntityNames(primaryKeyOriginal).equals(upperCaseEntityNames(primaryKeyNew))) {
             return null;
         }
 
-        return factory.createSetPrimaryKeyToDb(
-                dbEntity,
-                primaryKeyOriginal,
-                primaryKeyNew,
-                primaryKeyName);
+        return factory.createSetPrimaryKeyToDb(dbEntity, primaryKeyOriginal, primaryKeyNew, primaryKeyName);
     }
     
     private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attrs) {

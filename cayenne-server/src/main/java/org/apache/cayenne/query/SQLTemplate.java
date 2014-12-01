@@ -345,12 +345,12 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	}
 
 	/**
-	 * Initializes positional parameters of the query. This is a positional
-	 * style of binding. Names of variables in the expression are ignored and
-	 * parameters are bound in order they are found in the expression. E.g. if
-	 * the same name is mentioned twice, it can be bound to two different
-	 * values. If declared and provided parameters counts are mismatched, an
-	 * exception will be thrown.
+	 * Initializes positional parameters of the query. Parameters are bound in
+	 * the order they are found in the SQL template. If a given parameter name
+	 * is used more than once, only the first occurrence is treated as
+	 * "position", subsequent occurrences are bound with the same value as the
+	 * first one. If template parameters count is different from the array
+	 * parameter count, an exception will be thrown.
 	 * <p>
 	 * Note that calling this method will reset any previously set *named*
 	 * parameters.
@@ -362,6 +362,16 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	}
 
 	/**
+	 * Initializes positional parameters of the query. Parameters are bound in
+	 * the order they are found in the SQL template. If a given parameter name
+	 * is used more than once, only the first occurrence is treated as
+	 * "position", subsequent occurrences are bound with the same value as the
+	 * first one. If template parameters count is different from the list
+	 * parameter count, an exception will be thrown.
+	 * <p>
+	 * Note that calling this method will reset any previously set *named*
+	 * parameters.
+	 * 
 	 * @since 4.0
 	 */
 	public void setParamsList(List<Object> params) {

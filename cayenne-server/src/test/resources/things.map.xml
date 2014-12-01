@@ -9,12 +9,12 @@
     <property name="defaultClientPackage" value="test.client"/>
     <property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
     <db-entity name="BAG">
-        <db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+        <db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
         <db-attribute name="NAME" type="VARCHAR" length="200"/>
     </db-entity>
     <db-entity name="BALL">
         <db-attribute name="BOX_ID" type="BIGINT" isMandatory="true"/>
-        <db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+        <db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
         <db-attribute name="THING_VOLUME" type="INTEGER" isMandatory="true"/>
         <db-attribute name="THING_WEIGHT" type="INTEGER" isMandatory="true"/>
     </db-entity>
@@ -26,7 +26,7 @@
     <db-entity name="BOX_INFO">
         <db-attribute name="BOX_ID" type="BIGINT" isMandatory="true"/>
         <db-attribute name="COLOR" type="VARCHAR" isMandatory="true" length="200"/>
-        <db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+        <db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
     </db-entity>
     <db-entity name="BOX_THING">
         <db-attribute name="BOX_ID" type="BIGINT" isMandatory="true"/>
@@ -34,7 +34,7 @@
         <db-attribute name="THING_WEIGHT" type="INTEGER" isMandatory="true"/>
     </db-entity>
     <db-entity name="THING">
-        <db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+        <db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
         <db-attribute name="VOLUME" type="INTEGER" isMandatory="true"/>
         <db-attribute name="WEIGHT" type="INTEGER" isMandatory="true"/>
     </db-entity>

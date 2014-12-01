@@ -220,7 +220,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
             String pkColumn,
             String fkTable,
             String fkColumn) {
-        return new ExportedKey(pkTable, pkColumn, null, fkTable, fkColumn, null);
+        return new ExportedKey(pkTable, pkColumn, null, fkTable, fkColumn, null, (short) 1);
     }
 
     public List<InferredRelationship> getSelectedEntities() {

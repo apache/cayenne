@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import java.util.prefs.Preferences;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.util.Util;
+
+import java.util.prefs.Preferences;
 
 public class DataMapDefaults extends RenamedPreferences {
 
@@ -47,7 +47,7 @@ public class DataMapDefaults extends RenamedPreferences {
     }
 
     /**
-     * Returns a superlcass package tailored for a given DataMap.
+     * Returns a superclass package tailored for a given DataMap.
      */
     public void updateSuperclassPackage(DataMap dataMap, boolean isClient) {
 
@@ -135,6 +135,9 @@ public class DataMapDefaults extends RenamedPreferences {
     public void setOutputPath(String outputPath) {
         if (getCurrentPreference() != null) {
             this.outputPath = outputPath;
+            if(outputPath == null) {
+                outputPath = "";
+            }
             getCurrentPreference().put(OUTPUT_PATH_PROPERTY, outputPath);
         }
     }
@@ -151,6 +154,9 @@ public class DataMapDefaults extends RenamedPreferences {
     public void setSubclassTemplate(String subclassTemplate) {
         if (getCurrentPreference() != null) {
             this.subclassTemplate = subclassTemplate;
+            if(subclassTemplate == null) {
+                subclassTemplate = "";
+            }
             getCurrentPreference().put(SUBCLASS_TEMPLATE_PROPERTY, subclassTemplate);
         }
     }
@@ -167,6 +173,9 @@ public class DataMapDefaults extends RenamedPreferences {
     public void setSuperclassPackage(String superclassPackage) {
         if (getCurrentPreference() != null) {
             this.superclassPackage = superclassPackage;
+            if(superclassPackage == null) {
+                superclassPackage = "";
+            }
             getCurrentPreference().put(SUPERCLASS_PACKAGE_PROPERTY, superclassPackage);
         }
     }
@@ -183,6 +192,9 @@ public class DataMapDefaults extends RenamedPreferences {
     public void setSuperclassTemplate(String superclassTemplate) {
         if (getCurrentPreference() != null) {
             this.superclassTemplate = superclassTemplate;
+            if(superclassTemplate == null) {
+                superclassTemplate = "";
+            }
             getCurrentPreference().put(SUPERCLASS_TEMPLATE_PROPERTY, superclassTemplate);
         }
     }
@@ -196,6 +208,9 @@ public class DataMapDefaults extends RenamedPreferences {
 
     public void setProperty(String property, String value) {
         if (getCurrentPreference() != null) {
+            if(value == null) {
+                value = "";
+            }
             getCurrentPreference().put(property, value);
         }
     }

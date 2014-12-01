@@ -26,6 +26,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -232,8 +233,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 		Expression e = (Expression) object;
 
-		if (e.getType() != getType()
-				|| e.getOperandCount() != getOperandCount()) {
+		if (e.getType() != getType() || e.getOperandCount() != getOperandCount()) {
 			return false;
 		}
 
@@ -262,13 +262,14 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 	/**
 	 * Creates and returns a new Expression instance based on this expression,
-	 * but with named parameters substituted with provided values. This is a
-	 * positional style of binding. Names of variables in the expression are
-	 * ignored and parameters are bound in order they are found in the
-	 * expression. E.g. if the same name is mentioned twice, it can be bound to
-	 * two different values. Also positional style would not allow subexpression
-	 * pruning. If declared and provided parameters counts are mismatched, an
+	 * but with parameters substituted with provided values. This is a
+	 * positional style of binding. If a given parameter name is used more than
+	 * once, only the first occurrence is treated as "position", subsequent
+	 * occurrences are bound with the same value as the first one. If expression
+	 * parameters count is different from the array parameter count, an
 	 * exception will be thrown.
+	 * <p>
+	 * positional style would not allow subexpression pruning.
 	 * 
 	 * @since 4.0
 	 */
@@ -283,8 +284,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	void inPlaceParamsArray(Object... parameters) {
 
-		InPlaceParamReplacer replacer = new InPlaceParamReplacer(
-				parameters == null ? new Object[0] : parameters);
+		InPlaceParamReplacer replacer = new InPlaceParamReplacer(parameters == null ? new Object[0] : parameters);
 		traverse(replacer);
 		replacer.onFinish();
 	}
@@ -376,8 +376,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * 
 	 * @since 4.0
 	 */
-	public Expression joinExp(int type, Expression exp,
-			Expression... expressions) {
+	public Expression joinExp(int type, Expression exp, Expression... expressions) {
 		Expression join = ExpressionFactory.expressionOfType(type);
 		join.setOperand(0, this);
 		join.setOperand(1, exp);
@@ -604,8 +603,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 			return (Expression) transformed;
 		}
 
-		throw new ExpressionException("Invalid transformed expression: "
-				+ transformed);
+		throw new ExpressionException("Invalid transformed expression: " + transformed);
 	}
 
 	/**
@@ -623,8 +621,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 			Object transformedChild;
 
 			if (operand instanceof Expression) {
-				transformedChild = ((Expression) operand)
-						.transformExpression(transformer);
+				transformedChild = ((Expression) operand).transformExpression(transformer);
 			} else if (transformer != null) {
 				transformedChild = transformer.transform(operand);
 			} else {
@@ -633,8 +630,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 			// prune null children only if there is a transformer and it
 			// indicated so
-			boolean prune = transformer != null
-					&& transformedChild == PRUNED_NODE;
+			boolean prune = transformer != null && transformedChild == PRUNED_NODE;
 
 			if (!prune) {
 				copy.setOperand(j, transformedChild);
@@ -648,8 +644,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		}
 
 		// all the children are processed, only now transform this copy
-		return (transformer != null) ? (Expression) transformer.transform(copy)
-				: copy;
+		return (transformer != null) ? (Expression) transformer.transform(copy) : copy;
 	}
 
 	/**
@@ -662,8 +657,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		try {
 			appendAsString(encoder.getPrintWriter());
 		} catch (IOException e) {
-			throw new CayenneRuntimeException(
-					"Unexpected IO exception appending to PrintWriter", e);
+			throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
 		}
 		encoder.print("]]>");
 	}
@@ -724,8 +718,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * @since 4.0
 	 * @throws IOException
 	 */
-	public abstract void appendAsEJBQL(List<Object> parameterAccumulator,
-			Appendable out, String rootId) throws IOException;
+	public abstract void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
+			throws IOException;
 
 	@Override
 	public String toString() {
@@ -733,8 +727,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		try {
 			appendAsString(out);
 		} catch (IOException e) {
-			throw new CayenneRuntimeException(
-					"Unexpected IO exception appending to StringBuilder", e);
+			throw new CayenneRuntimeException("Unexpected IO exception appending to StringBuilder", e);
 		}
 		return out.toString();
 	}
@@ -755,8 +748,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		try {
 			appendAsEJBQL(parameterAccumulator, out, rootId);
 		} catch (IOException e) {
-			throw new CayenneRuntimeException(
-					"Unexpected IO exception appending to StringBuilder", e);
+			throw new CayenneRuntimeException("Unexpected IO exception appending to StringBuilder", e);
 		}
 		return out.toString();
 	}
@@ -808,8 +800,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 				if (pruneMissing) {
 					return PRUNED_NODE;
 				} else {
-					throw new ExpressionException(
-							"Missing required parameter: $" + name);
+					throw new ExpressionException("Missing required parameter: $" + name);
 				}
 			} else {
 				Object value = parameters.get(name);
@@ -818,8 +809,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 				// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
 				// object
 				// values in ASTScalars?
-				return (value != null) ? ExpressionFactory
-						.wrapPathOperand(value) : new ASTScalar(null);
+				return (value != null) ? ExpressionFactory.wrapPathOperand(value) : new ASTScalar(null);
 			}
 		}
 
@@ -829,6 +819,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 		private Object[] parameters;
 		private int i;
+		private Map<String, Object> seen;
 
 		InPlaceParamReplacer(Object[] parameters) {
 			this.parameters = parameters;
@@ -836,19 +827,17 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 		void onFinish() {
 			if (i < parameters.length) {
-				throw new ExpressionException(
-						"Too many parameters to bind expression. Expected: "
-								+ i + ", actual: " + parameters.length);
+				throw new ExpressionException("Too many parameters to bind expression. Expected: " + i + ", actual: "
+						+ parameters.length);
 			}
 		}
 
 		@Override
-		public void finishedChild(Expression node, int childIndex,
-				boolean hasMoreChildren) {
+		public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
 
 			Object child = node.getOperand(childIndex);
 			if (child instanceof ExpressionParameter) {
-				node.setOperand(childIndex, nextValue());
+				node.setOperand(childIndex, nextValue(((ExpressionParameter) child).getName()));
 			}
 			// normally Object[] is an ASTList child
 			else if (child instanceof Object[]) {
@@ -856,26 +845,34 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 				for (int i = 0; i < array.length; i++) {
 					if (array[i] instanceof ExpressionParameter) {
-						array[i] = nextValue();
+						array[i] = nextValue(((ExpressionParameter) array[i]).getName());
 					}
 				}
 			}
 		}
 
-		private Object nextValue() {
-			if (i >= parameters.length) {
-				throw new ExpressionException(
-						"Too few parameters to bind expression: "
-								+ parameters.length);
+		private Object nextValue(String name) {
+
+			if (seen == null) {
+				seen = new HashMap<String, Object>();
 			}
 
-			Object p = parameters[i++];
+			Object p;
+			if (seen.containsKey(name)) {
+				p = seen.get(name);
+			} else {
+				if (i >= parameters.length) {
+					throw new ExpressionException("Too few parameters to bind expression: " + parameters.length);
+				}
+
+				p = parameters[i++];
+				seen.put(name, p);
+			}
 
 			// wrap lists (for now); also support null parameters
 			// TODO: andrus 8/14/2007 - shouldn't we also wrap non-null
 			// object values in ASTScalars?
-			return (p != null) ? ExpressionFactory.wrapPathOperand(p)
-					: new ASTScalar(null);
+			return (p != null) ? ExpressionFactory.wrapPathOperand(p) : new ASTScalar(null);
 		}
 
 	}

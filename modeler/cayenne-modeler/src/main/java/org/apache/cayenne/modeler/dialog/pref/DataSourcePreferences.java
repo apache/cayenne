@@ -36,7 +36,7 @@ import java.util.prefs.Preferences;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
-import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.modeler.FileClassLoadingService;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;

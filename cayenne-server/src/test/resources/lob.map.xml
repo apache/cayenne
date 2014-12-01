@@ -16,6 +16,10 @@
         <db-attribute name="CLOB_COL" type="CLOB"/>
         <db-attribute name="CLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
     </db-entity>
+    <db-entity name="NCLOB_TEST">
+        <db-attribute name="NCLOB_COL" type="NCLOB"/>
+        <db-attribute name="NCLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+    </db-entity>
     <db-entity name="CLOB_TEST_RELATION">
         <db-attribute name="CVALUE" type="INTEGER"/>
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -30,6 +34,9 @@
     </obj-entity>
     <obj-entity name="ClobTestEntity" className="org.apache.cayenne.testdo.lob.ClobTestEntity" dbEntityName="CLOB_TEST">
         <obj-attribute name="clobCol" type="java.lang.String" db-attribute-path="CLOB_COL"/>
+    </obj-entity>
+    <obj-entity name="NClobTestEntity" className="org.apache.cayenne.testdo.lob.NClobTestEntity" dbEntityName="NCLOB_TEST">
+        <obj-attribute name="nclobCol" type="java.lang.String" db-attribute-path="NCLOB_COL"/>
     </obj-entity>
     <obj-entity name="ClobTestRelation" className="org.apache.cayenne.testdo.lob.ClobTestRelation" dbEntityName="CLOB_TEST_RELATION">
         <obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>

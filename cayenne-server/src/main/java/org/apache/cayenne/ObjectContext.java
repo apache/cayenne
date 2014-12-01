@@ -19,14 +19,14 @@
 
 package org.apache.cayenne;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A Cayenne object facade to a persistent store. Instances of ObjectContext are
@@ -194,6 +194,25 @@ public interface ObjectContext extends DataChannel, Serializable {
     <T> T selectOne(Select<T> query);
 
     /**
+     * Selects a single object using provided query. The query itself can
+     * match any number of objects, but will return only the first one. It
+     * returns null if no objects were matched.
+     * <p>
+     * If it matched more than one object, the first object from the list is
+     * returned. This makes 'selectFirst' different from
+     * {@link #selectOne(Select)}, which would throw in this situation.
+     * 'selectFirst' is useful e.g. when the query is ordered and we only want
+     * to see the first object (e.g. "most recent news article"), etc.
+     * <p>
+     * Selecting the first object via "Select.selectFirst(ObjectContext)"
+     * is more comprehensible than selecting via "ObjectContext.selectFirst(Select)",
+     * because implementations of "Select" set fetch size limit to one.
+     *
+     * @since 4.0
+     */
+    <T> T selectFirst(Select<T> query);
+
+    /**
      * Creates a ResultIterator based on the provided query and passes it to a
      * callback for processing. The caller does not need to worry about closing
      * the iterator. This method takes care of it.
@@ -206,12 +225,24 @@ public interface ObjectContext extends DataChannel, Serializable {
      * Creates a ResultIterator based on the provided query. It is usually
      * backed by an open result set and is useful for processing of large data
      * sets, preserving a constant memory footprint. The caller must wrap
-     * iteration in try/finally and close the ResultIterator explicitly. Or use
-     * {@link #iterate(Select, ResultIteratorCallback)} as an alternative.
+     * iteration in try/finally (or try-with-resources for Java 1.7 and higher) and
+     * close the ResultIterator explicitly.
+     * Or use {@link #iterate(Select, ResultIteratorCallback)} as an alternative.
      * 
      * @since 4.0
      */
     <T> ResultIterator<T> iterator(Select<T> query);
+
+    /**
+     * Creates a ResultBatchIterator based on the provided query and batch size. It is usually
+     * backed by an open result set and is useful for processing of large data
+     * sets, preserving a constant memory footprint. The caller must wrap
+     * iteration in try/finally (or try-with-resources for Java 1.7 and higher) and
+     * close the ResultBatchIterator explicitly.
+     *
+     * @since 4.0
+     */
+    <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size);
 
     /**
      * Executes any kind of query providing the result in a form of

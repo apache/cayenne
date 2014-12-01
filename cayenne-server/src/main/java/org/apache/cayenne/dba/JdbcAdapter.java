@@ -1,32 +1,23 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 
 package org.apache.cayenne.dba;
-
-import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -52,6 +43,15 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
+
+import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A generic DbAdapter implementation. Can be used as a default adapter or as a
@@ -234,6 +234,16 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
+     * Returns true.
+     *
+     * @since 4.0
+     */
+    @Override
+    public boolean supportsCatalogsOnReverseEngineering() {
+        return true;
+    }
+
+    /**
      * @since 1.1
      */
     public void setSupportsUniqueConstraints(boolean flag) {
@@ -262,6 +272,9 @@ public class JdbcAdapter implements DbAdapter {
     static boolean supportsLength(int type) {
         return type == Types.BINARY
                 || type == Types.CHAR
+                || type == Types.NCHAR
+                || type == Types.NVARCHAR
+                || type == Types.LONGNVARCHAR
                 || type == Types.DECIMAL
                 || type == Types.DOUBLE
                 || type == Types.FLOAT
@@ -335,10 +348,11 @@ public class JdbcAdapter implements DbAdapter {
             boolean firstPk = true;
 
             while (pkit.hasNext()) {
-                if (firstPk)
+                if (firstPk) {
                     firstPk = false;
-                else
+                } else {
                     sqlBuffer.append(", ");
+                }
 
                 DbAttribute at = pkit.next();
 
@@ -355,43 +369,41 @@ public class JdbcAdapter implements DbAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-
-        String[] types = externalTypesForJdbcType(column.getType());
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
-                    : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '" + entityName + "." + column.getName()
-                    + "': " + column.getType());
-        }
-
-        String type = types[0];
         sqlBuffer.append(quotingStrategy.quotedName(column));
-        sqlBuffer.append(' ').append(type);
+        sqlBuffer.append(' ').append(getType(this, column));
 
-        // append size and precision (if applicable)s
-        if (typeSupportsLength(column.getType())) {
-            int len = column.getMaxLength();
+        sqlBuffer.append(sizeAndPrecision(this, column));
+        sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
+    }
 
-            int scale = (TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT) ? column
-                    .getScale() : -1;
-
-            // sanity check
-            if (scale > len) {
-                scale = -1;
-            }
-
-            if (len > 0) {
-                sqlBuffer.append('(').append(len);
-
-                if (scale >= 0) {
-                    sqlBuffer.append(", ").append(scale);
-                }
-
-                sqlBuffer.append(')');
-            }
+    public static String sizeAndPrecision(DbAdapter adapter, DbAttribute column) {
+        if (!adapter.typeSupportsLength(column.getType())) {
+            return "";
         }
 
-        sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
+        int len = column.getMaxLength();
+        int scale = TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT ? column.getScale() : -1;
+
+        // sanity check
+        if (scale > len) {
+            scale = -1;
+        }
+
+        if (len > 0) {
+            return "(" + len + (scale >= 0 ? ", " + scale : "") + ")";
+        }
+
+        return "";
+    }
+
+    public static String getType(DbAdapter adapter, DbAttribute column) {
+        String[] types = adapter.externalTypesForJdbcType(column.getType());
+        if (types == null || types.length == 0) {
+            String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
+            throw new CayenneRuntimeException("Undefined type for attribute '"
+                    + entityName + "." + column.getName() + "': " + column.getType());
+        }
+        return types[0];
     }
 
     /**
@@ -446,11 +458,12 @@ public class JdbcAdapter implements DbAdapter {
         boolean first = true;
 
         for (DbJoin join : rel.getJoins()) {
-            if (!first) {
+            if (first) {
+                first = false;
+            } else {
                 buf.append(", ");
                 refBuf.append(", ");
-            } else
-                first = false;
+            }
 
             buf.append(quotingStrategy.quotedSourceName(join));
             refBuf.append(quotingStrategy.quotedTargetName(join));

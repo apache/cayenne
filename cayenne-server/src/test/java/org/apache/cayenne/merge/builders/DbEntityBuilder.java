@@ -59,7 +59,11 @@ public class DbEntityBuilder extends DefaultBuilder<DbEntity> {
 
     public DbEntityBuilder attributes(int numberUpTo) {
         for (int i = 0; i < numberUpTo; i++) {
-            obj.addAttribute(new DbAttributeBuilder().random());
+            try {
+                obj.addAttribute(new DbAttributeBuilder().random());
+            } catch (IllegalArgumentException e) {
+                i--; // try again
+            }
         }
 
         return this;

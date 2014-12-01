@@ -17,13 +17,12 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>4.0.M2-SNAPSHOT</version>
+		<version>4.0.M3-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -43,11 +42,6 @@
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
-        <dependency>
-            <groupId>org.fluttercode.datafactory</groupId>
-            <artifactId>datafactory</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
 			<groupId>org.apache.cayenne.build-tools</groupId>
@@ -66,6 +60,12 @@
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-testutil</artifactId>
+            <version>1.9.4</version>
+            <scope>test</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -115,6 +115,16 @@
 			<groupId>net.java.dev.inflector</groupId>
 			<artifactId>inflector</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
 	</dependencies>
 	
@@ -131,14 +141,39 @@
 				</executions>
 			</plugin>
             <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <!--<configuration>
-                    <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
-                </configuration>-->
-            </plugin>
-            <plugin>
-                <artifactId>maven-pmd-plugin</artifactId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 	</build>
+    <profiles>
+        <profile>
+            <id>code-quality</id>
+
+            <activation>
+                <property>
+                    <name>!fast-and-dirty</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <!--<configuration>
+                            <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
+                        </configuration>-->
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -69,7 +69,7 @@ class Oracle8LOBBatchQueryWrapper {
             DbAttribute attribute = this.dbAttributes.get(i);
             int type = attribute.getType();
             qualifierAttributes[i] = attribute.isPrimaryKey();
-            allLOBAttributes[i] = (type == Types.BLOB || type == Types.CLOB);
+            allLOBAttributes[i] = type == Types.BLOB || type == Types.CLOB;
         }
     }
 

@@ -16,11 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.tools;
 
 import java.io.File;
 
+import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.naming.DefaultNameGenerator;
@@ -28,50 +33,60 @@ import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.DbImportModule;
+import org.apache.cayenne.tools.dbimport.config.AntNestedElement;
+import org.apache.cayenne.tools.dbimport.config.Catalog;
+import org.apache.cayenne.tools.dbimport.config.ExcludeColumn;
+import org.apache.cayenne.tools.dbimport.config.ExcludeProcedure;
+import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
+import org.apache.cayenne.tools.dbimport.config.IncludeColumn;
+import org.apache.cayenne.tools.dbimport.config.IncludeProcedure;
+import org.apache.cayenne.tools.dbimport.config.IncludeTable;
+import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
+import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
+import javax.sql.DataSource;
+
 public class DbImporterTask extends Task {
 
-    private final DbImportConfiguration parameters;
+    private final DbImportConfiguration config;
 
-    /**
-     * @deprecated since 4.0 in favor of "schema"
-     */
-    @Deprecated
-    private String schemaName;
+    private final ReverseEngineering reverseEngineering = new ReverseEngineering();
 
-    /**
-     * @deprecated since 4.0 in favor of "meaningfulPkTable"
-     */
-    @Deprecated
-    private boolean meaningfulPk;
+    private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
 
     public DbImporterTask() {
-        parameters = new DbImportConfiguration();
-        parameters.setOverwrite(true);
-        parameters.setImportProcedures(false);
-        parameters.setUsePrimitives(true);
-        parameters.setNamingStrategy(DefaultNameGenerator.class.getName());
+        config = new DbImportConfiguration();
+        config.setOverwrite(true);
+        config.setUsePrimitives(true);
+        config.setNamingStrategy(DefaultNameGenerator.class.getName());
     }
 
     @Override
     public void execute() {
 
-        initSchema();
-        initMeaningfulPkTables();
+        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
+                .add(filterBuilder)
+                .filtersConfig());
 
         validateAttributes();
 
         Log logger = new AntLogger(this);
-        parameters.setLogger(logger);
+        config.setLogger(logger);
+        config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
+        config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
+        config.setTableTypes(reverseEngineering.getTableTypes());
+
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
+        validateDbImportConfiguration(config, injector);
+
         try {
-            injector.getInstance(DbImportAction.class).execute(parameters);
+            injector.getInstance(DbImportAction.class).execute(config);
         } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
 
@@ -89,6 +104,27 @@ public class DbImporterTask extends Task {
         }
     }
 
+    private void validateDbImportConfiguration(DbImportConfiguration config, Injector injector) throws BuildException {
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
+        DataSource dataSource = null;
+        DbAdapter adapter = null;
+
+        try {
+            dataSource = injector.getInstance(DataSourceFactory.class).getDataSource(dataNodeDescriptor);
+            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(dataNodeDescriptor, dataSource);
+
+            if (!adapter.supportsCatalogsOnReverseEngineering() &&
+                    reverseEngineering.getCatalogs() != null && !reverseEngineering.getCatalogs().isEmpty()) {
+                String message = "Your database does not support catalogs on reverse engineering. " +
+                        "It allows to connect to only one at the moment. Please don't note catalogs as param.";
+                throw new BuildException(message);
+            }
+        } catch (Exception e) {
+            throw new BuildException("Error creating DataSource ("
+                    + dataSource + ") or DbAdapter (" + adapter + ") for DataNodeDescriptor (" + dataNodeDescriptor + ")", e);
+        }
+    }
+
     /**
      * Validates attributes that are not related to internal
      * DefaultClassGenerator. Throws BuildException if attributes are invalid.
@@ -96,16 +132,17 @@ public class DbImporterTask extends Task {
     protected void validateAttributes() throws BuildException {
         StringBuilder error = new StringBuilder("");
 
-        if (parameters.getDataMapFile() == null) {
+        if (config.getDataMapFile() == null) {
             error.append("The 'map' attribute must be set.\n");
         }
 
-        if (parameters.getDriver() == null) {
+        DataSourceInfo dataSourceInfo = config.getDataSourceInfo();
+        if (dataSourceInfo.getJdbcDriver() == null) {
             error.append("The 'driver' attribute must be set.\n");
         }
 
-        if (parameters.getUrl() == null) {
-            error.append("The 'adapter' attribute must be set.\n");
+        if (dataSourceInfo.getDataSourceUrl() == null) {
+            error.append("The 'url' attribute must be set.\n");
         }
 
         if (error.length() > 0) {
@@ -117,122 +154,159 @@ public class DbImporterTask extends Task {
      * @since 4.0
      */
     public void setOverwrite(boolean overwrite) {
-        parameters.setOverwrite(overwrite);
+        config.setOverwrite(overwrite);
     }
 
     /**
      * @deprecated since 4.0 use {@link #setSchema(String)}
      */
+    @Deprecated
     public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
+        this.setSchema(schemaName);
     }
 
     /**
      * @since 4.0
      */
     public void setSchema(String schema) {
-        parameters.setSchema(schema);
+        filterBuilder.schema(schema);
     }
 
     /**
      * @since 4.0
      */
     public void setDefaultPackage(String defaultPackage) {
-        parameters.setDefaultPackage(defaultPackage);
+        config.setDefaultPackage(defaultPackage);
     }
 
     public void setTablePattern(String tablePattern) {
-        parameters.setTablePattern(tablePattern);
+        filterBuilder.includeTables(tablePattern);
     }
 
     public void setImportProcedures(boolean importProcedures) {
-        parameters.setImportProcedures(importProcedures);
+        filterBuilder.setProceduresFilters(importProcedures);
     }
 
     public void setProcedurePattern(String procedurePattern) {
-        parameters.setProcedurePattern(procedurePattern);
+        filterBuilder.includeProcedures(procedurePattern);
     }
 
     /**
      * @deprecated since 4.0 use {@link #setMeaningfulPkTables(String)}
      */
     public void setMeaningfulPk(boolean meaningfulPk) {
-        this.meaningfulPk = meaningfulPk;
+        log("'meaningfulPk' property is deprecated. Use 'meaningfulPkTables' pattern instead", Project.MSG_WARN);
+
+        if (meaningfulPk) {
+            setMeaningfulPkTables("*");
+        }
     }
 
     /**
      * @since 4.0
      */
     public void setMeaningfulPkTables(String meaningfulPkTables) {
-        parameters.setMeaningfulPkTables(meaningfulPkTables);
+        config.setMeaningfulPkTables(meaningfulPkTables);
     }
 
     public void setNamingStrategy(String namingStrategy) {
-        parameters.setNamingStrategy(namingStrategy);
+        config.setNamingStrategy(namingStrategy);
     }
 
     public void setAdapter(String adapter) {
-        parameters.setAdapter(adapter);
+        config.setAdapter(adapter);
     }
 
     public void setDriver(String driver) {
-        parameters.setDriver(driver);
+        config.setDriver(driver);
     }
 
     public void setMap(File map) {
-        parameters.setDataMapFile(map);
+        config.setDataMapFile(map);
     }
 
     public void setPassword(String password) {
-        parameters.setPassword(password);
+        config.setPassword(password);
     }
 
     public void setUrl(String url) {
-        parameters.setUrl(url);
+        config.setUrl(url);
     }
 
     public void setUserName(String username) {
-        parameters.setUsername(username);
+        config.setUsername(username);
     }
 
     /**
      * @since 4.0
      */
     public void setIncludeTables(String includeTables) {
-        parameters.setIncludeTables(includeTables);
+        filterBuilder.includeTables(includeTables);
     }
 
     /**
      * @since 4.0
      */
     public void setExcludeTables(String excludeTables) {
-        parameters.setExcludeTables(excludeTables);
+        filterBuilder.excludeTables(excludeTables);
     }
 
     /**
      * @since 4.0
      */
     public void setUsePrimitives(boolean usePrimitives) {
-        parameters.setUsePrimitives(usePrimitives);
+        config.setUsePrimitives(usePrimitives);
     }
 
-    private void initSchema() {
-        if (schemaName != null) {
-            log("'schemaName' property is deprecated. Use 'schema' instead", Project.MSG_WARN);
-        }
-
-        if (parameters.getSchema() == null) {
-            parameters.setSchema(schemaName);
-        }
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        reverseEngineering.setSkipRelationshipsLoading(skipRelationshipsLoading);
     }
 
-    private void initMeaningfulPkTables() {
-        if (meaningfulPk) {
-            log("'meaningfulPk' property is deprecated. Use 'meaningfulPkTables' pattern instead", Project.MSG_WARN);
-        }
+    public void addConfiguredIncludeColumn(IncludeColumn includeColumn) {
+        reverseEngineering.addIncludeColumn(includeColumn);
+    }
 
-        if (parameters.getMeaningfulPkTables() == null && meaningfulPk) {
-            parameters.setMeaningfulPkTables("*");
-        }
+    public void addConfiguredExcludeColumn(ExcludeColumn excludeColumn) {
+        reverseEngineering.addExcludeColumn(excludeColumn);
+    }
+
+    public void addConfiguredIncludeTable(IncludeTable includeTable) {
+        reverseEngineering.addIncludeTable(includeTable);
+    }
+
+    public void addConfiguredExcludeTable(ExcludeTable excludeTable) {
+        reverseEngineering.addExcludeTable(excludeTable);
+    }
+
+    public void addConfiguredIncludeProcedure(IncludeProcedure includeProcedure) {
+        reverseEngineering.addIncludeProcedure(includeProcedure);
+    }
+
+    public void addConfiguredExcludeProcedure(ExcludeProcedure excludeProcedure) {
+        reverseEngineering.addExcludeProcedure(excludeProcedure);
+    }
+
+    public void addConfiguredSchema(Schema schema) {
+        reverseEngineering.addSchema(schema);
+    }
+
+    public void addConfiguredCatalog(Catalog catalog) {
+        reverseEngineering.addCatalog(catalog);
+    }
+
+    public void addConfiguredTableType(AntNestedElement type) {
+        reverseEngineering.addTableType(type.getName());
+    }
+
+    public ReverseEngineering getReverseEngineering() {
+        return reverseEngineering;
+    }
+
+    public File getMap() {
+        return config.getDataMapFile();
+    }
+
+    public DbImportConfiguration toParameters() {
+        return config;
     }
 }

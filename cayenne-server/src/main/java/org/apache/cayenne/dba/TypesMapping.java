@@ -24,7 +24,6 @@ import java.math.BigInteger;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -33,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.util.Util;
+
+import static java.sql.Types.*;
 
 /**
  * A utility class that handles mappings of JDBC data types to the database types and Java
@@ -57,13 +58,16 @@ public class TypesMapping {
     public static final String SQL_BOOLEAN = "BOOLEAN";
 
     public static final String SQL_CLOB = "CLOB";
+    public static final String SQL_NCLOB = "NCLOB";
     public static final String SQL_CHAR = "CHAR";
+    public static final String SQL_NCHAR = "NCHAR";
     public static final String SQL_DATE = "DATE";
     public static final String SQL_DECIMAL = "DECIMAL";
     public static final String SQL_DOUBLE = "DOUBLE";
     public static final String SQL_FLOAT = "FLOAT";
     public static final String SQL_INTEGER = "INTEGER";
     public static final String SQL_LONGVARCHAR = "LONGVARCHAR";
+    public static final String SQL_LONGNVARCHAR = "LONGNVARCHAR";
     public static final String SQL_LONGVARBINARY = "LONGVARBINARY";
     public static final String SQL_NUMERIC = "NUMERIC";
     public static final String SQL_REAL = "REAL";
@@ -73,6 +77,8 @@ public class TypesMapping {
     public static final String SQL_TIMESTAMP = "TIMESTAMP";
     public static final String SQL_VARBINARY = "VARBINARY";
     public static final String SQL_VARCHAR = "VARCHAR";
+    public static final String SQL_NVARCHAR = "NVARCHAR";
+    public static final String SQL_SQLXML = "SQLXML";
     public static final String SQL_OTHER = "OTHER";
     public static final String SQL_NULL = "NULL";
 
@@ -96,124 +102,138 @@ public class TypesMapping {
     /**
      * Keys: SQL string type names, Values: SQL int type definitions from java.sql.Types
      */
-    private static final Map<String, Integer> sqlStringType = new HashMap<String, Integer>();
+    private static final Map<String, Integer> SQL_STRING_TYPE = new HashMap<String, Integer>();
 
     /**
      * Keys: SQL int type definitions from java.sql.Types, Values: SQL string type names
      */
-    private static final Map<Integer, String> sqlEnumType = new HashMap<Integer, String>();
+    private static final Map<Integer, String> SQL_ENUM_TYPE = new HashMap<Integer, String>();
 
     /**
      * Keys: SQL int type definitions from java.sql.Types, Values: java class names
      */
-    private static final Map<Integer, String> sqlEnumJava = new HashMap<Integer, String>();
+    private static final Map<Integer, String> SQL_ENUM_JAVA = new HashMap<Integer, String>();
 
     /**
      * Keys: java class names, Values: SQL int type definitions from java.sql.Types
      */
-    private static final Map<String, Integer> javaSqlEnum = new HashMap<String, Integer>();
+    private static final Map<String, Integer> JAVA_SQL_ENUM = new HashMap<String, Integer>();
 
     static {
-        sqlStringType.put(SQL_ARRAY, Integer.valueOf(Types.ARRAY));
-        sqlStringType.put(SQL_BIGINT, Integer.valueOf(Types.BIGINT));
-        sqlStringType.put(SQL_BINARY, Integer.valueOf(Types.BINARY));
-        sqlStringType.put(SQL_BIT, Integer.valueOf(Types.BIT));
-        sqlStringType.put(SQL_BLOB, Integer.valueOf(Types.BLOB));
-        sqlStringType.put(SQL_BOOLEAN, Integer.valueOf(Types.BOOLEAN));
-        sqlStringType.put(SQL_CLOB, Integer.valueOf(Types.CLOB));
-        sqlStringType.put(SQL_CHAR, Integer.valueOf(Types.CHAR));
-        sqlStringType.put(SQL_DATE, Integer.valueOf(Types.DATE));
-        sqlStringType.put(SQL_DECIMAL, Integer.valueOf(Types.DECIMAL));
-        sqlStringType.put(SQL_DOUBLE, Integer.valueOf(Types.DOUBLE));
-        sqlStringType.put(SQL_FLOAT, Integer.valueOf(Types.FLOAT));
-        sqlStringType.put(SQL_INTEGER, Integer.valueOf(Types.INTEGER));
-        sqlStringType.put(SQL_LONGVARCHAR, Integer.valueOf(Types.LONGVARCHAR));
-        sqlStringType.put(SQL_LONGVARBINARY, Integer.valueOf(Types.LONGVARBINARY));
-        sqlStringType.put(SQL_NUMERIC, Integer.valueOf(Types.NUMERIC));
-        sqlStringType.put(SQL_REAL, Integer.valueOf(Types.REAL));
-        sqlStringType.put(SQL_SMALLINT, Integer.valueOf(Types.SMALLINT));
-        sqlStringType.put(SQL_TINYINT, Integer.valueOf(Types.TINYINT));
-        sqlStringType.put(SQL_TIME, Integer.valueOf(Types.TIME));
-        sqlStringType.put(SQL_TIMESTAMP, Integer.valueOf(Types.TIMESTAMP));
-        sqlStringType.put(SQL_VARBINARY, Integer.valueOf(Types.VARBINARY));
-        sqlStringType.put(SQL_VARCHAR, Integer.valueOf(Types.VARCHAR));
-        sqlStringType.put(SQL_OTHER, Integer.valueOf(Types.OTHER));
-        sqlStringType.put(SQL_NULL, Integer.valueOf(Types.NULL));
+        SQL_STRING_TYPE.put(SQL_ARRAY, ARRAY);
+        SQL_STRING_TYPE.put(SQL_BIGINT, BIGINT);
+        SQL_STRING_TYPE.put(SQL_BINARY, BINARY);
+        SQL_STRING_TYPE.put(SQL_BIT, BIT);
+        SQL_STRING_TYPE.put(SQL_BLOB, BLOB);
+        SQL_STRING_TYPE.put(SQL_BOOLEAN, BOOLEAN);
+        SQL_STRING_TYPE.put(SQL_CLOB, CLOB);
+        SQL_STRING_TYPE.put(SQL_NCLOB, NCLOB);
+        SQL_STRING_TYPE.put(SQL_CHAR, CHAR);
+        SQL_STRING_TYPE.put(SQL_NCHAR, NCHAR);
+        SQL_STRING_TYPE.put(SQL_DATE, DATE);
+        SQL_STRING_TYPE.put(SQL_DECIMAL, DECIMAL);
+        SQL_STRING_TYPE.put(SQL_DOUBLE, DOUBLE);
+        SQL_STRING_TYPE.put(SQL_FLOAT, FLOAT);
+        SQL_STRING_TYPE.put(SQL_INTEGER, INTEGER);
+        SQL_STRING_TYPE.put(SQL_LONGVARCHAR, LONGVARCHAR);
+        SQL_STRING_TYPE.put(SQL_LONGNVARCHAR, LONGNVARCHAR);
+        SQL_STRING_TYPE.put(SQL_LONGVARBINARY, LONGVARBINARY);
+        SQL_STRING_TYPE.put(SQL_NUMERIC, NUMERIC);
+        SQL_STRING_TYPE.put(SQL_REAL, REAL);
+        SQL_STRING_TYPE.put(SQL_SMALLINT, SMALLINT);
+        SQL_STRING_TYPE.put(SQL_TINYINT, TINYINT);
+        SQL_STRING_TYPE.put(SQL_TIME, TIME);
+        SQL_STRING_TYPE.put(SQL_TIMESTAMP, TIMESTAMP);
+        SQL_STRING_TYPE.put(SQL_VARBINARY, VARBINARY);
+        SQL_STRING_TYPE.put(SQL_VARCHAR, VARCHAR);
+        SQL_STRING_TYPE.put(SQL_NVARCHAR, NVARCHAR);
+        SQL_STRING_TYPE.put(SQL_OTHER, OTHER);
+        SQL_STRING_TYPE.put(SQL_NULL, NULL);
 
-        sqlEnumType.put(Integer.valueOf(Types.ARRAY), SQL_ARRAY);
-        sqlEnumType.put(Integer.valueOf(Types.BIGINT), SQL_BIGINT);
-        sqlEnumType.put(Integer.valueOf(Types.BINARY), SQL_BINARY);
-        sqlEnumType.put(Integer.valueOf(Types.BIT), SQL_BIT);
-        sqlEnumType.put(Integer.valueOf(Types.BOOLEAN), SQL_BOOLEAN);
-        sqlEnumType.put(Integer.valueOf(Types.BLOB), SQL_BLOB);
-        sqlEnumType.put(Integer.valueOf(Types.CLOB), SQL_CLOB);
-        sqlEnumType.put(Integer.valueOf(Types.CHAR), SQL_CHAR);
-        sqlEnumType.put(Integer.valueOf(Types.DATE), SQL_DATE);
-        sqlEnumType.put(Integer.valueOf(Types.DECIMAL), SQL_DECIMAL);
-        sqlEnumType.put(Integer.valueOf(Types.DOUBLE), SQL_DOUBLE);
-        sqlEnumType.put(Integer.valueOf(Types.FLOAT), SQL_FLOAT);
-        sqlEnumType.put(Integer.valueOf(Types.INTEGER), SQL_INTEGER);
-        sqlEnumType.put(Integer.valueOf(Types.LONGVARCHAR), SQL_LONGVARCHAR);
-        sqlEnumType.put(Integer.valueOf(Types.LONGVARBINARY), SQL_LONGVARBINARY);
-        sqlEnumType.put(Integer.valueOf(Types.NUMERIC), SQL_NUMERIC);
-        sqlEnumType.put(Integer.valueOf(Types.REAL), SQL_REAL);
-        sqlEnumType.put(Integer.valueOf(Types.SMALLINT), SQL_SMALLINT);
-        sqlEnumType.put(Integer.valueOf(Types.TINYINT), SQL_TINYINT);
-        sqlEnumType.put(Integer.valueOf(Types.TIME), SQL_TIME);
-        sqlEnumType.put(Integer.valueOf(Types.TIMESTAMP), SQL_TIMESTAMP);
-        sqlEnumType.put(Integer.valueOf(Types.VARBINARY), SQL_VARBINARY);
-        sqlEnumType.put(Integer.valueOf(Types.VARCHAR), SQL_VARCHAR);
-        sqlEnumType.put(Integer.valueOf(Types.OTHER), SQL_OTHER);
-        sqlEnumType.put(Integer.valueOf(Types.NULL), SQL_NULL);
+        SQL_ENUM_TYPE.put(ARRAY, SQL_ARRAY);
+        SQL_ENUM_TYPE.put(BIGINT, SQL_BIGINT);
+        SQL_ENUM_TYPE.put(BINARY, SQL_BINARY);
+        SQL_ENUM_TYPE.put(BIT, SQL_BIT);
+        SQL_ENUM_TYPE.put(BOOLEAN, SQL_BOOLEAN);
+        SQL_ENUM_TYPE.put(BLOB, SQL_BLOB);
+        SQL_ENUM_TYPE.put(CLOB, SQL_CLOB);
+        SQL_ENUM_TYPE.put(NCLOB, SQL_NCLOB);
+        SQL_ENUM_TYPE.put(CHAR, SQL_CHAR);
+        SQL_ENUM_TYPE.put(NCHAR, SQL_NCHAR);
+        SQL_ENUM_TYPE.put(DATE, SQL_DATE);
+        SQL_ENUM_TYPE.put(DECIMAL, SQL_DECIMAL);
+        SQL_ENUM_TYPE.put(DOUBLE, SQL_DOUBLE);
+        SQL_ENUM_TYPE.put(FLOAT, SQL_FLOAT);
+        SQL_ENUM_TYPE.put(INTEGER, SQL_INTEGER);
+        SQL_ENUM_TYPE.put(LONGVARCHAR, SQL_LONGVARCHAR);
+        SQL_ENUM_TYPE.put(LONGNVARCHAR, SQL_LONGNVARCHAR);
+        SQL_ENUM_TYPE.put(LONGVARBINARY, SQL_LONGVARBINARY);
+        SQL_ENUM_TYPE.put(NUMERIC, SQL_NUMERIC);
+        SQL_ENUM_TYPE.put(REAL, SQL_REAL);
+        SQL_ENUM_TYPE.put(SMALLINT, SQL_SMALLINT);
+        SQL_ENUM_TYPE.put(TINYINT, SQL_TINYINT);
+        SQL_ENUM_TYPE.put(TIME, SQL_TIME);
+        SQL_ENUM_TYPE.put(TIMESTAMP, SQL_TIMESTAMP);
+        SQL_ENUM_TYPE.put(VARBINARY, SQL_VARBINARY);
+        SQL_ENUM_TYPE.put(VARCHAR, SQL_VARCHAR);
+        SQL_ENUM_TYPE.put(NVARCHAR, SQL_NVARCHAR);
+        SQL_ENUM_TYPE.put(SQLXML, SQL_SQLXML);
+        SQL_ENUM_TYPE.put(OTHER, SQL_OTHER);
+        SQL_ENUM_TYPE.put(NULL, SQL_NULL);
 
-        sqlEnumJava.put(Integer.valueOf(Types.BIGINT), JAVA_LONG);
-        sqlEnumJava.put(Integer.valueOf(Types.BINARY), JAVA_BYTES);
-        sqlEnumJava.put(Integer.valueOf(Types.BIT), JAVA_BOOLEAN);
-        sqlEnumJava.put(Integer.valueOf(Types.BOOLEAN), JAVA_BOOLEAN);
-        sqlEnumJava.put(Integer.valueOf(Types.BLOB), JAVA_BYTES);
-        sqlEnumJava.put(Integer.valueOf(Types.CLOB), JAVA_STRING);
-        sqlEnumJava.put(Integer.valueOf(Types.CHAR), JAVA_STRING);
-        sqlEnumJava.put(Integer.valueOf(Types.DATE), JAVA_UTILDATE);
-        sqlEnumJava.put(Integer.valueOf(Types.DECIMAL), JAVA_BIGDECIMAL);
-        sqlEnumJava.put(Integer.valueOf(Types.DOUBLE), JAVA_DOUBLE);
-        sqlEnumJava.put(Integer.valueOf(Types.FLOAT), JAVA_FLOAT);
-        sqlEnumJava.put(Integer.valueOf(Types.INTEGER), JAVA_INTEGER);
-        sqlEnumJava.put(Integer.valueOf(Types.LONGVARCHAR), JAVA_STRING);
-        sqlEnumJava.put(Integer.valueOf(Types.LONGVARBINARY), JAVA_BYTES);
-        sqlEnumJava.put(Integer.valueOf(Types.NUMERIC), JAVA_BIGDECIMAL);
-        sqlEnumJava.put(Integer.valueOf(Types.REAL), JAVA_FLOAT);
-        sqlEnumJava.put(Integer.valueOf(Types.SMALLINT), JAVA_SHORT);
-        sqlEnumJava.put(Integer.valueOf(Types.TINYINT), JAVA_SHORT);
-        sqlEnumJava.put(Integer.valueOf(Types.TIME), JAVA_UTILDATE);
-        sqlEnumJava.put(Integer.valueOf(Types.TIMESTAMP), JAVA_UTILDATE);
-        sqlEnumJava.put(Integer.valueOf(Types.VARBINARY), JAVA_BYTES);
-        sqlEnumJava.put(Integer.valueOf(Types.VARCHAR), JAVA_STRING);
+        SQL_ENUM_JAVA.put(BIGINT, JAVA_LONG);
+        SQL_ENUM_JAVA.put(BINARY, JAVA_BYTES);
+        SQL_ENUM_JAVA.put(BIT, JAVA_BOOLEAN);
+        SQL_ENUM_JAVA.put(BOOLEAN, JAVA_BOOLEAN);
+        SQL_ENUM_JAVA.put(BLOB, JAVA_BYTES);
+        SQL_ENUM_JAVA.put(CLOB, JAVA_STRING);
+        SQL_ENUM_JAVA.put(NCLOB, JAVA_STRING);
+        SQL_ENUM_JAVA.put(CHAR, JAVA_STRING);
+        SQL_ENUM_JAVA.put(NCHAR, JAVA_STRING);
+        SQL_ENUM_JAVA.put(DATE, JAVA_UTILDATE);
+        SQL_ENUM_JAVA.put(DECIMAL, JAVA_BIGDECIMAL);
+        SQL_ENUM_JAVA.put(DOUBLE, JAVA_DOUBLE);
+        SQL_ENUM_JAVA.put(FLOAT, JAVA_FLOAT);
+        SQL_ENUM_JAVA.put(INTEGER, JAVA_INTEGER);
+        SQL_ENUM_JAVA.put(LONGVARCHAR, JAVA_STRING);
+        SQL_ENUM_JAVA.put(LONGNVARCHAR, JAVA_STRING);
+        SQL_ENUM_JAVA.put(LONGVARBINARY, JAVA_BYTES);
+        SQL_ENUM_JAVA.put(NUMERIC, JAVA_BIGDECIMAL);
+        SQL_ENUM_JAVA.put(REAL, JAVA_FLOAT);
+        SQL_ENUM_JAVA.put(SMALLINT, JAVA_SHORT);
+        SQL_ENUM_JAVA.put(TINYINT, JAVA_SHORT);
+        SQL_ENUM_JAVA.put(TIME, JAVA_UTILDATE);
+        SQL_ENUM_JAVA.put(TIMESTAMP, JAVA_UTILDATE);
+        SQL_ENUM_JAVA.put(VARBINARY, JAVA_BYTES);
+        SQL_ENUM_JAVA.put(VARCHAR, JAVA_STRING);
+        SQL_ENUM_JAVA.put(NVARCHAR, JAVA_STRING);
+        SQL_ENUM_JAVA.put(SQLXML, JAVA_STRING);
 
-        javaSqlEnum.put(JAVA_LONG, Integer.valueOf(Types.BIGINT));
-        javaSqlEnum.put(JAVA_BYTES, Integer.valueOf(Types.BINARY));
-        javaSqlEnum.put(JAVA_BOOLEAN, Integer.valueOf(Types.BIT));
-        javaSqlEnum.put(JAVA_STRING, Integer.valueOf(Types.VARCHAR));
-        javaSqlEnum.put(JAVA_SQLDATE, Integer.valueOf(Types.DATE));
-        javaSqlEnum.put(JAVA_UTILDATE, Integer.valueOf(Types.DATE));
-        javaSqlEnum.put(JAVA_TIMESTAMP, Integer.valueOf(Types.TIMESTAMP));
-        javaSqlEnum.put(JAVA_BIGDECIMAL, Integer.valueOf(Types.DECIMAL));
-        javaSqlEnum.put(JAVA_DOUBLE, Integer.valueOf(Types.DOUBLE));
-        javaSqlEnum.put(JAVA_FLOAT, Integer.valueOf(Types.FLOAT));
-        javaSqlEnum.put(JAVA_INTEGER, Integer.valueOf(Types.INTEGER));
-        javaSqlEnum.put(JAVA_SHORT, Integer.valueOf(Types.SMALLINT));
-        javaSqlEnum.put(JAVA_BYTE, Integer.valueOf(Types.SMALLINT));
-        javaSqlEnum.put(JAVA_TIME, Integer.valueOf(Types.TIME));
-        javaSqlEnum.put(JAVA_TIMESTAMP, Integer.valueOf(Types.TIMESTAMP));
+        JAVA_SQL_ENUM.put(JAVA_LONG, BIGINT);
+        JAVA_SQL_ENUM.put(JAVA_BYTES, BINARY);
+        JAVA_SQL_ENUM.put(JAVA_BOOLEAN, BIT);
+        JAVA_SQL_ENUM.put(JAVA_STRING, VARCHAR);
+        JAVA_SQL_ENUM.put(JAVA_SQLDATE, DATE);
+        JAVA_SQL_ENUM.put(JAVA_UTILDATE, DATE);
+        JAVA_SQL_ENUM.put(JAVA_TIMESTAMP, TIMESTAMP);
+        JAVA_SQL_ENUM.put(JAVA_BIGDECIMAL, DECIMAL);
+        JAVA_SQL_ENUM.put(JAVA_DOUBLE, DOUBLE);
+        JAVA_SQL_ENUM.put(JAVA_FLOAT, FLOAT);
+        JAVA_SQL_ENUM.put(JAVA_INTEGER, INTEGER);
+        JAVA_SQL_ENUM.put(JAVA_SHORT, SMALLINT);
+        JAVA_SQL_ENUM.put(JAVA_BYTE, SMALLINT);
+        JAVA_SQL_ENUM.put(JAVA_TIME, TIME);
+        JAVA_SQL_ENUM.put(JAVA_TIMESTAMP, TIMESTAMP);
 
         // add primitives
-        javaSqlEnum.put("byte", Integer.valueOf(Types.TINYINT));
-        javaSqlEnum.put("int", Integer.valueOf(Types.INTEGER));
-        javaSqlEnum.put("short", Integer.valueOf(Types.SMALLINT));
-        javaSqlEnum.put("char", Integer.valueOf(Types.CHAR));
-        javaSqlEnum.put("double", Integer.valueOf(Types.DOUBLE));
-        javaSqlEnum.put("long", Integer.valueOf(Types.BIGINT));
-        javaSqlEnum.put("float", Integer.valueOf(Types.FLOAT));
-        javaSqlEnum.put("boolean", Integer.valueOf(Types.BIT));
+        JAVA_SQL_ENUM.put("byte", TINYINT);
+        JAVA_SQL_ENUM.put("int", INTEGER);
+        JAVA_SQL_ENUM.put("short", SMALLINT);
+        JAVA_SQL_ENUM.put("char", CHAR);
+        JAVA_SQL_ENUM.put("double", DOUBLE);
+        JAVA_SQL_ENUM.put("long", BIGINT);
+        JAVA_SQL_ENUM.put("float", FLOAT);
+        JAVA_SQL_ENUM.put("boolean", BIT);
     }
 
     /**
@@ -230,34 +250,34 @@ public class TypesMapping {
      * Returns true if supplied type is a numeric type.
      */
     public static boolean isNumeric(int type) {
-        return type == Types.BIGINT
-                || type == Types.BIT
-                || type == Types.DECIMAL
-                || type == Types.DOUBLE
-                || type == Types.FLOAT
-                || type == Types.INTEGER
-                || type == Types.NUMERIC
-                || type == Types.REAL
-                || type == Types.SMALLINT
-                || type == Types.TINYINT;
+        return type == BIGINT
+                || type == BIT
+                || type == DECIMAL
+                || type == DOUBLE
+                || type == FLOAT
+                || type == INTEGER
+                || type == NUMERIC
+                || type == REAL
+                || type == SMALLINT
+                || type == TINYINT;
     }
 
     /**
      * Returns true if supplied type is a decimal type.
      */
     public static boolean isDecimal(int type) {
-        return type == Types.DECIMAL
-                || type == Types.DOUBLE
-                || type == Types.FLOAT
-                || type == Types.REAL
-                || type == Types.NUMERIC;
+        return type == DECIMAL
+                || type == DOUBLE
+                || type == FLOAT
+                || type == REAL
+                || type == NUMERIC;
     }
 
     /**
      * Returns an array of string names of the default JDBC data types.
      */
     public static String[] getDatabaseTypes() {
-        Collection<String> types = sqlStringType.keySet();
+        Collection<String> types = SQL_STRING_TYPE.keySet();
         return types.toArray(new String[types.size()]);
     }
 
@@ -268,74 +288,80 @@ public class TypesMapping {
     protected static String pickDataType(int jdbcType, TypeInfo[] alts) {
         int len = alts.length;
 
-        if (len == 0)
+        if (len == 0) {
             return null;
+        }
 
-        if (len == 1)
+        if (len == 1) {
             return alts[0].name;
+        }
 
         // now the fun starts.. try to guess the right type
 
         String jdbcName = getSqlNameByType(jdbcType).toUpperCase();
 
         // 1. exact match
-        for (int i = 0; i < len; i++) {
-            if (jdbcName.equalsIgnoreCase(alts[i].name))
-                return alts[i].name;
+        for (TypeInfo alt : alts) {
+            if (jdbcName.equalsIgnoreCase(alt.name)) {
+                return alt.name;
+            }
         }
 
         // 2. filter those with biggest precision
         long maxPrec = 0;
-        for (int i = 0; i < len; i++) {
-            if (maxPrec < alts[i].precision) {
-                maxPrec = alts[i].precision;
+        for (TypeInfo alt : alts) {
+            if (maxPrec < alt.precision) {
+                maxPrec = alt.precision;
             }
         }
 
         List<TypeInfo> list = new ArrayList<TypeInfo>();
-        for (int i = 0; i < len; i++) {
-            if (maxPrec == alts[i].precision) {
-                list.add(alts[i]);
+        for (TypeInfo alt : alts) {
+            if (maxPrec == alt.precision) {
+                list.add(alt);
             }
         }
 
         // work with smaller list now.....
         int slen = list.size();
-        if (slen == 1)
-            return (list.get(0)).name;
+        if (slen == 1) {
+            return list.get(0).name;
+        }
 
         // start/end match
-        for (int i = 0; i < slen; i++) {
-            String uppercase = (list.get(i)).name.toUpperCase();
-            if (uppercase.startsWith(jdbcName) || uppercase.endsWith(jdbcName))
-                return (list.get(i)).name;
+        for (TypeInfo aList : list) {
+            String uppercase = aList.name.toUpperCase();
+            if (uppercase.startsWith(jdbcName) || uppercase.endsWith(jdbcName)) {
+                return aList.name;
+            }
         }
 
         // in the middle match
-        for (int i = 0; i < slen; i++) {
-            String uppercase = (list.get(i)).name.toUpperCase();
+        for (TypeInfo aList : list) {
+            String uppercase = aList.name.toUpperCase();
 
-            if (uppercase.contains(jdbcName))
-                return (list.get(i)).name;
+            if (uppercase.contains(jdbcName)) {
+                return aList.name;
+            }
         }
 
         // out of ideas... return the first one
-        return (list.get(0)).name;
+        return list.get(0).name;
     }
 
     /**
      * Returns a JDBC int type for SQL typem name.
      */
     public static int getSqlTypeByName(String typeName) {
-        Integer tmp = sqlStringType.get(typeName);
-        return (null == tmp) ? NOT_DEFINED : tmp.intValue();
+        Integer tmp = SQL_STRING_TYPE.get(typeName);
+        return tmp == null ? NOT_DEFINED : tmp;
     }
 
     /**
      * Returns a String representation of the SQL type from its JDBC code.
      */
     public static String getSqlNameByType(int type) {
-        return sqlEnumType.get(Integer.valueOf(type));
+        return SQL_ENUM_TYPE.get(type);
     }
 
     /**
@@ -349,9 +375,9 @@ public class TypesMapping {
             return NOT_DEFINED;
         }
 
-        Integer type = javaSqlEnum.get(className);
+        Integer type = JAVA_SQL_ENUM.get(className);
         if (type != null) {
-            return type.intValue();
+            return type;
         }
 
         // try to load a Java class - some nonstandard mappings may work
@@ -390,7 +416,7 @@ public class TypesMapping {
                 name = aClass.getName();
             }
 
-            Object type = javaSqlEnum.get(name);
+            Object type = JAVA_SQL_ENUM.get(name);
             if (type != null) {
                 return ((Number) type).intValue();
             }
@@ -404,24 +430,26 @@ public class TypesMapping {
             Class<?> elementType = javaClass.getComponentType();
             if (Character.class.isAssignableFrom(elementType)
                     || Character.TYPE.isAssignableFrom(elementType)) {
-                return Types.VARCHAR;
+                return VARCHAR;
             }
             else if (Byte.class.isAssignableFrom(elementType)
                     || Byte.TYPE.isAssignableFrom(elementType)) {
-                return Types.VARBINARY;
+                return VARBINARY;
             }
         }
 
         if (Calendar.class.isAssignableFrom(javaClass)) {
-            return Types.TIMESTAMP;
+            return TIMESTAMP;
         }
-        else if (BigInteger.class.isAssignableFrom(javaClass)) {
-            return Types.BIGINT;
+
+        if (BigInteger.class.isAssignableFrom(javaClass)) {
+            return BIGINT;
         }
+
         // serializable check should be the last one when all other mapping attempts
         // failed
-        else if (Serializable.class.isAssignableFrom(javaClass)) {
-            return Types.VARBINARY;
+        if (Serializable.class.isAssignableFrom(javaClass)) {
+            return VARBINARY;
         }
 
         return NOT_DEFINED;
@@ -436,7 +464,7 @@ public class TypesMapping {
      * @return Fully qualified Java type name or null if not found.
      */
     public static String getJavaBySqlType(int type) {
-        return sqlEnumJava.get(Integer.valueOf(type));
+        return SQL_ENUM_JAVA.get(type);
     }
 
  
@@ -453,7 +481,7 @@ public class TypesMapping {
                 info.jdbcType = rs.getInt("DATA_TYPE");
                 info.precision = rs.getLong("PRECISION");
 
-                Integer key = Integer.valueOf(info.jdbcType);
+                Integer key = info.jdbcType;
                 List<TypeInfo> infos = databaseTypes.get(key);
 
                 if (infos == null) {
@@ -471,40 +499,28 @@ public class TypesMapping {
         // do some tricks to substitute for missing datatypes
 
         // 1. swap TIMESTAMP - DATE
-        Integer ts = Integer.valueOf(Types.TIMESTAMP);
-        Integer dt = Integer.valueOf(Types.DATE);
-        List<TypeInfo> tsInfo = databaseTypes.get(ts);
-        List<TypeInfo> dtInfo = databaseTypes.get(dt);
-
-        if (tsInfo != null && dtInfo == null)
-            databaseTypes.put(dt, tsInfo);
-
-        if (dtInfo != null && tsInfo == null)
-            databaseTypes.put(ts, dtInfo);
+        swapTypes(TIMESTAMP, DATE);
 
         // 2. Swap CLOB - LONGVARCHAR
-        Integer clob = Integer.valueOf(Types.CLOB);
-        Integer lvc = Integer.valueOf(Types.LONGVARCHAR);
-        List<TypeInfo> clobInfo = databaseTypes.get(clob);
-        List<TypeInfo> lvcInfo = databaseTypes.get(lvc);
+        swapTypes(CLOB, LONGVARCHAR);
 
-        if (clobInfo != null && lvcInfo == null)
-            databaseTypes.put(lvc, clobInfo);
+        // 3. Swap BLOB - LONGVARBINARY
+        swapTypes(BLOB, LONGVARBINARY);
 
-        if (lvcInfo != null && clobInfo == null)
-            databaseTypes.put(clob, lvcInfo);
+        // 4. Swap NCLOB - LONGNVARCHAR
+        swapTypes(NCLOB, LONGNVARCHAR);
+    }
 
-        // 2. Swap BLOB - LONGVARBINARY
-        Integer blob = Integer.valueOf(Types.BLOB);
-        Integer lvb = Integer.valueOf(Types.LONGVARBINARY);
-        List<TypeInfo> blobInfo = databaseTypes.get(blob);
-        List<TypeInfo> lvbInfo = databaseTypes.get(lvb);
+    private void swapTypes(int type1, int type2) {
+        List<TypeInfo> type1Info = databaseTypes.get(type1);
+        List<TypeInfo> type2Info = databaseTypes.get(type2);
 
-        if (blobInfo != null && lvbInfo == null)
-            databaseTypes.put(lvb, blobInfo);
-
-        if (lvbInfo != null && blobInfo == null)
-            databaseTypes.put(blob, lvbInfo);
+        if (type1Info != null && type2Info == null) {
+            databaseTypes.put(type2, type1Info);
+        }
+        if (type2Info != null && type1Info == null) {
+            databaseTypes.put(type1, type2Info);
+        }
     }
 
     /** Stores (incomplete) information about database data type */
@@ -516,13 +532,8 @@ public class TypesMapping {
 
         @Override
         public String toString() {
-            StringBuilder buf = new StringBuilder();
-            buf.append("[   TypeInfo: ").append(name);
-            buf.append("\n    JDBC Type: ").append(
-                    TypesMapping.getSqlNameByType(jdbcType));
-            buf.append("\n    Precision: ").append(precision);
-            buf.append("\n]");
-            return buf.toString();
+            return "[   TypeInfo: " + name + "\n    JDBC Type: " + TypesMapping.getSqlNameByType(jdbcType)
+                    + "\n    Precision: " + precision + "\n]";
         }
     }
 

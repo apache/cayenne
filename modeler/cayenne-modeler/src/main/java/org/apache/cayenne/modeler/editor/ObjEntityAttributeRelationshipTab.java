@@ -33,7 +33,9 @@ import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
+import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.commons.logging.LogFactory;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -76,6 +78,18 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, attributePanel, relationshipPanel);
         splitPane.setOneTouchExpandable(true);
         splitPane.setResizeWeight(0.5);
+
+        try {
+            ComponentGeometry geometry = new ComponentGeometry(
+                    this.getClass(),
+                    "objEntityAttrRelTab/splitPane/divider");
+
+            geometry
+                    .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, -1);
+        }
+        catch (Exception ex) {
+            LogFactory.getLog(getClass()).error("Cannot bind divider property", ex);
+        }
 
         add(splitPane);
     }

@@ -19,7 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Collection;
+
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -31,11 +37,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbLoaderPartialIT extends ServerCase {
@@ -53,13 +54,7 @@ public class DbLoaderPartialIT extends ServerCase {
         loader = new DbLoader(
                 dataSourceFactory.getSharedDataSource().getConnection(),
                 adapter,
-                new DefaultDbLoaderDelegate() {
-
-                    public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
-                        return !(ent.getName().equalsIgnoreCase("ARTIST")
-                                || ent.getName().equalsIgnoreCase("PAINTING"));
-                    }
-                });
+                new DefaultDbLoaderDelegate());
     }
 
     @After
@@ -80,9 +75,7 @@ public class DbLoaderPartialIT extends ServerCase {
         DataMap map = new DataMap();
         String tableLabel = adapter.tableTypeForTable();
 
-        loader.loadDataMapFromDB(null, "%", new String[] {
-            tableLabel
-        }, map);
+        loader.loadDataMapFromDB(null, "%", new String[] {tableLabel}, map);
 
         Collection<?> rels = getDbEntity(map, "ARTIST").getRelationships();
         assertNotNull(rels);
