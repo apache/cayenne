@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -31,7 +29,6 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.things.Bag;
 import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.Box;
-import org.apache.cayenne.testdo.things.BoxInfo;
 import org.apache.cayenne.testdo.things.Thing;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
@@ -43,7 +40,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import static org.apache.cayenne.exp.ExpressionFactory.matchExp;
@@ -67,12 +63,32 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     @Inject
     protected DataChannelInterceptor queryInterceptor;
 
+    protected TableHelper tBag;
+    protected TableHelper tBall;
+    protected TableHelper tBox;
+    protected TableHelper tBoxInfo;
     protected TableHelper tBoxThing;
+    protected TableHelper tThing;
 
     @Before
     public void setUp() throws Exception {
+        tBag = new TableHelper(dbHelper, "BAG");
+        tBag.setColumns("ID", "NAME");
+
+        tBall = new TableHelper(dbHelper, "BALL");
+        tBall.setColumns("ID", "BOX_ID", "THING_VOLUME", "THING_WEIGHT");
+
+        tBox = new TableHelper(dbHelper, "BOX");
+        tBox.setColumns("ID", "BAG_ID", "NAME");
+
+        tBoxInfo = new TableHelper(dbHelper, "BOX_INFO");
+        tBoxInfo.setColumns("ID" ,"BOX_ID", "COLOR");
+
         tBoxThing = new TableHelper(dbHelper, "BOX_THING");
-        tBoxThing.setColumns("BOX_ID", "THING_WEIGHT", "THING_VOLUME");
+        tBoxThing.setColumns("BOX_ID", "THING_VOLUME", "THING_WEIGHT");
+
+        tThing = new TableHelper(dbHelper, "THING");
+        tThing.setColumns("ID", "VOLUME", "WEIGHT");
     }
 
     private void createBagWithTwoBoxesAndPlentyOfBallsDataSet() throws Exception {
@@ -81,109 +97,31 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         // inserting these objects via Cayenne, and then flushing the cache
         // http://technet.microsoft.com/en-us/library/ms188059.aspx
 
-        Collection<Object> invalidate = new ArrayList<Object>();
-        ObjectContext context = runtime.newContext();
+        tBag.insert(1, "b1");
+        tBox.insert(1, 1, "big");
+        tBoxInfo.insert(1, 1, "red");
+        tBox.insert(2, 1, "small");
+        tBoxInfo.insert(2, 2, "green");
+        tThing.insert(1, 10, 10);
+        tBall.insert(1, 1, 10, 10);
+        tThing.insert(2, 20, 20);
+        tBall.insert(2, 1, 20, 20);
+        tThing.insert(3, 30, 30);
+        tBall.insert(3, 2, 30, 30);
+        tThing.insert(4, 40, 40);
+        tBall.insert(4, 2, 40, 40);
+        tThing.insert(5, 20, 10);
+        tBall.insert(5, 2, 20, 10);
+        tThing.insert(6, 40, 30);
+        tBall.insert(6, 2, 40, 30);
 
-        Bag b1 = context.newObject(Bag.class);
-        invalidate.add(b1);
-        b1.setName("b1");
+        tBoxThing.insert(1, 10, 10);
+        tBoxThing.insert(1, 20, 20);
+        tBoxThing.insert(2, 30, 30);
+        tBoxThing.insert(1, 40, 40);
+        tBoxThing.insert(1, 20, 10);
+        tBoxThing.insert(1, 40, 30);
 
-        Box bx1 = context.newObject(Box.class);
-        invalidate.add(bx1);
-        bx1.setName("big");
-        bx1.setBag(b1);
-
-        BoxInfo bi1 = context.newObject(BoxInfo.class);
-        invalidate.add(bi1);
-        bi1.setColor("red");
-        bi1.setBox(bx1);
-
-        Box bx2 = context.newObject(Box.class);
-        invalidate.add(bx2);
-        bx2.setName("small");
-        bx2.setBag(b1);
-
-        BoxInfo bi2 = context.newObject(BoxInfo.class);
-        invalidate.add(bi2);
-        bi2.setColor("green");
-        bi2.setBox(bx2);
-
-        Thing t1 = context.newObject(Thing.class);
-        invalidate.add(t1);
-        t1.setVolume(10);
-        t1.setWeight(10);
-
-        Ball bl1 = context.newObject(Ball.class);
-        invalidate.add(bl1);
-        bl1.setBox(bx1);
-        bl1.setThingVolume(10);
-        bl1.setThingWeight(10);
-
-        Thing t2 = context.newObject(Thing.class);
-        invalidate.add(t2);
-        t2.setVolume(20);
-        t2.setWeight(20);
-
-        Ball bl2 = context.newObject(Ball.class);
-        invalidate.add(bl2);
-        bl2.setBox(bx1);
-        bl2.setThingVolume(20);
-        bl2.setThingWeight(20);
-
-        Thing t3 = context.newObject(Thing.class);
-        invalidate.add(t3);
-        t3.setVolume(30);
-        t3.setWeight(30);
-
-        Ball bl3 = context.newObject(Ball.class);
-        invalidate.add(bl3);
-        bl3.setBox(bx2);
-        bl3.setThingVolume(30);
-        bl3.setThingWeight(30);
-
-        Thing t4 = context.newObject(Thing.class);
-        invalidate.add(t4);
-        t4.setVolume(40);
-        t4.setWeight(40);
-
-        Ball bl4 = context.newObject(Ball.class);
-        invalidate.add(bl4);
-        bl4.setBox(bx2);
-        bl4.setThingVolume(40);
-        bl4.setThingWeight(40);
-
-        Thing t5 = context.newObject(Thing.class);
-        invalidate.add(t5);
-        t5.setVolume(20);
-        t5.setWeight(10);
-
-        Ball bl5 = context.newObject(Ball.class);
-        invalidate.add(bl5);
-        bl5.setBox(bx2);
-        bl5.setThingVolume(20);
-        bl5.setThingWeight(10);
-
-        Thing t6 = context.newObject(Thing.class);
-        invalidate.add(t6);
-        t6.setVolume(40);
-        t6.setWeight(30);
-
-        Ball bl6 = context.newObject(Ball.class);
-        invalidate.add(bl6);
-        bl6.setBox(bx2);
-        bl6.setThingVolume(40);
-        bl6.setThingWeight(30);
-
-        context.commitChanges();
-
-        tBoxThing.insert(Cayenne.intPKForObject(bx1), t1.getWeight(), t1.getVolume());
-        tBoxThing.insert(Cayenne.intPKForObject(bx1), t2.getWeight(), t2.getVolume());
-        tBoxThing.insert(Cayenne.intPKForObject(bx2), t3.getWeight(), t3.getVolume());
-        tBoxThing.insert(Cayenne.intPKForObject(bx1), t4.getWeight(), t4.getVolume());
-        tBoxThing.insert(Cayenne.intPKForObject(bx1), t5.getWeight(), t5.getVolume());
-        tBoxThing.insert(Cayenne.intPKForObject(bx1), t6.getWeight(), t6.getVolume());
-
-        context.invalidateObjects(invalidate);
     }
 
     @Test
