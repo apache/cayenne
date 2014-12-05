@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -29,13 +28,6 @@ import org.apache.cayenne.map.ObjEntity;
  * progress of reverse-engineering.
  */
 public interface DbLoaderDelegate {
-
-    /**
-     * Returns true to tell DbLoader that it is OK to overwrite DbEntity that
-     * already exists in the model. If loading process should be stopped
-     * immediately, an exception is thrown.
-     */
-    boolean overwriteDbEntity(DbEntity entity) throws CayenneException;
 
     void dbEntityAdded(DbEntity entity);
 

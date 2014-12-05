@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.loader;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -30,6 +27,9 @@ import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class represent ObjEntity that may be optimized using flattened relationships
@@ -72,7 +72,7 @@ public class ManyToManyCandidateEntity {
      */
     public static ManyToManyCandidateEntity build(ObjEntity joinEntity) {
         ArrayList<ObjRelationship> relationships = new ArrayList<ObjRelationship>(joinEntity.getRelationships());
-        if (relationships.size() != 2) {
+        if (relationships.size() != 2 || (relationships.get(0).getDbRelationships().isEmpty() || relationships.get(1).getDbRelationships().isEmpty())) {
             return null;
         }
 

@@ -19,18 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
@@ -60,6 +48,16 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
 
 /**
@@ -75,10 +73,6 @@ public class DbLoaderHelper {
     // preferences...
     private static final Collection<String> EXCLUDED_TABLES = Arrays.asList("AUTO_PK_SUPPORT", "auto_pk_support");
 
-    static DbLoaderMergeDialog mergeDialog;
-
-    protected boolean overwritePreferenceSet;
-    protected boolean overwritingEntities;
     protected boolean stoppingReverseEngineering;
     protected boolean existingMap;
 
@@ -98,38 +92,14 @@ public class DbLoaderHelper {
      */
     protected List<ObjEntity> addedObjEntities;
 
-    static DbLoaderMergeDialog getMergeDialogInstance() {
-        if (mergeDialog == null) {
-            mergeDialog = new DbLoaderMergeDialog(Application.getFrame());
-        }
-
-        return mergeDialog;
-    }
-
     public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter, String dbUserName) {
         this.dbUserName = dbUserName;
         this.mediator = mediator;
         this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
     }
 
-    public void setOverwritingEntities(boolean overwritePreference) {
-        this.overwritingEntities = overwritePreference;
-    }
-
-    public void setOverwritePreferenceSet(boolean overwritePreferenceSet) {
-        this.overwritePreferenceSet = overwritePreferenceSet;
-    }
-
     public void setStoppingReverseEngineering(boolean stopReverseEngineering) {
         this.stoppingReverseEngineering = stopReverseEngineering;
-    }
-
-    public boolean isOverwritePreferenceSet() {
-        return overwritePreferenceSet;
-    }
-
-    public boolean isOverwritingEntities() {
-        return overwritingEntities;
     }
 
     public boolean isStoppingReverseEngineering() {
@@ -214,24 +184,7 @@ public class DbLoaderHelper {
 
     final class LoaderDelegate implements DbLoaderDelegate {
 
-        public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
-            checkCanceled();
-
-            if (!overwritePreferenceSet) {
-                DbLoaderMergeDialog dialog = DbLoaderHelper.getMergeDialogInstance();
-                dialog.initFromModel(DbLoaderHelper.this, ent.getName());
-                dialog.centerWindow();
-                dialog.setVisible(true);
-                dialog.setVisible(false);
-            }
-
-            if (stoppingReverseEngineering) {
-                throw new CayenneException("Should stop DB import.");
-            }
-
-            return overwritingEntities;
-        }
-
+        @Override
         public void dbEntityAdded(DbEntity entity) {
             checkCanceled();
 
@@ -247,6 +200,7 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void objEntityAdded(ObjEntity entity) {
             checkCanceled();
 
@@ -258,6 +212,7 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void dbEntityRemoved(DbEntity entity) {
             checkCanceled();
 
@@ -266,6 +221,7 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void objEntityRemoved(ObjEntity entity) {
             checkCanceled();
 

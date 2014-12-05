@@ -74,12 +74,6 @@ public class DbLoader {
     public static final String WILDCARD = "%";
     public static final String WILDCARD_PATTERN = ".*";
 
-    /**
-     * CAY-479 - need to track which entities which are skipped during loading from db since it it already present in
-     * dataMap and haven't marked for overriding so that relationships to non-skipped entities can be loaded
-     */
-    private Set<DbEntity> skippedEntities = new HashSet<DbEntity>();
-
     private final Connection connection;
     private final DbAdapter adapter;
     private final DbLoaderDelegate delegate;
@@ -298,27 +292,20 @@ public class DbLoader {
                     // TODO continue?
                 }
 
-                try {
-                    if (delegate.overwriteDbEntity(oldEnt)) {
-                        LOGGER.debug("Overwrite: " + oldEnt.getName());
-                        map.removeDbEntity(oldEnt.getName(), true);
-                        delegate.dbEntityRemoved(oldEnt);
-                    } else {
-                        LOGGER.debug("Keep old: " + oldEnt.getName());
-
-                        // cay-479 - need to track entities that were not loaded for
-                        // relationships exported to entities that were
-                        skippedEntities.add(oldEnt);
-                        continue;
+                Collection<ObjEntity> oldObjEnt = map.getMappedEntities(oldEnt);
+                if (!oldObjEnt.isEmpty()) {
+                    for (ObjEntity objEntity : oldObjEnt) {
+                        LOGGER.debug("Delete ObjEntity: " + objEntity.getName());
+                        map.removeObjEntity(objEntity.getName(), true);
+                        delegate.objEntityRemoved(objEntity);
                     }
-                } catch (CayenneException ex) {
-                    LOGGER.debug("Load canceled.");
-
-                    return null; // cancel immediately
                 }
+
+                LOGGER.debug("Overwrite DbEntity: " + oldEnt.getName());
+                map.removeDbEntity(oldEnt.getName(), true);
+                delegate.dbEntityRemoved(oldEnt);
+
             }
-
-
 
             map.addDbEntity(dbEntity);
 
@@ -337,11 +324,6 @@ public class DbLoader {
 
         // get primary keys for each table and store it in dbEntity
         getPrimaryKeysForEachTableAndStoreItInDbEntity(map, tables);
-
-        // cay-479 - iterate skipped DbEntities to populate exported keys
-        for (DbEntity skippedEntity : skippedEntities) {
-            loadDbRelationships(map, skippedEntity, config);
-        }
 
         return dbEntityList;
 
@@ -455,9 +437,9 @@ public class DbLoader {
      * Creates an ObjEntity for each DbEntity in the map. ObjEntities are
      * created empty without
      */
-    protected void loadObjEntities(DataMap map, DbLoaderConfiguration config, Collection<DbEntity> entities) {
+    protected Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config, Collection<DbEntity> entities) {
         if (entities.isEmpty()) {
-            return;
+            return null;
         }
 
         Collection<ObjEntity> loadedEntities = new ArrayList<ObjEntity>(entities.size());
@@ -489,6 +471,8 @@ public class DbLoader {
 
         // update ObjEntity attributes and relationships
         createEntityMerger(map).synchronizeWithDbEntities(loadedEntities);
+
+        return loadedEntities;
     }
 
     /**
@@ -547,9 +531,6 @@ public class DbLoader {
 
                     if (fkEntity == null) {
                         LOGGER.info("FK warning: no entity found for name '" + fkEntityName + "'");
-                    } else if (skippedEntities.contains(entity) && skippedEntities.contains(fkEntity)) {
-                        // cay-479 - don't doLoad relationships between two skipped entities.
-                        continue;
                     } else {
                         // init relationship
                         forwardRelationship = new DbRelationship(generateName(entity, key, true));
@@ -643,7 +624,7 @@ public class DbLoader {
     /**
      * Flattens many-to-many relationships in the generated model.
      */
-    private void flattenManyToManyRelationships(DataMap map) {
+    private void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities) {
         Collection<ObjEntity> entitiesForDelete = new LinkedList<ObjEntity>();
 
         for (ObjEntity curEntity : map.getObjEntities()) {
@@ -659,10 +640,11 @@ public class DbLoader {
         for (ObjEntity curDeleteEntity : entitiesForDelete) {
             map.removeObjEntity(curDeleteEntity.getName(), true);
         }
+        loadedObjEntities.removeAll(entitiesForDelete);
     }
 
-    private void fireObjEntitiesAddedEvents(DataMap map) {
-        for (ObjEntity curEntity : map.getObjEntities()) {
+    private void fireObjEntitiesAddedEvents(Collection<ObjEntity> loadedObjEntities) {
+        for (ObjEntity curEntity : loadedObjEntities) {
             // notify delegate
             if (delegate != null) {
                 delegate.objEntityAdded(curEntity);
@@ -760,10 +742,10 @@ public class DbLoader {
 
 		if (entities != null) {
 			loadDbRelationships(dataMap, config, entities);
-			loadObjEntities(dataMap, config, entities);
+			Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
 
-			flattenManyToManyRelationships(dataMap);
-			fireObjEntitiesAddedEvents(dataMap);
+			flattenManyToManyRelationships(dataMap, loadedObjEntities);
+			fireObjEntitiesAddedEvents(loadedObjEntities);
 		}
 
 		loadProcedures(dataMap, config);

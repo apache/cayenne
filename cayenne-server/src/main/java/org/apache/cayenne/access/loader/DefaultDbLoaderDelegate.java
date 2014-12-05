@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.loader;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -27,11 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
  * @since 4.0.
  */
 public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
-
-    @Override
-    public boolean overwriteDbEntity(DbEntity entity) throws CayenneException {
-        return false;
-    }
 
     @Override
     public void dbEntityAdded(DbEntity entity) {
