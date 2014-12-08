@@ -43,7 +43,7 @@ import org.apache.tools.ant.Project;
  * 
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples
  *        package.
- * @deprecated since 3.2
+ * @deprecated since 4.0
  */
 @Deprecated
 public class DataPortTask extends CayenneTask {
@@ -64,7 +64,7 @@ public class DataPortTask extends CayenneTask {
     @Override
     public void execute() throws BuildException {
 
-        log("*** 'cdataport' task is deprecated and will be removed after 3.2",
+        log("*** 'cdataport' task is deprecated and will be removed after 4.0",
                 Project.MSG_WARN);
 
         validateParameters();

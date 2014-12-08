@@ -19,12 +19,14 @@
 
 package org.apache.cayenne;
 
+import org.junit.Test;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
 
-public class ObjectIdRegressionTest extends TestCase {
+public class ObjectIdRegressionTest {
 
     // public void testX() {
     // for (int i = 0; i < 10000; i++) {
@@ -38,6 +40,7 @@ public class ObjectIdRegressionTest extends TestCase {
     // }
     // }
 
+    @Test
     public void testIdPool() throws Exception {
         // testing uniqueness of a sequence of ObjectIds generated quickly one after the
         // other...

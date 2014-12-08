@@ -56,7 +56,7 @@ import org.apache.commons.logging.Log;
  * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven
  * plugins.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class ToolsModule implements Module {
 

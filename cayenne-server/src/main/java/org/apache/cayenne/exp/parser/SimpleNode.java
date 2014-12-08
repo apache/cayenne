@@ -268,7 +268,7 @@ public abstract class SimpleNode extends Expression implements Node {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public void appendAsString(Appendable out) throws IOException {
@@ -299,7 +299,7 @@ public abstract class SimpleNode extends Expression implements Node {
     }
 
     /**
-     * @deprecated since 3.2 use {@link #appendAsString(Appendable)}.
+     * @deprecated since 4.0 use {@link #appendAsString(Appendable)}.
      */
     @Override
     @Deprecated
@@ -433,7 +433,7 @@ public abstract class SimpleNode extends Expression implements Node {
 
     /**
      * @since 3.0
-     * @deprecated since 3.2 use {@link #appendAsEJBQL(Appendable, String)}.
+     * @deprecated since 4.0 use {@link #appendAsEJBQL(Appendable, String)}.
      */
     @Override
     @Deprecated
@@ -446,14 +446,14 @@ public abstract class SimpleNode extends Expression implements Node {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
          appendAsEJBQL(null,out,rootId);
     }
 
         /**
-         * @since 3.2
+         * @since 4.0
          */
     @Override
     public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {

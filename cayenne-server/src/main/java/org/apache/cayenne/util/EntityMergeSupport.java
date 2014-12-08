@@ -46,20 +46,21 @@ import org.apache.cayenne.map.naming.ObjectNameGenerator;
  */
 public class EntityMergeSupport {
 
-    private static final Map<String, String> CLASS_TO_PRIMITVE;
+    private static final Map<String, String> CLASS_TO_PRIMITIVE;
 
     static {
-        CLASS_TO_PRIMITVE = new HashMap<String, String>();
-        CLASS_TO_PRIMITVE.put(Byte.class.getName(), "byte");
-        CLASS_TO_PRIMITVE.put(Long.class.getName(), "long");
-        CLASS_TO_PRIMITVE.put(Double.class.getName(), "double");
-        CLASS_TO_PRIMITVE.put(Boolean.class.getName(), "boolean");
-        CLASS_TO_PRIMITVE.put(Float.class.getName(), "float");
-        CLASS_TO_PRIMITVE.put(Short.class.getName(), "short");
-        CLASS_TO_PRIMITVE.put(Integer.class.getName(), "int");
+        CLASS_TO_PRIMITIVE = new HashMap<String, String>();
+        CLASS_TO_PRIMITIVE.put(Byte.class.getName(), "byte");
+        CLASS_TO_PRIMITIVE.put(Long.class.getName(), "long");
+        CLASS_TO_PRIMITIVE.put(Double.class.getName(), "double");
+        CLASS_TO_PRIMITIVE.put(Boolean.class.getName(), "boolean");
+        CLASS_TO_PRIMITIVE.put(Float.class.getName(), "float");
+        CLASS_TO_PRIMITIVE.put(Short.class.getName(), "short");
+        CLASS_TO_PRIMITIVE.put(Integer.class.getName(), "int");
     }
 
-    protected DataMap map;
+    private final DataMap map;
+
     protected boolean removeMeaningfulFKs;
     protected boolean removeMeaningfulPKs;
     protected boolean usePrimitives;
@@ -67,12 +68,12 @@ public class EntityMergeSupport {
     /**
      * Strategy for choosing names for entities, attributes and relationships
      */
-    protected ObjectNameGenerator nameGenerator;
+    private final ObjectNameGenerator nameGenerator;
 
     /**
      * Listeners of merge process.
      */
-    protected List<EntityMergeListener> listeners;
+    private final List<EntityMergeListener> listeners = new ArrayList<EntityMergeListener>();
 
     public EntityMergeSupport(DataMap map) {
         this(map, new LegacyNameGenerator(), true);
@@ -83,10 +84,9 @@ public class EntityMergeSupport {
      */
     public EntityMergeSupport(DataMap map, ObjectNameGenerator nameGenerator, boolean removeMeaningfulPKs) {
         this.map = map;
-        this.removeMeaningfulFKs = true;
-        this.listeners = new ArrayList<EntityMergeListener>();
-        this.removeMeaningfulPKs = removeMeaningfulPKs;
         this.nameGenerator = nameGenerator;
+        this.removeMeaningfulFKs = true;
+        this.removeMeaningfulPKs = removeMeaningfulPKs;
 
         /**
          * Adding a listener, so that all created ObjRelationships would have
@@ -102,7 +102,7 @@ public class EntityMergeSupport {
      * @return true if any ObjEntity has changed as a result of synchronization.
      * @since 1.2 changed signature to use Collection instead of List.
      */
-    public boolean synchronizeWithDbEntities(Collection<ObjEntity> objEntities) {
+    public boolean synchronizeWithDbEntities(Iterable<ObjEntity> objEntities) {
         boolean changed = false;
         for (ObjEntity nextEntity : objEntities) {
             if (synchronizeWithDbEntity(nextEntity)) {
@@ -114,14 +114,14 @@ public class EntityMergeSupport {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected boolean removePK(DbEntity dbEntity) {
         return removeMeaningfulPKs;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected boolean removeFK(DbEntity dbEntity) {
         return removeMeaningfulFKs;
@@ -147,71 +147,79 @@ public class EntityMergeSupport {
         boolean changed = false;
 
         // synchronization on DataMap is some (weak) protection
-        // against simultaneous modification of the map (like double-clicking on
-        // sync
-        // button)
+        // against simultaneous modification of the map (like double-clicking on sync button)
         synchronized (map) {
 
             if (removeFK(dbEntity)) {
-
-                // get rid of attributes that are now src attributes for
-                // relationships
-                for (DbAttribute da : getMeaningfulFKs(entity)) {
-                    ObjAttribute oa = entity.getAttributeForDbAttribute(da);
-                    while (oa != null) {
-                        String attrName = oa.getName();
-                        entity.removeAttribute(attrName);
-                        changed = true;
-                        oa = entity.getAttributeForDbAttribute(da);
-                    }
-                }
+                changed = getRidOfAttributesThatAreNowSrcAttributesForRelationships(entity);
             }
 
-            // add missing attributes
-            for (DbAttribute da : getAttributesToAdd(entity)) {
-
-                String attrName = nameGenerator.createObjAttributeName(da);
-                // avoid duplicate names
-                attrName = DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, entity, attrName);
-
-                String type = TypesMapping.getJavaBySqlType(da.getType());
-
-                if (usePrimitives) {
-                    String primitive = CLASS_TO_PRIMITVE.get(type);
-                    if (primitive != null) {
-                        type = primitive;
-                    }
-                }
-
-                ObjAttribute oa = new ObjAttribute(attrName, type, entity);
-                oa.setDbAttributePath(da.getName());
-                entity.addAttribute(oa);
-                fireAttributeAdded(oa);
-                changed = true;
-            }
-
-            // add missing relationships
-            for (DbRelationship dr : getRelationshipsToAdd(entity)) {
-                DbEntity targetEntity = (DbEntity) dr.getTargetEntity();
-
-                for (Entity mappedTarget : map.getMappedEntities(targetEntity)) {
-
-                    // avoid duplicate names
-                    String relationshipName = nameGenerator.createObjRelationshipName(dr);
-                    relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, entity, relationshipName);
-
-                    ObjRelationship or = new ObjRelationship(relationshipName);
-                    or.addDbRelationship(dr);
-                    or.setSourceEntity(entity);
-                    or.setTargetEntity(mappedTarget);
-                    entity.addRelationship(or);
-
-                    fireRelationshipAdded(or);
-                    changed = true;
-                }
-            }
+            changed |= addMissingAttributes(entity);
+            changed |= addMissingRelationships(entity);
         }
 
+        return changed;
+    }
+
+    private boolean addMissingRelationships(ObjEntity entity) {
+        boolean changed = false;
+        for (DbRelationship dr : getRelationshipsToAdd(entity)) {
+            DbEntity targetEntity = dr.getTargetEntity();
+
+            for (Entity mappedTarget : map.getMappedEntities(targetEntity)) {
+
+                // avoid duplicate names
+                String relationshipName = nameGenerator.createObjRelationshipName(dr);
+                relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, entity, relationshipName);
+
+                ObjRelationship or = new ObjRelationship(relationshipName);
+                or.addDbRelationship(dr);
+                or.setSourceEntity(entity);
+                or.setTargetEntity(mappedTarget);
+                entity.addRelationship(or);
+
+                fireRelationshipAdded(or);
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    private boolean addMissingAttributes(ObjEntity entity) {
+        boolean changed = false;
+        for (DbAttribute da : getAttributesToAdd(entity)) {
+
+            String attrName = DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, entity,
+                    nameGenerator.createObjAttributeName(da));
+
+            String type = TypesMapping.getJavaBySqlType(da.getType());
+            if (usePrimitives) {
+                String primitive = CLASS_TO_PRIMITIVE.get(type);
+                if (primitive != null) {
+                    type = primitive;
+                }
+            }
+
+            ObjAttribute oa = new ObjAttribute(attrName, type, entity);
+            oa.setDbAttributePath(da.getName());
+            entity.addAttribute(oa);
+            fireAttributeAdded(oa);
+            changed = true;
+        }
+        return changed;
+    }
+
+    private boolean getRidOfAttributesThatAreNowSrcAttributesForRelationships(ObjEntity entity) {
+        boolean changed = false;
+        for (DbAttribute da : getMeaningfulFKs(entity)) {
+            ObjAttribute oa = entity.getAttributeForDbAttribute(da);
+            while (oa != null) {
+                String attrName = oa.getName();
+                entity.removeAttribute(attrName);
+                changed = true;
+                oa = entity.getAttributeForDbAttribute(da);
+            }
+        }
         return changed;
     }
 
@@ -249,16 +257,11 @@ public class EntityMergeSupport {
 
         for (DbAttribute dba : dbEntity.getAttributes()) {
 
-            if (dba.getName() == null) {
-                continue;
-            }
-
-            if (objEntity.getAttributeForDbAttribute(dba) != null) {
+            if (dba.getName() == null || objEntity.getAttributeForDbAttribute(dba) != null) {
                 continue;
             }
 
             boolean removeMeaningfulPKs = removePK(dbEntity);
-
             if (removeMeaningfulPKs && dba.isPrimaryKey()) {
                 continue;
             }
@@ -314,42 +317,41 @@ public class EntityMergeSupport {
         return missing;
     }
 
-    private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {
-        Collection<DbRelationship> incoming = new ArrayList<DbRelationship>();
+	private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {
+		Collection<DbRelationship> incoming = new ArrayList<DbRelationship>();
 
-        for (DbEntity nextEntity : entity.getDataMap().getDbEntities()) {
-            for (DbRelationship relationship : nextEntity.getRelationships()) {
-                if (entity == relationship.getTargetEntity()) {
-                    incoming.add(relationship);
-                }
-            }
-        }
+		for (DbEntity nextEntity : entity.getDataMap().getDbEntities()) {
+			for (DbRelationship relationship : nextEntity.getRelationships()) {
 
-        return incoming;
-    }
+				// TODO: PERFORMANCE 'getTargetEntity' is generally slow, called
+				// in this iterator it is showing (e.g. in YourKit profiles)..
+				// perhaps use cheaper 'getTargetEntityName()' or even better -
+				// pre-cache all relationships by target entity to avoid O(n)
+				// search ?
+				// (need to profile to prove the difference)
+				if (entity == relationship.getTargetEntity()) {
+					incoming.add(relationship);
+				}
+			}
+		}
+
+		return incoming;
+	}
 
     protected List<DbRelationship> getRelationshipsToAdd(ObjEntity objEntity) {
         List<DbRelationship> missing = new ArrayList<DbRelationship>();
-        for (DbRelationship dbrel : objEntity.getDbEntity().getRelationships()) {
+        for (DbRelationship dbRel : objEntity.getDbEntity().getRelationships()) {
             // check if adding it makes sense at all
-            if (dbrel.getName() == null) {
+            if (dbRel.getName() == null) {
                 continue;
             }
 
-            if (objEntity.getRelationshipForDbRelationship(dbrel) == null) {
-                missing.add(dbrel);
+            if (objEntity.getRelationshipForDbRelationship(dbRel) == null) {
+                missing.add(dbRel);
             }
         }
 
         return missing;
-    }
-
-    public DataMap getMap() {
-        return map;
-    }
-
-    public void setMap(DataMap map) {
-        this.map = map;
     }
 
     /**
@@ -391,8 +393,8 @@ public class EntityMergeSupport {
      * Notifies all listeners that an ObjAttribute was added
      */
     protected void fireAttributeAdded(ObjAttribute attr) {
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).objAttributeAdded(attr);
+        for (EntityMergeListener listener : listeners) {
+            listener.objAttributeAdded(attr);
         }
     }
 
@@ -400,16 +402,9 @@ public class EntityMergeSupport {
      * Notifies all listeners that an ObjRelationship was added
      */
     protected void fireRelationshipAdded(ObjRelationship rel) {
-        for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).objRelationshipAdded(rel);
+        for (EntityMergeListener listener : listeners) {
+            listener.objRelationshipAdded(rel);
         }
-    }
-
-    /**
-     * Sets new naming strategy for reverse engineering
-     */
-    public void setNameGenerator(ObjectNameGenerator strategy) {
-        this.nameGenerator = strategy;
     }
 
     /**
@@ -420,14 +415,14 @@ public class EntityMergeSupport {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public boolean isUsePrimitives() {
         return usePrimitives;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      * @param usePrimitives
      */
     public void setUsePrimitives(boolean usePrimitives) {

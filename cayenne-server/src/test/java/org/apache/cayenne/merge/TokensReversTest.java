@@ -32,7 +32,7 @@ import static org.apache.cayenne.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.merge.builders.ObjectMother.dbEntity;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class TokensReversTest {
 

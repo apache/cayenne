@@ -19,25 +19,28 @@
 
 package org.apache.cayenne.tools.dbimport;
 
-import java.util.Arrays;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.tools.dbimport.DbImportDbLoaderDelegate;
+import org.junit.Before;
+import org.junit.Test;
 
-public class DbImportDbLoaderDelegateTest extends TestCase {
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class DbImportDbLoaderDelegateTest {
 
     private DbImportDbLoaderDelegate delegate;
     private DataMap dataMap;
     private DbEntity dbEntity;
     private ObjEntity objEntity;
 
-    @Override
+    @Before
     public void setUp() {
         delegate = new DbImportDbLoaderDelegate();
         dataMap = new DataMap();
@@ -49,10 +52,12 @@ public class DbImportDbLoaderDelegateTest extends TestCase {
         objEntity.setDataMap(dataMap);
     }
 
+    @Test
     public void testOverwriteDbEntity() throws CayenneException {
         assertFalse(delegate.overwriteDbEntity(dbEntity));
     }
 
+    @Test
     public void testDbEntityAdded() {
         delegate.dbEntityAdded(dbEntity);
 
@@ -64,6 +69,7 @@ public class DbImportDbLoaderDelegateTest extends TestCase {
         assertEquals(entities, delegate.getAddedDbEntities());
     }
 
+    @Test
     public void testDbEntityRemoved() {
         // Make sure the entity is in the datamap to start.
         dataMap.addDbEntity(dbEntity);
@@ -76,6 +82,7 @@ public class DbImportDbLoaderDelegateTest extends TestCase {
         assertEquals(Arrays.asList(dbEntity), delegate.getRemovedDbEntities());
     }
 
+    @Test
     public void testObjEntityAdded() {
         delegate.objEntityAdded(objEntity);
 
@@ -87,6 +94,7 @@ public class DbImportDbLoaderDelegateTest extends TestCase {
         assertEquals(entities, delegate.getAddedObjEntities());
     }
 
+    @Test
     public void testObjEntityRemoved() {
         // Make sure the entity is in the datamap to start.
         dataMap.addObjEntity(objEntity);

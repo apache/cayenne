@@ -26,7 +26,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class PrefetchObjectResolver extends ObjectResolver {
 

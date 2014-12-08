@@ -19,7 +19,7 @@
 package org.apache.cayenne.di;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public interface DecoratorBuilder<T> {
 

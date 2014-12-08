@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.cayenne.reflect.BaseProperty;
+public class BasePropertyTest {
 
-import junit.framework.TestCase;
-
-public class BasePropertyTest extends TestCase {
-
+    @Test
     public void testGetName() {
         ClassDescriptor owner = mock(ClassDescriptor.class);
         Accessor accessor = mock(Accessor.class);

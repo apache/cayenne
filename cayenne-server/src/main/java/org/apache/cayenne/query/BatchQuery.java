@@ -50,14 +50,14 @@ public abstract class BatchQuery implements Query {
     protected DataMap dataMap;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected List<BatchQueryRow> rows;
 
     protected List<DbAttribute> dbAttributes;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public BatchQuery(DbEntity dbEntity, List<DbAttribute> dbAttributes, int batchCapacity) {
         this.dbEntity = dbEntity;
@@ -66,7 +66,7 @@ public abstract class BatchQuery implements Query {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public List<BatchQueryRow> getRows() {
         return rows;
@@ -159,7 +159,7 @@ public abstract class BatchQuery implements Query {
     }
 
     /**
-     * @deprecated since 3.2 use getRows().size().
+     * @deprecated since 4.0 use getRows().size().
      */
     @Deprecated
     public int size() {

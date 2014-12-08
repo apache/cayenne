@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
-import static org.mockito.Mockito.mock;
-
-import java.util.Collection;
-import java.util.Collections;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.ClientServerChannel;
@@ -36,9 +29,20 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.service.LocalConnection;
+import org.junit.Test;
 
-public class ClientLocalRuntimeTest extends TestCase {
+import java.util.Collection;
+import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+public class ClientLocalRuntimeTest {
+
+    @Test
 	public void testDefaultConstructor() {
 
 		Module serverModule = new Module() {
@@ -55,6 +59,7 @@ public class ClientLocalRuntimeTest extends TestCase {
 		assertTrue(cmodules.toArray()[0] instanceof ClientModule);
 	}
 
+    @Test
 	public void testGetConnection() {
 
 		final DataContext serverContext = mock(DataContext.class);

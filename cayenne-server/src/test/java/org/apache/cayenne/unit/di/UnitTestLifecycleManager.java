@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di;
 
-import junit.framework.TestCase;
-
 public interface UnitTestLifecycleManager {
 
-    <T extends TestCase> void setUp(T testCase);
+    <T> void setUp(T testCase);
 
-    <T extends TestCase> void tearDown(T testCase);
+    <T> void tearDown(T testCase);
 }

@@ -32,7 +32,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * Performs argument conversions for a calling binary expression, so that the
  * expression could eval the arguments of the same type.
  * 
- * @since 3.2
+ * @since 4.0
  */
 abstract class Evaluator {
 

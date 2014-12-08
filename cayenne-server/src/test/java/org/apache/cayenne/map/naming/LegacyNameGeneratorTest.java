@@ -18,13 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.map.naming;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.junit.Test;
 
-public class LegacyNameGeneratorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class LegacyNameGeneratorTest {
+
+    @Test
     public void testStrategy() throws Exception {
         LegacyNameGenerator strategy = new LegacyNameGenerator();
         

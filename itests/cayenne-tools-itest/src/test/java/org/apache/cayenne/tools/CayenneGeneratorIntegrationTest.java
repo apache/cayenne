@@ -18,15 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import org.junit.Test;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class CayenneGeneratorIntegrationTest extends TestCase {
+public class CayenneGeneratorIntegrationTest {
 
     private File testDir;
 
@@ -38,6 +42,7 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
     /**
      * Test single classes with a non-standard template.
      */
+    @Test
     public void testSingleClassesCustTemplate() throws Exception {
         startTest("single-classes-cust-template");
 
@@ -47,6 +52,7 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
     }
 
     /** Test single classes generation including full package path. */
+    @Test
     public void testSingleClasses1() throws Exception {
         startTest("single-classes1");
 
@@ -56,6 +62,7 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
     }
 
     /** Test single classes generation ignoring package path. */
+    @Test
     public void testSingleClasses2() throws Exception {
         startTest("single-classes2");
 
@@ -65,6 +72,7 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
     }
 
     /** Test pairs generation including full package path. */
+    @Test
     public void testPairs1() throws Exception {
         startTest("pairs1");
 
@@ -75,6 +83,7 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
     }
 
     /** Test pairs generation in the same directory. */
+    @Test
     public void testPairs2() throws Exception {
         startTest("pairs2");
 
@@ -87,6 +96,7 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
      * Test pairs generation including full package path with superclass and
      * subclass in different packages.
      */
+    @Test
     public void testPairs3() throws Exception {
         startTest("pairs3");
 
@@ -95,7 +105,8 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
         assertContents("org/apache/cayenne/testdo/testmap/superart/_Artist.java", "_Artist",
                 "org.apache.cayenne.testdo.testmap.superart", "CayenneDataObject");
     }
-    
+
+    @Test
     public void testPairs1_client() throws Exception {
         startTest("pairs1-client");
 
@@ -105,6 +116,7 @@ public class CayenneGeneratorIntegrationTest extends TestCase {
                 "org.apache.cayenne.testdo.testmap.client.superart", "PersistentObject");
     }
 
+    @Test
     public void testPairsEmbeddable3() throws Exception {
         startTest("pairs-embeddables3");
 

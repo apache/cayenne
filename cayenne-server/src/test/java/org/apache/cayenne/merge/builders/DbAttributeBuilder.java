@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DbAttribute;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
 

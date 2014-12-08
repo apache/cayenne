@@ -18,61 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Injector;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * A unit test superclass that supports injection of members based on the standard unit
  * test container.
  */
-public abstract class DICase extends TestCase {
+public abstract class DICase {
 
     protected abstract Injector getUnitTestInjector();
 
-    @Override
-    protected final void setUp() throws Exception {
+    @Before
+    public final void setUpLifecycleManager() throws Exception {
         getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).setUp(this);
-
-        try {
-            setUpAfterInjection();
-        }
-        catch (Exception e) {
-
-            // must stop the lifecycle manager (do the same thing we'd normally do in
-            // 'tearDown' ), otherwise following tests will end up in
-            // a bad state
-
-            try {
-                getUnitTestInjector()
-                        .getInstance(UnitTestLifecycleManager.class)
-                        .tearDown(this);
-            }
-            catch (Exception x) {
-                // swallow...
-            }
-
-            throw e;
-        }
     }
 
-    @Override
-    protected final void tearDown() throws Exception {
-
-        try {
-            tearDownBeforeInjection();
-        }
-        finally {
-            getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).tearDown(
-                    this);
-        }
+    @After
+    public final void tearDownLifecycleManager() throws Exception {
+        getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).tearDown(this);
     }
 
-    protected void setUpAfterInjection() throws Exception {
-        // noop
-    }
-
-    protected void tearDownBeforeInjection() throws Exception {
-        // noop
-    }
 }

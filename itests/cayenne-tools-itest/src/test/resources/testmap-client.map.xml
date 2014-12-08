@@ -277,7 +277,7 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="UUID" type="VARCHAR" length="100"/>
 	</db-entity>
-	<obj-entity name="ArraysEntity" className="org.apache.cayenne.testdo.testmap.ArraysEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.ArraysEntity" dbEntityName="ARRAYS_ENTITY">
+	<obj-entity name="ArraysEntity" className="org.apache.cayenne.testdo.misc_types.ArraysEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.ArraysEntity" dbEntityName="ARRAYS_ENTITY">
 		<obj-attribute name="byteArray" type="byte[]" db-attribute-path="BYTE_ARRAY"/>
 		<obj-attribute name="byteWrapperArray" type="java.lang.Byte[]" db-attribute-path="BYTE_WRAPPER_ARRAY"/>
 		<obj-attribute name="charArray" type="char[]" db-attribute-path="CHAR_ARRAY"/>
@@ -312,51 +312,51 @@
 	</obj-entity>
 	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" clientClassName="org.apache.cayenne.testdo.testmap.client.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
 	</obj-entity>
-	<obj-entity name="BigDecimalEntity" className="org.apache.cayenne.testdo.testmap.BigDecimalEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BigDecimalEntity" dbEntityName="BIGDECIMAL_ENTITY">
+	<obj-entity name="BigDecimalEntity" className="org.apache.cayenne.testdo.numeric_types.BigDecimalEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BigDecimalEntity" dbEntityName="BIGDECIMAL_ENTITY">
 		<obj-attribute name="bigDecimalField" type="java.math.BigDecimal" db-attribute-path="BIGDECIMAL_FIELD"/>
 	</obj-entity>
-	<obj-entity name="BigIntegerEntity" className="org.apache.cayenne.testdo.testmap.BigIntegerEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BigIntegerEntity" dbEntityName="BIGINTEGER_ENTITY">
+	<obj-entity name="BigIntegerEntity" className="org.apache.cayenne.testdo.numeric_types.BigIntegerEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BigIntegerEntity" dbEntityName="BIGINTEGER_ENTITY">
 		<obj-attribute name="bigIntegerField" type="java.math.BigInteger" db-attribute-path="BIG_INTEGER_FIELD"/>
 	</obj-entity>
-	<obj-entity name="BinaryPKTest1" className="org.apache.cayenne.testdo.testmap.BinaryPKTest1" clientClassName="org.apache.cayenne.testdo.testmap.client.BinaryPKTest1" dbEntityName="BINARY_PK_TEST1">
+	<obj-entity name="BinaryPKTest1" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest1" clientClassName="org.apache.cayenne.testdo.testmap.client.BinaryPKTest1" dbEntityName="BINARY_PK_TEST1">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="BinaryPKTest2" className="org.apache.cayenne.testdo.testmap.BinaryPKTest2" clientClassName="org.apache.cayenne.testdo.testmap.client.BinaryPKTest2" dbEntityName="BINARY_PK_TEST2">
+	<obj-entity name="BinaryPKTest2" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest2" clientClassName="org.apache.cayenne.testdo.testmap.client.BinaryPKTest2" dbEntityName="BINARY_PK_TEST2">
 		<obj-attribute name="detailName" type="java.lang.String" db-attribute-path="DETAIL_NAME"/>
 	</obj-entity>
-	<obj-entity name="BitNumberTestEntity" className="org.apache.cayenne.testdo.testmap.BitNumberTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BitNumberTestEntity" dbEntityName="BIT_TEST">
+	<obj-entity name="BitNumberTestEntity" className="org.apache.cayenne.testdo.numeric_types.BitNumberTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BitNumberTestEntity" dbEntityName="BIT_TEST">
 		<obj-attribute name="bitColumn" type="java.lang.Integer" db-attribute-path="BIT_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="BitTestEntity" className="org.apache.cayenne.testdo.testmap.BitTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BitTestEntity" dbEntityName="BIT_TEST">
+	<obj-entity name="BitTestEntity" className="org.apache.cayenne.testdo.numeric_types.BitTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BitTestEntity" dbEntityName="BIT_TEST">
 		<obj-attribute name="bitColumn" type="java.lang.Boolean" db-attribute-path="BIT_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="BlobTestEntity" className="org.apache.cayenne.testdo.testmap.BlobTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BlobTestEntity" dbEntityName="BLOB_TEST">
+	<obj-entity name="BlobTestEntity" className="org.apache.cayenne.testdo.lob.BlobTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BlobTestEntity" dbEntityName="BLOB_TEST">
 		<obj-attribute name="blobCol" type="byte[]" db-attribute-path="BLOB_COL"/>
 	</obj-entity>
-	<obj-entity name="BooleanTestEntity" className="org.apache.cayenne.testdo.testmap.BooleanTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BooleanTestEntity" dbEntityName="BOOLEAN_TEST">
+	<obj-entity name="BooleanTestEntity" className="org.apache.cayenne.testdo.numeric_types.BooleanTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BooleanTestEntity" dbEntityName="BOOLEAN_TEST">
 		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="CalendarEntity" className="org.apache.cayenne.testdo.testmap.CalendarEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CalendarEntity" dbEntityName="CALENDAR_TEST">
+	<obj-entity name="CalendarEntity" className="org.apache.cayenne.testdo.date_time.CalendarEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CalendarEntity" dbEntityName="CALENDAR_TEST">
 		<obj-attribute name="calendarField" type="java.util.Calendar" db-attribute-path="CALENDAR_FIELD"/>
 	</obj-entity>
-	<obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.testmap.CharFkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
+	<obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="CharPkTestEntity" className="org.apache.cayenne.testdo.testmap.CharPkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CharPkTestEntity" dbEntityName="CHAR_PK_TEST">
+	<obj-entity name="CharPkTestEntity" className="org.apache.cayenne.testdo.compound.CharPkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CharPkTestEntity" dbEntityName="CHAR_PK_TEST">
 		<obj-attribute name="otherCol" type="java.lang.String" db-attribute-path="OTHER_COL"/>
 		<obj-attribute name="pkCol" type="java.lang.String" db-attribute-path="PK_COL"/>
 	</obj-entity>
-	<obj-entity name="CharacterEntity" className="org.apache.cayenne.testdo.testmap.CharacterEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CharacterEntity" dbEntityName="CHARACTER_ENTITY">
+	<obj-entity name="CharacterEntity" className="org.apache.cayenne.testdo.misc_types.CharacterEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CharacterEntity" dbEntityName="CHARACTER_ENTITY">
 		<obj-attribute name="characterField" type="java.lang.Character" db-attribute-path="CHARACTER_FIELD"/>
 	</obj-entity>
-	<obj-entity name="ClobTestEntity" className="org.apache.cayenne.testdo.testmap.ClobTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.ClobTestEntity" dbEntityName="CLOB_TEST">
+	<obj-entity name="ClobTestEntity" className="org.apache.cayenne.testdo.lob.ClobTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.ClobTestEntity" dbEntityName="CLOB_TEST">
 		<obj-attribute name="clobCol" type="java.lang.String" db-attribute-path="CLOB_COL"/>
 	</obj-entity>
-	<obj-entity name="ClobTestRelation" className="org.apache.cayenne.testdo.testmap.ClobTestRelation" clientClassName="org.apache.cayenne.testdo.testmap.client.ClobTestRelation" dbEntityName="CLOB_TEST_RELATION">
+	<obj-entity name="ClobTestRelation" className="org.apache.cayenne.testdo.lob.ClobTestRelation" clientClassName="org.apache.cayenne.testdo.testmap.client.ClobTestRelation" dbEntityName="CLOB_TEST_RELATION">
 		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
 		<obj-attribute name="value" type="java.lang.Integer" db-attribute-path="VALUE"/>
 	</obj-entity>
-	<obj-entity name="CompoundFkTestEntity" className="org.apache.cayenne.testdo.testmap.CompoundFkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
+	<obj-entity name="CompoundFkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundFkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="CompoundPainting" className="org.apache.cayenne.testdo.testmap.CompoundPainting" clientClassName="org.apache.cayenne.testdo.testmap.client.CompoundPainting" dbEntityName="PAINTING">
@@ -366,78 +366,78 @@
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
 	</obj-entity>
-	<obj-entity name="CompoundPkTestEntity" className="org.apache.cayenne.testdo.testmap.CompoundPkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CompoundPkTestEntity" dbEntityName="COMPOUND_PK_TEST">
+	<obj-entity name="CompoundPkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundPkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.CompoundPkTestEntity" dbEntityName="COMPOUND_PK_TEST">
 		<obj-attribute name="key1" type="java.lang.String" db-attribute-path="KEY1"/>
 		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="DateTestEntity" className="org.apache.cayenne.testdo.testmap.DateTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.DateTestEntity" dbEntityName="DATE_TEST">
+	<obj-entity name="DateTestEntity" className="org.apache.cayenne.testdo.date_time.DateTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.DateTestEntity" dbEntityName="DATE_TEST">
 		<obj-attribute name="dateColumn" type="java.util.Date" db-attribute-path="DATE_COLUMN"/>
 		<obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
 		<obj-attribute name="timestampColumn" type="java.util.Date" db-attribute-path="TIMESTAMP_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="DecimalPKTest1" className="org.apache.cayenne.testdo.testmap.DecimalPKTest1" clientClassName="org.apache.cayenne.testdo.testmap.client.DecimalPKTest1" dbEntityName="DECIMAL_PK_TST">
+	<obj-entity name="DecimalPKTest1" className="org.apache.cayenne.testdo.numeric_types.DecimalPKTest1" clientClassName="org.apache.cayenne.testdo.testmap.client.DecimalPKTest1" dbEntityName="DECIMAL_PK_TST">
 		<obj-attribute name="decimalPK" type="java.lang.Double" db-attribute-path="DECIMAL_PK"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="DecimalPKTestEntity" className="org.apache.cayenne.testdo.testmap.DecimalPKTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.DecimalPKTestEntity" dbEntityName="DECIMAL_PK_TST">
+	<obj-entity name="DecimalPKTestEntity" className="org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.DecimalPKTestEntity" dbEntityName="DECIMAL_PK_TST">
 		<obj-attribute name="decimalPK" type="java.math.BigDecimal" db-attribute-path="DECIMAL_PK"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.testmap.EnumEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.EnumEntity" dbEntityName="ENUM_ENTITY">
-		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.testmap.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
+	<obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.enum_test.EnumEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.EnumEntity" dbEntityName="ENUM_ENTITY">
+		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
 	</obj-entity>
 	<obj-entity name="Exhibit" className="org.apache.cayenne.testdo.testmap.Exhibit" clientClassName="org.apache.cayenne.testdo.testmap.client.Exhibit" dbEntityName="EXHIBIT">
 		<obj-attribute name="closingDate" type="java.util.Date" db-attribute-path="CLOSING_DATE"/>
 		<obj-attribute name="openingDate" type="java.util.Date" db-attribute-path="OPENING_DATE"/>
 	</obj-entity>
-	<obj-entity name="ExtendedTypeEntity" className="org.apache.cayenne.testdo.testmap.ExtendedTypeEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.ExtendedTypeEntity" dbEntityName="EXTENDED_TYPE_TEST">
-		<obj-attribute name="name" type="org.apache.cayenne.testdo.testmap.StringET1" db-attribute-path="NAME"/>
+	<obj-entity name="ExtendedTypeEntity" className="org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.ExtendedTypeEntity" dbEntityName="EXTENDED_TYPE_TEST">
+		<obj-attribute name="name" type="org.apache.cayenne.testdo.extended_type.StringET1" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="Gallery" className="org.apache.cayenne.testdo.testmap.Gallery" clientClassName="org.apache.cayenne.testdo.testmap.client.Gallery" dbEntityName="GALLERY">
 		<obj-attribute name="galleryName" type="java.lang.String" db-attribute-path="GALLERY_NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedColumnCompKey" className="org.apache.cayenne.testdo.testmap.GeneratedColumnCompKey" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnCompKey" dbEntityName="GENERATED_COLUMN_COMP_KEY">
+	<obj-entity name="GeneratedColumnCompKey" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompKey" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnCompKey" dbEntityName="GENERATED_COLUMN_COMP_KEY">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedColumnCompMaster" className="org.apache.cayenne.testdo.testmap.GeneratedColumnCompMaster" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnCompMaster" dbEntityName="GENERATED_COLUMN_COMP_M">
+	<obj-entity name="GeneratedColumnCompMaster" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnCompMaster" dbEntityName="GENERATED_COLUMN_COMP_M">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedColumnDep" className="org.apache.cayenne.testdo.testmap.GeneratedColumnDep" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnDep" dbEntityName="GENERATED_COLUMN_DEP">
+	<obj-entity name="GeneratedColumnDep" className="org.apache.cayenne.testdo.generated.GeneratedColumnDep" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnDep" dbEntityName="GENERATED_COLUMN_DEP">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedColumnTest2" className="org.apache.cayenne.testdo.testmap.GeneratedColumnTest2" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnTest2" dbEntityName="GENERATED_COLUMN_TEST2">
+	<obj-entity name="GeneratedColumnTest2" className="org.apache.cayenne.testdo.generated.GeneratedColumnTest2" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnTest2" dbEntityName="GENERATED_COLUMN_TEST2">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.testmap.GeneratedColumnTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
+	<obj-entity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.testmap.GeneratedF1" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
 	</obj-entity>
-	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.testmap.GeneratedF2" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
 	</obj-entity>
-	<obj-entity name="LongEntity" className="org.apache.cayenne.testdo.testmap.LongEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.LongEntity" dbEntityName="LONG_ENTITY">
+	<obj-entity name="LongEntity" className="org.apache.cayenne.testdo.numeric_types.LongEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.LongEntity" dbEntityName="LONG_ENTITY">
 		<obj-attribute name="longField" type="java.lang.Long" db-attribute-path="LONG_FIELD"/>
 	</obj-entity>
 	<obj-entity name="MeaningfulGeneratedColumnTestEntity" className="org.apache.cayenne.testdo.testmap.MeaningfulGeneratedColumnTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.MeaningfulGeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
 		<obj-attribute name="generatedColumn" type="java.lang.Integer" db-attribute-path="GENERATED_COLUMN"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.testmap.MeaningfulPKDep" clientClassName="org.apache.cayenne.testdo.testmap.client.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
+	<obj-entity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" clientClassName="org.apache.cayenne.testdo.testmap.client.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
 		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
 	</obj-entity>
-	<obj-entity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.testmap.MeaningfulPKTest1" clientClassName="org.apache.cayenne.testdo.testmap.client.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
+	<obj-entity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1" clientClassName="org.apache.cayenne.testdo.testmap.client.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
 		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
 		<obj-attribute name="pkAttribute" type="java.lang.Integer" db-attribute-path="PK_ATTRIBUTE"/>
 	</obj-entity>
-	<obj-entity name="MixedPersistenceStrategy" className="org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy" clientClassName="org.apache.cayenne.testdo.testmap.client.MixedPersistenceStrategy" dbEntityName="MIXED_PERSISTENCE_STRATEGY">
+	<obj-entity name="MixedPersistenceStrategy" className="org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy" clientClassName="org.apache.cayenne.testdo.testmap.client.MixedPersistenceStrategy" dbEntityName="MIXED_PERSISTENCE_STRATEGY">
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="DESCRIPTION"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="MixedPersistenceStrategy2" className="org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy2" clientClassName="org.apache.cayenne.testdo.testmap.client.MixedPersistenceStrategy2" dbEntityName="MIXED_PERSISTENCE_STRATEGY2">
+	<obj-entity name="MixedPersistenceStrategy2" className="org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2" clientClassName="org.apache.cayenne.testdo.testmap.client.MixedPersistenceStrategy2" dbEntityName="MIXED_PERSISTENCE_STRATEGY2">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="NoPkTestEntity" className="org.apache.cayenne.testdo.testmap.NoPkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.NoPkTestEntity" dbEntityName="NO_PK_TEST">
+	<obj-entity name="NoPkTestEntity" className="org.apache.cayenne.testdo.no_pk.NoPkTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.NoPkTestEntity" dbEntityName="NO_PK_TEST">
 		<obj-attribute name="attribute1" type="java.lang.Integer" db-attribute-path="ATTRIBUTE1"/>
 	</obj-entity>
 	<obj-entity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" clientClassName="org.apache.cayenne.testdo.testmap.client.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtDataObject">
@@ -453,7 +453,7 @@
 		<obj-attribute name="imageBlob" type="byte[]" db-attribute-path="IMAGE_BLOB"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="TEXT_REVIEW"/>
 	</obj-entity>
-	<obj-entity name="PrimitivesTestEntity" className="org.apache.cayenne.testdo.testmap.PrimitivesTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.PrimitivesTestEntity" dbEntityName="PRIMITIVES_TEST">
+	<obj-entity name="PrimitivesTestEntity" className="org.apache.cayenne.testdo.primitive.PrimitivesTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.PrimitivesTestEntity" dbEntityName="PRIMITIVES_TEST">
 		<obj-attribute name="booleanColumn" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
 		<obj-attribute name="intColumn" type="int" db-attribute-path="INT_COLUMN"/>
 	</obj-entity>
@@ -470,7 +470,7 @@
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
 	</obj-entity>
-	<obj-entity name="ReturnTypesMap1" className="org.apache.cayenne.testdo.testmap.ReturnTypesMap1" clientClassName="org.apache.cayenne.testdo.testmap.client.ReturnTypesMap1" dbEntityName="TYPES_MAPPING_TEST1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="ReturnTypesMap1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap1" clientClassName="org.apache.cayenne.testdo.testmap.client.ReturnTypesMap1" dbEntityName="TYPES_MAPPING_TEST1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
 		<obj-attribute name="bigintColumn" type="java.lang.Long" db-attribute-path="BIGINT_COLUMN"/>
 		<obj-attribute name="bitColumn" type="java.lang.Boolean" db-attribute-path="BIT_COLUMN"/>
 		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
@@ -490,25 +490,25 @@
 		<obj-attribute name="tinyintColumn" type="java.lang.Byte" db-attribute-path="TINYINT_COLUMN"/>
 		<obj-attribute name="varcharColumn" type="java.lang.String" db-attribute-path="VARCHAR_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="ReturnTypesMap2" className="org.apache.cayenne.testdo.testmap.ReturnTypesMap2" clientClassName="org.apache.cayenne.testdo.testmap.client.ReturnTypesMap2" dbEntityName="TYPES_MAPPING_TEST2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="ReturnTypesMap2" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap2" clientClassName="org.apache.cayenne.testdo.testmap.client.ReturnTypesMap2" dbEntityName="TYPES_MAPPING_TEST2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
 		<obj-attribute name="binaryColumn" type="byte[]" db-attribute-path="BINARY_COLUMN"/>
 		<obj-attribute name="blobColumn" type="byte[]" db-attribute-path="BLOB_COLUMN"/>
 		<obj-attribute name="longvarbinaryColumn" type="byte[]" db-attribute-path="LONGVARBINARY_COLUMN"/>
 		<obj-attribute name="varbinaryColumn" type="byte[]" db-attribute-path="VARBINARY_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="SerializableEntity" className="org.apache.cayenne.testdo.testmap.SerializableEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.SerializableEntity" dbEntityName="SERIALIZABLE_ENTITY">
+	<obj-entity name="SerializableEntity" className="org.apache.cayenne.testdo.misc_types.SerializableEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.SerializableEntity" dbEntityName="SERIALIZABLE_ENTITY">
 		<obj-attribute name="serializableField" type="org.apache.cayenne.MockSerializable" db-attribute-path="SERIALIZABLE_FIELD"/>
 	</obj-entity>
-	<obj-entity name="SmallintTestEntity" className="org.apache.cayenne.testdo.testmap.SmallintTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.SmallintTestEntity" dbEntityName="SMALLINT_TEST">
+	<obj-entity name="SmallintTestEntity" className="org.apache.cayenne.testdo.numeric_types.SmallintTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.SmallintTestEntity" dbEntityName="SMALLINT_TEST">
 		<obj-attribute name="smallintCol" type="java.lang.Short" db-attribute-path="SMALLINT_COL"/>
 	</obj-entity>
 	<obj-entity name="SubPainting" className="org.apache.cayenne.testdo.testmap.SubPainting" clientClassName="org.apache.cayenne.testdo.testmap.client.SubPainting" dbEntityName="PAINTING">
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 	</obj-entity>
-	<obj-entity name="TinyintTestEntity" className="org.apache.cayenne.testdo.testmap.TinyintTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.TinyintTestEntity" dbEntityName="TINYINT_TEST">
+	<obj-entity name="TinyintTestEntity" className="org.apache.cayenne.testdo.numeric_types.TinyintTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.TinyintTestEntity" dbEntityName="TINYINT_TEST">
 		<obj-attribute name="tinyintCol" type="java.lang.Byte" db-attribute-path="TINYINT_COL"/>
 	</obj-entity>
-	<obj-entity name="UuidTestEntity" className="org.apache.cayenne.testdo.testmap.UuidTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.UuidTestEntity" dbEntityName="UUID_TEST">
+	<obj-entity name="UuidTestEntity" className="org.apache.cayenne.testdo.uuid.UuidTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.UuidTestEntity" dbEntityName="UUID_TEST">
 		<obj-attribute name="uuid" type="java.util.UUID" db-attribute-path="UUID"/>
 	</obj-entity>
 	<db-relationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toMany="true">

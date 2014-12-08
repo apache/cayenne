@@ -115,7 +115,7 @@ public class RemoteSession implements Serializable {
      * 
      * @throws CayenneRuntimeException if EventBridge startup fails for any reason.
      * 
-     * @deprecated since 3.2. Factory creation should is handled by the client connection.
+     * @deprecated since 4.0. Factory creation should is handled by the client connection.
      */
     @Deprecated
     public EventBridge createServerEventBridge() throws CayenneRuntimeException {
@@ -162,14 +162,14 @@ public class RemoteSession implements Serializable {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public String getEventBridgeFactory() {
         return eventBridgeFactory;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public Map<String, String> getEventBridgeParameters() {
         return eventBridgeParameters != null ? eventBridgeParameters : Collections.<String, String> emptyMap();

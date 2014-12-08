@@ -19,17 +19,22 @@
 
 package org.apache.cayenne.wocompat;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.query.PrefetchTreeNode;
+import org.junit.Test;
+
 import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.PrefetchTreeNode;
+public class EOQueryTest {
 
-public class EOQueryTest extends TestCase {
-
+    @Test
     public void testConstructor() throws Exception {
         
         URL url = getClass().getClassLoader().getResource("wotests/fetchspec.eomodeld/");

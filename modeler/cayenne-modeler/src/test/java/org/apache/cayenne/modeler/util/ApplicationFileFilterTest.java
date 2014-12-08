@@ -19,34 +19,42 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.io.File;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class ApplicationFileFilterTest extends TestCase {
+public class ApplicationFileFilterTest {
 
     protected FileFilter filter;
 
+    @Before
     public void setUp() throws Exception {
         filter = FileFilters.getApplicationFilter();
     }
 
+    @Test
     public void testAcceptDir() throws Exception {
         assertTrue(filter.accept(new File(".")));
     }
 
+    @Test
     public void testAcceptCayenneXml() throws Exception {
         assertTrue(filter.accept(new File("cayenne.xml")));
     }
 
+    @Test
     public void testRejectOther() throws Exception {
         assertFalse(filter.accept(new File("somefile.txt")));
     }
 
+    @Test
     public void testRejectBadCayenneXml() throws Exception {
         assertFalse(filter.accept(new File("bad_cayenne.xml")));
     }

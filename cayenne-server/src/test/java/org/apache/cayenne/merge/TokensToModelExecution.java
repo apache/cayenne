@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class TokensToModelExecution {
 

@@ -1,37 +1,23 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 package org.apache.cayenne.merge;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.DefaultDbLoaderDelegate;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DetectedDbEntity;
-
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -42,6 +28,22 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DbLoader;
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DetectedDbEntity;
 
 /**
  * Traverse a {@link DataNode} and a {@link DataMap} and create a group of
@@ -55,20 +57,13 @@ public class DbMerger {
     
     private final ValueForNullProvider valueForNull;
 
-    private final String schema;
-
     public DbMerger(MergerFactory factory) {
         this(factory, null);
     }
 
-    public DbMerger(MergerFactory factory, String schema) {
-        this(factory,  null, schema);
-    }
-
-    public DbMerger(MergerFactory factory, ValueForNullProvider valueForNull, String schema) {
+    public DbMerger(MergerFactory factory, ValueForNullProvider valueForNull) {
         this.factory = factory;
         this.valueForNull = valueForNull == null ? new EmptyValueForNullProvider() : valueForNull;
-        this.schema = schema;
     }
 
     /**
@@ -83,24 +78,24 @@ public class DbMerger {
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataNode dataNode, DataMap existing) {
-        return createMergeTokens(dataNode.getDataSource(), dataNode.getAdapter(), existing);
+    public List<MergerToken> createMergeTokens(DataNode dataNode, DataMap existing, DbLoaderConfiguration config) {
+        return createMergeTokens(dataNode.getDataSource(), dataNode.getAdapter(), existing, config);
     }
 
     /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DbLoader dbLoader, DataMap existing) {
-        return createMergeTokens(existing, loadDataMapFromDb(dbLoader));
+    public List<MergerToken> createMergeTokens(DbLoader dbLoader, DataMap existing, DbLoaderConfiguration config) {
+        return createMergeTokens(existing, loadDataMapFromDb(dbLoader, config));
     }
 
     /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataSource dataSource, DbAdapter adapter, DataMap existingDataMap) {
-        return createMergeTokens(existingDataMap, loadDataMapFromDb(dataSource, adapter));
+    public List<MergerToken> createMergeTokens(DataSource dataSource, DbAdapter adapter, DataMap existingDataMap, DbLoaderConfiguration config) {
+        return createMergeTokens(existingDataMap, loadDataMapFromDb(dataSource, adapter, config));
     }
 
     /**
@@ -131,26 +126,17 @@ public class DbMerger {
         return tokens;
     }
 
-    private DataMap loadDataMapFromDb(DataSource dataSource, DbAdapter adapter) {
+    private DataMap loadDataMapFromDb(DataSource dataSource, DbAdapter adapter, DbLoaderConfiguration config) {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
 
-            final DbMerger merger = this;
-
             // TODO pass naming strategy
-            DbLoader dbLoader = new DbLoader(conn, adapter, new DefaultDbLoaderDelegate()) {
-
-                @Override
-                public boolean includeTableName(String tableName) {
-                    return merger.includeTableName(tableName);
-                }
-            };
-
-            return loadDataMapFromDb(dbLoader);
+            DbLoader dbLoader = new DbLoader(conn, adapter, new DefaultDbLoaderDelegate());
+            return loadDataMapFromDb(dbLoader, config);
         }
         catch (SQLException e) {
-            throw new CayenneRuntimeException("Can't load dataMap from db.", e);
+            throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
         }
         finally {
             if (conn != null) {
@@ -164,10 +150,10 @@ public class DbMerger {
         }
     }
 
-    private DataMap loadDataMapFromDb(DbLoader dbLoader) {
+    private DataMap loadDataMapFromDb(DbLoader dbLoader, DbLoaderConfiguration config) {
         DataMap detectedDataMap = new DataMap();
         try {
-            dbLoader.load(detectedDataMap, null, schema, null, (String[]) null);
+            dbLoader.load(detectedDataMap, config);
         } catch (SQLException e) {
             // TODO log
         }
@@ -190,6 +176,8 @@ public class DbMerger {
             String tableName = dbEntity.getName();
 
             if (!includeTableName(tableName)) {
+                // TODO we have to cut this entities in db loader
+                // TODO log
                 continue;
             }
 
@@ -359,20 +347,15 @@ public class DbMerger {
         Collection<DbAttribute> primaryKeyNew = dbEntity.getPrimaryKeys();
 
         String primaryKeyName = null;
-        if ((detectedEntity instanceof DetectedDbEntity)) {
+        if (detectedEntity instanceof DetectedDbEntity) {
             primaryKeyName = ((DetectedDbEntity) detectedEntity).getPrimaryKeyName();
         }
 
-        if (upperCaseEntityNames(primaryKeyOriginal).equals(
-                upperCaseEntityNames(primaryKeyNew))) {
+        if (upperCaseEntityNames(primaryKeyOriginal).equals(upperCaseEntityNames(primaryKeyNew))) {
             return null;
         }
 
-        return factory.createSetPrimaryKeyToDb(
-                dbEntity,
-                primaryKeyOriginal,
-                primaryKeyNew,
-                primaryKeyName);
+        return factory.createSetPrimaryKeyToDb(dbEntity, primaryKeyOriginal, primaryKeyNew, primaryKeyName);
     }
     
     private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attrs) {

@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.docs</groupId>
 		<artifactId>cayenne-docs-parent</artifactId>
-		<version>3.2.M2-SNAPSHOT</version>
+		<version>4.0.M2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>cayenne-doc</artifactId>
@@ -46,12 +46,7 @@
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>ant</groupId>
-			<artifactId>ant</artifactId>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>

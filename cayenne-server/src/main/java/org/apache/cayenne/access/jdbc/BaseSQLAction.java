@@ -40,7 +40,7 @@ public abstract class BaseSQLAction implements SQLAction {
     protected DataNode dataNode;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public BaseSQLAction(DataNode dataNode) {
         this.dataNode = dataNode;

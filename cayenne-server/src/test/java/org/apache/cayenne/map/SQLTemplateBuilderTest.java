@@ -19,21 +19,27 @@
 
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLTemplate;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class SQLTemplateBuilderTest extends TestCase {
+public class SQLTemplateBuilderTest {
 
+    @Test
     public void testGetQueryType() throws Exception {
         SQLTemplateBuilder builder = new MockupRootQueryBuilder();
         assertTrue(builder.getQuery() instanceof SQLTemplate);
     }
 
+    @Test
     public void testGetQueryName() throws Exception {
         SQLTemplateBuilder builder = new MockupRootQueryBuilder();
         builder.setName("xyz");
@@ -41,6 +47,7 @@ public class SQLTemplateBuilderTest extends TestCase {
         assertEquals("xyz", builder.getQuery().getName());
     }
 
+    @Test
     public void testGetQueryRoot() throws Exception {
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("A");
@@ -54,6 +61,7 @@ public class SQLTemplateBuilderTest extends TestCase {
         assertSame(entity, ((SQLTemplate) query).getRoot());
     }
 
+    @Test
     public void testGetQueryProperties() throws Exception {
         SQLTemplateBuilder builder = new MockupRootQueryBuilder();
         builder.addProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
@@ -68,6 +76,7 @@ public class SQLTemplateBuilderTest extends TestCase {
         // TODO: test other properties...
     }
 
+    @Test
     public void testGetQuerySql() throws Exception {
         SQLTemplateBuilder builder = new MockupRootQueryBuilder();
         builder.addSql("abc", null);
@@ -76,6 +85,7 @@ public class SQLTemplateBuilderTest extends TestCase {
         assertEquals("abc", query.getDefaultTemplate());
     }
 
+    @Test
     public void testGetQueryAdapterSql() throws Exception {
         SQLTemplateBuilder builder = new MockupRootQueryBuilder();
         builder.addSql("abc", "adapter");

@@ -40,7 +40,7 @@ import org.apache.cayenne.map.ObjEntity;
  * A {@link ValueTransformerFactory} that creates encryptors/decryptors that are
  * taking advantage of the JCE (Java Cryptography Extension) ciphers.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 

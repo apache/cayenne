@@ -83,7 +83,7 @@ public class SelectTranslator extends QueryAssembler {
     JoinStack joinStack;
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public SelectTranslator(Query query, DataNode dataNode, Connection connection) {
         super(query, dataNode, connection);

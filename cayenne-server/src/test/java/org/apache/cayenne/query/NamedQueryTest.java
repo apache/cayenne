@@ -19,12 +19,17 @@
 
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class NamedQueryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
+public class NamedQueryTest {
+
+    @Test
     public void testName() {
         NamedQuery query = new NamedQuery("abc");
 
@@ -33,11 +38,13 @@ public class NamedQueryTest extends TestCase {
         assertEquals("123", query.getName());
     }
 
+    @Test
     public void testQueryName() {
         NamedQuery query = new NamedQuery("abc");
         assertEquals("abc", query.getName());
     }
 
+    @Test
     public void testSerializability() throws Exception {
         NamedQuery o = new NamedQuery("abc");
         Object clone = Util.cloneViaSerialization(o);
@@ -53,6 +60,7 @@ public class NamedQueryTest extends TestCase {
      * Proper 'equals' and 'hashCode' implementations are important when mapping
      * results obtained in a QueryChain back to the query.
      */
+    @Test
     public void testEquals() throws Exception {
         NamedQuery q1 = new NamedQuery("abc", new String[] { "a", "b" }, new Object[] { "1", "2" });
 

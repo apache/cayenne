@@ -24,28 +24,27 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class SyntheticNodeDataDomainProvider extends DataDomainProvider {
 
-    @Override
-    protected DataDomain createAndInitDataDomain() throws Exception {
+	@Override
+	protected DataDomain createAndInitDataDomain() throws Exception {
 
-        DataDomain dataDomain = super.createAndInitDataDomain();
+		DataDomain dataDomain = super.createAndInitDataDomain();
 
-        // no nodes... add a synthetic node... it will become the default
-        if (dataDomain.getDataNodes().isEmpty()) {
+		// no nodes... add a synthetic node... it will become the default
+		if (dataDomain.getDataNodes().isEmpty()) {
 
-            DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
-            channelDescriptor.setName(DEFAULT_NAME);
+			DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
 
-            DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(DEFAULT_NAME);
-            nodeDescriptor.setDataChannelDescriptor(channelDescriptor);
+			DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(ServerRuntimeBuilder.DEFAULT_NAME);
+			nodeDescriptor.setDataChannelDescriptor(channelDescriptor);
 
-            DataNode node = addDataNode(dataDomain, nodeDescriptor);
-            dataDomain.setDefaultNode(node);
-        }
-        return dataDomain;
-    }
+			DataNode node = addDataNode(dataDomain, nodeDescriptor);
+			dataDomain.setDefaultNode(node);
+		}
+		return dataDomain;
+	}
 
 }

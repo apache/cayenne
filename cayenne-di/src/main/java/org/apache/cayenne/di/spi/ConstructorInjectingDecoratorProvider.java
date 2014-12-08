@@ -24,7 +24,7 @@ import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class ConstructorInjectingDecoratorProvider<T> implements DecoratorProvider<T> {
 

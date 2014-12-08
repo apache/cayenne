@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
-import static org.mockito.Mockito.mock;
-import junit.framework.TestCase;
-
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.MockDataChannel;
@@ -30,13 +30,17 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
-public class ServletContextHandlerTest extends TestCase {
+public class ServletContextHandlerTest {
 
+    @Test
     public void testRequestStart_bindContext() {
 
         Module module = new Module() {

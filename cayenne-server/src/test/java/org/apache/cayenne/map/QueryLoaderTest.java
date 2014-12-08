@@ -19,18 +19,20 @@
 
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.query.Query;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  */
-public class QueryLoaderTest extends TestCase {
+public class QueryLoaderTest {
 
     protected QueryLoader builder;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         builder = new QueryLoader() {
 
             @Override
@@ -40,11 +42,13 @@ public class QueryLoaderTest extends TestCase {
         };
     }
 
+    @Test
     public void testSetName() throws Exception {
         builder.setName("aaa");
         assertEquals("aaa", builder.name);
     }
 
+    @Test
     public void testSetRootInfoDbEntity() throws Exception {
         DataMap map = new DataMap("map");
         DbEntity entity = new DbEntity("DB1");
@@ -54,6 +58,7 @@ public class QueryLoaderTest extends TestCase {
         assertSame(entity, builder.getRoot());
     }
 
+    @Test
     public void testSetRootObjEntity() throws Exception {
         DataMap map = new DataMap("map");
         ObjEntity entity = new ObjEntity("OBJ1");
@@ -63,6 +68,7 @@ public class QueryLoaderTest extends TestCase {
         assertSame(entity, builder.getRoot());
     }
 
+    @Test
     public void testSetRootDataMap() throws Exception {
         DataMap map = new DataMap("map");
 

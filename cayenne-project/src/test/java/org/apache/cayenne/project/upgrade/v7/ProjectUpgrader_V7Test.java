@@ -18,16 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade.v7;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
@@ -52,12 +42,31 @@ import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.test.resource.ResourceUtil;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 public class ProjectUpgrader_V7Test extends Project2Case {
 
+    @Test
     public void testMetadata_3_0_0_1() {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
@@ -92,6 +101,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
         assertEquals("7", md.getSupportedVersion());
     }
 
+    @Test
     public void testMetadata_Type2_0() {
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
         URL url = getClass().getClassLoader().getResource(baseUrl + "/2_0a/cayenne.xml");
@@ -123,6 +133,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
         assertEquals("7", md.getSupportedVersion());
     }
 
+    @Test
     public void testMetadata_Type6() {
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
         URL url = getClass().getClassLoader().getResource(baseUrl + "/6a/cayenne-PROJECT1.xml");
@@ -154,6 +165,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
         assertEquals("7", md.getSupportedVersion());
     }
 
+    @Test
     public void testMetadata_Type7() {
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
         URL url = getClass().getClassLoader().getResource(baseUrl + "/7a/cayenne-PROJECT1.xml");
@@ -185,6 +197,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
         assertEquals("7", md.getSupportedVersion());
     }
 
+    @Test
     public void testPerformUpgradeFrom3() throws Exception {
 
         File testFolder = setupTestDirectory("testPerformUpgrade_3_0_0_1");
@@ -347,6 +360,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
         assertEquals("7", xpath.evaluate("/data-map/@project-version", document));
     }
 
+    @Test
     public void testPerformUpgradeFrom6() throws Exception {
         File testFolder = setupTestDirectory("testUpgrade6a");
         String sourceUrl = getClass().getPackage().getName().replace('.', '/') + "/6a/";
@@ -416,6 +430,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
         assertEquals("7", xpath.evaluate("/data-map/@project-version", document));
     }
 
+    @Test
     public void testObjAttributeDelete() throws Exception {
 
         File testFolder = setupTestDirectory("testObjAttribute");

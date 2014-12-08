@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.unit;
 
-import java.sql.Connection;
-import java.util.Collection;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
+
+import java.sql.Connection;
+import java.util.Collection;
 
 public class PostgresUnitDbAdapter extends UnitDbAdapter {
 

@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Ordering;
@@ -37,14 +29,27 @@ import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.util.XMLEncoder;
+import org.junit.Test;
 import org.xml.sax.InputSource;
 
-public class MapLoaderLoadTest extends TestCase {
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class MapLoaderLoadTest {
 
     private InputSource getMapXml(String mapName) {
         return new InputSource(getClass().getClassLoader().getResourceAsStream(mapName));
     }
 
+    @Test
     public void testLoadEmbeddableMap() throws Exception {
         MapLoader mapLoader = new MapLoader();
         DataMap map = mapLoader.loadDataMap(getMapXml("embeddable.map.xml"));
@@ -83,9 +88,10 @@ public class MapLoaderLoadTest extends TestCase {
         assertEquals(2, oea2.getAttributeOverrides().size());
     }
 
+    @Test
     public void testLoadTestMap() throws Exception {
         MapLoader mapLoader = new MapLoader();
-        DataMap map = mapLoader.loadDataMap(getMapXml("tstmap.map.xml"));
+        DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
         assertNotNull(map);
 
         // test procedures
@@ -114,10 +120,11 @@ public class MapLoaderLoadTest extends TestCase {
         checkLoadedQueries(map);
     }
 
+    @Test
     public void testEncodeAsXML() throws FileNotFoundException {
         // load map
         MapLoader mapLoader = new MapLoader();
-        DataMap map = mapLoader.loadDataMap(getMapXml("tstmap.map.xml"));
+        DataMap map = mapLoader.loadDataMap(getMapXml("testmap.map.xml"));
         assertNotNull(map);
 
         // encode map

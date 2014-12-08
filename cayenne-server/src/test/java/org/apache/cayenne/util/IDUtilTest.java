@@ -20,14 +20,18 @@
 
 package org.apache.cayenne.util;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  */
-public class IDUtilTest extends TestCase {
+public class IDUtilTest {
 
+    @Test
     public void testPseudoUniqueByteSequence1() throws Exception {
         try {
             IDUtil.pseudoUniqueByteSequence(10);
@@ -37,6 +41,7 @@ public class IDUtilTest extends TestCase {
         }
     }
 
+    @Test
     public void testPseudoUniqueByteSequence2() throws Exception {
         byte[] byte16 = IDUtil.pseudoUniqueByteSequence(16);
         assertNotNull(byte16);
@@ -52,6 +57,7 @@ public class IDUtilTest extends TestCase {
         }
     }
 
+    @Test
     public void testPseudoUniqueByteSequence3() throws Exception {
         byte[] byte17 = IDUtil.pseudoUniqueByteSequence(17);
         assertNotNull(byte17);

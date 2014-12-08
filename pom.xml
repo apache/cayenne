@@ -25,7 +25,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
-	<version>3.2.M2-SNAPSHOT</version>
+	<version>4.0.M2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -231,9 +231,9 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>ant</groupId>
+				<groupId>org.apache.ant</groupId>
 				<artifactId>ant</artifactId>
-				<version>1.6.5</version>
+				<version>1.9.4</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -490,6 +490,21 @@
             	<version>1.5</version>
             	<scope>test</scope>
         	</dependency>
+        	<dependency>
+    			<groupId>org.slf4j</groupId>
+    			<artifactId>jcl-over-slf4j</artifactId>
+    			<version>1.7.7</version>
+			</dependency>
+			<dependency>
+    			<groupId>org.slf4j</groupId>
+    			<artifactId>slf4j-api</artifactId>
+    			<version>1.7.7</version>
+			</dependency>
+			<dependency>
+    			<groupId>org.slf4j</groupId>
+    			<artifactId>slf4j-simple</artifactId>
+    			<version>1.7.7</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -750,6 +765,10 @@
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.9.1</version>
+					<configuration>
+						<!-- Java 8 is too strict about Javadoc omissions --> 
+						<additionalparam>${javadoc.doclint.none}</additionalparam>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -862,6 +881,20 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>jdepend-maven-plugin</artifactId>
                     <version>2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.17</version>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
 
             </plugins>
@@ -1307,6 +1340,15 @@
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
+		</profile>
+		<profile>
+			<id>java8-disable-strict-javadoc</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<properties>
+				<javadoc.doclint.none>-Xdoclint:none</javadoc.doclint.none>
+			</properties>
 		</profile>
 	</profiles>
 

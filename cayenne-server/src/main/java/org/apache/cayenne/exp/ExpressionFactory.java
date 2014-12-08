@@ -93,20 +93,14 @@ public class ExpressionFactory {
 
 		// make sure all types are small integers, then we can use
 		// them as indexes in lookup array
-		int[] allTypes = new int[] { Expression.AND, Expression.OR,
-				Expression.NOT, Expression.EQUAL_TO, Expression.NOT_EQUAL_TO,
-				Expression.LESS_THAN, Expression.GREATER_THAN,
-				Expression.LESS_THAN_EQUAL_TO,
-				Expression.GREATER_THAN_EQUAL_TO, Expression.BETWEEN,
-				Expression.IN, Expression.LIKE, Expression.LIKE_IGNORE_CASE,
-				Expression.ADD, Expression.SUBTRACT, Expression.MULTIPLY,
-				Expression.DIVIDE, Expression.NEGATIVE, Expression.OBJ_PATH,
-				Expression.DB_PATH, Expression.LIST, Expression.NOT_BETWEEN,
-				Expression.NOT_IN, Expression.NOT_LIKE,
-				Expression.NOT_LIKE_IGNORE_CASE, Expression.TRUE,
-				Expression.FALSE, Expression.BITWISE_NOT,
-				Expression.BITWISE_AND, Expression.BITWISE_OR,
-				Expression.BITWISE_XOR, Expression.BITWISE_LEFT_SHIFT,
+		int[] allTypes = new int[] { Expression.AND, Expression.OR, Expression.NOT, Expression.EQUAL_TO,
+				Expression.NOT_EQUAL_TO, Expression.LESS_THAN, Expression.GREATER_THAN, Expression.LESS_THAN_EQUAL_TO,
+				Expression.GREATER_THAN_EQUAL_TO, Expression.BETWEEN, Expression.IN, Expression.LIKE,
+				Expression.LIKE_IGNORE_CASE, Expression.ADD, Expression.SUBTRACT, Expression.MULTIPLY,
+				Expression.DIVIDE, Expression.NEGATIVE, Expression.OBJ_PATH, Expression.DB_PATH, Expression.LIST,
+				Expression.NOT_BETWEEN, Expression.NOT_IN, Expression.NOT_LIKE, Expression.NOT_LIKE_IGNORE_CASE,
+				Expression.TRUE, Expression.FALSE, Expression.BITWISE_NOT, Expression.BITWISE_AND,
+				Expression.BITWISE_OR, Expression.BITWISE_XOR, Expression.BITWISE_LEFT_SHIFT,
 				Expression.BITWISE_RIGHT_SHIFT };
 
 		int max = 0;
@@ -322,19 +316,15 @@ public class ExpressionFactory {
 
 			int splitEnd = path.indexOf(Entity.PATH_SEPARATOR, split + 1);
 
-			String beforeSplit = split > 0 ? path.substring(0, split) + "."
-					: "";
-			String afterSplit = splitEnd > 0 ? "."
-					+ path.substring(splitEnd + 1) : "";
+			String beforeSplit = split > 0 ? path.substring(0, split) + "." : "";
+			String afterSplit = splitEnd > 0 ? "." + path.substring(splitEnd + 1) : "";
 			String aliasBase = "split" + autoAliasId++ + "_";
-			String splitChunk = splitEnd > 0 ? path.substring(split + 1,
-					splitEnd) : path.substring(split + 1);
+			String splitChunk = splitEnd > 0 ? path.substring(split + 1, splitEnd) : path.substring(split + 1);
 
 			// fix the path - replace split with dot if it's in the middle, or
 			// strip it if
 			// it's in the beginning
-			path = split == 0 ? path.substring(1) : path.replace(
-					SPLIT_SEPARATOR, '.');
+			path = split == 0 ? path.substring(1) : path.replace(SPLIT_SEPARATOR, '.');
 
 			int i = 0;
 			for (Object value : values) {
@@ -344,8 +334,7 @@ public class ExpressionFactory {
 				i++;
 
 				ASTPath pathExp = new ASTObjPath(aliasedPath);
-				pathExp.setPathAliases(Collections.singletonMap(alias,
-						splitChunk));
+				pathExp.setPathAliases(Collections.singletonMap(alias, splitChunk));
 				matches.add(new ASTEqual(pathExp, value));
 			}
 		} else {
@@ -572,8 +561,7 @@ public class ExpressionFactory {
 	/**
 	 * A convenience shortcut for building BETWEEN expressions.
 	 */
-	public static Expression betweenExp(String pathSpec, Object value1,
-			Object value2) {
+	public static Expression betweenExp(String pathSpec, Object value1, Object value2) {
 		return new ASTBetween(new ASTObjPath(pathSpec), value1, value2);
 	}
 
@@ -582,16 +570,14 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0
 	 */
-	public static Expression betweenDbExp(String pathSpec, Object value1,
-			Object value2) {
+	public static Expression betweenDbExp(String pathSpec, Object value1, Object value2) {
 		return new ASTBetween(new ASTDbPath(pathSpec), value1, value2);
 	}
 
 	/**
 	 * A convenience shortcut for building NOT_BETWEEN expressions.
 	 */
-	public static Expression notBetweenExp(String pathSpec, Object value1,
-			Object value2) {
+	public static Expression notBetweenExp(String pathSpec, Object value1, Object value2) {
 		return new ASTNotBetween(new ASTObjPath(pathSpec), value1, value2);
 	}
 
@@ -600,8 +586,7 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0
 	 */
-	public static Expression notBetweenDbExp(String pathSpec, Object value1,
-			Object value2) {
+	public static Expression notBetweenDbExp(String pathSpec, Object value1, Object value2) {
 		return new ASTNotBetween(new ASTDbPath(pathSpec), value1, value2);
 	}
 
@@ -609,7 +594,7 @@ public class ExpressionFactory {
 	 * A convenience shortcut for building LIKE expression.
 	 */
 	public static Expression likeExp(String pathSpec, Object value) {
-		return new ASTLike(new ASTObjPath(pathSpec), value);
+		return likeExpInternal(pathSpec, value, (char) 0);
 	}
 
 	/**
@@ -624,8 +609,11 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0.1
 	 */
-	public static Expression likeExp(String pathSpec, Object value,
-			char escapeChar) {
+	public static Expression likeExp(String pathSpec, Object value, char escapeChar) {
+		return likeExpInternal(pathSpec, value, escapeChar);
+	}
+
+	static ASTLike likeExpInternal(String pathSpec, Object value, char escapeChar) {
 		return new ASTLike(new ASTObjPath(pathSpec), value, escapeChar);
 	}
 
@@ -650,8 +638,7 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0.1
 	 */
-	public static Expression likeDbExp(String pathSpec, Object value,
-			char escapeChar) {
+	public static Expression likeDbExp(String pathSpec, Object value, char escapeChar) {
 		return new ASTLike(new ASTDbPath(pathSpec), value, escapeChar);
 	}
 
@@ -674,8 +661,7 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0.1
 	 */
-	public static Expression notLikeExp(String pathSpec, Object value,
-			char escapeChar) {
+	public static Expression notLikeExp(String pathSpec, Object value, char escapeChar) {
 		return new ASTNotLike(new ASTObjPath(pathSpec), value, escapeChar);
 	}
 
@@ -700,8 +686,7 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0.1
 	 */
-	public static Expression notLikeDbExp(String pathSpec, Object value,
-			char escapeChar) {
+	public static Expression notLikeDbExp(String pathSpec, Object value, char escapeChar) {
 		return new ASTNotLike(new ASTDbPath(pathSpec), value, escapeChar);
 	}
 
@@ -709,7 +694,7 @@ public class ExpressionFactory {
 	 * A convenience shortcut for building LIKE_IGNORE_CASE expression.
 	 */
 	public static Expression likeIgnoreCaseExp(String pathSpec, Object value) {
-		return new ASTLikeIgnoreCase(new ASTObjPath(pathSpec), value);
+		return likeIgnoreCaseExpInternal(pathSpec, value, (char) 0);
 	}
 
 	/**
@@ -724,10 +709,12 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0.1
 	 */
-	public static Expression likeIgnoreCaseExp(String pathSpec, Object value,
-			char escapeChar) {
-		return new ASTLikeIgnoreCase(new ASTObjPath(pathSpec), value,
-				escapeChar);
+	public static Expression likeIgnoreCaseExp(String pathSpec, Object value, char escapeChar) {
+		return likeIgnoreCaseExpInternal(pathSpec, value, escapeChar);
+	}
+
+	static ASTLikeIgnoreCase likeIgnoreCaseExpInternal(String pathSpec, Object value, char escapeChar) {
+		return new ASTLikeIgnoreCase(new ASTObjPath(pathSpec), value, escapeChar);
 	}
 
 	/**
@@ -751,8 +738,7 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0.1
 	 */
-	public static Expression likeIgnoreCaseDbExp(String pathSpec, Object value,
-			char escapeChar) {
+	public static Expression likeIgnoreCaseDbExp(String pathSpec, Object value, char escapeChar) {
 		return new ASTLikeIgnoreCase(new ASTDbPath(pathSpec), value, escapeChar);
 	}
 
@@ -775,10 +761,8 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0.1
 	 */
-	public static Expression notLikeIgnoreCaseExp(String pathSpec,
-			Object value, char escapeChar) {
-		return new ASTNotLikeIgnoreCase(new ASTObjPath(pathSpec), value,
-				escapeChar);
+	public static Expression notLikeIgnoreCaseExp(String pathSpec, Object value, char escapeChar) {
+		return new ASTNotLikeIgnoreCase(new ASTObjPath(pathSpec), value, escapeChar);
 	}
 
 	/**
@@ -786,8 +770,7 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0
 	 */
-	public static Expression notLikeIgnoreCaseDbExp(String pathSpec,
-			Object value) {
+	public static Expression notLikeIgnoreCaseDbExp(String pathSpec, Object value) {
 		return new ASTNotLikeIgnoreCase(new ASTDbPath(pathSpec), value);
 	}
 
@@ -803,10 +786,77 @@ public class ExpressionFactory {
 	 * 
 	 * @since 3.0.1
 	 */
-	public static Expression notLikeIgnoreCaseDbExp(String pathSpec,
-			Object value, char escapeChar) {
-		return new ASTNotLikeIgnoreCase(new ASTDbPath(pathSpec), value,
-				escapeChar);
+	public static Expression notLikeIgnoreCaseDbExp(String pathSpec, Object value, char escapeChar) {
+		return new ASTNotLikeIgnoreCase(new ASTDbPath(pathSpec), value, escapeChar);
+	}
+
+	/**
+	 * @return An expression for a database "LIKE" query with the value
+	 *         converted to a pattern matching anywhere in the String.
+	 * @since 4.0
+	 */
+	public static Expression containsExp(String pathSpec, String value) {
+		ASTLike like = likeExpInternal(pathSpec, value, (char) 0);
+		LikeExpressionHelper.toContains(like);
+		return like;
+	}
+
+	/**
+	 * @return An expression for a database "LIKE" query with the value
+	 *         converted to a pattern matching the beginning of the String.
+	 * @since 4.0
+	 */
+	public static Expression startsWithExp(String pathSpec, String value) {
+		ASTLike like = likeExpInternal(pathSpec, value, (char) 0);
+		LikeExpressionHelper.toStartsWith(like);
+		return like;
+	}
+
+	/**
+	 * @return An expression for a database "LIKE" query with the value
+	 *         converted to a pattern matching the beginning of the String.
+	 * @since 4.0
+	 */
+	public static Expression endsWithExp(String pathSpec, String value) {
+		ASTLike like = likeExpInternal(pathSpec, value, (char) 0);
+		LikeExpressionHelper.toEndsWith(like);
+		return like;
+	}
+
+	/**
+	 * Same as {@link #containsExp(String, String)} only using case-insensitive
+	 * comparison.
+	 * 
+	 * @since 4.0
+	 */
+	public static Expression containsIgnoreCaseExp(String pathSpec, String value) {
+		ASTLikeIgnoreCase like = likeIgnoreCaseExpInternal(pathSpec, value, (char) 0);
+		LikeExpressionHelper.toContains(like);
+		return like;
+	}
+
+	/**
+	 * Same as {@link #startsWithExp(String, String)} only using
+	 * case-insensitive comparison.
+	 * 
+	 * @since 4.0
+	 */
+	public static Expression startsWithIgnoreCaseExp(String pathSpec, String value) {
+		ASTLikeIgnoreCase like = likeIgnoreCaseExpInternal(pathSpec, value, (char) 0);
+		LikeExpressionHelper.toStartsWith(like);
+		return like;
+	}
+
+	/**
+	 * Same as {@link #endsWithExp(String, String)} only using case-insensitive
+	 * comparison.
+	 * 
+	 * @since 4.0
+	 */
+	public static Expression endsWithIgnoreCaseExp(String pathSpec, String value) {
+		ASTLikeIgnoreCase like = likeIgnoreCaseExpInternal(pathSpec, value, (char) 0);
+		LikeExpressionHelper.toEndsWith(like);
+		return like;
 	}
 
 	/**
@@ -837,8 +887,7 @@ public class ExpressionFactory {
 	 * expression would match any of the expressions.
 	 * </p>
 	 */
-	public static Expression joinExp(int type,
-			Collection<Expression> expressions) {
+	public static Expression joinExp(int type, Collection<Expression> expressions) {
 		int len = expressions.size();
 		if (len == 0) {
 			return null;
@@ -872,8 +921,7 @@ public class ExpressionFactory {
 	 * <code>object</code>.
 	 */
 	public static Expression matchExp(Persistent object) {
-		return matchAllDbExp(object.getObjectId().getIdSnapshot(),
-				Expression.EQUAL_TO);
+		return matchAllDbExp(object.getObjectId().getIdSnapshot(), Expression.EQUAL_TO);
 	}
 
 	/**
@@ -907,28 +955,28 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression and(Collection<Expression> expressions) {
 		return joinExp(Expression.AND, expressions);
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression and(Expression... expressions) {
 		return join(Expression.AND, expressions);
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression or(Collection<Expression> expressions) {
 		return joinExp(Expression.OR, expressions);
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression or(Expression... expressions) {
 		return join(Expression.OR, expressions);
@@ -942,7 +990,7 @@ public class ExpressionFactory {
 	 * Binding of parameters by name (as opposed to binding by position) can be
 	 * achieved by chaining this call with {@link Expression#params(Map)}.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static Expression exp(String expressionString, Object... parameters) {
 		Expression e = fromString(expressionString);
@@ -960,7 +1008,7 @@ public class ExpressionFactory {
 	 * Parses string, converting it to Expression. If string does not represent
 	 * a semantically correct expression, an ExpressionException is thrown.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	private static Expression fromString(String expressionString) {
 
@@ -971,12 +1019,11 @@ public class ExpressionFactory {
 		// optimizing parser buffers per CAY-1667...
 		// adding 1 extra char to the buffer size above the String length, as
 		// otherwise resizing still occurs at the end of the stream
-		int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE ? PARSE_BUFFER_MAX_SIZE
-				: expressionString.length() + 1;
+		int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE ? PARSE_BUFFER_MAX_SIZE : expressionString
+				.length() + 1;
 		Reader reader = new StringReader(expressionString);
 		JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
-		ExpressionParserTokenManager tm = new ExpressionParserTokenManager(
-				stream);
+		ExpressionParserTokenManager tm = new ExpressionParserTokenManager(stream);
 		ExpressionParser parser = new ExpressionParser(tm);
 
 		try {

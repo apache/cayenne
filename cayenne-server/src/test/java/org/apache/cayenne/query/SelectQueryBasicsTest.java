@@ -19,21 +19,28 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.ExpressionParameter;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.ExpressionParameter;
-import org.apache.cayenne.testdo.testmap.Artist;
+public class SelectQueryBasicsTest {
 
-public class SelectQueryBasicsTest extends TestCase {
-
+    @Test
     public void testAddPrefetch() {
         SelectQuery q = new SelectQuery();
 
@@ -44,6 +51,7 @@ public class SelectQueryBasicsTest extends TestCase {
         assertNotNull(q.getPrefetchTree().getNode("a.b.c"));
     }
 
+    @Test
     public void testAddPrefetchDuplicates() {
         SelectQuery q = new SelectQuery();
 
@@ -53,6 +61,7 @@ public class SelectQueryBasicsTest extends TestCase {
         assertEquals(1, q.getPrefetchTree().nonPhantomNodes().size());
     }
 
+    @Test
     public void testClearPrefetches() {
         SelectQuery q = new SelectQuery();
 
@@ -64,12 +73,14 @@ public class SelectQueryBasicsTest extends TestCase {
         assertNull(q.getPrefetchTree());
     }
 
+    @Test
     public void testPageSize() throws Exception {
         SelectQuery q = new SelectQuery();
         q.setPageSize(10);
         assertEquals(10, q.getPageSize());
     }
 
+    @Test
     public void testAddOrdering1() throws Exception {
         SelectQuery q = new SelectQuery();
 
@@ -79,6 +90,7 @@ public class SelectQueryBasicsTest extends TestCase {
         assertSame(ord, q.getOrderings().get(0));
     }
 
+    @Test
     public void testAddOrdering2() throws Exception {
         SelectQuery<Object> q = new SelectQuery<Object>();
 
@@ -91,6 +103,7 @@ public class SelectQueryBasicsTest extends TestCase {
         assertEquals(false, ord.isAscending());
     }
 
+    @Test
     public void testDistinct() throws Exception {
         SelectQuery q = new SelectQuery();
 
@@ -99,6 +112,7 @@ public class SelectQueryBasicsTest extends TestCase {
         assertTrue(q.isDistinct());
     }
 
+    @Test
     public void testQueryWithParams1() {
         SelectQuery q = new SelectQuery();
         q.setRoot(Artist.class);
@@ -110,6 +124,7 @@ public class SelectQueryBasicsTest extends TestCase {
         assertNull(q1.getQualifier());
     }
 
+    @Test
     public void testQueryWithParams2() throws Exception {
         SelectQuery q = new SelectQuery();
         q.setRoot(Artist.class);
@@ -130,6 +145,7 @@ public class SelectQueryBasicsTest extends TestCase {
         assertTrue(q1.getQualifier() != q.getQualifier());
     }
 
+    @Test
     public void testQueryWithParamsSkipName() {
         SelectQuery q = new SelectQuery();
         q.setRoot(Artist.class);

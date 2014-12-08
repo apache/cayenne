@@ -69,13 +69,13 @@ public class DataDomain implements QueryEngine, DataChannel {
     public static final boolean VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = true;
 
     /**
-     * @deprecated since 3.2 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
+     * @deprecated since 4.0 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
      */
     @Deprecated
     public static final String USING_EXTERNAL_TRANSACTIONS_PROPERTY = "cayenne.DataDomain.usingExternalTransactions";
 
     /**
-     * @deprecated since 3.2 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
+     * @deprecated since 4.0 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
      */
     @Deprecated
     public static final boolean USING_EXTERNAL_TRANSACTIONS_DEFAULT = false;
@@ -87,7 +87,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected JdbcEventLogger jdbcEventLogger;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Inject
     protected TransactionManager transactionManager;
@@ -144,7 +144,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      *            Configuration object.
      * @param properties
      *            A Map containing domain configuration properties.
-     * @deprecated since 3.2 unused
+     * @deprecated since 4.0 unused
      */
     @Deprecated
     public DataDomain(String name, Map properties) {
@@ -207,7 +207,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Reinitializes domain state with a new set of properties.
      * 
      * @since 1.1
-     * @deprecated since 3.2 properties are processed by the DI provider.
+     * @deprecated since 4.0 properties are processed by the DI provider.
      */
     @Deprecated
     public void initWithProperties(Map<String, String> properties) {
@@ -688,7 +688,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     /**
-     * Adds a new filter, immediately calling its 'init' method. Since 3.2 this
+     * Adds a new filter, immediately calling its 'init' method. Since 4.0 this
      * method also registers passed filter as an event listener, if any of its
      * methods have event annotations.
      * 
@@ -714,7 +714,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * is a shortcut for
      * 'getEntityResolver().getCallbackRegistry().addListener(listener)'.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void addListener(Object listener) {
         getEntityResolver().getCallbackRegistry().addListener(listener);

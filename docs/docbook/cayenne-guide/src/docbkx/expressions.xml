@@ -262,4 +262,27 @@ List&lt;User&gt; filtered = e.filterObjects(unfiltered);</programlisting></para>
             </note>
         </para>
     </section>
+
+    <section xml:id="expressions-to-ejbql">
+        <title>Translating Expressions to EJBQL</title>
+        <para>
+            <link linkend="ejbqlquery">EJBQL</link> is a textual query language that can be used with Cayenne.
+            In some situations, it is convenient to be able to convert Expression instances into EJBQL.
+            Expressions support this conversion.  An example is shown below.
+
+            <programlisting>String serial = ...
+Expression e = ExpressionFactory.matchExp(Pkg.SERIAL_PROPERTY, serial);
+List&lt;Object&gt; params = new ArrayList&lt;Object&gt;();
+EJBQLQuery query = new EJBQLQuery("SELECT p FROM Pkg p WHERE " + e.toEJBQL(params,&quot;p&quot;);
+
+for(int i=0;i&lt;params.size();i++) {
+  query.setParameter(i+1, params.get(i));
+}</programlisting>
+
+            This would be equivalent to the following purely EJBQL querying logic;
+
+            <programlisting>EJBQLQuery query = new EJBQLQuery("SELECT p FROM Pkg p WHERE p.serial = ?1");
+query.setParameter(1,serial);</programlisting>
+        </para>
+    </section>
 </chapter>

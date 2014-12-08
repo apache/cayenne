@@ -36,139 +36,137 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.1
  */
-public class DataChannelDescriptor implements ConfigurationNode, Serializable,
-        XMLSerializable {
+public class DataChannelDescriptor implements ConfigurationNode, Serializable, XMLSerializable {
 
-    protected String name;
-    protected Map<String, String> properties;
-    protected Collection<DataMap> dataMaps;
-    protected Collection<DataNodeDescriptor> nodeDescriptors;
-    protected Resource configurationSource;
-    protected String defaultNodeName;
+	private static final long serialVersionUID = 6567527544207035602L;
+	
+	protected String name;
+	protected Map<String, String> properties;
+	protected Collection<DataMap> dataMaps;
+	protected Collection<DataNodeDescriptor> nodeDescriptors;
+	protected Resource configurationSource;
+	protected String defaultNodeName;
 
-    public DataChannelDescriptor() {
-        properties = new HashMap<String, String>();
-        dataMaps = new ArrayList<DataMap>(5);
-        nodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
-    }
+	public DataChannelDescriptor() {
+		properties = new HashMap<String, String>();
+		dataMaps = new ArrayList<DataMap>(5);
+		nodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
+	}
 
-    public void encodeAsXML(XMLEncoder encoder) {
+	public void encodeAsXML(XMLEncoder encoder) {
 
-        encoder.print("<domain");
-        encoder.printProjectVersion();
-        encoder.println(">");
+		encoder.print("<domain");
+		encoder.printProjectVersion();
+		encoder.println(">");
 
-        encoder.indent(1);
-        boolean breakNeeded = false;
+		encoder.indent(1);
+		boolean breakNeeded = false;
 
-        if (!properties.isEmpty()) {
-            breakNeeded = true;
+		if (!properties.isEmpty()) {
+			breakNeeded = true;
 
-            List<String> keys = new ArrayList<String>(properties.keySet());
-            Collections.sort(keys);
+			List<String> keys = new ArrayList<String>(properties.keySet());
+			Collections.sort(keys);
 
-            for (String key : keys) {
-                encoder.printProperty(key, properties.get(key));
-            }
-        }
+			for (String key : keys) {
+				encoder.printProperty(key, properties.get(key));
+			}
+		}
 
-        if (!dataMaps.isEmpty()) {
-            if (breakNeeded) {
-                encoder.println();
-            }
-            else {
-                breakNeeded = true;
-            }
+		if (!dataMaps.isEmpty()) {
+			if (breakNeeded) {
+				encoder.println();
+			} else {
+				breakNeeded = true;
+			}
 
-            List<DataMap> maps = new ArrayList<DataMap>(this.dataMaps);
-            Collections.sort(maps);
+			List<DataMap> maps = new ArrayList<DataMap>(this.dataMaps);
+			Collections.sort(maps);
 
-            for (DataMap dataMap : maps) {
+			for (DataMap dataMap : maps) {
 
-                encoder.print("<map");
-                encoder.printAttribute("name", dataMap.getName().trim());
-                encoder.println("/>");
-            }
-        }
+				encoder.print("<map");
+				encoder.printAttribute("name", dataMap.getName().trim());
+				encoder.println("/>");
+			}
+		}
 
-        if (!nodeDescriptors.isEmpty()) {
-            if (breakNeeded) {
-                encoder.println();
-            }
-            else {
-                breakNeeded = true;
-            }
+		if (!nodeDescriptors.isEmpty()) {
+			if (breakNeeded) {
+				encoder.println();
+			} else {
+				breakNeeded = true;
+			}
 
-            List<DataNodeDescriptor> nodes = new ArrayList<DataNodeDescriptor>(
-                    nodeDescriptors);
-            Collections.sort(nodes);
-            encoder.print(nodes);
-        }
+			List<DataNodeDescriptor> nodes = new ArrayList<DataNodeDescriptor>(nodeDescriptors);
+			Collections.sort(nodes);
+			encoder.print(nodes);
+		}
 
-        encoder.indent(-1);
-        encoder.println("</domain>");
-    }
+		encoder.indent(-1);
+		encoder.println("</domain>");
+	}
 
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitDataChannelDescriptor(this);
-    }
+	public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+		return visitor.visitDataChannelDescriptor(this);
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Map<String, String> getProperties() {
-        return properties;
-    }
+	public Map<String, String> getProperties() {
+		return properties;
+	}
 
-    public Collection<DataMap> getDataMaps() {
-        return dataMaps;
-    }
+	public Collection<DataMap> getDataMaps() {
+		return dataMaps;
+	}
 
-    public DataMap getDataMap(String name) {
-        for (DataMap map : dataMaps) {
-            if (name.equals(map.getName())) {
-                return map;
-            }
-        }
-        return null;
-    }
+	public DataMap getDataMap(String name) {
+		for (DataMap map : dataMaps) {
+			if (name.equals(map.getName())) {
+				return map;
+			}
+		}
+		return null;
+	}
 
-    public Collection<DataNodeDescriptor> getNodeDescriptors() {
-        return nodeDescriptors;
-    }
+	public Collection<DataNodeDescriptor> getNodeDescriptors() {
+		return nodeDescriptors;
+	}
 
-    public DataNodeDescriptor getNodeDescriptor(String name) {
-        for (DataNodeDescriptor node : nodeDescriptors) {
-            if (name.equals(node.getName())) {
-                return node;
-            }
-        }
+	public DataNodeDescriptor getNodeDescriptor(String name) {
+		for (DataNodeDescriptor node : nodeDescriptors) {
+			if (name.equals(node.getName())) {
+				return node;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public Resource getConfigurationSource() {
-        return configurationSource;
-    }
+	public Resource getConfigurationSource() {
+		return configurationSource;
+	}
 
-    public void setConfigurationSource(Resource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
+	public void setConfigurationSource(Resource configurationSource) {
+		this.configurationSource = configurationSource;
+	}
 
-    /**
-     * Returns the name of the DataNode that should be used as the default if a DataMap is
-     * not explicitly linked to a node.
-     */
-    public String getDefaultNodeName() {
-        return defaultNodeName;
-    }
+	/**
+	 * Returns the name of the DataNode that should be used as the default if a
+	 * DataMap is not explicitly linked to a node.
+	 */
+	public String getDefaultNodeName() {
+		return defaultNodeName;
+	}
 
-    public void setDefaultNodeName(String defaultDataNodeName) {
-        this.defaultNodeName = defaultDataNodeName;
-    }
+	public void setDefaultNodeName(String defaultDataNodeName) {
+		this.defaultNodeName = defaultDataNodeName;
+	}
 }

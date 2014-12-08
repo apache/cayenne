@@ -19,17 +19,22 @@
 
 package org.apache.cayenne.event;
 
-import java.util.Collection;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
+import org.junit.Test;
+
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class EventBridgeTest extends TestCase {
+public class EventBridgeTest {
 
+    @Test
     public void testConstructor() throws Exception {
         EventSubject local = EventSubject
                 .getSubject(EventBridgeTest.class, "testInstall");
@@ -42,6 +47,7 @@ public class EventBridgeTest extends TestCase {
         assertEquals(external, bridge.getExternalSubject());
     }
 
+    @Test
     public void testStartup() throws Exception {
         EventSubject local = EventSubject
                 .getSubject(EventBridgeTest.class, "testInstall");
@@ -64,6 +70,7 @@ public class EventBridgeTest extends TestCase {
         assertEquals(1, bridge.shutdownCalls);
     }
 
+    @Test
     public void testShutdown() throws Exception {
         EventSubject local = EventSubject
                 .getSubject(EventBridgeTest.class, "testInstall");
@@ -79,6 +86,7 @@ public class EventBridgeTest extends TestCase {
         assertEquals(1, bridge.shutdownCalls);
     }
 
+    @Test
     public void testSendExternalEvent() throws Exception {
 
         final EventSubject local = EventSubject.getSubject(

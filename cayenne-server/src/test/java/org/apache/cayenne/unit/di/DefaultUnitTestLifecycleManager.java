@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -36,12 +34,12 @@ public class DefaultUnitTestLifecycleManager implements UnitTestLifecycleManager
         this.scope = scope;
     }
 
-    public <T extends TestCase> void setUp(T testCase) {
+    public <T> void setUp(T testCase) {
         injector.injectMembers(testCase);
     }
 
     @BeforeScopeEnd
-    public <T extends TestCase> void tearDown(T testCase) {
+    public <T> void tearDown(T testCase) {
         scope.shutdown();
     }
 }

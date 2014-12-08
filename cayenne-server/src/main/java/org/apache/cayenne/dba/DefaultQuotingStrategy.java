@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.Entity;
 
 /**
- * @since 3.2 this is a top-level class.
+ * @since 4.0 this is a top-level class.
  */
 public class DefaultQuotingStrategy implements QuotingStrategy {
 
@@ -38,7 +38,7 @@ public class DefaultQuotingStrategy implements QuotingStrategy {
     }
 
     /**
-     * @deprecated since 3.2
+     * @deprecated since 4.0
      */
     @Override
     @Deprecated

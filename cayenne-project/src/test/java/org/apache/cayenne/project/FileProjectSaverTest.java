@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import java.io.File;
-import java.net.URL;
-import java.util.Arrays;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -36,18 +28,28 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.FileProjectSaver;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.URLResource;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.io.File;
+import java.net.URL;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FileProjectSaverTest extends Project2Case {
 
     private FileProjectSaver saver;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         Module testModule = new Module() {
 
@@ -62,6 +64,7 @@ public class FileProjectSaverTest extends Project2Case {
         injector.injectMembers(saver);
     }
 
+    @Test
     public void testSaveAs_Sorted() throws Exception {
 
         File testFolder = setupTestDirectory("testSaveAs_Sorted");
@@ -139,6 +142,7 @@ public class FileProjectSaverTest extends Project2Case {
      * in target file path then file must be created successfully.
      * @throws Exception
      */
+    @Test
     public void testSaveForProjectFileWithRelatedPaths() throws Exception {
         File testFolder = setupTestDirectory("testSaveForProjectFileWithRelatedPaths");
 

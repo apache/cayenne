@@ -33,7 +33,7 @@ import org.apache.cayenne.tools.configuration.ToolsModule;
  * A DI module that bootstraps {@link DbImportAction}. Should be used in
  * conjunction with {@link ToolsModule}.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class DbImportModule implements Module {
 

@@ -18,17 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.util;
 
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
+public class GenericResponseTest {
 
-public class GenericResponseTest extends TestCase {
-
+    @Test
     public void testSerializationWithHessian() throws Exception {
         List list = new ArrayList();
         list.add(new HashMap());

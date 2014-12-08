@@ -19,33 +19,42 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.io.File;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class EOModelFileFilterTest extends TestCase {
-	protected FileFilter filter;
+public class EOModelFileFilterTest {
 
+    protected FileFilter filter;
+
+    @Before
 	public void setUp() throws Exception {
 		filter = FileFilters.getEOModelFilter();
 	}
-	
+
+    @Test
 	public void testAcceptDir() throws Exception {
 		assertTrue(filter.accept(new File(".")));
 	}
-	
+
+    @Test
 	public void testRejectIndexEOM() throws Exception {
 		assertFalse(filter.accept(new File("index.eomodeld")));
 	}
-	
+
+    @Test
 	public void testAcceptIndexEOM() throws Exception {
 		assertTrue(filter.accept(new File("some.eomodeld/index.eomodeld")));
 	}
-	
+
+    @Test
 	public void testRejectOther() throws Exception {
 		assertFalse(filter.accept(new File("somefile.txt")));
 	}

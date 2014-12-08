@@ -18,14 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import org.apache.cayenne.di.Injector;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
-import org.apache.cayenne.di.Injector;
+public class CayenneRuntimeTest {
 
-import junit.framework.TestCase;
-
-public class CayenneRuntimeTest extends TestCase {
-
+    @Test
     public void testBindThreadInjector() {
 
         Injector injector = mock(Injector.class);

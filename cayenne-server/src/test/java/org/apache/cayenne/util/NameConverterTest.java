@@ -19,11 +19,14 @@
 
 package org.apache.cayenne.util;
 
-import junit.framework.TestCase;
 import org.apache.cayenne.map.naming.NameConverter;
+import org.junit.Test;
 
-public class NameConverterTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class NameConverterTest {
+
+    @Test
     public void testUnderscoredToJava1() throws Exception {
         String expected = "ClassNameIdentifier";
         assertEquals(expected, NameConverter.underscoredToJava(
@@ -31,6 +34,7 @@ public class NameConverterTest extends TestCase {
                 true));
     }
 
+    @Test
     public void testUnderscoredToJava2() throws Exception {
         String expected = "propNameIdentifier123";
         assertEquals(expected, NameConverter.underscoredToJava(
@@ -38,62 +42,75 @@ public class NameConverterTest extends TestCase {
                 false));
     }
 
+    @Test
     public void testUnderscoredToJava3() throws Exception {
         String expected = "lastName";
         assertEquals(expected, NameConverter.underscoredToJava("lastName", false));
     }
 
+    @Test
     public void testUnderscoredToJava4() throws Exception {
         String expected = "lastName";
         assertEquals(expected, NameConverter.underscoredToJava("LastName", false));
     }
 
+    @Test
     public void testUnderscoredToJava5() throws Exception {
         String expected = "LastName";
         assertEquals(expected, NameConverter.underscoredToJava("LastName", true));
     }
 
+    @Test
     public void testUnderscoredToJavaSpecialChars() throws Exception {
         assertEquals("ABCpoundXyz", NameConverter.underscoredToJava("ABC#_XYZ", true));
     }
 
+    @Test
     public void testJavaToUnderscored1() throws Exception {
         String expected = "LAST_NAME";
         assertEquals(expected, NameConverter.javaToUnderscored("LastName"));
     }
 
+    @Test
     public void testJavaToUnderscored2() throws Exception {
         String expected = "A_CLASS";
         assertEquals(expected, NameConverter.javaToUnderscored("aClass"));
     }
 
+    @Test
     public void testJavaToUnderscored3() throws Exception {
         String expected = "VAR_A";
         assertEquals(expected, NameConverter.javaToUnderscored("varA"));
     }
 
+    @Test
     public void testJavaToUnderscored4() throws Exception {
         String expected = "LAST_NAME";
         assertEquals(expected, NameConverter.javaToUnderscored("LAST_NAME"));
     }
 
+    @Test
     public void testJavaToUnderscored5() throws Exception {
         String expected = "ABC_A";
         assertEquals(expected, NameConverter.javaToUnderscored("abc_A"));
     }
 
+    @Test
     public void testJavaToUnderscored6() throws Exception {
         String expected = "A123";
         assertEquals(expected, NameConverter.javaToUnderscored("a123"));
     }
 
+    @Test
     public void testJavaToUnderscored7() throws Exception {
         String expected = "AB_CDEF";
         assertEquals(expected, NameConverter.javaToUnderscored("abCDEF"));
     }
 
+    @Test
     public void testJavaToUnderscored8() throws Exception {
         String expected = "AB_CE";
         assertEquals(expected, NameConverter.javaToUnderscored("abCe"));
     }
+
 }

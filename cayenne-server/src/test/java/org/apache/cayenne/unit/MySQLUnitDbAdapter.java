@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.unit;
 
-import java.sql.Connection;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
+
+import java.sql.Connection;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  */

@@ -41,7 +41,7 @@ public interface ArcProperty extends PropertyDescriptor {
      * Returns a path over reverse DbRelationships for this arc's
      * ObjRelationship.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     String getComplimentaryReverseDbRelationshipPath();
 

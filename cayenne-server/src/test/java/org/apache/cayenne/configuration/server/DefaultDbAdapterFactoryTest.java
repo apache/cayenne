@@ -18,17 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
+import com.mockrunner.mock.jdbc.MockConnection;
+import com.mockrunner.mock.jdbc.MockDataSource;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -50,12 +41,23 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.junit.Test;
 
-import com.mockrunner.mock.jdbc.MockConnection;
-import com.mockrunner.mock.jdbc.MockDataSource;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DefaultDbAdapterFactoryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+public class DefaultDbAdapterFactoryTest {
+
+    @Test
     public void testCreatedAdapter_Auto() throws Exception {
 
         final DbAdapter adapter = mock(DbAdapter.class);
@@ -96,6 +98,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         assertEquals("XXXXX", createdAdapter.createTable(new DbEntity("Test")));
     }
 
+    @Test
     public void testCreatedAdapter_Generic() throws Exception {
 
         List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
@@ -128,6 +131,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         assertEquals("CREATE TABLE Test ()", createdAdapter.createTable(new DbEntity("Test")));
     }
 
+    @Test
     public void testCreatedAdapter_Custom() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
@@ -162,6 +166,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         assertTrue("Unexpected class: " + createdAdapter.getClass().getName(), createdAdapter instanceof SybaseAdapter);
     }
 
+    @Test
     public void testCreatedAdapter_AutoExplicit() throws Exception {
 
         final DbAdapter adapter = mock(DbAdapter.class);

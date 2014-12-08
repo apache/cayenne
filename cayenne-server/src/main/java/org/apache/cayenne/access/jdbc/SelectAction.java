@@ -46,7 +46,7 @@ public class SelectAction extends BaseSQLAction {
     protected SelectQuery<?> query;
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public SelectAction(SelectQuery<?> query, DataNode dataNode) {
         super(dataNode);

@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+
+import java.io.File;
 
 public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
 
@@ -67,6 +68,11 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
 
         assertFalse(superExcludedEntity.exists());
         assertFalse(excludedEntity.exists());
+
+        String content = FileUtils.readFileToString(superTestEntity);
+        assertTrue(content.contains("public static final Property<List<TestRelEntity>> ADDITIONAL_REL = new Property<List<TestRelEntity>>(\"additionalRel\");"));
+        assertTrue(content.contains("public void addToAdditionalRel(TestRelEntity obj)"));
+        assertTrue(content.contains("public void removeFromAdditionalRel(TestRelEntity obj)"));
 
     }
 }

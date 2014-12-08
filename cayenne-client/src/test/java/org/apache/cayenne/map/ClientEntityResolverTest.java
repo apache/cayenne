@@ -18,17 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.junit.Test;
+
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
-public class ClientEntityResolverTest extends ClientCase {
+public class ClientEntityResolverTest {
 
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         ObjEntity entity = new ObjEntity("test_entity");
         entity.setClassName(Artist.class.getName());

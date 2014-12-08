@@ -27,7 +27,7 @@ package org.apache.cayenne.map;
  * classes).
  * 
  * @since 3.0
- * @deprecated since 3.2, as EntityResolver no longer loads listeners from its
+ * @deprecated since 4.0, as EntityResolver no longer loads listeners from its
  *             DataMaps.
  */
 public interface EntityListenerFactory {

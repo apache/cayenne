@@ -35,7 +35,7 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
  * by the complimentary {@link CbcEncryptor}. The object is stateful and is not
  * thread-safe.
  * 
- * @since 3.2
+ * @since 4.0
  */
 class CbcDecryptor implements BytesDecryptor {
 

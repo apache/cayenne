@@ -50,7 +50,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     /**
      * Creates new JDBCResultIterator that reads from provided ResultSet.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public JDBCResultIterator(Statement statement, ResultSet resultSet, RowReader<T> rowReader) {
 
@@ -62,7 +62,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public Iterator<T> iterator() {
@@ -167,7 +167,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     }
 
     /**
-     * @deprecated since 3.2 always returns false. Connection closing is outside
+     * @deprecated since 4.0 always returns false. Connection closing is outside
      *             the scope of this iterator. See
      *             {@link ConnectionAwareResultIterator} for a replacement.
      */
@@ -179,7 +179,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
     /**
      * Sets the <code>closingConnection</code> property.
      * 
-     * @deprecated since 3.2 does nothing. Connection closing is outside the
+     * @deprecated since 4.0 does nothing. Connection closing is outside the
      *             scope of this iterator. See
      *             {@link ConnectionAwareResultIterator} for a replacement.
      */

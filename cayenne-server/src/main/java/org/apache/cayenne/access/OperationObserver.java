@@ -61,7 +61,7 @@ public interface OperationObserver extends OperationHints {
      * Callback method invoked after each batch of generated values is read during an
      * update.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate);
 

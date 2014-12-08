@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.Collections;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
@@ -44,9 +40,19 @@ import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
+import org.junit.Test;
 
-public class DataContextFactoryTest extends TestCase {
+import java.util.Collections;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+public class DataContextFactoryTest {
+
+    @Test
     public void testCreateDataContextWithDedicatedCache() throws Exception {
 
         final EventManager eventManager = new MockEventManager();
@@ -84,6 +90,7 @@ public class DataContextFactoryTest extends TestCase {
                 domain.getSharedSnapshotCache());
     }
 
+    @Test
     public void testCreateDataContextValidation() throws Exception {
         final EventManager eventManager = new MockEventManager();
         final DataDomain domain = new DataDomain("d1");

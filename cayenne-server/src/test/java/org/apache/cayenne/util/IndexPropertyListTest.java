@@ -19,14 +19,18 @@
 
 package org.apache.cayenne.util;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class IndexPropertyListTest extends TestCase {
+public class IndexPropertyListTest {
 
+    @Test
     public void testSort() {
 
         IndexedObject o1 = new IndexedObject(1);
@@ -55,6 +59,7 @@ public class IndexPropertyListTest extends TestCase {
         assertEquals(o1, indexedUnsortedList.get(3));
     }
 
+    @Test
     public void testAppend() {
         IndexedObject o1 = new IndexedObject(1);
         IndexedObject o2 = new IndexedObject(2);
@@ -72,6 +77,7 @@ public class IndexPropertyListTest extends TestCase {
         assertTrue(o4.getOrder() < o5.getOrder());
     }
 
+    @Test
     public void testInsert() {
         IndexedObject o1 = new IndexedObject(1);
         IndexedObject o2 = new IndexedObject(2);

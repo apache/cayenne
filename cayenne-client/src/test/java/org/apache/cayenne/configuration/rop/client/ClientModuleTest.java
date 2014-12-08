@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
@@ -34,9 +29,19 @@ import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.MockClientConnection;
 import org.apache.cayenne.remote.hessian.HessianConnection;
+import org.junit.Test;
 
-public class ClientModuleTest extends TestCase {
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+public class ClientModuleTest {
+
+    @Test
     public void testClientConnection() {
 
         Map<String, String> properties = new HashMap<String, String>();
@@ -53,6 +58,7 @@ public class ClientModuleTest extends TestCase {
                 .getInstance(ClientConnection.class));
     }
 
+    @Test
     public void testObjectContextFactory() {
 
         Map<String, String> properties = new HashMap<String, String>();
@@ -75,6 +81,7 @@ public class ClientModuleTest extends TestCase {
                 .getInstance(ObjectContextFactory.class));
     }
 
+    @Test
     public void testDataChannel() {
 
         Map<String, String> properties = new HashMap<String, String>();
@@ -103,6 +110,7 @@ public class ClientModuleTest extends TestCase {
         assertFalse(clientChannel.isChannelEventsEnabled());
     }
 
+    @Test
     public void testDataChannel_NoChannelEvents() {
 
         Map<String, String> properties = new HashMap<String, String>();

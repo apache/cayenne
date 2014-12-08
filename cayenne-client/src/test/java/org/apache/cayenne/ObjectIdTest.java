@@ -18,16 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
+public class ObjectIdTest {
 
-public class ObjectIdTest extends TestCase {
-
+    @Test
     public void testHessianSerializabilityTemp() throws Exception {
         ObjectId temp1 = new ObjectId("e");
 
@@ -46,6 +51,7 @@ public class ObjectIdTest extends TestCase {
         assertEquals(temp1, temp2);
     }
 
+    @Test
     public void testHessianSerializabilityPerm() throws Exception {
         ObjectId perm1 = new ObjectId("e", "a", "b");
 
@@ -64,6 +70,7 @@ public class ObjectIdTest extends TestCase {
         assertEquals(perm1, perm2);
     }
 
+    @Test
     public void testHessianSerializabilityPerm1() throws Exception {
         // test serializing an id created with unmodifiable map
 

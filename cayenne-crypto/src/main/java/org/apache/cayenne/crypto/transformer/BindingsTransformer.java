@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.transformer;
 import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public interface BindingsTransformer {
 

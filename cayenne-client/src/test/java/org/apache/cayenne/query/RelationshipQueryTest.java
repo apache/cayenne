@@ -18,14 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class RelationshipQueryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+public class RelationshipQueryTest {
+
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         ObjectId oid = new ObjectId("test", "a", "b");
         RelationshipQuery query = new RelationshipQuery(oid, "relX");

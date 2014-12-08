@@ -19,19 +19,23 @@
 package org.apache.cayenne.unit.di.client;
 
 import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.DICase;
+import org.apache.cayenne.unit.di.server.DBCleaner;
 import org.apache.cayenne.unit.di.server.SchemaBuilder;
 import org.apache.cayenne.unit.di.server.ServerCaseModule;
+import org.junit.Before;
 
 public class ClientCase extends DICase {
 
     public static final String ROP_CLIENT_KEY = "client";
 
-    public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";
-
     private static final Injector injector;
+
+    @Inject
+    private DBCleaner dbCleaner;
 
     static {
         DefaultScope testScope = new DefaultScope();
@@ -40,6 +44,11 @@ public class ClientCase extends DICase {
                 new ClientCaseModule(testScope));
        
         injector.getInstance(SchemaBuilder.class).rebuildSchema();
+    }
+
+    @Before
+    public void cleanUpDB() throws Exception {
+        dbCleaner.clean();
     }
 
     @Override

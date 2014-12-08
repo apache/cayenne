@@ -55,8 +55,8 @@ import org.apache.commons.collections.Transformer;
  */
 public class ObjEntity extends Entity implements ObjEntityListener, ConfigurationNode {
 
-    final public static int LOCK_TYPE_NONE = 0;
-    final public static int LOCK_TYPE_OPTIMISTIC = 1;
+    public static final int LOCK_TYPE_NONE = 0;
+    public static final int LOCK_TYPE_OPTIMISTIC = 1;
 
     // do not import CayenneDataObject as it introduces unneeded client
     // dependency
@@ -285,7 +285,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * specified explicitly, default DataMap superclass is used, and if it is
      * not set - CayenneDataObject is used.
      * 
-     * @since 3.2
+     * @since 4.0
      */
    public  String getJavaClassName() {
         String name = getClassName();
@@ -308,7 +308,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Casts any thrown exceptions into CayenneRuntimeException.
      * 
      * @since 1.2
-     * @deprecated since 3.2 this method based on statically defined class
+     * @deprecated since 4.0 this method based on statically defined class
      *             loading algorithm is not going to work in environments like
      *             OSGi. {@link AdhocObjectFactory} should be used as it can
      *             provide the environment-specific class loading policy. 
@@ -320,7 +320,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         try {
             return Util.getJavaClass(name);
         } catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException("Failed to load class " + name + ": " + e.getMessage(), e);
+            throw new CayenneRuntimeException("Failed to doLoad class " + name + ": " + e.getMessage(), e);
         }
     }
 
@@ -330,7 +330,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * not just a generic Collection is returned.
      * 
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -344,7 +344,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * @since 3.0
      * @throws IllegalArgumentException
      *             if a listener for the same class name is already registered.
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -362,7 +362,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Removes a listener matching class name.
      * 
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -379,7 +379,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
     /**
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -461,7 +461,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * @since 1.2
      */
     public boolean isClientAllowed() {
-        return (getDataMap() == null || isServerOnly()) ? false : getDataMap().isClientSupported();
+        return getDataMap() != null && !isServerOnly() && getDataMap().isClientSupported();
     }
 
     public boolean isAbstract() {
@@ -948,12 +948,13 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Clears mapping between entities, attributes and relationships.
      */
     public void clearDbMapping() {
-        if (dbEntityName == null)
+        if (dbEntityName == null) {
             return;
+        }
 
         for (ObjAttribute attribute : getAttributeMap().values()) {
             DbAttribute dbAttr = attribute.getDbAttribute();
-            if (null != dbAttr) {
+            if (dbAttr != null) {
                 attribute.setDbAttributePath(null);
             }
         }
@@ -1118,7 +1119,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public Set<String> getCallbackMethods() {
         Set<String> res = new LinkedHashSet<String>();
@@ -1252,7 +1253,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * this entity lifecycle events.
      * 
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -1261,7 +1262,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -1274,7 +1275,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * not be notified of this entity lifecycle events.
      * 
      * @since 3.0
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated
@@ -1283,7 +1284,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * @deprecated since 3.2 unused, as listeners are no longer mapped in a
+     * @deprecated since 4.0 unused, as listeners are no longer mapped in a
      *             DataMap.
      */
     @Deprecated

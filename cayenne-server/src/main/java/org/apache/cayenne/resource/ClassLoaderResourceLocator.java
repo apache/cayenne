@@ -67,7 +67,7 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
     }
 
     /**
-     * @deprecated since 3.2 unused, as AdhocObjectFactory.getClassLoader() is
+     * @deprecated since 4.0 unused, as AdhocObjectFactory.getClassLoader() is
      *             used instead.
      */
     @Deprecated

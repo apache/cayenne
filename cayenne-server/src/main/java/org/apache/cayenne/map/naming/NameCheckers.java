@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public enum NameCheckers implements NameChecker {
 
@@ -75,11 +75,7 @@ public enum NameCheckers implements NameChecker {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataMap map = (DataMap) namingContext;
-			if (map.getDefaultPackage() != null) {
-				return map
-						.getEmbeddable((map.getDefaultPackage() + "." + name)) != null;
-			}
-			return map.getEmbeddable(name) != null;
+            return map.getEmbeddable(map.getNameWithDefaultPackage(name)) != null;
 		}
 	},
 

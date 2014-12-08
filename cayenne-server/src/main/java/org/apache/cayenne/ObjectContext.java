@@ -180,7 +180,7 @@ public interface ObjectContext extends DataChannel, Serializable {
      * Executes a selecting query, returning a list of persistent objects or
      * data rows.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     <T> List<T> select(Select<T> query);
 
@@ -189,7 +189,7 @@ public interface ObjectContext extends DataChannel, Serializable {
      * objects, or a single object. If query matches more than one object,
      * {@link CayenneRuntimeException} is thrown.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     <T> T selectOne(Select<T> query);
 
@@ -198,7 +198,7 @@ public interface ObjectContext extends DataChannel, Serializable {
      * callback for processing. The caller does not need to worry about closing
      * the iterator. This method takes care of it.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback);
 
@@ -209,7 +209,7 @@ public interface ObjectContext extends DataChannel, Serializable {
      * iteration in try/finally and close the ResultIterator explicitly. Or use
      * {@link #iterate(Select, ResultIteratorCallback)} as an alternative.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     <T> ResultIterator<T> iterator(Select<T> query);
 

@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.query.AbstractQuery;
+import org.apache.cayenne.query.MockAbstractQuery;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
+import org.junit.Test;
+import org.xml.sax.InputSource;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -28,20 +36,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.apache.cayenne.query.AbstractQuery;
-import org.apache.cayenne.query.MockAbstractQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
-import org.xml.sax.InputSource;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * DataMap unit tests.
  */
-public class DataMapTest extends TestCase {
+public class DataMapTest {
 
+    @Test
     public void testSerializability() throws Exception {
         DataMap m1 = new DataMap("abc");
         DataMap d1 = (DataMap) Util.cloneViaSerialization(m1);
@@ -54,6 +62,7 @@ public class DataMapTest extends TestCase {
         assertNotNull(d2.getObjEntity(oe1.getName()));
     }
 
+    @Test
     public void testInitWithProperties() {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(DataMap.CLIENT_SUPPORTED_PROPERTY, "true");
@@ -68,6 +77,7 @@ public class DataMapTest extends TestCase {
         // TODO: test other defaults
     }
 
+    @Test
     public void testDefaultSchema() {
         DataMap map = new DataMap();
         String tstSchema = "tst_schema";
@@ -79,6 +89,7 @@ public class DataMapTest extends TestCase {
         assertNull(map.getDefaultSchema());
     }
 
+    @Test
     public void testDefaultClientPackage() {
         DataMap map = new DataMap();
         String tstPackage = "tst.pkg";
@@ -90,6 +101,7 @@ public class DataMapTest extends TestCase {
         assertNull(map.getDefaultClientPackage());
     }
 
+    @Test
     public void testDefaultClientSuperclass() {
         DataMap map = new DataMap();
         String tstSuperclass = "tst_superclass";
@@ -101,6 +113,7 @@ public class DataMapTest extends TestCase {
         assertNull(map.getDefaultClientSuperclass());
     }
 
+    @Test
     public void testDefaultPackage() {
         DataMap map = new DataMap();
         String tstPackage = "tst.pkg";
@@ -112,6 +125,7 @@ public class DataMapTest extends TestCase {
         assertNull(map.getDefaultPackage());
     }
 
+    @Test
     public void testDefaultSuperclass() {
         DataMap map = new DataMap();
         String tstSuperclass = "tst_superclass";
@@ -123,6 +137,7 @@ public class DataMapTest extends TestCase {
         assertNull(map.getDefaultSuperclass());
     }
 
+    @Test
     public void testDefaultLockType() {
         DataMap map = new DataMap();
         assertEquals(ObjEntity.LOCK_TYPE_NONE, map.getDefaultLockType());
@@ -133,6 +148,7 @@ public class DataMapTest extends TestCase {
         assertEquals(ObjEntity.LOCK_TYPE_NONE, map.getDefaultLockType());
     }
 
+    @Test
     public void testName() {
         DataMap map = new DataMap();
         String tstName = "tst_name";
@@ -140,6 +156,7 @@ public class DataMapTest extends TestCase {
         assertEquals(tstName, map.getName());
     }
 
+    @Test
     public void testLocation() {
         DataMap map = new DataMap();
         String tstName = "tst_name";
@@ -148,6 +165,7 @@ public class DataMapTest extends TestCase {
         assertEquals(tstName, map.getLocation());
     }
 
+    @Test
     public void testAddObjEntity() {
         DataMap map = new DataMap();
         ObjEntity e = new ObjEntity("b");
@@ -157,6 +175,7 @@ public class DataMapTest extends TestCase {
         assertSame(map, e.getDataMap());
     }
 
+    @Test
     public void testAddEntityWithSameName() {
         DataMap map = new DataMap();
 
@@ -175,6 +194,7 @@ public class DataMapTest extends TestCase {
         }
     }
 
+    @Test
     public void testRemoveThenAddNullClassName() {
         DataMap map = new DataMap();
         // It should be possible to cleanly remove and then add the same entity
@@ -188,6 +208,7 @@ public class DataMapTest extends TestCase {
         map.addObjEntity(e);
     }
 
+    @Test
     public void testRemoveObjEntity() {
         // make sure deleting an ObjEntity & other entity's relationships to it
         // works & does not cause a ConcurrentModificationException
@@ -224,6 +245,7 @@ public class DataMapTest extends TestCase {
         assertNull(map.getObjEntity("2"));
     }
 
+    @Test
     public void testMultipleNullClassNames() {
         // Now possible to have more than one objEntity with a null class name.
         // This test proves it
@@ -236,6 +258,7 @@ public class DataMapTest extends TestCase {
         map.addObjEntity(e2);
     }
 
+    @Test
     public void testRemoveThenAddRealClassName() {
         ObjEntity e = new ObjEntity("f");
         e.setClassName("f");
@@ -247,6 +270,7 @@ public class DataMapTest extends TestCase {
         map.addObjEntity(e);
     }
 
+    @Test
     public void testAddEmbeddable() {
         Embeddable e = new Embeddable("XYZ");
 
@@ -257,6 +281,7 @@ public class DataMapTest extends TestCase {
         assertTrue(map.getEmbeddables().contains(e));
     }
 
+    @Test
     public void testRemoveEmbeddable() {
         Embeddable e = new Embeddable("XYZ");
 
@@ -270,6 +295,7 @@ public class DataMapTest extends TestCase {
         assertFalse(map.getEmbeddables().contains(e));
     }
 
+    @Test
     public void testAddDbEntity() {
         DbEntity e = new DbEntity("b");
 
@@ -279,6 +305,7 @@ public class DataMapTest extends TestCase {
         assertSame(map, e.getDataMap());
     }
 
+    @Test
     public void testAddQuery() {
         AbstractQuery q = new MockAbstractQuery("a");
         DataMap map = new DataMap();
@@ -286,6 +313,7 @@ public class DataMapTest extends TestCase {
         assertSame(q, map.getQuery("a"));
     }
 
+    @Test
     public void testRemoveQuery() {
         AbstractQuery q = new MockAbstractQuery("a");
 
@@ -296,6 +324,7 @@ public class DataMapTest extends TestCase {
         assertNull(map.getQuery("a"));
     }
 
+    @Test
     public void testGetQueryMap() {
         AbstractQuery q = new MockAbstractQuery("a");
         DataMap map = new DataMap();
@@ -307,6 +336,7 @@ public class DataMapTest extends TestCase {
 
     // make sure deleting a DbEntity & other entity's relationships to it
     // works & does not cause a ConcurrentModificationException
+    @Test
     public void testRemoveDbEntity() {
 
         DataMap map = new DataMap();
@@ -348,6 +378,7 @@ public class DataMapTest extends TestCase {
         assertNull(map.getDbEntity(e2.getName()));
     }
 
+    @Test
     public void testChildProcedures() throws Exception {
         DataMap map = new DataMap();
         checkProcedures(map, new String[0]);
@@ -379,6 +410,7 @@ public class DataMapTest extends TestCase {
         }
     }
 
+    @Test
     public void testQuoteSqlIdentifiersEncodeAsXML() {
         DataMap map = new DataMap("aaa");
         map.setQuotingSQLIdentifiers(true);

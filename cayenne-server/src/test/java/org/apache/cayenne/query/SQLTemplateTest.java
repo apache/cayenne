@@ -16,196 +16,122 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.query;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class SQLTemplateTest extends ServerCase {
+public class SQLTemplateTest {
 
-    @Inject
-    private DataContext context;
+	@Test
+	public void testSetParams() throws Exception {
+		SQLTemplate query = new SQLTemplate();
 
-    @Inject
-    private DBHelper dbHelper;
+		assertTrue(query.getParams().isEmpty());
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-    }
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("a", "b");
 
-    public void testSQLTemplateForDataMap() {
-        DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
-        SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
-        List<DataRow> result = context.performQuery(q1);
-        assertEquals(0, result.size());
-    }
+		query.setParams(params);
+		assertEquals(params, query.getParams());
 
-    public void testSQLTemplateForDataMapWithInsert() {
-        DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
-        String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-        SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-        context.performNonSelectingQuery(q1);
+		query.setParams(null);
+		assertTrue(query.getParams().isEmpty());
+	}
 
-        SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
-        List<DataRow> result = context.performQuery(q2);
-        assertEquals(1, result.size());
-    }
+	@Test
+	public void testSetParamsArray() throws Exception {
+		SQLTemplate query = new SQLTemplate();
 
-    public void testSQLTemplateForDataMapWithInsertException() {
-        DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
-        String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-        SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-        context.performNonSelectingQuery(q1);
+		assertTrue(query.getPositionalParams().isEmpty());
 
-        SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", false);
-        boolean gotRuntimeException = false;
-        try {
-            context.performQuery(q2);
-        } catch (CayenneRuntimeException e) {
-            gotRuntimeException = true;
-        }
-        assertTrue("If fetchingDataRows is false and ObjectEntity not set, shoulb be thrown exception",
-                gotRuntimeException);
-    }
+		query.setParamsArray("N", "m");
+		assertEquals(Arrays.asList("N", "m"), query.getPositionalParams());
 
-    public void testColumnNameCapitalization() {
-        SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
-        assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
-        q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
-    }
+		query.setParamsArray();
+		assertTrue(query.getPositionalParams().isEmpty());
+	}
 
-    public void testQueryWithParameters() {
-        SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
-        q1.setName("QName");
+	@Test
+	public void testSetParams_MixingStyles() throws Exception {
 
-        Query q2 = q1.queryWithParameters(Collections.EMPTY_MAP);
-        assertNotNull(q2);
-        assertNotSame(q1, q2);
-        assertTrue(q2 instanceof SQLTemplate);
+		SQLTemplate query = new SQLTemplate();
 
-        assertNull(q2.getName());
+		assertTrue(query.getParams().isEmpty());
+		assertTrue(query.getPositionalParams().isEmpty());
 
-        Query q3 = q1.queryWithParameters(Collections.singletonMap("a", "b"));
-        assertNotNull(q3);
-        assertNotSame(q1, q3);
-        assertNull(q3.getName());
-        assertFalse(q1.getName().equals(q3.getName()));
+		Map<String, Object> params = Collections.<String, Object> singletonMap("a", "b");
+		query.setParams(params);
+		assertEquals(params, query.getParams());
+		assertTrue(query.getPositionalParams().isEmpty());
 
-        Query q4 = q1.queryWithParameters(Collections.singletonMap("a", "b"));
-        assertNotNull(q4);
-        assertNotSame(q3, q4);
-        assertEquals(q3.getName(), q4.getName());
-    }
+		query.setParamsArray("D", "G");
+		assertEquals(Arrays.asList("D", "G"), query.getPositionalParams());
+		assertTrue(query.getParams().isEmpty());
 
-    public void testSerializability() throws Exception {
-        SQLTemplate o = new SQLTemplate("Test", "DO SQL");
-        Object clone = Util.cloneViaSerialization(o);
+		// even resetting named to null should result in resetting positional
+		query.setParams(null);
+		assertTrue(query.getParams().isEmpty());
+		assertTrue(query.getPositionalParams().isEmpty());
+	}
 
-        assertTrue(clone instanceof SQLTemplate);
-        SQLTemplate c1 = (SQLTemplate) clone;
+	@Test
+	public void testGetDefaultTemplate() {
+		SQLTemplate query = new SQLTemplate();
+		query.setDefaultTemplate("AAA # BBB");
+		assertEquals("AAA # BBB", query.getDefaultTemplate());
+	}
 
-        assertNotSame(o, c1);
-        assertEquals(o.getRoot(), c1.getRoot());
-        assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
-    }
+	@Test
+	public void testGetTemplate() {
+		SQLTemplate query = new SQLTemplate();
 
-    public void testGetDefaultTemplate() {
-        SQLTemplate query = new SQLTemplate();
-        query.setDefaultTemplate("AAA # BBB");
-        assertEquals("AAA # BBB", query.getDefaultTemplate());
-    }
+		// no template for key, no default template... must be null
+		assertNull(query.getTemplate("key1"));
 
-    public void testGetTemplate() {
-        SQLTemplate query = new SQLTemplate();
+		// no template for key, must return default
+		query.setDefaultTemplate("AAA # BBB");
+		assertEquals("AAA # BBB", query.getTemplate("key1"));
 
-        // no template for key, no default template... must be null
-        assertNull(query.getTemplate("key1"));
+		// must find template
+		query.setTemplate("key1", "XYZ");
+		assertEquals("XYZ", query.getTemplate("key1"));
 
-        // no template for key, must return default
-        query.setDefaultTemplate("AAA # BBB");
-        assertEquals("AAA # BBB", query.getTemplate("key1"));
+		// add another template.. still must find
+		query.setTemplate("key2", "123");
+		assertEquals("XYZ", query.getTemplate("key1"));
+		assertEquals("123", query.getTemplate("key2"));
+	}
 
-        // must find template
-        query.setTemplate("key1", "XYZ");
-        assertEquals("XYZ", query.getTemplate("key1"));
+	@Test
+	public void testColumnNameCapitalization() {
+		SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
+		assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
+		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
+		assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
+	}
 
-        // add another template.. still must find
-        query.setTemplate("key2", "123");
-        assertEquals("XYZ", query.getTemplate("key1"));
-        assertEquals("123", query.getTemplate("key2"));
-    }
+	@Test
+	public void testSerializability() throws Exception {
+		SQLTemplate o = new SQLTemplate("Test", "DO SQL");
+		Object clone = Util.cloneViaSerialization(o);
 
-    public void testSingleParameterSet() throws Exception {
-        SQLTemplate query = new SQLTemplate();
+		assertTrue(clone instanceof SQLTemplate);
+		SQLTemplate c1 = (SQLTemplate) clone;
 
-        assertNotNull(query.getParameters());
-        assertTrue(query.getParameters().isEmpty());
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("a", "b");
-
-        query.setParameters(params);
-        assertEquals(params, query.getParameters());
-        Iterator<?> it = query.parametersIterator();
-        assertTrue(it.hasNext());
-        assertEquals(params, it.next());
-        assertFalse(it.hasNext());
-
-        query.setParameters(null);
-        assertNotNull(query.getParameters());
-        assertTrue(query.getParameters().isEmpty());
-        it = query.parametersIterator();
-        assertFalse(it.hasNext());
-    }
-
-    public void testBatchParameterSet() throws Exception {
-        SQLTemplate query = new SQLTemplate();
-
-        assertNotNull(query.getParameters());
-        assertTrue(query.getParameters().isEmpty());
-
-        Map<String, Object> params1 = new HashMap<String, Object>();
-        params1.put("a", "b");
-
-        Map<String, Object> params2 = new HashMap<String, Object>();
-        params2.put("1", "2");
-
-        query.setParameters(new Map[] { params1, params2, null });
-        assertEquals(params1, query.getParameters());
-        Iterator<?> it = query.parametersIterator();
-        assertTrue(it.hasNext());
-        assertEquals(params1, it.next());
-        assertTrue(it.hasNext());
-        assertEquals(params2, it.next());
-        assertTrue(it.hasNext());
-        assertTrue(((Map<String, Object>) it.next()).isEmpty());
-        assertFalse(it.hasNext());
-
-        query.setParameters((Map[]) null);
-        assertNotNull(query.getParameters());
-        assertTrue(query.getParameters().isEmpty());
-        it = query.parametersIterator();
-        assertFalse(it.hasNext());
-    }
+		assertNotSame(o, c1);
+		assertEquals(o.getRoot(), c1.getRoot());
+		assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
+	}
 }

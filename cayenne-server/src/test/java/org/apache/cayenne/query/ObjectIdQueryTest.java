@@ -19,13 +19,19 @@
 
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class ObjectIdQueryTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+public class ObjectIdQueryTest {
+
+    @Test
     public void testConstructorObjectId() {
 
         ObjectId oid = new ObjectId("MockDataObject", "a", "b");
@@ -34,6 +40,7 @@ public class ObjectIdQueryTest extends TestCase {
         assertSame(oid, query.getObjectId());
     }
 
+    @Test
     public void testSerializability() throws Exception {
         ObjectId oid = new ObjectId("test", "a", "b");
         ObjectIdQuery query = new ObjectIdQuery(oid);
@@ -48,6 +55,7 @@ public class ObjectIdQueryTest extends TestCase {
      * Proper 'equals' and 'hashCode' implementations are important when mapping
      * results obtained in a QueryChain back to the query.
      */
+    @Test
     public void testEquals() throws Exception {
         ObjectIdQuery q1 = new ObjectIdQuery(new ObjectId("abc", "a", 1));
         ObjectIdQuery q2 = new ObjectIdQuery(new ObjectId("abc", "a", 1));
@@ -64,6 +72,7 @@ public class ObjectIdQueryTest extends TestCase {
         assertFalse(q1.hashCode() == q4.hashCode());
     }
 
+    @Test
     public void testMetadata() {
         ObjectIdQuery q1 = new ObjectIdQuery(new ObjectId("abc", "a", 1), true, ObjectIdQuery.CACHE_REFRESH);
 

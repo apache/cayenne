@@ -18,13 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.graph;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class NodeDiffTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+public class NodeDiffTest {
+
+    @Test
     public void testHessianSerialization() throws Exception {
 
         // id must be a serializable object...

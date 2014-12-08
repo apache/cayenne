@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbRelationship;
  * ObjectNameGenerator is a strategy for creating names for entities,
  * attributes, relationships from DB metadata.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface ObjectNameGenerator {
 

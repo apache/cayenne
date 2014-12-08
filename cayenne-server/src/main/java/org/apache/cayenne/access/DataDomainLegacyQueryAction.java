@@ -127,7 +127,7 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
     }
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public QueryEngine engineForName(String name) {

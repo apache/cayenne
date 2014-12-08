@@ -35,7 +35,7 @@ import org.apache.cayenne.map.ObjEntity;
 /**
  * A query to select single objects by id.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class SelectById<T> extends IndirectQuery implements Select<T> {
 
@@ -53,6 +53,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	boolean fetchingDataRows;
 	QueryCacheStrategy cacheStrategy;
 	String[] cacheGroups;
+	PrefetchTreeNode prefetches;
 
 	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
 		SelectById<T> q = new SelectById<T>();
@@ -125,8 +126,13 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Selects a single object using provided context. Essentially the inversion
-	 * of "ObjectContext.selectOne(Select)".
+	 * Selects a single object using provided context. The query is expected to
+	 * match zero or one object. It returns null if no objects were matched. If
+	 * query matched more than one object, {@link CayenneRuntimeException} is
+	 * thrown. Since we are selecting by ID, multiple matched objects likely
+	 * indicate a database referential integrity problem.
+	 * <p>
+	 * Essentially the inversion of "ObjectContext.selectOne(Select)".
 	 */
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
@@ -141,7 +147,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
 	 * </pre>
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public SelectById<T> useLocalCache(String... cacheGroups) {
 		cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -180,6 +186,70 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return fetchingDataRows;
 	}
 
+	/**
+	 * Resets internal prefetches to the new value, which is a single prefetch
+	 * with specified semantics.
+	 * 
+	 * @return this object
+	 */
+	public SelectById<T> prefetch(String path, int semantics) {
+		this.prefetches = PrefetchTreeNode.withPath(path, semantics);
+		return this;
+	}
+
+	/**
+	 * Resets internal prefetches to the new value.
+	 * 
+	 * @return this object
+	 */
+	public SelectById<T> prefetch(PrefetchTreeNode prefetch) {
+		this.prefetches = prefetch;
+		return this;
+	}
+
+	/**
+	 * Merges prefetch into the query prefetch tree.
+	 * 
+	 * @return this object
+	 */
+	public SelectById<T> addPrefetch(PrefetchTreeNode prefetch) {
+
+		if (prefetch == null) {
+			return this;
+		}
+
+		if (prefetches == null) {
+			prefetches = new PrefetchTreeNode();
+		}
+
+		prefetches.merge(prefetch);
+		return this;
+	}
+
+	/**
+	 * Merges a prefetch path with specified semantics into the query prefetch
+	 * tree.
+	 * 
+	 * @return this object
+	 */
+	public SelectById<T> addPrefetch(String path, int semantics) {
+
+		if (path == null) {
+			return this;
+		}
+
+		if (prefetches == null) {
+			prefetches = new PrefetchTreeNode();
+		}
+
+		prefetches.addPath(path).setSemantics(semantics);
+		return this;
+	}
+	
+	public PrefetchTreeNode getPrefetches() {
+		return prefetches;
+	}
+
 	@Override
 	protected Query createReplacementQuery(EntityResolver resolver) {
 
@@ -196,6 +266,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		// optimally - object cache may have an object, but query cache will not
 		query.setCacheGroups(cacheGroups);
 		query.setCacheStrategy(cacheStrategy);
+		query.setPrefetchTree(prefetches);
 
 		return query;
 	}

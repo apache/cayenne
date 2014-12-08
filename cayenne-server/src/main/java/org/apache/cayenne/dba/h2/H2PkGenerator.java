@@ -37,7 +37,7 @@ import org.apache.cayenne.map.DbKeyGenerator;
 /**
  * Default PK generator for H2 that uses sequences for PK generation.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class H2PkGenerator extends OraclePkGenerator {
 

@@ -94,13 +94,6 @@ public class PackageUpdateController extends DefaultsPreferencesController {
 
     protected void updatePackage() {
         boolean doAll = isAllEntities();
-        String defaultPackage = getDefaultPackage();
-        if (Util.isEmptyString(defaultPackage)) {
-            defaultPackage = "";
-        }
-        else if (!defaultPackage.endsWith(".")) {
-            defaultPackage = defaultPackage + '.';
-        }
 
         Map<String, String> oldNameEmbeddableToNewName = new HashMap<String,String>();
         
@@ -114,7 +107,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
             
             if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
                 EmbeddableEvent e = new EmbeddableEvent(this, embeddable, embeddable.getClassName());
-                String newClassName = defaultPackage + className;
+                String newClassName = getNameWithDefaultPackage(className);
                 oldNameEmbeddableToNewName.put(oldName, newClassName);
                 embeddable.setClassName(newClassName);
                 mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
@@ -127,7 +120,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
             if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
                 String className = extractClassName(Util.isEmptyString(oldName) ? entity
                         .getName() : oldName);
-                setClassName(entity, defaultPackage + className);
+                setClassName(entity, getNameWithDefaultPackage(className));
             }
             
             for(ObjAttribute attribute: entity.getAttributes()){
@@ -155,9 +148,12 @@ public class PackageUpdateController extends DefaultsPreferencesController {
                 : "";
     }
 
-    protected String getDefaultPackage() {
-        return clientUpdate ? dataMap.getDefaultClientPackage() : dataMap
-                .getDefaultPackage();
+    protected String getNameWithDefaultPackage(String name) {
+        if (clientUpdate) {
+            return dataMap.getNameWithDefaultClientPackage(name);
+        } else {
+            return dataMap.getNameWithDefaultPackage(name);
+        }
     }
 
     protected String getClassName(ObjEntity entity) {

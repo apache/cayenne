@@ -21,7 +21,7 @@ package org.apache.cayenne.map.naming;
 import org.apache.cayenne.map.DataMap;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultUniqueNameGenerator implements UniqueNameGenerator {
 
@@ -49,12 +49,7 @@ public class DefaultUniqueNameGenerator implements UniqueNameGenerator {
             generator = new DefaultUniqueNameGenerator(NameCheckers.embeddable, pattern) {
                 @Override
                 public String generate(Object namingContext, String nameBase) {
-                    String name = super.generate(namingContext, nameBase);
-                    DataMap map = (DataMap) namingContext;
-                    if (map.getDefaultPackage() != null) {
-                        return map.getDefaultPackage() + "." + name;
-                    }
-                    return name;
+                    return ((DataMap) namingContext).getNameWithDefaultPackage(super.generate(namingContext, nameBase));
                 }
             };
         } else {

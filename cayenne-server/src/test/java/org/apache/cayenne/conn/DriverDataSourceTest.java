@@ -18,12 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.conn;
 
+import org.junit.Test;
+
 import java.sql.SQLException;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
-public class DriverDataSourceTest extends TestCase {
+public class DriverDataSourceTest {
 
+    @Test
     public void testLazyInstantiationOfDriverClass() {
         DriverDataSource dataSource = new DriverDataSource("does.not.exist.Driver", "jdbc:postgresql://localhost/database");
         assertNotNull(dataSource);

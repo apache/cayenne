@@ -33,7 +33,7 @@ class FrontBaseSelectTranslator extends SelectTranslator {
     static final String SELECT_PREFIX = "SELECT";
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public FrontBaseSelectTranslator(Query query, DataNode dataNode, Connection connection) {
         super(query, dataNode, connection);

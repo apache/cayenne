@@ -18,40 +18,45 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.id;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class EntityIdCoderTest extends TestCase {
+import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class EntityIdCoderTest {
 
     private ServerRuntime runtime;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         runtime = new ServerRuntime("cayenne-lifecycle.xml");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         runtime.shutdown();
     }
-    
+
+    @Test
     public void testGetEntityName() {
         assertEquals("M", EntityIdCoder.getEntityName("M:N:K"));
         assertEquals("M", EntityIdCoder.getEntityName(".M:N:K"));
     }
 
+    @Test
     public void testTempId() {
 
         ObjEntity e1 = runtime.getChannel().getEntityResolver()
@@ -69,6 +74,7 @@ public class EntityIdCoderTest extends TestCase {
         assertEquals(encoded, decoded);
     }
 
+    @Test
     public void testSingleIntPk() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk = new DbAttribute("ID");
@@ -90,6 +96,7 @@ public class EntityIdCoderTest extends TestCase {
         assertEquals(id, parsedId);
     }
 
+    @Test
     public void testSingleLongPk() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk = new DbAttribute("ID");
@@ -111,6 +118,7 @@ public class EntityIdCoderTest extends TestCase {
         assertEquals(id, parsedId);
     }
 
+    @Test
     public void testSingleStringPk() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk = new DbAttribute("ID");
@@ -132,6 +140,7 @@ public class EntityIdCoderTest extends TestCase {
         assertEquals(id, parsedId);
     }
 
+    @Test
     public void testIdEncoding() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk = new DbAttribute("ID");
@@ -153,6 +162,7 @@ public class EntityIdCoderTest extends TestCase {
         assertEquals(id, parsedId);
     }
 
+    @Test
     public void testMixedCompoundPk() {
         DbEntity dbEntity = new DbEntity("X");
         DbAttribute pk1 = new DbAttribute("ID");

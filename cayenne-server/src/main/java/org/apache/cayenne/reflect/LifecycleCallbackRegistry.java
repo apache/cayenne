@@ -153,14 +153,14 @@ public class LifecycleCallbackRegistry {
      * Registers a callback method to be invoked on an entity class instances
      * when a lifecycle event occurs.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public void addCallback(LifecycleEvent type, Class<?> entityClass, String methodName) {
         eventCallbacks[type.ordinal()].addListener(entityClass, methodName);
     }
     
     /**
-     * @since 3.2 renamed to {@link #addCallback(LifecycleEvent, Class, String)}.
+     * @since 4.0 renamed to {@link #addCallback(LifecycleEvent, Class, String)}.
      */
     @Deprecated
     public void addListener(LifecycleEvent type, Class<?> entityClass, String methodName) {

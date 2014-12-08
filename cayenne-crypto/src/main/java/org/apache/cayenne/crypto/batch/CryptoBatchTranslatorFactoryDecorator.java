@@ -29,7 +29,7 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFactory {
 

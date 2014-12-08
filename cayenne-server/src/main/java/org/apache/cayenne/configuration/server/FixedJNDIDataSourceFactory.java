@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class FixedJNDIDataSourceFactory extends JNDIDataSourceFactory {
 

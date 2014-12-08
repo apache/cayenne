@@ -19,10 +19,15 @@
 
 package org.apache.cayenne.modeler.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class VersionTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+public class VersionTest {
+
+    @Test
     public void testValidConstructor() {
         Version v1 = new Version("1");
         assertEquals("1", v1.getVersionString());
@@ -31,6 +36,7 @@ public class VersionTest extends TestCase {
         assertEquals("1.1", v1_1.getVersionString());
     }
 
+    @Test
     public void testInValidConstructor() {
         try {
             new Version(null);
@@ -57,6 +63,7 @@ public class VersionTest extends TestCase {
         }
     }
 
+    @Test
     public void testCompare() {
         assertEquals(0, new Version("1.0").compareTo("1.0"));
         assertEquals(0, new Version("1.0.1").compareTo("1.0.1"));

@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
@@ -43,9 +41,14 @@ import org.apache.cayenne.di.mock.MockInterface2;
 import org.apache.cayenne.di.mock.MockInterface3;
 import org.apache.cayenne.di.mock.MockInterface4;
 import org.apache.cayenne.di.mock.MockInterface5;
+import org.junit.Test;
 
-public class DefaultInjectorInjectionTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+public class DefaultInjectorInjectionTest {
+
+    @Test
     public void testFieldInjection() {
 
         Module module = new Module() {
@@ -63,6 +66,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("altered_MyName", service.getAlteredName());
     }
 
+    @Test
     public void testFieldInjection_Named() {
 
         Module module = new Module() {
@@ -84,6 +88,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("altered_alt", service.getAlteredName());
     }
 
+    @Test
     public void testFieldInjectionSuperclass() {
 
         Module module = new Module() {
@@ -102,6 +107,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("altered_MyName:XName", service.getAlteredName());
     }
 
+    @Test
     public void testConstructorInjection() {
 
         Module module = new Module() {
@@ -119,6 +125,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("constructor_MyName", service.getName());
     }
 
+    @Test
     public void testConstructorInjection_Named() {
 
         Module module = new Module() {
@@ -140,6 +147,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("constructor_alt2", service.getName());
     }
 
+    @Test
     public void testConstructorInjection_Named_Mixed() {
 
         Module module = new Module() {
@@ -162,6 +170,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("constructor_alt2_XName", service.getName());
     }
 
+    @Test
     public void testProviderInjection_Constructor() {
 
         Module module = new Module() {
@@ -179,6 +188,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("altered_MyName", service.getAlteredName());
     }
 
+    @Test
     public void testMapInjection_Empty() {
         Module module = new Module() {
 
@@ -198,6 +208,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("", service.getName());
     }
 
+    @Test
     public void testMapInjection() {
         Module module = new Module() {
 
@@ -218,6 +229,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals(";x=xvalue1;y=yvalue", service.getName());
     }
 
+    @Test
     public void testMapInjection_Resumed() {
         Module module = new Module() {
 
@@ -240,6 +252,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals(";x=xvalue1;y=yvalue;z=zvalue", service.getName());
     }
 
+    @Test
     public void testListInjection_addValue() {
         Module module = new Module() {
 
@@ -258,6 +271,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals(";xvalue;yvalue", service.getName());
     }
 
+    @Test
     public void testListInjection_addType() {
         Module module = new Module() {
 
@@ -278,6 +292,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals(";xyz;yvalue", service.getName());
     }
 
+    @Test
     public void testListInjection_empty() {
         Module module = new Module() {
 
@@ -295,6 +310,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals("", service.getName());
     }
 
+    @Test
     public void testListInjection_resumed() {
         Module module = new Module() {
 
@@ -314,6 +330,7 @@ public class DefaultInjectorInjectionTest extends TestCase {
         assertEquals(";xvalue;yvalue;avalue", service.getName());
     }
 
+    @Test
     public void testInjectorInjection() {
         Module module = new Module() {
 

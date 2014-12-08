@@ -142,7 +142,7 @@ public class ColumnDescriptor {
      * initialized in a context where a DbAttribite is unknown, this method may
      * return null.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public DbAttribute getAttribute() {
         return attribute;
@@ -213,7 +213,7 @@ public class ColumnDescriptor {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public String getNamePrefix() {
         return namePrefix;

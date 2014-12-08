@@ -24,7 +24,7 @@ import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultMapTransformer implements MapTransformer {
 

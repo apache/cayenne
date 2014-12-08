@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class FixedDataSourceFactory implements DataSourceFactory {
 

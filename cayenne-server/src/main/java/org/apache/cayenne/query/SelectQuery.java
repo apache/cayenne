@@ -20,6 +20,7 @@
 package org.apache.cayenne.query;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,8 @@ import org.apache.cayenne.util.XMLSerializable;
  */
 public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery, XMLSerializable, Select<T> {
 
+	private static final long serialVersionUID = 5486418811888197559L;
+
 	public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
 	public static final boolean DISTINCT_DEFAULT = false;
 
@@ -58,7 +61,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @param rootClass
 	 *            the Class of objects fetched by this query.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static <T> SelectQuery<T> query(Class<T> rootClass) {
 		return new SelectQuery<T>(rootClass);
@@ -73,7 +76,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @param qualifier
 	 *            an Expression indicating which objects should be fetched.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier) {
 		return new SelectQuery<T>(rootClass, qualifier);
@@ -90,14 +93,14 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @param orderings
 	 *            defines how to order the results, may be null.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier, List<? extends Ordering> orderings) {
 		return new SelectQuery<T>(rootClass, qualifier, orderings);
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static SelectQuery<DataRow> dataRowQuery(Class<?> rootClass) {
 		// create a query replica that would fetch DataRows
@@ -118,7 +121,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @param qualifier
 	 *            an Expression indicating which objects should be fetched.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static SelectQuery<DataRow> dataRowQuery(Class<?> rootClass, Expression qualifier) {
 		SelectQuery<DataRow> query = dataRowQuery(rootClass);
@@ -127,7 +130,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static SelectQuery<DataRow> dataRowQuery(Class<?> rootClass, Expression qualifier, List<Ordering> orderings) {
 		SelectQuery<DataRow> query = dataRowQuery(rootClass, qualifier);
@@ -471,7 +474,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 		// substitute qualifier parameters
 		if (qualifier != null) {
-			query.setQualifier(qualifier.expWithParameters(parameters, pruneMissing));
+			query.setQualifier(qualifier.params(parameters, pruneMissing));
 		}
 
 		return query;
@@ -498,11 +501,12 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * Adds a list of orderings.
 	 */
-	public void addOrderings(List<? extends Ordering> orderings) {
+	public void addOrderings(Collection<? extends Ordering> orderings) {
 		// If the supplied list of orderings is null, do not attempt to add
 		// to the collection (addAll() will NPE otherwise).
-		if (orderings != null)
+		if (orderings != null) {
 			nonNullOrderings().addAll(orderings);
+		}
 	}
 
 	/**
@@ -584,13 +588,10 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * Adds a prefetch with specified relationship path to the query.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
-	public PrefetchTreeNode addPrefetch(PrefetchTreeNode prefetchElement) {
-		String path = prefetchElement.getPath();
-		int semantics = prefetchElement.getSemantics();
-
-		return metaData.addPrefetch(path, semantics);
+	public void addPrefetch(PrefetchTreeNode prefetchElement) {
+		metaData.mergePrefetch(prefetchElement);
 	}
 
 	/**
@@ -622,9 +623,6 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * Returns <code>true</code> if this query should produce a list of data
 	 * rows as opposed to DataObjects, <code>false</code> for DataObjects. This
 	 * is a hint to QueryEngine executing this query.
-	 * 
-	 * @deprecated since 3.2, use {@link #dataRowQuery(Class, Expression)} to
-	 *             create DataRow query instead.
 	 */
 	public boolean isFetchingDataRows() {
 		return (root instanceof DbEntity) || metaData.isFetchingDataRows();
@@ -638,7 +636,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * setting has no effect, and data rows are always fetched. </i>
 	 * </p>
 	 * 
-	 * @deprecated since 3.2, use {@link #dataRowQuery(Class, Expression)} to
+	 * @deprecated since 4.0, use {@link #dataRowQuery(Class, Expression)} to
 	 *             create DataRow query instead.
 	 */
 	public void setFetchingDataRows(boolean flag) {
@@ -682,7 +680,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
 	 * </pre>
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public void useLocalCache(String... cacheGroups) {
 		setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -698,7 +696,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
 	 * </pre>
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public void useSharedCache(String... cacheGroups) {
 		setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);

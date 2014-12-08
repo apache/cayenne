@@ -21,7 +21,7 @@ package org.apache.cayenne.di;
 /**
  * A runtime exception thrown on DI misconfiguration.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class DIRuntimeException extends RuntimeException {
     /**

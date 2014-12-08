@@ -79,7 +79,7 @@ public class Main {
         SelectQuery<Painting> select1 = SelectQuery.query(Painting.class);
         List<Painting> paintings1 = context.select(select1);
 
-        Expression qualifier2 = Painting.NAME.likeInsensitive("gi%");
+        Expression qualifier2 = Painting.NAME.likeIgnoreCase("gi%");
         SelectQuery<Painting> select2 = SelectQuery.query(Painting.class, qualifier2);
         List<Painting> paintings2 = context.select(select2);
     }

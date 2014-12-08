@@ -28,7 +28,7 @@ import org.apache.cayenne.di.Module;
  * A module that decorates a collection of other modules. Used as a helper for
  * multi-module runtimes initialization.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class ModuleCollection implements Module {
 

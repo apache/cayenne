@@ -22,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.fluttercode.datafactory.impl.DataFactory;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public abstract class DefaultBuilder<T> implements Builder<T> {
 

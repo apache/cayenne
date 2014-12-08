@@ -22,7 +22,7 @@ package org.apache.cayenne;
  * A callback interface invoked on each row when iterating over
  * {@link ResultIterator}. This simplifies iterator management.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface ResultIteratorCallback<T> {
 

@@ -18,12 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class DbEntityTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+public class DbEntityTest {
+
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         DbEntity entity = new DbEntity("entity");
 

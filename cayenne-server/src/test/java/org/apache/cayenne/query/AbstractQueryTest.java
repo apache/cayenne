@@ -20,13 +20,17 @@
 
 package org.apache.cayenne.query;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.junit.Test;
 
-public class AbstractQueryTest extends TestCase {
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
+public class AbstractQueryTest {
+
+    @Test
     public void testSetRootEntityName() {
         AbstractQuery query = new MockAbstractQuery();
         assertNull(query.getRoot());
@@ -34,6 +38,7 @@ public class AbstractQueryTest extends TestCase {
         assertSame("SomeEntity", query.getRoot());
     }
 
+    @Test
     public void testSetRootObjEntity() {
         AbstractQuery query = new MockAbstractQuery();
 
@@ -43,6 +48,7 @@ public class AbstractQueryTest extends TestCase {
         assertSame(e, query.getRoot());
     }
 
+    @Test
     public void testSetRootClass() {
         AbstractQuery query = new MockAbstractQuery();
         assertNull(query.getRoot());
@@ -50,6 +56,7 @@ public class AbstractQueryTest extends TestCase {
         assertSame(Artist.class, query.getRoot());
     }
 
+    @Test
     public void testSetInvalidRoot() {
         AbstractQuery query = new MockAbstractQuery();
         assertNull(query.getRoot());

@@ -29,7 +29,7 @@ import org.apache.cayenne.query.BatchQueryRow;
 /**
  * Superclass of batch query translators.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public abstract class DefaultBatchTranslator implements BatchTranslator {
 

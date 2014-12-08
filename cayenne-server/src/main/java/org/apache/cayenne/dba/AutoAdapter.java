@@ -224,7 +224,7 @@ public class AutoAdapter implements DbAdapter {
     }
 
     /**
-     * @deprecated since 3.2
+     * @deprecated since 4.0
      */
     @Deprecated
     @Override
@@ -233,7 +233,7 @@ public class AutoAdapter implements DbAdapter {
     }
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public QuotingStrategy getQuotingStrategy() {
@@ -241,7 +241,7 @@ public class AutoAdapter implements DbAdapter {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public DbAdapter unwrap() {
@@ -249,7 +249,7 @@ public class AutoAdapter implements DbAdapter {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {

@@ -28,7 +28,7 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 /**
  * Default implementation of {@link BatchTranslatorFactory}.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultBatchTranslatorFactory implements BatchTranslatorFactory {
 

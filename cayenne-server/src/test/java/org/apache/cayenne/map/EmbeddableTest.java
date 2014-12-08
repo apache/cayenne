@@ -18,10 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class EmbeddableTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+public class EmbeddableTest {
+
+    @Test
     public void testClassName() {
         Embeddable e1 = new Embeddable();
         assertNull(e1.getClassName());
@@ -33,6 +40,7 @@ public class EmbeddableTest extends TestCase {
         assertEquals("ABC", e2.getClassName());
     }
 
+    @Test
     public void testAddAttribute() {
         Embeddable e1 = new Embeddable();
 
@@ -51,6 +59,7 @@ public class EmbeddableTest extends TestCase {
         assertTrue(e1.getAttributes().contains(a2));
     }
 
+    @Test
     public void testRemoveAttribute() {
         Embeddable e1 = new Embeddable();
 

@@ -18,17 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.map.EntityResolver;
+import org.junit.Test;
 
-public class LifecycleCallbackEventHandlerTest extends TestCase {
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class LifecycleCallbackEventHandlerTest {
+
+    @Test
     public void testDefaultListeners() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
@@ -45,6 +48,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         assertTrue(l1.entities.contains(c1));
     }
 
+    @Test
     public void testDefaultListenersCallbackOrder() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
@@ -67,6 +71,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         assertTrue(t2.compareTo(t1) < 0);
     }
 
+    @Test
     public void testCallbackOnSuperclass() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
@@ -81,6 +86,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         assertEquals(1, subclass.callbacks.size());
     }
 
+    @Test
     public void testCallbackOnSuperclassWithSublcassOverrides() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(
@@ -96,6 +102,7 @@ public class LifecycleCallbackEventHandlerTest extends TestCase {
         assertEquals("c4Callback", subclass.callbacks.get(0));
     }
 
+    @Test
     public void testCallbackOrderInInheritanceHierarchy() {
 
         LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler(

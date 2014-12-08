@@ -299,7 +299,7 @@ public abstract class BaseContext implements ObjectContext {
     public abstract List performQuery(Query query);
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -308,7 +308,7 @@ public abstract class BaseContext implements ObjectContext {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public <T> T selectOne(Select<T> query) {
@@ -324,7 +324,7 @@ public abstract class BaseContext implements ObjectContext {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {

@@ -53,7 +53,7 @@ public class EOModelHelper {
     /**
      * Creates helper instance and tries to locate EOModel and load index file.
      * 
-     * @deprecated since 3.2, use {@link #EOModelHelper(URL)}.
+     * @deprecated since 4.0, use {@link #EOModelHelper(URL)}.
      */
     @Deprecated
     public EOModelHelper(String path) throws Exception {

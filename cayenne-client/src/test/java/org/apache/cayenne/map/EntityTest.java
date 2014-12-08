@@ -19,11 +19,16 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-public class EntityTest extends TestCase {
+public class EntityTest {
 
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         Entity entity = new MockEntity("entity");
 

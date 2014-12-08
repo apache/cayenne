@@ -140,7 +140,7 @@ public class EhCacheQueryCache implements QueryCache {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     protected String cacheName(String key, String... cacheGroups) {
         if (cacheGroups != null && cacheGroups.length > 0) {
@@ -196,7 +196,7 @@ public class EhCacheQueryCache implements QueryCache {
     /**
      * Returns default cache group.
      * 
-     * @deprecated since 3.2 - this method is no longer in use. If you are
+     * @deprecated since 4.0 - this method is no longer in use. If you are
      *             overriding it, override {@link #cacheName(String, String...)}
      *             instead.
      */

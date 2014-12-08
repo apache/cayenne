@@ -65,7 +65,7 @@ public class BatchAction extends BaseSQLAction {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public BatchAction(BatchQuery query, DataNode dataNode, boolean runningAsBatch) {
         super(dataNode);
@@ -224,7 +224,7 @@ public class BatchAction extends BaseSQLAction {
     /**
      * Implements generated keys extraction supported in JDBC 3.0 specification.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)

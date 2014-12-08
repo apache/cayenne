@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.apache.cayenne.access.DataPort;
 import org.apache.cayenne.access.DataPortDelegate;
+import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
@@ -37,7 +38,7 @@ import org.apache.tools.ant.Task;
  * 
  * @since 1.2: Prior to 1.2 DataPort classes were a part of cayenne-examples
  *        package.
- * @deprecated since 3.2
+ * @deprecated since 4.0
  */
 @Deprecated
 class AntDataPortDelegate implements DataPortDelegate {
@@ -60,10 +61,10 @@ class AntDataPortDelegate implements DataPortDelegate {
             String includeEntitiesPattern, String excludeEntitiesPattern) {
         this.parentTask = parentTask;
 
-        this.namePatternMatcher = new NamePatternMatcher(new AntLogger(
-                parentTask), includeEntitiesPattern, excludeEntitiesPattern);
+        AntLogger logger = new AntLogger(parentTask);
 
-        this.mapFilters = namePatternMatcher.createPatterns(mapsPattern);
+        this.namePatternMatcher = NamePatternMatcher.build(logger, includeEntitiesPattern, excludeEntitiesPattern);
+        this.mapFilters = NamePatternMatcher.createPatterns(logger, mapsPattern);
     }
 
     /**

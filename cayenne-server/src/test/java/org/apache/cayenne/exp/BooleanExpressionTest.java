@@ -18,11 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
+import org.junit.Test;
 
-import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class BooleanExpressionTest extends TestCase {
+public class BooleanExpressionTest {
+
+    @Test
     public void testCAY1185() {
         Expression expTrue = Expression.fromString("booleanColumn = true");
         Expression expFalse = Expression.fromString("booleanColumn = false");

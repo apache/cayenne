@@ -19,18 +19,21 @@
 
 package org.apache.cayenne.reflect;
 
-import junit.framework.TestCase;
-
-import org.apache.cayenne.reflect.FieldAccessor;
 import org.apache.cayenne.unit.util.TstBean;
+import org.junit.Test;
 
-public class FieldAccessorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
+public class FieldAccessorTest {
+
+    @Test
     public void testConstructor() {
         FieldAccessor accessor = new FieldAccessor(TstBean.class, "string", String.class);
         assertEquals("string", accessor.getName());
     }
 
+    @Test
     public void testGet() {
         FieldAccessor accessor = new FieldAccessor(TstBean.class, "string", String.class);
 
@@ -39,6 +42,7 @@ public class FieldAccessorTest extends TestCase {
         assertEquals("abc", accessor.getValue(object));
     }
 
+    @Test
     public void testSetValue() {
         TstFields object = new TstFields();
 
@@ -67,6 +71,7 @@ public class FieldAccessorTest extends TestCase {
         assertSame(strings, object.stringArrayField);
     }
 
+    @Test
     public void testSetValuePrimitive() {
         TstFields object = new TstFields();
 

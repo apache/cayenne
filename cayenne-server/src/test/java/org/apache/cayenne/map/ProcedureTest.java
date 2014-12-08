@@ -19,18 +19,22 @@ package org.apache.cayenne.map;
  *  under the License.
  ****************************************************************/
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  */
-public class ProcedureTest extends TestCase {
+public class ProcedureTest {
     protected Procedure procedure;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         procedure = new Procedure();
     }
 
+    @Test
     public void testFullyQualifiedName() throws Exception {
         String tstName = "tst_name";
         String schemaName = "tst_schema_name";

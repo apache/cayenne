@@ -18,20 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockInterface1;
+import org.junit.Test;
 
-public class DefaultInjectorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+public class DefaultInjectorTest {
+
+    @Test
     public void testConstructor_Empty() {
         new DefaultInjector();
         // no exceptions...
     }
 
+    @Test
     public void testConstructor_SingleModule() {
         final boolean[] configureCalled = new boolean[1];
 
@@ -46,6 +51,7 @@ public class DefaultInjectorTest extends TestCase {
         assertTrue(configureCalled[0]);
     }
 
+    @Test
     public void testConstructor_MultiModule() {
 
         final boolean[] configureCalled = new boolean[2];
@@ -68,7 +74,8 @@ public class DefaultInjectorTest extends TestCase {
         assertTrue(configureCalled[0]);
         assertTrue(configureCalled[1]);
     }
-    
+
+    @Test
     public void testShutdown() {
 
         MockImplementation1_EventAnnotations.reset();

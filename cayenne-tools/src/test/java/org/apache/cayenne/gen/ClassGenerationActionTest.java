@@ -18,30 +18,33 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.NamedQuery;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ClassGenerationActionTest extends TestCase {
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class ClassGenerationActionTest {
 
     protected ClassGenerationAction action;
     protected Collection<StringWriter> writers;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         this.writers = new ArrayList<StringWriter>(3);
         this.action = new ClassGenerationAction() {
 
@@ -54,13 +57,13 @@ public class ClassGenerationActionTest extends TestCase {
         };
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         action = null;
         writers = null;
     }
 
+    @Test
     public void testExecuteArtifactPairsImports() throws Exception {
 
         ObjEntity testEntity1 = new ObjEntity("TE1");
@@ -84,6 +87,7 @@ public class ClassGenerationActionTest extends TestCase {
                 subclass.contains("import org.example.auto._TestClass1;"));
     }
 
+    @Test
     public void testExecuteArtifactPairsMapRelationships() throws Exception {
 
         ObjEntity testEntity1 = new ObjEntity("TE1");
@@ -116,8 +120,8 @@ public class ClassGenerationActionTest extends TestCase {
         String superclass = generated.get(0);
         assertTrue(superclass, superclass.contains("import java.util.Map;"));
     }
-    
-    
+
+    @Test
     public void testExecuteArtifactPairsAttribute() throws Exception {
 
         ObjEntity testEntity1 = new ObjEntity("TE1");
@@ -157,10 +161,12 @@ public class ClassGenerationActionTest extends TestCase {
 
     }
 
+    @Test
     public void testExecuteDataMapQueryNames() throws Exception {
         runDataMapTest(false);
     }
 
+    @Test
     public void testExecuteClientDataMapQueryNames() throws Exception {
         runDataMapTest(true);
     }
@@ -181,11 +187,12 @@ public class ClassGenerationActionTest extends TestCase {
         assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));
     }
 
+    @Test
     public void testCallbackMethodGeneration() throws Exception {
         assertCallbacks(false);
     }
 
-    
+    @Test
     public void testClientCallbackMethodGeneration() throws Exception {
         assertCallbacks(true);
     }

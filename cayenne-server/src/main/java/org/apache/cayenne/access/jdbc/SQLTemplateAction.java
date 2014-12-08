@@ -58,288 +58,318 @@ import org.apache.commons.collections.IteratorUtils;
  */
 public class SQLTemplateAction implements SQLAction {
 
-    protected SQLTemplate query;
-    protected QueryMetadata queryMetadata;
+	protected SQLTemplate query;
+	protected QueryMetadata queryMetadata;
 
-    protected DbEntity dbEntity;
-    protected DataNode dataNode;
-    protected DbAdapter dbAdapter;
+	protected DbEntity dbEntity;
+	protected DataNode dataNode;
+	protected DbAdapter dbAdapter;
 
-    /**
-     * @since 3.2
-     */
-    public SQLTemplateAction(SQLTemplate query, DataNode dataNode) {
-        this.query = query;
-        this.dataNode = dataNode;
-        this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
-        this.dbEntity = queryMetadata.getDbEntity();
-        
-        // using unwrapped adapter to check for the right SQL flavor...
-        this.dbAdapter = dataNode.getAdapter().unwrap();
-    }
-    
-    /**
-     * Returns unwrapped DbAdapter used to find correct SQL for a  given DB.
-     */
-    public DbAdapter getAdapter() {
-        return dbAdapter;
-    }
+	/**
+	 * @since 4.0
+	 */
+	public SQLTemplateAction(SQLTemplate query, DataNode dataNode) {
+		this.query = query;
+		this.dataNode = dataNode;
+		this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
+		this.dbEntity = queryMetadata.getDbEntity();
 
-    /**
-     * Runs a SQLTemplate query, collecting all results. If a callback expects
-     * an iterated result, result processing is stopped after the first
-     * ResultSet is encountered.
-     */
-    @Override
-    public void performAction(Connection connection, OperationObserver callback) throws SQLException, Exception {
+		// using unwrapped adapter to check for the right SQL flavor...
+		this.dbAdapter = dataNode.getAdapter().unwrap();
+	}
 
-        String template = extractTemplateString();
+	/**
+	 * Returns unwrapped DbAdapter used to find correct SQL for a given DB.
+	 */
+	public DbAdapter getAdapter() {
+		return dbAdapter;
+	}
 
-        // sanity check - misconfigured templates
-        if (template == null) {
-            throw new CayenneException("No template string configured for adapter " + dbAdapter.getClass().getName());
-        }
+	/**
+	 * Runs a SQLTemplate query, collecting all results. If a callback expects
+	 * an iterated result, result processing is stopped after the first
+	 * ResultSet is encountered.
+	 */
+	@Override
+	public void performAction(Connection connection, OperationObserver callback) throws SQLException, Exception {
 
-        boolean loggable = dataNode.getJdbcEventLogger().isLoggable();
-        int size = query.parametersSize();
+		String template = extractTemplateString();
 
-        SQLTemplateProcessor templateProcessor = new SQLTemplateProcessor();
+		// sanity check - misconfigured templates
+		if (template == null) {
+			throw new CayenneException("No template string configured for adapter " + dbAdapter.getClass().getName());
+		}
 
-        // zero size indicates a one-shot query with no parameters
-        // so fake a single entry batch...
-        int batchSize = (size > 0) ? size : 1;
+		boolean loggable = dataNode.getJdbcEventLogger().isLoggable();
+		List<Number> counts = new ArrayList<Number>();
 
-        List<Number> counts = new ArrayList<Number>(batchSize);
-        Iterator<?> it = (size > 0) ? query.parametersIterator() : IteratorUtils
-                .singletonIterator(Collections.EMPTY_MAP);
-        for (int i = 0; i < batchSize; i++) {
-            Map nextParameters = (Map) it.next();
+		// bind either positional or named parameters;
+		// for legacy reasons named parameters are processed as a batch.. this
+		// should go away after 4.0; newer positional parameter only support a
+		// single set of values.
+		if (query.getPositionalParams().isEmpty()) {
+			runWithNamedParametersBatch(connection, callback, template, counts, loggable);
+		} else {
+			runWithPositionalParameters(connection, callback, template, counts, loggable);
+		}
 
-            SQLStatement compiled = templateProcessor.processTemplate(template, nextParameters);
+		// notify of combined counts of all queries inside SQLTemplate
+		// multiplied by the
+		// number of parameter sets...
+		int[] ints = new int[counts.size()];
+		for (int i = 0; i < ints.length; i++) {
+			ints[i] = counts.get(i).intValue();
+		}
 
-            if (loggable) {
-                dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
-            }
+		callback.nextBatchCount(query, ints);
+	}
 
-            execute(connection, callback, compiled, counts);
-        }
+	private void runWithPositionalParameters(Connection connection, OperationObserver callback, String template,
+			Collection<Number> counts, boolean loggable) throws Exception {
 
-        // notify of combined counts of all queries inside SQLTemplate
-        // multiplied by the
-        // number of parameter sets...
-        int[] ints = new int[counts.size()];
-        for (int i = 0; i < ints.length; i++) {
-            ints[i] = counts.get(i).intValue();
-        }
+		SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template,
+				query.getPositionalParams());
 
-        callback.nextBatchCount(query, ints);
-    }
+		if (loggable) {
+			dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
+		}
 
-    protected void execute(Connection connection, OperationObserver callback, SQLStatement compiled,
-            Collection<Number> updateCounts) throws SQLException, Exception {
+		execute(connection, callback, compiled, counts);
+	}
 
-        long t1 = System.currentTimeMillis();
-        boolean iteratedResult = callback.isIteratedResult();
-        PreparedStatement statement = connection.prepareStatement(compiled.getSql());
-        try {
-            bind(statement, compiled.getBindings());
+	@SuppressWarnings("deprecation")
+	private void runWithNamedParametersBatch(Connection connection, OperationObserver callback, String template,
+			Collection<Number> counts, boolean loggable) throws Exception {
 
-            // process a mix of results
-            boolean isResultSet = statement.execute();
-            boolean firstIteration = true;
-            while (true) {
+		int size = query.parametersSize();
 
-                if (firstIteration) {
-                    firstIteration = false;
-                } else {
-                    isResultSet = statement.getMoreResults();
-                }
+		// zero size indicates a one-shot query with no parameters
+		// so fake a single entry batch...
+		int batchSize = (size > 0) ? size : 1;
 
-                if (isResultSet) {
+		// for now supporting deprecated batch parameters...
+		@SuppressWarnings("unchecked")
+		Iterator<Map<String, ?>> it = (size > 0) ? query.parametersIterator() : IteratorUtils
+				.singletonIterator(Collections.emptyMap());
+		for (int i = 0; i < batchSize; i++) {
+			Map<String, ?> nextParameters = it.next();
 
-                    ResultSet resultSet = statement.getResultSet();
+			SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template, nextParameters);
 
-                    if (resultSet != null) {
+			if (loggable) {
+				dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
+			}
 
-                        try {
-                            processSelectResult(compiled, connection, statement, resultSet, callback, t1);
-                        } finally {
-                            if (!iteratedResult) {
-                                resultSet.close();
-                            }
-                        }
+			execute(connection, callback, compiled, counts);
+		}
 
-                        // ignore possible following update counts and bail
-                        // early on
-                        // iterated results
-                        if (iteratedResult) {
-                            break;
-                        }
-                    }
-                } else {
-                    int updateCount = statement.getUpdateCount();
-                    if (updateCount == -1) {
-                        break;
-                    }
+	}
 
-                    updateCounts.add(Integer.valueOf(updateCount));
-                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
-                }
-            }
-        } finally {
-            if (!iteratedResult) {
-                statement.close();
-            }
-        }
-    }
+	protected void execute(Connection connection, OperationObserver callback, SQLStatement compiled,
+			Collection<Number> updateCounts) throws SQLException, Exception {
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected void processSelectResult(SQLStatement compiled, Connection connection, Statement statement,
-            ResultSet resultSet, OperationObserver callback, final long startTime) throws Exception {
+		long t1 = System.currentTimeMillis();
+		boolean iteratedResult = callback.isIteratedResult();
+		PreparedStatement statement = connection.prepareStatement(compiled.getSql());
+		try {
+			bind(statement, compiled.getBindings());
 
-        boolean iteratedResult = callback.isIteratedResult();
+			// process a mix of results
+			boolean isResultSet = statement.execute();
+			boolean firstIteration = true;
+			while (true) {
 
-        ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
-        RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
-        RowReader<?> rowReader = dataNode.rowReader(builder.getDescriptor(types), queryMetadata);
+				if (firstIteration) {
+					firstIteration = false;
+				} else {
+					isResultSet = statement.getMoreResults();
+				}
 
-        JDBCResultIterator result = new JDBCResultIterator(statement, resultSet, rowReader);
+				if (isResultSet) {
 
-        ResultIterator it = result;
+					ResultSet resultSet = statement.getResultSet();
 
-        if (iteratedResult) {
+					if (resultSet != null) {
 
-            it = new ConnectionAwareResultIterator(it, connection) {
-                @Override
-                protected void doClose() {
-                    dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - startTime);
-                    super.doClose();
-                }
-            };
-        }
+						try {
+							processSelectResult(compiled, connection, statement, resultSet, callback, t1);
+						} finally {
+							if (!iteratedResult) {
+								resultSet.close();
+							}
+						}
 
-        it = new LimitResultIterator(it, getFetchOffset(), query.getFetchLimit());
+						// ignore possible following update counts and bail
+						// early on
+						// iterated results
+						if (iteratedResult) {
+							break;
+						}
+					}
+				} else {
+					int updateCount = statement.getUpdateCount();
+					if (updateCount == -1) {
+						break;
+					}
 
-        if (iteratedResult) {
-            try {
-                callback.nextRows(query, it);
-            } catch (Exception ex) {
-                it.close();
-                throw ex;
-            }
-        } else {
-            // note that we are not closing the iterator here, relying on caller
-            // to close the underlying ResultSet on its own... this is a hack,
-            // maybe a cleaner flow is due here.
-            List<DataRow> resultRows = (List<DataRow>) it.allRows();
+					updateCounts.add(Integer.valueOf(updateCount));
+					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
+				}
+			}
+		} finally {
+			if (!iteratedResult) {
+				statement.close();
+			}
+		}
+	}
 
-            dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected void processSelectResult(SQLStatement compiled, Connection connection, Statement statement,
+			ResultSet resultSet, OperationObserver callback, final long startTime) throws Exception {
 
-            callback.nextRows(query, resultRows);
-        }
-    }
+		boolean iteratedResult = callback.isIteratedResult();
 
-    /**
-     * @since 3.0
-     */
-    protected RowDescriptorBuilder configureRowDescriptorBuilder(SQLStatement compiled, ResultSet resultSet)
-            throws SQLException {
-        RowDescriptorBuilder builder = new RowDescriptorBuilder();
-        builder.setResultSet(resultSet);
+		ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
+		RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
+		RowReader<?> rowReader = dataNode.rowReader(builder.getDescriptor(types), queryMetadata);
 
-        // SQLTemplate #result columns take precedence over other ways to
-        // determine the
-        // type
-        if (compiled.getResultColumns().length > 0) {
-            builder.setColumns(compiled.getResultColumns());
-        }
+		JDBCResultIterator result = new JDBCResultIterator(statement, resultSet, rowReader);
 
-        ObjEntity entity = queryMetadata.getObjEntity();
-        if (entity != null) {
-            // TODO: andrus 2008/03/28 support flattened attributes with
-            // aliases...
-            for (ObjAttribute attribute : entity.getAttributes()) {
-                String column = attribute.getDbAttributePath();
-                if (column == null || column.indexOf('.') > 0) {
-                    continue;
-                }
-                builder.overrideColumnType(column, attribute.getType());
-            }
-        }
+		ResultIterator it = result;
 
-        // override numeric Java types based on JDBC defaults for DbAttributes,
-        // as
-        // Oracle
-        // ResultSetMetadata is not very precise about NUMERIC distinctions...
-        // (BigDecimal vs Long vs. Integer)
-        if (dbEntity != null) {
-            for (DbAttribute attribute : dbEntity.getAttributes()) {
+		if (iteratedResult) {
 
-                if (!builder.isOverriden(attribute.getName()) && TypesMapping.isNumeric(attribute.getType())) {
+			it = new ConnectionAwareResultIterator(it, connection) {
+				@Override
+				protected void doClose() {
+					dataNode.getJdbcEventLogger().logSelectCount(rowCounter, System.currentTimeMillis() - startTime);
+					super.doClose();
+				}
+			};
+		}
 
-                    builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute.getType()));
-                }
-            }
-        }
+		it = new LimitResultIterator(it, getFetchOffset(), query.getFetchLimit());
 
-        switch (query.getColumnNamesCapitalization()) {
-        case LOWER:
-            builder.useLowercaseColumnNames();
-            break;
-        case UPPER:
-            builder.useUppercaseColumnNames();
-            break;
-        }
+		if (iteratedResult) {
+			try {
+				callback.nextRows(query, it);
+			} catch (Exception ex) {
+				it.close();
+				throw ex;
+			}
+		} else {
+			// note that we are not closing the iterator here, relying on caller
+			// to close the underlying ResultSet on its own... this is a hack,
+			// maybe a cleaner flow is due here.
+			List<DataRow> resultRows = (List<DataRow>) it.allRows();
 
-        return builder;
-    }
+			dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
 
-    /**
-     * Extracts a template string from a SQLTemplate query. Exists mainly for
-     * the benefit of subclasses that can customize returned template.
-     * 
-     * @since 1.2
-     */
-    protected String extractTemplateString() {
-        String sql = query.getTemplate(dbAdapter.getClass().getName());
+			callback.nextRows(query, resultRows);
+		}
+	}
 
-        // note that we MUST convert line breaks to spaces. On some databases
-        // (DB2)
-        // queries with breaks simply won't run; the rest are affected by
-        // CAY-726.
-        return Util.stripLineBreaks(sql, ' ');
-    }
+	/**
+	 * @since 3.0
+	 */
+	protected RowDescriptorBuilder configureRowDescriptorBuilder(SQLStatement compiled, ResultSet resultSet)
+			throws SQLException {
+		RowDescriptorBuilder builder = new RowDescriptorBuilder();
+		builder.setResultSet(resultSet);
 
-    /**
-     * Binds parameters to the PreparedStatement.
-     */
-    protected void bind(PreparedStatement preparedStatement, ParameterBinding[] bindings) throws SQLException,
-            Exception {
-        // bind parameters
-        if (bindings.length > 0) {
-            int len = bindings.length;
-            for (int i = 0; i < len; i++) {
-                dataNode.getAdapter().bindParameter(preparedStatement, bindings[i].getValue(), i + 1, bindings[i].getJdbcType(),
-                        bindings[i].getScale());
-            }
-        }
+		// SQLTemplate #result columns take precedence over other ways to
+		// determine the
+		// type
+		if (compiled.getResultColumns().length > 0) {
+			builder.setColumns(compiled.getResultColumns());
+		}
 
-        if (queryMetadata.getStatementFetchSize() != 0) {
-            preparedStatement.setFetchSize(queryMetadata.getStatementFetchSize());
-        }
-    }
+		ObjEntity entity = queryMetadata.getObjEntity();
+		if (entity != null) {
+			// TODO: andrus 2008/03/28 support flattened attributes with
+			// aliases...
+			for (ObjAttribute attribute : entity.getAttributes()) {
+				String column = attribute.getDbAttributePath();
+				if (column == null || column.indexOf('.') > 0) {
+					continue;
+				}
+				builder.overrideColumnType(column, attribute.getType());
+			}
+		}
 
-    /**
-     * Returns a SQLTemplate for this action.
-     */
-    public SQLTemplate getQuery() {
-        return query;
-    }
+		// override numeric Java types based on JDBC defaults for DbAttributes,
+		// as
+		// Oracle
+		// ResultSetMetadata is not very precise about NUMERIC distinctions...
+		// (BigDecimal vs Long vs. Integer)
+		if (dbEntity != null) {
+			for (DbAttribute attribute : dbEntity.getAttributes()) {
 
-    /**
-     * @since 3.0
-     */
-    protected int getFetchOffset() {
-        return query.getFetchOffset();
-    }
+				if (!builder.isOverriden(attribute.getName()) && TypesMapping.isNumeric(attribute.getType())) {
+
+					builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute.getType()));
+				}
+			}
+		}
+
+		switch (query.getColumnNamesCapitalization()) {
+		case LOWER:
+			builder.useLowercaseColumnNames();
+			break;
+		case UPPER:
+			builder.useUppercaseColumnNames();
+			break;
+		}
+
+		return builder;
+	}
+
+	/**
+	 * Extracts a template string from a SQLTemplate query. Exists mainly for
+	 * the benefit of subclasses that can customize returned template.
+	 * 
+	 * @since 1.2
+	 */
+	protected String extractTemplateString() {
+		String sql = query.getTemplate(dbAdapter.getClass().getName());
+
+		// note that we MUST convert line breaks to spaces. On some databases
+		// (DB2)
+		// queries with breaks simply won't run; the rest are affected by
+		// CAY-726.
+		return Util.stripLineBreaks(sql, ' ');
+	}
+
+	/**
+	 * Binds parameters to the PreparedStatement.
+	 */
+	protected void bind(PreparedStatement preparedStatement, ParameterBinding[] bindings) throws SQLException,
+			Exception {
+		// bind parameters
+		if (bindings.length > 0) {
+			int len = bindings.length;
+			for (int i = 0; i < len; i++) {
+				dataNode.getAdapter().bindParameter(preparedStatement, bindings[i].getValue(), i + 1,
+						bindings[i].getJdbcType(), bindings[i].getScale());
+			}
+		}
+
+		if (queryMetadata.getStatementFetchSize() != 0) {
+			preparedStatement.setFetchSize(queryMetadata.getStatementFetchSize());
+		}
+	}
+
+	/**
+	 * Returns a SQLTemplate for this action.
+	 */
+	public SQLTemplate getQuery() {
+		return query;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	protected int getFetchOffset() {
+		return query.getFetchOffset();
+	}
 }

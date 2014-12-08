@@ -18,15 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.project.Project;
+import org.junit.Test;
 
-public class ProjectTest extends TestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+public class ProjectTest {
+
+    @Test
     public void testRootNode() {
 
         ConfigurationNode object = new ConfigurationNode() {

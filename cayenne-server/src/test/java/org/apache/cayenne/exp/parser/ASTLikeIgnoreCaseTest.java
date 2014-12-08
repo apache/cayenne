@@ -18,12 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.junit.Test;
 
-public class ASTLikeIgnoreCaseTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class ASTLikeIgnoreCaseTest {
+
+    @Test
     public void testToEJBQL() {
         Expression like = ExpressionFactory.likeIgnoreCaseExp("a", "%b%");
         assertEquals(like.toEJBQL("p"), "upper(p.a) like '%B%'");

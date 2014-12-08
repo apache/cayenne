@@ -18,176 +18,61 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
-public class SelectByIdTest extends ServerCase {
+public class SelectByIdTest {
 
-	@Inject
-	private DataChannelInterceptor interceptor;
+	@Test
+	public void testPrefetch() {
 
-	@Inject
-	private DBHelper dbHelper;
+		PrefetchTreeNode root = PrefetchTreeNode.withPath("a.b", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-	private TableHelper tArtist;
+		SelectById<Artist> q = SelectById.query(Artist.class, 6);
+		q.prefetch(root);
 
-	@Inject
-	private ObjectContext context;
-
-	@Override
-	protected void setUpAfterInjection() throws Exception {
-		dbHelper.deleteAll("PAINTING_INFO");
-		dbHelper.deleteAll("PAINTING");
-		dbHelper.deleteAll("ARTIST_EXHIBIT");
-		dbHelper.deleteAll("ARTIST_GROUP");
-		dbHelper.deleteAll("ARTIST");
-		dbHelper.deleteAll("COMPOUND_FK_TEST");
-		dbHelper.deleteAll("COMPOUND_PK_TEST");
-		dbHelper.deleteAll("CHAR_PK_TEST");
-
-		tArtist = new TableHelper(dbHelper, "ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+		assertSame(root, q.getPrefetches());
 	}
 
-	private void createTwoArtists() throws Exception {
-		tArtist.insert(2, "artist2");
-		tArtist.insert(3, "artist3");
+	@Test
+	public void testPrefetch_Path() {
+
+		SelectById<Artist> q = SelectById.query(Artist.class, 7);
+		q.prefetch("a.b", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+		PrefetchTreeNode root1 = q.getPrefetches();
+
+		assertNotNull(root1);
+		assertNotNull(root1.getNode("a.b"));
+
+		q.prefetch("a.c", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+		PrefetchTreeNode root2 = q.getPrefetches();
+
+		assertNotNull(root2);
+		assertNotNull(root2.getNode("a.c"));
+		assertNull(root2.getNode("a.b"));
+		assertNotSame(root1, root2);
 	}
 
-	public void testIntPk() throws Exception {
-		createTwoArtists();
+	@Test
+	public void testAddPrefetch() {
 
-		Artist a3 = SelectById.query(Artist.class, 3).selectOne(context);
-		assertNotNull(a3);
-		assertEquals("artist3", a3.getArtistName());
+		PrefetchTreeNode root = PrefetchTreeNode.withPath("a.b", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
-		Artist a2 = SelectById.query(Artist.class, 2).selectOne(context);
-		assertNotNull(a2);
-		assertEquals("artist2", a2.getArtistName());
-	}
+		SelectById<Artist> q = SelectById.query(Artist.class, 8);
+		q.prefetch(root);
 
-	public void testMapPk() throws Exception {
-		createTwoArtists();
+		assertSame(root, q.getPrefetches());
 
-		Artist a3 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3)).selectOne(context);
-		assertNotNull(a3);
-		assertEquals("artist3", a3.getArtistName());
+		PrefetchTreeNode subRoot = PrefetchTreeNode.withPath("a.b.c", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+		q.addPrefetch(subRoot);
 
-		Artist a2 = SelectById.query(Artist.class, singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2)).selectOne(context);
-		assertNotNull(a2);
-		assertEquals("artist2", a2.getArtistName());
-	}
+		assertSame(root, q.getPrefetches());
 
-	public void testObjectIdPk() throws Exception {
-		createTwoArtists();
-
-		ObjectId oid3 = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
-		Artist a3 = SelectById.query(Artist.class, oid3).selectOne(context);
-		assertNotNull(a3);
-		assertEquals("artist3", a3.getArtistName());
-
-		ObjectId oid2 = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
-		Artist a2 = SelectById.query(Artist.class, oid2).selectOne(context);
-		assertNotNull(a2);
-		assertEquals("artist2", a2.getArtistName());
-	}
-
-	public void testDataRowIntPk() throws Exception {
-		createTwoArtists();
-
-		DataRow a3 = SelectById.dataRowQuery(Artist.class, 3).selectOne(context);
-		assertNotNull(a3);
-		assertEquals("artist3", a3.get("ARTIST_NAME"));
-
-		DataRow a2 = SelectById.dataRowQuery(Artist.class, 2).selectOne(context);
-		assertNotNull(a2);
-		assertEquals("artist2", a2.get("ARTIST_NAME"));
-	}
-
-	public void testMetadataCacheKey() throws Exception {
-		SelectById<Painting> q1 = SelectById.query(Painting.class, 4);
-		QueryMetadata md1 = q1.getMetaData(context.getEntityResolver());
-		assertNotNull(md1);
-		assertNotNull(md1.getCacheKey());
-
-		SelectById<Painting> q2 = SelectById.query(Painting.class, singletonMap(Painting.PAINTING_ID_PK_COLUMN, 4));
-		QueryMetadata md2 = q2.getMetaData(context.getEntityResolver());
-		assertNotNull(md2);
-		assertNotNull(md2.getCacheKey());
-
-		// this query is just a different form of q1, so should hit the same
-		// cache entry
-		assertEquals(md1.getCacheKey(), md2.getCacheKey());
-
-		SelectById<Painting> q3 = SelectById.query(Painting.class, 5);
-		QueryMetadata md3 = q3.getMetaData(context.getEntityResolver());
-		assertNotNull(md3);
-		assertNotNull(md3.getCacheKey());
-		assertNotEquals(md1.getCacheKey(), md3.getCacheKey());
-
-		SelectById<Artist> q4 = SelectById.query(Artist.class, 4);
-		QueryMetadata md4 = q4.getMetaData(context.getEntityResolver());
-		assertNotNull(md4);
-		assertNotNull(md4.getCacheKey());
-		assertNotEquals(md1.getCacheKey(), md4.getCacheKey());
-
-		SelectById<Painting> q5 = SelectById.query(Painting.class, new ObjectId("Painting",
-				Painting.PAINTING_ID_PK_COLUMN, 4));
-		QueryMetadata md5 = q5.getMetaData(context.getEntityResolver());
-		assertNotNull(md5);
-		assertNotNull(md5.getCacheKey());
-
-		// this query is just a different form of q1, so should hit the same
-		// cache entry
-		assertEquals(md1.getCacheKey(), md5.getCacheKey());
-	}
-
-	public void testLocalCache() throws Exception {
-		createTwoArtists();
-
-		final Artist[] a3 = new Artist[1];
-
-		assertEquals(1, interceptor.runWithQueryCounter(new UnitTestClosure() {
-
-			@Override
-			public void execute() {
-				a3[0] = SelectById.query(Artist.class, 3).useLocalCache("g1").selectOne(context);
-				assertNotNull(a3[0]);
-				assertEquals("artist3", a3[0].getArtistName());
-			}
-		}));
-
-		interceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-			@Override
-			public void execute() {
-				Artist a3cached = SelectById.query(Artist.class, 3).useLocalCache("g1").selectOne(context);
-				assertSame(a3[0], a3cached);
-			}
-		});
-
-		context.performGenericQuery(new RefreshQuery("g1"));
-
-		assertEquals(1, interceptor.runWithQueryCounter(new UnitTestClosure() {
-
-			@Override
-			public void execute() {
-				SelectById.query(Artist.class, 3).useLocalCache("g1").selectOne(context);
-			}
-		}));
+		assertNotNull(root.getNode("a.b.c"));
 	}
 }

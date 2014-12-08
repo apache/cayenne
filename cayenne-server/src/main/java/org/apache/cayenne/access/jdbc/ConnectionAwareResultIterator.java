@@ -32,7 +32,7 @@ import org.apache.cayenne.ResultIterator;
  * Subclasses are used in iterators that are returned to the end users and are
  * not implicitly managed by Cayenne.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class ConnectionAwareResultIterator<T> implements ResultIterator<T> {
 

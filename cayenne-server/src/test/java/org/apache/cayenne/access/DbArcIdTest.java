@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbRelationship;
+import org.junit.Test;
 
-public class DbArcIdTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+public class DbArcIdTest {
+
+    @Test
     public void testHashCode() {
 
         DbArcId id1 = new DbArcId(new ObjectId("x", "k", "v"),
@@ -46,6 +50,7 @@ public class DbArcIdTest extends TestCase {
         assertFalse(h1 == id3.hashCode());
     }
 
+    @Test
     public void testEquals() {
 
         DbArcId id1 = new DbArcId(new ObjectId("x", "k", "v"),

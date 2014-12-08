@@ -26,10 +26,9 @@ import org.apache.cayenne.map.DbRelationship;
 import org.jvnet.inflector.Noun;
 
 /**
- * SmartNameGenerator is a strategy for generating names of entities, attributes
- * etc.
+ * A strategy for generating names of entities, attributes etc.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class DefaultNameGenerator implements ObjectNameGenerator {
 
@@ -44,8 +43,7 @@ public class DefaultNameGenerator implements ObjectNameGenerator {
 				 * by default we use english language rules here. uppercase is
 				 * required for NameConverter to work properly
 				 */
-				name = Noun.pluralOf(key.getFKTableName().toLowerCase(),
-						Locale.ENGLISH).toUpperCase();
+				name = Noun.pluralOf(key.getFKTableName().toLowerCase(), Locale.ENGLISH).toUpperCase();
 			} catch (Exception inflectorError) {
 				/**
 				 * seems that Inflector cannot be trusted. For instance, it
@@ -61,11 +59,9 @@ public class DefaultNameGenerator implements ObjectNameGenerator {
 			// trim "ID" in the end
 			if (fkColName == null) {
 				name = key.getPKTableName();
-			} else if (fkColName.toUpperCase().endsWith("_ID")
-					&& fkColName.length() > 3) {
+			} else if (fkColName.toUpperCase().endsWith("_ID") && fkColName.length() > 3) {
 				name = fkColName.substring(0, fkColName.length() - 3);
-			} else if (fkColName.toUpperCase().endsWith("ID")
-					&& fkColName.length() > 2) {
+			} else if (fkColName.toUpperCase().endsWith("ID") && fkColName.length() > 2) {
 				name = fkColName.substring(0, fkColName.length() - 2);
 			} else {
 				/**

@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DbAttribute;
  * matching its name against a preset pattern. Only column name is inspected.
  * Table name is ignored.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class PatternColumnMapper implements ColumnMapper {
 

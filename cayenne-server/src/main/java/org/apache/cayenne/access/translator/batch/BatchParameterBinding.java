@@ -21,7 +21,7 @@ package org.apache.cayenne.access.translator.batch;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public class BatchParameterBinding {
 

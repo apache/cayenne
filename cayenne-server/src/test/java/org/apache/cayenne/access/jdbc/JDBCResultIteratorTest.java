@@ -19,14 +19,9 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import static org.mockito.Mockito.mock;
-
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.Collections;
-
-import junit.framework.TestCase;
-
+import com.mockrunner.mock.jdbc.MockConnection;
+import com.mockrunner.mock.jdbc.MockResultSet;
+import com.mockrunner.mock.jdbc.MockStatement;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
@@ -34,13 +29,21 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.MockQueryMetadata;
+import org.junit.Test;
 
-import com.mockrunner.mock.jdbc.MockConnection;
-import com.mockrunner.mock.jdbc.MockResultSet;
-import com.mockrunner.mock.jdbc.MockStatement;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.Collections;
 
-public class JDBCResultIteratorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
+public class JDBCResultIteratorTest {
+
+    @Test
     public void testNextDataRow() throws Exception {
         Connection c = new MockConnection();
         Statement s = new MockStatement(c);
@@ -60,6 +63,7 @@ public class JDBCResultIteratorTest extends TestCase {
         assertEquals("1", row.get("a"));
     }
 
+    @Test
     public void testClose() throws Exception {
         Connection c = new MockConnection();
         MockStatement s = new MockStatement(c);

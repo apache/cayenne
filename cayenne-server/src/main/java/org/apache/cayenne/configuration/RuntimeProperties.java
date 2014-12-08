@@ -34,7 +34,7 @@ public interface RuntimeProperties {
      * Returns a String property value for a given key or a default value if a
      * value is not present in properties or is null.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     String get(String key, String defaultValue);
 

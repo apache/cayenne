@@ -18,14 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.wocompat.unit;
 
-import java.io.File;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.test.file.FileUtil;
 
-public class WOCompatCase extends TestCase {
+import java.io.File;
+
+public class WOCompatCase {
 
     protected File setupTestDirectory(String subfolder) {
         String classPath = getClass().getName().replace('.', '/');

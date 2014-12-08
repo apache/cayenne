@@ -18,13 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-public class DataMapTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+public class DataMapTest {
+
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         DataMap m1 = new DataMap("abc");
         DataMap d1 = (DataMap) HessianUtil.cloneViaClientServerSerialization(m1, new EntityResolver());

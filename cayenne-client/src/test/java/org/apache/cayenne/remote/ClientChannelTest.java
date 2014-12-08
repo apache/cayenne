@@ -19,17 +19,6 @@
 
 package org.apache.cayenne.remote;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.MockPersistentObject;
@@ -46,11 +35,27 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.GenericResponse;
+import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class ClientChannelTest extends TestCase {
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class ClientChannelTest {
+
+    @Test
     public void testOnQuerySelect() {
 
         final MockPersistentObject o1 = new MockPersistentObject();
@@ -102,6 +107,7 @@ public class ClientChannelTest extends TestCase {
         assertSame(o1_1, context.getGraphManager().getNode(oid1));
     }
 
+    @Test
     public void testOnQuerySelectOverrideCached() {
         ObjEntity entity = new ObjEntity("test_entity");
         entity.setClassName(MockPersistentObject.class.getName());
@@ -144,6 +150,7 @@ public class ClientChannelTest extends TestCase {
         assertSame(o1, context.getGraphManager().getNode(oid));
     }
 
+    @Test
     public void testOnQuerySelectOverrideModifiedCached() {
         ObjEntity entity = new ObjEntity("test_entity");
         entity.setClassName(MockPersistentObject.class.getName());
@@ -184,6 +191,7 @@ public class ClientChannelTest extends TestCase {
         assertSame(o1, context.getGraphManager().getNode(oid));
     }
 
+    @Test
     public void testEventBridgeFailure() throws Exception {
         MockClientConnection connection = new MockClientConnection() {
 

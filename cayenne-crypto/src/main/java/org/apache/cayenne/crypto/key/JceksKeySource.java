@@ -39,7 +39,7 @@ import org.apache.cayenne.di.Inject;
  * {@link CryptoConstants#KEYSTORE_URL} to locate the keystore and
  * {@link CryptoConstants#KEY_PASSWORD} to read the secret key.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class JceksKeySource implements KeySource {
 

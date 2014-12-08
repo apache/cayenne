@@ -19,14 +19,17 @@
 
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.map.DataMap;
+import org.junit.Test;
+
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.cayenne.map.DataMap;
+public class AntDataPortDelegateTest {
 
-public class AntDataPortDelegateTest extends TestCase {
-
+    @Test
     public void testPassedDataMapFilter() {
         AntDataPortDelegate delegate = new AntDataPortDelegate();
 

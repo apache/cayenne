@@ -21,7 +21,7 @@ package org.apache.cayenne.crypto.cipher;
 import javax.crypto.Cipher;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 public interface CipherFactory {
 

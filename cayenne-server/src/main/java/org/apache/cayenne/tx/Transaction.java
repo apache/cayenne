@@ -23,7 +23,7 @@ import java.sql.Connection;
 /**
  * A Cayenne Transaction interface.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface Transaction {
 

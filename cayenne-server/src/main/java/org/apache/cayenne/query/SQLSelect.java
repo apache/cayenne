@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +35,7 @@ import org.apache.cayenne.map.SQLResult;
 /**
  * A selecting query based on raw SQL and featuring fluent API.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
@@ -89,7 +92,8 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	protected StringBuilder sqlBuffer;
 	protected QueryCacheStrategy cacheStrategy;
 	protected String[] cacheGroups;
-	protected Map<String, Object> parameters;
+	protected Map<String, Object> params;
+	protected List<Object> positionalParams;
 	protected CapsStrategy columnNameCaps;
 	protected int limit;
 	protected int offset;
@@ -103,7 +107,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	public SQLSelect(Class<T> persistentType, String sql) {
 		this.persistentType = persistentType;
 		this.sqlBuffer = sql != null ? new StringBuilder(sql) : new StringBuilder();
-		this.parameters = new HashMap<String, Object>();
 		this.limit = QueryMetadata.FETCH_LIMIT_DEFAULT;
 		this.offset = QueryMetadata.FETCH_OFFSET_DEFAULT;
 		this.pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
@@ -118,11 +121,32 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Selects a single object using provided context. Essentially the inversion
-	 * of "ObjectContext.selectOne(Select)".
+	 * Selects a single object using provided context. The query is expected to
+	 * match zero or one object. It returns null if no objects were matched. If
+	 * query matched more than one object, {@link CayenneRuntimeException} is
+	 * thrown.
+	 * <p>
+	 * Essentially the inversion of "ObjectContext.selectOne(Select)".
 	 */
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
+	}
+
+	/**
+	 * Selects a single object using provided context. The query itself can
+	 * match any number of objects, but will return only the first one. It
+	 * returns null if no objects were matched.
+	 * <p>
+	 * If it matched more than one object, the first object from the list is
+	 * returned. This makes 'selectFirst' different from
+	 * {@link #selectOne(ObjectContext)}, which would throw in this situation.
+	 * 'selectFirst' is useful e.g. when the query is ordered and we only want
+	 * to see the first object (e.g. "most recent news article"), etc.
+	 * <p>
+	 * This method is equivalent to calling "limit(1).selectOne(context)".
+	 */
+	public T selectFirst(ObjectContext context) {
+		return limit(1).selectOne(context);
 	}
 
 	public boolean isFetchingDataRows() {
@@ -148,29 +172,50 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	public SQLSelect<T> params(String name, Object value) {
-		parameters.put(name, value);
-		this.replacementQuery = null;
+		params(Collections.singletonMap(name, value));
 		return this;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SQLSelect<T> params(Map<String, ?> parameters) {
-		Map bareMap = parameters;
-		parameters.putAll(bareMap);
+
+		if (this.params == null) {
+			this.params = new HashMap<String, Object>(parameters);
+		} else {
+			Map bareMap = parameters;
+			this.params.putAll(bareMap);
+		}
+
 		this.replacementQuery = null;
+
+		// since named parameters are specified, resetting positional
+		// parameters
+		this.positionalParams = null;
+		return this;
+	}
+
+	public SQLSelect<T> paramsArray(Object... params) {
+		return paramsList(params != null ? Arrays.asList(params) : null);
+	}
+
+	public SQLSelect<T> paramsList(List<Object> params) {
+		// since named parameters are specified, resetting positional
+		// parameters
+		this.params = null;
+
+		this.positionalParams = params;
 		return this;
 	}
 
 	/**
-	 * Returns mutable map of parameters that will be bound to SQL. A caller is
-	 * free to add/remove parameters from the returned map as needed.
-	 * Alternatively one should use chained {@link #params(String, Object)}
+	 * Returns an immmutable map of parameters that will be bound to SQL. A
+	 * caller is free to add/remove parameters from the returned map as needed.
+	 * Alternatively one may use chained {@link #params(String, Object)}
 	 */
-	public Map<String, Object> getParameters() {
-		return parameters;
+	public Map<String, Object> getParams() {
+		return params != null ? params : Collections.<String, Object> emptyMap();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Query createReplacementQuery(EntityResolver resolver) {
 
@@ -196,7 +241,13 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroups(cacheGroups);
 		template.setCacheStrategy(cacheStrategy);
-		template.setParameters(parameters);
+
+		if (positionalParams != null) {
+			template.setParamsArray(positionalParams);
+		} else {
+			template.setParams(params);
+		}
+
 		template.setColumnNamesCapitalization(columnNameCaps);
 		template.setFetchLimit(limit);
 		template.setFetchOffset(offset);
@@ -217,15 +268,14 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * running the query. This is a short-hand notation for:
 	 * 
 	 * <pre>
-	 * query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
+	 * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
 	 * </pre>
-	 * 
-	 * @since 3.2
 	 */
-	public void useLocalCache(String... cacheGroups) {
+	public SQLSelect<T> localCache(String... cacheGroups) {
 		cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 		cacheGroups(cacheGroups);
+
+		return this;
 	}
 
 	/**
@@ -233,11 +283,10 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * running the query. This is a short-hand notation for:
 	 * 
 	 * <pre>
-	 * query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
+	 * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
 	 * </pre>
 	 */
-	public SQLSelect<T> useSharedCache(String... cacheGroups) {
+	public SQLSelect<T> sharedCache(String... cacheGroups) {
 		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE).cacheGroups(cacheGroups);
 	}
 
@@ -245,13 +294,13 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		return cacheStrategy;
 	}
 
-	public SQLSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
+	public SQLSelect<T> cacheStrategy(QueryCacheStrategy strategy, String... cacheGroups) {
 		if (this.cacheStrategy != strategy) {
 			this.cacheStrategy = strategy;
 			this.replacementQuery = null;
 		}
 
-		return this;
+		return cacheGroups(cacheGroups);
 	}
 
 	public String[] getCacheGroups() {
@@ -259,9 +308,19 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	public SQLSelect<T> cacheGroups(String... cacheGroups) {
-		this.cacheGroups = cacheGroups;
+		this.cacheGroups = cacheGroups != null && cacheGroups.length > 0 ? cacheGroups : null;
 		this.replacementQuery = null;
 		return this;
+	}
+
+	public SQLSelect<T> cacheGroups(Collection<String> cacheGroups) {
+
+		if (cacheGroups == null) {
+			return cacheGroups((String) null);
+		}
+
+		String[] array = new String[cacheGroups.size()];
+		return cacheGroups(cacheGroups.toArray(array));
 	}
 
 	/**

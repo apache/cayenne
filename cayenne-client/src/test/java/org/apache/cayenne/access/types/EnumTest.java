@@ -19,23 +19,27 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.apache.cayenne.util.Util;
+import org.junit.Test;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.remote.hessian.service.HessianUtil;
-import org.apache.cayenne.util.Util;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * A test case checking Cayenne handling of 1.5 Enums.
  * 
  */
-public class EnumTest extends TestCase {
+public class EnumTest {
 
+    @Test
     public void testSerializabilityWithHessianStandalone() throws Exception {
         MockEnum before = MockEnum.a;
 
@@ -47,6 +51,7 @@ public class EnumTest extends TestCase {
         assertSame(before, after);
     }
 
+    @Test
     public void testSerializabilityWithHessianInTheMap() throws Exception {
         // test in the Map
         Map<String, MockEnum> map = new HashMap<String, MockEnum>();
@@ -60,6 +65,7 @@ public class EnumTest extends TestCase {
 
     }
 
+    @Test
     public void testSerializabilityWithHessianObjectProperty() throws Exception {
         // test object property
         MockEnumHolder object = new MockEnumHolder();
@@ -71,6 +77,7 @@ public class EnumTest extends TestCase {
         assertSame(MockEnum.b, after.getMockEnum());
     }
 
+    @Test
     public void testSerializabilityWithHessianObjectPropertyInAList() throws Exception {
 
         // test that Enum properties are serialized properly...
@@ -96,6 +103,7 @@ public class EnumTest extends TestCase {
         assertSame(MockEnum.c, o2d.getMockEnum());
     }
 
+    @Test
     public void testSerializability() throws Exception {
         MockEnum before = MockEnum.c;
         Object object = Util.cloneViaSerialization(before);

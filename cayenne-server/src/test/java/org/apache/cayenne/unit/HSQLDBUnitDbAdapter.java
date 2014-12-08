@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.unit;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
+
+import java.sql.Connection;
 
 public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
 

@@ -19,25 +19,29 @@
 
 package org.apache.cayenne.exp;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ExpressionTraversalTest extends TestCase {
+public class ExpressionTraversalTest {
 
     private TstTraversalHandler handler;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         handler = new TstTraversalHandler();
     }
 
+    @Test
     public void testUnary() throws Exception {
         doExpressionTest(new TstUnaryExpSuite());
     }
 
+    @Test
     public void testBinary() throws Exception {
         doExpressionTest(new TstBinaryExpSuite());
     }
 
+    @Test
     public void testTernary() throws Exception {
         doExpressionTest(new TstTernaryExpSuite());
     }

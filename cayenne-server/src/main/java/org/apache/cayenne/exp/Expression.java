@@ -141,12 +141,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	public static final int BITWISE_XOR = 42;
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static final int BITWISE_LEFT_SHIFT = 43;
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static final int BITWISE_RIGHT_SHIFT = 44;
 
@@ -157,7 +157,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * a semantically correct expression, an ExpressionException is thrown.
 	 * 
 	 * @since 1.1
-	 * @deprecated since 3.2 use
+	 * @deprecated since 4.0 use
 	 *             {@link ExpressionFactory#exp(String, Object...)}
 	 */
 	@Deprecated
@@ -270,7 +270,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * pruning. If declared and provided parameters counts are mismatched, an
 	 * exception will be thrown.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public Expression paramsArray(Object... parameters) {
 		Expression clone = deepCopy();
@@ -279,7 +279,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	void inPlaceParamsArray(Object... parameters) {
 
@@ -298,7 +298,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * Note that if you want matching against nulls to be preserved, you must
 	 * place NULL values for the corresponding keys in the map.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public Expression params(Map<String, ?> parameters) {
 		return transform(new NamedParamTransformer(parameters, true));
@@ -315,7 +315,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * Note that if you want matching against nulls to be preserved, you must
 	 * place NULL values for the corresponding keys in the map.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public Expression params(Map<String, ?> parameters, boolean pruneMissing) {
 		return transform(new NamedParamTransformer(parameters, pruneMissing));
@@ -324,7 +324,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	/**
 	 * A shortcut for <code>expWithParams(params, true)</code>.
 	 * 
-	 * @deprecated since 3.2 use {@link #params(Map)}
+	 * @deprecated since 4.0 use {@link #params(Map)}
 	 */
 	@Deprecated
 	public Expression expWithParameters(Map<String, ?> parameters) {
@@ -353,13 +353,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 *         real values, or null if the whole expression was pruned, due to
 	 *         the missing parameters.
 	 * 
-	 * @deprecated since 3.2 use {@link #params(Map)} or
-	 *             {@link #paramsNoPrune(Map)}.
+	 * @deprecated since 4.0 use {@link #params(Map, boolean)} instead.
 	 */
 	@Deprecated
-	public Expression expWithParameters(Map<String, ?> parameters,
-			boolean pruneMissing) {
-		return transform(new NamedParamTransformer(parameters, pruneMissing));
+	public Expression expWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
+		return params(parameters, pruneMissing);
 	}
 
 	/**
@@ -376,7 +374,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * using specified join type. It is very useful for incrementally building
 	 * chained expressions, like long AND or OR statements.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public Expression joinExp(int type, Expression exp,
 			Expression... expressions) {
@@ -401,7 +399,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	/**
 	 * Chains this expression with other expressions using "and".
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public Expression andExp(Expression exp, Expression... expressions) {
 		return joinExp(Expression.AND, exp, expressions);
@@ -417,7 +415,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	/**
 	 * Chains this expression with other expressions using "or".
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public Expression orExp(Expression exp, Expression... expressions) {
 		return joinExp(Expression.OR, exp, expressions);
@@ -675,7 +673,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * PrintWriter.
 	 * 
 	 * @since 1.1
-	 * @deprecated since 3.2 use {@link #appendAsString(Appendable)}.
+	 * @deprecated since 4.0 use {@link #appendAsString(Appendable)}.
 	 */
 	@Deprecated
 	public abstract void encodeAsString(PrintWriter pw);
@@ -683,7 +681,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	/**
 	 * Appends own content as a String to the provided Appendable.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 * @throws IOException
 	 */
 	public abstract void appendAsString(Appendable out) throws IOException;
@@ -694,7 +692,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * expressions.
 	 * 
 	 * @since 3.0
-	 * @deprecated since 3.2 use {@link #appendAsEJBQL(Appendable, String)}
+	 * @deprecated since 4.0 use {@link #appendAsEJBQL(Appendable, String)}
 	 */
 	@Deprecated
 	public abstract void encodeAsEJBQL(PrintWriter pw, String rootId);
@@ -704,7 +702,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * Appendable. DB path expressions produce non-standard EJBQL path
 	 * expressions.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 * @throws IOException
 	 */
 	public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
@@ -723,7 +721,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * possible to generate a string-only representation of the Expression in
 	 * EJBQL.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 * @throws IOException
 	 */
 	public abstract void appendAsEJBQL(List<Object> parameterAccumulator,

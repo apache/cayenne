@@ -18,10 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.util.concurrentlinkedhashmap;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class ConcurrentLinkedHashMapTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+public class ConcurrentLinkedHashMapTest {
+
+    @Test
     public void testPutGet() {
         ConcurrentLinkedHashMap<String, Object> m = new ConcurrentLinkedHashMap.Builder<String, Object>()
                 .maximumWeightedCapacity(10)
@@ -38,6 +42,7 @@ public class ConcurrentLinkedHashMapTest extends TestCase {
         assertEquals(200, m.get("k2"));
     }
 
+    @Test
     public void testLRU() {
         ConcurrentLinkedHashMap<String, Object> m = new ConcurrentLinkedHashMap.Builder<String, Object>()
                 .maximumWeightedCapacity(5)

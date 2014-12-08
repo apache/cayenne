@@ -308,6 +308,9 @@ class Compiler {
         if (descriptor == null) {
             descriptor = descriptorsById.get(expression.getText());
         }
+        if(descriptor == null) {
+            throw new EJBQLException("the entity variable '" + id +"' does not refer to any entity in the FROM clause");
+        }
         final EntityResult entityResult = new EntityResult(descriptor.getObjectClass());
         final String prefix = "ec" + position + "_";
         final int[] index = {

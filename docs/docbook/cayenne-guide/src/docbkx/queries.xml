@@ -111,9 +111,38 @@ for(Object[] artistWithCount : result) {
             elements, where each entry in an Object[] is either a DataObject or a scalar, depending
             on the query SELECT clause. A result can also be a list of
             scalars:<programlisting language="java">EJBQLQuery query = new EJBQLQuery("select a.name FROM Artist a");
-List&lt;String> names = context.performQuery(query);</programlisting>While
+List&lt;String> names = context.performQuery(query);</programlisting>
+
+            EJBQLQuery supports an "IN" clause with three different usage-patterns.  The following
+            example would require three individual positional parameters (named
+            parameters could also have been used) to be supplied.
+
+            <screen>select p from Painting p where p.paintingTitle in (?1,?2,?3)</screen>
+
+            The following example requires a single positional parameter to be supplied.  The
+            parameter can be any concrete implementation of the java.util.Collection interface such as
+            java.util.List or java.util.Set.
+
+            <screen>select p from Painting p where p.paintingTitle in ?1</screen>
+
+            The following example is functionally identical to the one prior.
+
+            <screen>select p from Painting p where p.paintingTitle in (?1)</screen>
+
+            <para>
+                It is
+                <link linkend="expressions-to-ejbql">possible to convert</link>
+                an
+                <link linkend="expressions">Expression</link>
+                object used with a
+                <link linkend="selectquery">SelectQuery</link>
+                to EJBQL.  Use the Expression#appendAsEJBQL methods for this purpose.
+            </para>
+
+            While
             Cayenne Expressions discussed previously can be thought of as identical to JPQL WHERE
-            clause, and indeed they are very close, there are a few noteable differences:<itemizedlist>
+            clause, and indeed they are very close, there are a few noteable differences:
+            <itemizedlist>
                 <listitem>
                     <para>Null handling: SelectQuery would translate the expressions matching NULL
                         values to the corresponding "X IS NULL" or "X IS NOT NULL" SQL syntax.
@@ -126,7 +155,8 @@ List&lt;String> names = context.performQuery(query);</programlisting>While
                         (e.g. "$myParam"), while EJBQL uses ":" (e.g. ":myParam"). Also EJBQL
                         supports positional parameters denoted by the question mark: "?3".</para>
                 </listitem>
-            </itemizedlist></para>
+            </itemizedlist>
+        </para>
     </section>
     <section xml:id="sqltemplate">
         <title>SQLTemplate</title>

@@ -1,21 +1,21 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 
 package org.apache.cayenne.modeler.dialog.db;
 
@@ -34,6 +34,10 @@ import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.filters.EntityFilters;
+import org.apache.cayenne.access.loader.filters.FilterFactory;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
@@ -49,10 +53,14 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
+import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
 
 /**
  * Stateful helper class that encapsulates access to DbLoader.
@@ -78,12 +86,10 @@ public class DbLoaderHelper {
     protected String dbUserName;
     protected DbLoader loader;
     protected DataMap dataMap;
-    protected String schemaName;
-    protected String tableNamePattern;
-    protected boolean loadProcedures;
     protected boolean meaningfulPk;
-    protected String procedureNamePattern;
     protected List<String> schemas;
+
+    private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
 
     protected String loadStatusNote;
 
@@ -168,11 +174,12 @@ public class DbLoaderHelper {
             return;
         }
 
-        this.schemaName = dialog.getSelectedSchema();
-        this.tableNamePattern = dialog.getTableNamePattern();
-        this.loadProcedures = dialog.isLoadingProcedures();
+        this.filterBuilder.schema(dialog.getSelectedSchema());
+        this.filterBuilder.includeTables(dialog.getTableNamePattern());
+        this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures() ? FilterFactory.TRUE : FilterFactory.NULL);
+        this.filterBuilder.includeProcedures(dialog.getProcedureNamePattern());
+
         this.meaningfulPk = dialog.isMeaningfulPk();
-        this.procedureNamePattern = dialog.getProcedureNamePattern();
         this.addedObjEntities = new ArrayList<ObjEntity>();
 
         this.loader.setNameGenerator(dialog.getNamingStrategy());
@@ -347,41 +354,15 @@ public class DbLoaderHelper {
             if (!existingMap) {
                 dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap));
                 dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, mediator.getProject().getRootNode()));
-                dataMap.setDefaultSchema(schemaName);
+                dataMap.setDefaultSchema(filterBuilder.schema());
             }
 
             if (isCanceled()) {
                 return;
             }
 
-            loadStatusNote = "Importing tables...";
-
-            try {
-                loader.setCreatingMeaningfulPK(meaningfulPk);
-                loader.loadDataMapFromDB(schemaName, tableNamePattern, dataMap);
-
-                /**
-                 * Update default rules for relationships
-                 */
-                for (ObjEntity addedObjEntity : addedObjEntities) {
-                    DeleteRuleUpdater.updateObjEntity(addedObjEntity);
-                }
-            } catch (Throwable th) {
-                if (!isCanceled()) {
-                    processException(th, "Error Reengineering Database");
-                }
-            }
-
-            if (loadProcedures) {
-                loadStatusNote = "Importing procedures...";
-                try {
-                    loader.loadProceduresFromDB(schemaName, procedureNamePattern, dataMap);
-                } catch (Throwable th) {
-                    if (!isCanceled()) {
-                        processException(th, "Error Reengineering Database");
-                    }
-                }
-            }
+            importingTables();
+            importingProcedures();
 
             cleanup();
 
@@ -402,6 +383,47 @@ public class DbLoaderHelper {
                     dataMap.setConfigurationSource(dataMapResource);
                 }
                 mediator.addDataMap(Application.getFrame(), dataMap);
+            }
+        }
+
+        private void importingProcedures() {
+            if (!filterBuilder.proceduresFilters().equals(NULL)) {
+                return;
+            }
+
+            loadStatusNote = "Importing procedures...";
+            try {
+                DbLoaderConfiguration configuration = new DbLoaderConfiguration();
+                configuration.setFiltersConfig(new FiltersConfig(filterBuilder.build()));
+
+                loader.loadProcedures(dataMap, new DbLoaderConfiguration());
+            } catch (Throwable th) {
+                if (!isCanceled()) {
+                    processException(th, "Error Reengineering Database");
+                }
+            }
+        }
+
+        private void importingTables() {
+            loadStatusNote = "Importing tables...";
+            try {
+                loader.setCreatingMeaningfulPK(meaningfulPk);
+               
+                DbLoaderConfiguration configuration = new DbLoaderConfiguration();
+                configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
+                        .add(filterBuilder.build()).filtersConfig());
+                loader.load(dataMap, configuration);
+
+                /**
+                 * Update default rules for relationships
+                 */
+                for (ObjEntity addedObjEntity : addedObjEntities) {
+                    DeleteRuleUpdater.updateObjEntity(addedObjEntity);
+                }
+            } catch (Throwable th) {
+                if (!isCanceled()) {
+                    processException(th, "Error Reengineering Database");
+                }
             }
         }
     }

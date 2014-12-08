@@ -4,10 +4,17 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
-UPGRADING TO 3.2M2
+UPGRADING TO 4.0.M2
+
+* Note that 3.2 line of development was renamed to 4.0. So 4.0.M2 is a straight descendant of
+  3.2M1.
+
+* org.apache.cayenne.map.naming.SmartNamingStrategy was replaced with org.apache.cayenne.map.naming.DefaultNameGenerator. If you
+  mentioned SmartNamingStrategy explicitly in your Maven or Ant configs, make sure you rename it. Since this was/is the default,
+  chances are that you didn't.
 
 * Minimal required JDK version is now 1.6 (both for modeler and runtime). This is a pretty conservative 
-  requirement, considering that even Java 1.6 has been EOL'd by Oracle on Feb 2013.
+  requirement, considering that Java 1.6 has been EOL'd by Oracle on Feb 2013.
 
 * Managing listeners in the Modeler is counterproductive and confusing,
   so support for them was removed from the Modeler per CAY-1842. If you have
@@ -30,10 +37,21 @@ UPGRADING TO 3.2M2
 
 * Transaction management was refactored significantly:
 
-* External transactions are no longer configured in the Modeler. Instead they are provided as a DI property
-  defined in Constants.SERVER_EXTERNAL_TX_PROPERTY.
-* TransactionDelegate is no longer present. Similar functionality can be achieved by writing a decorator for 
-  Transaction interface and using a custom TransactionFactory to decorate standard transactions.
+  * External transactions are no longer configured in the Modeler. Instead they are provided as a DI property
+    defined in Constants.SERVER_EXTERNAL_TX_PROPERTY.
+
+  * TransactionDelegate is no longer present. Similar functionality can be achieved by writing a decorator for 
+    Transaction interface and using a custom TransactionFactory to decorate standard transactions.
+
+  * If your code relied on static methods Transaction.externalTransaction() or Transaction.internalTransaction() for
+    manual tx management, use constructors of ExternalTransaction and CayenneTransaction classes instead.
+
+* When switching to ServerRuntimeBuilder, users of multi-config projects may erroneously assume it has the same 
+  behavior as 3.1 ServerRuntime in assigning domain name to the resulting merged project. Which is to use the 
+  name of the last project config. We are trying to move away from this behavior, so ServerRuntimeBuilder 
+  will only use config name if there's only one config and no override. Otherwise it will use the override, 
+   or if not set - "cayenne" as the default name. Reference Jira: CAY-1972
+
 
 
 UPGRADING TO 3.1B1

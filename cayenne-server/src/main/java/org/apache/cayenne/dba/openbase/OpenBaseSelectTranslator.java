@@ -32,7 +32,7 @@ import org.apache.cayenne.query.Query;
 class OpenBaseSelectTranslator extends SelectTranslator {
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public OpenBaseSelectTranslator(Query query, DataNode dataNode, Connection connection) {
         super(query, dataNode, connection);

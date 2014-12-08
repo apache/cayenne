@@ -19,19 +19,6 @@
 
 package org.apache.cayenne.dba;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
@@ -44,6 +31,19 @@ import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.IDUtil;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Default primary key generator implementation. Uses a lookup table named
@@ -76,7 +76,9 @@ public class JdbcPkGenerator implements PkGenerator {
         }
 
         // delete any existing pk entries
-        runUpdate(node, pkDeleteString(dbEntities));
+        if (!dbEntities.isEmpty()) {
+            runUpdate(node, pkDeleteString(dbEntities));
+        }
 
         // insert all needed entries
         for (DbEntity ent : dbEntities) {

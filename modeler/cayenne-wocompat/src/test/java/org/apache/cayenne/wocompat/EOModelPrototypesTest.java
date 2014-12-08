@@ -19,27 +19,33 @@
 
 package org.apache.cayenne.wocompat;
 
-import java.net.URL;
-import java.sql.Types;
-
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.Before;
+import org.junit.Test;
 
-public class EOModelPrototypesTest extends TestCase {
+import java.net.URL;
+import java.sql.Types;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
+public class EOModelPrototypesTest {
 
     private URL url;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         url = getClass().getClassLoader().getResource("prototypes.eomodeld/");
         assertNotNull(url);
     }
 
+    @Test
     public void testSkipPrototypes() throws Exception {
         DataMap map = new EOModelProcessor().loadEOModel(url);
 
@@ -48,6 +54,7 @@ public class EOModelPrototypesTest extends TestCase {
         assertNull(map.getObjEntity("EOXYZPrototypes"));
     }
 
+    @Test
     public void testDbAttributeType() throws Exception {
         DataMap map = new EOModelProcessor().loadEOModel(url);
 
@@ -70,6 +77,7 @@ public class EOModelPrototypesTest extends TestCase {
     // TODO: move this test to EOModelProcessorInheritanceTst. The original problem had
     // nothing
     // to do with prototypes...
+    @Test
     public void testSameColumnMapping() throws Exception {
         DataMap map = new EOModelProcessor().loadEOModel(url);
 
@@ -93,6 +101,7 @@ public class EOModelPrototypesTest extends TestCase {
 
     // TODO: move this test to EOModelProcessorInheritanceTst. The original problem had
     // nothing to do with prototypes...
+    @Test
     public void testOverridingAttributes() throws Exception {
         DataMap map = new EOModelProcessor().loadEOModel(url);
 

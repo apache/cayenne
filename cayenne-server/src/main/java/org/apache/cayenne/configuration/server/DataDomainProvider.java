@@ -55,173 +55,172 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DataDomainProvider implements Provider<DataDomain> {
 
-    /**
-     * @since 3.2
-     */
-    static final String DEFAULT_NAME = "cayenne";
+	private static Log logger = LogFactory.getLog(DataDomainProvider.class);
 
-    private static Log logger = LogFactory.getLog(DataDomainProvider.class);
+	@Inject
+	protected ResourceLocator resourceLocator;
 
-    @Inject
-    protected ResourceLocator resourceLocator;
+	@Inject
+	protected DataChannelDescriptorMerger descriptorMerger;
 
-    @Inject
-    protected DataChannelDescriptorMerger descriptorMerger;
+	@Inject
+	protected DataChannelDescriptorLoader loader;
 
-    @Inject
-    protected DataChannelDescriptorLoader loader;
+	@Inject(Constants.SERVER_DOMAIN_FILTERS_LIST)
+	protected List<DataChannelFilter> filters;
 
-    @Inject(Constants.SERVER_DOMAIN_FILTERS_LIST)
-    protected List<DataChannelFilter> filters;
+	@Inject(Constants.SERVER_PROJECT_LOCATIONS_LIST)
+	protected List<String> locations;
 
-    @Inject(Constants.SERVER_PROJECT_LOCATIONS_LIST)
-    protected List<String> locations;
+	@Inject
+	protected Injector injector;
 
-    @Inject
-    protected Injector injector;
+	@Inject
+	protected QueryCache queryCache;
 
-    @Inject
-    protected QueryCache queryCache;
+	@Inject
+	protected RuntimeProperties runtimeProperties;
 
-    @Inject
-    protected RuntimeProperties runtimeProperties;
+	@Inject
+	protected DataNodeFactory dataNodeFactory;
 
-    @Inject
-    protected DataNodeFactory dataNodeFactory;
+	@Override
+	public DataDomain get() throws ConfigurationException {
 
-    @Override
-    public DataDomain get() throws ConfigurationException {
+		try {
+			return createAndInitDataDomain();
+		} catch (ConfigurationException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new DataDomainLoadException("Error loading DataChannel: '%s'", e, e.getMessage());
+		}
+	}
 
-        try {
-            return createAndInitDataDomain();
-        } catch (ConfigurationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new DataDomainLoadException("Error loading DataChannel: '%s'", e, e.getMessage());
-        }
-    }
+	protected DataDomain createDataDomain(String name) {
+		return new DataDomain(name);
+	}
 
-    protected DataDomain createDataDomain(String name) {
-        return new DataDomain(name);
-    }
+	protected DataDomain createAndInitDataDomain() throws Exception {
 
-    protected DataDomain createAndInitDataDomain() throws Exception {
+		DataChannelDescriptor descriptor;
 
-        DataChannelDescriptor descriptor;
+		if (locations.isEmpty()) {
+			descriptor = new DataChannelDescriptor();
+		} else {
+			descriptor = descriptorFromConfigs();
+		}
 
-        if (locations.isEmpty()) {
-            descriptor = new DataChannelDescriptor();
-            descriptor.setName(DEFAULT_NAME);
-        } else {
-            descriptor = descriptorFromConfigs();
-        }
+		String nameOverride = runtimeProperties.get(Constants.SERVER_DOMAIN_NAME_PROPERTY);
+		if (nameOverride != null) {
+			descriptor.setName(nameOverride);
+		}
 
-        DataDomain dataDomain = createDataDomain(descriptor.getName());
+		DataDomain dataDomain = createDataDomain(descriptor.getName());
 
-        dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
+		dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
 
-        dataDomain.setQueryCache(new NestedQueryCache(queryCache));
-        dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
-        dataDomain.setEventManager(injector.getInstance(EventManager.class));
+		dataDomain.setQueryCache(new NestedQueryCache(queryCache));
+		dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
+		dataDomain.setEventManager(injector.getInstance(EventManager.class));
 
-        dataDomain.initWithProperties(descriptor.getProperties());
+		dataDomain.initWithProperties(descriptor.getProperties());
 
-        for (DataMap dataMap : descriptor.getDataMaps()) {
-            dataDomain.addDataMap(dataMap);
-        }
+		for (DataMap dataMap : descriptor.getDataMaps()) {
+			dataDomain.addDataMap(dataMap);
+		}
 
-        dataDomain.getEntityResolver().applyDBLayerDefaults();
-        dataDomain.getEntityResolver().applyObjectLayerDefaults();
+		dataDomain.getEntityResolver().applyDBLayerDefaults();
+		dataDomain.getEntityResolver().applyObjectLayerDefaults();
 
-        for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
-            addDataNode(dataDomain, nodeDescriptor);
-        }
+		for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
+			addDataNode(dataDomain, nodeDescriptor);
+		}
 
-        // init default node
-        DataNode defaultNode = null;
+		// init default node
+		DataNode defaultNode = null;
 
-        if (descriptor.getDefaultNodeName() != null) {
-            defaultNode = dataDomain.getDataNode(descriptor.getDefaultNodeName());
-        }
+		if (descriptor.getDefaultNodeName() != null) {
+			defaultNode = dataDomain.getDataNode(descriptor.getDefaultNodeName());
+		}
 
-        if (defaultNode == null) {
-            Collection<DataNode> allNodes = dataDomain.getDataNodes();
-            if (allNodes.size() == 1) {
-                defaultNode = allNodes.iterator().next();
-            }
-        }
+		if (defaultNode == null) {
+			Collection<DataNode> allNodes = dataDomain.getDataNodes();
+			if (allNodes.size() == 1) {
+				defaultNode = allNodes.iterator().next();
+			}
+		}
 
-        if (defaultNode != null) {
-            logger.info("setting DataNode '" + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
+		if (defaultNode != null) {
+			logger.info("setting DataNode '" + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
 
-            dataDomain.setDefaultNode(defaultNode);
-        }
+			dataDomain.setDefaultNode(defaultNode);
+		}
 
-        for (DataChannelFilter filter : filters) {
-            dataDomain.addFilter(filter);
-        }
+		for (DataChannelFilter filter : filters) {
+			dataDomain.addFilter(filter);
+		}
 
-        return dataDomain;
-    }
+		return dataDomain;
+	}
 
-    /**
-     * @since 3.2
-     */
-    protected DataNode addDataNode(DataDomain dataDomain, DataNodeDescriptor nodeDescriptor) throws Exception {
-        DataNode dataNode = dataNodeFactory.createDataNode(nodeDescriptor);
+	/**
+	 * @since 4.0
+	 */
+	protected DataNode addDataNode(DataDomain dataDomain, DataNodeDescriptor nodeDescriptor) throws Exception {
+		DataNode dataNode = dataNodeFactory.createDataNode(nodeDescriptor);
 
-        // DataMaps
-        for (String dataMapName : nodeDescriptor.getDataMapNames()) {
-            dataNode.addDataMap(dataDomain.getDataMap(dataMapName));
-        }
+		// DataMaps
+		for (String dataMapName : nodeDescriptor.getDataMapNames()) {
+			dataNode.addDataMap(dataDomain.getDataMap(dataMapName));
+		}
 
-        dataDomain.addNode(dataNode);
-        return dataNode;
-    }
+		dataDomain.addNode(dataNode);
+		return dataNode;
+	}
 
-    private DataChannelDescriptor descriptorFromConfigs() {
+	private DataChannelDescriptor descriptorFromConfigs() {
 
-        long t0 = System.currentTimeMillis();
+		long t0 = System.currentTimeMillis();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting configuration loading: " + locations);
-        }
+		if (logger.isDebugEnabled()) {
+			logger.debug("starting configuration loading: " + locations);
+		}
 
-        DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
+		DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
 
-        for (int i = 0; i < locations.size(); i++) {
+		for (int i = 0; i < locations.size(); i++) {
 
-            String location = locations.get(i);
+			String location = locations.get(i);
 
-            Collection<Resource> configurations = resourceLocator.findResources(location);
+			Collection<Resource> configurations = resourceLocator.findResources(location);
 
-            if (configurations.isEmpty()) {
-                throw new DataDomainLoadException("Configuration resource \"%s\" is not found.", location);
-            }
+			if (configurations.isEmpty()) {
+				throw new DataDomainLoadException("Configuration resource \"%s\" is not found.", location);
+			}
 
-            Resource configurationResource = configurations.iterator().next();
+			Resource configurationResource = configurations.iterator().next();
 
-            // no support for multiple configs yet, but this is not a hard error
-            if (configurations.size() > 1) {
-                logger.info("found " + configurations.size() + " configurations for " + location
-                        + ", will use the first one: " + configurationResource.getURL());
-            }
+			// no support for multiple configs yet, but this is not a hard error
+			if (configurations.size() > 1) {
+				logger.info("found " + configurations.size() + " configurations for " + location
+						+ ", will use the first one: " + configurationResource.getURL());
+			}
 
-            ConfigurationTree<DataChannelDescriptor> tree = loader.load(configurationResource);
-            if (!tree.getLoadFailures().isEmpty()) {
-                // TODO: andrus 03/10/2010 - log the errors before throwing?
-                throw new DataDomainLoadException(tree, "Error loading DataChannelDescriptor");
-            }
+			ConfigurationTree<DataChannelDescriptor> tree = loader.load(configurationResource);
+			if (!tree.getLoadFailures().isEmpty()) {
+				// TODO: andrus 03/10/2010 - log the errors before throwing?
+				throw new DataDomainLoadException(tree, "Error loading DataChannelDescriptor");
+			}
 
-            descriptors[i] = tree.getRootNode();
-        }
+			descriptors[i] = tree.getRootNode();
+		}
 
-        long t1 = System.currentTimeMillis();
+		long t1 = System.currentTimeMillis();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("finished configuration loading in " + (t1 - t0) + " ms.");
-        }
+		if (logger.isDebugEnabled()) {
+			logger.debug("finished configuration loading in " + (t1 - t0) + " ms.");
+		}
 
-        return descriptorMerger.merge(descriptors);
-    }
+		return descriptorMerger.merge(descriptors);
+	}
 }

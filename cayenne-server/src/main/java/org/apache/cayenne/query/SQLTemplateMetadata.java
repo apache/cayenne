@@ -60,7 +60,7 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
                     key.append('/').append(query.getDefaultTemplate());
                 }
 
-                Map<String, ?> parameters = query.getParameters();
+                Map<String, ?> parameters = query.getParams();
                 if (!parameters.isEmpty()) {
 
                     List<String> keys = new ArrayList<String>(parameters.keySet());

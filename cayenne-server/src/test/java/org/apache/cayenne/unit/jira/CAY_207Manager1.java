@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.unit.jira;
 
-import org.apache.cayenne.testdo.inherit.Manager;
+import org.apache.cayenne.testdo.inheritance_people.Manager;
 
 /**
  */

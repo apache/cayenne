@@ -185,7 +185,7 @@ public interface DbAdapter {
 
     /**
      * @since 3.0
-     * @deprecated since 3.2 use {@link #getQuotingStrategy()}.
+     * @deprecated since 4.0 use {@link #getQuotingStrategy()}.
      */
     @Deprecated
     QuotingStrategy getQuotingStrategy(boolean needQuotes);
@@ -193,7 +193,7 @@ public interface DbAdapter {
     /**
      * Returns SQL identifier quoting strategy object
      * 
-     * @since 3.2
+     * @since 4.0
      */
     QuotingStrategy getQuotingStrategy();
 
@@ -201,14 +201,14 @@ public interface DbAdapter {
      * Allows the users to get access to the adapter decorated by a given
      * adapter.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     DbAdapter unwrap();
 
     /**
      * Returns a translator factory for EJBQL to SQL translation.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     EJBQLTranslatorFactory getEjbqlTranslatorFactory();
 }

@@ -18,13 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.junit.Test;
 
-public class DataRowTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
+public class DataRowTest {
+
+    @Test
     public void testHessianSerializability() throws Exception {
         DataRow s1 = new DataRow(10);
         s1.put("a", "b");

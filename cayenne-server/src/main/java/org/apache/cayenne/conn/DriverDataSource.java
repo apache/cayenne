@@ -52,7 +52,7 @@ public class DriverDataSource implements DataSource {
      * Loads JDBC driver using current thread class loader.
      * 
      * @since 3.0
-     * @deprecated since 3.2 as class loading should not happen here.
+     * @deprecated since 4.0 as class loading should not happen here.
      */
     @Deprecated
     private static Driver loadDriver(String driverClassName) throws SQLException {

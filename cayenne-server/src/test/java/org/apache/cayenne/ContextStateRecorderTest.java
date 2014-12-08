@@ -19,15 +19,19 @@
 
 package org.apache.cayenne;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.graph.MockGraphManager;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class ContextStateRecorderTest extends TestCase {
+public class ContextStateRecorderTest {
 
+    @Test
     public void testDirtyNodesInState() {
 
         GraphManager map = new MockGraphManager();
@@ -75,6 +79,7 @@ public class ContextStateRecorderTest extends TestCase {
         assertTrue(recorder.dirtyNodes(PersistenceState.HOLLOW).isEmpty());
     }
 
+    @Test
     public void testDirtyNodes() {
         GraphManager map = new MockGraphManager();
         ObjectContextStateLog recorder = new ObjectContextStateLog(map);
@@ -97,8 +102,8 @@ public class ContextStateRecorderTest extends TestCase {
         assertTrue(recorder.dirtyNodes().isEmpty());
     }
 
+    @Test
     public void testHasChanges() {
-
         ObjectContextStateLog recorder = new ObjectContextStateLog(new MockGraphManager());
         assertFalse(recorder.hasChanges());
 

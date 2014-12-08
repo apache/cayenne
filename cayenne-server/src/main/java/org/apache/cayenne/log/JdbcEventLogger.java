@@ -31,72 +31,72 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public interface JdbcEventLogger {
 
-    /**
-     * Logs an arbitrary message.
-     */
-    void log(String message);
+	/**
+	 * Logs an arbitrary message.
+	 */
+	void log(String message);
 
-    /**
-     * Logs database connection event using container data source.
-     */
-    void logConnect(String dataSource);
+	/**
+	 * Logs database connection event using container data source.
+	 */
+	void logConnect(String dataSource);
 
-    void logConnect(String url, String userName, String password);
+	void logConnect(String url, String userName, String password);
 
-    /**
-     * Logs database connection event.
-     */
-    void logPoolCreated(DataSourceInfo dsi);
+	/**
+	 * Logs database connection event.
+	 */
+	void logPoolCreated(DataSourceInfo dsi);
 
-    void logConnectSuccess();
+	void logConnectSuccess();
 
-    void logConnectFailure(Throwable th);
+	void logConnectFailure(Throwable th);
 
-    void logGeneratedKey(DbAttribute attribute, Object value);
+	void logGeneratedKey(DbAttribute attribute, Object value);
 
-    void logQuery(String sql, List<?> params);
+	void logQuery(String sql, List<?> params);
 
-    void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time);
+	void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time);
 
-    /**
-     * @since 3.2
-     */
-    void logQueryParameters(String label, BatchParameterBinding[] bindings);
+	/**
+	 * @since 4.0
+	 */
+	void logQueryParameters(String label, BatchParameterBinding[] bindings);
 
-    /**
-     * @deprecated since 3.2 in favor of
-     *             {@link #logQueryParameters(String, List)}
-     */
-    @Deprecated
-    void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting);
+	/**
+	 * @deprecated since 4.0 in favor of
+	 *             {@link #logQueryParameters(String, BatchParameterBinding[])}
+	 */
+	@Deprecated
+	void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting);
 
-    void logSelectCount(int count, long time);
+	void logSelectCount(int count, long time);
 
-    /**
-     * 
-     * @param count
-     * @param time
-     *            (milliseconds) time query took to run
-     * @param sql
-     *            SQL that was executed, printed when time exceeds timeThreshold
-     * 
-     * @since 3.2
-     */
-    void logSelectCount(int count, long time, String sql);
+	/**
+	 * 
+	 * @param count
+	 * @param time
+	 *            (milliseconds) time query took to run
+	 * @param sql
+	 *            SQL that was executed, printed when time exceeds timeThreshold
+	 * 
+	 * @since 4.0
+	 */
+	void logSelectCount(int count, long time, String sql);
 
-    void logUpdateCount(int count);
+	void logUpdateCount(int count);
 
-    void logBeginTransaction(String transactionLabel);
+	void logBeginTransaction(String transactionLabel);
 
-    void logCommitTransaction(String transactionLabel);
+	void logCommitTransaction(String transactionLabel);
 
-    void logRollbackTransaction(String transactionLabel);
+	void logRollbackTransaction(String transactionLabel);
 
-    void logQueryError(Throwable th);
+	void logQueryError(Throwable th);
 
-    /**
-     * Returns true if current thread default log level is high enough to
-     * generate output.
-     */
-    boolean isLoggable();
+	/**
+	 * Returns true if current thread default log level is high enough to
+	 * generate output.
+	 */
+	boolean isLoggable();
 }

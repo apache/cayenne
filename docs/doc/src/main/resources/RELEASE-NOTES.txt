@@ -8,7 +8,18 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
-Release: 3.2M2
+Release: 4.0.M3
+Date: 
+----------------------------------
+Changes/New Features:
+
+Bug Fixes:
+
+CAY-1974 Copy/Paste DbEntiry throws exception
+
+Changes/New Features:
+----------------------------------
+Release: 4.0.M2
 Date: 
 ----------------------------------
 Changes/New Features:
@@ -61,13 +72,21 @@ CAY-1936 ServerRuntime.getDataSource() returning DataSource of a default DataNod
 CAY-1937 Make Transaction an interface
 CAY-1938 Create a DI factory for transactions, get rid of TransactionDelegate and modeler config for tx policies
 CAY-1939 DataDomain must use injectable TransactionManager
+CAY-1946 CDbimport improvements
 CAY-1949 Search in configuration fields (Catalog, Schema) in DbEntity
 CAY-1952 Undeprecate (actually restore) ObjectContext.deleteObject(..)
 CAY-1953 Redo ResultIteratorCallback to handle single row callback instead of iterator
 CAY-1954 Make Cayenne class constructor protected
 CAY-1958 SelectById - a new full-featured select query to get objects by id
+CAY-1959 ObjectSelect query - a fluent API alternative to SelectQuery
 CAY-1960 ExpressionFactory.exp(..) , and(..), or(..)
 CAY-1962 Implement CayenneTable column resize on double-click on the header separator
+CAY-1965 Change version from 3.2 to 4.0
+CAY-1966 SQLTemplate/SQLSelect positional parameter binding
+CAY-1967 Deprecate SQLTemplate parameter batches
+CAY-1968 SQLSelect cleanup and omissions
+CAY-1971 Variants of Property.like(..) : contains(..), startsWith(..), endsWith(..)
+CAY-1972 A property to override DataSources of multi-module projects 
 
 Bug Fixes:
 
@@ -95,6 +114,8 @@ CAY-1885 Null value in subclass's field.
 CAY-1905 Multi-step prefetching NPE : 1..N..1 with absent N and root with no qualifier
 CAY-1943 XML file not deleted when a DataMap is deleted from the project
 CAY-1961 Fix RemoveAction for DataMaps in ProjectTree
+CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
+CAY-1973 error while generating classes
 
 ----------------------------------
 Release: 3.2M1

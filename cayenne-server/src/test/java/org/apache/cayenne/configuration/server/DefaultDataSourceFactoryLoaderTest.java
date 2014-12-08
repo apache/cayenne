@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -40,13 +36,22 @@ import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResourceLocator;
+import org.junit.Before;
+import org.junit.Test;
 
-public class DefaultDataSourceFactoryLoaderTest extends TestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class DefaultDataSourceFactoryLoaderTest {
 
     private Injector injector;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         Module testModule = new Module() {
 
             @Override
@@ -62,6 +67,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
         this.injector = DIBootstrap.createInjector(testModule);
     }
 
+    @Test
     public void testGetDataSourceFactory_Implicit() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
@@ -76,6 +82,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
         assertTrue(factory instanceof XMLPoolingDataSourceFactory);
     }
 
+    @Test
     public void testGetDataSourceFactory_Explicit() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
@@ -92,6 +99,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
                 ((MockDataSourceFactory1) factory).getInjector());
     }
 
+    @Test
     public void testGetDataSourceFactory_Property() throws Exception {
 
         final RuntimeProperties properties = mock(RuntimeProperties.class);

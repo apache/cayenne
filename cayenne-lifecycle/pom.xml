@@ -22,7 +22,7 @@
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>3.2.M2-SNAPSHOT</version>
+		<version>4.0.M2-SNAPSHOT</version>
 	</parent>
 	<artifactId>cayenne-lifecycle</artifactId>
 	<name>Cayenne Lifecycle Utilities</name>
@@ -57,6 +57,21 @@
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>jcl-over-slf4j</artifactId>
+    		<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>slf4j-api</artifactId>
+    		<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>slf4j-simple</artifactId>
+    		<scope>test</scope>
 		</dependency>
 	</dependencies>
 		<build>

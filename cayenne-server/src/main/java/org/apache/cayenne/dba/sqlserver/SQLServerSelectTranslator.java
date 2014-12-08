@@ -28,7 +28,7 @@ import org.apache.cayenne.query.QueryMetadata;
 public class SQLServerSelectTranslator extends SelectTranslator {
 	
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public SQLServerSelectTranslator(Query query, DataNode dataNode, Connection connection) {
         super(query, dataNode, connection);

@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
@@ -28,9 +26,15 @@ import org.apache.cayenne.di.mock.MockImplementation1Alt;
 import org.apache.cayenne.di.mock.MockImplementation1Alt2;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface1Provider;
+import org.junit.Test;
 
-public class DefaultInjectorBindingTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
+public class DefaultInjectorBindingTest {
+
+    @Test
     public void testClassBinding() {
 
         Module module = new Module() {
@@ -47,6 +51,7 @@ public class DefaultInjectorBindingTest extends TestCase {
         assertEquals("MyName", service.getName());
     }
 
+    @Test
     public void testClassNamedBinding() {
 
         Module module = new Module() {
@@ -79,6 +84,7 @@ public class DefaultInjectorBindingTest extends TestCase {
         assertEquals("alt2", xyzObject.getName());
     }
 
+    @Test
     public void testProviderBinding() {
         Module module = new Module() {
 
@@ -96,6 +102,7 @@ public class DefaultInjectorBindingTest extends TestCase {
         assertEquals("MyName", service.getName());
     }
 
+    @Test
     public void testInstanceBinding() {
 
         final MockImplementation1 instance = new MockImplementation1();
@@ -114,6 +121,7 @@ public class DefaultInjectorBindingTest extends TestCase {
         assertSame(instance, service);
     }
 
+    @Test
     public void testClassReBinding() {
 
         Module module = new Module() {

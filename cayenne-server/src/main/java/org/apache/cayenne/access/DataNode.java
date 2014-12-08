@@ -36,6 +36,7 @@ import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
+import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
@@ -74,6 +75,7 @@ public class DataNode implements QueryEngine {
     private JdbcEventLogger jdbcEventLogger;
     private RowReaderFactory rowReaderFactory;
     private BatchTranslatorFactory batchTranslatorFactory;
+    private SQLTemplateProcessor sqlTemplateProcessor;
 
     TransactionDataSource readThroughDataSource;
 
@@ -454,7 +456,7 @@ public class DataNode implements QueryEngine {
     /**
      * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
         return rowReader(descriptor, queryMetadata, Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
@@ -463,7 +465,7 @@ public class DataNode implements QueryEngine {
     /**
      * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
      * 
-     * @since 3.2
+     * @since 4.0
      */
     public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
             Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
@@ -471,37 +473,51 @@ public class DataNode implements QueryEngine {
     }
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public BatchTranslator batchTranslator(BatchQuery query, String trimFunction) {
         return batchTranslatorFactory.translator(query, getAdapter(), trimFunction);
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public RowReaderFactory getRowReaderFactory() {
         return rowReaderFactory;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setRowReaderFactory(RowReaderFactory rowReaderFactory) {
         this.rowReaderFactory = rowReaderFactory;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public BatchTranslatorFactory getBatchTranslatorFactory() {
         return batchTranslatorFactory;
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     public void setBatchTranslatorFactory(BatchTranslatorFactory batchTranslatorFactory) {
         this.batchTranslatorFactory = batchTranslatorFactory;
     }
+
+    /**
+     * @since 4.0
+     */
+	public SQLTemplateProcessor getSqlTemplateProcessor() {
+		return sqlTemplateProcessor;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public void setSqlTemplateProcessor(SQLTemplateProcessor sqlTemplateProcessor) {
+		this.sqlTemplateProcessor = sqlTemplateProcessor;
+	}
 }

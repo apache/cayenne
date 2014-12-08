@@ -74,7 +74,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
     }
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     @Override
     public Iterator<T> iterator() {

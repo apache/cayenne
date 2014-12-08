@@ -18,13 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.map.naming;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.junit.Test;
 
-public class DefaultNameGeneratorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class DefaultNameGeneratorTest {
+
+    @Test
     public void testStrategy() throws Exception {
         DefaultNameGenerator strategy = new DefaultNameGenerator();
         
@@ -52,4 +55,5 @@ public class DefaultNameGeneratorTest extends TestCase {
         assertEquals(strategy.createObjRelationshipName(new DbRelationship("mother")), "mother");
         assertEquals(strategy.createObjRelationshipName(new DbRelationship("persons")), "persons");
     }
+
 }

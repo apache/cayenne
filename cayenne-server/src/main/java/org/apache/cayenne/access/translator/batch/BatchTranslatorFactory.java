@@ -25,7 +25,7 @@ import org.apache.cayenne.query.BatchQuery;
  * Factory which creates BatchQueryBuilders for different types of queries,
  * which, in their turn, create SQL strings for batch queries.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public interface BatchTranslatorFactory {
 

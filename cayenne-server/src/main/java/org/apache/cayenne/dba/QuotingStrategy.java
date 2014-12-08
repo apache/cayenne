@@ -32,13 +32,13 @@ public interface QuotingStrategy {
     /**
      * Returns a properly quoted identifier.
      * 
-     * @deprecated since 3.2
+     * @deprecated since 4.0
      */
     @Deprecated
     String quoteString(String identifier);
 
     /**
-     * @deprecated since 3.2 renamed to
+     * @deprecated since 4.0 renamed to
      *             {@link #quotedFullyQualifiedName(DbEntity)}.
      */
     @Deprecated
@@ -50,33 +50,33 @@ public interface QuotingStrategy {
      * algorithm. Analog of "quotedIdentifier(entity.getCatalog(),
      * entity.getSchema(), entity.getName())".
      * 
-     * @since 3.2
+     * @since 4.0
      */
     String quotedFullyQualifiedName(DbEntity entity);
 
     /**
      * 
-     * @since 3.2
+     * @since 4.0
      */
     String quotedName(DbAttribute attribute);
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     String quotedSourceName(DbJoin join);
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     String quotedTargetName(DbJoin join);
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     String quotedIdentifier(Entity entity, String... identifierParts);
     
     /**
-     * @since 3.2
+     * @since 4.0
      */
     String quotedIdentifier(DataMap dataMap, String... identifierParts);
 }

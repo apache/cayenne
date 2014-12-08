@@ -83,7 +83,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	/**
 	 * Defines the name of the property for default DB catalog.
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public static final String DEFAULT_CATALOG_PROPERTY = "defaultCatalog";
 
@@ -148,7 +148,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	private SortedMap<String, SQLResult> results;
 
 	/**
-	 * @deprecated since 3.2 unused as listeners are no longer tied to a
+	 * @deprecated since 4.0 unused as listeners are no longer tied to a
 	 *             DataMap.
 	 */
 	private List<EntityListener> defaultEntityListeners;
@@ -782,7 +782,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * generic Collection is returned.
 	 * 
 	 * @since 3.0
-	 * @deprecated since 3.2 unused as listeners are no longer tied to a
+	 * @deprecated since 4.0 unused as listeners are no longer tied to a
 	 *             DataMap.
 	 */
 	@Deprecated
@@ -796,7 +796,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * @since 3.0
 	 * @throws IllegalArgumentException
 	 *             if a listener for the same class name is already registered.
-	 * @deprecated since 3.2 unused as listeners are no longer tied to a
+	 * @deprecated since 4.0 unused as listeners are no longer tied to a
 	 *             DataMap.
 	 */
 	@Deprecated
@@ -814,7 +814,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * Removes a listener matching class name.
 	 * 
 	 * @since 3.0
-	 * @deprecated since 3.2 unused as listeners are no longer tied to a
+	 * @deprecated since 4.0 unused as listeners are no longer tied to a
 	 *             DataMap.
 	 */
 	@Deprecated
@@ -831,7 +831,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
 	/**
 	 * @since 3.0
-	 * @deprecated since 3.2 unused, as listeners are no longer tied to a
+	 * @deprecated since 4.0 unused, as listeners are no longer tied to a
 	 *             DataMap.
 	 */
 	@Deprecated
@@ -1299,21 +1299,21 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public String getDefaultCatalog() {
 		return defaultCatalog;
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public void setDefaultCatalog(String defaultCatalog) {
 		this.defaultCatalog = defaultCatalog;
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public EntityInheritanceTree getInheritanceTree(String entityName) {
 		// TODO: we should support that
@@ -1321,7 +1321,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	/**
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public ObjEntity getObjEntity(Class<?> entityClass) {
 		if (entityClass == null) {
@@ -1356,4 +1356,39 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		clearQueries();
 		clearResultSets();
 	}
+
+    /**
+     *
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public String getNameWithDefaultPackage(String name) {
+        return getNameWithPackage(defaultPackage, name);
+    }
+
+    /**
+     *
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public static String getNameWithPackage(String pack, String name) {
+        if (Util.isEmptyString(pack)) {
+            return name;
+        } else {
+            return pack + (pack.endsWith(".") ? ""  : ".") + name;
+        }
+    }
+
+    /**
+     *
+     * @param name
+     * @return package + "." + name when it is possible otherwise just name
+     *
+     * @since 3.2
+     */
+    public String getNameWithDefaultClientPackage(String name) {
+        return getNameWithPackage(defaultClientPackage, name);
+    }
 }

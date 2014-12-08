@@ -63,6 +63,7 @@ java -jar $RAT -d $DIR \
 	-e '*.html' \
 	-e '*.css' \
 	-e '*.jceks' \
+	-e 'plain.txt' \
 	-e 'derby.log'
 
 
