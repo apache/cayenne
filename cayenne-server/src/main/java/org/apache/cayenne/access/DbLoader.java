@@ -26,13 +26,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.ManyToManyCandidateEntity;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
@@ -48,7 +47,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DbRelationshipDetected;
 import org.apache.cayenne.map.DetectedDbEntity;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -73,12 +71,6 @@ public class DbLoader {
 
     public static final String WILDCARD = "%";
     public static final String WILDCARD_PATTERN = ".*";
-
-    /**
-     * CAY-479 - need to track which entities which are skipped during loading from db since it it already present in
-     * dataMap and haven't marked for overriding so that relationships to non-skipped entities can be loaded
-     */
-    private Set<DbEntity> skippedEntities = new HashSet<DbEntity>();
 
     private final Connection connection;
     private final DbAdapter adapter;
@@ -223,19 +215,31 @@ public class DbLoader {
      * @return
      * @since 3.2
      */
-    public List<DbEntity> getTables(DbLoaderConfiguration config, String[] types)
+    public Map<DbPath, Map<String, DbEntity>> getTables(DbLoaderConfiguration config, String[] types)
             throws SQLException {
+        if (types == null || types.length == 0) {
+            types = getDefaultTableTypes();
+        }
 
-        List<DbEntity> tables = new LinkedList<DbEntity>();
+        Map<DbPath, Map<String, DbEntity>> tables = new HashMap<DbPath, Map<String, DbEntity>>();
         FiltersConfig filters = config.getFiltersConfig();
         for (DbPath path : filters.pathsForQueries()) {
-            tables.addAll(getDbEntities(filters, path, types));
+            tables.put(path, getDbEntities(filters, path, types));
         }
 
         return tables;
     }
 
-    private List<DbEntity> getDbEntities(FiltersConfig filters, DbPath dbPath, String[] types) throws SQLException {
+    /**
+     *
+     * @param filters
+     * @param dbPath
+     * @param types
+     * @return Map<TableName, DbEntity>
+     *
+     * @throws SQLException
+     */
+    private Map<String, DbEntity> getDbEntities(FiltersConfig filters, DbPath dbPath, String[] types) throws SQLException {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Read tables: catalog=" + dbPath.catalog + ", schema=" + dbPath.schema + ", types="
                     + Arrays.toString(types));
@@ -243,7 +247,7 @@ public class DbLoader {
 
         ResultSet rs = getMetaData().getTables(dbPath.catalog, dbPath.schema, WILDCARD, types);
 
-        List<DbEntity> tables = new ArrayList<DbEntity>();
+        Map<String, DbEntity> tables = new HashMap<String, DbEntity>();
         try {
             while (rs.next()) {
                 // Oracle 9i and newer has a nifty recycle bin feature... but we don't
@@ -265,7 +269,7 @@ public class DbLoader {
                 table.setSchema(schema);
 
                 if (filters.filter(new DbPath(catalog, schema)).tableFilter().isInclude(table)) {
-                    tables.add(table);
+                    tables.put(name, table);
                 }
             }
         } finally {
@@ -284,81 +288,48 @@ public class DbLoader {
      *            The list of org.apache.cayenne.ashwood.dbutil.Table objects
      *            for which DbEntities must be created.  @return false if loading must be immediately aborted.
      */
-    public List<DbEntity> loadDbEntities(DataMap map, DbLoaderConfiguration config, Collection<? extends DbEntity> tables) throws SQLException {
+    public List<DbEntity> loadDbEntities(DataMap map, DbLoaderConfiguration config, Map<DbPath, Map<String, DbEntity>> tables) throws SQLException {
         /** List of db entities to process. */
+
         List<DbEntity> dbEntityList = new ArrayList<DbEntity>();
-        for (DbEntity dbEntity : tables) {
+        for (Map.Entry<DbPath, Map<String, DbEntity>> tablesMap : tables.entrySet()) {
+            for (DbEntity dbEntity : tablesMap.getValue().values()) {
 
-            // Check if there already is a DbEntity under such name
-            // if so, consult the delegate what to do
-            DbEntity oldEnt = map.getDbEntity(dbEntity.getName());
-            if (oldEnt != null) {
-                if (delegate == null) {
-                    break; // no delegate, don't know what to do, cancel import
-                    // TODO continue?
+                // Check if there already is a DbEntity under such name
+                // if so, consult the delegate what to do
+                DbEntity oldEnt = map.getDbEntity(dbEntity.getName());
+                if (oldEnt != null) {
+                    map.removeDbEntity(oldEnt.getName(), true);
+                }
+                map.addDbEntity(dbEntity);
+
+                // notify delegate
+                if (delegate != null) {
+                    delegate.dbEntityAdded(dbEntity);
                 }
 
-                try {
-                    if (delegate.overwriteDbEntity(oldEnt)) {
-                        LOGGER.debug("Overwrite: " + oldEnt.getName());
-                        map.removeDbEntity(oldEnt.getName(), true);
-                        delegate.dbEntityRemoved(oldEnt);
-                    } else {
-                        LOGGER.debug("Keep old: " + oldEnt.getName());
-
-                        // cay-479 - need to track entities that were not loaded for
-                        // relationships exported to entities that were
-                        skippedEntities.add(oldEnt);
-                        continue;
-                    }
-                } catch (CayenneException ex) {
-                    LOGGER.debug("Load canceled.");
-
-                    return null; // cancel immediately
+                // delegate might have thrown this entity out... so check if it is still
+                // around before continuing processing
+                if (map.getDbEntity(dbEntity.getName()) == dbEntity) {
+                    dbEntityList.add(dbEntity);
                 }
             }
 
+            loadDbAttributes(config.getFiltersConfig(), tablesMap.getKey(), tablesMap.getValue());
 
-
-            map.addDbEntity(dbEntity);
-
-            // notify delegate
-            if (delegate != null) {
-                delegate.dbEntityAdded(dbEntity);
-            }
-            loadDbAttributes(config.getFiltersConfig(), dbEntity);
-
-            // delegate might have thrown this entity out... so check if it is still
-            // around before continuing processing
-            if (map.getDbEntity(dbEntity.getName()) == dbEntity) {
-                dbEntityList.add(dbEntity);
-            }
-        }
-
-        // get primary keys for each table and store it in dbEntity
-        getPrimaryKeysForEachTableAndStoreItInDbEntity(map, tables);
-
-        // cay-479 - iterate skipped DbEntities to populate exported keys
-        for (DbEntity skippedEntity : skippedEntities) {
-            loadDbRelationships(map, skippedEntity, config);
+            // get primary keys for each table and store it in dbEntity
+            getPrimaryKeyForTable(tablesMap.getValue());
         }
 
         return dbEntityList;
-
     }
 
-    private void getPrimaryKeysForEachTableAndStoreItInDbEntity(DataMap map, Collection<? extends DbEntity> tables)
-            throws SQLException {
-
-        for (DbEntity dbEntity : map.getDbEntities()) {
-            if (!tables.contains(dbEntity)) { // TODO is it ok? equals is not overridden
-                continue;
-            }
-
+    private void getPrimaryKeyForTable(Map<String, DbEntity> tables) throws SQLException {
+        for (DbEntity dbEntity : tables.values()) {
             ResultSet rs = getMetaData().getPrimaryKeys(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName());
             try {
                 while (rs.next()) {
-                    String columnName = rs.getString(4); // COLUMN_NAME
+                    String columnName = rs.getString("COLUMN_NAME");
                     DbAttribute attribute = dbEntity.getAttribute(columnName);
 
                     if (attribute != null) {
@@ -370,10 +341,11 @@ public class DbLoader {
                         LOGGER.warn("Can't locate attribute for primary key: " + columnName);
                     }
 
-                    String pkName = rs.getString(6); // PK_NAME
+                    String pkName = rs.getString("PK_NAME");
                     if (pkName != null && dbEntity instanceof DetectedDbEntity) {
                         ((DetectedDbEntity) dbEntity).setPrimaryKeyName(pkName);
                     }
+
                 }
             } finally {
                 rs.close();
@@ -381,8 +353,8 @@ public class DbLoader {
         }
     }
 
-    private void loadDbAttributes(FiltersConfig filters, DbEntity dbEntity) throws SQLException {
-        ResultSet rs = getMetaData().getColumns(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName(), "%");
+    private void loadDbAttributes(FiltersConfig filters, DbPath path, Map<String, DbEntity> entities) throws SQLException {
+        ResultSet rs = getMetaData().getColumns(path.catalog, path.schema, WILDCARD, WILDCARD);
 
         try {
             while (rs.next()) {
@@ -390,25 +362,30 @@ public class DbLoader {
                 // returns duplicate record sets for the same table, messing up table
                 // names. E.g. for the system table "WK$_ATTR_MAPPING" columns are
                 // returned twice - as "WK$_ATTR_MAPPING" and "WK$$_ATTR_MAPPING"... Go figure
-
                 String tableName = rs.getString("TABLE_NAME");
-                if (!dbEntity.getName().equals(tableName)) {
-                    LOGGER.info("Incorrectly returned columns for '" + tableName + ", skipping.");
+                DbEntity dbEntity = entities.get(tableName);
+                if (dbEntity == null) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Skip column for '" + tableName + "." + rs.getString("COLUMN_NAME") + ".");
+                    }
                     continue;
                 }
 
                 DbAttribute attr = loadDbAttribute(rs);
                 attr.setEntity(dbEntity);
-                DbPath path = new DbPath(dbEntity.getCatalog(), dbEntity.getSchema(), tableName);
                 Filter<DbAttribute> filter = filters.filter(path).columnFilter();
                 if (!filter.isInclude(attr)) {
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Importing: attribute '" + attr.getEntity().getName() + "." + attr.getName()
-                                + "' is skipped (Path: " + path + "; Filter: " + filter + ")");
+                        LOGGER.debug("Skip column for '" + attr.getEntity().getName() + "." + attr.getName()
+                                + "' (Path: " + path + "; Filter: " + filter + ")");
                     }
                     continue;
                 }
 
+                // override existing attributes if it comes again
+                if (dbEntity.getAttribute(attr.getName()) != null) {
+                    dbEntity.removeAttribute(attr.getName());
+                }
                 dbEntity.addAttribute(attr);
             }
         } finally {
@@ -498,110 +475,137 @@ public class DbLoader {
         return new EntityMergeSupport(map, nameGenerator, !creatingMeaningfulPK);
     }
 
-    /** Loads database relationships into a DataMap. */
-    protected void loadDbRelationships(DataMap map, DbLoaderConfiguration config, Iterable<DbEntity> entities) throws SQLException {
-        for (DbEntity pkEntity : entities) {
-            loadDbRelationships(map, pkEntity, config);
+    protected void loadDbRelationships(DbLoaderConfiguration config, Map<DbPath, Map<String, DbEntity>> tables) throws SQLException {
+        // Get all the foreign keys referencing this table
+
+        for (Map.Entry<DbPath, Map<String, DbEntity>> pathEntry : tables.entrySet()) {
+            Map<String, Set<ExportedKey>> keys = loadExportedKeys(config, pathEntry.getKey(), pathEntry.getValue());
+            for (Map.Entry<String, Set<ExportedKey>> entry : keys.entrySet()) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Process keys for: " + entry.getKey());
+                }
+
+                Set<ExportedKey> exportedKeys = entry.getValue();
+                ExportedKey key = exportedKeys.iterator().next();
+                if (key == null) {
+                    throw new IllegalStateException();
+                }
+
+                DbEntity pkEntity = pathEntry.getValue().get(key.getPKTableName());
+                if (pkEntity == null) {
+                    skipRelationLog(key, key.getPKTableName());
+                    continue;
+                }
+
+                DbEntity fkEntity = pathEntry.getValue().get(key.getFKTableName());
+                if (fkEntity == null) {
+                    skipRelationLog(key, key.getFKTableName());
+                    continue;
+                }
+
+                DbRelationship forwardRelationship = new DbRelationship(generateName(pkEntity, key, true));
+                forwardRelationship.setSourceEntity(pkEntity);
+                forwardRelationship.setTargetEntity(fkEntity);
+
+                DbRelationshipDetected reverseRelationship = new DbRelationshipDetected(generateName(fkEntity, key, false));
+                reverseRelationship.setFkName(key.getFKName());
+                reverseRelationship.setSourceEntity(fkEntity);
+                reverseRelationship.setTargetEntity(pkEntity);
+                reverseRelationship.setToMany(false);
+                fkEntity.addRelationship(reverseRelationship);
+
+                boolean toPK = createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
+
+                forwardRelationship.setToDependentPK(toPK);
+
+                boolean isOneToOne = toPK && fkEntity.getPrimaryKeys().size()
+                        == forwardRelationship.getJoins().size();
+
+                forwardRelationship.setToMany(!isOneToOne);
+                forwardRelationship.setName(generateName(pkEntity, key, !isOneToOne));
+                pkEntity.addRelationship(forwardRelationship);
+            }
         }
     }
 
-    protected void loadDbRelationships(DataMap map, DbEntity entity, DbLoaderConfiguration config) throws SQLException {
-        // Get all the foreign keys referencing this table
-        ResultSet rs;
+    private boolean createAndAppendJoins(Set<ExportedKey> exportedKeys, DbEntity pkEntity, DbEntity fkEntity, DbRelationship forwardRelationship, DbRelationshipDetected reverseRelationship) {
+        boolean toPK = true;
+        for (ExportedKey exportedKey : exportedKeys) {
+            // Create and append joins
+            String pkName = exportedKey.getPKColumnName();
+            String fkName = exportedKey.getFKColumnName();
 
-        try {
-            rs = getMetaData().getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName());
-        } catch (SQLException cay182Ex) {
-            // Sybase-specific - the line above blows on VIEWS, see CAY-182.
-            LOGGER.info("Error getting relationships for '" + entity.getName() + "', ignoring.");
-            return;
+            // skip invalid joins...
+            DbAttribute pkAtt = pkEntity.getAttribute(pkName);
+            if (pkAtt == null) {
+                LOGGER.info("no attribute for declared primary key: " + pkName);
+                continue;
+            }
+
+            DbAttribute fkAtt = fkEntity.getAttribute(fkName);
+            if (fkAtt == null) {
+                LOGGER.info("no attribute for declared foreign key: " + fkName);
+                continue;
+            }
+
+            forwardRelationship.addJoin(new DbJoin(forwardRelationship, pkName, fkName));
+            reverseRelationship.addJoin(new DbJoin(reverseRelationship, fkName, pkName));
+
+            if (!pkAtt.isPrimaryKey()) {
+                toPK = false;
+            }
         }
+        return toPK;
+    }
 
-        try {
-            // these will be initialized every time a new target entity is found
-            // in the result set (which should be ordered by table name among other things)
-            DbRelationship forwardRelationship = null;
-            DbRelationshipDetected reverseRelationship = null;
-            DbEntity fkEntity = null;
-            ExportedKey key = null;
+    private Map<String, Set<ExportedKey>> loadExportedKeys(DbLoaderConfiguration config, DbPath dbPath, Map<String, DbEntity> tables) throws SQLException {
+        Map<String, Set<ExportedKey>> keys = new HashMap<String, Set<ExportedKey>>();
 
-            while (rs.next()) {
-                key = ExportedKey.extractData(rs);
+        for (DbEntity dbEntity : tables.values()) {
+            ResultSet rs;
+            try {
+                rs = getMetaData().getExportedKeys(dbPath.catalog, dbPath.schema, dbEntity.getName());
+            } catch (SQLException cay182Ex) {
+                // Sybase-specific - the line above blows on VIEWS, see CAY-182.
+                LOGGER.info("Error getting relationships for '" + dbPath + "', ignoring. "
+                        + cay182Ex.getMessage(), cay182Ex);
+                return new HashMap<String, Set<ExportedKey>>();
+            }
 
-                short keySeq = rs.getShort("KEY_SEQ");
-                if (keySeq == 1) {
+            try {
+                while (rs.next()) {
+                    ExportedKey key = ExportedKey.extractData(rs);
 
-                    if (forwardRelationship != null) {
-                        postProcessMasterDbRelationship(forwardRelationship, key);
-                        forwardRelationship = null;
+                    DbEntity fkEntity = tables.get(key.getFKTableName());
+                    if (fkEntity == null) {
+                        skipRelationLog(key, key.getFKTableName());
+                        continue;
                     }
-
-                    // start new entity
-                    String fkEntityName = key.getFKTableName();
-
-                    fkEntity = map.getDbEntity(fkEntityName);
-                    DbPath path = new DbPath(entity.getCatalog(), entity.getSchema(), entity.getName());
+                    DbPath path = new DbPath(fkEntity.getCatalog(), fkEntity.getSchema(), fkEntity.getName());
                     if (!config.getFiltersConfig().filter(path).tableFilter().isInclude(fkEntity)) {
                         continue;
                     }
 
-                    if (fkEntity == null) {
-                        LOGGER.info("FK warning: no entity found for name '" + fkEntityName + "'");
-                    } else if (skippedEntities.contains(entity) && skippedEntities.contains(fkEntity)) {
-                        // cay-479 - don't doLoad relationships between two skipped entities.
-                        continue;
-                    } else {
-                        // init relationship
-                        forwardRelationship = new DbRelationship(generateName(entity, key, true));
-                        forwardRelationship.setSourceEntity(entity);
-                        forwardRelationship.setTargetEntity(fkEntity);
-                        entity.addRelationship(forwardRelationship);
+                    Set<ExportedKey> exportedKeys = keys.get(key.getStrKey());
+                    if (exportedKeys == null) {
+                        exportedKeys = new TreeSet<ExportedKey>();
 
-                        reverseRelationship = new DbRelationshipDetected(generateName(fkEntity, key, false));
-                        reverseRelationship.setFkName(key.getFKName());
-                        reverseRelationship.setToMany(false);
-                        reverseRelationship.setSourceEntity(fkEntity);
-                        reverseRelationship.setTargetEntity(entity);
-                        fkEntity.addRelationship(reverseRelationship);
+                        keys.put(key.getStrKey(), exportedKeys);
                     }
+                    exportedKeys.add(key);
                 }
 
-                if (fkEntity != null) {
-                    // Create and append joins
-                    String pkName = key.getPKColumnName();
-                    String fkName = key.getFKColumnName();
-
-                    // skip invalid joins...
-                    DbAttribute pkAtt = entity.getAttribute(pkName);
-                    if (pkAtt == null) {
-                        LOGGER.info("no attribute for declared primary key: " + pkName);
-                        continue;
-                    }
-
-                    DbAttribute fkAtt = fkEntity.getAttribute(fkName);
-                    if (fkAtt == null) {
-                        LOGGER.info("no attribute for declared foreign key: " + fkName);
-                        continue;
-                    }
-
-                    if (forwardRelationship != null) {
-                        forwardRelationship.addJoin(new DbJoin(forwardRelationship, pkName, fkName));
-                    }
-                    if (reverseRelationship != null) {
-                        reverseRelationship.addJoin(new DbJoin(reverseRelationship, fkName, pkName));
-                    }
-
-                }
+            } finally {
+                rs.close();
             }
-
-            if (forwardRelationship != null) {
-                postProcessMasterDbRelationship(forwardRelationship, key);
-                forwardRelationship = null;
-            }
-
-        } finally {
-            rs.close();
         }
+        return keys;
+    }
+
+    private void skipRelationLog(ExportedKey key, String tableName) {
+        // if (LOGGER.isDebugEnabled()) {
+        LOGGER.info("Skip relation: '" + key + "' because table '" + tableName + "' not found");
+        // }
     }
 
     private String generateName(DbEntity entity, ExportedKey key, boolean toMany) {
@@ -615,29 +619,7 @@ public class DbLoader {
      * called on relationships from PK to FK, not the reverse ones.
      */
     protected void postProcessMasterDbRelationship(DbRelationship relationship, ExportedKey key) {
-        boolean toPK = true;
-        List<DbJoin> joins = relationship.getJoins();
 
-        for (DbJoin join : joins) {
-            if (!join.getTarget().isPrimaryKey()) {
-                toPK = false;
-                break;
-            }
-
-        }
-
-        relationship.setToDependentPK(toPK);
-        relationship.setToMany(!(toPK && relationship.getTargetEntity().getPrimaryKeys().size() == joins.size()));
-
-        // if this is really to-one we need to rename the relationship
-        if (!relationship.isToMany()) {
-            Entity source = relationship.getSourceEntity();
-            source.removeRelationship(relationship.getName());
-            relationship.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dbRelationship, source,
-                    nameGenerator.createDbRelationshipName(key, false)));
-
-            source.addRelationship(relationship);
-        }
     }
 
     /**
@@ -731,8 +713,8 @@ public class DbLoader {
         config.setFiltersConfig(new FiltersConfig(new EntityFilters(
                 new DbPath(null, schemaPattern), transformPatternToFilter(tablePattern), TRUE, NULL)));
         config.setTableTypes(tableTypes);
-        
-        load(dataMap, config);
+
+        load(dataMap, config, tableTypes);
         return dataMap;
     }
 
@@ -753,21 +735,35 @@ public class DbLoader {
      *
      * @since 4.0
      */
-	public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+    public void load(DataMap dataMap, DbLoaderConfiguration config, String... tableTypes) throws SQLException {
 
-		String[] tableTypes = config.getTableTypes() == null ? this.getDefaultTableTypes() : config.getTableTypes();
-		List<DbEntity> entities = loadDbEntities(dataMap, config, getTables(config, tableTypes));
+        Map<DbPath, Map<String, DbEntity>> tables = getTables(config, tableTypes);
+        List<DbEntity> entities = loadDbEntities(dataMap, config, tables);
 
-		if (entities != null) {
-			loadDbRelationships(dataMap, config, entities);
-			loadObjEntities(dataMap, config, entities);
+        if (entities != null) {
+            loadDbRelationships(config, tables);
 
-			flattenManyToManyRelationships(dataMap);
-			fireObjEntitiesAddedEvents(dataMap);
-		}
+            loadObjEntities(dataMap, config, entities);
+            flattenManyToManyRelationships(dataMap);
+            fireObjEntitiesAddedEvents(dataMap);
+        }
+    }
 
-		loadProcedures(dataMap, config);
-	}
+    /**
+     * Performs database reverse engineering to match the specified catalog,
+     * schema, table name and table type patterns and fills the specified
+     * DataMap object with DB and object mapping info.
+     *
+     * @since 3.2
+     */
+    public DataMap load(DbLoaderConfiguration config) throws SQLException {
+
+        DataMap dataMap = new DataMap();
+        load(dataMap, config, config.getTableTypes());
+        loadProcedures(dataMap, config);
+
+        return dataMap;
+    }
 
     /**
      * Loads database stored procedures into the DataMap.
@@ -809,7 +805,7 @@ public class DbLoader {
             return procedures;
         }
 
-        loadProceduresColumns(procedures);
+        loadProceduresColumns(config, procedures);
 
         for (Procedure procedure : procedures.values()) {
             dataMap.addProcedure(procedure);
@@ -818,65 +814,75 @@ public class DbLoader {
         return procedures;
     }
 
-    private void loadProceduresColumns(Map<String, Procedure> procedures) throws SQLException {
-        ResultSet columnsRS = getMetaData().getProcedureColumns(null, null, null, null); // TODO catalog, schema
-        try {
-            while (columnsRS.next()) {
+    private void loadProceduresColumns(DbLoaderConfiguration config, Map<String, Procedure> procedures) throws SQLException {
+        for (DbPath dbPath : config.getFiltersConfig().pathsForQueries()) {
+            ResultSet columnsRS = getMetaData().getProcedureColumns(dbPath.catalog, dbPath.schema, null, null);
+            try {
+                while (columnsRS.next()) {
 
-                String schema = columnsRS.getString("PROCEDURE_SCHEM");
-                String name = columnsRS.getString("PROCEDURE_NAME");
-                String key = (schema == null ? "" : schema + '.') + name ;
-                Procedure procedure = procedures.get(key);
-                if (procedure == null) {
-                    continue;
-                }
-
-                String columnName = columnsRS.getString("COLUMN_NAME");
-
-                // skip ResultSet columns, as they are not described in Cayenne procedures yet...
-                short type = columnsRS.getShort("COLUMN_TYPE");
-                if (type == DatabaseMetaData.procedureColumnResult) {
-                    LOGGER.debug("skipping ResultSet column: " + key + "." + columnName);
-                }
-
-                if (columnName == null) {
-                    if (type == DatabaseMetaData.procedureColumnReturn) {
-                        LOGGER.debug("null column name, assuming result column: " + key);
-                        columnName = "_return_value";
-                        procedure.setReturningValue(true);
-                    } else {
-                        LOGGER.info("invalid null column name, skipping column : " + key);
+                    String schema = columnsRS.getString("PROCEDURE_SCHEM");
+                    String name = columnsRS.getString("PROCEDURE_NAME");
+                    String key = (schema == null ? "" : schema + '.') + name ;
+                    Procedure procedure = procedures.get(key);
+                    if (procedure == null) {
                         continue;
                     }
-                }
 
-                int columnType = columnsRS.getInt("DATA_TYPE");
-
-                // ignore precision of non-decimal columns
-                int decimalDigits = -1;
-                if (TypesMapping.isDecimal(columnType)) {
-                    decimalDigits = columnsRS.getShort("SCALE");
-                    if (columnsRS.wasNull()) {
-                        decimalDigits = -1;
+                    ProcedureParameter column = loadProcedureParams(columnsRS, key, procedure);
+                    if (column == null) {
+                        continue;
                     }
+                    procedure.addCallParameter(column);
                 }
-
-                ProcedureParameter column = new ProcedureParameter(columnName);
-                int direction = getDirection(type);
-                if (direction != -1) {
-                    column.setDirection(direction);
-                }
-
-                column.setType(columnType);
-                column.setMaxLength(columnsRS.getInt("LENGTH"));
-                column.setPrecision(decimalDigits);
-
-                column.setProcedure(procedure);
-                procedure.addCallParameter(column);
+            } finally {
+                columnsRS.close();
             }
-        } finally {
-            columnsRS.close();
         }
+    }
+
+    private ProcedureParameter loadProcedureParams(ResultSet columnsRS, String key, Procedure procedure) throws SQLException {
+        String columnName = columnsRS.getString("COLUMN_NAME");
+
+        // skip ResultSet columns, as they are not described in Cayenne procedures yet...
+        short type = columnsRS.getShort("COLUMN_TYPE");
+        if (type == DatabaseMetaData.procedureColumnResult) {
+            LOGGER.debug("skipping ResultSet column: " + key + "." + columnName);
+        }
+
+        if (columnName == null) {
+            if (type == DatabaseMetaData.procedureColumnReturn) {
+                LOGGER.debug("null column name, assuming result column: " + key);
+                columnName = "_return_value";
+                procedure.setReturningValue(true);
+            } else {
+                LOGGER.info("invalid null column name, skipping column : " + key);
+                return null;
+            }
+        }
+
+        int columnType = columnsRS.getInt("DATA_TYPE");
+
+        // ignore precision of non-decimal columns
+        int decimalDigits = -1;
+        if (TypesMapping.isDecimal(columnType)) {
+            decimalDigits = columnsRS.getShort("SCALE");
+            if (columnsRS.wasNull()) {
+                decimalDigits = -1;
+            }
+        }
+
+        ProcedureParameter column = new ProcedureParameter(columnName);
+        int direction = getDirection(type);
+        if (direction != -1) {
+            column.setDirection(direction);
+        }
+
+        column.setType(columnType);
+        column.setMaxLength(columnsRS.getInt("LENGTH"));
+        column.setPrecision(decimalDigits);
+
+        column.setProcedure(procedure);
+        return column;
     }
 
     private static int getDirection(short type) {

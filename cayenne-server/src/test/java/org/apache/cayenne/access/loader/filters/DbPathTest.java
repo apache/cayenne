@@ -21,6 +21,9 @@ package org.apache.cayenne.access.loader.filters;
 
 import org.junit.Test;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import static org.apache.cayenne.access.loader.filters.FiltersFactory.path;
 import static org.junit.Assert.*;
 
@@ -71,5 +74,20 @@ public class DbPathTest {
         DbPath path2 = path("", "APP");
         assertEquals(path1, path1.merge(path2));
         assertEquals(path1, path2.merge(path1));
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        Set<DbPath> pathes = new TreeSet<DbPath>();
+        pathes.add(path("q", "w"));
+        pathes.add(path("q", null));
+        pathes.add(path("q", ""));
+        pathes.add(path("", ""));
+        pathes.add(path("q", "w"));
+        pathes.add(path("q", "w"));
+        pathes.add(path("q", "w"));
+        pathes.add(path("q", "w"));
+
+        assertEquals(4, pathes.size());
     }
 }

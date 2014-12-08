@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.loader.filters;
 
+import org.apache.cayenne.map.DbEntity;
+
 import java.util.regex.Pattern;
 
 /**
@@ -149,5 +151,9 @@ public class DbPath implements Comparable<DbPath> {
         } else {
             return null;
         }
+    }
+
+    public static DbPath build(DbEntity entity) {
+        return new DbPath(entity.getCatalog(), entity.getSchema(), entity.getName());
     }
 }

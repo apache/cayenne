@@ -32,17 +32,17 @@ public class DefaultNameGeneratorTest {
         DefaultNameGenerator strategy = new DefaultNameGenerator();
         
         ExportedKey key = new ExportedKey("ARTIST", "ARTIST_ID", null,
-                "PAINTING", "ARTIST_ID", null);
+                "PAINTING", "ARTIST_ID", null, (short) 1);
         assertEquals(strategy.createDbRelationshipName(key, false), "artist"); 
         assertEquals(strategy.createDbRelationshipName(key, true), "paintings");
         
         key = new ExportedKey("PERSON", "PERSON_ID", null,
-                "PERSON", "MOTHER_ID", null);
+                "PERSON", "MOTHER_ID", null, (short) 1);
         assertEquals(strategy.createDbRelationshipName(key, false), "mother"); 
         assertEquals(strategy.createDbRelationshipName(key, true), "people");
         
         key = new ExportedKey("PERSON", "PERSON_ID", null,
-                "ADDRESS", "SHIPPING_ADDRESS_ID", null);
+                "ADDRESS", "SHIPPING_ADDRESS_ID", null, (short) 1);
         assertEquals(strategy.createDbRelationshipName(key, false), "shippingAddress"); 
         assertEquals(strategy.createDbRelationshipName(key, true), "addresses");
         

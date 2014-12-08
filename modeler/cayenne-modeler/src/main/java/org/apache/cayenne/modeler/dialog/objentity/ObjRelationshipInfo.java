@@ -346,12 +346,8 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
                 .getInstance()
                 .getLastUsedStrategies()
                 .get(0)).createDbRelationshipName(
-                new ExportedKey(targetModel.getSource().getName(),
-                                null,
-                                null,
-                                targetModel.getTarget().getName(),
-                                null,
-                                null),
+                new ExportedKey(targetModel.getSource().getName(), null, null,
+                                targetModel.getTarget().getName(), null, null, (short) 1),
                 targetModel.isToMany()));
 
         // note: NamedObjectFactory doesn't set source or target, just the name
