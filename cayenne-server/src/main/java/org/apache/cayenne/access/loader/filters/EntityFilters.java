@@ -315,6 +315,10 @@ public class EntityFilters {
             return this;
         }
 
+        public String catalog() {
+            return catalog;
+        }
+
         public String schema() {
             return schema;
         }
