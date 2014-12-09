@@ -321,4 +321,8 @@ public class DbImportConfiguration {
     public DataSourceInfo getDataSourceInfo() {
         return dataSourceInfo;
     }
+
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        this.dbLoaderConfiguration.setSkipRelationshipsLoading(skipRelationshipsLoading);
+    }
 }

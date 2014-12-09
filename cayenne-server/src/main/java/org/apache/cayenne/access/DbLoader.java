@@ -744,7 +744,9 @@ public class DbLoader {
         List<DbEntity> entities = loadDbEntities(dataMap, config, tables);
 
         if (entities != null) {
-            loadDbRelationships(config, tables);
+            if (!config.isSkipRelationshipsLoading()) {
+                loadDbRelationships(config, tables);
+            }
 
             loadObjEntities(dataMap, config, entities);
             flattenManyToManyRelationships(dataMap);

@@ -20,10 +20,7 @@ package org.apache.cayenne.tools;
 
 import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
 import static org.apache.cayenne.access.loader.filters.FilterFactory.exclude;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchemaContent;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
 
 import org.apache.cayenne.access.loader.filters.DbPath;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
@@ -76,7 +73,11 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     @Test
     public void testLoadFlat() throws Exception {
         assertFlat(getCdbImport("pom-flat.xml").getReverseEngineering());
+    }
 
+    @Test
+    public void testSkipRelationshipsLoading() throws Exception {
+        assertSkipRelationshipsLoading(getCdbImport("pom-skip-relationships-loading.xml").getReverseEngineering());
     }
 
     private DbImporterMojo getCdbImport(String pomFileName) throws Exception {

@@ -112,6 +112,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		test("testDefaultPackage");
 	}
 
+	public void testSkipRelationshipsLoading() throws Exception {
+		test("testSkipRelationshipsLoading");
+	}
+
 	private void test(String name) throws Exception {
 		DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
 		File mapFile = cdbImport.getMap();

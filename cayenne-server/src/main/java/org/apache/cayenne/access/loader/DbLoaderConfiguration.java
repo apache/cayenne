@@ -68,6 +68,8 @@ public class DbLoaderConfiguration {
      */
     private String namingStrategy;
 
+    private Boolean skipRelationshipsLoading;
+
     private String[] tableTypes;
 
     private FiltersConfig filtersConfig;
@@ -108,8 +110,25 @@ public class DbLoaderConfiguration {
         this.filtersConfig = filtersConfig;
     }
 
+    public Boolean isSkipRelationshipsLoading() {
+        return skipRelationshipsLoading != null && skipRelationshipsLoading;
+    }
+
+    public Boolean getSkipRelationshipsLoading() {
+        return skipRelationshipsLoading;
+    }
+
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        this.skipRelationshipsLoading = skipRelationshipsLoading;
+    }
+
     @Override
     public String toString() {
-        return "EntitiesFilters: " + getFiltersConfig();
+        String res = "EntitiesFilters: " + getFiltersConfig();
+        if (skipRelationshipsLoading != null && skipRelationshipsLoading) {
+            res += "\n Skip Loading Relationships! \n";
+        }
+
+        return res;
     }
 }

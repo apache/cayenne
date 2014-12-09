@@ -27,10 +27,20 @@ import java.util.LinkedList;
  */
 public class ReverseEngineering extends FilterContainer {
 
+    private Boolean skipRelationshipsLoading;
+
     private Collection<Catalog> catalogs = new LinkedList<Catalog>();
     private Collection<Schema> schemas = new LinkedList<Schema>();
 
     public ReverseEngineering() {
+    }
+
+    public Boolean getSkipRelationshipsLoading() {
+        return skipRelationshipsLoading;
+    }
+
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        this.skipRelationshipsLoading = skipRelationshipsLoading;
     }
 
     public Collection<Catalog> getCatalogs() {
