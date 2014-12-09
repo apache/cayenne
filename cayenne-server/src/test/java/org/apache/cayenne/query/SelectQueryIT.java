@@ -295,6 +295,35 @@ public class SelectQueryIT extends ServerCase {
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
     }
+    
+	@Test
+	public void testSelectLikeSingleWildcardMatchAndEscape_AndOtherCriteria() throws Exception {
+
+		createArtistsWildcardDataSet();
+
+		// CAY-1978 - combining LIKE..ESCAPE with another clause generated bad
+		// syntax
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		query.andQualifier(ExpressionFactory.likeExp("artistName", "=_%", '='));
+		query.andQualifier(Artist.ARTIST_NAME.eq("_X"));
+
+		List<?> objects = context.performQuery(query);
+		assertEquals(1, objects.size());
+	}
+	
+	@Test
+	public void testSelectLikeSingleWildcardMatchIgnoreCaseAndEscape_AndOtherCriteria() throws Exception {
+
+		createArtistsWildcardDataSet();
+
+		// CAY-1978 - combining LIKE..ESCAPE with another clause generated bad SQL
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		query.andQualifier(ExpressionFactory.likeIgnoreCaseExp("artistName", "=_%", '='));
+		query.andQualifier(Artist.ARTIST_NAME.eq("_X"));
+
+		List<?> objects = context.performQuery(query);
+		assertEquals(1, objects.size());
+	}
 
     @Test
     public void testSelectLikeMultipleWildcardMatch() throws Exception {

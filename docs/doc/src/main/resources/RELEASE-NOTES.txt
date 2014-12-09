@@ -116,6 +116,7 @@ CAY-1943 XML file not deleted when a DataMap is deleted from the project
 CAY-1961 Fix RemoveAction for DataMaps in ProjectTree
 CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
 CAY-1973 error while generating classes
+CAY-1978 ESCAPE clause should be included in LIKE parenthesis
 
 ----------------------------------
 Release: 3.2M1
