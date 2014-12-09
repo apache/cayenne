@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.access.loader.ManyToManyCandidateEntity;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.Filter;
@@ -101,7 +102,7 @@ public class DbLoader {
     public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, ObjectNameGenerator strategy) {
         this.adapter = adapter;
         this.connection = connection;
-        this.delegate = delegate;
+        this.delegate = delegate == null ? new DefaultDbLoaderDelegate() : delegate;
 
         setNameGenerator(strategy);
     }
@@ -303,10 +304,7 @@ public class DbLoader {
                 }
                 map.addDbEntity(dbEntity);
 
-                // notify delegate
-                if (delegate != null) {
-                    delegate.dbEntityAdded(dbEntity);
-                }
+                delegate.dbEntityAdded(dbEntity);
 
                 // delegate might have thrown this entity out... so check if it is still
                 // around before continuing processing
@@ -512,7 +510,9 @@ public class DbLoader {
                 reverseRelationship.setSourceEntity(fkEntity);
                 reverseRelationship.setTargetEntity(pkEntity);
                 reverseRelationship.setToMany(false);
-                fkEntity.addRelationship(reverseRelationship);
+                if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {
+                    fkEntity.addRelationship(reverseRelationship);
+                }
 
                 boolean toPK = createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
 
@@ -523,7 +523,9 @@ public class DbLoader {
 
                 forwardRelationship.setToMany(!isOneToOne);
                 forwardRelationship.setName(generateName(pkEntity, key, !isOneToOne));
-                pkEntity.addRelationship(forwardRelationship);
+                if (delegate.dbRelationshipLoaded(pkEntity, forwardRelationship)) {
+                    pkEntity.addRelationship(forwardRelationship);
+                }
             }
         }
     }
@@ -562,6 +564,10 @@ public class DbLoader {
         Map<String, Set<ExportedKey>> keys = new HashMap<String, Set<ExportedKey>>();
 
         for (DbEntity dbEntity : tables.values()) {
+            if (!delegate.dbRelationship(dbEntity)) {
+                continue;
+            }
+
             ResultSet rs;
             try {
                 rs = getMetaData().getExportedKeys(dbPath.catalog, dbPath.schema, dbEntity.getName());
@@ -645,10 +651,7 @@ public class DbLoader {
 
     private void fireObjEntitiesAddedEvents(DataMap map) {
         for (ObjEntity curEntity : map.getObjEntities()) {
-            // notify delegate
-            if (delegate != null) {
-                delegate.objEntityAdded(curEntity);
-            }
+            delegate.objEntityAdded(curEntity);
         }
     }
 

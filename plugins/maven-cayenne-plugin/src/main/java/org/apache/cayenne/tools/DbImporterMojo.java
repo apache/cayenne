@@ -242,6 +242,7 @@ public class DbImporterMojo extends AbstractMojo {
         Log logger = new MavenLogger(this);
 
         DbImportConfiguration config = toParameters();
+        config.setLogger(logger);
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
         try {

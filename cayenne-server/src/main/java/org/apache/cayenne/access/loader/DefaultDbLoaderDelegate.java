@@ -21,6 +21,7 @@ package org.apache.cayenne.access.loader;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -41,6 +42,16 @@ public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
     @Override
     public void dbEntityRemoved(DbEntity entity) {
 
+    }
+
+    @Override
+    public boolean dbRelationship(DbEntity entity) {
+        return true;
+    }
+
+    @Override
+    public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
+        return true;
     }
 
     @Override
