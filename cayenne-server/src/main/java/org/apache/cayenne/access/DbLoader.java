@@ -373,7 +373,7 @@ public class DbLoader {
 
                 DbAttribute attr = loadDbAttribute(rs);
                 attr.setEntity(dbEntity);
-                Filter<DbAttribute> filter = filters.filter(path).columnFilter();
+                Filter<DbAttribute> filter = filters.filter(new DbPath(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName())).columnFilter();
                 if (!filter.isInclude(attr)) {
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("Skip column for '" + attr.getEntity().getName() + "." + attr.getName()

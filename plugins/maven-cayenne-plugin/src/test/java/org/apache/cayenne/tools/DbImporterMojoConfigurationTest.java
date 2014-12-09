@@ -18,15 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
+import static org.apache.cayenne.access.loader.filters.FilterFactory.exclude;
 import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
 import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
 import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
 import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchemaContent;
 
+import org.apache.cayenne.access.loader.filters.DbPath;
+import org.apache.cayenne.access.loader.filters.EntityFilters;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
+
+import java.util.Collections;
 
 public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
@@ -41,6 +48,18 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
         assertEquals("schema-name-03", schema.getName());
 
         assertSchemaContent(schema);
+    }
+
+    @Test
+    public void testLoadSchema2() throws Exception {
+        FiltersConfig filters = getCdbImport("pom-schema-2.xml").toParameters()
+                .getDbLoaderConfig().getFiltersConfig();
+
+        DbPath path = new DbPath(null, "NHL_STATS");
+        assertEquals(Collections.singletonList(path), filters.getDbPaths());
+
+        EntityFilters filter = filters.filter(path);
+        assertEquals(filter, new EntityFilters(path, exclude("^ETL_.*"), exclude("^ETL_.*"), NULL));
     }
 
     @Test

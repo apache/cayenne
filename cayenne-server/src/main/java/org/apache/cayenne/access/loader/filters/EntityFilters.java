@@ -59,6 +59,13 @@ public class EntityFilters {
                 && (proceduresFilters == null || NULL.equals(proceduresFilters));
     }
 
+    public boolean isDefault() {
+        return dbPath == null || DbPath.EMPTY.equals(dbPath)
+                && (tableFilters != null && TRUE.equals(tableFilters))
+                && (columnFilters != null && TRUE.equals(columnFilters))
+                && (proceduresFilters == null || NULL.equals(proceduresFilters));
+    }
+
     public DbPath getDbPath() {
         return dbPath;
     }
