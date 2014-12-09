@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class DefaultTypeMapperBuilder {
 

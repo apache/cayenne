@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader {
 

@@ -34,7 +34,7 @@ import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.access.loader.filters.ListFilter;
 
 /**
-* @since 3.2.
+* @since 4.0.
 */
 public final class FiltersConfigBuilder {
 

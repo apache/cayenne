@@ -213,7 +213,7 @@ public class DbLoader {
      * @param types
      *            The types of table names to retrieve, null returns all types.
      * @return
-     * @since 3.2
+     * @since 4.0
      */
     public Map<DbPath, Map<String, DbEntity>> getTables(DbLoaderConfiguration config, String[] types)
             throws SQLException {
@@ -754,7 +754,7 @@ public class DbLoader {
      * schema, table name and table type patterns and fills the specified
      * DataMap object with DB and object mapping info.
      *
-     * @since 3.2
+     * @since 4.0
      */
     public DataMap load(DbLoaderConfiguration config) throws SQLException {
 

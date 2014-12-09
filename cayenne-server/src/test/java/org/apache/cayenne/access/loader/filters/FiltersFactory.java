@@ -19,7 +19,7 @@
 package org.apache.cayenne.access.loader.filters;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class FiltersFactory {
 

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class FilterContainer {
 

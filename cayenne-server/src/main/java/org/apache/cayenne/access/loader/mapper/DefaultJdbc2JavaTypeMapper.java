@@ -32,7 +32,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class DefaultJdbc2JavaTypeMapper implements Jdbc2JavaTypeMapper {
 

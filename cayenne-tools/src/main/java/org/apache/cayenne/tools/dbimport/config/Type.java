@@ -21,7 +21,7 @@ package org.apache.cayenne.tools.dbimport.config;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class Type {
 
