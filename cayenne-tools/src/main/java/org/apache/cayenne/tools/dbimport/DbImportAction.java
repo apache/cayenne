@@ -105,7 +105,8 @@ public class DbImportAction {
         } else {
             MergerFactory mergerFactory = adapter.mergerFactory();
 
-            List<MergerToken> mergeTokens = new DbMerger(mergerFactory).createMergeTokens(existing, loadedFomDb);
+            List<MergerToken> mergeTokens = new DbMerger(mergerFactory).createMergeTokens(existing, loadedFomDb,
+                    config.getDbLoaderConfig().getFiltersConfig());
             if (mergeTokens.isEmpty()) {
                 logger.info("No changes to import.");
                 return;

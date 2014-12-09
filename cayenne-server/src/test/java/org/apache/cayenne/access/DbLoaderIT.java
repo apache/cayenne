@@ -19,11 +19,8 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.filters.DbPath;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -45,13 +42,11 @@ import org.junit.Test;
 
 import java.sql.Types;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbLoaderIT extends ServerCase {
@@ -104,7 +99,8 @@ public class DbLoaderIT extends ServerCase {
 
         String tableLabel = adapter.tableTypeForTable();
 
-        List<DbEntity> tables = loader.getTables(new DbLoaderConfiguration(), new String[] { tableLabel });
+        Collection<DbEntity> tables = loader.getTables(new DbLoaderConfiguration(), new String[] { tableLabel })
+                .values().iterator().next().values();
 
         assertNotNull(tables);
 
@@ -128,7 +124,7 @@ public class DbLoaderIT extends ServerCase {
 
         loader.setCreatingMeaningfulPK(true);
 
-        List<DbEntity> testLoader = loader.getTables(CONFIG, tableLabel);
+        Map<DbPath, Map<String, DbEntity>> testLoader = loader.getTables(CONFIG, tableLabel);
         if (testLoader.isEmpty()) {
             testLoader = loader.getTables(CONFIG, tableLabel);
         }
@@ -171,7 +167,13 @@ public class DbLoaderIT extends ServerCase {
         }
 
         // *** TESTING THIS ***
-        loader.loadDbRelationships(map, CONFIG, entities);
+        HashMap<DbPath, Map<String, DbEntity>> tables = new HashMap<DbPath, Map<String, DbEntity>>();
+        HashMap<String, DbEntity> value = new HashMap<String, DbEntity>();
+        for (DbEntity e : entities) {
+            value.put(e.getName(), e);
+        }
+        tables.put(new DbPath(), value);
+        loader.loadDbRelationships(CONFIG, tables);
 
         if (supportsFK) {
             Collection<DbRelationship> rels = getDbEntity(map, "ARTIST").getRelationships();

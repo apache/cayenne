@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+import static org.apache.cayenne.access.loader.filters.FilterFactory.*;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
@@ -29,6 +30,9 @@ import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.filters.DbPath;
+import org.apache.cayenne.access.loader.filters.EntityFilters;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -71,8 +75,6 @@ public abstract class MergeCase extends ServerCase {
 
 	protected DataMap map;
 
-	private static List<String> TABLE_NAMES = Arrays.asList("ARTIST", "PAINTING", "NEW_TABLE", "NEW_TABLE2");
-
 	@Override
 	public void cleanUpDB() throws Exception {
 		dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
@@ -100,19 +102,15 @@ public abstract class MergeCase extends ServerCase {
 	}
 
 	protected DbMerger createMerger(MergerFactory mergerFactory, ValueForNullProvider valueForNullProvider) {
-		return new DbMerger(mergerFactory, valueForNullProvider) {
-
-			@Override
-			public boolean includeTableName(String tableName) {
-				return TABLE_NAMES.contains(tableName.toUpperCase());
-			}
-		};
+		return new DbMerger(mergerFactory, valueForNullProvider);
 	}
 
-	protected List<MergerToken> createMergeTokens() {
-		return createMerger(node.getAdapter().mergerFactory())
-				.createMergeTokens(node, map, new DbLoaderConfiguration());
-	}
+    protected List<MergerToken> createMergeTokens() {
+        DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
+        loaderConfiguration.setFiltersConfig(new FiltersConfig(new EntityFilters(DbPath.EMPTY, include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), TRUE, TRUE)));
+
+        return createMerger(node.getAdapter().mergerFactory()).createMergeTokens(node, map, loaderConfiguration);
+    }
 
 	/**
 	 * Remote binary pk {@link DbEntity} for {@link DbAdapter} not supporting

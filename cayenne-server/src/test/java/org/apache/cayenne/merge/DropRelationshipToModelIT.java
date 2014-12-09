@@ -125,21 +125,21 @@ public class DropRelationshipToModelIT extends MergeCase {
 		assertSame(objRel1To2, objRel2To1.getReverseRelationship());
 		assertSame(objRel2To1, objRel1To2.getReverseRelationship());
 
-		// remove relationship and fk from model, merge to db and read to model
-		dbEntity2.removeRelationship(rel2To1.getName());
-		dbEntity1.removeRelationship(rel1To2.getName());
-		dbEntity2.removeAttribute(e2col2.getName());
-		List<MergerToken> tokens = createMergeTokens();
-		assertTokens(tokens, 2, 1);
-		for (MergerToken token : tokens) {
-			if (token.getDirection().isToDb()) {
-				execute(token);
-			}
-		}
-		assertTokensAndExecute(0, 0);
-		dbEntity2.addRelationship(rel2To1);
-		dbEntity1.addRelationship(rel1To2);
-		dbEntity2.addAttribute(e2col2);
+        // remove relationship and fk from model, merge to db and read to model
+        dbEntity2.removeRelationship(rel2To1.getName());
+        dbEntity1.removeRelationship(rel1To2.getName());
+        dbEntity2.removeAttribute(e2col2.getName());
+        List<MergerToken> tokens = createMergeTokens();
+        assertTokens(tokens, 3, 0);
+        for (MergerToken token : tokens) {
+            if (token.getDirection().isToDb()) {
+                execute(token);
+            }
+        }
+        assertTokensAndExecute(0, 0);
+        dbEntity2.addRelationship(rel2To1);
+        dbEntity1.addRelationship(rel1To2);
+        dbEntity2.addAttribute(e2col2);
 
 		// try do use the merger to remove the relationship in the model
 		tokens = createMergeTokens();
