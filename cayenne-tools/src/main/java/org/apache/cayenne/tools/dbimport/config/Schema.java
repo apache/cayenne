@@ -55,4 +55,16 @@ public class Schema extends FilterContainer {
 
         setName(name);
     }
+
+    @Override
+    public String toString() {
+        return toString("    ");
+    }
+
+    @Override
+    public String toString(String indent) {
+        return indent + "Schema '" + name + "': "
+                + super.toString(indent + "    ");
+    }
+
 }

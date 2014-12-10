@@ -95,4 +95,15 @@ public class Catalog extends FilterContainer {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return toString("    ");
+    }
+
+    @Override
+    public String toString(String indent) {
+        return indent + "Catalog '" + name + "': "
+             + super.toString(indent + "    ");
+    }
 }

@@ -26,7 +26,7 @@ import java.util.LinkedList;
 /**
  * @since 4.0.
  */
-public class FilterContainer {
+public abstract class FilterContainer {
 
     private Collection<IncludeTable> includeTables = new LinkedList<IncludeTable>();
     private Collection<ExcludeTable> excludeTables = new LinkedList<ExcludeTable>();
@@ -112,5 +112,32 @@ public class FilterContainer {
         return includeColumns.isEmpty()    && excludeColumns.isEmpty()
             && includeTables.isEmpty()     && excludeTables.isEmpty()
             && includeProcedures.isEmpty() && excludeProcedures.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return toString("    ");
+    }
+
+    public String toString(String indent) {
+        return toStringFilters(indent + "Filter Tables     - ", includeTables, excludeTables)
+             + toStringFilters(indent + "Filter Columns    - ", includeColumns, excludeColumns)
+             + toStringFilters(indent + "Filter Procedures - ", includeProcedures, excludeProcedures);
+
+    }
+
+    private String toStringFilters(String name, Collection<? extends PatternParam> include, Collection<? extends PatternParam> exclude) {
+        if (include.isEmpty() && exclude.isEmpty()) {
+            return "";
+        }
+
+        String res = "\n" + name + ": ";
+        if (!include.isEmpty()) {
+            res += include + " ";
+        }
+        if (!exclude.isEmpty()) {
+            res += exclude + " ";
+        }
+        return res;
     }
 }
