@@ -109,7 +109,8 @@ public class ManyToManyCandidateEntity {
                 null,
                 rel2.getTargetEntity().getName(),
                 rel2.getTargetAttributes().iterator().next().getName(),
-                null);
+                null,
+                (short) 1);
 
         ObjRelationship newRelationship = new ObjRelationship();
         newRelationship.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, srcEntity,

@@ -78,10 +78,12 @@ public class DbLoaderHelper {
 
     protected ProjectController mediator;
     protected String dbUserName;
+    protected String dbCatalog;
     protected DbLoader loader;
     protected DataMap dataMap;
     protected boolean meaningfulPk;
     protected List<String> schemas;
+    protected List<String> catalogs;
 
     private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
 
@@ -95,6 +97,11 @@ public class DbLoaderHelper {
     public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter, String dbUserName) {
         this.dbUserName = dbUserName;
         this.mediator = mediator;
+        try {
+            this.dbCatalog = connection.getCatalog();
+        } catch (SQLException e) {
+            logObj.warn("Error getting catalog.", e);
+        }
         this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
     }
 
@@ -114,19 +121,26 @@ public class DbLoaderHelper {
     public void execute() {
         stoppingReverseEngineering = false;
 
+        // load catalogs...
+        LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
+        loadCatalogsTask.startAndWait();
+
+        if (stoppingReverseEngineering) {
+            return;
+        }
+
         // load schemas...
         LongRunningTask loadSchemasTask = new LoadSchemasTask(Application.getFrame(), "Loading Schemas");
-
         loadSchemasTask.startAndWait();
 
         if (stoppingReverseEngineering) {
             return;
         }
 
-        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, dbUserName, false);
+        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, catalogs, dbUserName, dbCatalog, false);
 
         try {
-            // since we are not inside EventDisptahcer Thread, must run it via
+            // since we are not inside EventDispatcher Thread, must run it via
             // SwingUtilities
             SwingUtilities.invokeAndWait(new Runnable() {
 
@@ -144,6 +158,7 @@ public class DbLoaderHelper {
             return;
         }
 
+        this.filterBuilder.catalog(dialog.getSelectedCatalog());
         this.filterBuilder.schema(dialog.getSelectedSchema());
         this.filterBuilder.includeTables(dialog.getTableNamePattern());
         this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures() ? FilterFactory.TRUE : FilterFactory.NULL);
@@ -293,6 +308,24 @@ public class DbLoaderHelper {
         }
     }
 
+    final class LoadCatalogsTask extends DbLoaderTask {
+
+        public LoadCatalogsTask(JFrame frame, String title) {
+            super(frame, title);
+        }
+
+        @Override
+        protected void execute() {
+            loadStatusNote = "Loading available catalogs...";
+
+            try {
+                catalogs = loader.getCatalogs();
+            } catch (Throwable th) {
+                processException(th, "Error Loading Catalogs");
+            }
+        }
+    }
+
     final class LoadDataMapTask extends DbLoaderTask {
 
         public LoadDataMapTask(JFrame frame, String title) {
@@ -310,6 +343,7 @@ public class DbLoaderHelper {
             if (!existingMap) {
                 dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap));
                 dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, mediator.getProject().getRootNode()));
+                dataMap.setDefaultCatalog(filterBuilder.catalog());
                 dataMap.setDefaultSchema(filterBuilder.schema());
             }
 

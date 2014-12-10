@@ -36,6 +36,9 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
+import org.apache.cayenne.access.loader.NameFilter;
+import org.apache.cayenne.access.loader.filters.DbPath;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
@@ -67,14 +70,6 @@ public class DbMerger {
     }
 
     /**
-     * A method that return true if the given table name should be included. The default
-     * implementation include all tables.
-     */
-    public boolean includeTableName(String tableName) {
-        return true;
-    }
-
-    /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
@@ -87,7 +82,7 @@ public class DbMerger {
      * {@link DataNode} to match the given {@link DataMap}
      */
     public List<MergerToken> createMergeTokens(DbLoader dbLoader, DataMap existing, DbLoaderConfiguration config) {
-        return createMergeTokens(existing, loadDataMapFromDb(dbLoader, config));
+        return createMergeTokens(existing, loadDataMapFromDb(dbLoader, config), config.getFiltersConfig());
     }
 
     /**
@@ -95,18 +90,18 @@ public class DbMerger {
      * {@link DataNode} to match the given {@link DataMap}
      */
     public List<MergerToken> createMergeTokens(DataSource dataSource, DbAdapter adapter, DataMap existingDataMap, DbLoaderConfiguration config) {
-        return createMergeTokens(existingDataMap, loadDataMapFromDb(dataSource, adapter, config));
+        return createMergeTokens(existingDataMap, loadDataMapFromDb(dataSource, adapter, config), config.getFiltersConfig());
     }
 
     /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb) {
+    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb, FiltersConfig filtersConfig) {
 
         loadedFomDb.setQuotingSQLIdentifiers(existing.isQuotingSQLIdentifiers());
 
-        List<MergerToken> tokens = createMergeTokens(existing.getDbEntities(), loadedFomDb.getDbEntities());
+        List<MergerToken> tokens = createMergeTokens(filter(existing, filtersConfig), loadedFomDb.getDbEntities());
 
 
         // sort. use a custom Comparator since only toDb tokens are comparable by now
@@ -124,6 +119,16 @@ public class DbMerger {
         });
 
         return tokens;
+    }
+
+    private Collection<DbEntity> filter(DataMap existing, FiltersConfig filtersConfig) {
+        Collection<DbEntity> existingFiltered = new LinkedList<DbEntity>();
+        for (DbEntity entity : existing.getDbEntities()) {
+            if (filtersConfig.filter(DbPath.build(entity)).tableFilter().isInclude(entity)) {
+                existingFiltered.add(entity);
+            }
+        }
+        return existingFiltered;
     }
 
     private DataMap loadDataMapFromDb(DataSource dataSource, DbAdapter adapter, DbLoaderConfiguration config) {
@@ -151,14 +156,13 @@ public class DbMerger {
     }
 
     private DataMap loadDataMapFromDb(DbLoader dbLoader, DbLoaderConfiguration config) {
-        DataMap detectedDataMap = new DataMap();
         try {
-            dbLoader.load(detectedDataMap, config);
+            return dbLoader.load(config);
         } catch (SQLException e) {
             // TODO log
         }
 
-        return detectedDataMap;
+        return new DataMap();
     }
 
     /**
@@ -174,12 +178,6 @@ public class DbMerger {
         List<MergerToken> tokens = new LinkedList<MergerToken>();
         for (DbEntity dbEntity : existing) {
             String tableName = dbEntity.getName();
-
-            if (!includeTableName(tableName)) {
-                // TODO we have to cut this entities in db loader
-                // TODO log
-                continue;
-            }
 
             // look for table
             DbEntity detectedEntity = findDbEntity(loadedFromDb, tableName);
@@ -207,10 +205,6 @@ public class DbMerger {
         // drop table
         // TODO: support drop table. currently, too many tables are marked for drop
         for (DbEntity e : dbEntitiesToDrop) {
-            if (!includeTableName(e.getName())) {
-                continue;
-            }
-
             tokens.add(factory.createDropTableToDb(e));
         }
 
@@ -320,10 +314,6 @@ public class DbMerger {
         List<MergerToken> tokens = new LinkedList<MergerToken>();
 
         for (DbRelationship rel : dbEntity.getRelationships()) {
-            if (!includeTableName(rel.getTargetEntityName())) {
-                continue;
-            }
-            
             if (findDbRelationship(detectedEntity, rel) == null) {
                 AddRelationshipToDb token = (AddRelationshipToDb)
                         factory.createAddRelationshipToDb(dbEntity, rel);

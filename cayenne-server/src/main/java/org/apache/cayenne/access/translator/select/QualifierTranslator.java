@@ -419,32 +419,32 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
      */
     public void endNode(Expression node, Expression parentNode) {
 
-        try {
-            // check if we need to use objectMatchTranslator to finish building the
-            // expression
-            if (node.getOperandCount() == 2 && matchingObject) {
-                appendObjectMatch();
-            }
+		try {
+			// check if we need to use objectMatchTranslator to finish building
+			// the
+			// expression
+			if (node.getOperandCount() == 2 && matchingObject) {
+				appendObjectMatch();
+			}
 
-            boolean parenthesisNeeded = parenthesisNeeded(node, parentNode);
-            boolean likeIgnoreCase = (node.getType() == Expression.LIKE_IGNORE_CASE || node
-                    .getType() == Expression.NOT_LIKE_IGNORE_CASE);
-            boolean isPatternMatchNode = PatternMatchNode.class.isAssignableFrom(node
-                    .getClass());
+			boolean parenthesisNeeded = parenthesisNeeded(node, parentNode);
+			boolean likeIgnoreCase = (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
+			boolean isPatternMatchNode = PatternMatchNode.class.isAssignableFrom(node.getClass());
 
-            if (parenthesisNeeded)
-                out.append(')');
+			// closing UPPER parenthesis
+			if (likeIgnoreCase && !caseInsensitive) {
+				out.append(')');
+			}
 
-            if (isPatternMatchNode && !likeIgnoreCase)
-                appendLikeEscapeCharacter((PatternMatchNode) node);
+			if (isPatternMatchNode) {
+				appendLikeEscapeCharacter((PatternMatchNode) node);
+			}
 
-            if (likeIgnoreCase && !caseInsensitive)
-                out.append(')');
-
-            if (isPatternMatchNode && likeIgnoreCase)
-                appendLikeEscapeCharacter((PatternMatchNode) node);
-
-        }
+			// closing LIKE parenthesis
+			if (parenthesisNeeded) {
+				out.append(')');
+			}
+		}
         catch (IOException ioex) {
             throw new CayenneRuntimeException("Error appending content", ioex);
         }

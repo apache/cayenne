@@ -88,7 +88,7 @@ public class DbImportActionTest {
 
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+            public void load(DataMap dataMap, DbLoaderConfiguration config, String ... tables) throws SQLException {
                  new DataMapBuilder(dataMap).withDbEntities(2).build();
             }
 
@@ -129,7 +129,7 @@ public class DbImportActionTest {
     public void testImportWithFieldChanged() throws Exception {
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+            public void load(DataMap dataMap, DbLoaderConfiguration config, String ... tables) throws SQLException {
                 new DataMapBuilder(dataMap).with(
                         dbEntity("ARTGROUP").attributes(
                                 dbAttr("GROUP_ID").typeInt().primaryKey(),
@@ -198,7 +198,7 @@ public class DbImportActionTest {
     public void testImportWithoutChanges() throws Exception {
         DbLoader dbLoader = new DbLoader(null, null, null) {
             @Override
-            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+            public void load(DataMap dataMap, DbLoaderConfiguration config, String ... tables) throws SQLException {
                 new DataMapBuilder(dataMap).with(
                         dbEntity("ARTGROUP").attributes(
                                 dbAttr("NAME").typeVarchar(100).mandatory()
