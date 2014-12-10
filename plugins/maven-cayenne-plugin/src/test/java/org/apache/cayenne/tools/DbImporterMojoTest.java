@@ -116,6 +116,15 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		test("testSkipRelationshipsLoading");
 	}
 
+    /**
+     * what happens if a relationship existed over a column that was later deleted? and ‘skipRelLoading’ is true
+     *
+     * @throws Exception
+     */
+	public void testPreserveRelationships() throws Exception {
+		test("testPreserveRelationships");
+	}
+
 	private void test(String name) throws Exception {
 		DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
 		File mapFile = cdbImport.getMap();
