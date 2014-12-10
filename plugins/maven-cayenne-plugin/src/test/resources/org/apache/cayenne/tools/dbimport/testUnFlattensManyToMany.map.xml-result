@@ -21,6 +21,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://cayenne.apache.org/schema/7/modelMap http://cayenne.apache.org/schema/7/modelMap.xsd"
           project-version="7">
+    <property name="defaultPackage" value="org.not.my.home"/>
     <db-entity name="A" schema="APP">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
@@ -31,11 +32,16 @@
     <db-entity name="B" schema="APP">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
+    <db-entity name="C" schema="APP">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
     <obj-entity name="A" className="A" dbEntityName="A">
     </obj-entity>
     <obj-entity name="AB" className="AB" dbEntityName="A_B">
     </obj-entity>
     <obj-entity name="B" className="B" dbEntityName="B">
+    </obj-entity>
+    <obj-entity name="C" className="org.not.my.home.C" dbEntityName="C">
     </obj-entity>
     <db-relationship name="aBArray" source="A" target="A_B" toMany="true">
         <db-attribute-pair source="ID" target="A_ID"/>
