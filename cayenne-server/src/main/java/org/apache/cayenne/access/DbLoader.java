@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.access.loader.ManyToManyCandidateEntity;
 import org.apache.cayenne.access.loader.filters.DbPath;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
@@ -103,7 +104,7 @@ public class DbLoader {
     public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, ObjectNameGenerator strategy) {
         this.adapter = adapter;
         this.connection = connection;
-        this.delegate = delegate;
+        this.delegate = delegate == null ? new DefaultDbLoaderDelegate() : delegate;
 
         setNameGenerator(strategy);
     }
@@ -212,7 +213,7 @@ public class DbLoader {
      * @param config
      * @param types  The types of table names to retrieve, null returns all types.
      * @return
-     * @since 3.2
+     * @since 4.0
      */
     public Map<DbPath, Map<String, DbEntity>> getTables(DbLoaderConfiguration config, String[] types)
             throws SQLException {
@@ -310,10 +311,7 @@ public class DbLoader {
 
                 map.addDbEntity(dbEntity);
 
-                // notify delegate
-                if (delegate != null) {
-                    delegate.dbEntityAdded(dbEntity);
-                }
+                delegate.dbEntityAdded(dbEntity);
 
                 // delegate might have thrown this entity out... so check if it is still
                 // around before continuing processing
@@ -380,7 +378,7 @@ public class DbLoader {
 
                 DbAttribute attr = loadDbAttribute(rs);
                 attr.setEntity(dbEntity);
-                Filter<DbAttribute> filter = filters.filter(path).columnFilter();
+                Filter<DbAttribute> filter = filters.filter(new DbPath(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName())).columnFilter();
                 if (!filter.isInclude(attr)) {
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("Skip column for '" + attr.getEntity().getName() + "." + attr.getName()
@@ -521,7 +519,9 @@ public class DbLoader {
                 reverseRelationship.setSourceEntity(fkEntity);
                 reverseRelationship.setTargetEntity(pkEntity);
                 reverseRelationship.setToMany(false);
-                fkEntity.addRelationship(reverseRelationship);
+                if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {
+                    fkEntity.addRelationship(reverseRelationship);
+                }
 
                 boolean toPK = createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
 
@@ -532,7 +532,9 @@ public class DbLoader {
 
                 forwardRelationship.setToMany(!isOneToOne);
                 forwardRelationship.setName(generateName(pkEntity, key, !isOneToOne));
-                pkEntity.addRelationship(forwardRelationship);
+                if (delegate.dbRelationshipLoaded(pkEntity, forwardRelationship)) {
+                    pkEntity.addRelationship(forwardRelationship);
+                }
             }
         }
     }
@@ -571,6 +573,10 @@ public class DbLoader {
         Map<String, Set<ExportedKey>> keys = new HashMap<String, Set<ExportedKey>>();
 
         for (DbEntity dbEntity : tables.values()) {
+            if (!delegate.dbRelationship(dbEntity)) {
+                continue;
+            }
+
             ResultSet rs;
             try {
                 rs = getMetaData().getExportedKeys(dbPath.catalog, dbPath.schema, dbEntity.getName());
@@ -751,9 +757,11 @@ public class DbLoader {
         List<DbEntity> entities = loadDbEntities(dataMap, config, tables);
 
         if (entities != null) {
-            loadDbRelationships(config, tables);
-            Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
+            if (!config.isSkipRelationshipsLoading()) {
+                loadDbRelationships(config, tables);
+            }
 
+            Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
             flattenManyToManyRelationships(dataMap, loadedObjEntities);
             fireObjEntitiesAddedEvents(loadedObjEntities);
         }
@@ -764,7 +772,7 @@ public class DbLoader {
      * schema, table name and table type patterns and fills the specified
      * DataMap object with DB and object mapping info.
      *
-     * @since 3.2
+     * @since 4.0
      */
     public DataMap load(DbLoaderConfiguration config) throws SQLException {
 

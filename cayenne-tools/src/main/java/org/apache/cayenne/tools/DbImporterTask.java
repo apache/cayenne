@@ -225,6 +225,10 @@ public class DbImporterTask extends Task {
         config.setUsePrimitives(usePrimitives);
     }
 
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        reverseEngineering.setSkipRelationshipsLoading(skipRelationshipsLoading);
+    }
+
     public void addConfiguredIncludeColumn(IncludeColumn includeColumn) {
         reverseEngineering.addIncludeColumn(includeColumn);
     }

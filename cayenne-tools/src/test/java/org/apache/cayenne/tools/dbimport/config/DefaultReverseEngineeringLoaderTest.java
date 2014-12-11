@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DefaultReverseEngineeringLoaderTest {
 
@@ -195,6 +196,18 @@ public class DefaultReverseEngineeringLoaderTest {
         assertEquals("includeProcedure-01", includeProcedures.next().getPattern());
         assertEquals("includeProcedure-02", includeProcedures.next().getPattern());
         assertEquals("includeProcedure-03", includeProcedures.next().getPattern());
+    }
+
+    @Test
+    public void testSkipRelationships() throws Exception {
+        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+                .load(getResource("reverseEngineering-skipRelationshipsLoading.xml"));
+
+        assertSkipRelationshipsLoading(engineering);
+    }
+
+    public static void assertSkipRelationshipsLoading(ReverseEngineering engineering) {
+        assertTrue(engineering.getSkipRelationshipsLoading());
     }
 
     protected URLResource getResource(String file) throws MalformedURLException {

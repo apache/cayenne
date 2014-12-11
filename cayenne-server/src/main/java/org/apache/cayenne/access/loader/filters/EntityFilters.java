@@ -30,7 +30,7 @@ import static org.apache.cayenne.access.loader.filters.FilterFactory.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class EntityFilters {
 
@@ -56,6 +56,13 @@ public class EntityFilters {
     public boolean isEmpty() {
         return (tableFilters == null || NULL.equals(tableFilters))
                 && (columnFilters == null || NULL.equals(columnFilters))
+                && (proceduresFilters == null || NULL.equals(proceduresFilters));
+    }
+
+    public boolean isDefault() {
+        return dbPath == null || DbPath.EMPTY.equals(dbPath)
+                && (tableFilters != null && TRUE.equals(tableFilters))
+                && (columnFilters != null && TRUE.equals(columnFilters))
                 && (proceduresFilters == null || NULL.equals(proceduresFilters));
     }
 

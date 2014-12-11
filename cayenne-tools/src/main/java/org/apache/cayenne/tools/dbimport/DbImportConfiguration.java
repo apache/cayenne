@@ -23,6 +23,7 @@ import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
+import org.apache.cayenne.access.loader.LoggingDbLoaderDelegate;
 import org.apache.cayenne.access.loader.NameFilter;
 import org.apache.cayenne.access.loader.filters.DbPath;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
@@ -292,7 +293,11 @@ public class DbImportConfiguration {
     }
 
     public DbLoaderDelegate createLoaderDelegate() {
-        return new DefaultDbLoaderDelegate();
+        if (getLogger() != null) {
+            return new LoggingDbLoaderDelegate(getLogger());
+        } else {
+            return new DefaultDbLoaderDelegate();
+        }
     }
 
     public DbLoaderConfiguration getDbLoaderConfig() {
@@ -315,5 +320,9 @@ public class DbImportConfiguration {
 
     public DataSourceInfo getDataSourceInfo() {
         return dataSourceInfo;
+    }
+
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        this.dbLoaderConfiguration.setSkipRelationshipsLoading(skipRelationshipsLoading);
     }
 }

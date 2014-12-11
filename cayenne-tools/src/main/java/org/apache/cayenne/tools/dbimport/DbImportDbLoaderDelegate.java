@@ -20,6 +20,7 @@
 package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.access.DbLoaderDelegate;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * @since 4.0
  */
-class DbImportDbLoaderDelegate implements DbLoaderDelegate {
+class DbImportDbLoaderDelegate extends DefaultDbLoaderDelegate {
 
     private final List<DbEntity> addedDbEntities;
     private final List<DbEntity> removedDbEntities;

@@ -112,6 +112,30 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		test("testDefaultPackage");
 	}
 
+	public void testSkipRelationshipsLoading() throws Exception {
+		test("testSkipRelationshipsLoading");
+	}
+
+    /**
+     * Q: what happens if a relationship existed over a column that was later deleted? and ‘skipRelLoading’ is true
+     * A: it should remove relationship and column
+     *
+     * @throws Exception
+     */
+	public void testPreserveRelationships() throws Exception {
+		test("testPreserveRelationships");
+	}
+
+    /**
+     * By default many-to-many are flattened during reverse engineering.
+     * But if a user un-flattens a given N:M manually, we’d like this choice to be preserved on the next run
+     *
+     * @throws Exception
+     */
+	public void testUnFlattensManyToMany() throws Exception {
+		test("testUnFlattensManyToMany");
+	}
+
 	private void test(String name) throws Exception {
 		DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
 		File mapFile = cdbImport.getMap();
@@ -143,28 +167,39 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		ResultSet views = connection.getMetaData().getTables(null, null, null, new String[] { "VIEW" });
 		while (views.next()) {
 			String schema = views.getString("TABLE_SCHEM");
-			System.out.println("DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
-			stmt.execute("DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
+            execute(stmt, "DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
 		}
 
 		ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[] { "TABLE" });
 		while (tables.next()) {
 			String schema = tables.getString("TABLE_SCHEM");
-			System.out.println("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
-			stmt.execute("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
+            String tableName = tables.getString("TABLE_NAME");
+            String tableNameFull = (isBlank(schema) ? "" : schema + ".") + tableName;
+
+            ResultSet keys = connection.getMetaData().getExportedKeys(null, schema, tableName);
+            while (keys.next()) {
+                execute(stmt, "ALTER TABLE " + keys.getString("FKTABLE_NAME") + " DROP CONSTRAINT " + keys.getString("FK_NAME"));
+            }
+
+            String sql = "DROP TABLE " + tableNameFull;
+            execute(stmt, sql);
 		}
 
 		ResultSet schemas = connection.getMetaData().getSchemas();
 		while (schemas.next()) {
 			String schem = schemas.getString("TABLE_SCHEM");
 			if (schem.startsWith("SCHEMA")) {
-				System.out.println("DROP SCHEMA " + schem);
-				stmt.execute("DROP SCHEMA " + schem + " RESTRICT");
+				execute(stmt, "DROP SCHEMA " + schem + " RESTRICT");
 			}
 		}
 	}
 
-	private void verifyResult(File map, File mapFileCopy) {
+    private void execute(Statement stmt, String sql) throws SQLException {
+        System.out.println(sql);
+        stmt.execute(sql);
+    }
+
+    private void verifyResult(File map, File mapFileCopy) {
 		try {
 			FileReader control = new FileReader(map.getAbsolutePath() + "-result");
 			FileReader test = new FileReader(mapFileCopy);

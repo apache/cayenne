@@ -23,14 +23,24 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class ReverseEngineering extends FilterContainer {
+
+    private Boolean skipRelationshipsLoading;
 
     private Collection<Catalog> catalogs = new LinkedList<Catalog>();
     private Collection<Schema> schemas = new LinkedList<Schema>();
 
     public ReverseEngineering() {
+    }
+
+    public Boolean getSkipRelationshipsLoading() {
+        return skipRelationshipsLoading;
+    }
+
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        this.skipRelationshipsLoading = skipRelationshipsLoading;
     }
 
     public Collection<Catalog> getCatalogs() {
@@ -57,4 +67,21 @@ public class ReverseEngineering extends FilterContainer {
         this.catalogs.add(catalog);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder res = new StringBuilder("    ReverseEngineering: ");
+        for (Catalog catalog : catalogs) {
+            res.append("\n").append(catalog.toString("        "));
+        }
+        for (Schema schema : schemas) {
+            res.append("\n").append(schema.toString("        "));
+        }
+
+        if (skipRelationshipsLoading != null && skipRelationshipsLoading) {
+            res.append("\n").append("        Skip Relationships Loading");
+        }
+        res.append(super.toString("    "));
+
+        return res.toString();
+    }
 }

@@ -53,6 +53,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 /**
  * A thin wrapper around {@link DbLoader} that encapsulates DB import logic for
  * the benefit of Ant and Maven db importers.
@@ -112,6 +114,9 @@ public class DbImportAction {
                 return;
             }
 
+            if (!isBlank(config.getDefaultPackage())) {
+                existing.setDefaultPackage(config.getDefaultPackage());
+            }
             saveLoaded(execute(config.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens))));
         }
     }

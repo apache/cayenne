@@ -22,7 +22,7 @@ package org.apache.cayenne.tools.dbimport.config;
  * Additional class to handle <name> element under <catalog> and <schema>
  *      required for ant configuration
  *
- * @since 3.2.
+ * @since 4.0.
  */
 public class AntNestedElement {
 

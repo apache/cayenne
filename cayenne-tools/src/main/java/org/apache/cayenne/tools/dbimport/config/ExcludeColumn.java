@@ -19,7 +19,7 @@
 package org.apache.cayenne.tools.dbimport.config;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class ExcludeColumn extends PatternParam {
     public ExcludeColumn() {

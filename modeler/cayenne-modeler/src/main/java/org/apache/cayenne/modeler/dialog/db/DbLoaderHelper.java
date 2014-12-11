@@ -23,6 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
@@ -197,7 +198,7 @@ public class DbLoaderHelper {
         }
     }
 
-    final class LoaderDelegate implements DbLoaderDelegate {
+    private final class LoaderDelegate extends DefaultDbLoaderDelegate {
 
         @Override
         public void dbEntityAdded(DbEntity entity) {

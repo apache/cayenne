@@ -136,7 +136,6 @@ public class DbMerger {
         try {
             conn = dataSource.getConnection();
 
-            // TODO pass naming strategy
             DbLoader dbLoader = new DbLoader(conn, adapter, new DefaultDbLoaderDelegate());
             return loadDataMapFromDb(dbLoader, config);
         }

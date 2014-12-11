@@ -34,7 +34,7 @@ import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.access.loader.filters.ListFilter;
 
 /**
-* @since 3.2.
+* @since 4.0.
 */
 public final class FiltersConfigBuilder {
 
@@ -46,6 +46,10 @@ public final class FiltersConfigBuilder {
     }
 
     public FiltersConfigBuilder add(EntityFilters filter) {
+        if (filter.isDefault()) {
+            return this;
+        }
+
         if (!filter.isEmpty()) {
             this.filters.add(filter);
         } else if (!filter.getDbPath().equals(new DbPath())) {

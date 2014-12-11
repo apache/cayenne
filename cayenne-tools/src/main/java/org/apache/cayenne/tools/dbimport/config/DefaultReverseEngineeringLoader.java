@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader {
 
@@ -57,6 +57,7 @@ public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader
             ReverseEngineering engineering = new ReverseEngineering();
 
             Element root = doc.getDocumentElement();
+            engineering.setSkipRelationshipsLoading(loadBoolean(root, "skipRelationshipsLoading"));
             engineering.setCatalogs(loadCatalogs(root));
             engineering.setSchemas(loadSchemas(root));
             engineering.setIncludeTables(loadIncludeTables(root));
@@ -77,6 +78,10 @@ public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader
 
 
         return null;
+    }
+
+    private Boolean loadBoolean(Element root, String name) {
+        return Boolean.valueOf(loadByName(root, name));
     }
 
     private Collection<ExcludeProcedure> loadExcludeProcedures(Node parent) {
