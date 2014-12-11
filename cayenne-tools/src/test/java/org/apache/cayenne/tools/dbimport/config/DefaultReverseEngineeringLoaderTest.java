@@ -27,6 +27,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -208,6 +209,18 @@ public class DefaultReverseEngineeringLoaderTest {
 
     public static void assertSkipRelationshipsLoading(ReverseEngineering engineering) {
         assertTrue(engineering.getSkipRelationshipsLoading());
+    }
+
+    @Test
+    public void testTableTypes() throws Exception {
+        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+                .load(getResource("reverseEngineering-tableTypes.xml"));
+
+        assertTableTypes(engineering);
+    }
+
+    public static void assertTableTypes(ReverseEngineering engineering) {
+        assertArrayEquals(engineering.getTableTypes(), new String[]{"type1", "type2", "type3"});
     }
 
     protected URLResource getResource(String file) throws MalformedURLException {

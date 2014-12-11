@@ -58,6 +58,8 @@ public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader
 
             Element root = doc.getDocumentElement();
             engineering.setSkipRelationshipsLoading(loadBoolean(root, "skipRelationshipsLoading"));
+            engineering.setTableTypes(loadTableTypes(root));
+
             engineering.setCatalogs(loadCatalogs(root));
             engineering.setSchemas(loadSchemas(root));
             engineering.setIncludeTables(loadIncludeTables(root));
@@ -153,6 +155,16 @@ public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader
             catalog.setExcludeProcedures(loadExcludeProcedures(catalogNode));
 
             res.add(catalog);
+        }
+
+        return res;
+    }
+
+    private Collection<String> loadTableTypes(Node parent) {
+        List<Node> types = getElementsByTagName(parent, "tableType");
+        Collection<String> res = new LinkedList<String>();
+        for (Node typeNode : types) {
+            res.add(loadName(typeNode));
         }
 
         return res;

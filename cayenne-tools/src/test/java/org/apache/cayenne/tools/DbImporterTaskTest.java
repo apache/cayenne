@@ -81,6 +81,11 @@ public class DbImporterTaskTest {
 		assertSkipRelationshipsLoading(getCdbImport("build-skip-relationships-loading.xml").getReverseEngineering());
 	}
 
+    @Test
+    public void testTableTypes() throws Exception {
+        assertTableTypes(getCdbImport("build-table-types.xml").getReverseEngineering());
+    }
+
 	@Test
 	public void testIncludeTable() throws Exception {
 		test("build-include-table.xml");

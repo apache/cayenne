@@ -29,6 +29,13 @@ public class ReverseEngineering extends FilterContainer {
 
     private Boolean skipRelationshipsLoading;
 
+    /*
+     * Typical types are "TABLE",
+     * "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
+     * "LOCAL TEMPORARY", "ALIAS", "SYNONYM"., etc.
+     */
+    private Collection<String> tableTypes = new LinkedList<String>();
+
     private Collection<Catalog> catalogs = new LinkedList<Catalog>();
     private Collection<Schema> schemas = new LinkedList<Schema>();
 
@@ -59,6 +66,28 @@ public class ReverseEngineering extends FilterContainer {
         this.schemas = schemas;
     }
 
+    public String[] getTableTypes() {
+        return tableTypes.toArray(new String[tableTypes.size()]);
+    }
+
+    /*
+     * Typical types are "TABLE",
+     * "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
+     * "LOCAL TEMPORARY", "ALIAS", "SYNONYM"., etc.
+     */
+    public void setTableTypes(Collection<String> tableTypes) {
+        this.tableTypes = tableTypes;
+    }
+
+    /*
+     * Typical types are "TABLE",
+     * "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
+     * "LOCAL TEMPORARY", "ALIAS", "SYNONYM"., etc.
+     */
+    public void addTableType(String type) {
+        this.tableTypes.add(type);
+    }
+
     public void addSchema(Schema schema) {
         this.schemas.add(schema);
     }
@@ -84,4 +113,6 @@ public class ReverseEngineering extends FilterContainer {
 
         return res.toString();
     }
+
+
 }

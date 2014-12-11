@@ -80,6 +80,11 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
         assertSkipRelationshipsLoading(getCdbImport("pom-skip-relationships-loading.xml").getReverseEngineering());
     }
 
+    @Test
+    public void testTableTypes() throws Exception {
+        assertTableTypes(getCdbImport("pom-table-types.xml").getReverseEngineering());
+    }
+
     private DbImporterMojo getCdbImport(String pomFileName) throws Exception {
         return (DbImporterMojo) lookupMojo("cdbimport",
                 getTestFile("src/test/resources/org/apache/cayenne/tools/config/" + pomFileName));

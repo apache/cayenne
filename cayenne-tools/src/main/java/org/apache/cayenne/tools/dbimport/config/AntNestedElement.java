@@ -32,6 +32,10 @@ public class AntNestedElement {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void addText(String str) {
         name = str;
     }

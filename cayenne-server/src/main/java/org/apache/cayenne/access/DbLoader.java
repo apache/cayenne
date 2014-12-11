@@ -697,7 +697,7 @@ public class DbLoader {
      *
      * @since 1.0.7
      * @deprecated since 4.0 use
-     * {@link #load(org.apache.cayenne.map.DataMap, DbLoaderConfiguration, String...)}
+     * {@link #load(org.apache.cayenne.map.DataMap, DbLoaderConfiguration)}
      * method that supports catalogs.
      */
     @Deprecated
@@ -717,7 +717,7 @@ public class DbLoader {
      * of tables to read.
      *
      * @deprecated since 4.0 use
-     * {@link #load(org.apache.cayenne.map.DataMap, DbLoaderConfiguration, String...)}
+     * {@link #load(org.apache.cayenne.map.DataMap, DbLoaderConfiguration)}
      * method that supports catalogs.
      */
     @Deprecated
@@ -730,7 +730,7 @@ public class DbLoader {
                 new DbPath(null, schemaPattern), transformPatternToFilter(tablePattern), TRUE, NULL)));
         config.setTableTypes(tableTypes);
 
-        load(dataMap, config, tableTypes);
+        load(dataMap, config);
         return dataMap;
     }
 
@@ -751,9 +751,9 @@ public class DbLoader {
      *
      * @since 4.0
      */
-    public void load(DataMap dataMap, DbLoaderConfiguration config, String... tableTypes) throws SQLException {
+    public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
 
-        Map<DbPath, Map<String, DbEntity>> tables = getTables(config, tableTypes);
+        Map<DbPath, Map<String, DbEntity>> tables = getTables(config, config.getTableTypes());
         List<DbEntity> entities = loadDbEntities(dataMap, config, tables);
 
         if (entities != null) {
@@ -777,7 +777,7 @@ public class DbLoader {
     public DataMap load(DbLoaderConfiguration config) throws SQLException {
 
         DataMap dataMap = new DataMap();
-        load(dataMap, config, config.getTableTypes());
+        load(dataMap, config);
         loadProcedures(dataMap, config);
 
         return dataMap;

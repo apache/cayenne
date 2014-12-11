@@ -277,6 +277,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
                 .add(filterBuilder.build()).filtersConfig());
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
+        config.setTableTypes(reverseEngineering.getTableTypes());
         return config;
     }
 

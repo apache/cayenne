@@ -108,6 +108,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		test("testViewsExclude");
 	}
 	
+	public void testTableTypes() throws Exception {
+		test("testTableTypes");
+	}
+
 	public void testDefaultPackage() throws Exception {
 		test("testDefaultPackage");
 	}

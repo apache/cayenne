@@ -19,10 +19,14 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.tools.dbimport.config.AntNestedElement;
 import org.apache.cayenne.tools.dbimport.config.Catalog;
 import org.apache.cayenne.tools.dbimport.config.ExcludeColumn;
 import org.apache.cayenne.tools.dbimport.config.ExcludeProcedure;
@@ -71,6 +75,8 @@ public class DbImporterTask extends Task {
 
         Log logger = new AntLogger(this);
         config.setLogger(logger);
+        config.setTableTypes(reverseEngineering.getTableTypes());
+        
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
         try {
@@ -259,6 +265,10 @@ public class DbImporterTask extends Task {
 
     public void addConfiguredCatalog(Catalog catalog) {
         reverseEngineering.addCatalog(catalog);
+    }
+
+    public void addConfiguredTableType(AntNestedElement type) {
+        reverseEngineering.addTableType(type.getName());
     }
 
     public ReverseEngineering getReverseEngineering() {

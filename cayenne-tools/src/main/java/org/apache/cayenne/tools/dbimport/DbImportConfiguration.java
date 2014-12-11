@@ -325,4 +325,8 @@ public class DbImportConfiguration {
     public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
         this.dbLoaderConfiguration.setSkipRelationshipsLoading(skipRelationshipsLoading);
     }
+
+    public void setTableTypes(String[] tableTypes) {
+        dbLoaderConfiguration.setTableTypes(tableTypes);
+    }
 }
