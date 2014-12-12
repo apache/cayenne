@@ -40,8 +40,7 @@ public class DbLoaderConfiguration {
 
 /*
     // TODO: Andrus, 10/29/2005 - this type of filtering should be delegated to adapter
-    */
-/* TODO by default should skip name.startsWith("BIN$") *//*
+       TODO by default should skip name.startsWith("BIN$")
 
     private NameFilter tableFilter = NamePatternMatcher.build(null, null, "BIN$");
 
@@ -69,6 +68,8 @@ public class DbLoaderConfiguration {
     private String namingStrategy;
 
     private Boolean skipRelationshipsLoading;
+
+    private Boolean skipPrimaryKeyLoading;
 
     private String[] tableTypes;
 
@@ -110,7 +111,7 @@ public class DbLoaderConfiguration {
         this.filtersConfig = filtersConfig;
     }
 
-    public Boolean isSkipRelationshipsLoading() {
+    public boolean isSkipRelationshipsLoading() {
         return skipRelationshipsLoading != null && skipRelationshipsLoading;
     }
 
@@ -122,11 +123,27 @@ public class DbLoaderConfiguration {
         this.skipRelationshipsLoading = skipRelationshipsLoading;
     }
 
+    public void setSkipPrimaryKeyLoading(Boolean skipPrimaryKeyLoading) {
+        this.skipPrimaryKeyLoading = skipPrimaryKeyLoading;
+    }
+
+    public boolean getSkipPrimaryKeyLoading() {
+        return skipPrimaryKeyLoading;
+    }
+
+    public boolean isSkipPrimaryKeyLoading() {
+        return skipPrimaryKeyLoading != null && skipPrimaryKeyLoading;
+    }
+
     @Override
     public String toString() {
         String res = "EntitiesFilters: " + getFiltersConfig();
-        if (skipRelationshipsLoading != null && skipRelationshipsLoading) {
+        if (isSkipRelationshipsLoading()) {
             res += "\n Skip Loading Relationships! \n";
+        }
+
+        if (isSkipPrimaryKeyLoading()) {
+            res += "\n Skip Loading PrimaryKeys! \n";
         }
 
         return res;

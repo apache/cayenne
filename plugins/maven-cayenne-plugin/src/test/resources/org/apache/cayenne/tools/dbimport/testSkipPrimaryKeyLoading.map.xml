@@ -25,31 +25,11 @@
     <db-entity name="A" schema="APP">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
-    <db-entity name="A_B" schema="APP">
-        <db-attribute name="A_ID" type="INTEGER" isMandatory="true" length="10"/>
-        <db-attribute name="B_ID" type="INTEGER" isMandatory="true" length="10"/>
-    </db-entity>
     <db-entity name="B" schema="APP">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
     <obj-entity name="A" className="A" dbEntityName="A">
     </obj-entity>
-    <obj-entity name="AB" className="AB" dbEntityName="A_B">
-    </obj-entity>
     <obj-entity name="B" className="B" dbEntityName="B">
     </obj-entity>
-    <db-relationship name="aBArray" source="A" target="A_B" toMany="true">
-        <db-attribute-pair source="ID" target="A_ID"/>
-    </db-relationship>
-    <db-relationship name="toA" source="A_B" target="A" toMany="false">
-        <db-attribute-pair source="A_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="toB" source="A_B" target="B" toMany="false">
-        <db-attribute-pair source="B_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="aBArray" source="B" target="A_B" toMany="true">
-        <db-attribute-pair source="ID" target="B_ID"/>
-    </db-relationship>
-    <obj-relationship name="toA" source="AB" target="A" deleteRule="Nullify" db-relationship-path="toA"/>
-    <obj-relationship name="aBArray" source="B" target="AB" deleteRule="Deny" db-relationship-path="aBArray"/>
 </data-map>

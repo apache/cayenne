@@ -58,6 +58,7 @@ public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader
 
             Element root = doc.getDocumentElement();
             engineering.setSkipRelationshipsLoading(loadBoolean(root, "skipRelationshipsLoading"));
+            engineering.setSkipPrimaryKeyLoading(loadBoolean(root, "skipPrimaryKeyLoading"));
             engineering.setTableTypes(loadTableTypes(root));
 
             engineering.setCatalogs(loadCatalogs(root));

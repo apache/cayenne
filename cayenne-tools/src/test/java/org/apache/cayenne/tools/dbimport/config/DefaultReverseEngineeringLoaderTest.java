@@ -212,6 +212,18 @@ public class DefaultReverseEngineeringLoaderTest {
     }
 
     @Test
+    public void testSkipPrimaryKeyLoading() throws Exception {
+        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+                .load(getResource("reverseEngineering-skipPrimaryKeyLoading.xml"));
+
+        assertSkipPrimaryKeyLoading(engineering);
+    }
+
+    public static void assertSkipPrimaryKeyLoading(ReverseEngineering engineering) {
+        assertTrue(engineering.getSkipPrimaryKeyLoading());
+    }
+
+    @Test
     public void testTableTypes() throws Exception {
         ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
                 .load(getResource("reverseEngineering-tableTypes.xml"));

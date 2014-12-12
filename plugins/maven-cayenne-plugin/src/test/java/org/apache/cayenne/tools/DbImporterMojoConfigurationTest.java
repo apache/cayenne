@@ -81,6 +81,11 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testSkipPrimaryKeyLoading() throws Exception {
+        assertSkipPrimaryKeyLoading(getCdbImport("pom-skip-primary-key-loading.xml").getReverseEngineering());
+    }
+
+    @Test
     public void testTableTypes() throws Exception {
         assertTableTypes(getCdbImport("pom-table-types.xml").getReverseEngineering());
     }

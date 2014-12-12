@@ -322,8 +322,9 @@ public class DbLoader {
 
             loadDbAttributes(config.getFiltersConfig(), tablesMap.getKey(), tablesMap.getValue());
 
-            // get primary keys for each table and store it in dbEntity
-            getPrimaryKeyForTable(tablesMap.getValue());
+            if (!config.isSkipPrimaryKeyLoading()) {
+                getPrimaryKeyForTable(tablesMap.getValue());
+            }
         }
 
         return dbEntityList;

@@ -29,6 +29,8 @@ public class ReverseEngineering extends FilterContainer {
 
     private Boolean skipRelationshipsLoading;
 
+    private Boolean skipPrimaryKeyLoading;
+
     /*
      * Typical types are "TABLE",
      * "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
@@ -48,6 +50,14 @@ public class ReverseEngineering extends FilterContainer {
 
     public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
         this.skipRelationshipsLoading = skipRelationshipsLoading;
+    }
+
+    public Boolean getSkipPrimaryKeyLoading() {
+        return skipPrimaryKeyLoading;
+    }
+
+    public void setSkipPrimaryKeyLoading(Boolean skipPrimaryKeyLoading) {
+        this.skipPrimaryKeyLoading = skipPrimaryKeyLoading;
     }
 
     public Collection<Catalog> getCatalogs() {
@@ -109,10 +119,11 @@ public class ReverseEngineering extends FilterContainer {
         if (skipRelationshipsLoading != null && skipRelationshipsLoading) {
             res.append("\n").append("        Skip Relationships Loading");
         }
+        if (skipPrimaryKeyLoading != null && skipPrimaryKeyLoading) {
+            res.append("\n").append("        Skip PrimaryKey Loading");
+        }
         res.append(super.toString("    "));
 
         return res.toString();
     }
-
-
 }

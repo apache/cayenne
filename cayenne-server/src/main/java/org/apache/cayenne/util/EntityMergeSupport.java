@@ -386,7 +386,7 @@ public class EntityMergeSupport {
      * Returns registered listeners
      */
     public EntityMergeListener[] getEntityMergeListeners() {
-        return listeners.toArray(new EntityMergeListener[0]);
+        return listeners.toArray(new EntityMergeListener[listeners.size()]);
     }
 
     /**

@@ -34,6 +34,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.merge.DbMergerConfig;
 import org.apache.cayenne.merge.DefaultModelMergeDelegate;
 import org.apache.cayenne.merge.ModelMergeDelegate;
 import org.apache.cayenne.resource.URLResource;
@@ -326,7 +327,19 @@ public class DbImportConfiguration {
         this.dbLoaderConfiguration.setSkipRelationshipsLoading(skipRelationshipsLoading);
     }
 
+    public void setSkipPrimaryKeyLoading(Boolean skipPrimaryKeyLoading) {
+        this.dbLoaderConfiguration.setSkipPrimaryKeyLoading(skipPrimaryKeyLoading);
+    }
+
     public void setTableTypes(String[] tableTypes) {
         dbLoaderConfiguration.setTableTypes(tableTypes);
+    }
+
+    public DbMergerConfig getDbMergerConfig() {
+        return new DbMergerConfig(
+                getDbLoaderConfig().getFiltersConfig(),
+                getDbLoaderConfig().getSkipRelationshipsLoading(),
+                getDbLoaderConfig().getSkipPrimaryKeyLoading()
+        );
     }
 }

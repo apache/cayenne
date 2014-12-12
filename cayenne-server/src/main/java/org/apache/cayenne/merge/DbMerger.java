@@ -36,7 +36,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
-import org.apache.cayenne.access.loader.NameFilter;
 import org.apache.cayenne.access.loader.filters.DbPath;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.dba.DbAdapter;
@@ -73,36 +72,24 @@ public class DbMerger {
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataNode dataNode, DataMap existing, DbLoaderConfiguration config) {
-        return createMergeTokens(dataNode.getDataSource(), dataNode.getAdapter(), existing, config);
-    }
-
-    /**
-     * Create and return a {@link List} of {@link MergerToken}s to alter the given
-     * {@link DataNode} to match the given {@link DataMap}
-     */
-    public List<MergerToken> createMergeTokens(DbLoader dbLoader, DataMap existing, DbLoaderConfiguration config) {
-        return createMergeTokens(existing, loadDataMapFromDb(dbLoader, config), config.getFiltersConfig());
-    }
-
-    /**
-     * Create and return a {@link List} of {@link MergerToken}s to alter the given
-     * {@link DataNode} to match the given {@link DataMap}
-     */
     public List<MergerToken> createMergeTokens(DataSource dataSource, DbAdapter adapter, DataMap existingDataMap, DbLoaderConfiguration config) {
-        return createMergeTokens(existingDataMap, loadDataMapFromDb(dataSource, adapter, config), config.getFiltersConfig());
+        return createMergeTokens(
+                existingDataMap,
+                loadDataMapFromDb(dataSource, adapter, config),
+                config
+        );
     }
 
     /**
      * Create and return a {@link List} of {@link MergerToken}s to alter the given
      * {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb, FiltersConfig filtersConfig) {
+    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb, DbLoaderConfiguration config) {
 
         loadedFomDb.setQuotingSQLIdentifiers(existing.isQuotingSQLIdentifiers());
 
-        List<MergerToken> tokens = createMergeTokens(filter(existing, filtersConfig), loadedFomDb.getDbEntities());
-
+        List<MergerToken> tokens
+                = createMergeTokens(filter(existing, config.getFiltersConfig()), loadedFomDb.getDbEntities(), config);
 
         // sort. use a custom Comparator since only toDb tokens are comparable by now
         Collections.sort(tokens, new Comparator<MergerToken>() {
@@ -110,9 +97,8 @@ public class DbMerger {
             public int compare(MergerToken o1, MergerToken o2) {
                 if (o1 instanceof AbstractToDbToken
                         && o2 instanceof AbstractToDbToken) {
-                    AbstractToDbToken d1 = (AbstractToDbToken) o1;
-                    AbstractToDbToken d2 = (AbstractToDbToken) o2;
-                    return d1.compareTo(d2);
+
+                    return ((AbstractToDbToken) o1).compareTo(o2);
                 }
                 return 0;
             }
@@ -136,42 +122,22 @@ public class DbMerger {
         try {
             conn = dataSource.getConnection();
 
-            DbLoader dbLoader = new DbLoader(conn, adapter, new DefaultDbLoaderDelegate());
-            return loadDataMapFromDb(dbLoader, config);
-        }
-        catch (SQLException e) {
+            return new DbLoader(conn, adapter, new DefaultDbLoaderDelegate()).load(config);
+        } catch (SQLException e) {
             throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
-        }
-        finally {
+        } finally {
             if (conn != null) {
                 try {
                     conn.close();
-                }
-                catch (SQLException e) {
+                } catch (SQLException e) {
                     // Do nothing.
                 }
             }
         }
     }
 
-    private DataMap loadDataMapFromDb(DbLoader dbLoader, DbLoaderConfiguration config) {
-        try {
-            return dbLoader.load(config);
-        } catch (SQLException e) {
-            // TODO log
-        }
-
-        return new DataMap();
-    }
-
-    /**
-     *
-     *
-     * @param existing
-     * @param loadedFromDb
-     * @return
-     */
-    public List<MergerToken> createMergeTokens(Collection<DbEntity> existing, Collection<DbEntity> loadedFromDb) {
+    public List<MergerToken> createMergeTokens(Collection<DbEntity> existing, Collection<DbEntity> loadedFromDb,
+                                               DbLoaderConfiguration config) {
         Collection<DbEntity> dbEntitiesToDrop = new LinkedList<DbEntity>(loadedFromDb);
 
         List<MergerToken> tokens = new LinkedList<MergerToken>();
@@ -192,12 +158,16 @@ public class DbMerger {
             dbEntitiesToDrop.remove(detectedEntity);
 
             tokens.addAll(checkRelationshipsToDrop(dbEntity, detectedEntity));
-            tokens.addAll(checkRelationshipsToAdd(dbEntity, detectedEntity));
+            if (!config.isSkipRelationshipsLoading()) {
+                tokens.addAll(checkRelationshipsToAdd(dbEntity, detectedEntity));
+            }
             tokens.addAll(checkRows(dbEntity, detectedEntity));
 
-            MergerToken token = checkPrimaryKeyChange(dbEntity, detectedEntity);
-            if (token != null) {
-                tokens.add(token);
+            if (!config.isSkipPrimaryKeyLoading()) {
+                MergerToken token = checkPrimaryKeyChange(dbEntity, detectedEntity);
+                if (token != null) {
+                    tokens.add(token);
+                }
             }
         }
 

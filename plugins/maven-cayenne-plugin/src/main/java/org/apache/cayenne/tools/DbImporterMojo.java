@@ -226,7 +226,7 @@ public class DbImporterMojo extends AbstractMojo {
      *
      * Default is <code>false</code>.
      *
-     * @parameter expression="${cdbimport.meaningfulPk}" default-value="false"
+     * @parameter expression="${cdbimport.meaningfulPk}"
      * @deprecated since 4.0 use meaningfulPkTables
      */
     private boolean meaningfulPk;
@@ -277,6 +277,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
                 .add(filterBuilder.build()).filtersConfig());
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
+        config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());
         return config;
     }
