@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
@@ -32,6 +31,7 @@ import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -244,6 +244,24 @@ public class DbLoaderHelper {
             if (existingMap) {
                 mediator.fireObjEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
             }
+        }
+
+        @Override
+        public boolean dbRelationship(DbEntity entity) {
+            checkCanceled();
+
+            loadStatusNote = "Load relationships for '" + entity.getName() + "'...";
+
+            return true;
+        }
+
+        @Override
+        public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
+            checkCanceled();
+
+            loadStatusNote = "Load relationship: '" + entity.getName() + "'; '" + relationship.getName() + "'...";
+
+            return true;
         }
 
         void checkCanceled() {
