@@ -53,6 +53,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -435,12 +436,11 @@ public class DbLoader {
     }
 
     /**
-     * Creates an ObjEntity for each DbEntity in the map. ObjEntities are
-     * created empty without
+     * Creates an ObjEntity for each DbEntity in the map.
      */
     protected Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config, Collection<DbEntity> entities) {
         if (entities.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
 
         Collection<ObjEntity> loadedEntities = new ArrayList<ObjEntity>(entities.size());
