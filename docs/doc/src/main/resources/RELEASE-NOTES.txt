@@ -7,16 +7,6 @@ http://cayenne.apache.org/
 To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
-----------------------------------
-Release: 4.0.M3
-Date: 
-----------------------------------
-Changes/New Features:
-
-Bug Fixes:
-
-CAY-1974 Copy/Paste DbEntiry throws exception
-
 Changes/New Features:
 ----------------------------------
 Release: 4.0.M2
@@ -116,7 +106,9 @@ CAY-1943 XML file not deleted when a DataMap is deleted from the project
 CAY-1961 Fix RemoveAction for DataMaps in ProjectTree
 CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
 CAY-1973 error while generating classes
+CAY-1974 Copy/Paste DbEntiry throws exception
 CAY-1978 ESCAPE clause should be included in LIKE parenthesis
+CAY-1979 Prefetches on Many-to-Many Relationships with Longvarchar
 
 ----------------------------------
 Release: 3.2M1
