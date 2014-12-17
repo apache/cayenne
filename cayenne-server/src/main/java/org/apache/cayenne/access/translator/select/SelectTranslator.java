@@ -19,17 +19,6 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.sql.Connection;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
@@ -59,6 +48,17 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
+
+import java.sql.Connection;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A builder of JDBC PreparedStatements based on Cayenne SelectQueries.
@@ -416,7 +416,9 @@ public class SelectTranslator extends QueryAssembler {
                         .resolvePath(pathExp, getPathAliases())) {
 
                     if (component.getRelationship() != null) {
-                        dbRelationshipAdded(component.getRelationship(), component.getJoinType(), null);
+                        // In this case we must have forcingDistinct = false (as default)
+                        // so we don't invoke dbRelationshipAdded() and invoke pushJoin() at once.
+                        getJoinStack().pushJoin(component.getRelationship(), component.getJoinType(), null);
                     }
 
                     lastComponent = component;
