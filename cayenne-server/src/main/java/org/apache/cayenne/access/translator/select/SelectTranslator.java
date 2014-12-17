@@ -415,11 +415,16 @@ public class SelectTranslator extends QueryAssembler {
                 for (PathComponent<DbAttribute, DbRelationship> component : table
                         .resolvePath(pathExp, getPathAliases())) {
 
-                    if (component.getRelationship() != null) {
-                        // In this case we must have forcingDistinct = false (as default)
-                        // so we don't invoke dbRelationshipAdded() and invoke pushJoin() at once.
-                        getJoinStack().pushJoin(component.getRelationship(), component.getJoinType(), null);
-                    }
+					if (component.getRelationship() != null) {
+						// do not invoke dbRelationshipAdded(), invoke
+						// pushJoin() instead. This is to prevent
+						// 'forcingDistinct' flipping to true, that will result
+						// in unneeded extra processing and sometimes in invalid
+						// results (see CAY-1979). Distinctness of each row is
+						// guaranteed by the prefetch query semantics - we
+						// include target ID in the result columns
+						getJoinStack().pushJoin(component.getRelationship(), component.getJoinType(), null);
+					}
 
                     lastComponent = component;
                 }
