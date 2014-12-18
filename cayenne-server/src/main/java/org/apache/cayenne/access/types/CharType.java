@@ -42,8 +42,8 @@ public class CharType implements ExtendedType {
     protected boolean trimmingChars;
     protected boolean usingClobs;
 
-    public CharType(boolean trimingChars, boolean usingClobs) {
-        this.trimmingChars = trimingChars;
+    public CharType(boolean trimmingChars, boolean usingClobs) {
+        this.trimmingChars = trimmingChars;
         this.usingClobs = usingClobs;
     }
 
@@ -59,51 +59,33 @@ public class CharType implements ExtendedType {
     @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
-        String val = null;
-
-        // CLOB handling
-        if (type == Types.CLOB) {
-            val = (isUsingClobs()) ? readClob(rs.getClob(index)) : readCharStream(
-                    rs,
-                    index);
-        }
-        else {
-
-            val = rs.getString(index);
-
-            // trim CHAR type
-            if (val != null && type == Types.CHAR && isTrimmingChars()) {
-                val = rtrim(val);
-            }
+        if (type == Types.CLOB || type == Types.NCLOB) {
+            return isUsingClobs() ? readClob(rs.getClob(index)) : readCharStream(rs, index);
         }
 
-        return val;
+        return handleString(rs.getString(index), type);
     }
 
-    /** Return trimmed string. */
     @Override
     public Object materializeObject(CallableStatement cs, int index, int type)
             throws Exception {
 
-        String val = null;
-
-        // CLOB handling
-        if (type == Types.CLOB) {
+        if (type == Types.CLOB || type == Types.NCLOB) {
             if (!isUsingClobs()) {
                 throw new CayenneException(
                         "Character streams are not supported in stored procedure parameters.");
             }
 
-            val = readClob(cs.getClob(index));
+            return readClob(cs.getClob(index));
         }
-        else {
 
-            val = cs.getString(index);
+        return handleString(cs.getString(index), type);
+    }
 
-            // trim CHAR type
-            if (val != null && type == Types.CHAR && isTrimmingChars()) {
-                val = rtrim(val);
-            }
+    private Object handleString(String val, int type) throws SQLException {
+        // trim CHAR type
+        if (val != null && (type == Types.CHAR || type == Types.NCHAR) && isTrimmingChars()) {
+            return rtrim(val);
         }
 
         return val;
@@ -113,10 +95,10 @@ public class CharType implements ExtendedType {
     protected String rtrim(String value) {
         int end = value.length() - 1;
         int count = end;
-        while ((end >= 0) && (value.charAt(end) <= ' ')) {
+        while (end >= 0 && value.charAt(end) <= ' ') {
             end--;
         }
-        return (end == count) ? value : value.substring(0, end + 1);
+        return end == count ? value : value.substring(0, end + 1);
     }
 
     @Override
@@ -131,11 +113,9 @@ public class CharType implements ExtendedType {
         // instead. This should work with most drivers
         if (type == Types.CLOB) {
             st.setString(pos, (String) value);
-        }
-        else if (scale != -1) {
+        } else if (scale != -1) {
             st.setObject(pos, value, type, scale);
-        }
-        else {
+        } else {
             st.setObject(pos, value, type);
         }
     }
@@ -163,18 +143,16 @@ public class CharType implements ExtendedType {
             SQLException {
         Reader in = rs.getCharacterStream(index);
 
-        return (in != null) ? readValueStream(in, -1, BUF_SIZE) : null;
+        return in != null ? readValueStream(in, -1, BUF_SIZE) : null;
     }
 
     protected String readValueStream(Reader in, int streamSize, int bufSize)
             throws IOException {
         char[] buf = new char[bufSize];
-        int read;
-        StringWriter out = (streamSize > 0)
-                ? new StringWriter(streamSize)
-                : new StringWriter();
+        StringWriter out = streamSize > 0 ? new StringWriter(streamSize) : new StringWriter();
 
         try {
+            int read;
             while ((read = in.read(buf, 0, bufSize)) >= 0) {
                 out.write(buf, 0, read);
             }
@@ -188,7 +166,7 @@ public class CharType implements ExtendedType {
     /**
      * Returns <code>true</code> if 'materializeObject' method should trim trailing spaces
      * from the CHAR columns. This addresses an issue with some JDBC drivers (e.g.
-     * Oracle), that return Strings for CHAR columsn padded with spaces.
+     * Oracle), that return Strings for CHAR columns padded with spaces.
      */
     public boolean isTrimmingChars() {
         return trimmingChars;

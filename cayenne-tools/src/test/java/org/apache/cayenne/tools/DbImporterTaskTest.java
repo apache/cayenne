@@ -33,6 +33,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.jdbc.SQLReader;
@@ -44,8 +45,11 @@ import org.apache.tools.ant.UnknownElement;
 import org.apache.tools.ant.util.FileUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 // TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
@@ -182,7 +186,14 @@ public class DbImporterTaskTest {
 
 			DetailedDiff diff = new DetailedDiff(new Diff(control, test));
 			if (!diff.similar()) {
-				fail(diff.toString());
+                for (Difference d : ((List<Difference>) diff.getAllDifferences())) {
+
+
+                    System.out.println("-------------------------------------------");
+                    System.out.println(d.getTestNodeDetail().getNode());
+                    System.out.println(d.getControlNodeDetail().getValue());
+                }
+                fail(diff.toString());
 			}
 
 		} catch (SAXException e) {

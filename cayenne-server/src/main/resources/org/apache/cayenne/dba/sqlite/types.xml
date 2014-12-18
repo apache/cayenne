@@ -48,8 +48,14 @@ http://sqlite.org/datatype3.html
    <jdbc-type name="CHAR">
        <db-type name="CHAR"/>
    </jdbc-type>
+   <jdbc-type name="NCHAR">
+       <db-type name="NCHAR"/>
+   </jdbc-type>
    <jdbc-type name="CLOB">
        <db-type name="CLOB"/>
+   </jdbc-type>
+   <jdbc-type name="NCLOB">
+       <db-type name="TEXT"/>
    </jdbc-type>
    <jdbc-type name="DATALINK">
        <db-type name="DATALINK"/>
@@ -110,5 +116,11 @@ http://sqlite.org/datatype3.html
    </jdbc-type>
    <jdbc-type name="VARCHAR">
        <db-type name="VARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="NVARCHAR">
+       <db-type name="NVARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="SQLXML">
+       <db-type name="TEXT"/>
    </jdbc-type>
 </types>

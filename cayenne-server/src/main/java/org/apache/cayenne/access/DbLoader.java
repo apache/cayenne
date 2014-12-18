@@ -49,12 +49,14 @@ import org.apache.commons.logging.LogFactory;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -364,6 +366,8 @@ public class DbLoader {
         ResultSet rs = getMetaData().getColumns(path.catalog, path.schema, WILDCARD, WILDCARD);
 
         try {
+            Set<String> columns = new HashSet<String>();
+
             while (rs.next()) {
                 // for a reason not quiet apparent to me, Oracle sometimes
                 // returns duplicate record sets for the same table, messing up table
@@ -378,7 +382,7 @@ public class DbLoader {
                     continue;
                 }
 
-                DbAttribute attr = loadDbAttribute(rs);
+                DbAttribute attr = loadDbAttribute(columns, rs);
                 attr.setEntity(dbEntity);
                 Filter<DbAttribute> filter = filters.filter(new DbPath(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName())).columnFilter();
                 if (!filter.isInclude(attr)) {
@@ -400,7 +404,14 @@ public class DbLoader {
         }
     }
 
-    private DbAttribute loadDbAttribute(ResultSet rs) throws SQLException {
+    private DbAttribute loadDbAttribute(Set<String> columns, ResultSet rs) throws SQLException {
+        if (columns.isEmpty()) {
+            ResultSetMetaData rsMetaData = rs.getMetaData();
+            for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
+                columns.add(rsMetaData.getColumnLabel(i));
+            }
+        }
+
         // gets attribute's (column's) information
         int columnType = rs.getInt("DATA_TYPE");
 
@@ -422,11 +433,7 @@ public class DbLoader {
                 decimalDigits,
                 rs.getBoolean("NULLABLE"));
 
-        if (adapter.supportsGeneratedKeys()) {
-
-            // TODO: this actually throws on some drivers... need to
-            // ensure that 'supportsGeneratedKeys' check is enough
-            // to prevent an exception here.
+        if (columns.contains("IS_AUTOINCREMENT")) {
             String autoIncrement = rs.getString("IS_AUTOINCREMENT");
             if ("YES".equals(autoIncrement)) {
                 attr.setGenerated(true);

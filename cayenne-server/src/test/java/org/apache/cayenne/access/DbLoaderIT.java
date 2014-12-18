@@ -287,12 +287,22 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull(blobAttr);
         assertTrue(msgForTypeMismatch(Types.BLOB, blobAttr), Types.BLOB == blobAttr.getType()
                 || Types.LONGVARBINARY == blobAttr.getType());
+
         DbEntity clobEnt = getDbEntity(map, "CLOB_TEST");
         assertNotNull(clobEnt);
         DbAttribute clobAttr = getDbAttribute(clobEnt, "CLOB_COL");
         assertNotNull(clobAttr);
         assertTrue(msgForTypeMismatch(Types.CLOB, clobAttr), Types.CLOB == clobAttr.getType()
                 || Types.LONGVARCHAR == clobAttr.getType());
+
+/*
+        DbEntity nclobEnt = getDbEntity(map, "NCLOB_TEST");
+        assertNotNull(nclobEnt);
+        DbAttribute nclobAttr = getDbAttribute(nclobEnt, "NCLOB_COL");
+        assertNotNull(nclobAttr);
+        assertTrue(msgForTypeMismatch(Types.NCLOB, nclobAttr), Types.NCLOB == nclobAttr.getType()
+                || Types.LONGVARCHAR == nclobAttr.getType());
+*/
     }
 
     private void assertLobObjEntities(DataMap map) {
@@ -302,12 +312,22 @@ public class DbLoaderIT extends ServerCase {
         ObjAttribute blobAttr = blobEnt.getAttribute("blobCol");
         assertNotNull("BlobTest.blobCol failed to doLoad", blobAttr);
         assertEquals("byte[]", blobAttr.getType());
+
+
         ObjEntity clobEnt = map.getObjEntity("ClobTest");
         assertNotNull(clobEnt);
         // CLOBs should be mapped as Strings by default
         ObjAttribute clobAttr = clobEnt.getAttribute("clobCol");
         assertNotNull(clobAttr);
         assertEquals(String.class.getName(), clobAttr.getType());
+
+
+        ObjEntity nclobEnt = map.getObjEntity("NclobTest");
+        assertNotNull(nclobEnt);
+        // CLOBs should be mapped as Strings by default
+        ObjAttribute nclobAttr = nclobEnt.getAttribute("nclobCol");
+        assertNotNull(nclobAttr);
+        assertEquals(String.class.getName(), nclobAttr.getType());
     }
 
     private DbEntity getDbEntity(DataMap map, String name) {

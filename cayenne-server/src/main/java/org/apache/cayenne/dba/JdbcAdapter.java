@@ -262,6 +262,9 @@ public class JdbcAdapter implements DbAdapter {
     static boolean supportsLength(int type) {
         return type == Types.BINARY
                 || type == Types.CHAR
+                || type == Types.NCHAR
+                || type == Types.NVARCHAR
+                || type == Types.LONGNVARCHAR
                 || type == Types.DECIMAL
                 || type == Types.DOUBLE
                 || type == Types.FLOAT
@@ -445,11 +448,12 @@ public class JdbcAdapter implements DbAdapter {
         boolean first = true;
 
         for (DbJoin join : rel.getJoins()) {
-            if (!first) {
+            if (first) {
+                first = false;
+            } else {
                 buf.append(", ");
                 refBuf.append(", ");
-            } else
-                first = false;
+            }
 
             buf.append(quotingStrategy.quotedSourceName(join));
             refBuf.append(quotingStrategy.quotedTargetName(join));

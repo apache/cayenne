@@ -46,7 +46,13 @@ MySQL types mapping
    <jdbc-type name="CHAR">
        <db-type name="CHAR"/>
    </jdbc-type>
+   <jdbc-type name="NCHAR">
+       <db-type name="CHAR"/>
+   </jdbc-type>
    <jdbc-type name="CLOB">
+       <db-type name="LONGTEXT"/>
+   </jdbc-type>
+   <jdbc-type name="NCLOB">
        <db-type name="LONGTEXT"/>
    </jdbc-type>
    <jdbc-type name="DATALINK"/>
@@ -71,6 +77,9 @@ MySQL types mapping
        <db-type name="LONGBLOB"/>
    </jdbc-type>
    <jdbc-type name="LONGVARCHAR">
+       <db-type name="LONGTEXT"/>
+   </jdbc-type>
+   <jdbc-type name="LONGNVARCHAR">
        <db-type name="LONGTEXT"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
@@ -102,5 +111,11 @@ MySQL types mapping
    </jdbc-type>
    <jdbc-type name="VARCHAR">
        <db-type name="VARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="NVARCHAR">
+       <db-type name="VARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="SQLXML">
+       <db-type name="LONGTEXT"/>
    </jdbc-type>
 </types>

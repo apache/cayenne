@@ -67,12 +67,12 @@ import java.util.Set;
  */
 public class SelectTranslator extends QueryAssembler {
 
-    protected static final int[] UNSUPPORTED_DISTINCT_TYPES = new int[] { Types.BLOB, Types.CLOB, Types.LONGVARBINARY,
-            Types.LONGVARCHAR };
+    protected static final int[] UNSUPPORTED_DISTINCT_TYPES = { Types.BLOB, Types.CLOB, Types.NCLOB,
+            Types.LONGVARBINARY, Types.LONGVARCHAR, Types.LONGNVARCHAR };
 
     protected static boolean isUnsupportedForDistinct(int type) {
-        for (int i = 0; i < UNSUPPORTED_DISTINCT_TYPES.length; i++) {
-            if (UNSUPPORTED_DISTINCT_TYPES[i] == type) {
+        for (int unsupportedDistinctType : UNSUPPORTED_DISTINCT_TYPES) {
+            if (unsupportedDistinctType == type) {
                 return true;
             }
         }
@@ -119,8 +119,9 @@ public class SelectTranslator extends QueryAssembler {
      */
     @Override
     public String createSqlString() throws Exception {
-        if (cachedSqlString != null)
+        if (cachedSqlString != null) {
             return cachedSqlString;
+        }
 
         DataMap dataMap = queryMetadata.getDataMap();
         JoinStack joins = getJoinStack();
@@ -308,7 +309,7 @@ public class SelectTranslator extends QueryAssembler {
 
     <T> List<ColumnDescriptor> appendDbEntityColumns(List<ColumnDescriptor> columns, SelectQuery<T> query) {
 
-        final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
+        Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
 
         DbEntity table = getRootDbEntity();
         for (DbAttribute dba : table.getAttributes()) {
@@ -377,9 +378,7 @@ public class SelectTranslator extends QueryAssembler {
                 DbRelationship dbRel = rel.getDbRelationships().get(0);
 
                 List<DbJoin> joins = dbRel.getJoins();
-                int len = joins.size();
-                for (int i = 0; i < len; i++) {
-                    DbJoin join = joins.get(i);
+                for (DbJoin join : joins) {
                     DbAttribute src = join.getSource();
                     appendColumn(columns, null, src, attributes, null);
                 }
@@ -394,7 +393,7 @@ public class SelectTranslator extends QueryAssembler {
 
         // add remaining needed attrs from DbEntity
         DbEntity table = getRootDbEntity();
-        for (final DbAttribute dba : table.getPrimaryKeys()) {
+        for (DbAttribute dba : table.getPrimaryKeys()) {
             appendColumn(columns, null, dba, attributes, null);
         }
 
@@ -606,7 +605,7 @@ public class SelectTranslator extends QueryAssembler {
         return true;
     }
 
-    final class ColumnTracker {
+    static final class ColumnTracker {
 
         private DbAttribute attribute;
         private String alias;
@@ -618,16 +617,23 @@ public class SelectTranslator extends QueryAssembler {
 
         @Override
         public boolean equals(Object object) {
-            if (object instanceof ColumnTracker) {
-                ColumnTracker other = (ColumnTracker) object;
-                return new EqualsBuilder().append(alias, other.alias).append(attribute, other.attribute).isEquals();
+            if (!(object instanceof ColumnTracker)) {
+                return false;
             }
-            return false;
+
+            ColumnTracker other = (ColumnTracker) object;
+            return new EqualsBuilder()
+                    .append(alias, other.alias)
+                    .append(attribute, other.attribute)
+                    .isEquals();
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder(31, 5).append(alias).append(attribute).toHashCode();
+            return new HashCodeBuilder(31, 5)
+                    .append(alias)
+                    .append(attribute)
+                    .toHashCode();
         }
 
     }

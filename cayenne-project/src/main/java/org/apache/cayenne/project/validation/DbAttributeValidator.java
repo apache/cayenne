@@ -53,7 +53,10 @@ class DbAttributeValidator extends ConfigurationNodeValidator {
 
         // VARCHAR and CHAR attributes must have max length
         else if (attribute.getMaxLength() < 0
-                && (attribute.getType() == java.sql.Types.VARCHAR || attribute.getType() == java.sql.Types.CHAR)) {
+                && (attribute.getType() == java.sql.Types.VARCHAR
+                    || attribute.getType() == java.sql.Types.NVARCHAR
+                    || attribute.getType() == java.sql.Types.CHAR
+                    || attribute.getType() == java.sql.Types.NCHAR)) {
 
             addFailure(
                     validationResult,

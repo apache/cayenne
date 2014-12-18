@@ -74,13 +74,17 @@ public class DefaultJdbc2JavaTypeMapper implements Jdbc2JavaTypeMapper {
         add(Types.BOOLEAN, JAVA_BOOLEAN);
         add(Types.BLOB, JAVA_BYTES);
         add(Types.CLOB, JAVA_STRING);
+        add(Types.NCLOB, JAVA_STRING);
+        add(Types.SQLXML, JAVA_STRING);
         add(Types.CHAR, JAVA_STRING);
+        add(Types.NCHAR, JAVA_STRING);
         add(Types.DATE, JAVA_UTILDATE);
         add(Types.DECIMAL, JAVA_BIGDECIMAL);
         add(Types.DOUBLE, JAVA_DOUBLE);
         add(Types.FLOAT, JAVA_FLOAT);
         add(Types.INTEGER, JAVA_INTEGER);
         add(Types.LONGVARCHAR, JAVA_STRING);
+        add(Types.LONGNVARCHAR, JAVA_STRING);
         add(Types.LONGVARBINARY, JAVA_BYTES);
         add(Types.NUMERIC, JAVA_BIGDECIMAL);
         add(Types.REAL, JAVA_FLOAT);
@@ -90,6 +94,7 @@ public class DefaultJdbc2JavaTypeMapper implements Jdbc2JavaTypeMapper {
         add(Types.TIMESTAMP, JAVA_UTILDATE);
         add(Types.VARBINARY, JAVA_BYTES);
         add(Types.VARCHAR, JAVA_STRING);
+        add(Types.NVARCHAR, JAVA_STRING);
 
         javaSqlEnum.put(JAVA_LONG, Types.BIGINT);
         javaSqlEnum.put(JAVA_BYTES, Types.BINARY);

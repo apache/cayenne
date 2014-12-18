@@ -26,6 +26,9 @@
    <jdbc-type name="BIGINT">
        <db-type name="bigint"/>
    </jdbc-type>
+   <jdbc-type name="ROWID">
+       <db-type name="ROWID"/>
+   </jdbc-type>
    <jdbc-type name="BINARY">
        <db-type name="binary"/>
    </jdbc-type>
@@ -40,10 +43,14 @@
    </jdbc-type>
    <jdbc-type name="CHAR">
        <db-type name="char"/>
+    </jdbc-type>
+    <jdbc-type name="NCHAR">
        <db-type name="nchar"/>
    </jdbc-type>
    <jdbc-type name="CLOB">
        <db-type name="text"/>
+    </jdbc-type>
+    <jdbc-type name="NCLOB">
        <db-type name="ntext"/>
    </jdbc-type>
    <jdbc-type name="DATALINK"/>
@@ -68,6 +75,8 @@
    </jdbc-type>
    <jdbc-type name="LONGVARCHAR">
        <db-type name="text"/>
+   </jdbc-type>
+    <jdbc-type name="LONGNVARCHAR">
        <db-type name="ntext"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
@@ -96,6 +105,11 @@
    </jdbc-type>
    <jdbc-type name="VARCHAR">
        <db-type name="varchar"/>
+   </jdbc-type>
+    <jdbc-type name="NVARCHAR">
        <db-type name="nvarchar"/>
+   </jdbc-type>
+    <jdbc-type name="SQLXML">
+       <db-type name="xml"/>
    </jdbc-type>
 </types>
