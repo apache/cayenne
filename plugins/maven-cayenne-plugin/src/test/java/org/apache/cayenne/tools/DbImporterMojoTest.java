@@ -41,6 +41,7 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -280,7 +281,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 			FileReader control = new FileReader(map.getAbsolutePath() + "-result");
 			FileReader test = new FileReader(mapFileCopy);
 
-			DetailedDiff diff = new DetailedDiff(new Diff(control, test));
+            Diff prototype = new Diff(control, test);
+            prototype.overrideElementQualifier(new ElementNameAndAttributeQualifier());
+            DetailedDiff diff = new DetailedDiff(prototype);
+
 			if (!diff.similar()) {
 				System.out.println(" >>>> " + map.getAbsolutePath() + "-result");
 				System.out.println(" >>>> " + mapFileCopy);

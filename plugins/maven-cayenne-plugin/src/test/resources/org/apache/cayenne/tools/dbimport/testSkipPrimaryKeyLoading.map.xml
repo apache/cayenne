@@ -28,7 +28,7 @@
     <db-entity name="B" schema="APP">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
-    <obj-entity name="A" className="A" dbEntityName="A">
+    <obj-entity name="NewName" className="NewName" dbEntityName="A">
     </obj-entity>
     <obj-entity name="B" className="B" dbEntityName="B">
     </obj-entity>

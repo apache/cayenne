@@ -31,7 +31,7 @@
     <db-entity name="C" schema="APP">
 		<db-attribute name="ID" type="INTEGER" isMandatory="true" length="10"/>
     </db-entity>
-    <obj-entity name="A" className="A" dbEntityName="A">
+    <obj-entity name="NewName" className="NewName" dbEntityName="A">
     </obj-entity>
     <obj-entity name="B" className="B" dbEntityName="B">
     </obj-entity>
