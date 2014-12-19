@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.access.trans;
 
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -54,6 +44,16 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
+
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A builder of JDBC PreparedStatements based on Cayenne SelectQueries. Translates
@@ -416,8 +416,14 @@ public class SelectTranslator extends QueryAssembler {
                         .resolvePath(pathExp, getPathAliases())) {
 
                     if (component.getRelationship() != null) {
-                        dbRelationshipAdded(component.getRelationship(), component
-                                .getJoinType(), null);
+                        // do not invoke dbRelationshipAdded(), invoke
+                        // pushJoin() instead. This is to prevent
+                        // 'forcingDistinct' flipping to true, that will result
+                        // in unneeded extra processing and sometimes in invalid
+                        // results (see CAY-1979). Distinctness of each row is
+                        // guaranteed by the prefetch query semantics - we
+                        // include target ID in the result columns
+                        getJoinStack().pushJoin(component.getRelationship(), component.getJoinType(), null);
                     }
 
                     lastComponent = component;
