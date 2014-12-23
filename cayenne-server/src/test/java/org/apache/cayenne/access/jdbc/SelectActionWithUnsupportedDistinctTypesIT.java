@@ -34,10 +34,13 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.UNSUPPORTED_DISTINCT_TYPES_PROJECT)
 public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
@@ -110,23 +113,22 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
         List<Product> result = context.performQuery(query);
         assertNotNull(result);
 
-        int i = 0;
         for (Product product : result) {
             List<Product> productsContained = product.getContained();
             assertNotNull(productsContained);
-            assertEquals(i, productsContained.size());
 
             List<Product> productsBase = product.getBase();
             assertNotNull(productsBase);
-            assertEquals(3 - i, productsBase.size());
 
-            i++;
+            assertEquals(3, productsContained.size() + productsBase.size());
         }
     }
 
     @Test
     public void testOrdersSelectManyToManyQuery() throws SQLException {
         createOrdersManyToManyDataSet();
+        List assertSizes = new ArrayList(3);
+        assertSizes.addAll(Arrays.asList(1, 2, 3));
 
         SelectQuery productQuery = new SelectQuery(Product.class);
         productQuery.addPrefetch("orderBy");
@@ -134,13 +136,13 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
         List<Product> productResult = context.performQuery(productQuery);
         assertNotNull(productResult);
 
-        int i = 3;
+        List orderBySizes = new ArrayList(3);
         for (Product product : productResult) {
             List<Customer> orderBy = product.getOrderBy();
             assertNotNull(orderBy);
-            assertEquals(i, orderBy.size());
-            i--;
+            orderBySizes.add(orderBy.size());
         }
+        assertTrue(assertSizes.containsAll(orderBySizes));
 
 
         SelectQuery customerQuery = new SelectQuery(Customer.class);
@@ -149,13 +151,13 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
         List<Customer> customerResult = context.performQuery(customerQuery);
         assertNotNull(customerResult);
 
-        i = 1;
+        List orderSizes = new ArrayList(3);
         for (Customer customer : customerResult) {
             List<Product> orders = customer.getOrder();
             assertNotNull(orders);
-            assertEquals(i, orders.size());
-            i++;
+            orderSizes.add(orders.size());
         }
+        assertTrue(assertSizes.containsAll(orderSizes));
     }
 
 }
