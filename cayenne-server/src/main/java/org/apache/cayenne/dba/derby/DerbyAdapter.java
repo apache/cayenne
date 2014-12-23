@@ -39,7 +39,6 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -155,6 +154,7 @@ public class DerbyAdapter extends JdbcAdapter {
         switch (type) {
             case Types.BLOB:
             case Types.CLOB:
+            case Types.NCLOB:
                 return true;
             default:
                 return super.typeSupportsLength(type);
@@ -198,9 +198,20 @@ public class DerbyAdapter extends JdbcAdapter {
 
         if (object == null && sqlType == 0) {
             statement.setNull(pos, Types.VARCHAR);
+        } else {
+            super.bindParameter(statement, object, pos, convertNTypes(sqlType), precision);
         }
-        else {
-            super.bindParameter(statement, object, pos, sqlType, precision);
+    }
+
+    private int convertNTypes(int sqlType) {
+        switch (sqlType) {
+            case Types.NCHAR: return Types.CHAR;
+            case Types.NVARCHAR: return Types.VARCHAR;
+            case Types.LONGNVARCHAR: return Types.LONGVARCHAR;
+            case Types.NCLOB: return Types.CLOB;
+
+            default:
+                return sqlType;
         }
     }
 
