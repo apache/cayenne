@@ -18,6 +18,7 @@ Bug Fixes Since 3.1:
 CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
 CAY-1973 error while generating classes
 CAY-1978 ESCAPE clause should be included in LIKE parenthesis
+CAY-1979 Prefetches on Many-to-Many Relationships with Longvarchar
 
 ----------------------------------
 Release: 3.1-final
