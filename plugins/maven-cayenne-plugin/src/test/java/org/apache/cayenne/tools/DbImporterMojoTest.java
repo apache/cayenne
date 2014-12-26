@@ -43,14 +43,30 @@ import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.SAXException;
+
 
 public class DbImporterMojoTest extends AbstractMojoTestCase {
 
 	static {
 		XMLUnit.setIgnoreWhitespace(true);
 	}
+
+    private static DerbyManager derbyAssembly;
+
+    @BeforeClass
+    public static void setUpClass() throws IOException, SQLException {
+        derbyAssembly = new DerbyManager("target/derby");
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws IOException, SQLException {
+        derbyAssembly.shutdown();
+        derbyAssembly = null;
+    }
 
 	public void testToParameters_MeaningfulPk() throws Exception {
 
@@ -272,7 +288,6 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 	}
 
     private void execute(Statement stmt, String sql) throws SQLException {
-        System.out.println(sql);
         stmt.execute(sql);
     }
 
@@ -286,8 +301,6 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
             DetailedDiff diff = new DetailedDiff(prototype);
 
 			if (!diff.similar()) {
-				System.out.println(" >>>> " + map.getAbsolutePath() + "-result");
-				System.out.println(" >>>> " + mapFileCopy);
 				fail(diff.toString());
 			}
 
