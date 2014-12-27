@@ -36,6 +36,7 @@ ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType('org.apache.cayenne.exp.Property')}##
+${importUtils.addType('java.util.Collection')}##
 #foreach( $attr in ${object.DeclaredAttributes} )
 $importUtils.addType(${attr.Type})##
 #end
@@ -125,6 +126,12 @@ public abstract class ${superClassName} extends ${baseClassName} {
     }
     public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) obj) {
         removeToManyTarget("${rel.Name}", obj, true);
+    }
+    public void setTo${stringUtils.capitalized($rel.Name)}(Collection<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})> obj) {
+        setToManyTarget("${rel.Name}", obj, true, false);
+    }
+    public void setTo${stringUtils.capitalized($rel.Name)}(Collection<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})> obj, boolean delete) {
+        setToManyTarget("${rel.Name}", obj, true, delete);
     }
 #end
     @SuppressWarnings("unchecked")
