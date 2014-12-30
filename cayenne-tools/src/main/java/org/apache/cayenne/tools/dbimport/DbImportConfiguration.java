@@ -144,7 +144,7 @@ public class DbImportConfiguration {
 
     /**
      * Returns a comma-separated list of Perl5 regular expressions that match
-     * table names for which {@link DbImportAction} should include ObjAttribute
+     * table names for which {@link DbImportActionDefault} should include ObjAttribute
      * for PK.
      */
     public String getMeaningfulPkTables() {

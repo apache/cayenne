@@ -21,17 +21,19 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
-import org.apache.cayenne.access.loader.filters.FiltersConfig;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -39,12 +41,16 @@ import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.LongRunningTask;
-import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.project.FileProjectSaver;
+import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.cayenne.tools.dbimport.DbImportAction;
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
+import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
 import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
-import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,16 +60,12 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
-
 /**
  * Stateful helper class that encapsulates access to DbLoader.
- * 
  */
 public class DbLoaderHelper {
 
@@ -82,28 +84,36 @@ public class DbLoaderHelper {
     protected String dbCatalog;
     protected DbLoader loader;
     protected DataMap dataMap;
-    protected boolean meaningfulPk;
     protected List<String> schemas;
     protected List<String> catalogs;
+    protected DbImportConfiguration config;
 
     private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
 
     protected String loadStatusNote;
 
-    /**
-     * ObjEntities which were added to project during reverse engineering
-     */
-    protected List<ObjEntity> addedObjEntities;
-
-    public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter, String dbUserName) {
-        this.dbUserName = dbUserName;
+    public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter, DBConnectionInfo dbConnectionInfo) {
         this.mediator = mediator;
+        this.dbUserName = dbConnectionInfo.getUserName();
+
+        this.config = new DbImportConfiguration();
+        this.config.setAdapter(adapter.getClass().getName());
+        this.config.setUsername(dbConnectionInfo.getUserName());
+        this.config.setPassword(dbConnectionInfo.getPassword());
+        this.config.setDriver(dbConnectionInfo.getJdbcDriver());
+        this.config.setUrl(dbConnectionInfo.getUrl());
+
         try {
             this.dbCatalog = connection.getCatalog();
         } catch (SQLException e) {
             logObj.warn("Error getting catalog.", e);
         }
-        this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
+
+        try {
+            this.loader = config.createLoader(adapter, connection, new LoaderDelegate());
+        } catch (Throwable th) {
+            processException(th, "Error creating DbLoader.");
+        }
     }
 
     public void setStoppingReverseEngineering(boolean stopReverseEngineering) {
@@ -165,10 +175,11 @@ public class DbLoaderHelper {
         this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures() ? FilterFactory.TRUE : FilterFactory.NULL);
         this.filterBuilder.includeProcedures(dialog.getProcedureNamePattern());
 
-        this.meaningfulPk = dialog.isMeaningfulPk();
-        this.addedObjEntities = new ArrayList<ObjEntity>();
+        this.loader.setCreatingMeaningfulPK(dialog.isMeaningfulPk());
 
-        this.loader.setNameGenerator(dialog.getNamingStrategy());
+        this.config.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
+                .add(filterBuilder.build()).filtersConfig());
+        this.config.setNamingStrategy(dialog.getNamingStrategy().getClass().getName());
 
         // load DataMap...
         LongRunningTask loadDataMapTask = new LoadDataMapTask(Application.getFrame(), "Reengineering DB");
@@ -221,7 +232,6 @@ public class DbLoaderHelper {
             checkCanceled();
 
             loadStatusNote = "Creating ObjEntity '" + entity.getName() + "'...";
-            addedObjEntities.add(entity);
 
             if (existingMap) {
                 mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
@@ -345,7 +355,7 @@ public class DbLoaderHelper {
         }
     }
 
-    final class LoadDataMapTask extends DbLoaderTask {
+    public final class LoadDataMapTask extends DbLoaderTask {
 
         public LoadDataMapTask(JFrame frame, String title) {
             super(frame, title);
@@ -370,70 +380,37 @@ public class DbLoaderHelper {
                 return;
             }
 
-            importingTables();
-            importingProcedures();
-
-            cleanup();
-
-            // fire up events
-            loadStatusNote = "Updating view...";
-            if (mediator.getCurrentDataMap() != null) {
-                mediator.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.CHANGE));
-                mediator.fireDataMapDisplayEvent(new DataMapDisplayEvent(Application.getFrame(), dataMap,
-                        (DataChannelDescriptor) mediator.getProject().getRootNode(), mediator.getCurrentDataNode()));
-            } else {
-                DataChannelDescriptor currentDomain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-                Resource baseResource = currentDomain.getConfigurationSource();
-
-                // this will be new data map so need to set configuration source
-                // for it
-                if (baseResource != null) {
-                    Resource dataMapResource = baseResource.getRelativeResource(dataMap.getName());
-                    dataMap.setConfigurationSource(dataMapResource);
-                }
-                mediator.addDataMap(Application.getFrame(), dataMap);
-            }
-        }
-
-        private void importingProcedures() {
-            if (!filterBuilder.proceduresFilters().equals(NULL)) {
-                return;
-            }
-
-            loadStatusNote = "Importing procedures...";
             try {
-                DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-                configuration.setFiltersConfig(new FiltersConfig(filterBuilder.build()));
+                Injector injector = DIBootstrap.createInjector(new ToolsModule(logObj), new DbImportModule() {
+                    @Override
+                    public void configure(Binder binder) {
+                        binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
+                        binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                        binder.bind(MapLoader.class).to(MapLoader.class);
+                        binder.bind(DbImportAction.class).to(DbImportActionModeler.class);
+                    }
+                });
 
-                loader.loadProcedures(dataMap, new DbLoaderConfiguration());
+                DbImportActionModeler importAction = (DbImportActionModeler) injector.getInstance(DbImportAction.class);
+                importAction.setDbLoaderHelper(DbLoaderHelper.this);
+                importAction.execute(config);
             } catch (Throwable th) {
-                if (!isCanceled()) {
-                    processException(th, "Error Reengineering Database");
-                }
+                processException(th, "Error importing database schema.");
             }
         }
 
-        private void importingTables() {
-            loadStatusNote = "Importing tables...";
-            try {
-                loader.setCreatingMeaningfulPK(meaningfulPk);
-               
-                DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-                configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
-                        .add(filterBuilder.build()).filtersConfig());
-                loader.load(dataMap, configuration);
-
-                /**
-                 * Update default rules for relationships
-                 */
-                for (ObjEntity addedObjEntity : addedObjEntities) {
-                    DeleteRuleUpdater.updateObjEntity(addedObjEntity);
-                }
-            } catch (Throwable th) {
-                if (!isCanceled()) {
-                    processException(th, "Error Reengineering Database");
-                }
-            }
-        }
     }
+
+    protected ProjectController getMediator() {
+        return mediator;
+    }
+
+    protected DbLoader getLoader() {
+        return loader;
+    }
+
+    protected DataMap getDataMap() {
+        return dataMap;
+    }
+
 }

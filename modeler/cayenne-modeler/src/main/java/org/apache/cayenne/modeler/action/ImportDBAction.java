@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-import java.sql.Connection;
-
-import javax.swing.SwingUtilities;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.ConnectionWizard;
 import org.apache.cayenne.modeler.dialog.db.DbLoaderHelper;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+
+import javax.swing.SwingUtilities;
+import java.awt.event.ActionEvent;
+import java.sql.Connection;
 
 /**
  * Action that imports database structure into a DataMap.
@@ -76,7 +75,7 @@ public class ImportDBAction extends DBWizardAction {
                 getProjectController(),
                 connection,
                 adapter,
-                dataSourceInfo.getUserName());
+                dataSourceInfo);
         Thread th = new Thread(new Runnable() {
 
             public void run() {

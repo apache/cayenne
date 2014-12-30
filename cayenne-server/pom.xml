@@ -169,6 +169,11 @@
     		<artifactId>slf4j-simple</artifactId>
     		<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.32</version>
+		</dependency>
     </dependencies>
 	<build>
 		<resources>

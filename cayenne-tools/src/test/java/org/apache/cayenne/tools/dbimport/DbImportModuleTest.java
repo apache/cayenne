@@ -34,6 +34,6 @@ public class DbImportModuleTest {
 
         Log log = mock(Log.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
-        assertTrue(i.getInstance(DbImportAction.class) instanceof DbImportAction);
+        assertTrue(i.getInstance(DbImportAction.class) instanceof DbImportActionDefault);
     }
 }

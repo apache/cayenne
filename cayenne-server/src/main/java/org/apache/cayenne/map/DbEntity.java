@@ -19,17 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.ConfigurationNode;
@@ -48,6 +37,17 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.Transformer;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database
@@ -611,9 +611,11 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
     public Collection<ObjEntity> mappedObjEntities() {
         Collection<ObjEntity> objEntities = new HashSet<ObjEntity>();
         MappingNamespace mns = getDataMap().getNamespace();
-        for (ObjEntity objEntity : mns.getObjEntities()) {
-            if (equals(objEntity.getDbEntity())) {
-                objEntities.add(objEntity);
+        if (mns != null) {
+            for (ObjEntity objEntity : mns.getObjEntities()) {
+                if (equals(objEntity.getDbEntity())) {
+                    objEntities.add(objEntity);
+                }
             }
         }
         return objEntities;
