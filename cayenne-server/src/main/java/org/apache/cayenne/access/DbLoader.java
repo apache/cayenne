@@ -49,14 +49,12 @@ import org.apache.commons.logging.LogFactory;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -325,9 +323,8 @@ public class DbLoader {
 
             loadDbAttributes(config.getFiltersConfig(), tablesMap.getKey(), tablesMap.getValue());
 
-            if (!config.isSkipPrimaryKeyLoading()) {
-                getPrimaryKeyForTable(tablesMap.getValue());
-            }
+            // get primary keys for each table and store it in dbEntity
+            getPrimaryKeyForTable(tablesMap.getValue());
         }
 
         return dbEntityList;
@@ -366,8 +363,6 @@ public class DbLoader {
         ResultSet rs = getMetaData().getColumns(path.catalog, path.schema, WILDCARD, WILDCARD);
 
         try {
-            Set<String> columns = new HashSet<String>();
-
             while (rs.next()) {
                 // for a reason not quiet apparent to me, Oracle sometimes
                 // returns duplicate record sets for the same table, messing up table
@@ -382,7 +377,7 @@ public class DbLoader {
                     continue;
                 }
 
-                DbAttribute attr = loadDbAttribute(columns, rs);
+                DbAttribute attr = loadDbAttribute(rs);
                 attr.setEntity(dbEntity);
                 Filter<DbAttribute> filter = filters.filter(new DbPath(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName())).columnFilter();
                 if (!filter.isInclude(attr)) {
@@ -404,14 +399,7 @@ public class DbLoader {
         }
     }
 
-    private DbAttribute loadDbAttribute(Set<String> columns, ResultSet rs) throws SQLException {
-        if (columns.isEmpty()) {
-            ResultSetMetaData rsMetaData = rs.getMetaData();
-            for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
-                columns.add(rsMetaData.getColumnLabel(i));
-            }
-        }
-
+    private DbAttribute loadDbAttribute(ResultSet rs) throws SQLException {
         // gets attribute's (column's) information
         int columnType = rs.getInt("DATA_TYPE");
 
@@ -433,7 +421,11 @@ public class DbLoader {
                 decimalDigits,
                 rs.getBoolean("NULLABLE"));
 
-        if (columns.contains("IS_AUTOINCREMENT")) {
+        if (adapter.supportsGeneratedKeys()) {
+
+            // TODO: this actually throws on some drivers... need to
+            // ensure that 'supportsGeneratedKeys' check is enough
+            // to prevent an exception here.
             String autoIncrement = rs.getString("IS_AUTOINCREMENT");
             if ("YES".equals(autoIncrement)) {
                 attr.setGenerated(true);
@@ -443,7 +435,8 @@ public class DbLoader {
     }
 
     /**
-     * Creates an ObjEntity for each DbEntity in the map.
+     * Creates an ObjEntity for each DbEntity in the map. ObjEntities are
+     * created empty without
      */
     protected Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config, Collection<DbEntity> entities) {
         if (entities.isEmpty()) {
@@ -518,28 +511,29 @@ public class DbLoader {
                     continue;
                 }
 
+                // forwardRelationship is a reference from table with primary key
                 DbRelationship forwardRelationship = new DbRelationship(generateName(pkEntity, key, true));
                 forwardRelationship.setSourceEntity(pkEntity);
                 forwardRelationship.setTargetEntity(fkEntity);
 
+                // forwardRelationship is a reference from table with foreign key, it is what exactly we load from db
                 DbRelationshipDetected reverseRelationship = new DbRelationshipDetected(generateName(fkEntity, key, false));
                 reverseRelationship.setFkName(key.getFKName());
                 reverseRelationship.setSourceEntity(fkEntity);
                 reverseRelationship.setTargetEntity(pkEntity);
                 reverseRelationship.setToMany(false);
+
+                createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
+
+                boolean isOneToOne = isOneToOne(fkEntity, forwardRelationship);
+
+                forwardRelationship.setToDependentPK(isOneToOne);
+                forwardRelationship.setToMany(!isOneToOne);
+                forwardRelationship.setName(generateName(pkEntity, key, !isOneToOne));
+
                 if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {
                     fkEntity.addRelationship(reverseRelationship);
                 }
-
-                boolean toPK = createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
-
-                forwardRelationship.setToDependentPK(toPK);
-
-                boolean isOneToOne = toPK && fkEntity.getPrimaryKeys().size()
-                        == forwardRelationship.getJoins().size();
-
-                forwardRelationship.setToMany(!isOneToOne);
-                forwardRelationship.setName(generateName(pkEntity, key, !isOneToOne));
                 if (delegate.dbRelationshipLoaded(pkEntity, forwardRelationship)) {
                     pkEntity.addRelationship(forwardRelationship);
                 }
@@ -547,8 +541,21 @@ public class DbLoader {
         }
     }
 
-    private boolean createAndAppendJoins(Set<ExportedKey> exportedKeys, DbEntity pkEntity, DbEntity fkEntity, DbRelationship forwardRelationship, DbRelationshipDetected reverseRelationship) {
-        boolean toPK = true;
+    private boolean isOneToOne(DbEntity fkEntity, DbRelationship forwardRelationship) {
+        if (fkEntity.getPrimaryKeys().size() != forwardRelationship.getJoins().size()) {
+            return false;
+        }
+
+        for (DbJoin dbJoin : forwardRelationship.getJoins()) {
+            if (!dbJoin.getTarget().isPrimaryKey()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void createAndAppendJoins(Set<ExportedKey> exportedKeys, DbEntity pkEntity, DbEntity fkEntity, DbRelationship forwardRelationship, DbRelationshipDetected reverseRelationship) {
         for (ExportedKey exportedKey : exportedKeys) {
             // Create and append joins
             String pkName = exportedKey.getPKColumnName();
@@ -569,12 +576,7 @@ public class DbLoader {
 
             forwardRelationship.addJoin(new DbJoin(forwardRelationship, pkName, fkName));
             reverseRelationship.addJoin(new DbJoin(reverseRelationship, fkName, pkName));
-
-            if (!pkAtt.isPrimaryKey()) {
-                toPK = false;
-            }
         }
-        return toPK;
     }
 
     private Map<String, Set<ExportedKey>> loadExportedKeys(DbLoaderConfiguration config, DbPath dbPath, Map<String, DbEntity> tables) throws SQLException {
@@ -760,6 +762,7 @@ public class DbLoader {
      * @since 4.0
      */
     public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+        LOGGER.info("Schema loading...");
 
         Map<DbPath, Map<String, DbEntity>> tables = getTables(config, config.getTableTypes());
         List<DbEntity> entities = loadDbEntities(dataMap, config, tables);

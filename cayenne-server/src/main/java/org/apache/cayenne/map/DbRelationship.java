@@ -33,6 +33,7 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A DbRelationship is a descriptor of a database inter-table relationship based
@@ -40,17 +41,18 @@ import org.apache.commons.collections.Transformer;
  */
 public class DbRelationship extends Relationship implements ConfigurationNode {
 
-    // The columns through which the join is implemented.
+    /**
+     * The columns through which the join is implemented.
+     */
     protected List<DbJoin> joins = new ArrayList<DbJoin>(2);
 
-    // Is relationship from source to target points to dependent primary
-    // key (primary key column of destination table that is also a FK to the
-    // source
-    // column)
+    /**
+     * Is relationship from source to target points to dependent primary key (primary key column of destination table
+     * that is also a FK to the source column)
+     */
     protected boolean toDependentPK;
 
     public DbRelationship() {
-        super();
     }
 
     public DbRelationship(String name) {
@@ -122,7 +124,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      */
     public Collection<DbAttribute> getTargetAttributes() {
         if (joins.size() == 0) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         return CollectionUtils.collect(joins, JoinTransformers.targetExtractor);
@@ -135,7 +137,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      */
     public Collection<DbAttribute> getSourceAttributes() {
         if (joins.size() == 0) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         return CollectionUtils.collect(joins, JoinTransformers.sourceExtractor);
@@ -148,7 +150,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * @since 1.0.5
      */
     public DbRelationship createReverseRelationship() {
-        DbEntity targetEntity = (DbEntity) getTargetEntity();
+        DbEntity targetEntity = getTargetEntity();
 
         DbRelationship reverse = new DbRelationship();
         reverse.setSourceEntity(targetEntity);
@@ -534,5 +536,25 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
             return j.relationship == this.relationship && Util.nullSafeEquals(j.sourceName, this.sourceName)
                     && Util.nullSafeEquals(j.targetName, this.targetName);
         }
+    }
+
+    @Override
+    public String toString() {
+        String res = "Db Relationship : " + (toMany ? "toMany" : "toOne ");
+
+        String sourceEntityName = getSourceEntityName();
+        String targetEntityName = getTargetEntityName();
+        for (DbJoin join : joins) {
+            res += " (" + sourceEntityName + "." + join.getSourceName() + ", " + targetEntityName + "." + join.getTargetName() + ")";
+        }
+
+        return res;
+    }
+
+    public String getSourceEntityName() {
+        if (this.sourceEntity == null) {
+            return null;
+        }
+        return this.sourceEntity.name;
     }
 }

@@ -165,6 +165,11 @@
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>xsddoc</groupId>
+                <artifactId>maven-xsddoc-plugin</artifactId>
+                <version>1.0</version>
+            </plugin>
         </plugins>
 	</build>
 </project>
