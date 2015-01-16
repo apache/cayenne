@@ -445,7 +445,15 @@ public class DbLoader {
     /**
      * Creates an ObjEntity for each DbEntity in the map.
      */
-    protected Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config, Collection<DbEntity> entities) {
+    public Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config, Collection<DbEntity> entities) {
+        Collection<ObjEntity> loadedEntities = DbLoader.loadObjEntities(map, config, entities, nameGenerator);
+
+        createEntityMerger(map).synchronizeWithDbEntities(loadedEntities);
+
+        return loadedEntities;
+    }
+
+    public static Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config, Collection<DbEntity> entities, ObjectNameGenerator nameGenerator) {
         if (entities.isEmpty()) {
             return Collections.emptyList();
         }
@@ -477,9 +485,6 @@ public class DbLoader {
             loadedEntities.add(objEntity);
         }
 
-        // update ObjEntity attributes and relationships
-        createEntityMerger(map).synchronizeWithDbEntities(loadedEntities);
-
         return loadedEntities;
     }
 
@@ -491,6 +496,10 @@ public class DbLoader {
     }
 
     protected void loadDbRelationships(DbLoaderConfiguration config, Map<DbPath, Map<String, DbEntity>> tables) throws SQLException {
+        if (config.isSkipRelationshipsLoading()) {
+            return;
+        }
+
         // Get all the foreign keys referencing this table
 
         for (Map.Entry<DbPath, Map<String, DbEntity>> pathEntry : tables.entrySet()) {
@@ -518,28 +527,31 @@ public class DbLoader {
                     continue;
                 }
 
+                // forwardRelationship is a reference from table with primary key
                 DbRelationship forwardRelationship = new DbRelationship(generateName(pkEntity, key, true));
                 forwardRelationship.setSourceEntity(pkEntity);
-                forwardRelationship.setTargetEntity(fkEntity);
+                forwardRelationship.setTargetEntityName(fkEntity);
 
+                // forwardRelationship is a reference from table with foreign key, it is what exactly we load from db
                 DbRelationshipDetected reverseRelationship = new DbRelationshipDetected(generateName(fkEntity, key, false));
                 reverseRelationship.setFkName(key.getFKName());
                 reverseRelationship.setSourceEntity(fkEntity);
-                reverseRelationship.setTargetEntity(pkEntity);
+                reverseRelationship.setTargetEntityName(pkEntity);
                 reverseRelationship.setToMany(false);
-                if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {
-                    fkEntity.addRelationship(reverseRelationship);
-                }
 
-                boolean toPK = createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
+                createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
 
-                forwardRelationship.setToDependentPK(toPK);
+                boolean toDependentPK = isToDependentPK(forwardRelationship);
+                forwardRelationship.setToDependentPK(toDependentPK);
 
-                boolean isOneToOne = toPK && fkEntity.getPrimaryKeys().size()
-                        == forwardRelationship.getJoins().size();
+                boolean isOneToOne = toDependentPK && fkEntity.getPrimaryKeys().size() == forwardRelationship.getJoins().size();
 
                 forwardRelationship.setToMany(!isOneToOne);
                 forwardRelationship.setName(generateName(pkEntity, key, !isOneToOne));
+
+                if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {
+                    fkEntity.addRelationship(reverseRelationship);
+                }
                 if (delegate.dbRelationshipLoaded(pkEntity, forwardRelationship)) {
                     pkEntity.addRelationship(forwardRelationship);
                 }
@@ -547,8 +559,17 @@ public class DbLoader {
         }
     }
 
-    private boolean createAndAppendJoins(Set<ExportedKey> exportedKeys, DbEntity pkEntity, DbEntity fkEntity, DbRelationship forwardRelationship, DbRelationshipDetected reverseRelationship) {
-        boolean toPK = true;
+    private boolean isToDependentPK(DbRelationship forwardRelationship) {
+        for (DbJoin dbJoin : forwardRelationship.getJoins()) {
+            if (!dbJoin.getTarget().isPrimaryKey()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void createAndAppendJoins(Set<ExportedKey> exportedKeys, DbEntity pkEntity, DbEntity fkEntity, DbRelationship forwardRelationship, DbRelationshipDetected reverseRelationship) {
         for (ExportedKey exportedKey : exportedKeys) {
             // Create and append joins
             String pkName = exportedKey.getPKColumnName();
@@ -569,12 +590,7 @@ public class DbLoader {
 
             forwardRelationship.addJoin(new DbJoin(forwardRelationship, pkName, fkName));
             reverseRelationship.addJoin(new DbJoin(reverseRelationship, fkName, pkName));
-
-            if (!pkAtt.isPrimaryKey()) {
-                toPK = false;
-            }
         }
-        return toPK;
     }
 
     private Map<String, Set<ExportedKey>> loadExportedKeys(DbLoaderConfiguration config, DbPath dbPath, Map<String, DbEntity> tables) throws SQLException {
@@ -648,14 +664,17 @@ public class DbLoader {
     /**
      * Flattens many-to-many relationships in the generated model.
      */
-    private void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities) {
+    public static void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities, ObjectNameGenerator objectNameGenerator) {
+        if (loadedObjEntities.isEmpty()) {
+            return;
+        }
         Collection<ObjEntity> entitiesForDelete = new LinkedList<ObjEntity>();
 
-        for (ObjEntity curEntity : map.getObjEntities()) {
+        for (ObjEntity curEntity : loadedObjEntities) {
             ManyToManyCandidateEntity entity = ManyToManyCandidateEntity.build(curEntity);
 
             if (entity != null) {
-                entity.optimizeRelationships(getNameGenerator());
+                entity.optimizeRelationships(objectNameGenerator);
                 entitiesForDelete.add(curEntity);
             }
         }
@@ -760,19 +779,22 @@ public class DbLoader {
      * @since 4.0
      */
     public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+        LOGGER.info("Schema loading...");
 
         Map<DbPath, Map<String, DbEntity>> tables = getTables(config, config.getTableTypes());
         List<DbEntity> entities = loadDbEntities(dataMap, config, tables);
 
         if (entities != null) {
-            if (!config.isSkipRelationshipsLoading()) {
-                loadDbRelationships(config, tables);
-            }
+            loadDbRelationships(config, tables);
 
-            Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
-            flattenManyToManyRelationships(dataMap, loadedObjEntities);
-            fireObjEntitiesAddedEvents(loadedObjEntities);
+            prepareObjLayer(dataMap, config, entities);
         }
+    }
+
+    public void prepareObjLayer(DataMap dataMap, DbLoaderConfiguration config, Collection<DbEntity> entities) {
+        Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
+        flattenManyToManyRelationships(dataMap, loadedObjEntities, getNameGenerator());
+        fireObjEntitiesAddedEvents(loadedObjEntities);
     }
 
     /**
@@ -982,10 +1004,11 @@ public class DbLoader {
      */
     public void setNameGenerator(ObjectNameGenerator strategy) {
         if (strategy == null) {
-            throw new NullPointerException("Null strategy not allowed");
+            LOGGER.warn("Attempt to set null into NameGenerator. LegacyNameGenerator will be used.");
+            this.nameGenerator = new LegacyNameGenerator();
+        } else {
+            this.nameGenerator = strategy;
         }
-
-        this.nameGenerator = strategy;
     }
 
     /**

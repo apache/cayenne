@@ -350,15 +350,15 @@ public class DataMapTest {
 
         DbRelationship r1 = new DbRelationship();
         r1.setName("r1");
-        r1.setTargetEntity(e2);
+        r1.setTargetEntityName(e2);
 
         DbRelationship r2 = new DbRelationship();
         r2.setName("r2");
-        r2.setTargetEntity(e1);
+        r2.setTargetEntityName(e1);
 
         DbRelationship r3 = new DbRelationship();
         r3.setName("r3");
-        r3.setTargetEntity(e2);
+        r3.setTargetEntityName(e2);
 
         e1.addRelationship(r1);
         e1.addRelationship(r2);

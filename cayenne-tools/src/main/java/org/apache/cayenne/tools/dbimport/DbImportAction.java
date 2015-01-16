@@ -1,21 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- *    or more contributor license agreements.  See the NOTICE file
- *    distributed with this work for additional information
- *    regarding copyright ownership.  The ASF licenses this file
- *    to you under the Apache License, Version 2.0 (the
- *    "License"); you may not use this file except in compliance
- *    with the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing,
- *    software distributed under the License is distributed on an
- *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *    KIND, either express or implied.  See the License for the
- *    specific language governing permissions and limitations
- *    under the License.
- */
 package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.access.DbLoader;
@@ -26,9 +8,13 @@ import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.merge.DbMerger;
+import org.apache.cayenne.merge.DropTableToDb;
 import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerFactory;
@@ -37,6 +23,7 @@ import org.apache.cayenne.merge.ModelMergeDelegate;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.util.EntityMergeSupport;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -48,6 +35,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -117,7 +105,23 @@ public class DbImportAction {
             if (!isBlank(config.getDefaultPackage())) {
                 existing.setDefaultPackage(config.getDefaultPackage());
             }
-            saveLoaded(execute(config.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens))));
+
+
+
+            DataMap executed = execute(config.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens)));
+
+            // TODO DbLoader shouldn't do by it self it should separate processor
+            ObjectNameGenerator nameGenerator = config.getNameGenerator();
+            Collection<ObjEntity> loadedObjEntities = new LinkedList<ObjEntity>();
+            for (MergerToken mergeToken : mergeTokens) {
+                if (mergeToken instanceof DropTableToDb) {
+                    loadedObjEntities.addAll(executed.getMappedEntities(((DropTableToDb) mergeToken).getEntity()));
+                }
+            }
+
+            DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, nameGenerator);
+
+            saveLoaded(executed);
         }
     }
 
@@ -182,6 +186,10 @@ public class DbImportAction {
         }
 
         return dataMap;
+    }
+
+    private DbLoader getLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        return config.createLoader(adapter, connection, config.createLoaderDelegate());
     }
 
     void saveLoaded(DataMap dataMap) throws FileNotFoundException {

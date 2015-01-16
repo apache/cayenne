@@ -48,7 +48,7 @@ public class RelationshipTest {
         Relationship rel = new MockRelationship();
         Entity tstEntity = new MockEntity();
         tstEntity.setName("abc");
-        rel.setTargetEntity(tstEntity);
+        rel.setTargetEntityName(tstEntity);
         assertSame("abc", rel.getTargetEntityName());
     }
 

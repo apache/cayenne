@@ -117,7 +117,7 @@ public class ManyToManyCandidateEntity {
                 nameGenerator.createDbRelationshipName(key, true)));
 
         newRelationship.setSourceEntity(srcEntity);
-        newRelationship.setTargetEntity(dstEntity);
+        newRelationship.setTargetEntityName(dstEntity);
 
         newRelationship.addDbRelationship(rel1);
         newRelationship.addDbRelationship(rel2);

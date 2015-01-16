@@ -251,7 +251,7 @@ public class DbMerger {
                 }
 
                 detected.setSourceEntity(dbEntity);
-                detected.setTargetEntity(targetEntity);
+                detected.setTargetEntityName(targetEntity);
 
                 // manipulate the joins to match the DbAttributes in the model
                 for (DbJoin join : detected.getJoins()) {
