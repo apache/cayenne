@@ -18,17 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.map.EntityResolver;
 import org.junit.Test;
 
 public class SQLSelectTest {
-	
+
 	@Test
 	public void testCacheGroups_Collection() {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
@@ -56,7 +60,7 @@ public class SQLSelectTest {
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroups());
 	}
-	
+
 	@Test
 	public void testLocalCache() {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
@@ -72,7 +76,7 @@ public class SQLSelectTest {
 		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroups());
 	}
-	
+
 	@Test
 	public void testSharedCache() {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
@@ -87,5 +91,29 @@ public class SQLSelectTest {
 		q.sharedCache();
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroups());
+	}
+
+	@Test
+	public void testCreateReplacementQuery() {
+
+		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
+		Query replacement = q.createReplacementQuery(mock(EntityResolver.class));
+		assertThat(replacement, instanceOf(SQLTemplate.class));
+	}
+
+	@Test
+	public void testCreateReplacementQuery_ParamsArray_Single() {
+
+		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").paramsArray("a");
+		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
+		assertArrayEquals(new Object[] { "a" }, replacement.getPositionalParams().toArray());
+	}
+
+	@Test
+	public void testCreateReplacementQuery_ParamsArray_Multiple() {
+
+		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").paramsArray("a", "b");
+		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
+		assertArrayEquals(new Object[] { "a", "b" }, replacement.getPositionalParams().toArray());
 	}
 }
