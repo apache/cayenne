@@ -219,8 +219,11 @@ public class MergerFactoryIT extends MergeCase {
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
         resolver.refreshMappingCache();
-        assertTokensAndExecute(2, 0);
-//        assertTokensAndExecute(1, 1);
+        /*
+         * Db -Rel 'toArtistR1' - NEW_TABLE 1 -> 1 ARTIST"
+r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE"
+         * */
+        assertTokensAndExecute(1, 1);
         assertTokensAndExecute(0, 0);
 
         // clear up
@@ -277,7 +280,11 @@ public class MergerFactoryIT extends MergeCase {
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
         resolver.refreshMappingCache();
-        assertTokensAndExecute(2, 0);
+        /*
+        * Add Relationship ARTIST->NEW_TABLE To Model
+        * Drop Relationship NEW_TABLE->ARTIST To DB
+        * */
+        assertTokensAndExecute(1, 1);
         assertTokensAndExecute(0, 0);
 
         // clear up

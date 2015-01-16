@@ -110,7 +110,8 @@ public class DbImportAction {
             List<MergerToken> mergeTokens = new DbMerger(mergerFactory)
                     .createMergeTokens(existing, loadedFomDb, config.getDbLoaderConfig());
             if (mergeTokens.isEmpty()) {
-                logger.info("No changes to import.");
+                logger.info("");
+                logger.info("Detected changes: No changes to import.");
                 return;
             }
 
@@ -122,6 +123,7 @@ public class DbImportAction {
     }
 
     private Collection<MergerToken> log(List<MergerToken> tokens) {
+        logger.info("");
         logger.info("Detected changes: ");
         for (MergerToken token : tokens) {
             logger.info(String.format("    %-20s %s", token.getTokenName(), token.getTokenValue()));
@@ -154,7 +156,7 @@ public class DbImportAction {
     /**
      * Performs configured schema operations via DbGenerator.
      */
-    public DataMap execute(ModelMergeDelegate mergeDelegate, DataMap dataMap, Collection<MergerToken> tokens) {
+    private DataMap execute(ModelMergeDelegate mergeDelegate, DataMap dataMap, Collection<MergerToken> tokens) {
         MergerContext mergerContext = new ExecutingMergerContext(
                 dataMap, null, null, mergeDelegate);
 
@@ -190,18 +192,18 @@ public class DbImportAction {
         projectSaver.save(project);
     }
 
-	private DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
-		DataMap dataMap = config.createDataMap();
+    private DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
+        DataMap dataMap = config.createDataMap();
 
-		try {
-			DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
-			loader.load(dataMap, config.getDbLoaderConfig());
-		} finally {
-			if (connection != null) {
-				connection.close();
-			}
-		}
+        try {
+            DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
+            loader.load(dataMap, config.getDbLoaderConfig());
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+        }
 
-		return dataMap;
-	}
+        return dataMap;
+    }
 }

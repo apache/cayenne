@@ -28,6 +28,19 @@ import java.sql.SQLException;
 /**
  * ExportedKey is an representation of relationship between two tables 
  * in database. It can be used for creating names for relationships
+ *
+ * Example:
+ *  Table A with primary key ID
+ *  Table B with primary key ID and foreign key A_ID
+ *
+ *  In that case ExportedKey will be:
+ *      pkTable:  A
+ *      pkColumn: A.ID
+ *      fkTable:  B
+ *      fkColumn: B.A_ID
+ *      fkName:   name of foreign key
+ *      pkName:
+ *      keySeq: TODO
  * 
  */
 public class ExportedKey implements Comparable {
@@ -200,11 +213,10 @@ public class ExportedKey implements Comparable {
 
     @Override
     public String toString() {
-        return getStrKey() + " # " + keySeq
-                + "(" + pkColumn + " <- " + fkColumn + ")";
+        return getStrKey() + " # " + keySeq;
     }
 
     public String getStrKey() {
-        return pkTable + "." + pkName + " <- " + fkTable + "." + fkName;
+        return pkTable + "." + pkColumn + " <- " + fkTable + "." + fkColumn;
     }
 }
