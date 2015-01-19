@@ -153,6 +153,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		test("testSkipPrimaryKeyLoading");
 	}
 
+	public void testOneToOne() throws Exception {
+		test("testOneToOne");
+	}
+
     /**
      * Q: what happens if a relationship existed over a column that was later deleted? and ‘skipRelLoading’ is true
      * A: it should remove relationship and column
