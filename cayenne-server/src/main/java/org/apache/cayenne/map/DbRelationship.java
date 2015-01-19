@@ -540,7 +540,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         StringBuilder res = new StringBuilder("Db Relationship : ");
         res.append(toMany ? "toMany" : "toOne ");
 
-        String sourceEntityName = getSourceEntity().getName();
+        String sourceEntityName = getSourceEntityName();
         for (DbJoin join : joins) {
             res.append(" (").append(sourceEntityName).append(".").append(join.getSourceName()).append(", ")
                     .append(targetEntityName).append(".").append(join.getTargetName()).append(")");
@@ -548,4 +548,10 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         return res.toString();
     }
 
+    public String getSourceEntityName() {
+        if (this.sourceEntity == null) {
+            return null;
+        }
+        return this.sourceEntity.name;
+    }
 }
