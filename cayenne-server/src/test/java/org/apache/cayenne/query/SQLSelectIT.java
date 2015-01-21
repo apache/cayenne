@@ -246,4 +246,19 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(2l, ids.get(0).longValue());
 		assertEquals(3l, ids.get(1).longValue());
 	}
+
+	@Test
+	public void test_ParamsArray_Multiple_OptionalChunks() throws Exception {
+
+		createArtistsDataSet();
+
+		List<Long> ids = SQLSelect
+				.scalarQuery(
+						Long.class,
+						"SELECT ARTIST_ID FROM ARTIST #chain('OR' 'WHERE') #chunk($a) ARTIST_NAME = #bind($a) #end #chunk($b) ARTIST_NAME = #bind($b) #end #end ORDER BY ARTIST_ID")
+				.paramsArray(null, null, "artist2", "artist2").select(context);
+
+		assertEquals(1, ids.size());
+		assertEquals(2l, ids.get(0).longValue());
+	}
 }
