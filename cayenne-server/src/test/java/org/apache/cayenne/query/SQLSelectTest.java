@@ -126,13 +126,16 @@ public class SQLSelectTest {
 		QueryMetadata md0 = SQLSelect.dataRowQuery("bla").localCache().getMetaData(resolver);
 		QueryMetadata md1 = SQLSelect.dataRowQuery("bla").localCache().paramsArray("a").getMetaData(resolver);
 		QueryMetadata md2 = SQLSelect.dataRowQuery("bla").localCache().paramsArray("a", "b").getMetaData(resolver);
+		QueryMetadata md3 = SQLSelect.dataRowQuery("bla").localCache().paramsArray(null, "b").getMetaData(resolver);
 
 		assertNotNull(md0.getCacheKey());
 		assertNotNull(md1.getCacheKey());
 		assertNotNull(md2.getCacheKey());
+		assertNotNull(md3.getCacheKey());
 		
 		assertNotEquals(md0.getCacheKey(), md1.getCacheKey());
 		assertNotEquals(md0.getCacheKey(), md2.getCacheKey());
 		assertNotEquals(md1.getCacheKey(), md2.getCacheKey());
+		assertNotEquals(md3.getCacheKey(), md2.getCacheKey());
 	}
 }
