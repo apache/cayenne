@@ -194,10 +194,36 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		return this;
 	}
 
+	/**
+	 * Initializes positional parameters of the query. Parameters are bound in
+	 * the order they are found in the SQL template. If a given parameter name
+	 * is used more than once, only the first occurrence is treated as
+	 * "position", subsequent occurrences are bound with the same value as the
+	 * first one. If template parameters count is different from the array
+	 * parameter count, an exception will be thrown.
+	 * <p>
+	 * Note that calling this method will reset any previously set *named*
+	 * parameters.
+	 * 
+	 * @since 4.0
+	 */
 	public SQLSelect<T> paramsArray(Object... params) {
 		return paramsList(params != null ? Arrays.asList(params) : null);
 	}
 
+	/**
+	 * Initializes positional parameters of the query. Parameters are bound in
+	 * the order they are found in the SQL template. If a given parameter name
+	 * is used more than once, only the first occurrence is treated as
+	 * "position", subsequent occurrences are bound with the same value as the
+	 * first one. If template parameters count is different from the list
+	 * parameter count, an exception will be thrown.
+	 * <p>
+	 * Note that calling this method will reset any previously set *named*
+	 * parameters.
+	 * 
+	 * @since 4.0
+	 */
 	public SQLSelect<T> paramsList(List<Object> params) {
 		// since named parameters are specified, resetting positional
 		// parameters

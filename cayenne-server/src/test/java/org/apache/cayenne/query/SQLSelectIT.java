@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -27,13 +36,8 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLSelectIT extends ServerCase {
@@ -44,9 +48,14 @@ public class SQLSelectIT extends ServerCase {
 	@Inject
 	private DBHelper dbHelper;
 
+	private TableHelper tArtist;
+
+	@Before
+	public void before() {
+		tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+	}
+
 	protected void createArtistsDataSet() throws Exception {
-		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
 		long dateBase = System.currentTimeMillis();
 
@@ -250,15 +259,44 @@ public class SQLSelectIT extends ServerCase {
 	@Test
 	public void test_ParamsArray_Multiple_OptionalChunks() throws Exception {
 
-		createArtistsDataSet();
+		Date dob = new java.sql.Date(System.currentTimeMillis());
+
+		tArtist.insert(1, "artist1", dob);
+		tArtist.insert(2, "artist2", null);
 
 		List<Long> ids = SQLSelect
 				.scalarQuery(
 						Long.class,
-						"SELECT ARTIST_ID FROM ARTIST #chain('OR' 'WHERE') #chunk($a) ARTIST_NAME = #bind($a) #end #chunk($b) ARTIST_NAME = #bind($b) #end #end ORDER BY ARTIST_ID")
-				.paramsArray(null, null, "artist2", "artist2").select(context);
+						"SELECT ARTIST_ID FROM ARTIST #chain('OR' 'WHERE') "
+								+ "#chunk($a) DATE_OF_BIRTH #bindEqual($a) #end "
+								+ "#chunk($b) ARTIST_NAME #bindEqual($b) #end #end ORDER BY ARTIST_ID")
+				.paramsArray(null, "artist1").select(context);
 
 		assertEquals(1, ids.size());
-		assertEquals(2l, ids.get(0).longValue());
+		assertEquals(1l, ids.get(0).longValue());
+	}
+
+	@Test
+	public void test_Params_Multiple_OptionalChunks() throws Exception {
+
+		Date dob = new java.sql.Date(System.currentTimeMillis());
+
+		tArtist.insert(1, "artist1", dob);
+		tArtist.insert(2, "artist2", null);
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("a", null);
+		params.put("b", "artist1");
+
+		List<Long> ids = SQLSelect
+				.scalarQuery(
+						Long.class,
+						"SELECT ARTIST_ID FROM ARTIST #chain('OR' 'WHERE') "
+								+ "#chunk($a) DATE_OF_BIRTH #bindEqual($a) #end "
+								+ "#chunk($b) ARTIST_NAME #bindEqual($b) #end #end ORDER BY ARTIST_ID").params(params)
+				.select(context);
+
+		assertEquals(1, ids.size());
+		assertEquals(1l, ids.get(0).longValue());
 	}
 }
