@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -33,6 +26,13 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A DbRelationship is a descriptor of a database inter-table relationship based
@@ -534,5 +534,24 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
             return j.relationship == this.relationship && Util.nullSafeEquals(j.sourceName, this.sourceName)
                     && Util.nullSafeEquals(j.targetName, this.targetName);
         }
+    }
+
+    public String toString() {
+        StringBuilder res = new StringBuilder("Db Relationship : ");
+        res.append(toMany ? "toMany" : "toOne ");
+
+        String sourceEntityName = getSourceEntityName();
+        for (DbJoin join : joins) {
+            res.append(" (").append(sourceEntityName).append(".").append(join.getSourceName()).append(", ")
+                    .append(targetEntityName).append(".").append(join.getTargetName()).append(")");
+        }
+        return res.toString();
+    }
+
+    public String getSourceEntityName() {
+        if (this.sourceEntity == null) {
+            return null;
+        }
+        return this.sourceEntity.name;
     }
 }

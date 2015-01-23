@@ -31,63 +31,62 @@ import org.apache.cayenne.map.ObjEntity;
  */
 class SQLTemplateMetadata extends BaseQueryMetadata {
 
-    boolean resolve(Object root, EntityResolver resolver, SQLTemplate query) {
+	boolean resolve(Object root, EntityResolver resolver, SQLTemplate query) {
 
-        if (super.resolve(root, resolver, null)) {
+		if (super.resolve(root, resolver, null)) {
 
-            resultSetMapping = query.getResult() != null ? query
-                    .getResult()
-                    .getResolvedComponents(resolver) : null;
+			resultSetMapping = query.getResult() != null ? query.getResult().getResolvedComponents(resolver) : null;
 
-            // generate unique cache key...
-            if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
+			// generate unique cache key...
+			if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
 
-            }
-            else {
+			} else {
 
-                // create a unique key based on entity, SQL, and parameters
+				// create a unique key based on entity, SQL, and parameters
 
-                StringBuilder key = new StringBuilder();
-                ObjEntity entity = getObjEntity();
-                if (entity != null) {
-                    key.append(entity.getName());
-                }
-                else if (dbEntity != null) {
-                    key.append("db:").append(dbEntity.getName());
-                }
+				StringBuilder key = new StringBuilder();
+				ObjEntity entity = getObjEntity();
+				if (entity != null) {
+					key.append(entity.getName());
+				} else if (dbEntity != null) {
+					key.append("db:").append(dbEntity.getName());
+				}
 
-                if (query.getDefaultTemplate() != null) {
-                    key.append('/').append(query.getDefaultTemplate());
-                }
+				if (query.getDefaultTemplate() != null) {
+					key.append('/').append(query.getDefaultTemplate());
+				}
 
-                Map<String, ?> parameters = query.getParams();
-                if (!parameters.isEmpty()) {
+				Map<String, ?> parameters = query.getParams();
+				if (!parameters.isEmpty()) {
 
-                    List<String> keys = new ArrayList<String>(parameters.keySet());
-                    Collections.sort(keys);
+					List<String> keys = new ArrayList<String>(parameters.keySet());
+					Collections.sort(keys);
 
-                    for (String parameterKey : keys) {
-                        key.append('/').append(parameterKey).append('=').append(
-                                parameters.get(parameterKey));
-                    }
-                }
-                
-                if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
-                    key.append('/');
-                    if (query.getFetchOffset() > 0) {
-                        key.append('o').append(query.getFetchOffset());
-                    }
-                    if (query.getFetchLimit() > 0) {
-                        key.append('l').append(query.getFetchLimit());
-                    }
-                }
+					for (String parameterKey : keys) {
+						key.append('/').append(parameterKey).append('=').append(parameters.get(parameterKey));
+					}
+				}
 
-                this.cacheKey = key.toString();
-            }
+				for (Object parameter : query.getPositionalParams()) {
+					key.append("/p:").append(parameter);
+				}
 
-            return true;
-        }
+				if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
+					key.append('/');
+					if (query.getFetchOffset() > 0) {
+						key.append('o').append(query.getFetchOffset());
+					}
+					if (query.getFetchLimit() > 0) {
+						key.append('l').append(query.getFetchLimit());
+					}
+				}
 
-        return false;
-    }
+				this.cacheKey = key.toString();
+			}
+
+			return true;
+		}
+
+		return false;
+	}
 }

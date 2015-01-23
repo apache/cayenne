@@ -36,37 +36,41 @@ public class LoggingDbLoaderDelegate extends DefaultDbLoaderDelegate {
 
     @Override
     public void dbEntityAdded(DbEntity entity) {
-        logger.info("Add dbEntity: " + entity.getFullyQualifiedName());
+        logger.info("  Table: " + entity.getFullyQualifiedName());
     }
 
     @Override
     public void dbEntityRemoved(DbEntity entity) {
-        logger.info("Del dbEntity: " + entity.getFullyQualifiedName());
+        logger.info("  Table removed: " + entity.getFullyQualifiedName());
     }
 
     @Override
     public boolean dbRelationship(DbEntity entity) {
-        logger.info("    Relationships for " + entity.getFullyQualifiedName());
-
-        return true;
-    }
-
-    @Override
-    public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
         if (logger.isDebugEnabled()) {
-            logger.debug("    Relationship : " + entity.getName() + "; " + relationship.toString());
+            logger.debug("    Relationships for " + entity.getFullyQualifiedName());
         }
 
         return true;
     }
 
     @Override
+    public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
+        logger.info("    " + relationship);
+
+        return true;
+    }
+
+    @Override
     public void objEntityAdded(ObjEntity entity) {
-        logger.info("Add objEntity: " + entity.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("  Class: " + entity.getName());
+        }
     }
 
     @Override
     public void objEntityRemoved(ObjEntity entity) {
-        logger.info("Del objEntity: " + entity.getName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("  Class removed: " + entity.getName());
+        }
     }
 }

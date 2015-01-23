@@ -85,6 +85,10 @@ public class ManyToManyCandidateEntity {
     }
 
     private boolean isManyToMany() {
+        if (reverseRelationship1 == null || reverseRelationship2 == null) {
+            return false;
+        }
+
         boolean isNotHaveAttributes = joinEntity.getAttributes().size() == 0;
 
         return isNotHaveAttributes
@@ -117,7 +121,7 @@ public class ManyToManyCandidateEntity {
                 nameGenerator.createDbRelationshipName(key, true)));
 
         newRelationship.setSourceEntity(srcEntity);
-        newRelationship.setTargetEntity(dstEntity);
+        newRelationship.setTargetEntityName(dstEntity);
 
         newRelationship.addDbRelationship(rel1);
         newRelationship.addDbRelationship(rel2);

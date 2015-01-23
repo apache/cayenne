@@ -87,7 +87,6 @@ public class DbImportActionModeler implements DbImportAction {
                 ProjectController mediator = dbLoaderHelper.getMediator();
 
                 if (mediator.getCurrentDataMap() != null) {
-                    //  Maybe we should change ProjectThree.dataMapChanged() method? (MapEvent.CHANGE)
                     mediator.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.REMOVE));
                     mediator.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.ADD));
                 } else {

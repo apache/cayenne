@@ -28,7 +28,10 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.merge.DbMerger;
+import org.apache.cayenne.merge.DropTableToDb;
 import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerFactory;
@@ -111,18 +114,35 @@ public class DbImportActionDefault implements DbImportAction {
             List<MergerToken> mergeTokens = new DbMerger(mergerFactory)
                     .createMergeTokens(existing, loadedFomDb, config.getDbLoaderConfig());
             if (mergeTokens.isEmpty()) {
-                logger.info("No changes to import.");
+                logger.info("");
+                logger.info("Detected changes: No changes to import.");
                 return;
             }
 
             if (!isBlank(config.getDefaultPackage())) {
                 existing.setDefaultPackage(config.getDefaultPackage());
             }
-            saveLoaded(execute(config.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens))));
+
+
+            DataMap executed = execute(config.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens)));
+
+            // TODO DbLoader shouldn't do by it self it should separate processor
+            ObjectNameGenerator nameGenerator = config.getNameGenerator();
+            Collection<ObjEntity> loadedObjEntities = new LinkedList<ObjEntity>();
+            for (MergerToken mergeToken : mergeTokens) {
+                if (mergeToken instanceof DropTableToDb) {
+                    loadedObjEntities.addAll(executed.getMappedEntities(((DropTableToDb) mergeToken).getEntity()));
+                }
+            }
+
+            DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, nameGenerator);
+
+            saveLoaded(executed);
         }
     }
 
     private Collection<MergerToken> log(List<MergerToken> tokens) {
+        logger.info("");
         logger.info("Detected changes: ");
         for (MergerToken token : tokens) {
             logger.info(String.format("    %-20s %s", token.getTokenName(), token.getTokenValue()));
@@ -183,6 +203,10 @@ public class DbImportActionDefault implements DbImportAction {
         }
 
         return dataMap;
+    }
+
+    private DbLoader getLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        return config.createLoader(adapter, connection, config.createLoaderDelegate());
     }
 
     protected void saveLoaded(DataMap dataMap) throws FileNotFoundException {

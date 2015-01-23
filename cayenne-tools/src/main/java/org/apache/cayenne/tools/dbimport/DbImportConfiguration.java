@@ -33,6 +33,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.merge.DbMergerConfig;
 import org.apache.cayenne.merge.DefaultModelMergeDelegate;
@@ -187,13 +188,18 @@ public class DbImportConfiguration {
         };
 
         // TODO: load via DI AdhocObjectFactory
-        String namingStrategy = getNamingStrategy();
-        if (namingStrategy != null) {
-            ObjectNameGenerator nameGeneratorInst = (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
-            loader.setNameGenerator(nameGeneratorInst);
-        }
+        loader.setNameGenerator(getNameGenerator());
 
         return loader;
+    }
+
+    public ObjectNameGenerator getNameGenerator() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        String namingStrategy = getNamingStrategy();
+        if (namingStrategy != null) {
+            return (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
+        }
+
+        return new LegacyNameGenerator(); // TODO
     }
 
     public void setDriver(String jdbcDriver) {

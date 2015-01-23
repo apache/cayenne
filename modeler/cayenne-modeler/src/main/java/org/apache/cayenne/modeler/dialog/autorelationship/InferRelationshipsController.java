@@ -191,7 +191,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
             mediator.fireDbRelationshipEvent(e);
 
             rel.setSourceEntity(temp.getSource());
-            rel.setTargetEntity(temp.getTarget());
+            rel.setTargetEntityName(temp.getTarget());
             DbJoin join = new DbJoin(rel, temp.getJoinSource().getName(), temp
                     .getJoinTarget()
                     .getName());

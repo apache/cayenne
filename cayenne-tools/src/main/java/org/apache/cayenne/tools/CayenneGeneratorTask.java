@@ -73,16 +73,9 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     protected ClassGenerationAction createGeneratorAction() {
-        ClassGenerationAction action;
-        if (client) {
-            action = new ClientClassGenerationAction();
-            action.setContext(getVppContext());
-        }
-        else {
-            action = new ClassGenerationAction();
-            action.setContext(getVppContext());
-        }
+        ClassGenerationAction action = client ? new ClientClassGenerationAction() : new ClassGenerationAction();
 
+        action.setContext(getVppContext());
         action.setDestDir(destDir);
         action.setEncoding(encoding);
         action.setMakePairs(makepairs);

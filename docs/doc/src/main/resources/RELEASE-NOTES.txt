@@ -14,6 +14,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-1984 cdbimport doesn't flatten many to many relationships
 CAY-1826 Merge Entity Attributes and Relationships tabs together with one toolbar.
 CAY-1839 Allow to link DataMaps to DataNodes from DataNode editor.
 CAY-1841 Filters for Left-hand project navigator

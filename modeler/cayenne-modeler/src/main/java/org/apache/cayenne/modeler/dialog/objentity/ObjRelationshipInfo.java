@@ -352,7 +352,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
         // note: NamedObjectFactory doesn't set source or target, just the name
         dbRelationship.setSourceEntity(targetModel.getSource());
-        dbRelationship.setTargetEntity(targetModel.getTarget());
+        dbRelationship.setTargetEntityName(targetModel.getTarget());
         dbRelationship.setToMany(targetModel.isToMany());
         targetModel.getSource().addRelationship(dbRelationship);
 
@@ -606,7 +606,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             // note on events notification - this needs to be propagated
             // via old modeler events, but we leave this to the controller
             // since model knows nothing about Modeler mediator.
-            relationship.setTargetEntity(objectTarget);
+            relationship.setTargetEntityName(objectTarget);
         }
 
         // check for path modifications
