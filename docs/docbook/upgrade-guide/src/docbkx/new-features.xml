@@ -100,13 +100,15 @@
         </section>
         <section>
             <title>Positional Parameter Bindings </title>
-            <para>Expressions and SQLTemplate always supported binding of parameters by name as a
-                map. Cayenne 4.0 introduces a very easy form of positional bindings. It works with
-                the same named template format, only parameters are bound left-to-right,
-                disregarding the
-                names:<programlisting>// two distinct names, 3 positional parameters
+            <para>Expressions and SQLTemplate traditionally supported binding of parameters by name
+                as a map. Cayenne 4.0 introduces a very easy form of positional bindings. It works
+                with the same named template format, only parameters are bound by position,
+                left-to-right. Here we showing a more complex example with the same parameter name
+                beijg used more than once in the
+                query:<programlisting>// two distinct names, 3 positional parameters.
+// "price" is set to 23, "maxPrice" - to 50
 Expression e = ExpressionFactory.exp(
-     "price = $price or averagePrice = $price and maxPrice = $maxPrice", 23, 25, 50);</programlisting>This
+     "price = $price or averagePrice = $price and maxPrice = $maxPrice", 23, 50);</programlisting>This
                 API is supported in Expressions, SQLTemplate as well as new SQLSelect and can be
                 used interchnageably with named parameters with a single template flavor.</para>
         </section>
