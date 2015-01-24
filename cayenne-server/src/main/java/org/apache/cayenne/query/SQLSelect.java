@@ -204,8 +204,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * <p>
 	 * Note that calling this method will reset any previously set *named*
 	 * parameters.
-	 * 
-	 * @since 4.0
 	 */
 	public SQLSelect<T> paramsArray(Object... params) {
 		return paramsList(params != null ? Arrays.asList(params) : null);
@@ -221,8 +219,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * <p>
 	 * Note that calling this method will reset any previously set *named*
 	 * parameters.
-	 * 
-	 * @since 4.0
 	 */
 	public SQLSelect<T> paramsList(List<Object> params) {
 		// since named parameters are specified, resetting positional
@@ -234,12 +230,19 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Returns an immmutable map of parameters that will be bound to SQL. A
-	 * caller is free to add/remove parameters from the returned map as needed.
-	 * Alternatively one may use chained {@link #params(String, Object)}
+	 * Returns a potentially immmutable map of named parameters that will be
+	 * bound to SQL.
 	 */
 	public Map<String, Object> getParams() {
 		return params != null ? params : Collections.<String, Object> emptyMap();
+	}
+
+	/**
+	 * Returns a potentially immmutable list of positional parameters that will
+	 * be bound to SQL.
+	 */
+	public List<Object> getPositionalParams() {
+		return positionalParams != null ? positionalParams : Collections.emptyList();
 	}
 
 	@Override
