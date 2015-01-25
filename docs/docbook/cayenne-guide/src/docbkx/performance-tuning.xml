@@ -218,13 +218,9 @@ finally {
         <para>Same thing with a
             callback:<programlisting>SelectQuery&lt;Artist> q = new SelectQuery&lt;Artist>(Artist.class);
 
-context.iterate(q, new ResultIteratorCallback&lt;Artist>() {
-    public void iterate(ResultIterator&lt;Artist> it) {
-        for(Artist a : it) {
-            // do something with the object...
-            ...
-        }
-    }
+context.iterate(q, (Artist a) -> {
+    // do something with the object...
+    ...
 });</programlisting></para>
     </section>
     <section xml:id="paginated-queries">
