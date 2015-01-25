@@ -19,13 +19,17 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.map.naming.DefaultNameGenerator;
+import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.cayenne.tools.dbimport.DbImportAction;
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
+import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.cayenne.tools.dbimport.config.AntNestedElement;
 import org.apache.cayenne.tools.dbimport.config.Catalog;
 import org.apache.cayenne.tools.dbimport.config.ExcludeColumn;
@@ -36,13 +40,6 @@ import org.apache.cayenne.tools.dbimport.config.IncludeProcedure;
 import org.apache.cayenne.tools.dbimport.config.IncludeTable;
 import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
 import org.apache.cayenne.tools.dbimport.config.Schema;
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.map.naming.DefaultNameGenerator;
-import org.apache.cayenne.tools.configuration.ToolsModule;
-import org.apache.cayenne.tools.dbimport.DbImportAction;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
-import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
