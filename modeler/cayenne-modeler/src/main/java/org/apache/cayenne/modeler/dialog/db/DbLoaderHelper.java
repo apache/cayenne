@@ -24,16 +24,12 @@ import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -43,10 +39,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.LongRunningTask;
-import org.apache.cayenne.project.FileProjectSaver;
-import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.tools.configuration.ToolsModule;
-import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
@@ -381,18 +374,11 @@ public class DbLoaderHelper {
             }
 
             try {
-                Injector injector = DIBootstrap.createInjector(new ToolsModule(logObj), new DbImportModule() {
-                    @Override
-                    public void configure(Binder binder) {
-                        binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-                        binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
-                        binder.bind(MapLoader.class).to(MapLoader.class);
-                        binder.bind(DbImportAction.class).to(DbImportActionModeler.class);
-                    }
-                });
+                DbImportActionModeler importAction = new DbImportActionModeler(logObj, DbLoaderHelper.this);
 
-                DbImportActionModeler importAction = (DbImportActionModeler) injector.getInstance(DbImportAction.class);
-                importAction.setDbLoaderHelper(DbLoaderHelper.this);
+                Injector injector = DIBootstrap.createInjector(new ToolsModule(logObj), new DbImportModule());
+                injector.injectMembers(importAction);
+
                 importAction.execute(config);
             } catch (Throwable th) {
                 processException(th, "Error importing database schema.");

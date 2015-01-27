@@ -45,25 +45,23 @@ import java.sql.Connection;
 public class DbImportActionModeler implements DbImportAction {
 
     private final Log logger;
-    private final ProjectSaver projectSaver;
-    private final DataSourceFactory dataSourceFactory;
-    private final DbAdapterFactory adapterFactory;
-    private final MapLoader mapLoader;
-    private DbLoaderHelper dbLoaderHelper;
 
-    public DbImportActionModeler(@Inject Log logger,
-                                 @Inject ProjectSaver projectSaver,
-                                 @Inject DataSourceFactory dataSourceFactory,
-                                 @Inject DbAdapterFactory adapterFactory,
-                                 @Inject MapLoader mapLoader) {
+    private final DbLoaderHelper dbLoaderHelper;
+
+    @Inject
+    private ProjectSaver projectSaver;
+
+    @Inject
+    private DataSourceFactory dataSourceFactory;
+
+    @Inject
+    private DbAdapterFactory adapterFactory;
+
+    @Inject
+    private MapLoader mapLoader;
+
+    public DbImportActionModeler(Log logger, DbLoaderHelper dbLoaderHelper) {
         this.logger = logger;
-        this.projectSaver = projectSaver;
-        this.dataSourceFactory = dataSourceFactory;
-        this.adapterFactory = adapterFactory;
-        this.mapLoader = mapLoader;
-    }
-
-    public void setDbLoaderHelper(DbLoaderHelper dbLoaderHelper) {
         this.dbLoaderHelper = dbLoaderHelper;
     }
 
@@ -120,5 +118,35 @@ public class DbImportActionModeler implements DbImportAction {
         }.execute(config);
     }
 
+    public ProjectSaver getProjectSaver() {
+        return projectSaver;
+    }
 
+    public void setProjectSaver(ProjectSaver projectSaver) {
+        this.projectSaver = projectSaver;
+    }
+
+    public DataSourceFactory getDataSourceFactory() {
+        return dataSourceFactory;
+    }
+
+    public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
+        this.dataSourceFactory = dataSourceFactory;
+    }
+
+    public DbAdapterFactory getAdapterFactory() {
+        return adapterFactory;
+    }
+
+    public void setAdapterFactory(DbAdapterFactory adapterFactory) {
+        this.adapterFactory = adapterFactory;
+    }
+
+    public MapLoader getMapLoader() {
+        return mapLoader;
+    }
+
+    public void setMapLoader(MapLoader mapLoader) {
+        this.mapLoader = mapLoader;
+    }
 }
