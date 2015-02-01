@@ -267,10 +267,9 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
      * New relationships will be created with
      * {@link #addToManyTarget(String, org.apache.cayenne.DataObject, boolean)},
      * already established relationships stay untouched. Missing relationships
-     * will be deleted with
+     * will be removed with
      * {@link #removeToManyTarget(String, org.apache.cayenne.DataObject, boolean)}
-     * . Their corresponding <code>Keyword</code> objects will be deleted if
-     * delete parameter is set to true.
+     * and returnd as List. You may delete them manually.
      * </p>
      * 
      * <p>
@@ -279,24 +278,25 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
      * {@link #removeToManyTarget(String, org.apache.cayenne.DataObject, boolean)}
      * </p>
      * 
+     * @param relName
+     *            name of the relation
      * @param values
      *            <code>DataObject</code> objects of this
      *            <code>Collection</code> are set to the object. No changes will
-     *            be made to the the <code>DataObject</code>, a copy is used. It
-     *            is safe to pass a persisted <code>Collection</code> of another
-     *            object.
+     *            be made to the the
+     *            <code>List&lt;? extends DataObject&gt;</code>, a copy is used.
+     *            It is safe to pass a persisted <code>Collection</code> of
+     *            another object.
      * @param setReverse
      *            update reverse relationships
-     * @param delete
-     *            If true, elements which relationships were removed will also
-     *            be deleted by {@link ObjectContext#deleteObject(Object)}.
-     *            Otherwise they will not be deleted.
+     * @return non null <code>List&lt;? extends DataObject&gt;</code> whose
+     *            relationships were removed
      * @throws NullPointerException
      *             if passed <code>Collection</code> is null. To clear all
      *             relationships use an empty <code>Collection</code>
      * @since 4.0.M2-SNAPSHOT
      */
-    public void setToManyTarget(String relName, Collection<? extends DataObject> values, boolean setReverse, boolean delete) {
+    public List<? extends DataObject> setToManyTarget(String relName, Collection<? extends DataObject> values, boolean setReverse) {
         if (values == null) {
             throw new NullPointerException();
         }
@@ -314,15 +314,16 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         // operate on a copy of passed collection
         values = new ArrayList<DataObject>(values);
         
+        List<DataObject> removedObjects = new ArrayList<DataObject>();
+        
         // remove all relationships, which are missing in passed collection
         Object [] oldValues = old.toArray();
         for (Object obj : oldValues ) {
             if (!values.contains(obj)) {
-                removeToManyTarget(relName, (DataObject) obj, setReverse);
-                //and maybe delete it
-                if (delete) {
-                    getObjectContext().deleteObject(obj);
-                }
+            	DataObject obj2 = (DataObject) obj;
+                removeToManyTarget(relName, obj2, setReverse);
+                //collect objects whose relationsship was removed
+				removedObjects.add((DataObject) obj2);
             }
         }
         
@@ -335,6 +336,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
         for (DataObject obj : values) {
             addToManyTarget(relName, obj, setReverse);
         }
+        
+        return removedObjects;
     }
 
     public void setToOneTarget(String relationshipName, DataObject value, boolean setReverse) {
