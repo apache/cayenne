@@ -289,8 +289,9 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
      *            another object.
      * @param setReverse
      *            update reverse relationships
-     * @return non null <code>List&lt;? extends DataObject&gt;</code> whose
-     *            relationships were removed
+     * @return <code>List&lt;? extends DataObject&gt;</code> of unrelated
+     *            DataObjects. If no relationship was removed an empty List is
+     *            returned.
      * @throws NullPointerException
      *             if passed <code>Collection</code> is null. To clear all
      *             relationships use an empty <code>Collection</code>
