@@ -284,7 +284,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
      *            <code>DataObject</code> objects of this
      *            <code>Collection</code> are set to the object. No changes will
      *            be made to the the
-     *            <code>List&lt;? extends DataObject&gt;</code>, a copy is used.
+     *            <code>Collection</code>, a copy is used.
      *            It is safe to pass a persisted <code>Collection</code> of
      *            another object.
      * @param setReverse
