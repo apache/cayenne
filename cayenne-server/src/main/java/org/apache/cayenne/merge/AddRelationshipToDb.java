@@ -31,7 +31,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     private DbRelationship rel;
 
     public AddRelationshipToDb(DbEntity entity, DbRelationship rel) {
-        super("Add Relationship", entity);
+        super("Add foreign key", entity);
         this.rel = rel;
     }
 
@@ -63,7 +63,11 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
 
     @Override
     public String getTokenValue() {
-        return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
+        if (this.shouldGenerateFkConstraint()) {
+            return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
+        } else {
+            return "Skip. No sql representation.";
+        }
     }
     
     public DbRelationship getRelationship() {

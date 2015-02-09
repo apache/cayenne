@@ -7,23 +7,11 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
-import org.apache.cayenne.merge.DbMerger;
-import org.apache.cayenne.merge.DropTableToDb;
-import org.apache.cayenne.merge.ExecutingMergerContext;
-import org.apache.cayenne.merge.MergerContext;
-import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.ModelMergeDelegate;
+import org.apache.cayenne.map.*;
+import org.apache.cayenne.merge.*;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.util.EntityMergeSupport;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -35,11 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
@@ -91,6 +75,11 @@ public class DbImportAction {
 
         DataMap existing = loadExistingDataMap(config.getDataMapFile());
         if (existing == null) {
+            logger.info("");
+            File file = config.getDataMapFile();
+            logger.info("Map file does not exist. Loaded db model will be saved into '"
+                    + (file == null ? "null" : file.getAbsolutePath() + "'"));
+
             saveLoaded(config.initializeDataMap(loadedFomDb));
         } else {
             MergerFactory mergerFactory = adapter.mergerFactory();
@@ -107,27 +96,62 @@ public class DbImportAction {
                 existing.setDefaultPackage(config.getDefaultPackage());
             }
 
+            final Collection<ObjEntity> loadedObjEntities = new LinkedList<ObjEntity>();
+            DataMap executed = execute(new ProxyModelMergeDelegate(config.createMergeDelegate()) {
+                @Override
+                public void objEntityAdded(ObjEntity ent) {
+                    loadedObjEntities.add(ent);
 
-
-            DataMap executed = execute(config.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens)));
-
-            // TODO DbLoader shouldn't do by it self it should separate processor
-            ObjectNameGenerator nameGenerator = config.getNameGenerator();
-            Collection<ObjEntity> loadedObjEntities = new LinkedList<ObjEntity>();
-            for (MergerToken mergeToken : mergeTokens) {
-                if (mergeToken instanceof DropTableToDb) {
-                    loadedObjEntities.addAll(executed.getMappedEntities(((DropTableToDb) mergeToken).getEntity()));
+                    super.objEntityAdded(ent);
                 }
-            }
 
-            DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, nameGenerator);
+            }, existing, log(sort(reverse(mergerFactory, mergeTokens))));
+
+            DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, config.getNameGenerator());
+
+            relationshipsSanity(executed);
+
 
             saveLoaded(executed);
         }
     }
 
+    private void relationshipsSanity(DataMap executed) {
+        // obj relationships sanity
+        for (ObjEntity objEntity : executed.getObjEntities()) {
+            for (ObjRelationship objRelationship : objEntity.getRelationships()) {
+                if (objRelationship.getSourceEntity() == null
+                        || objRelationship.getTargetEntity() == null) {
+                    logger.error("Incorrect obj relationship: " + objRelationship);
+                    objEntity.removeRelationship(objRelationship.getName());
+                }
+            }
+        }
+    }
+
+    protected static List<MergerToken> sort(List<MergerToken> reverse) {
+        Collections.sort(reverse, new Comparator<MergerToken>() {
+            @Override
+            public int compare(MergerToken o1, MergerToken o2) {
+                if (o1 instanceof AddRelationshipToDb
+                        && o2 instanceof AddRelationshipToDb) {
+                    return 0;
+                }
+
+                return o1 instanceof AddRelationshipToDb ? 1 : -1;
+            }
+        });
+
+        return reverse;
+    }
+
     private Collection<MergerToken> log(List<MergerToken> tokens) {
         logger.info("");
+        if (tokens.isEmpty()) {
+            logger.info("Detected changes: No changes to import.");
+            return tokens;
+        }
+
         logger.info("Detected changes: ");
         for (MergerToken token : tokens) {
             logger.info(String.format("    %-20s %s", token.getTokenName(), token.getTokenValue()));
@@ -152,6 +176,9 @@ public class DbImportAction {
     private List<MergerToken> reverse(MergerFactory mergerFactory, Iterable<MergerToken> mergeTokens) throws IOException {
         List<MergerToken> tokens = new LinkedList<MergerToken>();
         for (MergerToken token : mergeTokens) {
+            if (token instanceof AbstractToModelToken) {
+                continue;
+            }
             tokens.add(token.createReverse(mergerFactory));
         }
         return tokens;

@@ -725,6 +725,8 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", getName())
+                .append("sourceEntityName", getSourceEntity().getName())
+                .append("targetEntityName", getTargetEntityName())
                 .append("dbRelationshipPath", getDbRelationshipPath()).toString();
     }
 
