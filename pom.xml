@@ -210,6 +210,16 @@
 				<role>Committer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>kolonitsky</id>
+			<name>Alex Kolonitsky</name>
+			<email>kolonitsky@apache.org</email>
+            <organization>ObjectStyle</organization>
+			<roles>
+				<role>Committer</role>
+			</roles>
+            <timezone>+3</timezone>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
