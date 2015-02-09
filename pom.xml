@@ -220,6 +220,16 @@
 			</roles>
             <timezone>+3</timezone>
 		</developer>
+		<developer>
+			<id>skolbachev</id>
+			<name>Savva Kolbachev</name>
+			<email>skolbachev@apache.org</email>
+			<organization>ObjectStyle</organization>
+			<roles>
+				<role>Committer</role>
+			</roles>
+			<timezone>+3</timezone>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
