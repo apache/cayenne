@@ -237,11 +237,6 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull("Null 'ARTIST' entity, other DbEntities: " + map.getDbEntityMap(), dae);
         assertEquals("ARTIST", dae.getName().toUpperCase());
 
-        if (accessStackAdapter.supportsCatalogs()) {
-            assertNotNull(dae.getCatalog());
-            assertEquals("CAYENNE", dae.getCatalog().toUpperCase());
-        }
-
         DbAttribute a = getDbAttribute(dae, "ARTIST_ID");
         assertNotNull(a);
         assertTrue(a.isPrimaryKey());
