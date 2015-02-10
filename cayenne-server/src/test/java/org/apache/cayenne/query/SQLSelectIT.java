@@ -95,7 +95,7 @@ public class SQLSelectIT extends ServerCase {
 
 		createArtistsDataSet();
 
-		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST");
+		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST").columnNameCaps(CapsStrategy.UPPER);
 		assertFalse(q1.isFetchingDataRows());
 		List<Artist> result = context.select(q1);
 		assertEquals(20, result.size());
@@ -108,7 +108,7 @@ public class SQLSelectIT extends ServerCase {
 		createArtistsDataSet();
 
 		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)");
-		q1.params("a", "artist3");
+		q1.params("a", "artist3").columnNameCaps(CapsStrategy.UPPER);
 
 		assertFalse(q1.isFetchingDataRows());
 		Artist a = context.selectOne(q1);
@@ -121,7 +121,7 @@ public class SQLSelectIT extends ServerCase {
 		createArtistsDataSet();
 
 		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class,
-				"SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a) OR ARTIST_NAME = #bind($b)");
+				"SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a) OR ARTIST_NAME = #bind($b)").columnNameCaps(CapsStrategy.UPPER);
 		q1.params("a", "artist3").params("b", "artist4");
 
 		List<Artist> result = context.select(q1);
@@ -170,7 +170,7 @@ public class SQLSelectIT extends ServerCase {
 		createArtistsDataSet();
 
 		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST")
-				.append(" WHERE ARTIST_NAME = #bind($a)").params("a", "artist3");
+				.append(" WHERE ARTIST_NAME = #bind($a)").params("a", "artist3").columnNameCaps(CapsStrategy.UPPER);
 
 		List<Artist> result = context.select(q1);
 		assertEquals(1, result.size());
@@ -182,7 +182,7 @@ public class SQLSelectIT extends ServerCase {
 		createArtistsDataSet();
 
 		List<Artist> result = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-				.params("a", "artist3").select(context);
+				.params("a", "artist3").columnNameCaps(CapsStrategy.UPPER).select(context);
 
 		assertEquals(1, result.size());
 	}
@@ -193,7 +193,7 @@ public class SQLSelectIT extends ServerCase {
 		createArtistsDataSet();
 
 		Artist a = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-				.params("a", "artist3").selectOne(context);
+				.params("a", "artist3").columnNameCaps(CapsStrategy.UPPER).selectOne(context);
 
 		assertEquals("artist3", a.getArtistName());
 	}

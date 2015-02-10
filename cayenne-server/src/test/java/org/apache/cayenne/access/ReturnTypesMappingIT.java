@@ -25,6 +25,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap2;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1;
+import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -40,6 +41,8 @@ import java.util.Date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Test Types mapping for selected columns
@@ -167,6 +170,9 @@ public class ReturnTypesMappingIT extends ServerCase {
 
     @Test
     public void testBLOB() throws Exception {
+        assumeTrue("In postresql blob_column has OID type, but in JAVA it converts into long not into byte.",
+                !(unitDbAdapter instanceof PostgresUnitDbAdapter));
+
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "BLOB_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
