@@ -18,6 +18,7 @@ CAY-1991 More control over generated String property names
 
 Bug Fixes:
 
+CAY-1987 Widen types before performing in-memory evaluation of qualifiers using j.l.Number subclasses
 CAY-1990 Incorrect display of the raw SQL query in Modeler
 
 ----------------------------------
