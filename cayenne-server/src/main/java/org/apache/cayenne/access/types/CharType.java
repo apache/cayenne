@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.CayenneException;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -28,8 +30,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
-import org.apache.cayenne.CayenneException;
 
 /**
  * Handles <code>java.lang.String</code>, mapping it as either of JDBC types - CLOB or
@@ -111,7 +111,7 @@ public class CharType implements ExtendedType {
 
         // if this is a CLOB column, set the value as "String"
         // instead. This should work with most drivers
-        if (type == Types.CLOB) {
+        if (type == Types.CLOB || type == Types.NCLOB) {
             st.setString(pos, (String) value);
         } else if (scale != -1) {
             st.setObject(pos, value, type, scale);
