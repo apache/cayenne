@@ -133,9 +133,12 @@ public class DbImportAction {
         Collections.sort(reverse, new Comparator<MergerToken>() {
             @Override
             public int compare(MergerToken o1, MergerToken o2) {
-                if (o1 instanceof AddRelationshipToDb
-                        && o2 instanceof AddRelationshipToDb) {
+                if (o1 instanceof AddRelationshipToDb && o2 instanceof AddRelationshipToDb) {
                     return 0;
+                }
+
+                if (!(o1 instanceof AddRelationshipToDb || o2 instanceof AddRelationshipToDb)) {
+                    return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
                 }
 
                 return o1 instanceof AddRelationshipToDb ? 1 : -1;
