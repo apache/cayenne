@@ -204,6 +204,7 @@
 								${project.build.directory}/generated-sources/javacc/org/apache/cayenne/ejbql
 							</outputDirectory>
 							<buildNodeFiles>false</buildNodeFiles>
+                            <grammarEncoding>UTF-8</grammarEncoding>
 						</configuration>
 						<goals>
 							<goal>jjtree-javacc</goal>
@@ -266,39 +267,55 @@
 				</executions>
 			</plugin>
             <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <configuration>
-                    <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/ExpressionParserTreeConstants.java</exclude>
-                        <exclude>**/JavaCharStream.java</exclude>
-                        <exclude>**/JJTExpressionParserState.java</exclude>
-                        <exclude>**/ParseException.java</exclude>
-                        <exclude>**/Token.java</exclude>
-                        <exclude>**/TokenMgrError.java</exclude>
-                        <exclude>**/ExpressionParser.java</exclude>
-                        <exclude>**/ExpressionParserConstants.java</exclude>
-                        <exclude>**/ExpressionParserTokenManager.java</exclude>
-                        <exclude>**/SimpleNode.java</exclude>
-                        <exclude>**/ParseException.java</exclude>
-                        <exclude>**/Parser.java.java</exclude>
-                        <exclude>**/ParserConstants.java</exclude>
-                        <exclude>**/ParserTokenManager.java</exclude>
-                        <exclude>**/SimpleCharStream.java</exclude>
-                        <exclude>**/TokenMgrError.java</exclude>
-                        <exclude>org/apache/cayenne/ejbql/parser/*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
         </plugins>
 	</build>
+
+    <profiles>
+        <profile>
+            <id>code-quality</id>
+
+            <activation>
+                <property>
+                    <name>!fast-and-dirty</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <configuration>
+                            <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/ExpressionParserTreeConstants.java</exclude>
+                                <exclude>**/JavaCharStream.java</exclude>
+                                <exclude>**/JJTExpressionParserState.java</exclude>
+                                <exclude>**/ParseException.java</exclude>
+                                <exclude>**/Token.java</exclude>
+                                <exclude>**/TokenMgrError.java</exclude>
+                                <exclude>**/ExpressionParser.java</exclude>
+                                <exclude>**/ExpressionParserConstants.java</exclude>
+                                <exclude>**/ExpressionParserTokenManager.java</exclude>
+                                <exclude>**/SimpleNode.java</exclude>
+                                <exclude>**/ParseException.java</exclude>
+                                <exclude>**/Parser.java.java</exclude>
+                                <exclude>**/ParserConstants.java</exclude>
+                                <exclude>**/ParserTokenManager.java</exclude>
+                                <exclude>**/SimpleCharStream.java</exclude>
+                                <exclude>**/TokenMgrError.java</exclude>
+                                <exclude>org/apache/cayenne/ejbql/parser/*</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
