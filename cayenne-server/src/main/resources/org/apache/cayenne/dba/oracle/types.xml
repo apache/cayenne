@@ -78,9 +78,9 @@ Oracle types mapping
    <jdbc-type name="LONGVARCHAR">
        <db-type name="LONG VARCHAR"/>
    </jdbc-type>
-   <jdbc-type name="LONGNVARCHAR">
-       <db-type name="LONG NVARCHAR2"/>
-   </jdbc-type>
+    <jdbc-type name="LONGNVARCHAR">
+        <db-type name="NCLOB"/>
+    </jdbc-type>
    <jdbc-type name="NUMERIC">
        <db-type name="NUMBER"/>
    </jdbc-type>

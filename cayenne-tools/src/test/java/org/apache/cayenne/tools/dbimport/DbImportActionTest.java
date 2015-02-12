@@ -337,7 +337,7 @@ public class DbImportActionTest {
         tokens.add(new CreateTableToDb(null));
         tokens.add(new CreateTableToModel(null));
 
-        assertEquals(asList("CreateTableToModel", "CreateTableToDb", "AddColumnToDb", "AddRelationshipToDb"),
+        assertEquals(asList("AddColumnToDb", "CreateTableToDb", "CreateTableToModel", "AddRelationshipToDb"),
                 toClasses(DbImportAction.sort(tokens)));
     }
 
