@@ -71,6 +71,7 @@ public class OracleAdapter extends JdbcAdapter {
     public static final String ORACLE_FLOAT = "FLOAT";
     public static final String ORACLE_BLOB = "BLOB";
     public static final String ORACLE_CLOB = "CLOB";
+    public static final String ORACLE_NCLOB = "NCLOB";
 
     public static final String TRIM_FUNCTION = "RTRIM";
     public static final String NEW_CLOB_FUNCTION = "EMPTY_CLOB()";
@@ -220,12 +221,8 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public Collection<String> dropTableStatements(DbEntity table) {
-        QuotingStrategy context = getQuotingStrategy();
-        StringBuffer buf = new StringBuffer("DROP TABLE ");
-        buf.append(context.quotedFullyQualifiedName(table));
-
-        buf.append(" CASCADE CONSTRAINTS");
-        return Collections.singleton(buf.toString());
+        return Collections.singleton("DROP TABLE " + getQuotingStrategy().quotedFullyQualifiedName(table)
+                + " CASCADE CONSTRAINTS");
     }
 
     @Override
@@ -253,40 +250,25 @@ public class OracleAdapter extends JdbcAdapter {
      * and has non-positive precision it is converted to INTEGER.
      */
     @Override
-    public DbAttribute buildAttribute(
-            String name,
-            String typeName,
-            int type,
-            int size,
-            int scale,
-            boolean allowNulls) {
-
-        DbAttribute attr = super.buildAttribute(
-                name,
-                typeName,
-                type,
-                size,
-                scale,
-                allowNulls);
+    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
+        DbAttribute attr = super.buildAttribute(name, typeName, type, size, scale, allowNulls);
 
         if (type == Types.DECIMAL && scale <= 0) {
             attr.setType(Types.INTEGER);
             attr.setScale(-1);
-        }
-        else if (type == Types.OTHER) {
+        } else if (type == Types.OTHER) {
             // in this case we need to guess the attribute type
             // based on its string value
             if (ORACLE_FLOAT.equals(typeName)) {
                 attr.setType(Types.FLOAT);
-            }
-            else if (ORACLE_BLOB.equals(typeName)) {
+            } else if (ORACLE_BLOB.equals(typeName)) {
                 attr.setType(Types.BLOB);
-            }
-            else if (ORACLE_CLOB.equals(typeName)) {
+            } else if (ORACLE_CLOB.equals(typeName)) {
                 attr.setType(Types.CLOB);
+            } else if (ORACLE_NCLOB.equals(typeName)) {
+                attr.setType(Types.NCLOB);
             }
-        }
-        else if (type == Types.DATE) {
+        } else if (type == Types.DATE) {
             // Oracle DATE can store JDBC TIMESTAMP
             if ("DATE".equals(typeName)) {
                 attr.setType(Types.TIMESTAMP);

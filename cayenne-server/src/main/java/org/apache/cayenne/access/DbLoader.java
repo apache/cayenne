@@ -43,6 +43,7 @@ import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.EntityMergeSupport;
+import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -524,6 +525,21 @@ public class DbLoader {
                 DbEntity fkEntity = pathEntry.getValue().get(key.getFKTableName());
                 if (fkEntity == null) {
                     skipRelationLog(key, key.getFKTableName());
+                    continue;
+                }
+
+                if (!new EqualsBuilder()
+                        .append(pkEntity.getCatalog(), key.pkCatalog)
+                        .append(pkEntity.getSchema(), key.pkSchema)
+                        .append(fkEntity.getCatalog(), key.fkCatalog)
+                        .append(fkEntity.getSchema(), key.fkSchema)
+                        .isEquals()) {
+
+                    LOGGER.info("Skip relation: '" + key + "' because it related to objects from other catalog/schema");
+                    LOGGER.info("     relation primary key: '" + key.pkCatalog + "." + key.pkSchema + "'");
+                    LOGGER.info("       primary key entity: '" + pkEntity.getCatalog() + "." + pkEntity.getSchema() + "'");
+                    LOGGER.info("     relation foreign key: '" + key.fkCatalog + "." + key.fkSchema + "'");
+                    LOGGER.info("       foreign key entity: '" + fkEntity.getCatalog() + "." + fkEntity.getSchema() + "'");
                     continue;
                 }
 
