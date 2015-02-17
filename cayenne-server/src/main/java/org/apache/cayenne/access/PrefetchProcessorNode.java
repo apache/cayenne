@@ -21,15 +21,10 @@ package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.Fault;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.*;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -43,7 +38,7 @@ import org.apache.cayenne.util.ToStringBuilder;
 class PrefetchProcessorNode extends PrefetchTreeNode {
 
     List dataRows;
-    List objects;
+    List<Persistent> objects;
 
     ArcProperty incoming;
     ObjectResolver resolver;
@@ -133,30 +128,26 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         }
     }
 
-    private final void clearNullRelationships(List parentObjects) {
-        Iterator it = parentObjects.iterator();
-        while (it.hasNext()) {
-            Object object = it.next();
+    private void clearNullRelationships(List parentObjects) {
+        for (Object object : parentObjects) {
             if (incoming.readPropertyDirectly(object) instanceof Fault) {
                 incoming.writePropertyDirectly(object, null, null);
             }
         }
     }
 
-    private final void connectToNodeParents(List parentObjects) {
+    private void connectToNodeParents(List parentObjects) {
 
-        Iterator it = parentObjects.iterator();
-        while (it.hasNext()) {
-            Persistent object = (Persistent) it.next();
+        for (Object parentObject : parentObjects) {
+            Persistent object = (Persistent) parentObject;
             List related = (List) partitionByParent.get(object);
             connect(object, related);
         }
     }
 
-    private final void connectToFaultedParents() {
-        Iterator it = partitionByParent.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+    private void connectToFaultedParents() {
+        for (Object o : partitionByParent.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
 
             Persistent object = (Persistent) entry.getKey();
             List related = (List) entry.getValue();
@@ -164,7 +155,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         }
     }
 
-    private final void connect(Persistent object, List related) {
+    private void connect(Persistent object, List related) {
         if (incoming.getRelationship().isToMany()) {
             ValueHolder toManyList = (ValueHolder) incoming.readProperty(object);
 
@@ -183,7 +174,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         return dataRows;
     }
 
-    List getObjects() {
+    List<Persistent> getObjects() {
         return objects;
     }
 
@@ -207,7 +198,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         this.dataRows = dataRows;
     }
 
-    void setObjects(List objects) {
+    void setObjects(List<Persistent> objects) {
         this.objects = objects;
     }
 

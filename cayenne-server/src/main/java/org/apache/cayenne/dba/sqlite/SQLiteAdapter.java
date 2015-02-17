@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -96,6 +99,23 @@ public class SQLiteAdapter extends JdbcAdapter {
     @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new SQLiteActionBuilder(node));
+    }
+
+    @Override
+    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale) throws SQLException, Exception {
+        super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
+    }
+
+    private int mapNTypes(int sqlType) {
+        switch (sqlType) {
+            case Types.NCHAR : return Types.CHAR;
+            case Types.NCLOB : return Types.CLOB;
+            case Types.NVARCHAR : return Types.VARCHAR;
+            case Types.LONGNVARCHAR : return Types.LONGVARCHAR;
+
+            default:
+                return sqlType;
+        }
     }
 
     /**

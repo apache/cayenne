@@ -85,7 +85,20 @@
                 
             </section>
         </section>
-        
+        <section xml:id="objectcontext">
+            <title>ObjectContext</title>
+            <section>
+            <title>Callback-based Object Iterator</title>
+            <para>ObjectContext now features a simpler way to iterate over large result sets, based
+                    on callback interface that can be implemented with a
+                    lambda:<programlisting>SelectQuery&lt;Artist> q = new SelectQuery&lt;Artist>(Artist.class);
+
+context.iterate(q, (Artist a) -> {
+    // do something with the object...
+    ...
+});</programlisting></para>
+            </section>
+        </section>
         <section>
             <title>Generics in Expressions and Queries</title>
             <para>We finished the work of "genericizing" Cayenne APIs started in 3.1. Now all APIs
@@ -100,13 +113,15 @@
         </section>
         <section>
             <title>Positional Parameter Bindings </title>
-            <para>Expressions and SQLTemplate always supported binding of parameters by name as a
-                map. Cayenne 4.0 introduces a very easy form of positional bindings. It works with
-                the same named template format, only parameters are bound left-to-right,
-                disregarding the
-                names:<programlisting>// two distinct names, 3 positional parameters
+            <para>Expressions and SQLTemplate traditionally supported binding of parameters by name
+                as a map. Cayenne 4.0 introduces a very easy form of positional bindings. It works
+                with the same named template format, only parameters are bound by position,
+                left-to-right. Here we showing a more complex example with the same parameter name
+                beijg used more than once in the
+                query:<programlisting>// two distinct names, 3 positional parameters.
+// "price" is set to 23, "maxPrice" - to 50
 Expression e = ExpressionFactory.exp(
-     "price = $price or averagePrice = $price and maxPrice = $maxPrice", 23, 25, 50);</programlisting>This
+     "price = $price or averagePrice = $price and maxPrice = $maxPrice", 23, 50);</programlisting>This
                 API is supported in Expressions, SQLTemplate as well as new SQLSelect and can be
                 used interchnageably with named parameters with a single template flavor.</para>
         </section>

@@ -175,6 +175,12 @@ public class DbMerger {
         // TODO: support drop table. currently, too many tables are marked for drop
         for (DbEntity e : dbEntitiesToDrop) {
             tokens.add(factory.createDropTableToDb(e));
+            for (DbRelationship relationship : e.getRelationships()) {
+                DbEntity detectedEntity = findDbEntity(existing, relationship.getTargetEntityName());
+                if (detectedEntity != null) {
+                    tokens.add(factory.createDropRelationshipToDb(detectedEntity, relationship.getReverseRelationship()));
+                }
+            }
         }
 
         return tokens;

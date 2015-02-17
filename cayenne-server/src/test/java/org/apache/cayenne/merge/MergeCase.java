@@ -107,7 +107,7 @@ public abstract class MergeCase extends ServerCase {
 
     protected List<MergerToken> createMergeTokens() {
         DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
-        loaderConfiguration.setFiltersConfig(new FiltersConfig(new EntityFilters(DbPath.EMPTY, include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), TRUE, TRUE)));
+        loaderConfiguration.setFiltersConfig(new FiltersConfig(new EntityFilters(DbPath.EMPTY, include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), TRUE, NULL)));
 
         return createMerger(node.getAdapter().mergerFactory())
                 .createMergeTokens(node.getDataSource(), node.getAdapter(), map, loaderConfiguration);

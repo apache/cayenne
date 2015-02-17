@@ -117,36 +117,4 @@ public class DbImportActionModeler implements DbImportAction {
             }
         }.execute(config);
     }
-
-    public ProjectSaver getProjectSaver() {
-        return projectSaver;
-    }
-
-    public void setProjectSaver(ProjectSaver projectSaver) {
-        this.projectSaver = projectSaver;
-    }
-
-    public DataSourceFactory getDataSourceFactory() {
-        return dataSourceFactory;
-    }
-
-    public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
-        this.dataSourceFactory = dataSourceFactory;
-    }
-
-    public DbAdapterFactory getAdapterFactory() {
-        return adapterFactory;
-    }
-
-    public void setAdapterFactory(DbAdapterFactory adapterFactory) {
-        this.adapterFactory = adapterFactory;
-    }
-
-    public MapLoader getMapLoader() {
-        return mapLoader;
-    }
-
-    public void setMapLoader(MapLoader mapLoader) {
-        this.mapLoader = mapLoader;
-    }
 }

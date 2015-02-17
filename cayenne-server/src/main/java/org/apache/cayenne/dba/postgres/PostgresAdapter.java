@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -114,6 +116,23 @@ public class PostgresAdapter extends JdbcAdapter {
         }
 
         return super.buildAttribute(name, typeName, type, size, scale, allowNulls);
+    }
+
+    @Override
+    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale) throws SQLException, Exception {
+        super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
+    }
+
+    private int mapNTypes(int sqlType) {
+        switch (sqlType) {
+            case Types.NCHAR : return Types.CHAR;
+            case Types.NCLOB : return Types.CLOB;
+            case Types.NVARCHAR : return Types.VARCHAR;
+            case Types.LONGNVARCHAR : return Types.LONGVARCHAR;
+
+            default:
+                return sqlType;
+        }
     }
 
     /**

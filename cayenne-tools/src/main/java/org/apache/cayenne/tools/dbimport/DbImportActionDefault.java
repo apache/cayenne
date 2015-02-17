@@ -29,14 +29,16 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.merge.AbstractToModelToken;
+import org.apache.cayenne.merge.AddRelationshipToDb;
 import org.apache.cayenne.merge.DbMerger;
-import org.apache.cayenne.merge.DropTableToDb;
 import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.ModelMergeDelegate;
+import org.apache.cayenne.merge.ProxyModelMergeDelegate;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
@@ -53,6 +55,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,10 +76,10 @@ public class DbImportActionDefault implements DbImportAction {
     private final MapLoader mapLoader;
 
     public DbImportActionDefault(@Inject Log logger,
-                                 @Inject ProjectSaver projectSaver,
-                                 @Inject DataSourceFactory dataSourceFactory,
-                                 @Inject DbAdapterFactory adapterFactory,
-                                 @Inject MapLoader mapLoader) {
+                          @Inject ProjectSaver projectSaver,
+                          @Inject DataSourceFactory dataSourceFactory,
+                          @Inject DbAdapterFactory adapterFactory,
+                          @Inject MapLoader mapLoader) {
         this.logger = logger;
         this.projectSaver = projectSaver;
         this.dataSourceFactory = dataSourceFactory;
@@ -84,7 +87,6 @@ public class DbImportActionDefault implements DbImportAction {
         this.mapLoader = mapLoader;
     }
 
-    @Override
     public void execute(DbImportConfiguration config) throws Exception {
 
         if (logger.isDebugEnabled()) {
@@ -107,6 +109,11 @@ public class DbImportActionDefault implements DbImportAction {
 
         DataMap existing = loadExistingDataMap(config.getDataMapFile());
         if (existing == null) {
+            logger.info("");
+            File file = config.getDataMapFile();
+            logger.info("Map file does not exist. Loaded db model will be saved into '"
+                    + (file == null ? "null" : file.getAbsolutePath() + "'"));
+
             saveLoaded(config.initializeDataMap(loadedFomDb));
         } else {
             MergerFactory mergerFactory = adapter.mergerFactory();
@@ -123,26 +130,65 @@ public class DbImportActionDefault implements DbImportAction {
                 existing.setDefaultPackage(config.getDefaultPackage());
             }
 
+            final Collection<ObjEntity> loadedObjEntities = new LinkedList<ObjEntity>();
+            DataMap executed = execute(new ProxyModelMergeDelegate(config.createMergeDelegate()) {
+                @Override
+                public void objEntityAdded(ObjEntity ent) {
+                    loadedObjEntities.add(ent);
 
-            DataMap executed = execute(config.createMergeDelegate(), existing, log(reverse(mergerFactory, mergeTokens)));
-
-            // TODO DbLoader shouldn't do by it self it should separate processor
-            ObjectNameGenerator nameGenerator = config.getNameGenerator();
-            Collection<ObjEntity> loadedObjEntities = new LinkedList<ObjEntity>();
-            for (MergerToken mergeToken : mergeTokens) {
-                if (mergeToken instanceof DropTableToDb) {
-                    loadedObjEntities.addAll(executed.getMappedEntities(((DropTableToDb) mergeToken).getEntity()));
+                    super.objEntityAdded(ent);
                 }
-            }
 
-            DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, nameGenerator);
+            }, existing, log(sort(reverse(mergerFactory, mergeTokens))));
+
+            DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, config.getNameGenerator());
+
+            relationshipsSanity(executed);
+
 
             saveLoaded(executed);
         }
     }
 
+    private void relationshipsSanity(DataMap executed) {
+        // obj relationships sanity
+        for (ObjEntity objEntity : executed.getObjEntities()) {
+            for (ObjRelationship objRelationship : objEntity.getRelationships()) {
+                if (objRelationship.getSourceEntity() == null
+                        || objRelationship.getTargetEntity() == null) {
+                    logger.error("Incorrect obj relationship: " + objRelationship);
+                    objEntity.removeRelationship(objRelationship.getName());
+                }
+            }
+        }
+    }
+
+    protected static List<MergerToken> sort(List<MergerToken> reverse) {
+        Collections.sort(reverse, new Comparator<MergerToken>() {
+            @Override
+            public int compare(MergerToken o1, MergerToken o2) {
+                if (o1 instanceof AddRelationshipToDb && o2 instanceof AddRelationshipToDb) {
+                    return 0;
+                }
+
+                if (!(o1 instanceof AddRelationshipToDb || o2 instanceof AddRelationshipToDb)) {
+                    return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
+                }
+
+                return o1 instanceof AddRelationshipToDb ? 1 : -1;
+            }
+        });
+
+        return reverse;
+    }
+
     private Collection<MergerToken> log(List<MergerToken> tokens) {
         logger.info("");
+        if (tokens.isEmpty()) {
+            logger.info("Detected changes: No changes to import.");
+            return tokens;
+        }
+
         logger.info("Detected changes: ");
         for (MergerToken token : tokens) {
             logger.info(String.format("    %-20s %s", token.getTokenName(), token.getTokenValue()));
@@ -167,6 +213,9 @@ public class DbImportActionDefault implements DbImportAction {
     private List<MergerToken> reverse(MergerFactory mergerFactory, Iterable<MergerToken> mergeTokens) throws IOException {
         List<MergerToken> tokens = new LinkedList<MergerToken>();
         for (MergerToken token : mergeTokens) {
+            if (token instanceof AbstractToModelToken) {
+                continue;
+            }
             tokens.add(token.createReverse(mergerFactory));
         }
         return tokens;

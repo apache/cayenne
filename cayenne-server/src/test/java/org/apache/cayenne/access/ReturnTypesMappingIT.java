@@ -25,6 +25,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap2;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1;
+import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -40,6 +41,8 @@ import java.util.Date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Test Types mapping for selected columns
@@ -167,6 +170,9 @@ public class ReturnTypesMappingIT extends ServerCase {
 
     @Test
     public void testBLOB() throws Exception {
+        assumeTrue("In postresql blob_column has OID type, but in JAVA it converts into long not into byte.",
+                !(unitDbAdapter instanceof PostgresUnitDbAdapter));
+
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "BLOB_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
@@ -324,7 +330,7 @@ public class ReturnTypesMappingIT extends ServerCase {
             ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
 
             StringBuilder buffer = new StringBuilder();
-            for (int i = 0; i < 10000; i++) {
+            for (int i = 0; i < 1000; i++) {
                 buffer.append("رودالف بیر و دد مک‌کرِیت درخت بی را زمانی که در شرکت بوئینگ [۱]، مشغول به کار بودند ابداع نمودند، اما حرف B واقعاً\" از کجا آمده؟ داگلاس کامر یک سری از احتمالات را پیشنهاد کرد:\n" +
                         "\"Balanced,\" \"Broad,\" یا \"Bushy\" ممکن است استفاده شده‌باشند [چون همهٔ برگ‌ها در یک سطح قرار دارند]. دیگران اظهار داشتند که حرف \"B\" از کلمهٔ بوئینگ گرفته شده است [به این دلیل که پدیدآوردنده درسال 1972 در آزمایشگاه‌های تحقیقاتی علمی شرکت بوئینگ کار می‌کرد]. با این وجود پنداشتن درخت بی به عنوان درخت \"بِیِر\" نیز درخور است.[۲]");
             }

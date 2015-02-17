@@ -41,10 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -237,19 +234,14 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull("Null 'ARTIST' entity, other DbEntities: " + map.getDbEntityMap(), dae);
         assertEquals("ARTIST", dae.getName().toUpperCase());
 
-        if (accessStackAdapter.supportsCatalogs()) {
-            assertNotNull(dae.getCatalog());
-            assertEquals("CAYENNE", dae.getCatalog().toUpperCase());
-        }
-
         DbAttribute a = getDbAttribute(dae, "ARTIST_ID");
         assertNotNull(a);
         assertTrue(a.isPrimaryKey());
         assertFalse(a.isGenerated());
 
         if (adapter.supportsGeneratedKeys()) {
-            DbEntity bag = getDbEntity(map, "BAG");
-            DbAttribute id = bag.getAttribute("ID");
+            DbEntity bag = getDbEntity(map, "GENERATED_COLUMN_TEST");
+            DbAttribute id = bag.getAttribute("GENERATED_COLUMN");
             assertTrue(id.isPrimaryKey());
             assertTrue(id.isGenerated());
         }

@@ -31,8 +31,13 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.merge.AddColumnToDb;
+import org.apache.cayenne.merge.AddRelationshipToDb;
+import org.apache.cayenne.merge.CreateTableToDb;
+import org.apache.cayenne.merge.CreateTableToModel;
 import org.apache.cayenne.merge.DefaultModelMergeDelegate;
 import org.apache.cayenne.merge.MergerFactory;
+import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.builders.DataMapBuilder;
 import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.Project;
@@ -48,7 +53,10 @@ import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.apache.cayenne.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.merge.builders.ObjectMother.dbEntity;
 import static org.apache.cayenne.merge.builders.ObjectMother.objAttr;
@@ -316,5 +324,25 @@ public class DbImportActionTest {
 
         String contents = Util.stringFromFile(out);
         assertTrue("Has no project version saved", contents.contains("project-version=\""));
+    }
+
+    @Test
+    public void testMergeTokensSorting() {
+        LinkedList<MergerToken> tokens = new LinkedList<MergerToken>();
+        tokens.add(new AddColumnToDb(null, null));
+        tokens.add(new AddRelationshipToDb(null, null));
+        tokens.add(new CreateTableToDb(null));
+        tokens.add(new CreateTableToModel(null));
+
+        assertEquals(asList("AddColumnToDb", "CreateTableToDb", "CreateTableToModel", "AddRelationshipToDb"),
+                toClasses(DbImportActionDefault.sort(tokens)));
+    }
+
+    private List<String> toClasses(List<MergerToken> sort) {
+        LinkedList<String> res = new LinkedList<String>();
+        for (MergerToken mergerToken : sort) {
+            res.add(mergerToken.getClass().getSimpleName());
+        }
+        return res;
     }
 }

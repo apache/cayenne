@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +71,9 @@ public class SelectQueryIT extends ServerCase {
 
 	@Before
 	public void before() {
-		this.tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+		this.tArtist = new TableHelper(dbHelper, "ARTIST")
+                .setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
+                .setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
 	}
 
 	protected void createArtistsDataSet() throws Exception {

@@ -56,6 +56,10 @@ public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
         return type(TypesMapping.SQL_INTEGER);
     }
 
+    public DbAttributeBuilder typeBigInt() {
+        return type(TypesMapping.SQL_BIGINT);
+    }
+
     public DbAttributeBuilder typeVarchar(int length) {
         type(TypesMapping.SQL_VARCHAR);
         length(length);
