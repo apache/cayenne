@@ -923,19 +923,34 @@
 				</configuration>
 			</plugin>
 			<plugin>
+                <!-- TOOD move to release plugin -->
 				<groupId>org.apache.rat</groupId>
 				<artifactId>apache-rat-plugin</artifactId>
 				<configuration>
 					<excludes>
 						<exclude>**/target</exclude>
-						<exclude>**/MANIFEST.MF</exclude>
-						<exclude>**/*.plist</exclude>
-						<exclude>**/*.graffle</exclude>
-						<exclude>**/.*</exclude>
-						<exclude>**/.*/**</exclude>
-						<exclude>**/*.map.xml</exclude>
-						<exclude>**/*.css</exclude>
-						<exclude>**/*.properties</exclude>
+                        <exclude>**/.*</exclude>
+                        <exclude>**/.*/**</exclude>
+
+                        <exclude>**/cayenne-*.xml</exclude>
+                        <exclude>**/cayenne.xml</exclude>
+                        <exclude>**/*.map.xml</exclude>
+                        <exclude>**/_*.java</exclude>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/*.css</exclude>
+                        <exclude>**/*.driver.xml</exclude>
+                        <exclude>**/testdo/**</exclude>
+                        <exclude>**/test/**/*.sql</exclude>
+
+                        <exclude>**/test/**/ks1.jceks</exclude>
+                        <exclude>**/test/**/plain.txt</exclude>
+
+                        <exclude>**/DiagramLayout</exclude>
+                        <exclude>**/*.plist</exclude>
+                        <exclude>**/*.eomodeld</exclude>
+                        <exclude>**/*.fspec</exclude>
+
+                        <exclude>derby.log</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
