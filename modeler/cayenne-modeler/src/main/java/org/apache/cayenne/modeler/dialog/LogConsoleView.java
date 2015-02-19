@@ -20,6 +20,9 @@ package org.apache.cayenne.modeler.dialog;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
+
+import org.apache.cayenne.modeler.util.ModelerUtil;
+
 import java.awt.*;
 
 /**
@@ -34,24 +37,34 @@ public class LogConsoleView extends JPanel {
     JTextComponent logView;
     
     /**
-     * Button which performs clearing the console output 
+     * Item which performs clearing the console output 
      */
-    JButton clearButton;
+    JMenuItem clearItem;
     
     /**
-     * Button which performs copying the console output 
+     * Item which performs copying the console output 
      */
-    JButton copyButton;
+    JMenuItem copyItem;
     
     /**
-     * Button which performs docking the window, i.e. sticking it to parent 
+     * Item which performs docking the window, i.e. sticking it to parent 
      */
-    JButton dockButton;
+    JMenuItem dockItem;
     
     /**
      * Scrollpane containing the text area
      */
     JScrollPane scroller;
+    
+    /**
+     * PopupMenu to choose item 
+     */
+    JPopupMenu menu;
+    
+    /**
+     * Button which performs showing PopupMenu
+     */
+    JButton menuButton;
     
     /**
      * Constructs a new log console view component
@@ -75,16 +88,24 @@ public class LogConsoleView extends JPanel {
         scroller = new JScrollPane(logView);
         add(scroller, BorderLayout.CENTER);
         
-        JPanel buttonsPane = new JPanel();
+        JToolBar buttonsBar = new JToolBar();
+        buttonsBar.setFloatable(false);
         
-        copyButton = new JButton("Copy");
-        clearButton = new JButton("Clear");
-        dockButton = new JButton("Dock");
+        menu = new JPopupMenu();
+        copyItem = new JMenuItem("Copy");
+        menu.add(copyItem);
+        clearItem = new JMenuItem("Clear");
+        menu.add(clearItem);
+        dockItem = new JMenuItem("Dock");
+        menu.add(dockItem);
         
-        buttonsPane.add(clearButton);
-        buttonsPane.add(copyButton);
-        buttonsPane.add(dockButton);
-        add(buttonsPane, BorderLayout.SOUTH);
+        menu.setInvoker(this);
+
+        Icon icon = ModelerUtil.buildIcon("popupmenu.gif");
+        menuButton = new JButton(icon);
+        
+        buttonsBar.add(menuButton);
+        add(buttonsBar, BorderLayout.NORTH);
         
         //no need to center log window
         setLocation(100, 100);
@@ -97,19 +118,27 @@ public class LogConsoleView extends JPanel {
         return logView;
     }
     
-    protected AbstractButton getCopyButton() {
-        return copyButton;
+    protected JMenuItem getCopyItem() {
+        return copyItem;
     }
     
-    protected AbstractButton getClearButton() {
-        return clearButton;
+    protected JMenuItem getClearItem() {
+        return clearItem;
     }
     
-    protected AbstractButton getDockButton() {
-        return dockButton;
+    protected JMenuItem getDockItem() {
+        return dockItem;
     }
     
     protected JScrollPane getScroller() {
         return scroller;
+    }
+    
+    protected AbstractButton getMenuButton() {
+        return menuButton;
+    }
+    
+    protected JPopupMenu getMenu() {
+        return menu;
     }
 }
