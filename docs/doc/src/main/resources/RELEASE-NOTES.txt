@@ -16,6 +16,10 @@ Changes/New Features:
 
 CAY-1267 Some changes to LogDialog
 
+Bug Fixes:
+
+CAy-1988 ServerRuntimeBuilder: synthetic DataNode does not have domain's DataMaps linked
+
 Changes/New Features:
 ----------------------------------
 Release: 4.0.M2
