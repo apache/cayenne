@@ -9,6 +9,15 @@ https://issues.apache.org/jira/browse/CAY
 
 Changes/New Features:
 ----------------------------------
+Release: 4.0.M3
+Date: 
+----------------------------------
+Changes/New Features:
+
+CAY-1267 Some changes to LogDialog
+
+Changes/New Features:
+----------------------------------
 Release: 4.0.M2
 Date: 
 ----------------------------------
