@@ -938,8 +938,6 @@
                         <exclude>**/*.html</exclude>
                         <exclude>**/*.css</exclude>
                         <exclude>**/*.driver.xml</exclude>
-                        <exclude>**/testdo/**</exclude>
-                        <exclude>**/test/**/*.sql</exclude>
 
                         <exclude>**/test/**/ks1.jceks</exclude>
                         <exclude>**/test/**/plain.txt</exclude>
