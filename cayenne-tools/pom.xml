@@ -42,11 +42,6 @@
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
-        <dependency>
-            <groupId>org.fluttercode.datafactory</groupId>
-            <artifactId>datafactory</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
 			<groupId>org.apache.cayenne.build-tools</groupId>
