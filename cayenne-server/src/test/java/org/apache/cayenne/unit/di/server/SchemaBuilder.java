@@ -72,7 +72,7 @@ public class SchemaBuilder {
             "lob.map.xml", "date-time.map.xml", "enum.map.xml", "extended-type.map.xml", "generated.map.xml", "mixed-persistence-strategy.map.xml", "people.map.xml", "primitive.map.xml", "inheritance.map.xml",
             "locking.map.xml", "soft-delete.map.xml", "empty.map.xml", "relationships.map.xml", "relationships-activity.map.xml", "relationships-delete-rules.map.xml",
             "relationships-collection-to-many.map.xml", "relationships-child-master.map.xml", "relationships-clob.map.xml",
-            "relationships-flattened.map.xml", "relationships-set-to-many.map.xml", "relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml", "return-types.map.xml", "uuid.map.xml",
+            "relationships-flattened.map.xml", "relationships-qualifier.map.xml", "relationships-set-to-many.map.xml", "relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml", "return-types.map.xml", "uuid.map.xml",
             "multi-tier.map.xml", "persistent.map.xml", "reflexive.map.xml", "delete-rules.map.xml", "lifecycles.map.xml",
             "map-to-many.map.xml", "toone.map.xml", "meaningful-pk.map.xml", "table-primitives.map.xml",
             "generic.map.xml", "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml",

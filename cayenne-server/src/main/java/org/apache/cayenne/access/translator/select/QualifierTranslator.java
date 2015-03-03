@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -38,9 +34,12 @@ import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Translates query qualifier to SQL. Used as a helper class by query translators.
@@ -60,7 +59,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     /**
      * Translates query qualifier to SQL WHERE clause. Qualifier is obtained from the
      * parent queryAssembler.
-     * 
+     *
      * @since 3.0
      */
     @Override
@@ -74,7 +73,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
     /**
      * Translates query qualifier to SQL WHERE clause. Qualifier is a method parameter.
-     * 
+     *
      * @since 3.0
      */
     protected void doAppendPart(Expression rootNode) throws IOException {
@@ -93,18 +92,15 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         ObjEntity entity = getObjEntity();
 
         if (entity != null) {
+            QualifierBuilder qualifierBuilder = new QualifierBuilder(qualifier, entity, queryAssembler);
 
-            ClassDescriptor descriptor = queryAssembler
-                    .getEntityResolver()
-                    .getClassDescriptor(entity.getName());
-            Expression entityQualifier = descriptor
-                    .getEntityInheritanceTree()
-                    .qualifierForEntityAndSubclasses();
-            if (entityQualifier != null) {
-                qualifier = (qualifier != null)
-                        ? qualifier.andExp(entityQualifier)
-                        : entityQualifier;
+            if (qualifier == null) {
+                qualifierBuilder.qualifierForEntityAndSubclasses(entity);
+            } else {
+                qualifier.traverse(qualifierBuilder);
             }
+
+            qualifier = qualifierBuilder.getQualifier();
         }
 
         /**
@@ -346,21 +342,21 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     protected String operandForBitwiseAnd() {
         return "&";
     }
-    
+
     /**
      * @since 3.1
      */
     protected String operandForBitwiseXor() {
         return "^";
     }
-    
+
     /**
      * @since 4.0
      */
     protected String operandForBitwiseLeftShift() {
         return "<<";
     }
-    
+
     /**
      * @since 4.0
      */

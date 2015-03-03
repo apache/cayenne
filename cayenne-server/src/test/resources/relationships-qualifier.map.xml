@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/7/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/7/modelMap http://cayenne.apache.org/schema/7/modelMap.xsd"
+	 project-version="7">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_qualifier"/>
+	<db-entity name="CONTACT">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="COURSE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="RELATION">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="entityId" type="INTEGER"/>
+		<db-attribute name="entityIdentifier" type="VARCHAR" length="200"/>
+		<db-attribute name="ruleId" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="RULE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+		<db-attribute name="STATUS_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="RULE_STATUS">
+		<db-attribute name="APPROVED" type="BOOLEAN"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="STATUS" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="Contact" className="org.apache.cayenne.testdo.relationships_qualifier.Contact" dbEntityName="CONTACT">
+		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="ContactRuleRelation" superEntityName="RuleRelation" className="org.apache.cayenne.testdo.relationships_qualifier.ContactRuleRelation">
+		<qualifier><![CDATA[entityIdentifier like "Contact%"]]></qualifier>
+	</obj-entity>
+	<obj-entity name="Course" className="org.apache.cayenne.testdo.relationships_qualifier.Course" dbEntityName="COURSE">
+		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CourseRuleRelation" superEntityName="RuleRelation" className="org.apache.cayenne.testdo.relationships_qualifier.CourseRuleRelation">
+		<qualifier><![CDATA[entityIdentifier like "Course%"]]></qualifier>
+	</obj-entity>
+	<obj-entity name="Rule" className="org.apache.cayenne.testdo.relationships_qualifier.Rule" dbEntityName="RULE">
+		<qualifier><![CDATA[(name like "Rule%") and (ruleStatus.status like "enable")]]></qualifier>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+		<obj-attribute name="statusId" type="java.lang.Integer" db-attribute-path="STATUS_ID"/>
+	</obj-entity>
+	<obj-entity name="RuleRelation" abstract="true" className="org.apache.cayenne.testdo.relationships_qualifier.RuleRelation" dbEntityName="RELATION">
+		<obj-attribute name="entityId" type="java.lang.Integer" db-attribute-path="entityId"/>
+		<obj-attribute name="entityIdentifier" type="java.lang.String" db-attribute-path="entityIdentifier"/>
+		<obj-attribute name="ruleId" type="java.lang.Integer" db-attribute-path="ruleId"/>
+	</obj-entity>
+	<obj-entity name="RuleStatus" className="org.apache.cayenne.testdo.relationships_qualifier.RuleStatus" dbEntityName="RULE_STATUS">
+		<qualifier><![CDATA[approved = true]]></qualifier>
+		<obj-attribute name="approved" type="java.lang.Boolean" db-attribute-path="APPROVED"/>
+		<obj-attribute name="status" type="java.lang.String" db-attribute-path="STATUS"/>
+	</obj-entity>
+	<db-relationship name="relations" source="CONTACT" target="RELATION" toMany="true">
+		<db-attribute-pair source="ID" target="entityId"/>
+	</db-relationship>
+	<db-relationship name="relations" source="COURSE" target="RELATION" toMany="true">
+		<db-attribute-pair source="ID" target="entityId"/>
+	</db-relationship>
+	<db-relationship name="contacts" source="RELATION" target="CONTACT" toMany="false">
+		<db-attribute-pair source="entityId" target="ID"/>
+	</db-relationship>
+	<db-relationship name="courses" source="RELATION" target="COURSE" toMany="false">
+		<db-attribute-pair source="entityId" target="ID"/>
+	</db-relationship>
+	<db-relationship name="rulecq" source="RELATION" target="RULE" toMany="false">
+		<db-attribute-pair source="ruleId" target="ID"/>
+	</db-relationship>
+	<db-relationship name="relation" source="RULE" target="RELATION" toMany="true">
+		<db-attribute-pair source="ID" target="ruleId"/>
+	</db-relationship>
+	<db-relationship name="ruleStatus" source="RULE" target="RULE_STATUS" toMany="false">
+		<db-attribute-pair source="STATUS_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="rule" source="RULE_STATUS" target="RULE" toMany="true">
+		<db-attribute-pair source="ID" target="STATUS_ID"/>
+	</db-relationship>
+	<obj-relationship name="relations" source="Contact" target="ContactRuleRelation" deleteRule="Deny" db-relationship-path="relations"/>
+	<obj-relationship name="contacts" source="ContactRuleRelation" target="Contact" deleteRule="Nullify" db-relationship-path="contacts"/>
+	<obj-relationship name="rule" source="ContactRuleRelation" target="Rule" deleteRule="Nullify" db-relationship-path="rulecq"/>
+	<obj-relationship name="relations" source="Course" target="CourseRuleRelation" deleteRule="Deny" db-relationship-path="relations"/>
+	<obj-relationship name="courses" source="CourseRuleRelation" target="Course" deleteRule="Nullify" db-relationship-path="courses"/>
+	<obj-relationship name="rule" source="CourseRuleRelation" target="Rule" deleteRule="Nullify" db-relationship-path="rulecq"/>
+	<obj-relationship name="relation" source="Rule" target="RuleRelation" deleteRule="Deny" db-relationship-path="relation"/>
+	<obj-relationship name="ruleStatus" source="Rule" target="RuleStatus" deleteRule="Nullify" db-relationship-path="ruleStatus"/>
+	<obj-relationship name="rule" source="RuleStatus" target="Rule" deleteRule="Deny" db-relationship-path="rule"/>
+</data-map>
