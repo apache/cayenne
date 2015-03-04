@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -30,10 +30,12 @@ public class QualifierBuilderHelper extends QualifierBuilder {
 
     private Expression parentQualifier;
     private Expression attachableQualifier;
+    private ASTObjPath buffRelPath;
 
-    public QualifierBuilderHelper(Expression qualifier, ObjEntity objEntity, QueryAssembler queryAssembler, String relPath, Expression parentQualifier) {
+    public QualifierBuilderHelper(Expression qualifier, ObjEntity objEntity, QueryAssembler queryAssembler, ASTObjPath relPath, Expression parentQualifier) {
         super(qualifier, objEntity, queryAssembler);
         this.relPath = relPath;
+        this.buffRelPath = (ASTObjPath) relPath.shallowCopy();
         this.parentQualifier = parentQualifier;
     }
 
@@ -51,8 +53,7 @@ public class QualifierBuilderHelper extends QualifierBuilder {
         for (PathComponent<ObjAttribute, ObjRelationship> pathComponent : pathComponents) {
             ObjAttribute attribute = pathComponent.getAttribute();
             if (attribute != null) {
-                Expression entityQualifier = ExpressionFactory.exp(relPath + parentNode.toString().replace("(", "").replace(")", ""));
-
+                Expression entityQualifier = relPath.prependToExpression(parentNode);
                 switch (parentQualifier.getType()) {
                     case Expression.AND:
                         attachableQualifier = (attachableQualifier != null) ? attachableQualifier.andExp(entityQualifier) : entityQualifier;
@@ -69,10 +70,9 @@ public class QualifierBuilderHelper extends QualifierBuilder {
 
             ObjRelationship relationship = pathComponent.getRelationship();
 
-            relPath += relationship.getName() + ObjEntity.PATH_SEPARATOR;
+            relPath.appendPath(relationship.getName());
             qualifierForEntityAndSubclasses(relationship.getTargetEntity());
-            relPath = relPath.replace(relationship.getName() + ObjEntity.PATH_SEPARATOR, "");
-
+            relPath = buffRelPath;
         }
     }
 

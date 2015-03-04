@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.Entity;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Path expression traversing DB relationships and attributes.
@@ -45,7 +45,7 @@ public class ASTDbPath extends ASTPath {
         super(ExpressionParserTreeConstants.JJTDBPATH);
     }
 
-    public ASTDbPath(Object value) {
+    public ASTDbPath(String value) {
         super(ExpressionParserTreeConstants.JJTDBPATH);
         setPath(value);
     }

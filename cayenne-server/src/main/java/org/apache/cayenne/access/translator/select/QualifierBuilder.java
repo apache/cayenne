@@ -21,6 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHelper;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -30,7 +31,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 public class QualifierBuilder extends TraversalHelper {
 
     protected QueryAssembler queryAssembler;
-    protected String relPath;
+    protected ASTObjPath relPath;
     protected ObjEntity objEntity;
     protected Expression qualifier;
 
@@ -38,7 +39,7 @@ public class QualifierBuilder extends TraversalHelper {
         this.qualifier = qualifier;
         this.objEntity = objEntity;
         this.queryAssembler = queryAssembler;
-        this.relPath = "";
+        this.relPath = new ASTObjPath();
     }
 
     @Override
@@ -51,7 +52,7 @@ public class QualifierBuilder extends TraversalHelper {
             return;
         }
 
-        this.relPath = "";
+        this.relPath = new ASTObjPath();
 
         Iterable<PathComponent<ObjAttribute, ObjRelationship>> pathComponents = objEntity.resolvePath(objPath, queryAssembler.getPathAliases());
         for (PathComponent<ObjAttribute, ObjRelationship> pathComponent : pathComponents) {
@@ -74,7 +75,7 @@ public class QualifierBuilder extends TraversalHelper {
         qualifierForEntityAndSubclasses(entity);
 
         if (relationship != null) {
-            relPath += relationship.getName() + ObjEntity.PATH_SEPARATOR;
+            relPath.appendPath(relationship.getName());
         }
     }
 

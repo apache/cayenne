@@ -559,7 +559,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
         public Object transform(Object input) {
             if (input instanceof ASTObjPath) {
-                return new ASTDbPath(((SimpleNode) input).getOperand(0));
+                return new ASTDbPath(((SimpleNode) input).getOperand(0).toString());
             }
             return input;
         }

@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.exp.Expression;
@@ -30,6 +27,9 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.util.List;
 
 public class ASTObjPath extends ASTPath {
     private static final Log logObj = LogFactory.getLog(ASTObjPath.class);
@@ -47,7 +47,7 @@ public class ASTObjPath extends ASTPath {
         super(ExpressionParserTreeConstants.JJTOBJPATH);
     }
 
-    public ASTObjPath(Object value) {
+    public ASTObjPath(String value) {
         super(ExpressionParserTreeConstants.JJTOBJPATH);
         setPath(value);
     }

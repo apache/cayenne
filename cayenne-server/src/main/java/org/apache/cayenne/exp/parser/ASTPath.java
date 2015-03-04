@@ -19,11 +19,15 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.util.CayenneMapEntry;
+
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.CayenneMapEntry;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 /**
  * Generic path expression.
@@ -59,11 +63,11 @@ public abstract class ASTPath extends SimpleNode {
             throw new ArrayIndexOutOfBoundsException(index);
         }
 
-        setPath(value);
+        setPath(value == null ? null : value.toString());
     }
 
-    protected void setPath(Object path) {
-        this.path = (path != null) ? path.toString() : null;
+    protected void setPath(String path) {
+        this.path = path;
     }
 
     public String getPath() {
@@ -104,4 +108,39 @@ public abstract class ASTPath extends SimpleNode {
                 + ExpressionParserTreeConstants.jjtNodeName[id]
                 + "'");
     }
+
+    public ASTPath appendPath(String path) {
+        return join(this.path, path);
+    }
+
+    public ASTPath prependPath(String path) {
+        return join(path, this.path);
+    }
+
+    private ASTPath join(String first, String second) {
+        if (isEmpty(first)) {
+            setPath(second);
+        } else if (isEmpty(second)) {
+            setPath(first);
+        } else {
+            setPath(first + Entity.PATH_SEPARATOR + second);
+        }
+        return this;
+    }
+
+    public Expression prependToExpression(Expression expression) {
+        if (isEmpty(this.path)) {
+            return expression;
+        }
+
+        Expression exp = expression.deepCopy();
+
+        if (exp.getOperand(0) instanceof ASTPath) {
+            ((ASTPath) exp.getOperand(0)).prependPath(this.path);
+            return exp;
+        } else {
+            throw new ExpressionException("First operand of the expression should be ASTPath");
+        }
+    }
+
 }
