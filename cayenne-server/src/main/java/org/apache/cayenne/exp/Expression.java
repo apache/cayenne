@@ -19,7 +19,14 @@
 
 package org.apache.cayenne.exp;
 
-import static org.apache.cayenne.exp.ExpressionFactory.exp;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.exp.parser.ASTScalar;
+import org.apache.cayenne.util.ConversionUtil;
+import org.apache.cayenne.util.HashCodeBuilder;
+import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+import org.apache.commons.collections.Transformer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,13 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.exp.parser.ASTScalar;
-import org.apache.cayenne.util.ConversionUtil;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
-import org.apache.commons.collections.Transformer;
+import static org.apache.cayenne.exp.ExpressionFactory.exp;
 
 /**
  * Superclass of Cayenne expressions that defines basic API for expressions use.
@@ -248,7 +249,21 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		return true;
 	}
 
-	/**
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+        hashCodeBuilder.append(getType());
+        hashCodeBuilder.append(getOperandCount());
+
+        int len = getOperandCount();
+        for (int i = 0; i < len; i++) {
+            hashCodeBuilder.append(getOperand(i));
+        }
+
+        return hashCodeBuilder.toHashCode();
+    }
+
+    /**
 	 * Returns a type of expression. Most common types are defined as public
 	 * static fields of this interface.
 	 */

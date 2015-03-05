@@ -28,9 +28,13 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class QualifierBuilder extends TraversalHelper {
 
     protected QueryAssembler queryAssembler;
+    protected Set<Expression> addedQualifiers;
     protected ASTObjPath relPath;
     protected ObjEntity objEntity;
     protected Expression qualifier;
@@ -40,6 +44,7 @@ public class QualifierBuilder extends TraversalHelper {
         this.objEntity = objEntity;
         this.queryAssembler = queryAssembler;
         this.relPath = new ASTObjPath();
+        this.addedQualifiers = new HashSet<Expression>();
     }
 
     @Override
@@ -89,7 +94,12 @@ public class QualifierBuilder extends TraversalHelper {
                 .qualifierForEntityAndSubclasses();
 
         if (entityQualifier != null) {
-            QualifierBuilderHelper qualifierBuilder = new QualifierBuilderHelper(qualifier, entity, queryAssembler, relPath, entityQualifier);
+
+            if (!addedQualifiers.add(entityQualifier)) {
+                return;
+            }
+
+            QualifierBuilderHelper qualifierBuilder = new QualifierBuilderHelper(qualifier, entity, queryAssembler, relPath, addedQualifiers, entityQualifier);
             entityQualifier.traverse(qualifierBuilder);
 
             qualifier = qualifierBuilder.getQualifier();

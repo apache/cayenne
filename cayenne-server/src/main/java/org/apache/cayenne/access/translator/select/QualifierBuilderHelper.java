@@ -26,17 +26,20 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
 
+import java.util.Set;
+
 public class QualifierBuilderHelper extends QualifierBuilder {
 
     private Expression parentQualifier;
     private Expression attachableQualifier;
     private ASTObjPath buffRelPath;
 
-    public QualifierBuilderHelper(Expression qualifier, ObjEntity objEntity, QueryAssembler queryAssembler, ASTObjPath relPath, Expression parentQualifier) {
+    public QualifierBuilderHelper(Expression qualifier, ObjEntity objEntity, QueryAssembler queryAssembler, ASTObjPath relPath, Set addedQualifiers, Expression parentQualifier) {
         super(qualifier, objEntity, queryAssembler);
         this.relPath = relPath;
         this.buffRelPath = (ASTObjPath) relPath.shallowCopy();
         this.parentQualifier = parentQualifier;
+        this.addedQualifiers = addedQualifiers;
     }
 
     @Override
@@ -76,7 +79,7 @@ public class QualifierBuilderHelper extends QualifierBuilder {
         }
     }
 
-    public Expression getAttachableQualifier() {
+    protected Expression getAttachableQualifier() {
         return attachableQualifier;
     }
 
