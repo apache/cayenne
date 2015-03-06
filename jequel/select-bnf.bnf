@@ -1,0 +1,224 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+//                               Search Condition
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+<search condition>    ::=
+         [ NOT ] <boolean primary> [ IS [ NOT ] {TRUE | FALSE | UNKNOWN} ]
+     | <search condition> OR <search condition>
+     | <search condition> AND <search condition>
+
+<boolean primary>    ::=
+       <row value constructor> <comp op> <row value constructor>
+     | <row value constructor> [ NOT ] BETWEEN <row value constructor> AND <row value constructor>
+     | <row value constructor> [ NOT ] IN <in predicate value>
+     | <character value expression> [ NOT ] LIKE <character value expression> [ ESCAPE <character value expression> ]
+     | IS [ NOT ] NULL
+     | <row value constructor> <comp op> {ALL | SOME | ANY} <table subquery>
+     | EXISTS "(" <query expression> ")"
+     | <row value constructor> MATCH [ UNIQUE ] [ PARTIAL | FULL ] "(" <query expression> ")"
+     | <row value constructor> OVERLAPS <row value constructor>
+     | "(" <search condition> ")"
+
+<comp op>    ::= "=" | "<>" | "<" | ">" | "<=" | ">="
+
+<row value constructor>    ::=
+          <row value constructor element>
+     | "(" <row value constructor element> [ { "," <row value constructor element> }* ] ")"
+     | "(" <query expression> ")"
+
+<row value constructor element>    ::=
+       <value expression>
+     | NULL
+     | DEFAULT
+
+<value expression>    ::=
+       <numeric value expression>
+     | <string value expression>
+     | <datetime value expression>
+     | <interval value expression>
+
+<numeric value expression>    ::=
+       [ <sign> ] <numeric primary>
+     | <numeric value expression> "+" <numeric value expression>
+     | <numeric value expression> "-" <numeric value expression>
+     | <numeric value expression> "*" <numeric value expression>
+     | <numeric value expression> "/" <numeric value expression>
+
+<numeric primary>    ::=   <value expression primary> | <numeric value function>
+
+<value expression primary>    ::=
+       <unsigned numeric literal>
+     | <general literal>
+     |  ":" <identifier> [ [ INDICATOR ] <parameter name> ]
+     | "?"
+     | VALUE
+     | <column reference>
+     |  COUNT "(" "*" ")"
+     | {AVG | MAX | MIN | SUM | COUNT} "(" [ <set quantifier> ] <value expression> ")"
+     | "(" <query expression> ")"
+     | <case expression>
+     | "(" <value expression> ")"
+     | <cast specification>
+
+
+<numeric value function>    ::=
+       POSITION "(" <character value expression> IN <character value expression> ")"
+     | EXTRACT "(" <extract field> FROM <extract source> ")"
+     | CHAR_LENGTH "(" <string value expression> ")"
+     | CHARACTER_LENGTH "(" <string value expression> ")"
+     | OCTET_LENGTH "(" <string value expression> ")"
+     | BIT_LENGTH "(" <string value expression> ")"
+
+<string value expression>    ::=   <character value expression> | <bit value expression>
+
+<column reference>    ::=   [ <qualifier> "." ] <column name>
+
+<qualifier>    ::=   <table name> | <identifier>
+
+<set quantifier>    ::=   DISTINCT | ALL
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//                               Queries
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+<query expression>    ::=   <non-join query expression> | <joined table>
+
+<non-join query expression>    ::= 
+         <non-join query term>
+     |     <query expression> UNION [ ALL ] [ <corresponding spec> ]  <non-join query term>
+     |     <query expression> EXCEPT [ ALL ] [ <corresponding spec> ]  <non-join query term>
+     |     <query expression> UNION [ ALL ] [ <corresponding spec> ] <joined table>
+     |     <query expression> EXCEPT [ ALL ] [ <corresponding spec> ] <joined table>
+
+<non-join query term>    ::= 
+         <non-join query primary>
+     |     <non-join query term> INTERSECT [ ALL ] [ <corresponding spec> ] <non-join query primary>
+     |     <non-join query term> INTERSECT [ ALL ] [ <corresponding spec> ] <joined table>
+     |     <joined table> INTERSECT [ ALL ] [ <corresponding spec> ] <non-join query primary>
+     |     <joined table> INTERSECT [ ALL ] [ <corresponding spec> ] <joined table>
+
+<corresponding spec>    ::=   CORRESPONDING [ BY "(" <column name list> ")" ]
+
+<non-join query primary>    ::=
+         <query specification>
+     | VALUES <row value constructor> [ { "," <row value constructor> }* ]
+     | TABLE <table name>
+     | "(" <non-join query expression> ")"
+
+<query specification>    ::=
+         SELECT [ <set quantifier> ] <select list>
+         FROM <table reference> [ { "," <table reference> }* ] // Note that <correlation specification> does not appear in the ISO/IEC grammar. The notation is written out longhand several times, instead.
+         [ WHERE <search condition> ]
+         [ GROUP BY <grouping column reference> [ { "," <grouping column reference> }* ] ]
+         [ HAVING <search condition> ]
+
+<select list>    ::= 
+         "*"
+     |     <select sublist> [ { "," <select sublist> }* ]
+
+<select sublist>    ::=
+        <value expression> [ [ AS ] <column name> ]
+     | <qualifier> "." "*"
+
+<table reference>    ::=
+         <table name> [ <correlation specification> ]
+     | "(" <query expression> ")" <correlation specification>
+     | <joined table>
+
+<correlation specification>    ::= [ AS ] <identifier> [ "(" <column name list> ")" ]
+
+<joined table>    ::=
+       <table reference> CROSS JOIN <table reference>
+     | <table reference> [ NATURAL ] [ {INNER | {LEFT | RIGHT | FULL} [ OUTER ] | UNION} ] JOIN <table reference> [ <join specification> ]
+     | "(" <joined table> ")"
+
+<join specification>    ::=
+        ON <search condition>
+      | USING "(" <column name list> ")"
+
+<grouping column reference>    ::=   <column reference> [ COLLATE <qualified name> ]
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//          Query expression components
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+<case expression>    ::=
+      NULLIF "(" <value expression> "," <value expression> ")"
+    | COALESCE "(" <value expression> { "," <value expression> }* ")"
+    | <simple case>
+    | <searched case>
+
+<simple case>    ::=
+         CASE <value expression>
+             {WHEN <value expression> THEN <result>} *
+             [ ELSE <nullable expression> ]
+         END
+
+<searched case>    ::=
+         CASE
+            {WHEN <search condition> THEN <result>}*
+            [ ELSE <nullable expression> ]
+         END
+
+<nullable expression>    ::=   <value expression> | NULL
+
+<cast specification>    ::=   CAST "(" <nullable expression> AS <cast target> ")"
+
+<cast target>    ::=   <domain name> | <data type>
+
+<character value expression>    ::=
+        <character factor> {<concatenation operator> <character factor>}*
+
+<character factor>    ::=   <character primary> [ COLLATE <qualified name> ]
+
+<character primary>    ::=
+        <value expression primary>
+      | <character value function>
+      | SUBSTRING "(" <bit value expression> FROM <numeric value expression> [ FOR <numeric value expression> ] ")"
+
+<character value function>    ::=
+        SUBSTRING "(" <character value expression> FROM <numeric value expression> [ FOR <numeric value expression> ] ")"
+      | UPPER "(" <character value expression> ")"
+      | LOWER "(" <character value expression> ")"
+      | CONVERT "(" <character value expression> USING <qualified name> ")"
+      | TRANSLATE "(" <character value expression> USING <qualified name> ")"
+      | TRIM "(" [ [ {LEADING | TRAILING | BOTH} ] [ <character value expression> ] FROM ] <character value expression> ")"
+
+
+<bit value expression>    ::= <character primary> {<concatenation operator> <character primary>}*
+
+<extract field>    ::=   <non-second datetime field> | SECOND | TIMEZONE_HOUR | TIMEZONE_MINUTE
+
+<extract source>    ::=   <datetime value expression> | <interval value expression>
+
+<datetime value expression>    ::=
+         <datetime factor>
+     |     <interval value expression> "+" <datetime factor>
+     |     <datetime value expression> "+" <interval term>
+     |     <datetime value expression> "-" <interval term>
+
+<interval term>    ::=
+         <interval factor>
+     |     <interval term> "*" <factor>
+     |     <interval term> "/" <factor>
+     |     <term> "*" <interval factor>
+
+<interval factor>    ::=   [ <sign> ] <value expression primary> [ <interval qualifier> ]
+
+<interval value expression>    ::=
+         <interval term>
+     |     <interval value expression> "+" <interval term>
+     |     <interval value expression> "-" <interval term>
+     |     "(" <datetime value expression> "-" <datetime factor> ")" <interval qualifier>
+
+<datetime factor>    ::=   <datetime primary> [ AT {LOCAL | TIME ZONE} <interval value expression> ]
+
+<datetime primary>    ::=   <value expression primary> | <datetime value function>
+
+<in predicate value>    ::=
+       "(" <query expression> ")"
+     | "(" <value expression> { "," <value expression> }* ")"
+
