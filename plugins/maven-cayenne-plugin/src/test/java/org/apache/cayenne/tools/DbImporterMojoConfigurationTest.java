@@ -18,15 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchemaContent;
+import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
+import static org.apache.cayenne.access.loader.filters.FilterFactory.exclude;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
 
+import org.apache.cayenne.access.loader.filters.DbPath;
+import org.apache.cayenne.access.loader.filters.EntityFilters;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
+
+import java.util.Collections;
 
 public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
@@ -44,6 +48,18 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testLoadSchema2() throws Exception {
+        FiltersConfig filters = getCdbImport("pom-schema-2.xml").toParameters()
+                .getDbLoaderConfig().getFiltersConfig();
+
+        DbPath path = new DbPath(null, "NHL_STATS");
+        assertEquals(Collections.singletonList(path), filters.getDbPaths());
+
+        EntityFilters filter = filters.filter(path);
+        assertEquals(filter, new EntityFilters(path, exclude("^ETL_.*"), exclude("^ETL_.*"), NULL));
+    }
+
+    @Test
     public void testLoadCatalogAndSchema() throws Exception {
         assertCatalogAndSchema(getCdbImport("pom-catalog-and-schema.xml").getReverseEngineering());
     }
@@ -57,7 +73,21 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     @Test
     public void testLoadFlat() throws Exception {
         assertFlat(getCdbImport("pom-flat.xml").getReverseEngineering());
+    }
 
+    @Test
+    public void testSkipRelationshipsLoading() throws Exception {
+        assertSkipRelationshipsLoading(getCdbImport("pom-skip-relationships-loading.xml").getReverseEngineering());
+    }
+
+    @Test
+    public void testSkipPrimaryKeyLoading() throws Exception {
+        assertSkipPrimaryKeyLoading(getCdbImport("pom-skip-primary-key-loading.xml").getReverseEngineering());
+    }
+
+    @Test
+    public void testTableTypes() throws Exception {
+        assertTableTypes(getCdbImport("pom-table-types.xml").getReverseEngineering());
     }
 
     private DbImporterMojo getCdbImport(String pomFileName) throws Exception {

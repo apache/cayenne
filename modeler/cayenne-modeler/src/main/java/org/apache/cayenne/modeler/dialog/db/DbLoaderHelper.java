@@ -19,22 +19,10 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
@@ -43,6 +31,7 @@ import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -60,6 +49,16 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
 
 /**
@@ -75,19 +74,17 @@ public class DbLoaderHelper {
     // preferences...
     private static final Collection<String> EXCLUDED_TABLES = Arrays.asList("AUTO_PK_SUPPORT", "auto_pk_support");
 
-    static DbLoaderMergeDialog mergeDialog;
-
-    protected boolean overwritePreferenceSet;
-    protected boolean overwritingEntities;
     protected boolean stoppingReverseEngineering;
     protected boolean existingMap;
 
     protected ProjectController mediator;
     protected String dbUserName;
+    protected String dbCatalog;
     protected DbLoader loader;
     protected DataMap dataMap;
     protected boolean meaningfulPk;
     protected List<String> schemas;
+    protected List<String> catalogs;
 
     private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
 
@@ -98,38 +95,19 @@ public class DbLoaderHelper {
      */
     protected List<ObjEntity> addedObjEntities;
 
-    static DbLoaderMergeDialog getMergeDialogInstance() {
-        if (mergeDialog == null) {
-            mergeDialog = new DbLoaderMergeDialog(Application.getFrame());
-        }
-
-        return mergeDialog;
-    }
-
     public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter, String dbUserName) {
         this.dbUserName = dbUserName;
         this.mediator = mediator;
+        try {
+            this.dbCatalog = connection.getCatalog();
+        } catch (SQLException e) {
+            logObj.warn("Error getting catalog.", e);
+        }
         this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
-    }
-
-    public void setOverwritingEntities(boolean overwritePreference) {
-        this.overwritingEntities = overwritePreference;
-    }
-
-    public void setOverwritePreferenceSet(boolean overwritePreferenceSet) {
-        this.overwritePreferenceSet = overwritePreferenceSet;
     }
 
     public void setStoppingReverseEngineering(boolean stopReverseEngineering) {
         this.stoppingReverseEngineering = stopReverseEngineering;
-    }
-
-    public boolean isOverwritePreferenceSet() {
-        return overwritePreferenceSet;
-    }
-
-    public boolean isOverwritingEntities() {
-        return overwritingEntities;
     }
 
     public boolean isStoppingReverseEngineering() {
@@ -144,19 +122,26 @@ public class DbLoaderHelper {
     public void execute() {
         stoppingReverseEngineering = false;
 
+        // load catalogs...
+        LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
+        loadCatalogsTask.startAndWait();
+
+        if (stoppingReverseEngineering) {
+            return;
+        }
+
         // load schemas...
         LongRunningTask loadSchemasTask = new LoadSchemasTask(Application.getFrame(), "Loading Schemas");
-
         loadSchemasTask.startAndWait();
 
         if (stoppingReverseEngineering) {
             return;
         }
 
-        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, dbUserName, false);
+        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, catalogs, dbUserName, dbCatalog, false);
 
         try {
-            // since we are not inside EventDisptahcer Thread, must run it via
+            // since we are not inside EventDispatcher Thread, must run it via
             // SwingUtilities
             SwingUtilities.invokeAndWait(new Runnable() {
 
@@ -174,6 +159,7 @@ public class DbLoaderHelper {
             return;
         }
 
+        this.filterBuilder.catalog(dialog.getSelectedCatalog());
         this.filterBuilder.schema(dialog.getSelectedSchema());
         this.filterBuilder.includeTables(dialog.getTableNamePattern());
         this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures() ? FilterFactory.TRUE : FilterFactory.NULL);
@@ -212,26 +198,9 @@ public class DbLoaderHelper {
         }
     }
 
-    final class LoaderDelegate implements DbLoaderDelegate {
+    private final class LoaderDelegate extends DefaultDbLoaderDelegate {
 
-        public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
-            checkCanceled();
-
-            if (!overwritePreferenceSet) {
-                DbLoaderMergeDialog dialog = DbLoaderHelper.getMergeDialogInstance();
-                dialog.initFromModel(DbLoaderHelper.this, ent.getName());
-                dialog.centerWindow();
-                dialog.setVisible(true);
-                dialog.setVisible(false);
-            }
-
-            if (stoppingReverseEngineering) {
-                throw new CayenneException("Should stop DB import.");
-            }
-
-            return overwritingEntities;
-        }
-
+        @Override
         public void dbEntityAdded(DbEntity entity) {
             checkCanceled();
 
@@ -247,6 +216,7 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void objEntityAdded(ObjEntity entity) {
             checkCanceled();
 
@@ -258,6 +228,7 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void dbEntityRemoved(DbEntity entity) {
             checkCanceled();
 
@@ -266,12 +237,31 @@ public class DbLoaderHelper {
             }
         }
 
+        @Override
         public void objEntityRemoved(ObjEntity entity) {
             checkCanceled();
 
             if (existingMap) {
                 mediator.fireObjEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
             }
+        }
+
+        @Override
+        public boolean dbRelationship(DbEntity entity) {
+            checkCanceled();
+
+            loadStatusNote = "Load relationships for '" + entity.getName() + "'...";
+
+            return true;
+        }
+
+        @Override
+        public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
+            checkCanceled();
+
+            loadStatusNote = "Load relationship: '" + entity.getName() + "'; '" + relationship.getName() + "'...";
+
+            return true;
         }
 
         void checkCanceled() {
@@ -337,6 +327,24 @@ public class DbLoaderHelper {
         }
     }
 
+    final class LoadCatalogsTask extends DbLoaderTask {
+
+        public LoadCatalogsTask(JFrame frame, String title) {
+            super(frame, title);
+        }
+
+        @Override
+        protected void execute() {
+            loadStatusNote = "Loading available catalogs...";
+
+            try {
+                catalogs = loader.getCatalogs();
+            } catch (Throwable th) {
+                processException(th, "Error Loading Catalogs");
+            }
+        }
+    }
+
     final class LoadDataMapTask extends DbLoaderTask {
 
         public LoadDataMapTask(JFrame frame, String title) {
@@ -354,6 +362,7 @@ public class DbLoaderHelper {
             if (!existingMap) {
                 dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap));
                 dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, mediator.getProject().getRootNode()));
+                dataMap.setDefaultCatalog(filterBuilder.catalog());
                 dataMap.setDefaultSchema(filterBuilder.schema());
             }
 

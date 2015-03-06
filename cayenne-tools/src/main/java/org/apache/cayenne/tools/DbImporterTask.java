@@ -23,6 +23,14 @@ import java.io.File;
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.map.naming.DefaultNameGenerator;
+import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.cayenne.tools.dbimport.DbImportAction;
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
+import org.apache.cayenne.tools.dbimport.DbImportModule;
+import org.apache.cayenne.tools.dbimport.config.AntNestedElement;
 import org.apache.cayenne.tools.dbimport.config.Catalog;
 import org.apache.cayenne.tools.dbimport.config.ExcludeColumn;
 import org.apache.cayenne.tools.dbimport.config.ExcludeProcedure;
@@ -32,13 +40,6 @@ import org.apache.cayenne.tools.dbimport.config.IncludeProcedure;
 import org.apache.cayenne.tools.dbimport.config.IncludeTable;
 import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
 import org.apache.cayenne.tools.dbimport.config.Schema;
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.map.naming.DefaultNameGenerator;
-import org.apache.cayenne.tools.configuration.ToolsModule;
-import org.apache.cayenne.tools.dbimport.DbImportAction;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
-import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
@@ -71,6 +72,10 @@ public class DbImporterTask extends Task {
 
         Log logger = new AntLogger(this);
         config.setLogger(logger);
+        config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
+        config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
+        config.setTableTypes(reverseEngineering.getTableTypes());
+
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
         try {
@@ -225,6 +230,10 @@ public class DbImporterTask extends Task {
         config.setUsePrimitives(usePrimitives);
     }
 
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        reverseEngineering.setSkipRelationshipsLoading(skipRelationshipsLoading);
+    }
+
     public void addConfiguredIncludeColumn(IncludeColumn includeColumn) {
         reverseEngineering.addIncludeColumn(includeColumn);
     }
@@ -255,6 +264,10 @@ public class DbImporterTask extends Task {
 
     public void addConfiguredCatalog(Catalog catalog) {
         reverseEngineering.addCatalog(catalog);
+    }
+
+    public void addConfiguredTableType(AntNestedElement type) {
+        reverseEngineering.addTableType(type.getName());
     }
 
     public ReverseEngineering getReverseEngineering() {

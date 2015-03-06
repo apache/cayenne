@@ -24,6 +24,7 @@ import java.util.Iterator;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -369,5 +370,10 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
             setDbAttributePath(newDbAttributePath.toString());
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ObjAttr: " + type + " " + name + "; DbPath[" + dbAttributePath + "]";
     }
 }

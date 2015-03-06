@@ -45,7 +45,10 @@ class ProcedureParameterValidator extends ConfigurationNodeValidator {
 
         // VARCHAR and CHAR attributes must have max length
         if (parameter.getMaxLength() < 0
-                && (parameter.getType() == Types.VARCHAR || parameter.getType() == Types.CHAR)) {
+                && (parameter.getType() == Types.VARCHAR
+                    || parameter.getType() == Types.NVARCHAR
+                    || parameter.getType() == Types.CHAR
+                    || parameter.getType() == Types.NCHAR)) {
 
             addFailure(
                     validationResult,

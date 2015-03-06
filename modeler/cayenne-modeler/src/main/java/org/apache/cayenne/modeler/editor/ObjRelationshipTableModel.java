@@ -169,7 +169,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         }
         else if (column == REL_TARGET) {
             ObjEntity target = (ObjEntity) value;
-            relationship.setTargetEntity(target);
+            relationship.setTargetEntityName(target);
             
             /**
              * Clear existing relationships, otherwise addDbRelationship() might fail

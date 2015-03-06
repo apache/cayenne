@@ -118,8 +118,7 @@ class HierarchicalObjectResolver {
                 return true;
             }
 
-            List objects = processorNode.getResolver().objectsFromDataRows(
-                    processorNode.getDataRows());
+            List<Persistent> objects = processorNode.getResolver().objectsFromDataRows(processorNode.getDataRows());
             processorNode.setObjects(objects);
 
             return true;

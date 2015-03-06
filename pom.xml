@@ -17,15 +17,14 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cayenne-parent</artifactId>
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
-	<version>4.0.M2-SNAPSHOT</version>
+	<version>4.0.M3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -43,6 +42,9 @@
         <pmd.skip>false</pmd.skip>
         <checkstyle.skip>false</checkstyle.skip>
         <findbugs.skip>false</findbugs.skip>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
 	<url>http://cayenne.apache.org/</url>
@@ -209,6 +211,26 @@
 			<roles>
 				<role>Committer</role>
 			</roles>
+		</developer>
+		<developer>
+			<id>kolonitsky</id>
+			<name>Alex Kolonitsky</name>
+			<email>kolonitsky@apache.org</email>
+            <organization>ObjectStyle</organization>
+			<roles>
+				<role>Committer</role>
+			</roles>
+            <timezone>+3</timezone>
+		</developer>
+		<developer>
+			<id>skolbachev</id>
+			<name>Savva Kolbachev</name>
+			<email>skolbachev@apache.org</email>
+			<organization>ObjectStyle</organization>
+			<roles>
+				<role>Committer</role>
+			</roles>
+			<timezone>+3</timezone>
 		</developer>
 	</developers>
 	<licenses>
@@ -416,13 +438,6 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-            <dependency>
-                <groupId>org.fluttercode.datafactory</groupId>
-                <artifactId>datafactory</artifactId>
-                <version>0.8</version>
-                <type>jar</type>
-                <scope>test</scope>
-            </dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-mock</artifactId>
@@ -535,7 +550,7 @@
 				<enabled>true</enabled>
 			</releases>
 		</pluginRepository>
-	</pluginRepositories>
+    </pluginRepositories>
 	<build>
 		<defaultGoal>install</defaultGoal>
 
@@ -676,10 +691,54 @@
 										<ignore />
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+                    					<artifactId>maven-checkstyle-plugin</artifactId>
+                    					<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+                    					<artifactId>maven-pmd-plugin</artifactId>
+                    					<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-plugin-plugin</artifactId>
+                                        <versionRange>[1.0,)</versionRange>
+                                        <goals>
+                                            <goal>descriptor</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                    <version>3.3</version>
+                </plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>2.4.3</version>
@@ -785,103 +844,6 @@
 					<artifactId>japp-maven-plugin</artifactId>
 					<version>3.0</version>
 				</plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.9.1</version>
-                    <configuration>
-                        <skip>${checkstyle.skip}</skip>
-                        <consoleOutput>true</consoleOutput>
-                        <enableRulesSummary>false</enableRulesSummary>
-                        <failOnViolation>false</failOnViolation>
-                        <!-- TODO make it 'true' when we will be ready -->
-                        <violationSeverity>warning</violationSeverity>
-                        <configLocation>/cayenne-checkstyle.xml</configLocation>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>process-sources</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.cayenne.build-tools</groupId>
-                            <artifactId>cayenne-checkers</artifactId>
-                            <version>${project.version}</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.2</version>
-                    <configuration>
-                        <skip>${pmd.skip}</skip>
-                        <sourceEncoding>utf-8</sourceEncoding>
-                        <targetJdk>1.6</targetJdk>
-                        <verbose>true</verbose>
-                        <failOnViolation>false</failOnViolation>
-                        <!-- TODO make it 'true' when we will be ready -->
-                        <failurePriority>2</failurePriority>
-                        <rulesets>
-                            <!-- go back on one dir to parent project -->
-                            <ruleset>/cayenne-pmd.xml</ruleset>
-                        </rulesets>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>process-sources</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.cayenne.build-tools</groupId>
-                            <artifactId>cayenne-checkers</artifactId>
-                            <version>${project.version}</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>2.5</version>
-                    <configuration>
-                        <effort>Max</effort>
-                        <!-- do max effort at CI Server -->
-                        <threshold>Low</threshold>
-                        <!-- make it 'low' at CI Server -->
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>process-classes</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>clirr-maven-plugin</artifactId>
-                    <version>2.6.1</version>
-                    <configuration>
-                        <comparisonVersion>3.1RC1</comparisonVersion>
-                        <minSeverity>info</minSeverity>
-                        <logResults>true</logResults>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>jdepend-maven-plugin</artifactId>
-                    <version>2.0</version>
-                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
@@ -896,7 +858,10 @@
                         </execution>
                     </executions>
                 </plugin>
-
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
             </plugins>
 		</pluginManagement>
 
@@ -950,19 +915,32 @@
 				</configuration>
 			</plugin>
 			<plugin>
+                <!-- TOOD move to release plugin -->
 				<groupId>org.apache.rat</groupId>
 				<artifactId>apache-rat-plugin</artifactId>
 				<configuration>
 					<excludes>
 						<exclude>**/target</exclude>
-						<exclude>**/MANIFEST.MF</exclude>
-						<exclude>**/*.plist</exclude>
-						<exclude>**/*.graffle</exclude>
-						<exclude>**/.*</exclude>
-						<exclude>**/.*/**</exclude>
-						<exclude>**/*.map.xml</exclude>
-						<exclude>**/*.css</exclude>
-						<exclude>**/*.properties</exclude>
+                        <exclude>**/.*</exclude>
+                        <exclude>**/.*/**</exclude>
+
+                        <exclude>**/cayenne-*.xml</exclude>
+                        <exclude>**/cayenne.xml</exclude>
+                        <exclude>**/*.map.xml</exclude>
+                        <exclude>**/_*.java</exclude>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/*.css</exclude>
+                        <exclude>**/*.driver.xml</exclude>
+
+                        <exclude>**/test/**/ks1.jceks</exclude>
+                        <exclude>**/test/**/plain.txt</exclude>
+
+                        <exclude>**/DiagramLayout</exclude>
+                        <exclude>**/*.plist</exclude>
+                        <exclude>**/*.eomodeld</exclude>
+                        <exclude>**/*.fspec</exclude>
+
+                        <exclude>derby.log</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -978,14 +956,144 @@
 
 	<profiles>
         <profile>
-            <id>fast-and-dirty</id>
+            <id>code-quality</id>
 
-            <properties>
-                <pmd.skip>true</pmd.skip>
-                <maven.test.skip>true</maven.test.skip>
-                <checkstyle.skip>true</checkstyle.skip>
-                <findbugs.skip>true</findbugs.skip>
-            </properties>
+            <activation>
+                <property>
+                    <name>!fast-and-dirty</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <version>2.9.1</version>
+                            <configuration>
+                                <skip>${checkstyle.skip}</skip>
+                                <consoleOutput>true</consoleOutput>
+                                <enableRulesSummary>false</enableRulesSummary>
+                                <failOnViolation>false</failOnViolation>
+                                <!-- TODO make it 'true' when we will be ready -->
+                                <violationSeverity>warning</violationSeverity>
+                                <configLocation>/cayenne-checkstyle.xml</configLocation>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <phase>process-sources</phase>
+                                    <goals>
+                                        <goal>check</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.apache.cayenne.build-tools</groupId>
+                                    <artifactId>cayenne-checkers</artifactId>
+                                    <version>${project.version}</version>
+                                </dependency>
+                            </dependencies>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-pmd-plugin</artifactId>
+                            <version>3.2</version>
+                            <configuration>
+                                <skip>${pmd.skip}</skip>
+                                <sourceEncoding>utf-8</sourceEncoding>
+                                <targetJdk>1.6</targetJdk>
+                                <verbose>true</verbose>
+                                <failOnViolation>false</failOnViolation>
+                                <!-- TODO make it 'true' when we will be ready -->
+                                <failurePriority>2</failurePriority>
+                                <rulesets>
+                                    <!-- go back on one dir to parent project -->
+                                    <ruleset>/cayenne-pmd.xml</ruleset>
+                                </rulesets>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <phase>process-sources</phase>
+                                    <goals>
+                                        <goal>check</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.apache.cayenne.build-tools</groupId>
+                                    <artifactId>cayenne-checkers</artifactId>
+                                    <version>${project.version}</version>
+                                </dependency>
+                            </dependencies>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>findbugs-maven-plugin</artifactId>
+                            <version>2.5</version>
+                            <configuration>
+                                <effort>Max</effort>
+                                <!-- do max effort at CI Server -->
+                                <threshold>Low</threshold>
+                                <!-- make it 'low' at CI Server -->
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <phase>process-classes</phase>
+                                    <goals>
+                                        <goal>check</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>clirr-maven-plugin</artifactId>
+                            <version>2.6.1</version>
+                            <configuration>
+                                <comparisonVersion>3.1RC1</comparisonVersion>
+                                <minSeverity>info</minSeverity>
+                                <logResults>true</logResults>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>jdepend-maven-plugin</artifactId>
+                            <version>2.0</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <inherited>true</inherited>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <inherited>true</inherited>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <configuration>
+                            <effort>Max</effort>
+                            <threshold>Low</threshold>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>jdepend-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>clirr-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </reporting>
         </profile>
         <profile>
             <id>tests-development</id>
@@ -1367,30 +1475,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
                 <version>2.8</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <inherited>true</inherited>
-            </plugin>
-            <plugin>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <inherited>true</inherited>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <configuration>
-                    <effort>Max</effort>
-                    <threshold>Low</threshold>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jdepend-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>clirr-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>

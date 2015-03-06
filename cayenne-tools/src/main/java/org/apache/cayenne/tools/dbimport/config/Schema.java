@@ -19,7 +19,7 @@
 package org.apache.cayenne.tools.dbimport.config;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class Schema extends FilterContainer {
 
@@ -55,4 +55,16 @@ public class Schema extends FilterContainer {
 
         setName(name);
     }
+
+    @Override
+    public String toString() {
+        return toString("    ");
+    }
+
+    @Override
+    public String toString(String indent) {
+        return indent + "Schema '" + name + "': "
+                + super.toString(indent + "    ");
+    }
+
 }

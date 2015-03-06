@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,6 +63,8 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class PostgresAdapter extends JdbcAdapter {
 
+    public static final String BYTEA = "bytea";
+
     public PostgresAdapter(@Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
@@ -99,7 +103,7 @@ public class PostgresAdapter extends JdbcAdapter {
         // "bytea" maps to pretty much any binary type, so
         // it is up to us to select the most sensible default.
         // And the winner is LONGVARBINARY
-        if ("bytea".equalsIgnoreCase(typeName)) {
+        if (BYTEA.equalsIgnoreCase(typeName)) {
             type = Types.LONGVARBINARY;
         }
         // oid is returned as INTEGER, need to make it BLOB
@@ -114,6 +118,23 @@ public class PostgresAdapter extends JdbcAdapter {
         return super.buildAttribute(name, typeName, type, size, scale, allowNulls);
     }
 
+    @Override
+    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale) throws SQLException, Exception {
+        super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
+    }
+
+    private int mapNTypes(int sqlType) {
+        switch (sqlType) {
+            case Types.NCHAR : return Types.CHAR;
+            case Types.NCLOB : return Types.CLOB;
+            case Types.NVARCHAR : return Types.VARCHAR;
+            case Types.LONGNVARCHAR : return Types.LONGVARCHAR;
+
+            default:
+                return sqlType;
+        }
+    }
+
     /**
      * Customizes table creating procedure for PostgreSQL. One difference with
      * generic implementation is that "bytea" type has no explicit length unlike
@@ -126,11 +147,7 @@ public class PostgresAdapter extends JdbcAdapter {
 
         QuotingStrategy context = getQuotingStrategy();
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ");
-
-        buf.append(context.quotedFullyQualifiedName(ent));
-
-        buf.append(" (");
+        buf.append("CREATE TABLE ").append(context.quotedFullyQualifiedName(ent)).append(" (");
 
         // columns
         Iterator<DbAttribute> it = ent.getAttributes().iterator();
@@ -142,51 +159,7 @@ public class PostgresAdapter extends JdbcAdapter {
                 buf.append(", ");
             }
 
-            DbAttribute at = it.next();
-
-            // attribute may not be fully valid, do a simple check
-            if (at.getType() == TypesMapping.NOT_DEFINED) {
-                throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
-                        + at.getName() + "'.");
-            }
-
-            String[] types = externalTypesForJdbcType(at.getType());
-            if (types == null || types.length == 0) {
-                throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
-                        + at.getName() + "': " + at.getType());
-            }
-
-            String type = types[0];
-            buf.append(context.quotedName(at)).append(' ').append(type);
-
-            // append size and precision (if applicable)
-            if (typeSupportsLength(at.getType())) {
-
-                int len = at.getMaxLength();
-                // Postgres does not support notation float(a, b)
-                int scale = (TypesMapping.isDecimal(at.getType()) && at.getType() != Types.FLOAT) ? at.getScale() : -1;
-
-                // sanity check
-                if (scale > len) {
-                    scale = -1;
-                }
-
-                if (len > 0) {
-                    buf.append('(').append(len);
-
-                    if (scale >= 0) {
-                        buf.append(", ").append(scale);
-                    }
-
-                    buf.append(')');
-                }
-            }
-
-            if (at.isMandatory()) {
-                buf.append(" NOT NULL");
-            } else {
-                buf.append(" NULL");
-            }
+            createAttribute(ent, context, buf, it.next());
         }
 
         // primary key clause
@@ -216,13 +189,31 @@ public class PostgresAdapter extends JdbcAdapter {
         return buf.toString();
     }
 
+    private void createAttribute(DbEntity ent, QuotingStrategy context, StringBuilder buf, DbAttribute at) {
+        // attribute may not be fully valid, do a simple check
+        if (at.getType() == TypesMapping.NOT_DEFINED) {
+            throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
+                    + at.getName() + "'.");
+        }
+
+        String[] types = externalTypesForJdbcType(at.getType());
+        if (types == null || types.length == 0) {
+            throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
+                    + at.getName() + "': " + at.getType());
+        }
+
+        buf.append(context.quotedName(at))
+           .append(' ').append(types[0]).append(sizeAndPrecision(this, at))
+           .append(at.isMandatory() ? " NOT" : "").append(" NULL");
+    }
+
     @Override
     public boolean typeSupportsLength(int type) {
         // "bytea" type does not support length
         String[] externalTypes = externalTypesForJdbcType(type);
         if (externalTypes != null && externalTypes.length > 0) {
             for (String externalType : externalTypes) {
-                if ("bytea".equalsIgnoreCase(externalType)) {
+                if (BYTEA.equalsIgnoreCase(externalType)) {
                     return false;
                 }
             }

@@ -32,7 +32,7 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
     private DbRelationship rel;
 
     public DropRelationshipToDb(DbEntity entity, DbRelationship rel) {
-        super("Drop Relationship", entity);
+        super("Drop foreign key", entity);
         this.rel = rel;
     }
     

@@ -48,11 +48,11 @@ public class Expression_ParamsTest {
 	}
 
 	@Test
-	public void testParams_Positional2() {
+	public void testParams_Positional_Repeating() {
 		Expression e = ExpressionFactory.exp("a = $a or x = $x and y = $x");
-		Expression ep = e.paramsArray("A", 5, 6);
+		Expression ep = e.paramsArray("A", 5);
 		assertNotSame(e, ep);
-		assertEquals("(a = \"A\") or ((x = 5) and (y = 6))", ep.toString());
+		assertEquals("(a = \"A\") or ((x = 5) and (y = 5))", ep.toString());
 	}
 
 	@Test

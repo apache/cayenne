@@ -18,22 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Types;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLSelectIT extends ServerCase {
@@ -44,23 +48,28 @@ public class SQLSelectIT extends ServerCase {
 	@Inject
 	private DBHelper dbHelper;
 
-	protected void createArtistsDataSet() throws Exception {
-		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+	private TableHelper tPainting;
 
-		long dateBase = System.currentTimeMillis();
+	@Before
+	public void before() {
 
-		for (int i = 1; i <= 20; i++) {
-			tArtist.insert(i, "artist" + i, new java.sql.Date(dateBase + 10000 * i));
-		}
+		tPainting = new TableHelper(dbHelper, "PAINTING")
+                .setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DECIMAL);
 	}
 
-    @Test
+    protected void createArtistsDataSet() throws Exception {
+        for (int i = 1; i <= 20; i++) {
+            tPainting.insert(i, "painting" + i, 10000. * i);
+        }
+    }
+
+	@Test
 	public void test_DataRows_DataMapNameRoot() throws Exception {
 
 		createArtistsDataSet();
 
-		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("testmap", "SELECT * FROM ARTIST");
+		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("testmap", "SELECT * FROM PAINTING");
 		assertTrue(q1.isFetchingDataRows());
 
 		List<DataRow> result = context.select(q1);
@@ -68,12 +77,12 @@ public class SQLSelectIT extends ServerCase {
 		assertTrue(result.get(0) instanceof DataRow);
 	}
 
-    @Test
+	@Test
 	public void test_DataRows_DefaultRoot() throws Exception {
 
 		createArtistsDataSet();
 
-		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM ARTIST");
+		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING");
 		assertTrue(q1.isFetchingDataRows());
 
 		List<DataRow> result = context.select(q1);
@@ -81,48 +90,48 @@ public class SQLSelectIT extends ServerCase {
 		assertTrue(result.get(0) instanceof DataRow);
 	}
 
-    @Test
+	@Test
 	public void test_DataRows_ClassRoot() throws Exception {
 
 		createArtistsDataSet();
 
-		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST");
+		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING").columnNameCaps(CapsStrategy.UPPER);
 		assertFalse(q1.isFetchingDataRows());
-		List<Artist> result = context.select(q1);
+		List<Painting> result = context.select(q1);
 		assertEquals(20, result.size());
-		assertTrue(result.get(0) instanceof Artist);
+		assertTrue(result.get(0) instanceof Painting);
 	}
 
-    @Test
+	@Test
 	public void test_DataRows_ClassRoot_Parameters() throws Exception {
 
 		createArtistsDataSet();
 
-		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)");
-		q1.params("a", "artist3");
+		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)");
+		q1.params("a", "painting3").columnNameCaps(CapsStrategy.UPPER);
 
 		assertFalse(q1.isFetchingDataRows());
-		Artist a = context.selectOne(q1);
-		assertEquals("artist3", a.getArtistName());
+        Painting a = context.selectOne(q1);
+		assertEquals("painting3", a.getPaintingTitle());
 	}
 
-    @Test
+	@Test
 	public void test_DataRows_ClassRoot_Bind() throws Exception {
 
 		createArtistsDataSet();
 
-		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class,
-				"SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a) OR ARTIST_NAME = #bind($b)");
-		q1.params("a", "artist3").params("b", "artist4");
+		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class,
+				"SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a) OR PAINTING_TITLE = #bind($b)").columnNameCaps(CapsStrategy.UPPER);
+		q1.params("a", "painting3").params("b", "painting4");
 
-		List<Artist> result = context.select(q1);
+		List<Painting> result = context.select(q1);
 		assertEquals(2, result.size());
 	}
 
-    @Test
+	@Test
 	public void test_DataRows_ColumnNameCaps() throws Exception {
 
-		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM ARTIST WHERE ARTIST_NAME = 'artist2'");
+		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING WHERE PAINTING_TITLE = 'painting2'");
 		q1.upperColumnNames();
 
 		SQLTemplate r1 = (SQLTemplate) q1.getReplacementQuery(context.getEntityResolver());
@@ -133,103 +142,157 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(CapsStrategy.LOWER, r2.getColumnNamesCapitalization());
 	}
 
-    @Test
+	@Test
 	public void test_DataRows_FetchLimit() throws Exception {
 
 		createArtistsDataSet();
 
-		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM ARTIST");
+		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING");
 		q1.limit(5);
 
 		assertEquals(5, context.select(q1).size());
 	}
 
-    @Test
+	@Test
 	public void test_DataRows_FetchOffset() throws Exception {
 
 		createArtistsDataSet();
 
-		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM ARTIST");
+		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING");
 		q1.offset(4);
 
 		assertEquals(16, context.select(q1).size());
 	}
 
-    @Test
+	@Test
 	public void test_Append() throws Exception {
 
 		createArtistsDataSet();
 
-		SQLSelect<Artist> q1 = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST")
-				.append(" WHERE ARTIST_NAME = #bind($a)").params("a", "artist3");
+		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
+				.append(" WHERE PAINTING_TITLE = #bind($a)").params("a", "painting3").columnNameCaps(CapsStrategy.UPPER);
 
-		List<Artist> result = context.select(q1);
+		List<Painting> result = context.select(q1);
 		assertEquals(1, result.size());
 	}
 
-    @Test
+	@Test
 	public void test_Select() throws Exception {
 
 		createArtistsDataSet();
 
-		List<Artist> result = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-				.params("a", "artist3").select(context);
+		List<Painting> result = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
+				.params("a", "painting3").columnNameCaps(CapsStrategy.UPPER).select(context);
 
 		assertEquals(1, result.size());
 	}
 
-    @Test
+	@Test
 	public void test_SelectOne() throws Exception {
 
 		createArtistsDataSet();
 
-		Artist a = SQLSelect.query(Artist.class, "SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-				.params("a", "artist3").selectOne(context);
+        Painting a = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
+				.params("a", "painting3").columnNameCaps(CapsStrategy.UPPER).selectOne(context);
 
-		assertEquals("artist3", a.getArtistName());
+		assertEquals("painting3", a.getPaintingTitle());
 	}
 
-    @Test
+	@Test
 	public void test_SelectLong() throws Exception {
 
 		createArtistsDataSet();
 
-		long id = SQLSelect.scalarQuery(Long.class, "SELECT ARTIST_ID FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-				.params("a", "artist3").selectOne(context);
+		long id = SQLSelect.scalarQuery(Integer.class, "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
+				.params("a", "painting3").selectOne(context);
 
 		assertEquals(3l, id);
 	}
 
-    @Test
+	@Test
 	public void test_SelectLongArray() throws Exception {
 
 		createArtistsDataSet();
 
-		List<Long> ids = SQLSelect.scalarQuery(Long.class, "SELECT ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID").select(
+		List<Integer> ids = SQLSelect.scalarQuery(Integer.class, "SELECT PAINTING_ID FROM PAINTING ORDER BY PAINTING_ID").select(
 				context);
 
 		assertEquals(20, ids.size());
-		assertEquals(2l, ids.get(1).longValue());
+		assertEquals(2l, ids.get(1).intValue());
 	}
 
-    @Test
+	@Test
 	public void test_SelectCount() throws Exception {
 
 		createArtistsDataSet();
 
-		int c = SQLSelect.scalarQuery(Integer.class, "SELECT #result('COUNT(*)' 'int') FROM ARTIST").selectOne(context);
+		int c = SQLSelect.scalarQuery(Integer.class, "SELECT #result('COUNT(*)' 'int') FROM PAINTING").selectOne(context);
 
 		assertEquals(20, c);
 	}
 
-    @Test
-	public void testSQLTemplate_PositionalParams() throws Exception {
+	@Test
+	public void test_ParamsArray_Single() throws Exception {
 
 		createArtistsDataSet();
 
-		Long id = SQLSelect.scalarQuery(Long.class, "SELECT ARTIST_ID FROM ARTIST WHERE ARTIST_NAME = #bind($a)")
-				.paramsArray("artist3").selectOne(context);
+        Integer id = SQLSelect.scalarQuery(Integer.class, "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
+				.paramsArray("painting3").selectOne(context);
 
-		assertEquals(3l, id.longValue());
+		assertEquals(3l, id.intValue());
+	}
+
+	@Test
+	public void test_ParamsArray_Multiple() throws Exception {
+
+		createArtistsDataSet();
+
+		List<Integer> ids = SQLSelect
+				.scalarQuery(Integer.class,
+						"SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a) OR PAINTING_TITLE = #bind($b) ORDER BY PAINTING_ID")
+				.paramsArray("painting3", "painting2").select(context);
+
+		assertEquals(2l, ids.get(0).intValue());
+		assertEquals(3l, ids.get(1).intValue());
+	}
+
+	@Test
+	public void test_ParamsArray_Multiple_OptionalChunks() throws Exception {
+
+		tPainting.insert(1, "painting1", 1.0);
+		tPainting.insert(2, "painting2", null);
+
+		List<Integer> ids = SQLSelect
+				.scalarQuery(
+						Integer.class,
+						"SELECT PAINTING_ID FROM PAINTING #chain('OR' 'WHERE') "
+								+ "#chunk($a) ESTIMATED_PRICE #bindEqual($a) #end "
+								+ "#chunk($b) PAINTING_TITLE #bindEqual($b) #end #end ORDER BY PAINTING_ID")
+				.paramsArray(null, "painting1").select(context);
+
+		assertEquals(1, ids.size());
+		assertEquals(1l, ids.get(0).longValue());
+	}
+
+	@Test
+	public void test_Params_Multiple_OptionalChunks() throws Exception {
+
+		tPainting.insert(1, "painting1", 1.0);
+		tPainting.insert(2, "painting2", null);
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("a", null);
+		params.put("b", "painting1");
+
+		List<Integer> ids = SQLSelect
+				.scalarQuery(
+                        Integer.class,
+						"SELECT PAINTING_ID FROM PAINTING #chain('OR' 'WHERE') "
+								+ "#chunk($a) ESTIMATED_PRICE #bindEqual($a) #end "
+								+ "#chunk($b) PAINTING_TITLE #bindEqual($b) #end #end ORDER BY PAINTING_ID").params(params)
+				.select(context);
+
+		assertEquals(1, ids.size());
+		assertEquals(1l, ids.get(0).longValue());
 	}
 }

@@ -19,19 +19,18 @@
 
 package org.apache.cayenne.tools.dbimport;
 
+import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.access.DbLoaderDelegate;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-
 /**
  * @since 4.0
  */
-class DbImportDbLoaderDelegate implements DbLoaderDelegate {
+class DbImportDbLoaderDelegate extends DefaultDbLoaderDelegate {
 
     private final List<DbEntity> addedDbEntities;
     private final List<DbEntity> removedDbEntities;
@@ -43,10 +42,6 @@ class DbImportDbLoaderDelegate implements DbLoaderDelegate {
         removedDbEntities = new ArrayList<DbEntity>();
         addedObjEntities = new ArrayList<ObjEntity>();
         removedObjEntities = new ArrayList<ObjEntity>();
-    }
-
-    public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
-        return false;
     }
 
     public void dbEntityAdded(DbEntity ent) {

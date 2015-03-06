@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.tools.dbimport;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -30,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class DbImportDbLoaderDelegateTest {
@@ -50,11 +48,6 @@ public class DbImportDbLoaderDelegateTest {
 
         objEntity = new ObjEntity("TestObjEntity");
         objEntity.setDataMap(dataMap);
-    }
-
-    @Test
-    public void testOverwriteDbEntity() throws CayenneException {
-        assertFalse(delegate.overwriteDbEntity(dbEntity));
     }
 
     @Test

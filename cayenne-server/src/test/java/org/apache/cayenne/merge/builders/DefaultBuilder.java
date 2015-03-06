@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.merge.builders;
 
+import org.apache.cayenne.datafactory.DataFactory;
 import org.apache.commons.lang.StringUtils;
-import org.fluttercode.datafactory.impl.DataFactory;
 
 /**
  * @since 4.0.

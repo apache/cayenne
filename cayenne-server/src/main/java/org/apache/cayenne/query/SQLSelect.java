@@ -194,10 +194,32 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		return this;
 	}
 
+	/**
+	 * Initializes positional parameters of the query. Parameters are bound in
+	 * the order they are found in the SQL template. If a given parameter name
+	 * is used more than once, only the first occurrence is treated as
+	 * "position", subsequent occurrences are bound with the same value as the
+	 * first one. If template parameters count is different from the array
+	 * parameter count, an exception will be thrown.
+	 * <p>
+	 * Note that calling this method will reset any previously set *named*
+	 * parameters.
+	 */
 	public SQLSelect<T> paramsArray(Object... params) {
 		return paramsList(params != null ? Arrays.asList(params) : null);
 	}
 
+	/**
+	 * Initializes positional parameters of the query. Parameters are bound in
+	 * the order they are found in the SQL template. If a given parameter name
+	 * is used more than once, only the first occurrence is treated as
+	 * "position", subsequent occurrences are bound with the same value as the
+	 * first one. If template parameters count is different from the list
+	 * parameter count, an exception will be thrown.
+	 * <p>
+	 * Note that calling this method will reset any previously set *named*
+	 * parameters.
+	 */
 	public SQLSelect<T> paramsList(List<Object> params) {
 		// since named parameters are specified, resetting positional
 		// parameters
@@ -208,12 +230,19 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Returns an immmutable map of parameters that will be bound to SQL. A
-	 * caller is free to add/remove parameters from the returned map as needed.
-	 * Alternatively one may use chained {@link #params(String, Object)}
+	 * Returns a potentially immmutable map of named parameters that will be
+	 * bound to SQL.
 	 */
 	public Map<String, Object> getParams() {
 		return params != null ? params : Collections.<String, Object> emptyMap();
+	}
+
+	/**
+	 * Returns a potentially immmutable list of positional parameters that will
+	 * be bound to SQL.
+	 */
+	public List<Object> getPositionalParams() {
+		return positionalParams != null ? positionalParams : Collections.emptyList();
 	}
 
 	@Override
@@ -243,7 +272,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setCacheStrategy(cacheStrategy);
 
 		if (positionalParams != null) {
-			template.setParamsArray(positionalParams);
+			template.setParamsList(positionalParams);
 		} else {
 			template.setParams(params);
 		}

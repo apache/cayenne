@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class Catalog extends FilterContainer {
 
@@ -94,5 +94,16 @@ public class Catalog extends FilterContainer {
             }
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return toString("    ");
+    }
+
+    @Override
+    public String toString(String indent) {
+        return indent + "Catalog '" + name + "': "
+             + super.toString(indent + "    ");
     }
 }

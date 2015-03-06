@@ -23,6 +23,7 @@ import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
+import org.apache.cayenne.access.loader.LoggingDbLoaderDelegate;
 import org.apache.cayenne.access.loader.NameFilter;
 import org.apache.cayenne.access.loader.filters.DbPath;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
@@ -32,7 +33,9 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.merge.DbMergerConfig;
 import org.apache.cayenne.merge.DefaultModelMergeDelegate;
 import org.apache.cayenne.merge.ModelMergeDelegate;
 import org.apache.cayenne.resource.URLResource;
@@ -185,13 +188,18 @@ public class DbImportConfiguration {
         };
 
         // TODO: load via DI AdhocObjectFactory
-        String namingStrategy = getNamingStrategy();
-        if (namingStrategy != null) {
-            ObjectNameGenerator nameGeneratorInst = (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
-            loader.setNameGenerator(nameGeneratorInst);
-        }
+        loader.setNameGenerator(getNameGenerator());
 
         return loader;
+    }
+
+    public ObjectNameGenerator getNameGenerator() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        String namingStrategy = getNamingStrategy();
+        if (namingStrategy != null) {
+            return (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
+        }
+
+        return new LegacyNameGenerator(); // TODO
     }
 
     public void setDriver(String jdbcDriver) {
@@ -292,7 +300,11 @@ public class DbImportConfiguration {
     }
 
     public DbLoaderDelegate createLoaderDelegate() {
-        return new DefaultDbLoaderDelegate();
+        if (getLogger() != null) {
+            return new LoggingDbLoaderDelegate(getLogger());
+        } else {
+            return new DefaultDbLoaderDelegate();
+        }
     }
 
     public DbLoaderConfiguration getDbLoaderConfig() {
@@ -315,5 +327,25 @@ public class DbImportConfiguration {
 
     public DataSourceInfo getDataSourceInfo() {
         return dataSourceInfo;
+    }
+
+    public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
+        this.dbLoaderConfiguration.setSkipRelationshipsLoading(skipRelationshipsLoading);
+    }
+
+    public void setSkipPrimaryKeyLoading(Boolean skipPrimaryKeyLoading) {
+        this.dbLoaderConfiguration.setSkipPrimaryKeyLoading(skipPrimaryKeyLoading);
+    }
+
+    public void setTableTypes(String[] tableTypes) {
+        dbLoaderConfiguration.setTableTypes(tableTypes);
+    }
+
+    public DbMergerConfig getDbMergerConfig() {
+        return new DbMergerConfig(
+                getDbLoaderConfig().getFiltersConfig(),
+                getDbLoaderConfig().getSkipRelationshipsLoading(),
+                getDbLoaderConfig().getSkipPrimaryKeyLoading()
+        );
     }
 }

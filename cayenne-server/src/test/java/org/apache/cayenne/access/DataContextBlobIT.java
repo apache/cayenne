@@ -121,9 +121,7 @@ public class DataContextBlobIT extends ServerCase {
             return;
         }
 
-        byte[] bytes2 = new byte[] {
-                'a', 'b', 'c', 'd'
-        };
+        byte[] bytes2 = {'a', 'b', 'c', 'd'};
 
         // insert new blob
         context.newObject(BlobTestEntity.class);

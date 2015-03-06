@@ -44,16 +44,16 @@ import org.apache.cayenne.map.ObjEntity;
  */
 public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
-    private Key defaultKey;
+    private final Key defaultKey;
 
-    private Map<String, BytesConverter> objectToBytes;
-    private Map<Integer, BytesConverter> dbToBytes;
+    private final Map<String, BytesConverter> objectToBytes;
+    private final Map<Integer, BytesConverter> dbToBytes;
 
-    private Map<String, BytesConverter> bytesToObject;
-    private Map<Integer, BytesConverter> bytesToDb;
+    private final Map<String, BytesConverter> bytesToObject;
+    private final Map<Integer, BytesConverter> bytesToDb;
 
-    private ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
-    private ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
+    private final ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
+    private final ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
 
     public DefaultValueTransformerFactory(@Inject KeySource keySource) {
         this.defaultKey = keySource.getKey(keySource.getDefaultKeyAlias());
@@ -106,9 +106,13 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         map.put(Types.LONGVARBINARY, BytesToBytesConverter.INSTANCE);
 
         map.put(Types.CHAR, Base64StringConverter.INSTANCE);
+        map.put(Types.NCHAR, Base64StringConverter.INSTANCE);
         map.put(Types.CLOB, Base64StringConverter.INSTANCE);
+        map.put(Types.NCLOB, Base64StringConverter.INSTANCE);
+        map.put(Types.LONGVARCHAR, Base64StringConverter.INSTANCE);
         map.put(Types.LONGNVARCHAR, Base64StringConverter.INSTANCE);
         map.put(Types.VARCHAR, Base64StringConverter.INSTANCE);
+        map.put(Types.NVARCHAR, Base64StringConverter.INSTANCE);
 
         return map;
     }
@@ -122,9 +126,13 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         map.put(Types.LONGVARBINARY, BytesToBytesConverter.INSTANCE);
 
         map.put(Types.CHAR, Base64StringConverter.INSTANCE);
+        map.put(Types.NCHAR, Base64StringConverter.INSTANCE);
         map.put(Types.CLOB, Base64StringConverter.INSTANCE);
+        map.put(Types.NCLOB, Base64StringConverter.INSTANCE);
+        map.put(Types.LONGVARCHAR, Base64StringConverter.INSTANCE);
         map.put(Types.LONGNVARCHAR, Base64StringConverter.INSTANCE);
         map.put(Types.VARCHAR, Base64StringConverter.INSTANCE);
+        map.put(Types.NVARCHAR, Base64StringConverter.INSTANCE);
 
         return map;
     }

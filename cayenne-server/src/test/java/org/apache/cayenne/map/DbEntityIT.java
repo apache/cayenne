@@ -207,12 +207,12 @@ public class DbEntityIT extends ServerCase {
 
         DbRelationship rel = new DbRelationship("relfrom");
         ent.addRelationship(rel);
-        rel.setTargetEntity(otherEntity);
+        rel.setTargetEntityName(otherEntity);
         rel.addJoin(new DbJoin(rel, "a1", "a11"));
 
         DbRelationship rel1 = new DbRelationship("relto");
         otherEntity.addRelationship(rel1);
-        rel1.setTargetEntity(ent);
+        rel1.setTargetEntityName(ent);
         rel1.addJoin(new DbJoin(rel1, "a11", "a1"));
 
         // check that the test case is working

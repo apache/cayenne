@@ -54,7 +54,7 @@ public class DbGeneratorMojo extends AbstractMojo {
     /**
      * DataMap XML file to use as a schema descriptor.
      * 
-     * @parameter expression="${cdbgen.map}"
+     * @parameter map="map"
      * @required
      */
     private File map;
@@ -64,14 +64,14 @@ public class DbGeneratorMojo extends AbstractMojo {
      * attribute is optional (a generic JdbcAdapter is used if not set), it is
      * highly recommended to specify correct target adapter.
      * 
-     * @parameter expression="${cdbgen.adapter}"
+     * @parameter adapter="adapter"
      */
     private String adapter;
 
     /**
      * A class of JDBC driver to use for the target database.
      * 
-     * @parameter expression="${cdbgen.driver}"
+     * @parameter driver="driver"
      * @required
      */
     private String driver;
@@ -79,7 +79,7 @@ public class DbGeneratorMojo extends AbstractMojo {
     /**
      * JDBC connection URL of a target database.
      * 
-     * @parameter expression="${cdbgen.url}"
+     * @parameter url="url"
      * @required
      */
     private String url;
@@ -87,14 +87,14 @@ public class DbGeneratorMojo extends AbstractMojo {
     /**
      * Database user name.
      * 
-     * @parameter expression="${cdbgen.username}"
+     * @parameter username="username"
      */
     private String username;
 
     /**
      * Database user password.
      * 
-     * @parameter expression="${cdbgen.password}"
+     * @parameter password="password"
      */
     private String password;
 
@@ -102,7 +102,7 @@ public class DbGeneratorMojo extends AbstractMojo {
      * Defines whether cdbgen should drop the tables before attempting to create
      * new ones. Default is <code>false</code>.
      * 
-     * @parameter expression="${cdbgen.dropTables}" default-value="false"
+     * @parameter dropTables="dropTables" default-value="false"
      */
     private boolean dropTables;
 
@@ -110,7 +110,7 @@ public class DbGeneratorMojo extends AbstractMojo {
      * Defines whether cdbgen should drop Cayenne primary key support objects.
      * Default is <code>false</code>.
      * 
-     * @parameter expression="${cdbgen.dropPK}" default-value="false"
+     * @parameter dropPK="dropPK" default-value="false"
      */
     private boolean dropPK;
 
@@ -118,7 +118,7 @@ public class DbGeneratorMojo extends AbstractMojo {
      * Defines whether cdbgen should create new tables. Default is
      * <code>true</code>.
      * 
-     * @parameter expression="${cdbgen.createTables}" default-value="true"
+     * @parameter createTables="createTables" default-value="true"
      */
     private boolean createTables;
 
@@ -126,7 +126,7 @@ public class DbGeneratorMojo extends AbstractMojo {
      * Defines whether cdbgen should create Cayenne-specific auto PK objects.
      * Default is <code>true</code>.
      * 
-     * @parameter expression="${cdbgen.createPK}" default-value="true"
+     * @parameter createPK="createPK" default-value="true"
      */
     private boolean createPK;
 
@@ -134,7 +134,7 @@ public class DbGeneratorMojo extends AbstractMojo {
      * Defines whether cdbgen should create foreign key copnstraints. Default is
      * <code>true</code>.
      * 
-     * @parameter expression="${cdbgen.createFK}' default-value="true"
+     * @parameter createFK="createFK" default-value="true"
      */
     private boolean createFK;
 

@@ -18,24 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.tree.TreePath;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
@@ -52,6 +34,7 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectTreeModel;
+import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
@@ -63,6 +46,23 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
+
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.tree.TreePath;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An instance of this class is responsible for displaying search results and navigating
@@ -204,11 +204,17 @@ public class FindDialog extends CayenneController {
             o[0] = domain;
             o[1] = ((Entity) path).getDataMap();
             o[2] = (Entity) path;
+
+            TreePath treePath = buildTreePath(o, editor);
+            ProjectTreeView projectTreeView = editor.getProjectTreeView();
+            if (!projectTreeView.isExpanded(treePath.getParentPath())) {
+                projectTreeView.expandPath(treePath.getParentPath());
+            }
+
             /** Make selection in a project tree, open correspondent entity tab */
-            editor.getProjectTreeView().getSelectionModel().setSelectionPath(
-                    buildTreePath(o, editor));
+            projectTreeView.getSelectionModel().setSelectionPath(treePath);
             EntityDisplayEvent event = new EntityDisplayEvent(
-                    editor.getProjectTreeView(),
+                    projectTreeView,
                     (Entity) path,
                     ((Entity) path).getDataMap(),
                     domain);
@@ -235,11 +241,16 @@ public class FindDialog extends CayenneController {
             o[1] = dmForQuery;
             o[2] = (Query) path;
 
+            TreePath treePath = buildTreePath(o, editor);
+            ProjectTreeView projectTreeView = editor.getProjectTreeView();
+            if (!projectTreeView.isExpanded(treePath.getParentPath())) {
+                projectTreeView.expandPath(treePath.getParentPath());
+            }
+
             /** Make selection in a project tree, open correspondent entity tab */
-            editor.getProjectTreeView().getSelectionModel().setSelectionPath(
-                    buildTreePath(o, editor));
+            editor.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
             QueryDisplayEvent event = new QueryDisplayEvent(
-                    editor.getProjectTreeView(),
+                    projectTreeView,
                     (Query) path,
                     (DataMap) dmForQuery,
                     domain);
@@ -254,11 +265,15 @@ public class FindDialog extends CayenneController {
             o[1] = ((Embeddable) path).getDataMap();
             o[2] = (Embeddable) path;
 
+            TreePath treePath = buildTreePath(o, editor);
+            ProjectTreeView projectTreeView = editor.getProjectTreeView();
+            if (!projectTreeView.isExpanded(treePath.getParentPath())) {
+                projectTreeView.expandPath(treePath.getParentPath());
+            }
+
             /** Make selection in a project tree, open correspondent entity tab */
-            editor.getProjectTreeView().getSelectionModel().setSelectionPath(
-                    buildTreePath(o, editor));
-            EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(editor
-                    .getProjectTreeView(), (Embeddable) path, ((Embeddable) path)
+            editor.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
+            EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(projectTreeView, (Embeddable) path, ((Embeddable) path)
                     .getDataMap(), domain);
             event.setMainTabFocus(true);
 
@@ -273,11 +288,16 @@ public class FindDialog extends CayenneController {
             o[1] = ((EmbeddableAttribute) path).getEmbeddable().getDataMap();
             o[2] = ((EmbeddableAttribute) path).getEmbeddable();
 
-            editor.getProjectTreeView().getSelectionModel().setSelectionPath(
-                    buildTreePath(o, editor));
+            TreePath treePath = buildTreePath(o, editor);
+            ProjectTreeView projectTreeView = editor.getProjectTreeView();
+            if (!projectTreeView.isExpanded(treePath.getParentPath())) {
+                projectTreeView.expandPath(treePath.getParentPath());
+            }
+
+            editor.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
 
             EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(
-                    editor.getProjectTreeView(),
+                    projectTreeView,
                     ((EmbeddableAttribute) path).getEmbeddable(),
                     (EmbeddableAttribute) path,
                     ((EmbeddableAttribute) path).getEmbeddable().getDataMap(),
@@ -300,28 +320,31 @@ public class FindDialog extends CayenneController {
                 o[1] = ((Relationship) path).getSourceEntity().getDataMap();
                 o[2] = ((Relationship) path).getSourceEntity();
             }
-            editor.getProjectTreeView().getSelectionModel().setSelectionPath(
-                    buildTreePath(o, editor));
+
+            TreePath treePath = buildTreePath(o, editor);
+            ProjectTreeView projectTreeView = editor.getProjectTreeView();
+            if (!projectTreeView.isExpanded(treePath.getParentPath())) {
+                projectTreeView.expandPath(treePath.getParentPath());
+            }
+
+            projectTreeView.getSelectionModel().setSelectionPath(treePath);
 
             if (path instanceof DbAttribute) {
-                AttributeDisplayEvent event = new AttributeDisplayEvent(editor
-                        .getProjectTreeView(), (Attribute) path, ((Attribute) path)
+                AttributeDisplayEvent event = new AttributeDisplayEvent(projectTreeView, (Attribute) path, ((Attribute) path)
                         .getEntity(), ((Attribute) path).getEntity().getDataMap(), domain);
                 event.setMainTabFocus(true);
                 editor.getDbDetailView().currentDbAttributeChanged(event);
             }
 
             if (path instanceof ObjAttribute) {
-                AttributeDisplayEvent event = new AttributeDisplayEvent(editor
-                        .getProjectTreeView(), (Attribute) path, ((Attribute) path)
+                AttributeDisplayEvent event = new AttributeDisplayEvent(projectTreeView, (Attribute) path, ((Attribute) path)
                         .getEntity(), ((Attribute) path).getEntity().getDataMap(), domain);
                 event.setMainTabFocus(true);
                 editor.getObjDetailView().currentObjAttributeChanged(event);
             }
 
             if (path instanceof DbRelationship) {
-                RelationshipDisplayEvent event = new RelationshipDisplayEvent(editor
-                        .getProjectTreeView(), (Relationship) path, ((Relationship) path)
+                RelationshipDisplayEvent event = new RelationshipDisplayEvent(projectTreeView, (Relationship) path, ((Relationship) path)
                         .getSourceEntity(), ((Relationship) path)
                         .getSourceEntity()
                         .getDataMap(), domain);
@@ -329,8 +352,7 @@ public class FindDialog extends CayenneController {
                 editor.getDbDetailView().currentDbRelationshipChanged(event);
             }
             if (path instanceof ObjRelationship) {
-                RelationshipDisplayEvent event = new RelationshipDisplayEvent(editor
-                        .getProjectTreeView(), (Relationship) path, ((Relationship) path)
+                RelationshipDisplayEvent event = new RelationshipDisplayEvent(projectTreeView, (Relationship) path, ((Relationship) path)
                         .getSourceEntity(), ((Relationship) path)
                         .getSourceEntity()
                         .getDataMap(), domain);

@@ -140,13 +140,13 @@ public class DropColumnToModelIT extends MergeCase {
 		// create db relationships, but do not sync them to db
 		DbRelationship rel1To2 = new DbRelationship("rel1To2");
 		rel1To2.setSourceEntity(dbEntity1);
-		rel1To2.setTargetEntity(dbEntity2);
+		rel1To2.setTargetEntityName(dbEntity2);
 		rel1To2.setToMany(true);
 		rel1To2.addJoin(new DbJoin(rel1To2, e1col1.getName(), e2col2.getName()));
 		dbEntity1.addRelationship(rel1To2);
 		DbRelationship rel2To1 = new DbRelationship("rel2To1");
 		rel2To1.setSourceEntity(dbEntity2);
-		rel2To1.setTargetEntity(dbEntity1);
+		rel2To1.setTargetEntityName(dbEntity1);
 		rel2To1.setToMany(false);
 		rel2To1.addJoin(new DbJoin(rel2To1, e2col2.getName(), e1col1.getName()));
 		dbEntity2.addRelationship(rel2To1);
@@ -175,12 +175,12 @@ public class DropColumnToModelIT extends MergeCase {
 		ObjRelationship objRel1To2 = new ObjRelationship("objRel1To2");
 		objRel1To2.addDbRelationship(rel1To2);
 		objRel1To2.setSourceEntity(objEntity1);
-		objRel1To2.setTargetEntity(objEntity2);
+		objRel1To2.setTargetEntityName(objEntity2);
 		objEntity1.addRelationship(objRel1To2);
 		ObjRelationship objRel2To1 = new ObjRelationship("objRel2To1");
 		objRel2To1.addDbRelationship(rel2To1);
 		objRel2To1.setSourceEntity(objEntity2);
-		objRel2To1.setTargetEntity(objEntity1);
+		objRel2To1.setTargetEntityName(objEntity1);
 		objEntity2.addRelationship(objRel2To1);
 		assertEquals(1, objEntity1.getRelationships().size());
 		assertEquals(1, objEntity2.getRelationships().size());

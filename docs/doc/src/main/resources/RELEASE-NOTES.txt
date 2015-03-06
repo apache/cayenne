@@ -7,16 +7,6 @@ http://cayenne.apache.org/
 To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
-----------------------------------
-Release: 4.0.M3
-Date: 
-----------------------------------
-Changes/New Features:
-
-Bug Fixes:
-
-CAY-1974 Copy/Paste DbEntiry throws exception
-
 Changes/New Features:
 ----------------------------------
 Release: 4.0.M2
@@ -24,6 +14,9 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-1267 Some changes to LogDialog
+CAY-1980 'mvn cayenne-modeler:run' seems to be broken in 4.0
+CAY-1984 cdbimport doesn't flatten many to many relationships
 CAY-1826 Merge Entity Attributes and Relationships tabs together with one toolbar.
 CAY-1839 Allow to link DataMaps to DataNodes from DataNode editor.
 CAY-1841 Filters for Left-hand project navigator
@@ -87,9 +80,11 @@ CAY-1967 Deprecate SQLTemplate parameter batches
 CAY-1968 SQLSelect cleanup and omissions
 CAY-1971 Variants of Property.like(..) : contains(..), startsWith(..), endsWith(..)
 CAY-1972 A property to override DataSources of multi-module projects 
+CAY-1981 Add support of JDBC 4.0 N-types (nchar, nvarchar, longnvarchar, nclob)
 
 Bug Fixes:
 
+CAy-1988 ServerRuntimeBuilder: synthetic DataNode does not have domain's DataMaps linked
 CAY-1480 Implement cross-db functional expressions
 CAY-1695 Unexpected null value in bidirectional one-to-one prefetch 
 CAY-1736 IllegalArgumentException when synchronizing entities in the Modeler
@@ -116,6 +111,9 @@ CAY-1943 XML file not deleted when a DataMap is deleted from the project
 CAY-1961 Fix RemoveAction for DataMaps in ProjectTree
 CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
 CAY-1973 error while generating classes
+CAY-1974 Copy/Paste DbEntiry throws exception
+CAY-1978 ESCAPE clause should be included in LIKE parenthesis
+CAY-1979 Prefetches on Many-to-Many Relationships with Longvarchar
 
 ----------------------------------
 Release: 3.2M1

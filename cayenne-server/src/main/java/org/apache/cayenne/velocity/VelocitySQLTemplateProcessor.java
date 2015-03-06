@@ -64,19 +64,19 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 		@Override
 		public Object visit(ASTReference node, Object data) {
 
-			if (i >= positionalParams.size()) {
-				throw new ExpressionException("Too few parameters to bind template: " + positionalParams.size());
-			}
-
 			// strip off leading "$"
 			String paramName = node.getFirstToken().image.substring(1);
-			VelocityParamSequence sequence = (VelocityParamSequence) params.get(paramName);
-			if (sequence == null) {
-				sequence = new VelocityParamSequence();
-				params.put(paramName, sequence);
-			}
 
-			sequence.add(positionalParams.get(i++));
+			// only consider the first instance of each named parameter
+			if (!params.containsKey(paramName)) {
+
+				if (i >= positionalParams.size()) {
+					throw new ExpressionException("Too few parameters to bind template: " + positionalParams.size());
+				}
+
+				params.put(paramName, positionalParams.get(i));
+				i++;
+			}
 
 			return data;
 		}

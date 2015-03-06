@@ -33,6 +33,9 @@ File must be called "types.xml".
    <jdbc-type name="BIGINT">
        <db-type name="BIGINT"/>
    </jdbc-type>
+   <jdbc-type name="ROWID">
+       <db-type name="ROWID"/>
+   </jdbc-type>
    <jdbc-type name="BINARY">
        <db-type name="BINARY"/>
    </jdbc-type>
@@ -48,8 +51,14 @@ File must be called "types.xml".
    <jdbc-type name="CHAR">
        <db-type name="CHAR"/>
    </jdbc-type>
+   <jdbc-type name="NCHAR">
+       <db-type name="NCHAR"/>
+   </jdbc-type>
    <jdbc-type name="CLOB">
        <db-type name="CLOB"/>
+   </jdbc-type>
+   <jdbc-type name="NCLOB">
+       <db-type name="NCLOB"/>
    </jdbc-type>
    <jdbc-type name="DATALINK">
        <db-type name="DATALINK"/>
@@ -77,6 +86,9 @@ File must be called "types.xml".
    </jdbc-type>
    <jdbc-type name="LONGVARCHAR">
        <db-type name="LONGVARCHAR"/>
+   </jdbc-type>
+   <jdbc-type name="LONGNVARCHAR">
+       <db-type name="LONGNVARCHAR"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
        <db-type name="NUMERIC"/>
@@ -111,4 +123,10 @@ File must be called "types.xml".
    <jdbc-type name="VARCHAR">
        <db-type name="VARCHAR"/>
    </jdbc-type>
+   <jdbc-type name="NVARCHAR">
+       <db-type name="NVARCHAR"/>
+   </jdbc-type>
+    <jdbc-type name="SQLXML">
+        <db-type name="SQLXML"/>
+    </jdbc-type>
 </types>
