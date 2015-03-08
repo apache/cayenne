@@ -1,6 +1,6 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.Delimeter;
+import de.jexp.jequel.literals.Delimeter;
 
 import java.util.Collection;
 
@@ -10,7 +10,7 @@ import java.util.Collection;
 public abstract class RowListExpression<A extends RowListExpression<A>> extends SimpleListExpression implements Aliased<A> {
     private String alias;
 
-    protected RowListExpression(Delimeter delim, Collection<? extends Expression> expressions) {
+    protected RowListExpression(Delimeter delim, Collection<Expression> expressions) {
         super(delim, expressions);
     }
 

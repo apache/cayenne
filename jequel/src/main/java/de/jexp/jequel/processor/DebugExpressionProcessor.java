@@ -9,7 +9,7 @@ public class DebugExpressionProcessor extends AbstractExpressionProcessor<String
         return sb.toString();
     }
 
-    protected void doProcess(Expression<?> expression) {
+    protected void doProcess(Expression expression) {
         sb.append(String.format("%s {%s}\n", expression, expression.getClass().getSimpleName()));
     }
 }

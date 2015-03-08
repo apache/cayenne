@@ -63,6 +63,8 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
+
+        <module>jequel</module>
 	</modules>
 	<issueManagement>
 		<system>jira</system>

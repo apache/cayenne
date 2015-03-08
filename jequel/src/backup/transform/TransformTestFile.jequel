@@ -1,0 +1,14 @@
+package de.jexp.jequel.transform;import static de.jexp.jequel.expression.Expressions.*;
+import static de.jexp.jequel.sql.Sql.*;
+import static de.jexp.jequel.tables.TEST_TABLES.*;
+
+public class TransformTestFile {
+    public String getSqlString() {
+        final StringBuilder sb = new StringBuilder();
+ Select( OID ).from( ARTICLE )
+ ).where( ARTICLE.OID .is_not( null)
+ ).and( ARTICLE.ARTICLE_NO .eq( 12345)
+ ).order_by( ARTICLE.ARTICLE_NO )
+        return sb.toString();
+    }
+}

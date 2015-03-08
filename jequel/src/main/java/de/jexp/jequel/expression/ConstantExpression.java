@@ -1,8 +1,6 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.Valueable;
-
-public class ConstantExpression<V> extends AbstractExpression implements Valueable<V> {
+public class ConstantExpression<V> extends AbstractExpression {
     private final V value;
     private final String literal;
 

@@ -1,7 +1,11 @@
 package de.jexp.jequel.table;
 
+import de.jexp.jequel.Sql92Format;
+
 public interface TablePart {
-    TableExpressionFormat TABLE_FORMAT = new TableExpressionFormat();
+
+    /* this expression format are used in expressins in toString method */
+    TableExpressionFormat TABLE_FORMAT = new TableExpressionFormat(new Sql92Format());
 
     String getName();
 

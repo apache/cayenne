@@ -1,9 +1,12 @@
 package de.jexp.jequel.expression;
 
 import de.jexp.jequel.SqlString;
+import de.jexp.jequel.Sql92Format;
 
 public interface Expression extends SqlString, NumericOperations, ListOperations, StringOperations, IsOperations {
-    DelegatingExpressionFormat EXPRESSION_FORMAT = new DelegatingExpressionFormat();
+
+    /* this expression format are used in expressins in toString method */
+    DelegatingExpressionFormat EXPRESSION_FORMAT = new DelegatingExpressionFormat(new Sql92Format());
 
     <K> void process(ExpressionProcessor<K> expressionProcessor);
 

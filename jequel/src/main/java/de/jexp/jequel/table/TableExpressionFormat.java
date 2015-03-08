@@ -2,16 +2,10 @@ package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.DelegatingFormat;
 
-/**
- * @author mh14 @ jexp.de
- * @since 05.11.2007 01:33:27 (c) 2007 jexp.de
- */
 public class TableExpressionFormat extends DelegatingFormat<TableFormat> implements TableFormat {
-    public TableExpressionFormat() {
-    }
 
-    public TableExpressionFormat(String formatClassName) {
-        super(formatClassName);
+    public TableExpressionFormat(TableFormat format) {
+        super(format);
     }
 
     public <T> String visit(Field<T> field) {

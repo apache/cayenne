@@ -3,12 +3,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 <search condition>    ::=
-         [ NOT ] <boolean primary> [ IS [ NOT ] {TRUE | FALSE | UNKNOWN} ]
+         [ NOT ] <search condition> [ IS [ NOT ] {TRUE | FALSE | UNKNOWN} ]
      | <search condition> OR <search condition>
      | <search condition> AND <search condition>
-
-<boolean primary>    ::=
-       <row value constructor> <comp op> <row value constructor>
+     | <row value constructor> <comp op> <row value constructor>
      | <row value constructor> [ NOT ] BETWEEN <row value constructor> AND <row value constructor>
      | <row value constructor> [ NOT ] IN <in predicate value>
      | <character value expression> [ NOT ] LIKE <character value expression> [ ESCAPE <character value expression> ]
@@ -38,13 +36,12 @@
      | <interval value expression>
 
 <numeric value expression>    ::=
-       [ <sign> ] <numeric primary>
+       [ <sign> ] <value expression primary>
+     | [ <sign> ] <numeric value function>
      | <numeric value expression> "+" <numeric value expression>
      | <numeric value expression> "-" <numeric value expression>
      | <numeric value expression> "*" <numeric value expression>
      | <numeric value expression> "/" <numeric value expression>
-
-<numeric primary>    ::=   <value expression primary> | <numeric value function>
 
 <value expression primary>    ::=
        <unsigned numeric literal>
@@ -114,9 +111,9 @@
 
 <select list>    ::= 
          "*"
-     |     <select sublist> [ { "," <select sublist> }* ]
+     |     Selectable [ { "," Selectable }* ]
 
-<select sublist>    ::=
+Selectable    ::=
         <value expression> [ [ AS ] <column name> ]
      | <qualifier> "." "*"
 
@@ -176,17 +173,13 @@
 
 <character primary>    ::=
         <value expression primary>
-      | <character value function>
-      | SUBSTRING "(" <bit value expression> FROM <numeric value expression> [ FOR <numeric value expression> ] ")"
-
-<character value function>    ::=
-        SUBSTRING "(" <character value expression> FROM <numeric value expression> [ FOR <numeric value expression> ] ")"
+      | SUBSTRING "(" <character value expression> FROM <numeric value expression> [ FOR <numeric value expression> ] ")"
       | UPPER "(" <character value expression> ")"
       | LOWER "(" <character value expression> ")"
       | CONVERT "(" <character value expression> USING <qualified name> ")"
       | TRANSLATE "(" <character value expression> USING <qualified name> ")"
       | TRIM "(" [ [ {LEADING | TRAILING | BOTH} ] [ <character value expression> ] FROM ] <character value expression> ")"
-
+      | SUBSTRING "(" <bit value expression> FROM <numeric value expression> [ FOR <numeric value expression> ] ")"
 
 <bit value expression>    ::= <character primary> {<concatenation operator> <character primary>}*
 

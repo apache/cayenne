@@ -10,7 +10,7 @@ public abstract class CheckSpec {
     private boolean satisfied;
     private boolean violated;
 
-    public abstract void check(Expression<?> expression);
+    public abstract void check(Expression expression);
 
     protected void setSatisfied() {
         satisfied = true;

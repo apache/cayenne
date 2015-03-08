@@ -11,10 +11,6 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * @author mh14 @ jexp.de
- * @since 02.11.2007 19:39:02 (c) 2007 jexp.de
- */
 public interface ExecutableStatement {
     int getValue();
 

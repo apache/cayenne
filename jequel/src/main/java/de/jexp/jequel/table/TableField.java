@@ -45,6 +45,8 @@ public class TableField<T> extends AbstractExpression implements Field<T> {
     void initName(String name) {
         if (this.name == null) {
             this.name = name;
+
+            return;
         }
 
         throw new IllegalStateException("Name already set " + this);

@@ -3,6 +3,10 @@ package de.jexp.jequel.expression;
 public class MutableBooleanExpression extends AbstractBooleanExpression {
     private BooleanExpression expr;
 
+    public MutableBooleanExpression() {
+        this.expr = null;
+    }
+
     public MutableBooleanExpression(BooleanExpression expr) {
         this.expr = expr;
     }

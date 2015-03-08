@@ -25,7 +25,7 @@ public class ParameterCollectorProcessor extends AbstractExpressionProcessor<Lis
         return namedExpressions;
     }
 
-    protected void doProcess(Expression<?> expression) {
+    protected void doProcess(Expression expression) {
         if (expression instanceof ParamExpression) {
             ParamExpression paramExpression = (ParamExpression) expression;
             if (paramExpression.isNamedExpression()) {

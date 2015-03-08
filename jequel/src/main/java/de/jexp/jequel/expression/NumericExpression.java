@@ -1,8 +1,6 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.Valueable;
-
-public class NumericExpression extends AbstractExpression implements Valueable<Number> {
+public class NumericExpression extends AbstractExpression {
     private final Number value;
 
     public NumericExpression() {

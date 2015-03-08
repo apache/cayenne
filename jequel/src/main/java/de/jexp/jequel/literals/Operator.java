@@ -10,7 +10,7 @@ public enum Operator implements SqlKeyword {
     LIKE,
     AND,
     OR,
-    IS_NOT,
+    IS_NOT(null, "isNot"),
     IS,
     IN,
     BETWEEN,
@@ -20,16 +20,29 @@ public enum Operator implements SqlKeyword {
     BY("/");
 
     private final String sqlOperator;
+    private final String javaOperator;
 
     Operator() {
-        this(null);
+        this(null, null);
     }
 
     Operator(String sqlOperator) {
+        this(sqlOperator, null);
+    }
+    Operator(String sqlOperator, String javaOperator) {
         this.sqlOperator = sqlOperator;
+        this.javaOperator = javaOperator;
     }
 
     public String getSqlKeyword() {
         return sqlOperator;
+    }
+
+    public String javaName() {
+        if (javaOperator != null) {
+            return javaOperator;
+        }
+
+        return name().toLowerCase();
     }
 }

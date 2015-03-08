@@ -5,7 +5,7 @@ import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.ExpressionProcessor;
 import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.processor.AbstractExpressionProcessor;
-import de.jexp.jequel.sql.SelectPartExpression;
+import de.jexp.jequel.sql.DslSqlModel;
 import de.jexp.jequel.sql.Sql;
 import de.jexp.jequel.table.Field;
 
@@ -84,7 +84,7 @@ public class SqlChecker {
         Collection<String> symbols = new ArrayList<String>();
 
         public void process(Expression expression) {
-            if (expression instanceof SelectPartExpression) {
+            if (expression instanceof DslSqlModel.SelectPartExpression) {
                 expression.process(this);
                 return;
             }
@@ -104,7 +104,7 @@ public class SqlChecker {
         private final Collection<Expression> expressions = new ArrayList<Expression>();
 
         public void process(Expression expression) {
-            if (expression instanceof SelectPartExpression) {
+            if (expression instanceof DslSqlModel.SelectPartExpression) {
                 expression.process(this);
                 return;
             }

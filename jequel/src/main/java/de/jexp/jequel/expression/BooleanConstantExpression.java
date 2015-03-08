@@ -1,8 +1,6 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.Valueable;
-
-public class BooleanConstantExpression extends AbstractBooleanExpression implements Valueable<Boolean> {
+public class BooleanConstantExpression extends AbstractBooleanExpression {
     private final String literal;
     private final Boolean value;
 

@@ -1,27 +1,28 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.Delimeter;
+import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.SqlKeyword;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+
+import static java.util.Arrays.asList;
 
 /**
  * A list of expressions rendered separated by delimeter
  * a column or select list
  */
-public class SimpleListExpression <E extends Expression> extends AbstractExpression implements CompoundExpression<E> {
-    private final Collection<E> expressions = new ArrayList<E>();
+public class SimpleListExpression extends AbstractExpression implements CompoundExpression<Expression> {
+    private final Collection<Expression> expressions = new ArrayList<Expression>();
     private final Delimeter delim;
 
-    protected SimpleListExpression(Delimeter delim, Collection<E> expressions) {
+    protected SimpleListExpression(Delimeter delim, Collection<Expression> expressions) {
         this.expressions.addAll(expressions);
         this.delim = delim;
     }
 
-    protected SimpleListExpression(Delimeter delim, E... expressions) {
-        this(delim, Arrays.asList(expressions));
+    protected SimpleListExpression(Delimeter delim, Expression... expressions) {
+        this(delim, asList(expressions));
     }
 
     public String toString() {
@@ -32,21 +33,21 @@ public class SimpleListExpression <E extends Expression> extends AbstractExpress
         return expressionVisitor.visit(this);
     }
 
-    protected void append(Collection<E> expressions) {
+    public void append(Collection<? extends Expression> expressions) {
         if (expressions == null || expressions.isEmpty()) {
             return;
         }
         this.expressions.addAll(expressions);
     }
 
-    public void append(E... expressions) {
+    public void append(Expression... expressions) {
         if (expressions == null || expressions.length == 0) {
             return;
         }
-        append(Arrays.asList(expressions));
+        append(asList(expressions));
     }
 
-    public Collection<E> getExpressions() {
+    public Collection<Expression> getExpressions() {
         return expressions;
     }
 

@@ -1,15 +1,9 @@
 package de.jexp.jequel.expression;
 
-/**
- * @author mh14 @ jexp.de
- * @since 05.11.2007 01:33:27 (c) 2007 jexp.de
- */
 public class DelegatingExpressionFormat extends DelegatingFormat<ExpressionFormat> implements ExpressionFormat {
-    public DelegatingExpressionFormat() {
-    }
 
-    public DelegatingExpressionFormat(String formatClassName) {
-        super(formatClassName);
+    public DelegatingExpressionFormat(ExpressionFormat format) {
+        super(format);
     }
 
     public <V> String visit(ConstantExpression<V> expression) {

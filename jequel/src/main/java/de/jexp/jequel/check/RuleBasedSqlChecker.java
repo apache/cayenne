@@ -23,7 +23,7 @@ public class RuleBasedSqlChecker {
             this.relationName = relationName;
         }
 
-        public void check(Expression<?> expression) {
+        public void check(Expression expression) {
             if (expression instanceof Field) {
                 if (((Field) expression).getTableName().equals(relationName)) {
                     setSatisfied();
@@ -55,13 +55,13 @@ public class RuleBasedSqlChecker {
 
     protected Collection<String> getRelationNames() {
         Collection<String> relationNames = new ArrayList<String>(10);
-        for (Expression<?> relation : sql.getFrom().getExpressions()) {
+        for (Expression relation : sql.getFrom().getExpressions()) {
             relationNames.add(getRelationName(relation));
         }
         return relationNames;
     }
 
-    protected String getRelationName(Expression<?> relation) {
+    protected String getRelationName(Expression relation) {
         String relationName = null;
         if (relation instanceof Aliased) {
             Aliased aliased = (Aliased) relation;
@@ -81,7 +81,7 @@ public class RuleBasedSqlChecker {
             this.checkSpec = checkSpec;
         }
 
-        public void process(Expression<?> expression) {
+        public void process(Expression expression) {
             checkSpec.check(expression);
             if (!checkSpec.isSatisfied() && !checkSpec.isViolated()) {
                 expression.process(this);

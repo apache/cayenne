@@ -1,6 +1,6 @@
 package de.jexp.jequel.table;
 
-import de.jexp.jequel.Delimeter;
+import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.expression.RowListExpression;
 
 import java.math.BigDecimal;

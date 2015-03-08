@@ -9,10 +9,6 @@ import de.jexp.jequel.sql.Sql;
 import javax.sql.DataSource;
 import java.util.Map;
 
-/**
- * @author mh14 @ jexp.de
- * @since 03.11.2007 15:13:18 (c) 2007 jexp.de
- */
 public abstract class AbstractExecutableStatement implements ExecutableStatement, SqlString {
     private final Sql sql;
 
@@ -73,17 +69,8 @@ public abstract class AbstractExecutableStatement implements ExecutableStatement
         return withParams(DefaultExecutableParams.createParams(params));
     }
 
-    public Sql toSql() {
-        return getSql();
-    }
-
     public String toString() {
         return getSqlString();
-    }
-
-    public ExecutableStatement executeOn(DataSource dataSource) {
-        this.dataSource = dataSource;
-        return this;
     }
 }
 

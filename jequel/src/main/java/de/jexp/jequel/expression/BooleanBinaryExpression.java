@@ -3,10 +3,10 @@ package de.jexp.jequel.expression;
 import de.jexp.jequel.literals.Operator;
 
 public class BooleanBinaryExpression extends AbstractBooleanExpression {
-    private final BinaryExpression<Boolean> binaryExpression;
+    private final BinaryExpression binaryExpression;
 
     public BooleanBinaryExpression(Expression first, Operator operator, Expression second) {
-        this.binaryExpression = new BinaryExpression<Boolean>(first, operator, second);
+        this.binaryExpression = new BinaryExpression(first, operator, second);
     }
 
     public String toString() {
@@ -17,7 +17,7 @@ public class BooleanBinaryExpression extends AbstractBooleanExpression {
         return expressionVisitor.visit(this);
     }
 
-    public BinaryExpression<Boolean> getBinaryExpression() {
+    public BinaryExpression getBinaryExpression() {
         return binaryExpression;
     }
 
