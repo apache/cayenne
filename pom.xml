@@ -49,22 +49,22 @@
 
 	<url>http://cayenne.apache.org/</url>
 	<modules>
-		<module>build-tools</module>
-		<module>cayenne-di</module>
+		<!--<module>build-tools</module>-->
+		<!--<module>cayenne-di</module>-->
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
 		<module>cayenne-tools</module>
 		<module>cayenne-project</module>
 		<module>cayenne-lifecycle</module>
-		<module>cayenne-crypto</module>
-		<module>itests</module>
-		<module>modeler</module>
+		<!--<module>cayenne-crypto</module>-->
+		<!--<module>itests</module>-->
+		<!--<module>modeler</module>-->
 		<module>plugins</module>
-		<module>tutorials</module>
-		<module>docs</module>
-		<module>assembly</module>
+		<!--<module>tutorials</module>-->
+		<!--<module>docs</module>-->
+		<!--<module>assembly</module>-->
 
-        <module>jequel</module>
+        <module>cayenne-qeury-language</module>
 	</modules>
 	<issueManagement>
 		<system>jira</system>
