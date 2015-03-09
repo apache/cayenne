@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.TraversalHelper;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.map.ObjAttribute;
@@ -62,8 +63,18 @@ public class QualifierBuilder extends TraversalHelper {
         Iterable<PathComponent<ObjAttribute, ObjRelationship>> pathComponents = objEntity.resolvePath(objPath, queryAssembler.getPathAliases());
         for (PathComponent<ObjAttribute, ObjRelationship> pathComponent : pathComponents) {
             if (pathComponent.isAlias()) {
-                for (PathComponent<ObjAttribute, ObjRelationship> aliasPathComponent : pathComponent.getAliasedPath()) {
-                    extractQualifier(aliasPathComponent);
+                for (PathComponent<ObjAttribute, ObjRelationship> aliasedPathComponent : pathComponent.getAliasedPath()) {
+                    if (extractQualifier(aliasedPathComponent)) {
+                        StringBuilder ex = new StringBuilder();
+                        ex
+                                .append("Can't extract qualifiers for aliased path. Aliased path shouldn't contain any qualifiers")
+                                .append(": [")
+                                .append(pathComponent.getName())
+                                .append(" -> ")
+                                .append(relPath)
+                                .append("].");
+                        throw new ExpressionException(ex.toString());
+                    };
                 }
                 continue;
             }
@@ -72,19 +83,21 @@ public class QualifierBuilder extends TraversalHelper {
         }
     }
 
-    private void extractQualifier(PathComponent<ObjAttribute, ObjRelationship> pathComponent) {
+    private boolean extractQualifier(PathComponent<ObjAttribute, ObjRelationship> pathComponent) {
         ObjAttribute attribute = pathComponent.getAttribute();
         ObjRelationship relationship = pathComponent.getRelationship();
         ObjEntity entity = (attribute != null) ? attribute.getEntity() : relationship.getSourceEntity();
 
-        qualifierForEntityAndSubclasses(entity);
+        boolean extracted = qualifierForEntityAndSubclasses(entity);
 
         if (relationship != null) {
             relPath.appendPath(relationship.getName());
         }
+
+        return extracted;
     }
 
-    protected void qualifierForEntityAndSubclasses(ObjEntity entity) {
+    protected boolean qualifierForEntityAndSubclasses(ObjEntity entity) {
         ClassDescriptor descriptor = queryAssembler
                 .getEntityResolver()
                 .getClassDescriptor(entity.getName());
@@ -94,9 +107,8 @@ public class QualifierBuilder extends TraversalHelper {
                 .qualifierForEntityAndSubclasses();
 
         if (entityQualifier != null) {
-
             if (!addedQualifiers.add(entityQualifier)) {
-                return;
+                return false;
             }
 
             QualifierBuilderHelper qualifierBuilder = new QualifierBuilderHelper(qualifier, entity, queryAssembler, relPath, addedQualifiers, entityQualifier);
@@ -106,7 +118,11 @@ public class QualifierBuilder extends TraversalHelper {
             qualifier = (qualifier != null)
                     ? qualifier.andExp(qualifierBuilder.getAttachableQualifier())
                     : qualifierBuilder.getAttachableQualifier();
+
+            return true;
         }
+
+        return false;
     }
 
     public Expression getQualifier() {
