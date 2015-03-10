@@ -43,6 +43,13 @@ public interface SQLActionVisitor {
     <T> SQLAction objectSelectAction(SelectQuery<T> query);
 
     /**
+     * TODO circular dependency
+     *
+     * Creates an action to execute a SelectQuery.
+     */
+    <T> SQLAction objectSelectAction(DslObjectSelect<T> query);
+
+    /**
      * Creates an action to execute a SQLTemplate.
      */
     SQLAction sqlAction(SQLTemplate query);

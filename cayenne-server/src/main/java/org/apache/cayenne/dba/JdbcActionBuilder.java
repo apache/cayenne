@@ -26,6 +26,7 @@ import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.DslObjectSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
@@ -69,6 +70,11 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
         return new SelectAction(query, dataNode);
+    }
+
+    @Override
+    public <T> SQLAction objectSelectAction(DslObjectSelect<T> query) {
+        return new DslObjectSelectAction<T>(query, dataNode);
     }
 
     @Override

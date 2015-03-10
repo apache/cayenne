@@ -16,25 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.expression;
+package org.apache.cayenne.dba;
 
-import de.jexp.jequel.expression.logical.BooleanExpression;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.jdbc.BaseSQLAction;
+import org.apache.cayenne.query.DslObjectSelect;
+import org.apache.cayenne.query.SQLAction;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * @since 4.0
  */
-public interface OrderingOperations {
-    BooleanExpression eq(Object expression);
+public class DslObjectSelectAction<T> extends BaseSQLAction {
+    private final DslObjectSelect<T> query;
 
-    BooleanExpression ge(Object expression);
+    public DslObjectSelectAction(DslObjectSelect<T> query, DataNode dataNode) {
+        super(dataNode);
+        this.query = query;
+    }
 
-    BooleanExpression gt(Object expression);
+    @Override
+    public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-    BooleanExpression lt(Object expression);
-
-    BooleanExpression le(Object expression);
-
-    BooleanExpression ne(Object expression);
-
-    BooleanExpression between(Object start, Object end);
+    }
 }

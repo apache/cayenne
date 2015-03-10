@@ -38,6 +38,7 @@
         <module>cayenne-sql-dsl-executor</module>
         <!--<module>cayenne-sql-dsl-generator</module>-->
         <module>cayenne-sql-dsl-generator-maven</module>
+        <module>cayenne-oql-dsl-executor</module>
     </modules>
 
     <properties>
