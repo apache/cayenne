@@ -1,5 +1,7 @@
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.expression.visitor.Format;
+
 public class DelegatingFormat<T extends Format> implements Format {
     private final T format;
 

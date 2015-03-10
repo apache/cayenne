@@ -12,91 +12,69 @@ public class JavaFileGenerationProcessor extends AbstractJavaFileGenerationProce
     public static final String TABLE_INITIALIZER =
             "    { initFields(); }\n";
 
-    private boolean multiFile = false;
-
     public JavaFileGenerationProcessor(SchemaMetaData schemaMetaData) {
         super(schemaMetaData);
     }
 
-
-    public String createTableClassSource(String tableName, Boolean multiFile) {
-        return createTableClassSource(schemaMetaData.getTable(tableName), multiFile);
+    public String createTableClassSource(String tableName) {
+        return createTableClassSource(getSchemaMetaData().getTable(tableName));
     }
 
-    public String createTableClassSource(TableMetaData table, boolean multiFile) {
-        String accessModifier = multiFile ? "final" : "final static";
+    public String createTableClassSource(TableMetaData table) {
         return String.format(
-                "public %2$s class %1$s extends BaseTable<%1$s> {\n", table.getName(), accessModifier) +
+                "final class %1$s extends BaseTable<%1$s> {\n", table.getName()) +
                 createColumnsSource(table) +
                 TABLE_INITIALIZER +
                 FOOTER;
     }
 
-    public String createSchemaClassSource(String javaClassName, SchemaMetaData schemaMetaData, boolean multiFile) {
+    public String createSchemaClassSource(String javaClassName, SchemaMetaData schemaMetaData) {
         return String.format(
-                "public abstract class %1$s {\n", javaClassName) +
-                createTableInstancesSource(schemaMetaData, multiFile) +
+                "public interface %1$s {\n", javaClassName) +
+                createTableInstancesSource(schemaMetaData) +
                 FOOTER;
     }
 
-    public String createTableInstancesSource(SchemaMetaData schemaMetaData, boolean multiFile) {
+    public String createTableInstancesSource(SchemaMetaData schemaMetaData) {
         StringBuilder sb = new StringBuilder();
         for (TableMetaData tableMetaData : schemaMetaData.getTables()) {
-            if (!multiFile) {
-                sb.append(createTableClassSource(tableMetaData, false));
-            }
             sb.append(createTableInstanceVariable(tableMetaData));
         }
         return sb.toString();
     }
 
-    public void createAllTablesSourceFiles(String basePath, String javaPackage, boolean multiFile) {
-        for (TableMetaData tableMetaData : schemaMetaData.getTables()) {
-            createTableSourceFile(basePath, javaPackage, tableMetaData, multiFile);
+    public void createAllTablesSourceFiles(String basePath, String javaPackage) {
+        for (TableMetaData tableMetaData : getSchemaMetaData().getTables()) {
+            createTableSourceFile(basePath, javaPackage, tableMetaData);
         }
     }
 
-    public void createTableSourceFile(String basePath, String javaPackage, TableMetaData tableMetaData, boolean multiFile) {
+    public void createTableSourceFile(String basePath, String javaPackage, TableMetaData tableMetaData) {
         File file = FileUtils.assertWriteJavaFile(basePath, javaPackage, tableMetaData.getName());
-        FileUtils.writeFile(file, createTableFileSource(javaPackage, tableMetaData, multiFile));
+        FileUtils.writeFile(file, createTableFileSource(javaPackage, tableMetaData));
     }
 
-    protected String createTableFileSource(String javaPackage, TableMetaData tableMetaData, boolean multiFile) {
+    protected String createTableFileSource(String javaPackage, TableMetaData tableMetaData) {
         return getHeader(javaPackage, tableMetaData.getRemark(), getAuthor())
-                + createTableClassSource(tableMetaData, multiFile);
+                + createTableClassSource(tableMetaData);
     }
 
-    public void createSchemaSourceFile(String basePath, String javaPackage, String javaClassName, boolean multiFile) {
+    public void createSchemaSourceFile(String basePath, String javaPackage, String javaClassName) {
         File file = FileUtils.assertWriteJavaFile(basePath, javaPackage, javaClassName);
-        FileUtils.writeFile(file, createSchemaFileSource(javaPackage, javaClassName, multiFile));
+        FileUtils.writeFile(file, createSchemaFileSource(javaPackage, javaClassName));
     }
 
-    public String createSchemaFileSource(String javaPackage, String javaClassName, boolean multiFile) {
+    public String createSchemaFileSource(String javaPackage, String javaClassName) {
         return getHeader(javaPackage, getSchemaComment(), getAuthor())
-                + createSchemaClassSource(javaClassName, schemaMetaData, multiFile);
+                + createSchemaClassSource(javaClassName, getSchemaMetaData());
     }
 
     public void processMetaData() {
-        if (isMultiFile()) {
-            createAllTablesSourceFiles(getBasePath(), getJavaPackage(), isMultiFile());
-        }
-        createSchemaSourceFile(getBasePath(), getJavaPackage(), getJavaClassName(), isMultiFile());
-    }
-
-    public boolean isMultiFile() {
-        return multiFile;
-    }
-
-    public void setMultiFile(boolean multiFile) {
-        this.multiFile = multiFile;
+        createSchemaSourceFile(getBasePath(), getJavaPackage(), getJavaClassName());
     }
 
     protected String createForeignKeyColumn(TableMetaData referencedTable, TableMetaDataColumn pkColumn) {
-        String javaClassName = getJavaClassName();
-        if (isMultiFile()) {
-            return "foreignKey(" + javaClassName + ".class," + referencedTable.getName() + ".class,\"" + pkColumn.getName() + "\")";
-        }
-        return "foreignKey(" + javaClassName + "." + referencedTable.getName() + ".class,\"" + pkColumn.getName() + "\")";
+        return "foreignKey(" + getJavaClassName() + "." + referencedTable.getName() + ".class,\"" + pkColumn.getName() + "\")";
     }
 
 }

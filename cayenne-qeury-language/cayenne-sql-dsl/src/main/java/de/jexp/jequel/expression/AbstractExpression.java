@@ -1,6 +1,10 @@
 package de.jexp.jequel.expression;
 
 import static de.jexp.jequel.expression.Expressions.*;
+
+import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
+import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.literals.Operator;
 
 public abstract class AbstractExpression implements Expression {
@@ -29,7 +33,7 @@ public abstract class AbstractExpression implements Expression {
     }
 
     public BooleanExpression between(Object start, Object end) {
-        BooleanExpression andExpression = Expressions.createBinaryBooleanExpression(e(start), Operator.AND, end);
+        BooleanExpression andExpression = createBinaryBooleanExpression(e(start), Operator.AND, end);
         return createBinaryBooleanExpression(Operator.BETWEEN, andExpression);
     }
 
@@ -37,47 +41,29 @@ public abstract class AbstractExpression implements Expression {
         return createBinaryBooleanExpression(Operator.LIKE, expression);
     }
 
-    public BooleanExpression is(Object expression) {
-        return createBinaryBooleanExpression(Operator.IS, expression);
-    }
-
-    public BooleanExpression isNot(Object expression) {
-        return createBinaryBooleanExpression(Operator.IS_NOT, expression);
-    }
-
     public BooleanExpression in(Object... expressions) {
         return createBinaryBooleanExpression(Operator.IN, e(expressions));
     }
 
-    public NumericBinaryExpression plus(Object expression) {
-        return createBinaryNumericExpression(Operator.PLUS, expression);
+    @Override
+    public BooleanExpression isNull() {
+        return new BooleanBinaryExpression(this, Operator.IS, BooleanLiteral.NULL);
     }
 
-    public NumericBinaryExpression minus(Object expression) {
-        return createBinaryNumericExpression(Operator.MINUS, expression);
-    }
-
-    public NumericBinaryExpression times(Object expression) {
-        return createBinaryNumericExpression(Operator.TIMES, expression);
-    }
-
-    public NumericBinaryExpression by(Object expression) {
-        return createBinaryNumericExpression(Operator.BY, expression);
+    @Override
+    public BooleanExpression isNotNull() {
+        return new BooleanBinaryExpression(this, Operator.IS_NOT, BooleanLiteral.NULL);
     }
 
     protected BooleanBinaryExpression createBinaryBooleanExpression(Operator operator, Object expression) {
-        return Expressions.createBinaryBooleanExpression(this, operator, expression);
+        return createBinaryBooleanExpression(this, operator, expression);
     }
 
-    protected NumericBinaryExpression createBinaryNumericExpression(Operator operator, Object expression) {
-        return new NumericBinaryExpression(this, operator, e(expression));
+    protected static BooleanBinaryExpression createBinaryBooleanExpression(Expression first, Operator operator, Object expression) {
+        return new BooleanBinaryExpression(first, operator, e(expression));
     }
 
     public <K> void process(ExpressionProcessor<K> expressionProcessor) {
-    }
-
-    public boolean isParenthesed() {
-        return false;
     }
 
 }

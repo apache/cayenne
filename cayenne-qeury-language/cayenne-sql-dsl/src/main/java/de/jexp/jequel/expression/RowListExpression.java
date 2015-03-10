@@ -6,8 +6,10 @@ import java.util.Collection;
 
 /**
  * dynamic set of expressions, instance of Collection, used for in()
+ *
+ * @param <A> - return type for alias operation
  */
-public abstract class RowListExpression<A extends RowListExpression<A>> extends SimpleListExpression implements Aliased<A> {
+public class RowListExpression<A extends RowListExpression> extends SimpleListExpression implements Aliased<A> {
     private String alias;
 
     protected RowListExpression(Delimeter delim, Collection<Expression> expressions) {
@@ -19,16 +21,12 @@ public abstract class RowListExpression<A extends RowListExpression<A>> extends 
     }
 
     public String toString() {
-        return this.<String>accept(EXPRESSION_FORMAT);
+        return this.accept(EXPRESSION_FORMAT);
     }
 
-    public boolean isParenthesed() {
-        return true;
-    }
-
-    public A as(String alias) {
+    public RowListExpression as(String alias) {
         this.alias = alias;
-        return (A) this;
+        return this;
     }
 
     public A getAliased() {

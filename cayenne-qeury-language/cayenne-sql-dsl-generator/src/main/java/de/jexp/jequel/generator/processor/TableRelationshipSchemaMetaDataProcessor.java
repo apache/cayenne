@@ -1,6 +1,10 @@
 package de.jexp.jequel.generator.processor;
 
-import de.jexp.jequel.generator.data.*;
+import de.jexp.jequel.generator.data.SchemaMetaData;
+import de.jexp.jequel.generator.data.SchemaMetaDataProcessor;
+import de.jexp.jequel.generator.data.TableMetaData;
+import de.jexp.jequel.generator.data.TableMetaDataColumn;
+import de.jexp.jequel.generator.data.TableMetaDataIteratorCallback;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

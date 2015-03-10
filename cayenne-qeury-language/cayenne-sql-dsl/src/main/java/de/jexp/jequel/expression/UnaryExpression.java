@@ -1,13 +1,14 @@
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.UnaryOperator;
 
-public class UnaryExpression extends AbstractExpression {
+public class UnaryExpression<E extends Expression> extends AbstractExpression {
     private final UnaryOperator operator;
-    private final Expression first;
+    private final E exp;
 
-    public UnaryExpression(UnaryOperator operator, Expression first) {
-        this.first = first;
+    public UnaryExpression(UnaryOperator operator, E exp) {
+        this.exp = exp;
         this.operator = operator;
     }
 
@@ -20,18 +21,14 @@ public class UnaryExpression extends AbstractExpression {
     }
 
     public <K> void process(ExpressionProcessor<K> expressionProcessor) {
-        expressionProcessor.process(first);
+        expressionProcessor.process(exp);
     }
 
     public UnaryOperator getOperator() {
         return operator;
     }
 
-    public Expression getFirst() {
-        return first;
-    }
-
-    public boolean isAtomic() {
-        return false;
+    public E getExpression() {
+        return exp;
     }
 }

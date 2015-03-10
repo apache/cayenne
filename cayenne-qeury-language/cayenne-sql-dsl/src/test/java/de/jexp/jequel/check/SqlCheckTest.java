@@ -14,27 +14,27 @@ import java.util.List;
 
 public class SqlCheckTest extends TestCase {
     public void testFromSymbols() {
-        Sql sql = Select().from(ARTICLE).where(ARTICLE.OID.is(NULL)).toSql();
+        Sql sql = Select().from(ARTICLE).where(ARTICLE.OID.isNull()).toSql();
         Collection<String> fromSymbols = new SqlChecker(sql).getFromSymbols();
         assertEquals(Arrays.asList(ARTICLE.getName()), fromSymbols);
     }
 
     public void testFromSymbolsAlias() {
         ARTICLE_COLOR ARTICLE_COLOR2 = ARTICLE_COLOR.as("article_color_alias");
-        Sql sql = Select().from(ARTICLE, ARTICLE_COLOR2).where(ARTICLE.OID.is(NULL)).toSql();
+        Sql sql = Select().from(ARTICLE, ARTICLE_COLOR2).where(ARTICLE.OID.isNull()).toSql();
         Collection<String> fromSymbols = new SqlChecker(sql).getFromSymbols();
         assertEquals(Arrays.asList(ARTICLE.getName(), "article_color_alias"), fromSymbols);
     }
 
     public void testFromSymbolsExpression() {
-        Sql sql = Select().from(ARTICLE, subSelect(ARTICLE.OID).toSql().as("sql_alias")).where(ARTICLE.OID.is(NULL)).toSql();
+        Sql sql = Select().from(ARTICLE, subSelect(ARTICLE.OID).toSql().as("sql_alias")).where(ARTICLE.OID.isNull()).toSql();
         assertEquals("from ARTICLE, (select ARTICLE.OID) as sql_alias where ARTICLE.OID is NULL", sql.toString());
         Collection<String> fromSymbols = new SqlChecker(sql).getFromSymbols();
         assertEquals(Arrays.asList(ARTICLE.getName(), "sql_alias"), fromSymbols);
     }
 
     public void testUsedTables() {
-        Sql sql = Select(ARTICLE.OID, ARTICLE_COLOR.ARTICLE_OID).from(ARTICLE, subSelect(ARTICLE.OID).toSql().as("sql_alias")).where(ARTICLE.OID.is(NULL)).toSql();
+        Sql sql = Select(ARTICLE.OID, ARTICLE_COLOR.ARTICLE_OID).from(ARTICLE, subSelect(ARTICLE.OID).toSql().as("sql_alias")).where(ARTICLE.OID.isNull()).toSql();
         Collection<String> usedTables = new SqlChecker(sql).getUsedTables();
         List<String> expected = Arrays.asList(ARTICLE.getName(), ARTICLE_COLOR.getName());
         assertEquals(expected.size(), usedTables.size());
@@ -42,7 +42,7 @@ public class SqlCheckTest extends TestCase {
     }
 
     public void testCheckUsedTables() {
-        Sql sql = Select(ARTICLE.OID, ARTICLE_COLOR.ARTICLE_OID).from(ARTICLE, subSelect(ARTICLE.OID).toSql().as("sql_alias")).where(ARTICLE.OID.is(NULL)).toSql();
+        Sql sql = Select(ARTICLE.OID, ARTICLE_COLOR.ARTICLE_OID).from(ARTICLE, subSelect(ARTICLE.OID).toSql().as("sql_alias")).where(ARTICLE.OID.isNull()).toSql();
         SqlChecker checker = new SqlChecker(sql);
         TableUsageCheckResult checkResult = checker.checkUsedTables();
         assertFalse(checkResult.isValid());

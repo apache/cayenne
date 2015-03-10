@@ -1,6 +1,10 @@
 package de.jexp.jequel.generator;
 
-import de.jexp.jequel.generator.data.*;
+import de.jexp.jequel.generator.data.MetaDataElement;
+import de.jexp.jequel.generator.data.SchemaMetaData;
+import de.jexp.jequel.generator.data.SchemaMetaDataProcessor;
+import de.jexp.jequel.generator.data.TableMetaData;
+import de.jexp.jequel.generator.data.TableMetaDataColumn;
 import de.jexp.jequel.table.BaseTable;
 import de.jexp.jequel.table.Field;
 
@@ -20,13 +24,10 @@ public abstract class AbstractJavaFileGenerationProcessor extends SchemaMetaData
                     "import " + BigDecimal.class.getName() + ";\n" +
                     "import " + Date.class.getName() + ";\n" +
                     "import " + Timestamp.class.getName() + ";\n" +
-                    "\n" +
-                    "/**\n" +
-                    " * @author %2$s\n" +
-                    " * @since %4$tc\n" +
-                    " * %3$s \n" +
-                    " */\n\n";
+                    "\n\n";
+
     protected static final String FOOTER = "}\n";
+
     private String javaClassName;
     private String basePath;
     private String javaPackage;
@@ -41,7 +42,7 @@ public abstract class AbstractJavaFileGenerationProcessor extends SchemaMetaData
 
     protected String createTableInstanceVariable(TableMetaData table) {
         return String.format("%2$s\n" +
-                "public final static %1$s %1$s = new %1$s();\n", table.getName(), createComment(table));
+                "final %1$s %1$s = new %1$s();\n", table.getName(), createComment(table));
     }
 
     public String createColumnsSource(TableMetaData table) {
@@ -65,10 +66,10 @@ public abstract class AbstractJavaFileGenerationProcessor extends SchemaMetaData
             return "";
         }
         String remark = element.getRemark();
-        remark = remark.replaceFirst("deprecated", "@deprecated");
         if (isBlank(remark)) {
             return "";
         }
+        remark = remark.replaceFirst("deprecated", "@deprecated");
         return String.format("/** %s */\n", remark);
     }
 
@@ -191,12 +192,12 @@ public abstract class AbstractJavaFileGenerationProcessor extends SchemaMetaData
     }
 
     public String getJavaClassName() {
-        return javaClassName != null ? javaClassName : schemaMetaData.getSchema();
+        return javaClassName != null ? javaClassName : getSchemaMetaData().getSchema();
     }
 
     protected String getSchemaComment() {
         return "Generated from: "
-                + (schemaMetaData.hasRemark() ? schemaMetaData.getRemark() : schemaMetaData.getSchema());
+                + (getSchemaMetaData().hasRemark() ? getSchemaMetaData().getRemark() : getSchemaMetaData().getSchema());
     }
 
     protected String getAuthor() {

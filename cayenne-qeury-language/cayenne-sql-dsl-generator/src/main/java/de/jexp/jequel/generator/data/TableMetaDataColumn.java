@@ -1,9 +1,5 @@
 package de.jexp.jequel.generator.data;
 
-/**
- * Created: mhu@salt-solutions.de 19.10.2007 16:05:42
- * (c) Salt Solutions GmbH 2006
- */
 public class TableMetaDataColumn extends MetaDataElement {
     private final int jdbcType;
     private final TableMetaData table;
@@ -15,7 +11,7 @@ public class TableMetaDataColumn extends MetaDataElement {
     private Class<?> javaClass;
 
     // TODO getJavaType
-    public TableMetaDataColumn(final String columnName, final int jdbcType, final TableMetaData table) {
+    public TableMetaDataColumn(String columnName, int jdbcType, TableMetaData table) {
         super(columnName);
         this.jdbcType = jdbcType;
         this.table = table;
@@ -29,7 +25,7 @@ public class TableMetaDataColumn extends MetaDataElement {
         return jdbcType;
     }
 
-    public void setReferencedTable(final TableMetaData referencedTable) {
+    public void setReferencedTable(TableMetaData referencedTable) {
         this.referencedTable = referencedTable;
     }
 
@@ -54,7 +50,7 @@ public class TableMetaDataColumn extends MetaDataElement {
     }
 
 
-    public void setReferencedColumn(final TableMetaDataColumn referencedColumn) {
+    public void setReferencedColumn(TableMetaDataColumn referencedColumn) {
         this.referencedColumn = referencedColumn;
         this.referencedTable = referencedColumn.getTable();
     }
@@ -63,7 +59,7 @@ public class TableMetaDataColumn extends MetaDataElement {
         return referencedColumn;
     }
 
-    public void setJavaType(final String typeClassName) {
+    public void setJavaType(String typeClassName) {
         this.typeClassName = typeClassName;
     }
 
@@ -71,7 +67,7 @@ public class TableMetaDataColumn extends MetaDataElement {
         return typeClassName;
     }
 
-    public void setJavaClass(final String javaClassName) {
+    public void setJavaClass(String javaClassName) {
         try {
             this.javaClass = Class.forName(javaClassName);
         } catch (ClassNotFoundException e) {

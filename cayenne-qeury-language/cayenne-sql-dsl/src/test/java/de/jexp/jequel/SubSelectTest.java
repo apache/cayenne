@@ -8,14 +8,14 @@ import junit.framework.TestCase;
 
 public class SubSelectTest extends TestCase {
     public void testSubSelect() {
-        final ARTICLE ARTICLE2 = ARTICLE.as("ARTICLE2");
-        final SqlString sqlString = Select(ARTICLE.OID)
+        ARTICLE ARTICLE2 = ARTICLE.as("ARTICLE2");
+        SqlString sqlString = Select(ARTICLE.OID)
                 .from(ARTICLE)
                 .where(not(exits(
                         subSelect(e(1)).
                                 from(ARTICLE2)
                                 .where(ARTICLE2.OID.eq(ARTICLE.OID)
-                                .and(ARTICLE2.ARTICLE_NO.is(NULL)))
+                                .and(ARTICLE2.ARTICLE_NO.isNull()))
                 )));
 
         assertEquals("sub select",
@@ -27,8 +27,8 @@ public class SubSelectTest extends TestCase {
     }
 
     public void testSubSelect2() {
-        final TEST_TABLES.ARTICLE_EAN ARTICLE_EAN2 = ARTICLE_EAN.as("ARTICLE_EAN2");
-        final SqlString sqlString = Select(ARTICLE_EAN.EAN)
+        TEST_TABLES.ARTICLE_EAN ARTICLE_EAN2 = ARTICLE_EAN.as("ARTICLE_EAN2");
+        SqlString sqlString = Select(ARTICLE_EAN.EAN)
                 .from(ARTICLE_EAN)
                 .where(ARTICLE_EAN.ARTICLE_OID.in(
                         Select(ARTICLE_EAN2.ARTICLE_OID)

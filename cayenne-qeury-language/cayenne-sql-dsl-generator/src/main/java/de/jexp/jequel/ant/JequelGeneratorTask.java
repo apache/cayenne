@@ -9,18 +9,16 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * @author mh14 @ jexp.de
- * @since 22.10.2007 19:35:07 (c) 2007 jexp.de
- *        Ant task for generating schema metadata
- *        can be configured with database information
- *        transfers this information to children if not set otherwise
+ * Ant task for generating schema metadata
+ * can be configured with database information
+ * transfers this information to children if not set otherwise
  */
 public class JequelGeneratorTask extends SchemaMetaDataProcessorDataSourceTask implements TaskContainer {
     private final Collection<Task> tasks = new LinkedList<Task>();
     private SchemaMetaData schemaMetaData = new SchemaMetaData();
 
     public void execute() throws BuildException {
-        for (final Task task : tasks) {
+        for (Task task : tasks) {
             initDatabaseTask(task);
             if (task instanceof SchemaMetaDataProcessorTask) {
                 handleSchemaMetaDataProcessorTask((SchemaMetaDataProcessorTask) task);
@@ -30,23 +28,23 @@ public class JequelGeneratorTask extends SchemaMetaDataProcessorDataSourceTask i
         }
     }
 
-    private void handleSchemaMetaDataProcessorTask(final SchemaMetaDataProcessorTask schemaMetaDataProcessorTask) {
+    private void handleSchemaMetaDataProcessorTask(SchemaMetaDataProcessorTask schemaMetaDataProcessorTask) {
         schemaMetaDataProcessorTask.setSchemaMetaData(schemaMetaData);
         schemaMetaDataProcessorTask.perform();
         schemaMetaData = schemaMetaDataProcessorTask.getSchemaMetaData();
     }
 
 
-    public void addTask(final Task task) {
+    public void addTask(Task task) {
         addToTasks(task);
     }
 
-    private <T extends Task> T addToTasks(final T task) {
+    private <T extends Task> T addToTasks(T task) {
         this.tasks.add(task);
         return task;
     }
 
-    public void setSchema(final String schema) {
+    public void setSchema(String schema) {
         schemaMetaData = new SchemaMetaData(schema);
     }
 

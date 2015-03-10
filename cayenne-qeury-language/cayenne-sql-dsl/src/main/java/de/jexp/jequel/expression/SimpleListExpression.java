@@ -1,5 +1,6 @@
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.SqlKeyword;
 
@@ -63,9 +64,5 @@ public class SimpleListExpression extends AbstractExpression implements Compound
 
     public SqlKeyword getDelimeter() {
         return delim;
-    }
-
-    public boolean isAtomic() {
-        return false;
     }
 }

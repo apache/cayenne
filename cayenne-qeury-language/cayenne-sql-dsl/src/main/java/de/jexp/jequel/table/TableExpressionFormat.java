@@ -1,6 +1,7 @@
 package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.DelegatingFormat;
+import de.jexp.jequel.table.visitor.TableFormat;
 
 public class TableExpressionFormat extends DelegatingFormat<TableFormat> implements TableFormat {
 

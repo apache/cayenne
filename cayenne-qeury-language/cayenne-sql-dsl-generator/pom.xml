@@ -28,7 +28,6 @@
         <version>4.0.M3-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.cayenne.server</groupId>
     <artifactId>cayenne-sql-dsl-generator</artifactId>
     <name>Cayenne SQL DSL Generator</name>
 
@@ -40,10 +39,29 @@
             <artifactId>cayenne-sql-dsl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
+        </dependency>
+
+        <!-- spring jdbc template are used in test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>4.1.5.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>4.1.5.RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

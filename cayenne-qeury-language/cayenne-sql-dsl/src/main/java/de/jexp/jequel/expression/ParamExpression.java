@@ -3,6 +3,8 @@
  */
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+
 /*
 * TODO: Alex, remove this class
 * */

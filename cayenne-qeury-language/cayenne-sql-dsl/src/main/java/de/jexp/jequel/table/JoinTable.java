@@ -1,13 +1,15 @@
 package de.jexp.jequel.table;
 
+import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
+import de.jexp.jequel.table.visitor.TableVisitor;
 
 public class JoinTable extends BaseTable<BaseTable> {
-    private final BaseTable<? extends BaseTable> first;
-    private final BaseTable<? extends BaseTable> second;
-    private Expression joinExpression;
+    private final BaseTable first;
+    private final BaseTable second;
+    private Expression joinOnExpression;
 
-    public JoinTable(BaseTable<? extends BaseTable> first, BaseTable<? extends BaseTable> second) {
+    public JoinTable(BaseTable first, BaseTable second) {
         this.first = first;
         this.second = second;
     }
@@ -21,11 +23,11 @@ public class JoinTable extends BaseTable<BaseTable> {
     }
 
 
-    public BaseTable<? extends BaseTable> getFirst() {
+    public BaseTable getFirst() {
         return first;
     }
 
-    public BaseTable<? extends BaseTable> getSecond() {
+    public BaseTable getSecond() {
         return second;
     }
 
@@ -33,20 +35,22 @@ public class JoinTable extends BaseTable<BaseTable> {
         return second.getOid(); // first.getOid() // TODO speculative
     }
 
-    public JoinTable on(Expression expression) {
-        joinExpression = expression;
+    public JoinTable on(BooleanExpression expression) {
+        joinOnExpression = expression;
         return this;
     }
 
     public Expression getJoinExpression() {
-        if (joinExpression != null) return joinExpression;
+        if (joinOnExpression != null) {
+            return joinOnExpression;
+        }
 
         Field foreignKey = second.getForeignKey(first);
         if (foreignKey != null) {
-            joinExpression = first.getOid().eq(foreignKey);
+            joinOnExpression = first.getOid().eq(foreignKey);
         } else {
-            joinExpression = second.getOid().eq(first.getForeignKey(second));
+            joinOnExpression = second.getOid().eq(first.getForeignKey(second));
         }
-        return joinExpression;
+        return joinOnExpression;
     }
 }

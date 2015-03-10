@@ -3,9 +3,9 @@ package de.jexp.jequel.jdbctest;
 import java.sql.ResultSetMetaData;
 
 public abstract class ResultSetWrapper {
-    protected final ResultSetData resultSetData;
+    protected ResultSetData resultSetData;
 
-    public ResultSetWrapper(final ResultSetData resultSetData) {
+    public ResultSetWrapper(ResultSetData resultSetData) {
         this.resultSetData = resultSetData;
     }
 
@@ -13,11 +13,11 @@ public abstract class ResultSetWrapper {
         return resultSetData;
     }
 
-    public <T> T get(final Class<T> returnType, final int columnIndex) {
+    public <T> T get(Class<T> returnType, int columnIndex) {
         return resultSetData.get(returnType, columnIndex);
     }
 
-    public <T> T get(final Class<T> returnType, final String columnName) {
+    public <T> T get(Class<T> returnType, String columnName) {
         return resultSetData.get(returnType, columnName);
     }
 

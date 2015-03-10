@@ -1,28 +1,25 @@
 package de.jexp.jequel.literals;
 
 public enum UnaryOperator implements SqlKeyword {
+    /* boolean result */
     NOT,
-    SUM,
-    COUNT,
-    ROUND,
-    AVG,
     EXISTS,
     NOT_EXISTS,
+
+    /* aggregation numeric functions */
+    SUM,
+    COUNT,
+    AVG,
+
+    /* aggregation ordering functions */
     MIN,
     MAX,
+
+    /* numeric functions */
+    ROUND,
     TO_NUMBER;
 
-    private final String sqlOperator;
-
-    UnaryOperator() {
-        this(null);
-    }
-
-    UnaryOperator(final String sqlOperator) {
-        this.sqlOperator = sqlOperator;
-    }
-
     public String getSqlKeyword() {
-        return sqlOperator;
+        return null;
     }
 }

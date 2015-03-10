@@ -1,7 +1,8 @@
 package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.AbstractExpression;
-import de.jexp.jequel.expression.ExpressionVisitor;
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.table.visitor.TableVisitor;
 
 public class TableField<T> extends AbstractExpression implements Field<T> {
     private final Table table;
@@ -71,9 +72,5 @@ public class TableField<T> extends AbstractExpression implements Field<T> {
 
     public Field<T> foreignKey(Field<T> reference) {
         return new ForeignKey<T>(getTable(), reference);
-    }
-
-    public boolean isAtomic() {
-        return true;
     }
 }

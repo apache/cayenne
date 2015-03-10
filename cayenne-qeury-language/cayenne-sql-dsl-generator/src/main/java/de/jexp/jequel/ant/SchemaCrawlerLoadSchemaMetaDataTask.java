@@ -12,7 +12,7 @@ public class SchemaCrawlerLoadSchemaMetaDataTask extends SchemaMetaDataProcessor
     }
 
     protected SchemaCrawlerLoadSchemaMetaDataProcessor createProcessor(final Class<SchemaCrawlerLoadSchemaMetaDataProcessor> metaDataProcessorClass, final SchemaMetaData schemaMetaData) {
-        final SchemaCrawlerLoadSchemaMetaDataProcessor loadSchemaMetaDataProcessor = super.createProcessor(metaDataProcessorClass, schemaMetaData);
+        SchemaCrawlerLoadSchemaMetaDataProcessor loadSchemaMetaDataProcessor = super.createProcessor(metaDataProcessorClass, schemaMetaData);
         loadSchemaMetaDataProcessor.setHandleForeignKeys(isForeignKeys());
         loadSchemaMetaDataProcessor.setDataSource(getDataSource());
         return loadSchemaMetaDataProcessor;

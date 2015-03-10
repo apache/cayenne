@@ -9,11 +9,11 @@ import java.util.Calendar;
 import java.util.Map;
 
 public class ResultSetStub extends ResultSetWrapper implements ResultSet {
-    public ResultSetStub(final ResultSetData resultSetData) {
+    public ResultSetStub(ResultSetData resultSetData) {
         super(resultSetData);
     }
 
-    public ResultSetStub(final Object[] data, final String... columnNames) {
+    public ResultSetStub(Object[] data, String... columnNames) {
         this(new ArrayResultSetData(data, columnNames));
     }
 
@@ -24,135 +24,135 @@ public class ResultSetStub extends ResultSetWrapper implements ResultSet {
         return false;
     }
 
-    public String getString(final int i) throws SQLException {
+    public String getString(int i) throws SQLException {
         return get(String.class, i);
     }
 
-    public boolean getBoolean(final int i) throws SQLException {
+    public boolean getBoolean(int i) throws SQLException {
         return get(Boolean.class, i);
     }
 
-    public byte getByte(final int i) throws SQLException {
+    public byte getByte(int i) throws SQLException {
         return get(Byte.class, i);
     }
 
-    public short getShort(final int i) throws SQLException {
+    public short getShort(int i) throws SQLException {
         return get(Short.class, i);
     }
 
-    public int getInt(final int i) throws SQLException {
+    public int getInt(int i) throws SQLException {
         return get(Integer.class, i);
     }
 
-    public long getLong(final int i) throws SQLException {
+    public long getLong(int i) throws SQLException {
         return get(Long.class, i);
     }
 
-    public float getFloat(final int i) throws SQLException {
+    public float getFloat(int i) throws SQLException {
         return get(Float.class, i);
     }
 
-    public double getDouble(final int i) throws SQLException {
+    public double getDouble(int i) throws SQLException {
         return get(Double.class, i);
     }
 
     @Deprecated
-    public BigDecimal getBigDecimal(final int i, final int i1) throws SQLException {
+    public BigDecimal getBigDecimal(int i, int i1) throws SQLException {
         return get(BigDecimal.class, i);
     }
 
-    public byte[] getBytes(final int i) throws SQLException {
+    public byte[] getBytes(int i) throws SQLException {
         return get(byte[].class, i);
     }
 
-    public Date getDate(final int i) throws SQLException {
+    public Date getDate(int i) throws SQLException {
         return get(Date.class, i);
     }
 
-    public Time getTime(final int i) throws SQLException {
+    public Time getTime(int i) throws SQLException {
         return get(Time.class, i);
     }
 
-    public Timestamp getTimestamp(final int i) throws SQLException {
+    public Timestamp getTimestamp(int i) throws SQLException {
         return get(Timestamp.class, i);
     }
 
-    public InputStream getAsciiStream(final int i) throws SQLException {
+    public InputStream getAsciiStream(int i) throws SQLException {
         return get(InputStream.class, i);
     }
 
     @Deprecated
-    public InputStream getUnicodeStream(final int i) throws SQLException {
+    public InputStream getUnicodeStream(int i) throws SQLException {
         return get(InputStream.class, i);
     }
 
-    public InputStream getBinaryStream(final int i) throws SQLException {
+    public InputStream getBinaryStream(int i) throws SQLException {
         return get(InputStream.class, i);
     }
 
-    public String getString(final String i) throws SQLException {
+    public String getString(String i) throws SQLException {
         return get(String.class, i);
     }
 
-    public boolean getBoolean(final String i) throws SQLException {
+    public boolean getBoolean(String i) throws SQLException {
         return get(Boolean.class, i);
     }
 
-    public byte getByte(final String i) throws SQLException {
+    public byte getByte(String i) throws SQLException {
         return get(Byte.class, i);
     }
 
-    public short getShort(final String i) throws SQLException {
+    public short getShort(String i) throws SQLException {
         return get(Short.class, i);
     }
 
-    public int getInt(final String i) throws SQLException {
+    public int getInt(String i) throws SQLException {
         return get(Integer.class, i);
     }
 
-    public long getLong(final String i) throws SQLException {
+    public long getLong(String i) throws SQLException {
         return get(Long.class, i);
     }
 
-    public float getFloat(final String i) throws SQLException {
+    public float getFloat(String i) throws SQLException {
         return get(Float.class, i);
     }
 
-    public double getDouble(final String i) throws SQLException {
+    public double getDouble(String i) throws SQLException {
         return get(Double.class, i);
     }
 
     @Deprecated
-    public BigDecimal getBigDecimal(final String i, final int i1) throws SQLException {
+    public BigDecimal getBigDecimal(String i, int i1) throws SQLException {
         return get(BigDecimal.class, i);
     }
 
-    public byte[] getBytes(final String i) throws SQLException {
+    public byte[] getBytes(String i) throws SQLException {
         return get(byte[].class, i);
     }
 
-    public Date getDate(final String i) throws SQLException {
+    public Date getDate(String i) throws SQLException {
         return get(Date.class, i);
     }
 
-    public Time getTime(final String i) throws SQLException {
+    public Time getTime(String i) throws SQLException {
         return get(Time.class, i);
     }
 
-    public Timestamp getTimestamp(final String i) throws SQLException {
+    public Timestamp getTimestamp(String i) throws SQLException {
         return get(Timestamp.class, i);
     }
 
-    public InputStream getAsciiStream(final String i) throws SQLException {
+    public InputStream getAsciiStream(String i) throws SQLException {
         return get(InputStream.class, i);
     }
 
     @Deprecated
-    public InputStream getUnicodeStream(final String i) throws SQLException {
+    public InputStream getUnicodeStream(String i) throws SQLException {
         return get(InputStream.class, i);
     }
 
-    public InputStream getBinaryStream(final String i) throws SQLException {
+    public InputStream getBinaryStream(String i) throws SQLException {
         return get(InputStream.class, i);
     }
 
@@ -167,31 +167,31 @@ public class ResultSetStub extends ResultSetWrapper implements ResultSet {
         return null;
     }
 
-    public Object getObject(final int i) throws SQLException {
+    public Object getObject(int i) throws SQLException {
         return get(Object.class, i);
     }
 
-    public Object getObject(final String s) throws SQLException {
+    public Object getObject(String s) throws SQLException {
         return get(Object.class, s);
     }
 
-    public int findColumn(final String s) throws SQLException {
+    public int findColumn(String s) throws SQLException {
         return 0; // TODO
     }
 
-    public Reader getCharacterStream(final int i) throws SQLException {
+    public Reader getCharacterStream(int i) throws SQLException {
         return get(Reader.class, i);
     }
 
-    public Reader getCharacterStream(final String s) throws SQLException {
+    public Reader getCharacterStream(String s) throws SQLException {
         return get(Reader.class, s);
     }
 
-    public BigDecimal getBigDecimal(final int i) throws SQLException {
+    public BigDecimal getBigDecimal(int i) throws SQLException {
         return get(BigDecimal.class, i);
     }
 
-    public BigDecimal getBigDecimal(final String s) throws SQLException {
+    public BigDecimal getBigDecimal(String s) throws SQLException {
         return get(BigDecimal.class, s);
     }
 
@@ -231,11 +231,11 @@ public class ResultSetStub extends ResultSetWrapper implements ResultSet {
         return 0;
     }
 
-    public boolean absolute(final int i) throws SQLException {
+    public boolean absolute(int i) throws SQLException {
         return false;
     }
 
-    public boolean relative(final int i) throws SQLException {
+    public boolean relative(int i) throws SQLException {
         return false;
     }
 
@@ -243,14 +243,14 @@ public class ResultSetStub extends ResultSetWrapper implements ResultSet {
         return false;
     }
 
-    public void setFetchDirection(final int i) throws SQLException {
+    public void setFetchDirection(int i) throws SQLException {
     }
 
     public int getFetchDirection() throws SQLException {
         return 0;
     }
 
-    public void setFetchSize(final int i) throws SQLException {
+    public void setFetchSize(int i) throws SQLException {
     }
 
     public int getFetchSize() throws SQLException {
@@ -277,118 +277,118 @@ public class ResultSetStub extends ResultSetWrapper implements ResultSet {
         return false;
     }
 
-    public void updateNull(final int i) throws SQLException {
+    public void updateNull(int i) throws SQLException {
     }
 
-    public void updateBoolean(final int i, final boolean b) throws SQLException {
+    public void updateBoolean(int i, boolean b) throws SQLException {
     }
 
-    public void updateByte(final int i, final byte b) throws SQLException {
+    public void updateByte(int i, byte b) throws SQLException {
     }
 
-    public void updateShort(final int i, final short i1) throws SQLException {
+    public void updateShort(int i, short i1) throws SQLException {
     }
 
-    public void updateInt(final int i, final int i1) throws SQLException {
+    public void updateInt(int i, int i1) throws SQLException {
     }
 
-    public void updateLong(final int i, final long l) throws SQLException {
+    public void updateLong(int i, long l) throws SQLException {
     }
 
-    public void updateFloat(final int i, final float v) throws SQLException {
+    public void updateFloat(int i, float v) throws SQLException {
     }
 
-    public void updateDouble(final int i, final double v) throws SQLException {
+    public void updateDouble(int i, double v) throws SQLException {
     }
 
-    public void updateBigDecimal(final int i, final BigDecimal bigDecimal) throws SQLException {
+    public void updateBigDecimal(int i, BigDecimal bigDecimal) throws SQLException {
     }
 
-    public void updateString(final int i, final String s) throws SQLException {
+    public void updateString(int i, String s) throws SQLException {
     }
 
-    public void updateBytes(final int i, final byte[] bytes) throws SQLException {
+    public void updateBytes(int i, byte[] bytes) throws SQLException {
     }
 
-    public void updateDate(final int i, final Date date) throws SQLException {
+    public void updateDate(int i, Date date) throws SQLException {
     }
 
-    public void updateTime(final int i, final Time time) throws SQLException {
+    public void updateTime(int i, Time time) throws SQLException {
     }
 
-    public void updateTimestamp(final int i, final Timestamp timestamp) throws SQLException {
+    public void updateTimestamp(int i, Timestamp timestamp) throws SQLException {
     }
 
-    public void updateAsciiStream(final int i, final InputStream inputStream, final int i1) throws SQLException {
+    public void updateAsciiStream(int i, InputStream inputStream, int i1) throws SQLException {
     }
 
-    public void updateBinaryStream(final int i, final InputStream inputStream, final int i1) throws SQLException {
+    public void updateBinaryStream(int i, InputStream inputStream, int i1) throws SQLException {
     }
 
-    public void updateCharacterStream(final int i, final Reader reader, final int i1) throws SQLException {
+    public void updateCharacterStream(int i, Reader reader, int i1) throws SQLException {
     }
 
-    public void updateObject(final int i, final Object o, final int i1) throws SQLException {
+    public void updateObject(int i, Object o, int i1) throws SQLException {
     }
 
-    public void updateObject(final int i, final Object o) throws SQLException {
+    public void updateObject(int i, Object o) throws SQLException {
     }
 
-    public void updateNull(final String s) throws SQLException {
+    public void updateNull(String s) throws SQLException {
     }
 
-    public void updateBoolean(final String s, final boolean b) throws SQLException {
+    public void updateBoolean(String s, boolean b) throws SQLException {
     }
 
-    public void updateByte(final String s, final byte b) throws SQLException {
+    public void updateByte(String s, byte b) throws SQLException {
     }
 
-    public void updateShort(final String s, final short i) throws SQLException {
+    public void updateShort(String s, short i) throws SQLException {
     }
 
-    public void updateInt(final String s, final int i) throws SQLException {
+    public void updateInt(String s, int i) throws SQLException {
     }
 
-    public void updateLong(final String s, final long l) throws SQLException {
+    public void updateLong(String s, long l) throws SQLException {
     }
 
-    public void updateFloat(final String s, final float v) throws SQLException {
+    public void updateFloat(String s, float v) throws SQLException {
     }
 
-    public void updateDouble(final String s, final double v) throws SQLException {
+    public void updateDouble(String s, double v) throws SQLException {
     }
 
-    public void updateBigDecimal(final String s, final BigDecimal bigDecimal) throws SQLException {
+    public void updateBigDecimal(String s, BigDecimal bigDecimal) throws SQLException {
     }
 
-    public void updateString(final String s, final String s1) throws SQLException {
+    public void updateString(String s, String s1) throws SQLException {
     }
 
-    public void updateBytes(final String s, final byte[] bytes) throws SQLException {
+    public void updateBytes(String s, byte[] bytes) throws SQLException {
     }
 
-    public void updateDate(final String s, final Date date) throws SQLException {
+    public void updateDate(String s, Date date) throws SQLException {
     }
 
-    public void updateTime(final String s, final Time time) throws SQLException {
+    public void updateTime(String s, Time time) throws SQLException {
     }
 
-    public void updateTimestamp(final String s, final Timestamp timestamp) throws SQLException {
+    public void updateTimestamp(String s, Timestamp timestamp) throws SQLException {
     }
 
-    public void updateAsciiStream(final String s, final InputStream inputStream, final int i) throws SQLException {
+    public void updateAsciiStream(String s, InputStream inputStream, int i) throws SQLException {
     }
 
-    public void updateBinaryStream(final String s, final InputStream inputStream, final int i) throws SQLException {
+    public void updateBinaryStream(String s, InputStream inputStream, int i) throws SQLException {
     }
 
-    public void updateCharacterStream(final String s, final Reader reader, final int i) throws SQLException {
+    public void updateCharacterStream(String s, Reader reader, int i) throws SQLException {
     }
 
-    public void updateObject(final String s, final Object o, final int i) throws SQLException {
+    public void updateObject(String s, Object o, int i) throws SQLException {
     }
 
-    public void updateObject(final String s, final Object o) throws SQLException {
+    public void updateObject(String s, Object o) throws SQLException {
     }
 
     public void insertRow() throws SQLException {
@@ -416,100 +416,100 @@ public class ResultSetStub extends ResultSetWrapper implements ResultSet {
         return null; // TODO
     }
 
-    public Object getObject(final int i, final Map<String, Class<?>> stringClassMap) throws SQLException {
+    public Object getObject(int i, Map<String, Class<?>> stringClassMap) throws SQLException {
         return get(Object.class, i);  // TODO
     }
 
-    public Ref getRef(final int i) throws SQLException {
+    public Ref getRef(int i) throws SQLException {
         return get(Ref.class, i);
     }
 
-    public Blob getBlob(final int i) throws SQLException {
+    public Blob getBlob(int i) throws SQLException {
         return get(Blob.class, i);
     }
 
-    public Clob getClob(final int i) throws SQLException {
+    public Clob getClob(int i) throws SQLException {
         return get(Clob.class, i);
     }
 
-    public Array getArray(final int i) throws SQLException {
+    public Array getArray(int i) throws SQLException {
         return get(Array.class, i);
     }
 
-    public Object getObject(final String s, final Map<String, Class<?>> stringClassMap) throws SQLException {
+    public Object getObject(String s, Map<String, Class<?>> stringClassMap) throws SQLException {
         return get(Object.class, s); // TODO
     }
 
-    public Ref getRef(final String s) throws SQLException {
+    public Ref getRef(String s) throws SQLException {
         return get(Ref.class, s);
     }
 
-    public Blob getBlob(final String s) throws SQLException {
+    public Blob getBlob(String s) throws SQLException {
         return get(Blob.class, s);
     }
 
-    public Clob getClob(final String s) throws SQLException {
+    public Clob getClob(String s) throws SQLException {
         return get(Clob.class, s);
     }
 
-    public Array getArray(final String s) throws SQLException {
+    public Array getArray(String s) throws SQLException {
         return get(Array.class, s);
     }
 
-    public Date getDate(final int i, final Calendar calendar) throws SQLException {
+    public Date getDate(int i, Calendar calendar) throws SQLException {
         return getDate(i);
     }
 
-    public Date getDate(final String s, final Calendar calendar) throws SQLException {
+    public Date getDate(String s, Calendar calendar) throws SQLException {
         return getDate(s);
     }
 
-    public Time getTime(final int i, final Calendar calendar) throws SQLException {
+    public Time getTime(int i, Calendar calendar) throws SQLException {
         return getTime(i);
     }
 
-    public Time getTime(final String s, final Calendar calendar) throws SQLException {
+    public Time getTime(String s, Calendar calendar) throws SQLException {
         return getTime(s);
     }
 
-    public Timestamp getTimestamp(final int i, final Calendar calendar) throws SQLException {
+    public Timestamp getTimestamp(int i, Calendar calendar) throws SQLException {
         return getTimestamp(i);
     }
 
-    public Timestamp getTimestamp(final String s, final Calendar calendar) throws SQLException {
+    public Timestamp getTimestamp(String s, Calendar calendar) throws SQLException {
         return getTimestamp(s);
     }
 
-    public URL getURL(final int i) throws SQLException {
+    public URL getURL(int i) throws SQLException {
         return get(URL.class, i);
     }
 
-    public URL getURL(final String s) throws SQLException {
+    public URL getURL(String s) throws SQLException {
         return get(URL.class, s);
     }
 
-    public void updateRef(final int i, final Ref ref) throws SQLException {
+    public void updateRef(int i, Ref ref) throws SQLException {
     }
 
-    public void updateRef(final String s, final Ref ref) throws SQLException {
+    public void updateRef(String s, Ref ref) throws SQLException {
     }
 
-    public void updateBlob(final int i, final Blob blob) throws SQLException {
+    public void updateBlob(int i, Blob blob) throws SQLException {
     }
 
-    public void updateBlob(final String s, final Blob blob) throws SQLException {
+    public void updateBlob(String s, Blob blob) throws SQLException {
     }
 
-    public void updateClob(final int i, final Clob clob) throws SQLException {
+    public void updateClob(int i, Clob clob) throws SQLException {
     }
 
-    public void updateClob(final String s, final Clob clob) throws SQLException {
+    public void updateClob(String s, Clob clob) throws SQLException {
     }
 
-    public void updateArray(final int i, final Array array) throws SQLException {
+    public void updateArray(int i, Array array) throws SQLException {
     }
 
-    public void updateArray(final String s, final Array array) throws SQLException {
+    public void updateArray(String s, Array array) throws SQLException {
     }
 
     @Override
@@ -752,12 +752,10 @@ public class ResultSetStub extends ResultSetWrapper implements ResultSet {
 
     }
 
-    @Override
     public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
         return null;
     }
 
-    @Override
     public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
         return null;
     }

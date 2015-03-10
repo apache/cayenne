@@ -6,10 +6,6 @@ import de.jexp.jequel.generator.processor.ResourceBundleMetaDataProcessor;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-/**
- * @author mh14 @ jexp.de
- * @since 22.10.2007 21:51:35 (c) 2007 jexp.de
- */
 public class ResourceBundleCommentsSchemaMetaDataProcessorTask extends SchemaMetaDataProcessorTask<ResourceBundleMetaDataProcessor> {
     private Locale locale = Locale.getDefault();
     private String resourceBundleBaseName;
@@ -18,9 +14,9 @@ public class ResourceBundleCommentsSchemaMetaDataProcessorTask extends SchemaMet
         setMetaDataProcessorClass(ResourceBundleMetaDataProcessor.class);
     }
 
-    protected ResourceBundleMetaDataProcessor createProcessor(final Class<ResourceBundleMetaDataProcessor> metaDataProcessorClass, final SchemaMetaData schemaMetaData) {
-        final ResourceBundleMetaDataProcessor resourceBundleMetaDataProcessor = super.createProcessor(metaDataProcessorClass, schemaMetaData);
-        final ResourceBundle resourceBundle = ResourceBundle.getBundle(getResourceBundleBaseName(), getLocale());
+    protected ResourceBundleMetaDataProcessor createProcessor(Class<ResourceBundleMetaDataProcessor> metaDataProcessorClass, SchemaMetaData schemaMetaData) {
+        ResourceBundleMetaDataProcessor resourceBundleMetaDataProcessor = super.createProcessor(metaDataProcessorClass, schemaMetaData);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(getResourceBundleBaseName(), getLocale());
         resourceBundleMetaDataProcessor.setResourceBundle(resourceBundle);
         return resourceBundleMetaDataProcessor;
     }
@@ -33,11 +29,11 @@ public class ResourceBundleCommentsSchemaMetaDataProcessorTask extends SchemaMet
         return resourceBundleBaseName;
     }
 
-    public void setLocale(final String localeString) {
+    public void setLocale(String localeString) {
         this.locale = new Locale(localeString);
     }
 
-    public void setResourceBundleBaseName(final String resourceBundleBaseName) {
+    public void setResourceBundleBaseName(String resourceBundleBaseName) {
         this.resourceBundleBaseName = resourceBundleBaseName;
     }
 }

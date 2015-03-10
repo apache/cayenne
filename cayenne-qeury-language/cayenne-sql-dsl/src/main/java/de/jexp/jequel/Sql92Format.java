@@ -1,13 +1,36 @@
 package de.jexp.jequel;
 
-import de.jexp.jequel.expression.*;
+import de.jexp.jequel.expression.Aliased;
+import de.jexp.jequel.expression.BinaryExpression;
+import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
+import de.jexp.jequel.expression.logical.BooleanLiteral;
+import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
+import de.jexp.jequel.expression.CompoundExpression;
+import de.jexp.jequel.expression.ConstantExpression;
+import de.jexp.jequel.expression.Expression;
+import de.jexp.jequel.expression.ExpressionAlias;
+import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
+import de.jexp.jequel.expression.numeric.NumericLiteral;
+import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
+import de.jexp.jequel.expression.visitor.ExpressionFormat;
+import de.jexp.jequel.expression.SearchCondition;
+import de.jexp.jequel.expression.ParamExpression;
+import de.jexp.jequel.expression.RowListExpression;
+import de.jexp.jequel.expression.SimpleListExpression;
+import de.jexp.jequel.expression.StringExpression;
+import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.Operator;
 import de.jexp.jequel.literals.SelectKeyword;
 import de.jexp.jequel.literals.SqlKeyword;
-import de.jexp.jequel.sql.DslSqlModel;
+import de.jexp.jequel.sql.SqlModel;
 import de.jexp.jequel.sql.Sql;
-import de.jexp.jequel.table.*;
+import de.jexp.jequel.table.BaseTable;
+import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.ForeignKey;
+import de.jexp.jequel.table.JoinTable;
+import de.jexp.jequel.table.TableField;
+import de.jexp.jequel.table.visitor.TableFormat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,16 +38,13 @@ import java.util.Iterator;
 
 import static org.apache.commons.lang3.StringUtils.join;
 
-public class Sql92Format implements ExpressionFormat, TableFormat, DslSqlModel.SqlFormat {
+public class Sql92Format implements ExpressionFormat, TableFormat, SqlModel.SqlFormat {
 
     protected String parenthese(String expressionString) {
         return "(" + expressionString + ")";
     }
 
     public String formatAround(String expressionString, Expression expression) {
-        if (expression.isParenthesed()) {
-            expressionString = parenthese(expressionString);
-        }
         if (expression instanceof Aliased) {
             Aliased aliased = (Aliased) expression;
             if (aliased.getAlias() != null) {
@@ -54,12 +74,12 @@ public class Sql92Format implements ExpressionFormat, TableFormat, DslSqlModel.S
         if (value instanceof Field) return visit((Field) value);
         if (value instanceof ForeignKey) return visit((ForeignKey) value);
         if (value instanceof BaseTable) return visit((BaseTable) value);
-        if (value instanceof NumericExpression) return visit((NumericExpression) value);
+        if (value instanceof NumericLiteral) return visit((NumericLiteral) value);
         if (value instanceof ParamExpression) return visit((ParamExpression) value);
-        if (value instanceof DslSqlModel.SelectPartColumnListExpression) return visit((DslSqlModel.SelectPartColumnListExpression) value);
-        if (value instanceof DslSqlModel.Where) return visit((DslSqlModel.Where) value);
-        if (value instanceof DslSqlModel.Having) return visit((DslSqlModel.Having) value);
-        if (value instanceof Sql) return visit((Sql) value);
+        if (value instanceof SqlModel.SelectPartColumnListExpression) return visit((SqlModel.SelectPartColumnListExpression) value);
+        if (value instanceof SqlModel.Where) return visit((SqlModel.Where) value);
+        if (value instanceof SqlModel.Having) return visit((SqlModel.Having) value);
+        if (value instanceof Sql) return "(" + visit((Sql) value) + ")";
         if (value instanceof StringExpression) return visit((StringExpression) value);
         if (value instanceof TableField) return visit((TableField) value);
         if (value instanceof UnaryExpression) return visit((UnaryExpression) value);
@@ -97,14 +117,16 @@ public class Sql92Format implements ExpressionFormat, TableFormat, DslSqlModel.S
         return literal != null ? literal : visit(constantValue);
     }
 
-    public String visit(NumericExpression numericExpression) {
-        Number value = numericExpression.getValue();
-        return value != null ? visit(value) : visit((Expression) numericExpression);
+    public String visit(NumericLiteral numericLiteral) {
+        Number value = numericLiteral.getValue();
+        return value != null ? visit(value) : visit((Expression) numericLiteral);
     }
 
-    public String visit(BooleanConstantExpression booleanConstantExpression) {
-        String literal = booleanConstantExpression.getLiteral();
-        return literal != null ? literal : visit((BooleanExpression) booleanConstantExpression);
+    public String visit(BooleanLiteral bool) {
+        if (bool.getValue() == null) {
+            return "NULL";
+        }
+        return bool.getValue() ? "TRUE" : "FALSE";
     }
 
     public String visit(StringExpression stringExpression) {
@@ -112,7 +134,7 @@ public class Sql92Format implements ExpressionFormat, TableFormat, DslSqlModel.S
     }
 
     public String visit(UnaryExpression unaryExpression) {
-        return visit(unaryExpression.getOperator()) + parenthese(visit(unaryExpression.getFirst()));
+        return visit(unaryExpression.getOperator()) + parenthese(visit(unaryExpression.getExpression()));
     }
 
     public String visit(BooleanUnaryExpression booleanUnaryExpression) {
@@ -127,6 +149,7 @@ public class Sql92Format implements ExpressionFormat, TableFormat, DslSqlModel.S
         Expression first = binaryExpression.getFirst();
         Expression second = binaryExpression.getSecond();
         Operator operator = binaryExpression.getOperator();
+
         if (!binaryExpression.oneIsNull()) {
             return formatBinaryExpression(first, operator, second);
         }
@@ -189,7 +212,7 @@ public class Sql92Format implements ExpressionFormat, TableFormat, DslSqlModel.S
         }
     }
 
-    public String visit(DslSqlModel.SelectPartColumnListExpression sqlPartColumnTupleExpression) {
+    public String visit(SqlModel.SelectPartColumnListExpression sqlPartColumnTupleExpression) {
         if (sqlPartColumnTupleExpression.hasValues()) {
             return visit(sqlPartColumnTupleExpression.getSelectKeyword()) + " " + visit((SimpleListExpression) sqlPartColumnTupleExpression);
         }
@@ -197,18 +220,20 @@ public class Sql92Format implements ExpressionFormat, TableFormat, DslSqlModel.S
         return "";
     }
 
-    public String visit(MutableBooleanExpression mutableBooleanExpression) {
-        return mutableBooleanExpression.hasValue() ? visit(mutableBooleanExpression.getBooleanExpression()) : "";
+    public String visitSearchCondition(SelectKeyword keyword, SearchCondition searchCondition) {
+        if (!searchCondition.getBooleanExpression().equals(BooleanLiteral.NULL)) {
+            return visit(keyword) + " " + visit(searchCondition.getBooleanExpression());
+        } else {
+            return "";
+        }
     }
 
-    public String visit(DslSqlModel.Where where) {
-        return where.hasValue() ?
-                visit(SelectKeyword.WHERE) + " " + visit((MutableBooleanExpression) where) : "";
+    public String visit(SqlModel.Where where) {
+        return visitSearchCondition(SelectKeyword.WHERE, where);
     }
 
-    public String visit(DslSqlModel.Having having) {
-        return having.hasValue() ?
-                visit(SelectKeyword.HAVING) + " " + visit((MutableBooleanExpression) having) : "";
+    public String visit(SqlModel.Having having) {
+        return visitSearchCondition(SelectKeyword.HAVING, having);
     }
 
     public String visit(JoinTable joinTable) {

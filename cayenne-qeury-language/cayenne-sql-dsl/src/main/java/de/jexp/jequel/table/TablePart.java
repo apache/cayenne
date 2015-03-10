@@ -1,6 +1,7 @@
 package de.jexp.jequel.table;
 
 import de.jexp.jequel.Sql92Format;
+import de.jexp.jequel.table.visitor.TableVisitor;
 
 public interface TablePart {
 

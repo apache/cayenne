@@ -4,8 +4,6 @@ import de.jexp.jequel.generator.data.SchemaMetaData;
 import de.jexp.jequel.generator.data.SchemaMetaDataProcessor;
 import de.jexp.jequel.generator.data.TableMetaData;
 import de.jexp.jequel.generator.data.TableMetaDataColumn;
-import schemacrawler.crawl.*;
-import schemacrawler.schema.*;
 
 import javax.sql.DataSource;
 

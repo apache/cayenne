@@ -1,13 +1,33 @@
 package de.jexp.jequel.table;
 
-public abstract class BaseTable<T extends BaseTable> extends AbstractTable {
+import de.jexp.jequel.expression.Aliased;
+import de.jexp.jequel.expression.RowListExpression;
+import de.jexp.jequel.literals.Delimeter;
+import de.jexp.jequel.table.visitor.TableVisitor;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ *
+ * @param <A> - return type for alias operation
+ */
+public class BaseTable<A extends BaseTable> extends RowListExpression<A> implements Table, Aliased<A> {
+
+    private static final String OID_COLUMN = "OID"; // TODO FieldType PK
 
     private final String tableName = getClass().getSimpleName().toUpperCase();
-    private String alias;
 
-    protected BaseTable aliasedTable;
+    private final Map<String, Field<?>> fields = new LinkedHashMap<String, Field<?>>();
+
+    private String alias;
+    private BaseTable aliasedTable;
 
     protected BaseTable() {
+        super(Delimeter.COMMA);
     }
 
     public String toString() {
@@ -35,20 +55,19 @@ public abstract class BaseTable<T extends BaseTable> extends AbstractTable {
         return new ForeignKey<T>(this, reference);
     }
 
-    protected <T> Field<T> foreignKey(Class<? extends BaseTable<?>> tableClass, String field) {
+    protected <T> Field<T> foreignKey(Class<? extends BaseTable> tableClass, String field) {
         return new ForeignKey<T>(this, new FieldReference<T>(tableClass, field));
     }
 
-    protected <T> Field<T> foreignKey(Class<?> schemaClass, Class<? extends BaseTable<?>> tableClass, String field) {
+    protected <T> Field<T> foreignKey(Class<?> schemaClass, Class<? extends BaseTable> tableClass, String field) {
         return new ForeignKey<T>(this, new FieldReference<T>(schemaClass, tableClass, field));
     }
 
-    public T as(String alias) {
+    public A as(String alias) {
         try {
-            //noinspection unchecked
-            T table = ((Class<T>) getClass()).newInstance();
+            A table = (A) getClass().newInstance();
             table.setAlias(alias);
-            table.aliasedTable = this;
+            table.setAliasedTable(this);
             return table;
         } catch (InstantiationException e) {
             throw new RuntimeException(String.format("Error creating table %s with Alias %s", getClass(), alias), e);
@@ -61,7 +80,7 @@ public abstract class BaseTable<T extends BaseTable> extends AbstractTable {
         return getAlias() != null ? getAlias() : tableName;
     }
 
-    public Field getForeignKey(BaseTable<? extends BaseTable> other) {
+    public Field getForeignKey(BaseTable other) {
         return getForeignKey(other.getOid());
     }
 
@@ -75,7 +94,7 @@ public abstract class BaseTable<T extends BaseTable> extends AbstractTable {
         return null;
     }
 
-    public JoinTable join(BaseTable<? extends BaseTable> second) {
+    public JoinTable join(BaseTable second) {
         return new JoinTable(this, second);
     }
 
@@ -88,5 +107,69 @@ public abstract class BaseTable<T extends BaseTable> extends AbstractTable {
 
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    public void setAliasedTable(BaseTable aliasedTable) {
+        this.aliasedTable = aliasedTable;
+    }
+
+    public Field getOid() {
+        return getField(OID_COLUMN);
+    }
+
+    public Field getField(String name) {
+        return getFields().get(name.toUpperCase());
+    }
+
+    public Map<String, Field<?>> getFields() {
+        if (fields.isEmpty()) {
+            initFields();
+        }
+        return fields;
+    }
+
+    protected void initFields() {
+        Class type = getClass();
+        for (java.lang.reflect.Field instanceField : type.getFields()) {
+            if (Field.class.isAssignableFrom(instanceField.getType())) {
+                String fieldName = instanceField.getName();
+                try {
+                    Field field = (Field) instanceField.get(this);
+                    if (field instanceof TableField) {
+                        ((TableField) field).initName(fieldName);
+                    }
+                    fields.put(fieldName, field);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(String.format("Error accessing field %s in table %s", fieldName, this));
+                }
+            }
+        }
+        append(fields.values());
+        // TODO replace with append at creation time, perhaps remove the fields table at all
+        // and use the expressions list of superclass for locating fields
+    }
+
+    protected Field<Integer> integer() {
+        return field(Integer.class);
+    }
+
+    protected Field<String> string() {
+        return field(String.class);
+    }
+
+    protected Field<BigDecimal> numeric() {
+        return field(BigDecimal.class);
+    }
+
+    protected Field<Boolean> bool() {
+        return field(Boolean.class);
+    }
+
+    protected Field<Date> date() {
+        return field(Date.class);
+    }
+
+    protected Field<Timestamp> timestamp() {
+        return field(Timestamp.class);
     }
 }

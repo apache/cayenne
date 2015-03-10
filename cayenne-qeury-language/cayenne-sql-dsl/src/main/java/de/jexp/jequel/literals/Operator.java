@@ -8,12 +8,15 @@ public enum Operator implements SqlKeyword {
     GT(">"),
     EQ("="),
     LIKE,
+
     AND,
     OR,
     IS_NOT(null, "isNot"),
     IS,
+
     IN,
     BETWEEN,
+
     PLUS("+"),
     MINUS("-"),
     TIMES("*"),

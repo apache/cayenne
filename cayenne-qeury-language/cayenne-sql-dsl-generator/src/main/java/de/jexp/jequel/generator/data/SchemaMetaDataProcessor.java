@@ -1,6 +1,6 @@
 package de.jexp.jequel.generator.data;
 
-public abstract class SchemaMetaDataProcessor implements MetaDataProcessor {
+public abstract class SchemaMetaDataProcessor {
     private final SchemaMetaData schemaMetaData;
 
     protected SchemaMetaDataProcessor(SchemaMetaData schemaMetaData) {
@@ -10,5 +10,7 @@ public abstract class SchemaMetaDataProcessor implements MetaDataProcessor {
     public SchemaMetaData getSchemaMetaData() {
         return schemaMetaData;
     }
+
+    public abstract void processMetaData();
 
 }

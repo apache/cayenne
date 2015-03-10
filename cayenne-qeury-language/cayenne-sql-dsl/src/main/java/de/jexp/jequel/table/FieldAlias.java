@@ -1,6 +1,7 @@
 package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.DefaultExpressionAlias;
+import de.jexp.jequel.table.visitor.TableVisitor;
 
 public class FieldAlias<T> extends DefaultExpressionAlias<Field<T>> implements Field<T> {
     public FieldAlias(Field<T> aliased, String alias) {

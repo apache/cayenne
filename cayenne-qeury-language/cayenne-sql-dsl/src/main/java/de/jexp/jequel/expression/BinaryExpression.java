@@ -1,17 +1,18 @@
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.Operator;
 import de.jexp.jequel.literals.SqlKeyword;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-public class BinaryExpression extends AbstractExpression implements CompoundExpression {
-    private final Expression first;
+public class BinaryExpression<T extends Expression> extends AbstractExpression {
+    private final T first;
     private final Operator operator;
-    private final Expression second;
+    private final T second;
 
-    public BinaryExpression(Expression first, Operator operator, Expression second) {
+    public BinaryExpression(T first, Operator operator, T second) {
         this.first = first;
         this.operator = operator;
         this.second = second;
@@ -21,8 +22,11 @@ public class BinaryExpression extends AbstractExpression implements CompoundExpr
         return accept(EXPRESSION_FORMAT);
     }
 
-    public <R> R accept(ExpressionVisitor<R> expressionVisitor) {
-        return expressionVisitor.visit(this);
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        first.accept(visitor);
+        second.accept(visitor);
+
+        return visitor.visit(this);
     }
 
     public <K> void process(ExpressionProcessor<K> expressionProcessor) {
@@ -30,11 +34,11 @@ public class BinaryExpression extends AbstractExpression implements CompoundExpr
         expressionProcessor.process(second);
     }
 
-    public Expression getFirst() {
+    public T getFirst() {
         return first;
     }
 
-    public Expression getSecond() {
+    public T getSecond() {
         return second;
     }
 
@@ -44,10 +48,6 @@ public class BinaryExpression extends AbstractExpression implements CompoundExpr
 
     public boolean oneIsNull() {
         return first == Expressions.NULL || second == Expressions.NULL;
-    }
-
-    public boolean isAtomic() {
-        return false;
     }
 
     public Collection<? extends Expression> getExpressions() {

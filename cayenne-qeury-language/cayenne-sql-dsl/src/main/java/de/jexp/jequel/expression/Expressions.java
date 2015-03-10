@@ -1,5 +1,12 @@
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
+import de.jexp.jequel.expression.logical.BooleanLiteral;
+import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
+import de.jexp.jequel.expression.numeric.NumericExpression;
+import de.jexp.jequel.expression.numeric.NumericLiteral;
+import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.Operator;
 
@@ -14,40 +21,36 @@ public abstract class Expressions {
     public static final ConstantExpression<Void> NULL = new ConstantExpression<Void>("NULL");
     public static final ConstantExpression<Void> STAR = new ConstantExpression<Void>("*"); // TODO other type
 
-    public static final BooleanExpression TRUE = new BooleanConstantExpression("TRUE", true);
-    public static final BooleanExpression FALSE = new BooleanConstantExpression("FALSE", false);
+    public static final BooleanExpression TRUE = BooleanLiteral.TRUE;
+    public static final BooleanExpression FALSE = BooleanLiteral.FALSE;
 
-    public static BooleanUnaryExpression not(Object expression) {
-        return new BooleanUnaryExpression(NOT, e(expression));
+    public static BooleanExpression not(BooleanExpression expression) {
+        return new BooleanUnaryExpression(NOT, expression);
     }
 
-    // TODO numericExpr als Param
-    public static Expression sum(Object expression) {
-        return new NumericUnaryExpression(SUM, e(expression));
-    }
-
-    public static Expression avg(Object expression) {
-        return new NumericUnaryExpression(AVG, e(expression));
-    }
-
-    public static Expression count(Object expression) {
-        return new NumericUnaryExpression(COUNT, e(expression));
-    }
-
-    public static Expression round(Object expression) {
-        return new NumericUnaryExpression(ROUND, e(expression));
-    }
-
-    public static Expression toNumber(Object expression) {
-        return new NumericUnaryExpression(TO_NUMBER, e(expression));
-    }
-
-    public static BooleanUnaryExpression exits(Object expression) {
+    public static BooleanExpression exits(Object expression) {
         return new BooleanUnaryExpression(EXISTS, e(expression));
     }
 
-    public static BooleanUnaryExpression notExits(Object expression) {
+    public static BooleanExpression notExits(Object expression) {
         return new BooleanUnaryExpression(NOT_EXISTS, e(expression));
+    }
+
+    // TODO numericExpr als Param
+    public static NumericExpression sum(NumericExpression expression) {
+        return new NumericUnaryExpression(SUM, expression);
+    }
+
+    public static NumericExpression avg(NumericExpression expression) {
+        return new NumericUnaryExpression(AVG, expression);
+    }
+
+    public static NumericExpression round(NumericExpression expression) {
+        return new NumericUnaryExpression(ROUND, expression);
+    }
+
+    public static NumericExpression toNumber(NumericExpression expression) {
+        return new NumericUnaryExpression(TO_NUMBER, expression);
     }
 
     public static UnaryExpression min(Object expression) {
@@ -56,6 +59,10 @@ public abstract class Expressions {
 
     public static UnaryExpression max(Object expression) {
         return new UnaryExpression(MAX, e(expression));
+    }
+
+    public static Expression count(Expression expression) {
+        return new UnaryExpression(COUNT, expression);
     }
 
     public static Expression count() {
@@ -71,7 +78,7 @@ public abstract class Expressions {
         if (expression instanceof AbstractExpression) return (AbstractExpression) expression;
         if (expression instanceof Boolean) return (Boolean) expression ? TRUE : FALSE;
         if (expression instanceof String) return new StringExpression((String) expression);
-        if (expression instanceof Number) return new NumericExpression((Number) expression);
+        if (expression instanceof Number) return new NumericLiteral((Number) expression);
         if (expression instanceof Iterable) {
             return new RowListExpression(Delimeter.COMMA, createExpressionCollection((Iterable<?>) expression)) {
             };
@@ -116,9 +123,5 @@ public abstract class Expressions {
 
     public static <T> ParamExpression<Collection<T>> param(T... paramValues) {
         return new ParamExpression<Collection<T>>(asList(paramValues));
-    }
-
-    protected static BooleanBinaryExpression createBinaryBooleanExpression(Expression first, Operator operator, Object expression) {
-        return new BooleanBinaryExpression(first, operator, e(expression));
     }
 }

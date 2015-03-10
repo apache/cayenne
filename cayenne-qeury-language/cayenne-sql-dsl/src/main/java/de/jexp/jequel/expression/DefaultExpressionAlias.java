@@ -1,5 +1,8 @@
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+
 public class DefaultExpressionAlias<E extends Expression> implements ExpressionAlias<E> {
     private final E aliased;
     private final String alias;
@@ -25,12 +28,18 @@ public class DefaultExpressionAlias<E extends Expression> implements ExpressionA
         return expressionVisitor.visit(this);
     }
 
-    public <K> void process(ExpressionProcessor<K> expressionProcessor) {
-        aliased.process(expressionProcessor);
+    @Override
+    public BooleanExpression isNull() {
+        return aliased.isNull();
     }
 
-    public boolean isParenthesed() {
-        return false;
+    @Override
+    public BooleanExpression isNotNull() {
+        return aliased.isNotNull();
+    }
+
+    public <K> void process(ExpressionProcessor<K> expressionProcessor) {
+        aliased.process(expressionProcessor);
     }
 
     public BooleanExpression eq(Object expression) {
@@ -61,22 +70,6 @@ public class DefaultExpressionAlias<E extends Expression> implements ExpressionA
         return aliased.between(start, end);
     }
 
-    public NumericBinaryExpression plus(Object expression) {
-        return aliased.plus(expression);
-    }
-
-    public NumericBinaryExpression minus(Object expression) {
-        return aliased.minus(expression);
-    }
-
-    public NumericBinaryExpression times(Object expression) {
-        return aliased.times(expression);
-    }
-
-    public NumericBinaryExpression by(Object expression) {
-        return aliased.by(expression);
-    }
-
     public BooleanExpression in(Object... expressions) {
         return aliased.in(expressions);
     }
@@ -85,23 +78,4 @@ public class DefaultExpressionAlias<E extends Expression> implements ExpressionA
         return aliased.like(expression);
     }
 
-    public BooleanExpression is(Object expression) {
-        return aliased.is(expression);
-    }
-
-    public BooleanExpression isNot(Object expression) {
-        return aliased.isNot(expression);
-    }
-
-    public static DefaultExpressionAlias<Expression> as(AbstractExpression aliased, String alias) {
-        return new DefaultExpressionAlias<Expression>(aliased, alias);
-    }
-
-    public static DefaultExpressionAlias<Expression> AS(AbstractExpression aliased, String alias) {
-        return as(aliased, alias.toUpperCase());
-    }
-
-    public boolean isAtomic() {
-        return aliased.isAtomic();
-    }
 }
