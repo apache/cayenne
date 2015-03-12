@@ -9,12 +9,19 @@ https://issues.apache.org/jira/browse/CAY
 
 Changes/New Features:
 ----------------------------------
+Release: 4.0.M3
+Date:
+----------------------------------
+Bug Fixes:
+
+CAY-1990 Incorrect display of the raw SQL query in Modeler
+
+----------------------------------
 Release: 4.0.M2
 Date: 
 ----------------------------------
 Changes/New Features:
 
-CAY-1990 Incorrect display of the raw SQL query in Modeler
 CAY-1267 Some changes to LogDialog
 CAY-1980 'mvn cayenne-modeler:run' seems to be broken in 4.0
 CAY-1984 cdbimport doesn't flatten many to many relationships
