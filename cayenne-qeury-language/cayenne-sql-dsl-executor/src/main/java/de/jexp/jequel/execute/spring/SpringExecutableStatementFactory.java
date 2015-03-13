@@ -7,16 +7,10 @@ import de.jexp.jequel.sql.Sql;
 
 import javax.sql.DataSource;
 
-/**
- * @author mh14 @ jexp.de
- * @since 04.11.2007 14:17:20 (c) 2007 jexp.de
- */
 public class SpringExecutableStatementFactory implements ExecutableStatementFactory {
-    public SpringExecutableStatementFactory() {
-    }
 
-    public ExecutableStatement createExecutableStatement(final DataSource dataSource, final Sql sql) {
-        final DefaultExecutableParams executableParams = DefaultExecutableParams.extractParams(sql);
+    public ExecutableStatement createExecutableStatement(DataSource dataSource, Sql sql) {
+        DefaultExecutableParams executableParams = DefaultExecutableParams.extractParams(sql);
         if (executableParams.hasParams()) {
             if (executableParams.hasOnlyNamed()) {
                 return new NamedParameterJdbcTemplateExecutableStatement(dataSource, sql).withParams(executableParams);

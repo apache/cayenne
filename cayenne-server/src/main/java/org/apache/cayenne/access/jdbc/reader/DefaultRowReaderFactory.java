@@ -54,7 +54,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
         List<Object> rsMapping = queryMetadata.getResultSetMapping();
         if (rsMapping == null) {
-            return createFullRowReader(descriptor, queryMetadata, postProcessorFactory);
+            return createFullRowReader(descriptor, queryMetadata, postProcessorFactory.get());
         }
 
         int resultWidth = rsMapping.size();
@@ -66,7 +66,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
             if (segment instanceof EntityResultSegment) {
                 return createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment,
-                        postProcessorFactory);
+                        postProcessorFactory.get());
             } else {
                 return new ScalarRowReader<Object>(descriptor, (ScalarResultSegment) segment);
             }
@@ -80,7 +80,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                     reader.addRowReader(
                             i,
                             createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment,
-                                    postProcessorFactory));
+                                    postProcessorFactory.get()));
                 } else {
                     reader.addRowReader(i, new ScalarRowReader<Object>(descriptor, (ScalarResultSegment) segment));
                 }
@@ -91,26 +91,25 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     }
 
     private RowReader<?> createEntityRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-            EntityResultSegment resultMetadata, PostprocessorFactory postProcessorFactory) {
+                                               EntityResultSegment resultMetadata, DataRowPostProcessor postProcessor) {
 
         if (queryMetadata.getPageSize() > 0) {
-            return new IdRowReader<Object>(descriptor, queryMetadata, postProcessorFactory.get());
+            return new IdRowReader<Object>(descriptor, queryMetadata, postProcessor);
         } else if (resultMetadata.getClassDescriptor() != null && resultMetadata.getClassDescriptor().hasSubclasses()) {
-            return new InheritanceAwareEntityRowReader(descriptor, resultMetadata, postProcessorFactory.get());
+            return new InheritanceAwareEntityRowReader(descriptor, resultMetadata, postProcessor);
         } else {
-            return new EntityRowReader(descriptor, resultMetadata, postProcessorFactory.get());
+            return new EntityRowReader(descriptor, resultMetadata, postProcessor);
         }
     }
 
-    private RowReader<?> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-            PostprocessorFactory postProcessorFactory) {
+    private RowReader<?> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
 
         if (queryMetadata.getPageSize() > 0) {
-            return new IdRowReader<Object>(descriptor, queryMetadata, postProcessorFactory.get());
+            return new IdRowReader<Object>(descriptor, queryMetadata, postProcessor);
         } else if (queryMetadata.getClassDescriptor() != null && queryMetadata.getClassDescriptor().hasSubclasses()) {
-            return new InheritanceAwareRowReader(descriptor, queryMetadata, postProcessorFactory.get());
+            return new InheritanceAwareRowReader(descriptor, queryMetadata, postProcessor);
         } else {
-            return new FullRowReader(descriptor, queryMetadata, postProcessorFactory.get());
+            return new FullRowReader(descriptor, queryMetadata, postProcessor);
         }
     }
 

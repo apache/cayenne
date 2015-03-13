@@ -20,13 +20,13 @@ public interface ExecutableStatement {
 
     void processRows(RowCallbackHandler rowHandler);
 
-    <I, O> Collection<O> mapBeans(final BeanRowMapper<I, O> beanRowMapper);
+    <I, O> Collection<O> mapBeans(BeanRowMapper<I, O> beanRowMapper);
 
-    <O> Collection<O> mapValues(final ValueRowMapper<O> valueRowMapper);
+    <O> Collection<O> mapValues(ValueRowMapper<O> valueRowMapper);
 
-    <I> void handleBeans(final BeanRowHandler<I> beanRowHandler);
+    <I> void handleBeans(BeanRowHandler<I> beanRowHandler);
 
-    void handleValues(final ValueRowHandler valueRowHandler);
+    void handleValues(ValueRowHandler valueRowHandler);
 
     DataSource getDataSource();
 

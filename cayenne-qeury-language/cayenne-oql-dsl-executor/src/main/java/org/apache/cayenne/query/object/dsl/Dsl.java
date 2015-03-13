@@ -16,29 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.oql.model;
+package org.apache.cayenne.query.object.dsl;
 
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.object.model.ToModel;
 
 /**
  * @since 4.0
  */
-public interface OqlDsl {
+public interface Dsl {
 
     interface Select {
-
+        From from(ObjEntity entity);
     }
 
-    interface From {
+    interface From extends ToModel {
 
     }
-
-    class FromEntity implements From {
-        public final ObjEntity entity;
-
-        public FromEntity(ObjEntity entity) {
-            this.entity = entity;
-        }
-    }
-
 }

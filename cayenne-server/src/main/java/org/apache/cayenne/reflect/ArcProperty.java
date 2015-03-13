@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**

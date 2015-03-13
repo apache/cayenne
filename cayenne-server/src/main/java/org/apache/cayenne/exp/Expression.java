@@ -52,7 +52,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * 
 	 * @since 1.2
 	 */
-	public final static Object PRUNED_NODE = new Object();
+    public static final Object PRUNED_NODE = new Object();
 
 	public static final int AND = 0;
 	public static final int OR = 1;
@@ -599,11 +599,13 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 		if (transformed == PRUNED_NODE || transformed == null) {
 			return null;
-		} else if (transformed instanceof Expression) {
-			return (Expression) transformed;
 		}
 
-		throw new ExpressionException("Invalid transformed expression: " + transformed);
+        if (transformed instanceof Expression) {
+            return (Expression) transformed;
+        }
+
+        throw new ExpressionException("Invalid transformed expression: " + transformed);
 	}
 
 	/**

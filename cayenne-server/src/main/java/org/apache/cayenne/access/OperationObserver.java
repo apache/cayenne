@@ -69,11 +69,11 @@ public interface OperationObserver extends OperationHints {
      * Callback method invoked on exceptions that happen during an execution of a specific
      * query.
      */
-    public void nextQueryException(Query query, Exception ex);
+    void nextQueryException(Query query, Exception ex);
 
     /**
      * Callback method invoked on exceptions that are not tied to a specific query
      * execution, such as JDBC connection exceptions, etc.
      */
-    public void nextGlobalException(Exception ex);
+    void nextGlobalException(Exception ex);
 }

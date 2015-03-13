@@ -39,7 +39,6 @@ class EntityRowReader implements RowReader<DataRow> {
     private int[] types;
 
     String entityName;
-    private int mapCapacity;
     private int startIndex;
 
     DataRowPostProcessor postProcessor;
@@ -85,7 +84,7 @@ class EntityRowReader implements RowReader<DataRow> {
     public DataRow readRow(ResultSet resultSet) {
 
         try {
-            DataRow row = new DataRow(mapCapacity);
+            DataRow row = new DataRow(0);
             int len = converters.length;
 
             for (int i = 0; i < len; i++) {

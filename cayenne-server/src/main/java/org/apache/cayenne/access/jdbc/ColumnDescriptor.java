@@ -30,6 +30,8 @@ import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.ToStringBuilder;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 /**
  * A descriptor of a ResultSet column.
  * 
@@ -37,19 +39,17 @@ import org.apache.cayenne.util.ToStringBuilder;
  */
 public class ColumnDescriptor {
 
-    protected DbAttribute attribute;
-    protected String tableName;
-    protected String procedureName;
+    private DbAttribute attribute;
 
     // identifies column in result set
-    protected String name;
-    protected String namePrefix;
+    private String name;
+    private String namePrefix;
 
     // identifies column in a DataRow
-    protected String dataRowKey;
+    private String dataRowKey;
 
-    protected int jdbcType;
-    protected String javaClass;
+    private int jdbcType;
+    private String javaClass;
 
     /**
      * Creates a ColumnDescriptor
@@ -79,10 +79,6 @@ public class ColumnDescriptor {
 
         this.attribute = attribute;
         this.namePrefix = tableAlias;
-
-        if (attribute.getEntity() != null) {
-            this.tableName = attribute.getEntity().getName();
-        }
     }
 
     /**
@@ -101,10 +97,6 @@ public class ColumnDescriptor {
      */
     public ColumnDescriptor(ProcedureParameter parameter) {
         this(parameter.getName(), parameter.getType());
-
-        if (parameter.getProcedure() != null) {
-            this.procedureName = parameter.getProcedure().getName();
-        }
     }
 
     /**
@@ -127,25 +119,14 @@ public class ColumnDescriptor {
 
     private static String getColumnNameFromMeta(ResultSetMetaData metaData, int position) throws SQLException {
         String name = metaData.getColumnLabel(position);
-        if (name == null || name.length() == 0) {
+        if (isBlank(name)) {
             name = metaData.getColumnName(position);
 
-            if (name == null || name.length() == 0) {
+            if (isBlank(name)) {
                 name = "column_" + position;
             }
         }
         return name;
-    }
-
-    /**
-     * Returns a DbAttribute for this column. Since columns descriptors can be
-     * initialized in a context where a DbAttribite is unknown, this method may
-     * return null.
-     * 
-     * @since 4.0
-     */
-    public DbAttribute getAttribute() {
-        return attribute;
     }
 
     /**
@@ -162,9 +143,11 @@ public class ColumnDescriptor {
         }
 
         ColumnDescriptor rhs = (ColumnDescriptor) o;
-        return new EqualsBuilder().append(name, rhs.name).append(namePrefix, rhs.namePrefix)
-                .append(procedureName, rhs.procedureName).append(dataRowKey, rhs.dataRowKey)
-                .append(tableName, rhs.tableName).isEquals();
+        return new EqualsBuilder()
+                .append(name, rhs.name)
+                .append(namePrefix, rhs.namePrefix)
+                .append(dataRowKey, rhs.dataRowKey)
+                .isEquals();
     }
 
     /**
@@ -172,7 +155,9 @@ public class ColumnDescriptor {
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(23, 43).append(name).append(namePrefix).append(procedureName).append(tableName)
+        return new HashCodeBuilder(23, 43)
+                .append(name)
+                .append(namePrefix)
                 .append(dataRowKey).toHashCode();
     }
 
@@ -181,15 +166,13 @@ public class ColumnDescriptor {
      */
     @Override
     public String toString() {
-        ToStringBuilder builder = new ToStringBuilder(this);
-        builder.append("namePrefix", namePrefix);
-        builder.append("name", getName());
-        builder.append("dataRowKey", getDataRowKey());
-        builder.append("tableName", getTableName());
-        builder.append("procedureName", getProcedureName());
-        builder.append("javaClass", getJavaClass());
-        builder.append("jdbcType", getJdbcType());
-        return builder.toString();
+        return new ToStringBuilder(this)
+                .append("namePrefix", namePrefix)
+                .append("name", getName())
+                .append("dataRowKey", getDataRowKey())
+                .append("javaClass", getJavaClass())
+                .append("jdbcType", getJdbcType())
+                .toString();
     }
 
     /**
@@ -198,7 +181,7 @@ public class ColumnDescriptor {
      * @since 1.2
      */
     public String getQualifiedColumnName() {
-        return (namePrefix != null) ? namePrefix + '.' + name : name;
+        return namePrefix != null ? namePrefix + '.' + name : name;
     }
 
     public int getJdbcType() {
@@ -236,38 +219,6 @@ public class ColumnDescriptor {
     }
 
     /**
-     * Returns the name of the parent table.
-     * 
-     * @since 1.2
-     */
-    public String getTableName() {
-        return tableName;
-    }
-
-    /**
-     * @since 1.2
-     */
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    /**
-     * Returns the name of the parent stored procedure.
-     * 
-     * @since 1.2
-     */
-    public String getProcedureName() {
-        return procedureName;
-    }
-
-    /**
-     * @since 1.2
-     */
-    public void setProcedureName(String procedureName) {
-        this.procedureName = procedureName;
-    }
-
-    /**
      * @since 3.0
      */
     public String getDataRowKey() {
@@ -279,5 +230,13 @@ public class ColumnDescriptor {
      */
     public void setDataRowKey(String dataRowKey) {
         this.dataRowKey = dataRowKey;
+    }
+
+    public void setNamePrefix(String namePrefix) {
+        this.namePrefix = namePrefix;
+    }
+
+    public DbAttribute getAttribute() {
+        return attribute;
     }
 }

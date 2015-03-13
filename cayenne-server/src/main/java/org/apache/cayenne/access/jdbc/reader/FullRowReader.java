@@ -47,10 +47,8 @@ class FullRowReader extends BaseRowReader<DataRow> {
 
             // process result row columns,
             for (int i = 0; i < resultWidth; i++) {
-                // note: jdbc column indexes start from 1, not 0 unlike
-                // everywhere else
-                Object val = converters[i].materializeObject(resultSet, i + 1, types[i]);
-                dataRow.put(labels[i], val);
+                // note: jdbc column indexes start from 1, not 0 unlike everywhere else
+                dataRow.put(labels[i], converters[i].materializeObject(resultSet, i + 1, types[i]));
             }
 
             postprocessRow(resultSet, dataRow);

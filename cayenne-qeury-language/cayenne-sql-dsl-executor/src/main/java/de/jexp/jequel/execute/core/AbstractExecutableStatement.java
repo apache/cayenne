@@ -11,8 +11,8 @@ import java.util.Map;
 
 public abstract class AbstractExecutableStatement implements ExecutableStatement, SqlString {
     private final Sql sql;
+    private final DataSource dataSource;
 
-    private DataSource dataSource;
     private ExecutableParams executableParams;
 
     protected AbstractExecutableStatement(DataSource dataSource, Sql sql) {
@@ -60,9 +60,9 @@ public abstract class AbstractExecutableStatement implements ExecutableStatement
 
     // TODO adapt, move responsibility to Expression Params
     private boolean hasNamedParams(Sql sql) {
-        ParameterCollectorProcessor parameterCollectorProcessor = new ParameterCollectorProcessor();
-        parameterCollectorProcessor.process(sql);
-        return !parameterCollectorProcessor.getNamedExpressions().isEmpty();
+        ParameterCollectorProcessor paramsCollector = new ParameterCollectorProcessor();
+        paramsCollector.process(sql);
+        return !paramsCollector.getNamedExpressions().isEmpty();
     }
 
     public ExecutableStatement withParams(Map<String, Object> params) {

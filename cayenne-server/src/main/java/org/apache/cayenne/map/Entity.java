@@ -365,12 +365,12 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     // This entity is assumed to be the root of the path.
     final class PathIterator implements Iterator<CayenneMapEntry> {
 
-        private StringTokenizer toks;
+        private final StringTokenizer toks;
+        private final String path;
+
         private Entity currentEnt;
-        private String path;
 
         PathIterator(String path) {
-            super();
             currentEnt = Entity.this;
             toks = new StringTokenizer(path, PATH_SEPARATOR);
             this.path = path;
@@ -389,11 +389,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
                 // do a sanity check...
                 if (toks.hasMoreTokens())
                     throw new ExpressionException(
-                            "Attribute must be the last component of the path: '"
-                                    + pathComp
-                                    + "'.",
-                            path,
-                            null);
+                            "Attribute must be the last component of the path: '" + pathComp + "'.", path, null);
 
                 return attr;
             }
@@ -406,22 +402,15 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
                 }
             }
             
-            String entityName = (currentEnt != null) ? currentEnt.getName() : "(?)";
+            String entityName = currentEnt != null ? currentEnt.getName() : "(?)";
 
             // build error message
-            StringBuilder buf = new StringBuilder();
-            buf
-                    .append("Can't resolve path component: [")
-                    .append(entityName)
-                    .append('.')
-                    .append(pathComp)
-                    .append("].");
-            throw new ExpressionException(buf.toString(), path, null);
+            throw new ExpressionException(
+                            "Can't resolve path component: [" + entityName + '.' + pathComp + "].", path, null);
         }
 
         public void remove() {
-            throw new UnsupportedOperationException(
-                    "'remove' operation is not supported.");
+            throw new UnsupportedOperationException("'remove' operation is not supported.");
         }
     }
 

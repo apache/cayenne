@@ -29,9 +29,9 @@ public class DefaultExecutableParams implements ExecutableParams {
         for (Object param : params) {
             if (i >= this.params.size()) {
                 break; // this.params.add(param);
-            } else {
-                this.params.set(i, param);
             }
+
+            this.params.set(i, param);
             i++;
         }
     }
@@ -79,24 +79,18 @@ public class DefaultExecutableParams implements ExecutableParams {
     }
 
     public static DefaultExecutableParams extractParams(Sql sql) {
-        ParameterCollectorProcessor parameterCollectorProcessor = getParamsFromSql(sql);
+        ParameterCollectorProcessor paramsCollector = new ParameterCollectorProcessor();
+        paramsCollector.process(sql);
 
         DefaultExecutableParams executableParams = new DefaultExecutableParams();
-        for (ParamExpression namedExpression : parameterCollectorProcessor.getNamedExpressions()) {
+        for (ParamExpression namedExpression : paramsCollector.getNamedExpressions()) {
             executableParams.addParam(namedExpression.getLiteral(), namedExpression.getValue());
         }
-        for (ParamExpression paramExpression : parameterCollectorProcessor.getParamExpressions()) {
+        for (ParamExpression paramExpression : paramsCollector.getParamExpressions()) {
             executableParams.addParam(paramExpression.getValue());
         }
         return executableParams;
     }
-
-    public static ParameterCollectorProcessor getParamsFromSql(Sql sql) {
-        ParameterCollectorProcessor parameterCollectorProcessor = new ParameterCollectorProcessor();
-        parameterCollectorProcessor.process(sql);
-        return parameterCollectorProcessor;
-    }
-
 
     public static ExecutableParams createParams(Object[] params) {
         return new DefaultExecutableParams(Arrays.asList(params));

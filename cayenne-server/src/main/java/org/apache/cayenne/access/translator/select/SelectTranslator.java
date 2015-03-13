@@ -52,10 +52,10 @@ import org.apache.cayenne.util.HashCodeBuilder;
 import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -266,11 +266,11 @@ public class SelectTranslator extends QueryAssembler {
      * @since 1.2
      */
     public Map<ObjAttribute, ColumnDescriptor> getAttributeOverrides() {
-        if (attributeOverrides != null) {
-            return attributeOverrides;
-        } else {
-            return Collections.emptyMap();
+        if (attributeOverrides == null) {
+            attributeOverrides = new HashMap<ObjAttribute, ColumnDescriptor>();
         }
+
+        return attributeOverrides;
     }
 
     /**
@@ -293,22 +293,20 @@ public class SelectTranslator extends QueryAssembler {
 
         this.defaultAttributesByColumn = new HashMap<ColumnDescriptor, ObjAttribute>();
 
-        List<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();
         SelectQuery<?> query = getSelectQuery();
-
         if (query.getRoot() instanceof DbEntity) {
-            appendDbEntityColumns(columns, query);
-        } else if (getQueryMetadata().getPageSize() > 0) {
-            appendIdColumns(columns, query);
-        } else {
-            appendQueryColumns(columns, query);
+            return appendDbEntityColumns();
         }
 
-        return columns;
+        if (getQueryMetadata().getPageSize() > 0) {
+            return appendIdColumns();
+        }
+
+        return appendQueryColumns(query);
     }
 
-    <T> List<ColumnDescriptor> appendDbEntityColumns(List<ColumnDescriptor> columns, SelectQuery<T> query) {
-
+    List<ColumnDescriptor> appendDbEntityColumns() {
+        List<ColumnDescriptor> columns = new LinkedList<ColumnDescriptor>();
         Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
 
         DbEntity table = getRootDbEntity();
@@ -323,8 +321,8 @@ public class SelectTranslator extends QueryAssembler {
      * Appends columns needed for object SelectQuery to the provided columns
      * list.
      */
-    <T> List<ColumnDescriptor> appendQueryColumns(final List<ColumnDescriptor> columns, SelectQuery<T> query) {
-
+    <T> List<ColumnDescriptor> appendQueryColumns(SelectQuery<T> query) {
+        final List<ColumnDescriptor> columns = new LinkedList<ColumnDescriptor>();
         final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
 
         // fetched attributes include attributes that are either:
@@ -349,13 +347,13 @@ public class SelectTranslator extends QueryAssembler {
 
                     if (pathPart == null) {
                         throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
-                    } else if (pathPart instanceof DbRelationship) {
-                        DbRelationship rel = (DbRelationship) pathPart;
-                        dbRelationshipAdded(rel, JoinType.LEFT_OUTER, null);
-                    } else if (pathPart instanceof DbAttribute) {
-                        DbAttribute dbAttr = (DbAttribute) pathPart;
 
-                        appendColumn(columns, oa, dbAttr, attributes, null);
+                    } else if (pathPart instanceof DbRelationship) {
+                        dbRelationshipAdded((DbRelationship) pathPart, JoinType.LEFT_OUTER, null);
+
+                    } else if (pathPart instanceof DbAttribute) {
+                        appendColumn(columns, oa, (DbAttribute) pathPart, attributes, null);
+
                     }
                 }
                 return true;
@@ -429,23 +427,23 @@ public class SelectTranslator extends QueryAssembler {
                 }
 
                 // process terminating element
-                if (lastComponent != null) {
+                if (lastComponent == null) {
+                    continue;
+                }
 
-                    DbRelationship relationship = lastComponent.getRelationship();
+                DbRelationship relationship = lastComponent.getRelationship();
+                if (relationship == null) {
+                    continue;
+                }
 
-                    if (relationship != null) {
+                String labelPrefix = pathExp.getPath();
+                DbEntity targetEntity = relationship.getTargetEntity();
 
-                        String labelPrefix = pathExp.getPath();
-                        DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
+                for (DbAttribute pk : targetEntity.getPrimaryKeys()) {
 
-                        for (DbAttribute pk : targetEntity.getPrimaryKeys()) {
-
-                            // note that we my select a source attribute, but
-                            // label it as
-                            // target for simplified snapshot processing
-                            appendColumn(columns, null, pk, attributes, labelPrefix + '.' + pk.getName());
-                        }
-                    }
+                    // note that we my select a source attribute, but label it as
+                    // target for simplified snapshot processing
+                    appendColumn(columns, null, pk, attributes, labelPrefix + '.' + pk.getName());
                 }
             }
         }
@@ -482,7 +480,7 @@ public class SelectTranslator extends QueryAssembler {
                 // go via target OE to make sure that Java types are mapped
                 // correctly...
                 ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(oe);
-                ObjEntity targetEntity = (ObjEntity) targetRel.getTargetEntity();
+                ObjEntity targetEntity = targetRel.getTargetEntity();
 
                 String labelPrefix = dbPrefetch.getPath();
                 for (ObjAttribute oa : targetEntity.getAttributes()) {
@@ -493,8 +491,8 @@ public class SelectTranslator extends QueryAssembler {
                         if (pathPart == null) {
                             throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
                         } else if (pathPart instanceof DbRelationship) {
-                            DbRelationship rel = (DbRelationship) pathPart;
-                            dbRelationshipAdded(rel, JoinType.INNER, null);
+                            dbRelationshipAdded((DbRelationship) pathPart, JoinType.INNER, null);
+
                         } else if (pathPart instanceof DbAttribute) {
                             DbAttribute attribute = (DbAttribute) pathPart;
 
@@ -504,7 +502,7 @@ public class SelectTranslator extends QueryAssembler {
                 }
 
                 // append remaining target attributes such as keys
-                DbEntity targetDbEntity = (DbEntity) r.getTargetEntity();
+                DbEntity targetDbEntity = r.getTargetEntity();
                 for (DbAttribute attribute : targetDbEntity.getAttributes()) {
                     appendColumn(columns, null, attribute, attributes, labelPrefix + '.' + attribute.getName());
                 }
@@ -514,8 +512,8 @@ public class SelectTranslator extends QueryAssembler {
         return columns;
     }
 
-    <T> List<ColumnDescriptor> appendIdColumns(final List<ColumnDescriptor> columns, SelectQuery<T> query) {
-
+    List<ColumnDescriptor> appendIdColumns() {
+        List<ColumnDescriptor> columns = new LinkedList<ColumnDescriptor>();
         Set<ColumnTracker> skipSet = new HashSet<ColumnTracker>();
 
         ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
@@ -538,8 +536,9 @@ public class SelectTranslator extends QueryAssembler {
         String alias = getCurrentAlias();
         if (skipSet.add(new ColumnTracker(alias, attribute))) {
 
-            ColumnDescriptor column = (objAttribute != null) ? new ColumnDescriptor(objAttribute, attribute, alias)
-                    : new ColumnDescriptor(attribute, alias);
+            ColumnDescriptor column = objAttribute == null
+                    ? new ColumnDescriptor(attribute, alias)
+                    : new ColumnDescriptor(objAttribute, attribute, alias);
 
             if (label != null) {
                 column.setDataRowKey(label);
@@ -547,34 +546,28 @@ public class SelectTranslator extends QueryAssembler {
 
             columns.add(column);
 
-            // TODO: andrus, 5/7/2006 - replace 'columns' collection with this
-            // map, as it
-            // is redundant
-            defaultAttributesByColumn.put(column, objAttribute);
+            // TODO: andrus, 5/7/2006 - replace 'columns' collection with this map, as it is redundant
+            if (objAttribute != null) {
+                getAttributeOverrides().put(objAttribute, column);
+            }
         } else if (objAttribute != null) {
+            ColumnDescriptor column = findColumnByName(columns, attribute.getName());
+            if (column == null) {
+                return;
+            }
 
-            // record ObjAttribute override
-            for (ColumnDescriptor column : columns) {
-                if (attribute.getName().equals(column.getName())) {
-                    
-                    if (attributeOverrides == null) {
-                        attributeOverrides = new HashMap<ObjAttribute, ColumnDescriptor>();
-                    }
+            column.setJavaClass(Void.TYPE.getName());
+            getAttributeOverrides().put(objAttribute, column);
+        }
+    }
 
-                    // kick out the original attribute
-                    ObjAttribute original = defaultAttributesByColumn.remove(column);
-
-                    if (original != null) {
-                        attributeOverrides.put(original, column);
-                    }
-
-                    attributeOverrides.put(objAttribute, column);
-                    column.setJavaClass(Void.TYPE.getName());
-                    
-                    break;
-                }
+    private ColumnDescriptor findColumnByName(List<ColumnDescriptor> columns, String attributeName) {
+        for (ColumnDescriptor column : columns) {
+            if (attributeName.equals(column.getName())) {
+                return column;
             }
         }
+        return null;
     }
 
     /**
@@ -607,8 +600,8 @@ public class SelectTranslator extends QueryAssembler {
 
     static final class ColumnTracker {
 
-        private DbAttribute attribute;
-        private String alias;
+        private final DbAttribute attribute;
+        private final String alias;
 
         ColumnTracker(String alias, DbAttribute attribute) {
             this.attribute = attribute;
@@ -624,7 +617,7 @@ public class SelectTranslator extends QueryAssembler {
             ColumnTracker other = (ColumnTracker) object;
             return new EqualsBuilder()
                     .append(alias, other.alias)
-                    .append(attribute, other.attribute)
+                    .append(attribute, other.attribute) // TODO it doesn't override equals
                     .isEquals();
         }
 

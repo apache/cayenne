@@ -60,7 +60,6 @@ public class ColumnDescriptorTest {
         ColumnDescriptor column = new ColumnDescriptor(a, null);
         assertEquals("name", column.getName());
         assertEquals("name", column.getQualifiedColumnName());
-        assertEquals("entity", column.getTableName());
         assertEquals(String.class.getName(), column.getJavaClass());
         assertEquals("name", column.getDataRowKey());
         assertEquals(Types.VARCHAR, column.getJdbcType());
@@ -70,21 +69,18 @@ public class ColumnDescriptorTest {
     public void testEquals() {
         ColumnDescriptor column1 = new ColumnDescriptor();
         column1.setName("n1");
-        column1.namePrefix = "np1";
-        column1.setTableName("t1");
+        column1.setNamePrefix("np1");
         // type should be ignored in the comparison
         column1.setJdbcType(Types.VARCHAR);
 
         ColumnDescriptor column2 = new ColumnDescriptor();
         column2.setName("n1");
-        column2.namePrefix = "np1";
-        column2.setTableName("t1");
+        column2.setNamePrefix("np1");
         column2.setJdbcType(Types.BOOLEAN);
 
         ColumnDescriptor column3 = new ColumnDescriptor();
         column3.setName("n1");
-        column3.namePrefix = "np3";
-        column3.setTableName("t1");
+        column3.setNamePrefix("np3");
 
         assertEquals(column1, column2);
         assertFalse(column1.equals(column3));
@@ -95,21 +91,18 @@ public class ColumnDescriptorTest {
     public void testHashCode() {
         ColumnDescriptor column1 = new ColumnDescriptor();
         column1.setName("n1");
-        column1.namePrefix = "np1";
-        column1.setTableName("t1");
+        column1.setNamePrefix("np1");
         // type should be ignored in the comparison
         column1.setJdbcType(Types.VARCHAR);
 
         ColumnDescriptor column2 = new ColumnDescriptor();
         column2.setName("n1");
-        column2.namePrefix = "np1";
-        column2.setTableName("t1");
+        column2.setNamePrefix("np1");
         column2.setJdbcType(Types.BOOLEAN);
 
         ColumnDescriptor column3 = new ColumnDescriptor();
         column3.setName("n1");
-        column3.namePrefix = "np3";
-        column3.setTableName("t1");
+        column3.setNamePrefix("np3");
 
         assertEquals(column1.hashCode(), column2.hashCode());
 

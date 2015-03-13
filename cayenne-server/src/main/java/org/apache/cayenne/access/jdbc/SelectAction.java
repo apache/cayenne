@@ -63,7 +63,7 @@ public class SelectAction extends BaseSQLAction {
 
         final long t1 = System.currentTimeMillis();
 
-        final SelectTranslator translator = createTranslator(connection);
+        SelectTranslator translator = createTranslator(connection);
         PreparedStatement prepStmt = translator.createStatement();
 
         // TODO: ugly... 'createSqlString' is already called inside
@@ -149,13 +149,9 @@ public class SelectAction extends BaseSQLAction {
             it = new DistinctResultIterator(workerIterator, translator.getRootDbEntity(), compareFullRows[0]);
         }
 
-        // wrap iterator in a fetch limit checker ... there are a few cases when
-        // in-memory
-        // fetch limit is a noop, however in a general case this is needed, as
-        // the SQL
-        // result count does not directly correspond to the number of objects
-        // returned
-        // from Cayenne.
+        // wrap iterator in a fetch limit checker ... there are a few cases when in-memory
+        // fetch limit is a noop, however in a general case this is needed, as the SQL
+        // result count does not directly correspond to the number of objects returned from Cayenne.
 
         int fetchLimit = query.getFetchLimit();
         int offset = translator.isSuppressingDistinct() ? query.getFetchOffset() : getInMemoryOffset(query

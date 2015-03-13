@@ -31,7 +31,7 @@ import org.apache.cayenne.query.QueryMetadata;
  */
 class InheritanceAwareRowReader extends FullRowReader {
 
-    private EntityInheritanceTree entityInheritanceTree;
+    private final EntityInheritanceTree entityInheritanceTree;
 
     InheritanceAwareRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
         super(descriptor, queryMetadata, postProcessor);

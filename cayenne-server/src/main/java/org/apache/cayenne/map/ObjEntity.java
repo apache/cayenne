@@ -1131,9 +1131,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
     final class DBPathConverter implements Transformer {
 
-        // TODO: make it a public method - resolveDBPathComponents or
-        // something...
-        // seems generally useful
+        // TODO: make it a public method - resolveDBPathComponents or something... seems generally useful
 
         String toDbPath(PathComponentIterator objectPathComponents) {
             StringBuilder buf = new StringBuilder();
