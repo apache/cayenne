@@ -12,6 +12,10 @@ Changes/New Features:
 Release: 4.0.M3
 Date:
 ----------------------------------
+Changes/New Features:
+
+CAY-1991 More control over generated String property names
+
 Bug Fixes:
 
 CAY-1990 Incorrect display of the raw SQL query in Modeler
