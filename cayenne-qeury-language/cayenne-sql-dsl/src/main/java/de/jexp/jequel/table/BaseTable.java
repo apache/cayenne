@@ -3,6 +3,7 @@ package de.jexp.jequel.table;
 import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.RowListExpression;
 import de.jexp.jequel.literals.Delimeter;
+import de.jexp.jequel.table.types.INTEGER;
 import de.jexp.jequel.table.visitor.TableVisitor;
 
 import java.math.BigDecimal;
@@ -149,8 +150,8 @@ public class BaseTable<A extends BaseTable> extends RowListExpression<A> impleme
         // and use the expressions list of superclass for locating fields
     }
 
-    protected Field<Integer> integer() {
-        return field(Integer.class);
+    protected INTEGER integer() {
+        return new INTEGER(this);
     }
 
     protected Field<String> string() {

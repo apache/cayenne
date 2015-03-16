@@ -99,13 +99,13 @@ public class RowDescriptorBuilder {
             throw new CayenneRuntimeException("'ResultSetMetadata' is empty.");
         }
 
-        int columnLen = (columns != null) ? columns.length : 0;
+        int columnLen = columns == null ? 0 : columns.length;
 
         if (rsLen < columnLen) {
-            throw new CayenneRuntimeException(
-                    "'ResultSetMetadata' has less elements then 'columns'.");
+            throw new CayenneRuntimeException("'ResultSetMetadata' has less elements then 'columns'.");
         }
-        else if (rsLen == columnLen) {
+
+        if (rsLen == columnLen) {
             // 'columns' contains ColumnDescriptor for every column
             // in resultSetMetadata. This return is for optimization.
             return columns;
@@ -114,14 +114,15 @@ public class RowDescriptorBuilder {
         ColumnDescriptor[] rsColumns = new ColumnDescriptor[rsLen];
 
         int outputLen = 0;
-        for (int i = 0; i < rsLen; i++) {
-            String rowkey = resolveDataRowKeyFromResultSet(i + 1);
+        for (int i = 0; i < rsLen; i++, outputLen++) {
+            String rowKey = resolveDataRowKeyFromResultSet(i + 1);
             
             // resolve column descriptor from 'columns' or create new
-            rsColumns[outputLen] = getColumnDescriptor(rowkey, columns, i + 1);
-            outputLen++;
+            rsColumns[outputLen] = getColumnDescriptor(rowKey, columns, i + 1);
         }
+
         if (outputLen < rsLen) {
+            // TODO alex, when is it possible?
             // cut ColumnDescriptor array
             ColumnDescriptor[] rsColumnsCut = new ColumnDescriptor[outputLen];
             System.arraycopy(rsColumns, 0, rsColumnsCut, 0, outputLen);

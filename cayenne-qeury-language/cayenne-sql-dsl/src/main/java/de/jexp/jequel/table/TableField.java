@@ -10,11 +10,11 @@ public class TableField<T> extends AbstractExpression implements Field<T> {
     private String name;
     private boolean primaryKey;
 
-    TableField(Table table) {
+    protected TableField(Table table) {
         this(null, table);
     }
 
-    TableField(String name, Table table) {
+    protected TableField(String name, Table table) {
         this.name = name;
         this.table = table;
     }
@@ -53,19 +53,22 @@ public class TableField<T> extends AbstractExpression implements Field<T> {
         throw new IllegalStateException("Name already set " + this);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
-    public TableField<T> primaryKey() {
+    public <E extends TableField<T>> E primaryKey() {
         this.primaryKey = true;
-        return this;
+        return (E) this;
     }
 
+    @Override
     public boolean isPrimaryKey() {
         return primaryKey;
     }
 
+    @Override
     public Table getTable() {
         return table;
     }

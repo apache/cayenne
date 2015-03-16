@@ -6,7 +6,7 @@ package de.jexp.jequel.expression;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
 /*
-* TODO: Alex, remove this class
+* TODO: Alex, split it to 2 classes with named and unnamed param
 * */
 public class ParamExpression<T> extends ConstantExpression<T> {
 

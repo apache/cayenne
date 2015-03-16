@@ -20,7 +20,7 @@ public class FieldAlias<T> extends DefaultExpressionAlias<Field<T>> implements F
         return getAliased().getName();
     }
 
-    public Field<T> primaryKey() {
+    public <E extends TableField<T>> E  primaryKey() {
         return getAliased().primaryKey();
     }
 

@@ -197,11 +197,9 @@ public abstract class QueryAssembler {
 
                 DbAttribute attr = attributes.get(i);
 
-                // null DbAttributes are a result of inferior qualifier
-                // processing
+                // null DbAttributes are a result of inferior qualifier processing
                 // (qualifier can't map parameters to DbAttributes and therefore
-                // only supports standard java types now)
-                // hence, a special moronic case here:
+                // only supports standard java types now) hence, a special moronic case here:
                 if (attr == null) {
                     stmt.setObject(i + 1, val);
                 } else {

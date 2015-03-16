@@ -1,14 +1,8 @@
 package de.jexp.jequel.expression;
 
-import static de.jexp.jequel.expression.Expressions.*;
-import static de.jexp.jequel.tables.TEST_TABLES.*;
+import de.jexp.jequel.tables.TEST_TABLES;
 import junit.framework.TestCase;
 
-/**
- * @author mh14 @ jexp.de
- * @copyright (c) 2007 jexp.de
- * @since 18.10.2007 15:17:02
- */
 public class NumericExpressionTest extends TestCase {
     public void testNumericExpression() {
         assertEquals("1", Expressions.e(1).toString());

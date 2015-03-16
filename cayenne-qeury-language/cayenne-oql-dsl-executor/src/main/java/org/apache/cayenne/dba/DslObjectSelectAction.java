@@ -54,6 +54,9 @@ public class DslObjectSelectAction<T> extends BaseSQLAction {
 
         final long t1 = System.currentTimeMillis();
 
+        SqlDslAction sqlAction = new SqlDslAction(dataNode);
+
+
         Sql sql = new OqlToSqlTransformer().transform(query.getSelect());
 
         PreparedStatement prepStmt = translator.createStatement();
