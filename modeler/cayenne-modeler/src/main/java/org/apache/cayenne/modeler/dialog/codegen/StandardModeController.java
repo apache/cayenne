@@ -98,7 +98,9 @@ public class StandardModeController extends GeneratorController {
 
     @Override
     public Collection<ClassGenerationAction> createGenerator() {
-        mode = ArtifactsGenerationMode.ALL.getLabel();
+        mode = view.getCreateDataMapClass().isSelected()
+                ? ArtifactsGenerationMode.ALL.getLabel()
+                : ArtifactsGenerationMode.ENTITY.getLabel();
         return super.createGenerator();
     }
 }
