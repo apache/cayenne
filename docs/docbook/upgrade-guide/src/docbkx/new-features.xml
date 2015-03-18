@@ -41,6 +41,34 @@
 			<para>ServerRuntime can now be started without any ORM mapping at all. This is useful in situations when Cayenne is used as a stack to
 				execute raw SQL, in unit tests, etc.</para>
 		</section>
+		<section>
+			<title>DI Container Decorators</title>
+			<para>In addition to overriding services in DI container, Cayenne now allows to supply
+				decorators. True to the "smallest-footprint" DI philosophy, decorator approach is
+				very simple and does not require proxies or class enhancement. Just implement the
+				decorated interface and provide a constructor that takes a delegate instance being
+				decorated:<programlisting>public class MyInterfaceDecorator implements MyInterface {
+
+    private MyInterface delegate;
+
+    public MockInterface1_Decorator3(@Inject MyInterface delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public String getName() {
+        return "&lt;" + delegate.getName() + ">";
+    }
+}
+
+Module module = new Module() {
+
+    @Override
+    public void configure(Binder binder) {
+        binder.decorate(MyInterface.class).before(MyInterfaceDecorator.class);
+    }
+};</programlisting></para>
+		</section>
 	</section>
 	<section xml:id="framework-api">
 		<title>Framework API</title>
