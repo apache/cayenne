@@ -20,11 +20,11 @@ package org.apache.cayenne.access.jdbc.reader;
 
 import java.sql.ResultSet;
 
+import com.sun.istack.internal.Nullable;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * @since 3.0
@@ -34,13 +34,16 @@ abstract class BaseRowReader<T> implements RowReader<T> {
     ExtendedType[] converters;
     String[] labels;
     int[] types;
+
+    @Nullable
     DataRowPostProcessor postProcessor;
+
+    @Nullable
     String entityName;
 
-    BaseRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
-        ObjEntity rootObjEntity = queryMetadata.getObjEntity();
-        if (rootObjEntity != null) {
-            this.entityName = rootObjEntity.getName();
+    BaseRowReader(RowDescriptor descriptor, DataRowPostProcessor postProcessor, ObjEntity objEntity) {
+        if (objEntity != null) {
+            this.entityName = objEntity.getName();
         }
 
         this.postProcessor = postProcessor;

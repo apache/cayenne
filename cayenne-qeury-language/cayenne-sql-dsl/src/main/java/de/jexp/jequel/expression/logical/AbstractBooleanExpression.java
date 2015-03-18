@@ -27,12 +27,12 @@ import de.jexp.jequel.literals.Operator;
 public abstract class AbstractBooleanExpression extends AbstractExpression implements BooleanExpression {
     @Override
     public BooleanExpression and(BooleanExpression expression) {
-        return new BooleanBinaryExpression(this, Operator.AND, expression);
+        return new BooleanListExpression(Operator.AND, this, expression);
     }
 
     @Override
     public BooleanExpression or(BooleanExpression expression) {
-        return new BooleanBinaryExpression(this, Operator.OR, expression);
+        return new BooleanListExpression(Operator.OR, this, expression);
     }
 
     @Override

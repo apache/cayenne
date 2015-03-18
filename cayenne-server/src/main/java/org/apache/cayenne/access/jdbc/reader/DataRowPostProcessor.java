@@ -59,7 +59,7 @@ class DataRowPostProcessor {
         Collection<ColumnOverride> overrides = getOverrides(row);
 
         if (overrides != null) {
-            for (final ColumnOverride override : overrides) {
+            for (ColumnOverride override : overrides) {
 
                 Object newValue = override.converter.materializeObject(resultSet, override.index, override.jdbcType);
                 row.put(override.key, newValue);
@@ -67,7 +67,7 @@ class DataRowPostProcessor {
         }
     }
 
-    private final Collection<ColumnOverride> getOverrides(DataRow row) {
+    private Collection<ColumnOverride> getOverrides(DataRow row) {
         if (defaultOverrides != null) {
             return defaultOverrides;
         } else {
@@ -78,10 +78,10 @@ class DataRowPostProcessor {
 
     static final class ColumnOverride {
 
-        int index;
-        int jdbcType;
-        String key;
-        ExtendedType converter;
+        public final int index;
+        public final int jdbcType;
+        public final String key;
+        public final ExtendedType converter;
 
         ColumnOverride(int index, String key, ExtendedType converter, int jdbcType) {
             this.index = index;

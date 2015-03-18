@@ -26,9 +26,9 @@ package org.apache.cayenne.access.jdbc;
  */
 public class ParameterBinding {
 
-    protected int jdbcType;
-    protected int scale;
-    protected Object value;
+    private final int jdbcType;
+    private final int scale;
+    private final Object value;
 
     public ParameterBinding(Object value, int jdbcType, int scale) {
         this.value = value;
@@ -49,20 +49,5 @@ public class ParameterBinding {
 
     public Object getValue() {
         return value;
-    }
-
-    public void setJdbcType(int i) {
-        jdbcType = i;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public void setScale(int i) {
-        scale = i;
-    }
-
-    public void setValue(Object object) {
-        value = object;
     }
 }

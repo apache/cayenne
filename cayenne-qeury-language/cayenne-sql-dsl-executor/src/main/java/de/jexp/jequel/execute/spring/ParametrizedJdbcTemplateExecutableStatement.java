@@ -17,15 +17,10 @@ import org.springframework.jdbc.core.RowMapper;
 import javax.sql.DataSource;
 import java.util.Collection;
 
-/**
- * @author mh14 @ jexp.de
- * @since 02.11.2007 19:45:17 (c) 2007 jexp.de
- */
-@SuppressWarnings({"unchecked"})
 public class ParametrizedJdbcTemplateExecutableStatement extends AbstractExecutableStatement {
     private final JdbcTemplate template;
 
-    public ParametrizedJdbcTemplateExecutableStatement(final DataSource dataSource, final Sql sql) {
+    public ParametrizedJdbcTemplateExecutableStatement(DataSource dataSource, Sql sql) {
         super(dataSource, sql);
         template = new JdbcTemplate(dataSource);
     }
@@ -38,31 +33,31 @@ public class ParametrizedJdbcTemplateExecutableStatement extends AbstractExecuta
         return template.queryForInt(getSqlString(), getParams());
     }
 
-    public <T> T getValue(final Class<T> type) {
-        return (T) template.queryForObject(getSqlString(), getParams(), type);
+    public <T> T getValue(Class<T> type) {
+        return template.queryForObject(getSqlString(), getParams(), type);
     }
 
-    public <T> Collection<T> mapRows(final RowMapper rowMapper) {
+    public <T> Collection<T> mapRows(RowMapper rowMapper) {
         return template.query(getSqlString(), getParams(), rowMapper);
     }
 
-    public void processRows(final RowCallbackHandler rowHandler) {
+    public void processRows(RowCallbackHandler rowHandler) {
         template.query(getSqlString(), getParams(), rowHandler);
     }
 
-    public <I, O> Collection<O> mapBeans(final BeanRowMapper<I, O> beanRowMapper) {
+    public <I, O> Collection<O> mapBeans(BeanRowMapper<I, O> beanRowMapper) {
         return template.query(getSqlString(), getParams(), new ResultSetBeanRowMapper<I, O>(beanRowMapper));
     }
 
-    public <O> Collection<O> mapValues(final ValueRowMapper<O> valueRowMapper) {
+    public <O> Collection<O> mapValues(ValueRowMapper<O> valueRowMapper) {
         return template.query(getSqlString(), getParams(), new ResultSetValueRowMapper<O>(valueRowMapper));
     }
 
-    public <I> void handleBeans(final BeanRowHandler<I> beanRowHandler) {
+    public <I> void handleBeans(BeanRowHandler<I> beanRowHandler) {
         template.query(getSqlString(), getParams(), new ResultSetBeanRowHandler<I>(beanRowHandler));
     }
 
-    public void handleValues(final ValueRowHandler valueRowHandler) {
+    public void handleValues(ValueRowHandler valueRowHandler) {
         template.query(getSqlString(), getParams(), new ResultSetValueRowHandler(valueRowHandler));
     }
 

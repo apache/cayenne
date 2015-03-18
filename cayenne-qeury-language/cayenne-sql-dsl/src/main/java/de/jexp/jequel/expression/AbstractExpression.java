@@ -6,6 +6,7 @@ import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
 import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.literals.Operator;
+import de.jexp.jequel.sql.SqlDsl;
 
 public abstract class AbstractExpression implements Expression {
     public BooleanExpression eq(Object expression) {
@@ -39,6 +40,10 @@ public abstract class AbstractExpression implements Expression {
 
     public BooleanExpression like(Object expression) {
         return createBinaryBooleanExpression(Operator.LIKE, expression);
+    }
+
+    public BooleanExpression in(SqlDsl.ToSql subQuery) {
+        return createBinaryBooleanExpression(Operator.IN, subQuery);
     }
 
     public BooleanExpression in(Object... expressions) {

@@ -33,8 +33,10 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
@@ -49,12 +51,16 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DbAdapter adapter,
             Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
 
-        PostprocessorFactory postProcessorFactory = new PostprocessorFactory(descriptor, queryMetadata,
-                adapter.getExtendedTypes(), attributeOverrides);
+        ClassDescriptor classDescriptor = queryMetadata.getClassDescriptor();
+        ObjEntity objEntity = queryMetadata.getObjEntity();
+        DbEntity dbEntity = queryMetadata.getDbEntity();
+        int pageSize = queryMetadata.getPageSize();
+
+        DataRowPostProcessor postProcessor = create(descriptor, adapter.getExtendedTypes(), attributeOverrides, classDescriptor);
 
         List<Object> rsMapping = queryMetadata.getResultSetMapping();
         if (rsMapping == null) {
-            return createFullRowReader(descriptor, queryMetadata, postProcessorFactory.get());
+            return createFullRowReader(descriptor, postProcessor, objEntity, dbEntity, classDescriptor, pageSize);
         }
 
         int resultWidth = rsMapping.size();
@@ -65,8 +71,8 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
             Object segment = rsMapping.get(0);
 
             if (segment instanceof EntityResultSegment) {
-                return createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment,
-                        postProcessorFactory.get());
+                return createEntityRowReader(descriptor, (EntityResultSegment) segment,
+                        postProcessor, objEntity, dbEntity, pageSize);
             } else {
                 return new ScalarRowReader<Object>(descriptor, (ScalarResultSegment) segment);
             }
@@ -77,10 +83,8 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                 Object segment = rsMapping.get(i);
 
                 if (segment instanceof EntityResultSegment) {
-                    reader.addRowReader(
-                            i,
-                            createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment,
-                                    postProcessorFactory.get()));
+                    reader.addRowReader(i, createEntityRowReader(descriptor, (EntityResultSegment) segment,
+                                    postProcessor, objEntity, dbEntity, pageSize));
                 } else {
                     reader.addRowReader(i, new ScalarRowReader<Object>(descriptor, (ScalarResultSegment) segment));
                 }
@@ -90,11 +94,11 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         }
     }
 
-    private RowReader<?> createEntityRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
-                                               EntityResultSegment resultMetadata, DataRowPostProcessor postProcessor) {
+    private RowReader<?> createEntityRowReader(RowDescriptor descriptor, EntityResultSegment resultMetadata,
+                                               DataRowPostProcessor postProcessor, ObjEntity objEntity, DbEntity dbEntity, int pageSize) {
 
-        if (queryMetadata.getPageSize() > 0) {
-            return new IdRowReader<Object>(descriptor, queryMetadata, postProcessor);
+        if (pageSize > 0) {
+            return new IdRowReader<Object>(descriptor, postProcessor, objEntity, dbEntity);
         } else if (resultMetadata.getClassDescriptor() != null && resultMetadata.getClassDescriptor().hasSubclasses()) {
             return new InheritanceAwareEntityRowReader(descriptor, resultMetadata, postProcessor);
         } else {
@@ -102,104 +106,76 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         }
     }
 
-    private RowReader<?> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
+    private RowReader<?> createFullRowReader(RowDescriptor descriptor, DataRowPostProcessor postProcessor,
+                                             ObjEntity objEntity, DbEntity dbEntity, ClassDescriptor classDescriptor, int pageSize) {
 
-        if (queryMetadata.getPageSize() > 0) {
-            return new IdRowReader<Object>(descriptor, queryMetadata, postProcessor);
-        } else if (queryMetadata.getClassDescriptor() != null && queryMetadata.getClassDescriptor().hasSubclasses()) {
-            return new InheritanceAwareRowReader(descriptor, queryMetadata, postProcessor);
+        if (pageSize > 0) {
+            return new IdRowReader<Object>(descriptor, postProcessor, objEntity, dbEntity);
+        } else if (classDescriptor != null && classDescriptor.hasSubclasses()) {
+            return new InheritanceAwareRowReader(descriptor, postProcessor, objEntity, classDescriptor.getEntityInheritanceTree());
         } else {
-            return new FullRowReader(descriptor, queryMetadata, postProcessor);
+            return new FullRowReader(descriptor, postProcessor, objEntity);
         }
     }
 
-    private class PostprocessorFactory {
 
-        private QueryMetadata queryMetadata;
-        private ExtendedTypeMap extendedTypes;
-        private Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
-        private RowDescriptor rowDescriptor;
+    private DataRowPostProcessor create(RowDescriptor rowDescriptor, ExtendedTypeMap extendedTypes,
+                                        Map<ObjAttribute, ColumnDescriptor> attributeOverrides, ClassDescriptor classDescriptor) {
 
-        private boolean created;
-        private DataRowPostProcessor postProcessor;
-
-        PostprocessorFactory(RowDescriptor rowDescriptor, QueryMetadata queryMetadata, ExtendedTypeMap extendedTypes,
-                Map<ObjAttribute, ColumnDescriptor> attributeOverrides) {
-            this.rowDescriptor = rowDescriptor;
-            this.extendedTypes = extendedTypes;
-            this.attributeOverrides = attributeOverrides;
-            this.queryMetadata = queryMetadata;
+        if (attributeOverrides.isEmpty()) {
+            return null;
         }
 
-        DataRowPostProcessor get() {
+        ColumnDescriptor[] columns = rowDescriptor.getColumns();
 
-            if (!created) {
-                postProcessor = create();
-                created = true;
-            }
+        Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(2);
 
-            return postProcessor;
-        }
+        for (Entry<ObjAttribute, ColumnDescriptor> entry : attributeOverrides.entrySet()) {
 
-        private DataRowPostProcessor create() {
+            ObjAttribute attribute = entry.getKey();
+            Entity entity = attribute.getEntity();
 
-            if (attributeOverrides.isEmpty()) {
-                return null;
-            }
+            String key = null;
+            int jdbcType = TypesMapping.NOT_DEFINED;
+            int index = -1;
+            for (int i = 0; i < columns.length; i++) {
+                if (columns[i] == entry.getValue()) {
 
-            ColumnDescriptor[] columns = rowDescriptor.getColumns();
-
-            Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(2);
-
-            for (Entry<ObjAttribute, ColumnDescriptor> entry : attributeOverrides.entrySet()) {
-
-                ObjAttribute attribute = entry.getKey();
-                Entity entity = attribute.getEntity();
-
-                String key = null;
-                int jdbcType = TypesMapping.NOT_DEFINED;
-                int index = -1;
-                for (int i = 0; i < columns.length; i++) {
-                    if (columns[i] == entry.getValue()) {
-
-                        // if attribute type is the same as column, there is no
-                        // conflict
-                        if (!attribute.getType().equals(columns[i].getJavaClass())) {
-                            // note that JDBC index is "1" based
-                            index = i + 1;
-                            jdbcType = columns[i].getJdbcType();
-                            key = columns[i].getDataRowKey();
-                        }
-
-                        break;
+                    // if attribute type is the same as column, there is no
+                    // conflict
+                    if (!attribute.getType().equals(columns[i].getJavaClass())) {
+                        // note that JDBC index is "1" based
+                        index = i + 1;
+                        jdbcType = columns[i].getJdbcType();
+                        key = columns[i].getDataRowKey();
                     }
+
+                    break;
                 }
-
-                if (index < 1) {
-                    continue;
-                }
-
-                ExtendedType converter = extendedTypes.getRegisteredType(attribute.getType());
-
-                Collection<ColumnOverride> overrides = columnOverrides.get(entity.getName());
-
-                if (overrides == null) {
-                    overrides = new ArrayList<ColumnOverride>(3);
-                    columnOverrides.put(entity.getName(), overrides);
-                }
-
-                overrides.add(new ColumnOverride(index, key, converter, jdbcType));
             }
 
-            // inject null post-processor
-            if (columnOverrides.isEmpty()) {
-                return null;
+            if (index < 1) {
+                continue;
             }
 
-            ClassDescriptor rootDescriptor = queryMetadata.getClassDescriptor();
+            ExtendedType converter = extendedTypes.getRegisteredType(attribute.getType());
 
-            return new DataRowPostProcessor(rootDescriptor, columnOverrides);
+            Collection<ColumnOverride> overrides = columnOverrides.get(entity.getName());
+
+            if (overrides == null) {
+                overrides = new ArrayList<ColumnOverride>(3);
+                columnOverrides.put(entity.getName(), overrides);
+            }
+
+            overrides.add(new ColumnOverride(index, key, converter, jdbcType));
         }
+
+        // inject null post-processor
+        if (columnOverrides.isEmpty()) {
+            return null;
+        }
+
+        return new DataRowPostProcessor(classDescriptor, columnOverrides);
     }
 
 }

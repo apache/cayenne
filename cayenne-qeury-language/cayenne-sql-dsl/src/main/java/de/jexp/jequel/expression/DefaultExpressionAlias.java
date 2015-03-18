@@ -2,6 +2,7 @@ package de.jexp.jequel.expression;
 
 import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.sql.SqlDsl;
 
 public class DefaultExpressionAlias<E extends Expression> implements ExpressionAlias<E> {
     private final E aliased;
@@ -68,6 +69,11 @@ public class DefaultExpressionAlias<E extends Expression> implements ExpressionA
 
     public BooleanExpression between(Object start, Object end) {
         return aliased.between(start, end);
+    }
+
+    @Override
+    public BooleanExpression in(SqlDsl.ToSql subQuery) {
+        return aliased.in(subQuery);
     }
 
     public BooleanExpression in(Object... expressions) {

@@ -8,7 +8,7 @@ import de.jexp.jequel.literals.SelectKeyword;
 
 public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From, SqlDsl.Where, SqlDsl.OrderBy, SqlDsl.GroupBy, SqlDsl.Having {
 
-    private final SqlModel.SelectPartColumnListExpression select = new SqlModel.SelectPartColumnListExpression(SelectKeyword.SELECT);
+    private final SqlModel.Select select = new SqlModel.Select();
     private final SqlModel.SelectPartColumnListExpression from = new SqlModel.SelectPartColumnListExpression(SelectKeyword.FROM);
     private final SqlModel.Where where = new SqlModel.Where();
     private final SqlModel.SelectPartColumnListExpression groupBy = new SqlModel.SelectPartColumnListExpression(SelectKeyword.GROUP_BY);
@@ -94,7 +94,7 @@ public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From
         return this;
     }
 
-    public SqlModel.SelectPartColumnListExpression getSelect() {
+    public SqlModel.Select getSelect() {
         return select;
     }
 

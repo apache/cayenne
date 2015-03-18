@@ -1,8 +1,11 @@
 package de.jexp.jequel;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.BinaryExpression;
 import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
+import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.expression.logical.BooleanListExpression;
 import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
 import de.jexp.jequel.expression.CompoundExpression;
@@ -35,6 +38,7 @@ import de.jexp.jequel.table.visitor.TableFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import static org.apache.commons.lang3.StringUtils.join;
 
@@ -77,6 +81,7 @@ public class Sql92Format implements ExpressionFormat, TableFormat, SqlModel.SqlF
         if (value instanceof NumericLiteral) return visit((NumericLiteral) value);
         if (value instanceof ParamExpression) return visit((ParamExpression) value);
         if (value instanceof SqlModel.SelectPartColumnListExpression) return visit((SqlModel.SelectPartColumnListExpression) value);
+        if (value instanceof SqlModel.Select) return visit((SqlModel.Select) value);
         if (value instanceof SqlModel.Where) return visit((SqlModel.Where) value);
         if (value instanceof SqlModel.Having) return visit((SqlModel.Having) value);
         if (value instanceof Sql) return "(" + visit((Sql) value) + ")";
@@ -150,6 +155,10 @@ public class Sql92Format implements ExpressionFormat, TableFormat, SqlModel.SqlF
         Expression second = binaryExpression.getSecond();
         Operator operator = binaryExpression.getOperator();
 
+        if (operator == Operator.IN) {
+            return visitIn(first, second);
+        }
+
         if (!binaryExpression.oneIsNull()) {
             return formatBinaryExpression(first, operator, second);
         }
@@ -159,13 +168,44 @@ public class Sql92Format implements ExpressionFormat, TableFormat, SqlModel.SqlF
         if (operator == Operator.NE) {
             return formatBinaryExpression(first, Operator.IS_NOT, second);
         }
+
         return formatBinaryExpression(first, operator, second); // TODO not all Operators usable
+    }
+
+    protected String visitIn(Expression first, Expression second) {
+        if (second instanceof Sql) {
+            return visit(first) + " in " + visit(second);
+        }
+
+        return visit(first) + " in (" + visit(second) + ")";
     }
 
     public String visit(BooleanBinaryExpression binaryExpression) {
         return visit(binaryExpression.getBinaryExpression());
     }
 
+    @Override
+    public String visit(BooleanListExpression list) {
+        LinkedList<String> strings = new LinkedList<String>();
+        for (BooleanExpression expression : list.getExpressions()) {
+            if (expression == null) {
+                continue;
+            }
+
+            String string = visit(expression);
+            if (string.isEmpty()) {
+                continue;
+            }
+
+            if (expression instanceof BooleanListExpression) {
+                string = "(" + string + ")";
+            }
+            strings.add(string);
+        }
+
+        return join(strings, " " + list.getOperator().getSqlKeyword() + " ");
+
+    }
 
     public String visit(NumericBinaryExpression binaryExpression) {
         return visit(binaryExpression.getBinaryExpression());
@@ -226,6 +266,13 @@ public class Sql92Format implements ExpressionFormat, TableFormat, SqlModel.SqlF
         } else {
             return "";
         }
+    }
+
+    public String visit(SqlModel.Select select) {
+        if (!select.hasValues()) {
+            return "";
+        }
+        return "select " + visit((SimpleListExpression) select);
     }
 
     public String visit(SqlModel.Where where) {

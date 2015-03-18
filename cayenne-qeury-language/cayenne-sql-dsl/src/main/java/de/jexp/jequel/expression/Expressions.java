@@ -1,6 +1,5 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
 import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
@@ -8,7 +7,6 @@ import de.jexp.jequel.expression.numeric.NumericExpression;
 import de.jexp.jequel.expression.numeric.NumericLiteral;
 import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
 import de.jexp.jequel.literals.Delimeter;
-import de.jexp.jequel.literals.Operator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,8 +39,16 @@ public abstract class Expressions {
         return new NumericUnaryExpression(SUM, expression);
     }
 
+    public static NumericExpression sum(Number number) {
+        return new NumericUnaryExpression(SUM, new NumericLiteral(number));
+    }
+
     public static NumericExpression avg(NumericExpression expression) {
         return new NumericUnaryExpression(AVG, expression);
+    }
+
+    public static NumericExpression avg(Number number) {
+        return new NumericUnaryExpression(AVG, new NumericLiteral(number));
     }
 
     public static NumericExpression round(NumericExpression expression) {
@@ -61,8 +67,12 @@ public abstract class Expressions {
         return new UnaryExpression(MAX, e(expression));
     }
 
-    public static Expression count(Expression expression) {
-        return new UnaryExpression(COUNT, expression);
+    public static <E extends Expression> UnaryExpression<E> count(E expression) {
+        return new UnaryExpression<E>(COUNT, expression);
+    }
+
+    public static UnaryExpression<NumericLiteral> count(Number number) {
+        return count(new NumericLiteral(number));
     }
 
     public static Expression count() {

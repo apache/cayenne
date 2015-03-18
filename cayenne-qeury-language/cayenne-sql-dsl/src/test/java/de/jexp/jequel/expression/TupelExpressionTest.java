@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 public class TupelExpressionTest extends TestCase {
     public void testRowTupelExpression() {
-        assertTrue("table is row tuple", RowTupleExpression.class.isAssignableFrom(BaseTable.class));
-        assertTrue("sql is row tuple", RowTupleExpression.class.isAssignableFrom(Sql.class));
+        assertTrue("table is row tuple", RowListExpression.class.isAssignableFrom(BaseTable.class));
+        assertTrue("sql is row tuple", RowListExpression.class.isAssignableFrom(Sql.class));
     }
 }

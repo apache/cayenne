@@ -39,12 +39,8 @@ public class SQLStatementTest {
 
     @Test
     public void testSQL() throws Exception {
-        SQLStatement statement = new SQLStatement();
-        statement.setSql("abc");
-        assertEquals("abc", statement.getSql());
-        statement.setSql("xyz");
-        assertEquals("xyz", statement.getSql());
-        statement.setSql(null);
-        assertNull(statement.getSql());
+        assertEquals("abc", new SQLStatement("abc", null).getSql());
+        assertEquals("xyz", new SQLStatement("xyz", null).getSql());
+        assertNull(new SQLStatement(null, null).getSql());
     }
 }

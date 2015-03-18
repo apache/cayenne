@@ -88,4 +88,8 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     public SQLAction ejbqlAction(EJBQLQuery query) {
         return new EJBQLAction(query, this, dataNode);
     }
+
+    public DataNode getDataNode() {
+        return dataNode;
+    }
 }

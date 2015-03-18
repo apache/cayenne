@@ -199,9 +199,7 @@ public class SQLTemplateAction implements SQLAction {
 							}
 						}
 
-						// ignore possible following update counts and bail
-						// early on
-						// iterated results
+						// ignore possible following update counts and bail early on iterated results
 						if (iteratedResult) {
 							break;
 						}

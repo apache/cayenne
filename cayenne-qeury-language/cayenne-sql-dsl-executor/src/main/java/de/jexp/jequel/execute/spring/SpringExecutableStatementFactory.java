@@ -11,12 +11,14 @@ public class SpringExecutableStatementFactory implements ExecutableStatementFact
 
     public ExecutableStatement createExecutableStatement(DataSource dataSource, Sql sql) {
         DefaultExecutableParams executableParams = DefaultExecutableParams.extractParams(sql);
-        if (executableParams.hasParams()) {
-            if (executableParams.hasOnlyNamed()) {
-                return new NamedParameterJdbcTemplateExecutableStatement(dataSource, sql).withParams(executableParams);
-            }
-            return new ParametrizedJdbcTemplateExecutableStatement(dataSource, sql).withParams(executableParams);
+        if (!executableParams.hasParams()) {
+            return new JdbcTemplateExecutableStatement(dataSource, sql);
         }
-        return new JdbcTemplateExecutableStatement(dataSource, sql);
+
+        if (executableParams.hasOnlyNamed()) {
+            return new NamedParameterJdbcTemplateExecutableStatement(dataSource, sql).withParams(executableParams);
+        }
+
+        return new ParametrizedJdbcTemplateExecutableStatement(dataSource, sql).withParams(executableParams);
     }
 }

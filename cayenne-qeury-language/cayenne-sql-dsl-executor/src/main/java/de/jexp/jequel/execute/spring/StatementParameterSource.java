@@ -7,27 +7,25 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
- * @author mh14 @ jexp.de
- * @since 05.11.2007 03:25:55 (c) 2007 jexp.de
- *        supplies named parameters from the statement as paramsource
+ *  supplies named parameters from the statement as paramsource
  */
 public class StatementParameterSource implements SqlParameterSource {
     private final MapSqlParameterSource mapSqlParameterSource;
 
-    public StatementParameterSource(final Sql sql) {
-        final DefaultExecutableParams executableParams = DefaultExecutableParams.extractParams(sql);
+    public StatementParameterSource(Sql sql) {
+        DefaultExecutableParams executableParams = DefaultExecutableParams.extractParams(sql);
         mapSqlParameterSource = new MapSqlParameterSource(executableParams.getNamedParams());
     }
 
-    public boolean hasValue(final String paramName) {
+    public boolean hasValue(String paramName) {
         return mapSqlParameterSource.hasValue(paramName);
     }
 
-    public Object getValue(final String paramName) throws IllegalArgumentException {
+    public Object getValue(String paramName) throws IllegalArgumentException {
         return mapSqlParameterSource.getValue(paramName);
     }
 
-    public int getSqlType(final String paramName) {
+    public int getSqlType(String paramName) {
         return mapSqlParameterSource.getSqlType(paramName);
     }
 

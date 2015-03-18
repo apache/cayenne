@@ -27,12 +27,9 @@ package org.apache.cayenne.access.jdbc;
  */
 public class SQLStatement {
 
-    protected String sql;
-    protected ParameterBinding[] bindings;
-    protected ColumnDescriptor[] resultColumns;
-
-    public SQLStatement() {
-    }
+    private final String sql;
+    private final ParameterBinding[] bindings;
+    private final ColumnDescriptor[] resultColumns;
 
     public SQLStatement(String sql, ParameterBinding[] bindings) {
         this(sql, null, bindings);
@@ -41,12 +38,10 @@ public class SQLStatement {
     /**
      * @since 1.2
      */
-    public SQLStatement(String sql, ColumnDescriptor[] resultColumns,
-            ParameterBinding[] bindings) {
-
-        setSql(sql);
-        setBindings(bindings);
-        setResultColumns(resultColumns);
+    public SQLStatement(String sql, ColumnDescriptor[] resultColumns, ParameterBinding[] bindings) {
+        this.sql = sql;
+        this.bindings = bindings;
+        this.resultColumns = resultColumns;
     }
 
     /**
@@ -56,26 +51,11 @@ public class SQLStatement {
         return resultColumns;
     }
 
-    /**
-     * @since 1.2
-     */
-    public void setResultColumns(ColumnDescriptor[] descriptors) {
-        resultColumns = descriptors;
-    }
-
     public ParameterBinding[] getBindings() {
         return bindings;
     }
 
     public String getSql() {
         return sql;
-    }
-
-    public void setBindings(ParameterBinding[] bindings) {
-        this.bindings = bindings;
-    }
-
-    public void setSql(String string) {
-        sql = string;
     }
 }

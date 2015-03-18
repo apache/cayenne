@@ -1,6 +1,9 @@
 package de.jexp.jequel.expression;
 
 import static de.jexp.jequel.expression.Expressions.*;
+
+import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.expression.numeric.NumericLiteral;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -9,49 +12,49 @@ import java.util.List;
 
 public class ExpressionsTest extends TestCase {
     public void testNumericConversion() {
-        final NumericExpression expression = (NumericExpression) Expressions.e(1);
+        NumericLiteral expression = (NumericLiteral) e(1);
         assertEquals(1, expression.getValue().intValue());
     }
 
     public void testBooleanTrueConversion() {
-        final BooleanExpression expression = (BooleanExpression) Expressions.e(true);
-        assertSame(Expressions.TRUE, expression);
+        BooleanExpression expression = (BooleanExpression) e(true);
+        assertSame(TRUE, expression);
     }
 
     public void testBooleanFalseConversion() {
-        final BooleanExpression expression = (BooleanExpression) Expressions.e(false);
-        assertSame(Expressions.FALSE, expression);
+        BooleanExpression expression = (BooleanExpression) e(false);
+        assertSame(FALSE, expression);
     }
 
     public void testStringConversion() {
-        final StringExpression expression = (StringExpression) Expressions.e("abc");
+        StringExpression expression = (StringExpression) e("abc");
         assertEquals("abc", expression.getValue());
         assertEquals("'abc'", expression.toString());
     }
 
     public void testNullConversion() {
-        final Expression expression = Expressions.e((Object) null);
+        Expression expression = e((Object) null);
         assertEquals("NULL", expression.toString());
     }
 
     public void testIterableConversion() {
-        final TupleExpression expressions = (TupleExpression) Expressions.e(3, 7);
-        final Iterable iterable = expressions.getExpressions();
-        final Iterator it = iterable.iterator();
-        assertEquals(3, ((NumericExpression) it.next()).getValue().intValue());
-        assertEquals(7, ((NumericExpression) it.next()).getValue().intValue());
+        CompoundExpression expressions = (CompoundExpression) e(3, 7);
+        Iterable iterable = expressions.getExpressions();
+        Iterator it = iterable.iterator();
+        assertEquals(3, ((NumericLiteral) it.next()).getValue().intValue());
+        assertEquals(7, ((NumericLiteral) it.next()).getValue().intValue());
     }
 
     public void testSqlHackString() {
-        assertEquals("nvl(A,1)", Expressions.sql("nvl(A,1)").toString());
+        assertEquals("nvl(A,1)", sql("nvl(A,1)").toString());
     }
 
     public void testNamedParameter() {
-        assertEquals(":article_oid", Expressions.named("article_oid").toString());
+        assertEquals(":article_oid", named("article_oid").toString());
     }
 
     public void testNamedParameterWithValue() {
-        final ParamExpression<Integer> expression = Expressions.named("article_oid", 10);
+        ParamExpression<Integer> expression = named("article_oid", 10);
         assertTrue(expression.isNamedExpression());
         assertEquals("article_oid", expression.getLiteral());
         assertEquals(":article_oid", expression.toString());
@@ -59,7 +62,7 @@ public class ExpressionsTest extends TestCase {
     }
 
     public void testParameter() {
-        final ParamExpression paramExpression = Expressions.param("article_oid");
+        ParamExpression paramExpression = param("article_oid");
         assertEquals(null, paramExpression.getLiteral());
         assertFalse(paramExpression.isNamedExpression());
         assertEquals("?", paramExpression.toString());
@@ -67,8 +70,8 @@ public class ExpressionsTest extends TestCase {
     }
 
     public void testCollectionParameter() {
-        final List<Integer> list = Arrays.asList(1, 2, 3);
-        final ParamExpression paramExpression = Expressions.param(list);
+        List<Integer> list = Arrays.asList(1, 2, 3);
+        ParamExpression paramExpression = param(list);
         assertFalse(paramExpression.isNamedExpression());
         assertEquals(null, paramExpression.getLiteral());
         assertEquals("?, ?, ?", paramExpression.toString());

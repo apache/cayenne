@@ -26,7 +26,7 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -34,12 +34,11 @@ import org.apache.cayenne.util.Util;
  */
 class IdRowReader<T> extends BaseRowReader<T> {
 
-    protected int[] pkIndices;
+    private int[] pkIndices;
 
-    public IdRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
-        super(descriptor, queryMetadata, postProcessor);
+    public IdRowReader(RowDescriptor descriptor, DataRowPostProcessor postProcessor, ObjEntity objEntity, DbEntity dbEntity) {
+        super(descriptor, postProcessor, objEntity);
 
-        DbEntity dbEntity = queryMetadata.getDbEntity();
         if (dbEntity == null) {
             throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
         }
@@ -60,13 +59,13 @@ class IdRowReader<T> extends BaseRowReader<T> {
             }
         }
 
-        this.pkIndices = pk;
+        this.setPkIndices(pk);
     }
 
     @Override
     public T readRow(ResultSet resultSet) {
         try {
-            if (pkIndices.length == 1) {
+            if (getPkIndices().length == 1) {
                 return readSingleId(resultSet);
             } else {
                 return readIdMap(resultSet);
@@ -82,7 +81,7 @@ class IdRowReader<T> extends BaseRowReader<T> {
     private T readSingleId(ResultSet resultSet) throws Exception {
 
         // dereference column index
-        int index = pkIndices[0];
+        int index = getPkIndices()[0];
 
         // note: jdbc column indexes start from 1, not 0 as in arrays
         @SuppressWarnings("unchecked")
@@ -99,12 +98,12 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
         DataRow idRow = new DataRow(2);
         idRow.setEntityName(entityName);
-        int len = pkIndices.length;
+        int len = getPkIndices().length;
 
         for (int i = 0; i < len; i++) {
 
             // dereference column index
-            int index = pkIndices[i];
+            int index = getPkIndices()[i];
 
             // note: jdbc column indexes start from 1, not 0 as in arrays
             Object val = converters[index].materializeObject(resultSet, index + 1, types[index]);
@@ -116,5 +115,13 @@ class IdRowReader<T> extends BaseRowReader<T> {
         }
 
         return (T) idRow;
+    }
+
+    public int[] getPkIndices() {
+        return pkIndices;
+    }
+
+    public void setPkIndices(int[] pkIndices) {
+        this.pkIndices = pkIndices;
     }
 }

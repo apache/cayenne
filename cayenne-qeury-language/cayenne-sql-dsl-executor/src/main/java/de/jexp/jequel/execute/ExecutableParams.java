@@ -1,6 +1,7 @@
 package de.jexp.jequel.execute;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface ExecutableParams {
@@ -10,7 +11,7 @@ public interface ExecutableParams {
 
     int getParamCount();
 
-    Collection<?> getParamValues();
+    List<Object> getParamValues();
 
     Collection<?> getParamNames();
 

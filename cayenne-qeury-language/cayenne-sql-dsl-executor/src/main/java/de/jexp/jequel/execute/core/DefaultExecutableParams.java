@@ -66,7 +66,7 @@ public class DefaultExecutableParams implements ExecutableParams {
         return namedParams.size() + params.size();
     }
 
-    public Collection<?> getParamValues() {
+    public List<Object> getParamValues() {
         return params;
     }
 

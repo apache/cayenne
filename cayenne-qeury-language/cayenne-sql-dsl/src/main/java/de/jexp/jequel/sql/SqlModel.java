@@ -19,11 +19,14 @@
 
 package de.jexp.jequel.sql;
 
-import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.Sql92Format;
+import de.jexp.jequel.expression.AppendableExpression;
+import de.jexp.jequel.expression.DelegatingFormat;
+import de.jexp.jequel.expression.Expression;
+import de.jexp.jequel.expression.SearchCondition;
+import de.jexp.jequel.expression.SimpleListExpression;
 import de.jexp.jequel.expression.visitor.Format;
 import de.jexp.jequel.literals.Delimeter;
-import de.jexp.jequel.expression.*;
-import de.jexp.jequel.Sql92Format;
 import de.jexp.jequel.literals.SelectKeyword;
 
 public interface SqlModel {
@@ -79,9 +82,7 @@ public interface SqlModel {
         }
     }
 
-    class From {
-
-    }
+    class From { }
 
     class OrderBy {}
 
@@ -113,7 +114,21 @@ public interface SqlModel {
         }
     }
 
-    interface SelectPartExpression<T extends Expression> extends AppendableExpression<T> {
+    class Select extends SimpleListExpression implements SqlVisitable {
+        public Select(Expression... expressions) {
+            super(Delimeter.COMMA, expressions);
+        }
+
+        public String toString() {
+            return accept(SelectPartExpression.SQL_FORMAT);
+        }
+
+        public <R> R accept(SqlVisitor<R> sqlVisitor) {
+            return sqlVisitor.visit(this);
+        }
+    }
+
+    interface SelectPartExpression<T extends Expression> extends AppendableExpression<T>, SqlVisitable {
         SqlExpressionFormat SQL_FORMAT = new SqlExpressionFormat(new Sql92Format());
 
         SelectKeyword getSelectKeyword();
@@ -130,14 +145,22 @@ public interface SqlModel {
             super(format);
         }
 
+        @Override
         public String visit(SelectPartColumnListExpression sqlPartColumnTupleExpression) {
             return formatAround(getFormat().visit(sqlPartColumnTupleExpression), sqlPartColumnTupleExpression);
         }
 
+        @Override
+        public String visit(Select select) {
+            return formatAround(getFormat().visit(select), select);
+        }
+
+        @Override
         public String visit(Where where) {
             return formatAround(getFormat().visit(where), where);
         }
 
+        @Override
         public String visit(Having having) {
             return formatAround(getFormat().visit(having), having);
         }
@@ -149,8 +172,14 @@ public interface SqlModel {
     interface SqlVisitor<R> {
         R visit(SelectPartColumnListExpression sqlPartColumnTupleExpression);
 
+        R visit(Select select);
+
         R visit(Where where);
 
         R visit(Having having);
+    }
+
+    interface SqlVisitable {
+        <R> R accept(SqlVisitor<R> sqlVisitor);
     }
 }

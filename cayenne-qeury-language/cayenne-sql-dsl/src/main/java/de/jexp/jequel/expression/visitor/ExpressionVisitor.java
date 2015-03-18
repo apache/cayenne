@@ -21,6 +21,7 @@ package de.jexp.jequel.expression.visitor;
 
 import de.jexp.jequel.expression.BinaryExpression;
 import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
+import de.jexp.jequel.expression.logical.BooleanListExpression;
 import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
 import de.jexp.jequel.expression.CompoundExpression;
@@ -50,6 +51,8 @@ public interface ExpressionVisitor<R> {
     R visit(BooleanUnaryExpression booleanUnaryExpression);
 
     R visit(BooleanBinaryExpression binaryExpression);
+
+    R visit(BooleanListExpression binaryExpression);
 
     R visit(StringExpression stringExpression);
 

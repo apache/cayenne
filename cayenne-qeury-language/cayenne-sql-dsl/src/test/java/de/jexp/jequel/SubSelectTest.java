@@ -33,8 +33,8 @@ public class SubSelectTest extends TestCase {
                 .where(ARTICLE_EAN.ARTICLE_OID.in(
                         Select(ARTICLE_EAN2.ARTICLE_OID)
                                 .from(ARTICLE_EAN2)
-                                .where(ARTICLE_EAN2.EAN.eq(e("1234567890123"))
-                                .and(ARTICLE_EAN.ARTICLE_OID.eq(ARTICLE_EAN2.ARTICLE_OID)))));
+                                .where(ARTICLE_EAN2.EAN.eq(e("1234567890123")).and(ARTICLE_EAN.ARTICLE_OID.eq(ARTICLE_EAN2.ARTICLE_OID)))
+                      ));
         assertEquals("sub select 2",
                 "select ARTICLE_EAN.EAN " +
                         "from ARTICLE_EAN " +

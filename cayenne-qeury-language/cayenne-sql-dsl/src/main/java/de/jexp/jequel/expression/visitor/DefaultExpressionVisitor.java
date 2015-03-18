@@ -20,6 +20,7 @@ package de.jexp.jequel.expression.visitor;
 
 import de.jexp.jequel.expression.BinaryExpression;
 import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
+import de.jexp.jequel.expression.logical.BooleanListExpression;
 import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
 import de.jexp.jequel.expression.CompoundExpression;
@@ -82,6 +83,11 @@ public class DefaultExpressionVisitor<R> implements ExpressionVisitor<R> {
 
     @Override
     public R visit(BooleanBinaryExpression binaryExpression) {
+        return null;
+    }
+
+    @Override
+    public R visit(BooleanListExpression binaryExpression) {
         return null;
     }
 

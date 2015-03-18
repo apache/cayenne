@@ -11,7 +11,7 @@ public enum Operator implements SqlKeyword {
 
     AND,
     OR,
-    IS_NOT(null, "isNot"),
+    IS_NOT("is not", "isNot"),
     IS,
 
     IN,
@@ -38,7 +38,11 @@ public enum Operator implements SqlKeyword {
     }
 
     public String getSqlKeyword() {
-        return sqlOperator;
+        if (sqlOperator != null) {
+            return sqlOperator;
+        }
+
+        return name().toLowerCase();
     }
 
     public String javaName() {
