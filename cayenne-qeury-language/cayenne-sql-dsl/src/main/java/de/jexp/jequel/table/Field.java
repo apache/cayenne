@@ -6,9 +6,13 @@ import de.jexp.jequel.expression.Expression;
 public interface Field<T> extends Expression, Alias<FieldAlias<T>>, TablePart {
     Field resolve();
 
-    <E extends TableField<T>> E  primaryKey();
+    Table getTable();
+
+    int getJdbcType();
+
+    String getName();
 
     boolean isPrimaryKey();
 
-    Table getTable();
+    boolean isMandatory();
 }

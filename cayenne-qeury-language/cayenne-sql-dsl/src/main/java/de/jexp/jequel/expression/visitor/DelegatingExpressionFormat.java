@@ -37,6 +37,9 @@ import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
 import de.jexp.jequel.expression.numeric.NumericLiteral;
 import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
+import de.jexp.jequel.table.BaseTable;
+import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.JoinTable;
 
 public class DelegatingExpressionFormat extends DelegatingFormat<ExpressionFormat> implements ExpressionFormat {
 
@@ -103,5 +106,20 @@ public class DelegatingExpressionFormat extends DelegatingFormat<ExpressionForma
 
     public <E extends Expression> String visit(ExpressionAlias<E> expression) {
         return formatAround(getFormat().visit(expression), expression);
+    }
+
+    @Override
+    public <T> String visit(Field<T> field) {
+        return formatAround(getFormat().visit(field), field);
+    }
+
+    @Override
+    public String visit(JoinTable joinTable) {
+        return formatAround(getFormat().visit(joinTable), joinTable);
+    }
+
+    @Override
+    public String visit(BaseTable table) {
+        return formatAround(getFormat().visit(table), table);
     }
 }

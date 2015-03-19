@@ -36,6 +36,9 @@ import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
 import de.jexp.jequel.expression.numeric.NumericLiteral;
 import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
+import de.jexp.jequel.table.BaseTable;
+import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.JoinTable;
 
 public interface ExpressionVisitor<R> {
     <V> R visit(ConstantExpression<V> constantExpression);
@@ -67,4 +70,11 @@ public interface ExpressionVisitor<R> {
     <T> R visit(ParamExpression<T> paramExpression);
 
     <E extends Expression> R visit(ExpressionAlias<E> expression);
+
+    /* TableVisitor */
+    <T> R visit(Field<T> field);
+
+    R visit(JoinTable joinTable);
+
+    R visit(BaseTable table);
 }

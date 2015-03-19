@@ -2,7 +2,7 @@ package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.table.visitor.TableVisitor;
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
 public class JoinTable extends BaseTable<BaseTable> {
     private final BaseTable first;
@@ -15,11 +15,11 @@ public class JoinTable extends BaseTable<BaseTable> {
     }
 
     public String toString() {
-        return accept(TABLE_FORMAT);
+        return accept(EXPRESSION_FORMAT);
     }
 
-    public <R> R accept(TableVisitor<R> tableVisitor) {
-        return tableVisitor.visit(this);
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 
 

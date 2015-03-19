@@ -51,6 +51,8 @@
 	<modules>
 		<!--<module>build-tools</module>-->
 		<!--<module>cayenne-di</module>-->
+        <module>cayenne-qeury-language</module>
+
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
 		<module>cayenne-tools</module>
@@ -64,7 +66,7 @@
 		<!--<module>docs</module>-->
 		<!--<module>assembly</module>-->
 
-        <module>cayenne-qeury-language</module>
+
 	</modules>
 	<issueManagement>
 		<system>jira</system>

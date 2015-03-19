@@ -28,7 +28,7 @@ public class SqlCheckTest extends TestCase {
 
     public void testFromSymbolsExpression() {
         Sql sql = Select().from(ARTICLE, subSelect(ARTICLE.OID).toSql().as("sql_alias")).where(ARTICLE.OID.isNull()).toSql();
-        assertEquals("from ARTICLE, (select ARTICLE.OID) as sql_alias where ARTICLE.OID is NULL", sql.toString());
+        assertEquals("select * from ARTICLE, (select ARTICLE.OID) as sql_alias where ARTICLE.OID is NULL", sql.toString());
         Collection<String> fromSymbols = new SqlChecker(sql).getFromSymbols();
         assertEquals(Arrays.asList(ARTICLE.getName(), "sql_alias"), fromSymbols);
     }

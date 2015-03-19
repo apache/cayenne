@@ -16,17 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package de.jexp.jequel.table.visitor;
+package org.apache.cayenne;
 
 import de.jexp.jequel.table.BaseTable;
 import de.jexp.jequel.table.Field;
-import de.jexp.jequel.table.JoinTable;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 
-public interface TableVisitor<R> {
-    <T> R visit(Field<T> field);
+import java.util.Map;
 
-    R visit(JoinTable joinTable);
+/**
+ * @since 4.0
+ */
+public class NewTableHelper extends TableHelper {
+    public NewTableHelper(DBHelper dbHelper, BaseTable<?> table) {
+        super(dbHelper, table.getName());
 
-    R visit(BaseTable table);
+        Map<String, Field<?>> fields = table.getFields();
+        String[] columns = new String[fields.size()];
+        int[] types = new int[fields.size()];
+        int i = 0;
+        for (Field<?> entry : fields.values()) {
+            columns[i] = entry.getName();
+            types[i] = entry.getJdbcType();
+            i++;
+        }
+        setColumns(columns);
+        setColumnTypes(types);
+    }
+
+    public NewTableHelper(DBHelper dbHelper, String tableName, String... columns) {
+        super(dbHelper, tableName, columns);
+    }
 }

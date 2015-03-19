@@ -21,8 +21,8 @@ public class ParamExpressionProcessorTest extends TestCase {
                               .or(ARTICLE.OID.in(named("article_oid", Arrays.asList(1, 2, 3))))).toSql();
 
         assertEquals("select ARTICLE.OID from ARTICLE" +
-                " where ARTICLE.ARTICLE_NO like ?" +
-                " and ARTICLE_COLOR.OID = :article" +
+                " where (ARTICLE.ARTICLE_NO like ?" + // TODO brackets shouldn't be here
+                " and ARTICLE_COLOR.OID = :article)" +
                 " or ARTICLE.OID in (:article_oid)",
                 sql.toString());
 

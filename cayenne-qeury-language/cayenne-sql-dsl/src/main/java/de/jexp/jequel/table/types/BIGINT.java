@@ -16,11 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package de.jexp.jequel.table.types;
 
-package de.jexp.jequel.table.visitor;
+import de.jexp.jequel.table.Table;
 
-import de.jexp.jequel.expression.visitor.Format;
-import de.jexp.jequel.table.visitor.TableVisitor;
+import java.sql.Types;
 
-public interface TableFormat extends TableVisitor<String>, Format {
+/**
+ * @since 4.0
+ */
+public class BIGINT extends NUMERIC {
+    public BIGINT(Table table) {
+        super(null, table, Types.BIGINT);
+    }
+
+    public BIGINT(String name, Table table) {
+        super(name, table, Types.BIGINT);
+    }
 }

@@ -47,7 +47,7 @@ public interface SQLActionVisitor {
      *
      * Creates an action to execute a SelectQuery.
      */
-//    <T> SQLAction objectSelectAction(DslObjectSelect<T> query);
+    SqlDslAction sqlDslAction(SqlQuery query);
 
     /**
      * Creates an action to execute a SQLTemplate.

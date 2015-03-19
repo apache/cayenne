@@ -2,13 +2,15 @@ package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.RowListExpression;
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.Delimeter;
+import de.jexp.jequel.table.types.BIGINT;
 import de.jexp.jequel.table.types.INTEGER;
-import de.jexp.jequel.table.visitor.TableVisitor;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,13 +34,12 @@ public class BaseTable<A extends BaseTable> extends RowListExpression<A> impleme
     }
 
     public String toString() {
-        return accept(TABLE_FORMAT);
+        return accept(EXPRESSION_FORMAT);
     }
 
-    public <R> R accept(TableVisitor<R> tableVisitor) {
-        return tableVisitor.visit(this);
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visit(this);
     }
-
 
     public String getAlias() {
         return alias;
@@ -48,8 +49,8 @@ public class BaseTable<A extends BaseTable> extends RowListExpression<A> impleme
         return tableName;
     }
 
-    public <K> Field<K> field(Class<K> type) {
-        return new TableField<K>(this);
+    public <K> TableField<K> field(int jdbcType) {
+        return new TableField<K>(this, jdbcType);
     }
 
     protected <T> Field<T> foreignKey(Field<T> reference) {
@@ -154,23 +155,31 @@ public class BaseTable<A extends BaseTable> extends RowListExpression<A> impleme
         return new INTEGER(this);
     }
 
-    protected Field<String> string() {
-        return field(String.class);
+    protected BIGINT bigint() {
+        return new BIGINT(this);
     }
 
-    protected Field<BigDecimal> numeric() {
-        return field(BigDecimal.class);
+    protected TableField<String> character(int length) {
+        return field(Types.CHAR);
     }
 
-    protected Field<Boolean> bool() {
-        return field(Boolean.class);
+    protected TableField<String> string() {
+        return field(Types.VARCHAR);
     }
 
-    protected Field<Date> date() {
-        return field(Date.class);
+    protected TableField<BigDecimal> numeric() {
+        return field(Types.BIGINT);
     }
 
-    protected Field<Timestamp> timestamp() {
-        return field(Timestamp.class);
+    protected TableField<Boolean> bool() {
+        return field(Types.BOOLEAN);
+    }
+
+    protected TableField<Date> date() {
+        return field(Types.DATE);
+    }
+
+    protected TableField<Timestamp> timestamp() {
+        return field(Types.TIMESTAMP);
     }
 }

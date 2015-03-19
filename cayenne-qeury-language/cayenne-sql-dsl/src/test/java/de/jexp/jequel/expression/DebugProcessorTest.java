@@ -10,20 +10,20 @@ import junit.framework.TestCase;
 public class DebugProcessorTest extends TestCase {
     private static final String EXPECTED_DEBUG_INFO =
             "select ARTICLE.OID from ARTICLE where ARTICLE_COLOR.OID is NULL {Sql}\n" +
-                    "select ARTICLE.OID {SelectPartColumnTupleExpression}\n" +
-                    "ARTICLE.OID {TableField}\n" +
-                    "from ARTICLE {SelectPartColumnTupleExpression}\n" +
+                    "select ARTICLE.OID {Select}\n" +
+                    "ARTICLE.OID {INTEGER}\n" +
+                    "from ARTICLE {SelectPartColumnListExpression}\n" +
                     "ARTICLE {ARTICLE}\n" +
-                    "ARTICLE.OID {TableField}\n" +
+                    "ARTICLE.OID {INTEGER}\n" +
                     "ARTICLE.NAME {TableField}\n" +
-                    "ARTICLE.ARTICLE_NO {TableField}\n" +
-                    "where ARTICLE_COLOR.OID is NULL {SelectPartMutableBooleanExpression}\n" +
+                    "ARTICLE.ARTICLE_NO {INTEGER}\n" +
+                    "ARTICLE_COLOR.OID is NULL {Where}\n" +
                     "ARTICLE_COLOR.OID is NULL {BinaryExpression}\n" +
-                    "ARTICLE_COLOR.OID {TableField}\n" +
-                    "NULL {ConstantExpression}\n" +
-                    " {SelectPartColumnTupleExpression}\n" +
-                    " {SelectPartMutableBooleanExpression}\n" +
-                    " {SelectPartColumnTupleExpression}\n";
+                    "ARTICLE_COLOR.OID {INTEGER}\n" +
+                    "NULL {}\n" +
+                    " {SelectPartColumnListExpression}\n" +
+                    "NULL {Having}\n" +
+                    " {SelectPartColumnListExpression}\n";
 
     private DebugExpressionProcessor expressionProcessor;
 

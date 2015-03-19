@@ -18,8 +18,6 @@
  */
 package org.apache.cayenne.query;
 
-import de.jexp.jequel.execute.ExecutableParams;
-import de.jexp.jequel.execute.core.DefaultExecutableParams;
 import de.jexp.jequel.sql.Sql;
 import org.apache.cayenne.access.QueryEngine;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
@@ -34,9 +32,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @param <R> query return type
+ *
  * @since 4.0
  */
-public class SqlQuery implements Query {
+public class SqlQuery<R> implements Query {
 
     private final Sql sql;
     private final String name;
@@ -44,7 +44,7 @@ public class SqlQuery implements Query {
     private final QueryMetadata metadata = new BaseQueryMetadata();
 
     /* @Lazy */
-    private DefaultExecutableParams params;
+    private SqlDslExecutableParams params;
 
     public SqlQuery(Sql sql, String name) {
         this.sql = sql;
@@ -80,8 +80,8 @@ public class SqlQuery implements Query {
     }
 
     @Override
-    public SQLAction createSQLAction(SQLActionVisitor visitor) {
-        return new SqlDslAction(this, ((JdbcActionBuilder) visitor).getDataNode());
+    public SqlDslAction<R> createSQLAction(SQLActionVisitor visitor) {
+        return new SqlDslAction<R>(this, ((JdbcActionBuilder) visitor).getDataNode());
     }
 
     @Override
@@ -111,9 +111,9 @@ public class SqlQuery implements Query {
         return getParams().getParamValues();
     }
 
-    private ExecutableParams getParams() {
+    private SqlDslExecutableParams getParams() {
         if (this.params == null) {
-            this.params = DefaultExecutableParams.extractParams(sql);
+            this.params = SqlDslDefaultExecutableParams.extractParams(sql);
         }
 
         return this.params;

@@ -35,6 +35,9 @@ import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
 import de.jexp.jequel.expression.numeric.NumericLiteral;
 import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
+import de.jexp.jequel.table.BaseTable;
+import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.JoinTable;
 
 /**
  * @since 4.0
@@ -113,6 +116,21 @@ public class DefaultExpressionVisitor<R> implements ExpressionVisitor<R> {
 
     @Override
     public <E extends Expression> R visit(ExpressionAlias<E> expression) {
+        return null;
+    }
+
+    @Override
+    public <T> R visit(Field<T> field) {
+        return null;
+    }
+
+    @Override
+    public R visit(JoinTable joinTable) {
+        return null;
+    }
+
+    @Override
+    public R visit(BaseTable table) {
         return null;
     }
 }

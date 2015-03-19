@@ -5,6 +5,8 @@ import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.RowListExpression;
 import de.jexp.jequel.literals.SelectKeyword;
+import de.jexp.jequel.table.BaseTable;
+import de.jexp.jequel.table.Table;
 
 public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From, SqlDsl.Where, SqlDsl.OrderBy, SqlDsl.GroupBy, SqlDsl.Having {
 
@@ -24,6 +26,10 @@ public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From
 
     public Sql toSql() {
         return this;
+    }
+
+    public static SqlDsl.From Select(BaseTable table) {
+        return new Sql().from(table);
     }
 
     public static SqlDsl.Select Select(Expression... fields) {

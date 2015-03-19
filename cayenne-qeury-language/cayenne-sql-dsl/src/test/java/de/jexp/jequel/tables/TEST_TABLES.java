@@ -2,13 +2,13 @@ package de.jexp.jequel.tables;
 
 import de.jexp.jequel.table.BaseTable;
 import de.jexp.jequel.table.Field;
-import de.jexp.jequel.table.types.INTEGER;
+import de.jexp.jequel.table.types.NUMERIC;
 
 public interface TEST_TABLES {
     ARTICLE ARTICLE = new ARTICLE();
 
     final class ARTICLE extends BaseTable<ARTICLE> {
-        public INTEGER OID = integer().primaryKey();
+        public NUMERIC OID = integer().primaryKey();
         public Field NAME = string();
         public Field<Integer> ARTICLE_NO = integer();
 

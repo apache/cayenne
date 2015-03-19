@@ -16,21 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.table.types;
 
-import de.jexp.jequel.table.Table;
+package org.apache.cayenne.query;
 
-import java.sql.Types;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-/**
- * @since 4.0
- */
-public class INTEGER extends NUMERIC {
-    public INTEGER(Table table) {
-        super(null, table, Types.INTEGER);
-    }
+public interface SqlDslExecutableParams {
+    boolean hasParams();
 
-    public INTEGER(String name, Table table) {
-        super(null, table, Types.INTEGER);
-    }
+    boolean hasOnlyNamed();
+
+    int getParamCount();
+
+    List<Object> getParamValues();
+
+    Collection<?> getParamNames();
+
+    Map<String, Object> getNamedParams();
+
+    void addParams(SqlDslExecutableParams executableParams);
 }

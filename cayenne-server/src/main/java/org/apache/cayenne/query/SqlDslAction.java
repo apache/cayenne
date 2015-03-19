@@ -1,5 +1,6 @@
 package org.apache.cayenne.query;
 
+import de.jexp.jequel.Sql92Format;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -53,7 +54,7 @@ public class SqlDslAction<T> extends BaseSQLAction {
     private List<Number> runWithPositionalParameters(Connection connection, OperationObserver callback) throws Exception {
 
         SQLStatement compiled = new SQLStatement(
-                query.getSql().toString(), // TODO use db dependent formatter
+                query.getSql().accept(new Sql92Format()), // TODO use db dependent formatter
                 query.getResultColumns(),
                 query.getParametersBindings()
         );
@@ -131,7 +132,8 @@ public class SqlDslAction<T> extends BaseSQLAction {
         ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
         RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
 
-        RowReader<T> rowReader = (RowReader<T>) dataNode.rowReader(builder.getDescriptor(types), null/*queryMetadata*/);
+        QueryMetadata metaData = query.getMetaData(dataNode.getEntityResolver());
+        RowReader<T> rowReader = (RowReader<T>) dataNode.rowReader(builder.getDescriptor(types), metaData);
 
         ResultIterator<T> it = new JDBCResultIterator<T>(statement, resultSet, rowReader);
         if (iteratedResult) {

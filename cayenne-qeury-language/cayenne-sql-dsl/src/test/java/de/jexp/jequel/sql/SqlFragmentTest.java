@@ -28,11 +28,11 @@ public class SqlFragmentTest extends TestCase {
         assertEquals("select ARTICLE.ARTICLE_NO, ARTICLE_COLOR.ARTICLE_OID from ARTICLE_COLOR where" +
                 " ARTICLE_COLOR.OID = ARTICLE.OID and ARTICLE.OID is not NULL"
                 , ARTICLE_COLORS.toString());
-        assertEquals("where ARTICLE.OID is not NULL", NOT_NULL_FRAGMENT.toString());
+        assertEquals("ARTICLE.OID is not NULL", NOT_NULL_FRAGMENT.getWhere().toString());
 
         ARTICLE_COLORS.where().and(TRUE.eq(FALSE));
 
-        assertEquals("where ARTICLE.OID is not NULL", NOT_NULL_FRAGMENT.toString());
+        assertEquals("ARTICLE.OID is not NULL", NOT_NULL_FRAGMENT.getWhere().toString());
         assertEquals("select ARTICLE.ARTICLE_NO, ARTICLE_COLOR.ARTICLE_OID from ARTICLE_COLOR where" +
                 " ARTICLE_COLOR.OID = ARTICLE.OID and ARTICLE.OID is not NULL and TRUE = FALSE",
                 ARTICLE_COLORS.toString());

@@ -1,39 +1,37 @@
 package de.jexp.jequel;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.BinaryExpression;
+import de.jexp.jequel.expression.CompoundExpression;
+import de.jexp.jequel.expression.ConstantExpression;
+import de.jexp.jequel.expression.Expression;
+import de.jexp.jequel.expression.ExpressionAlias;
+import de.jexp.jequel.expression.ParamExpression;
+import de.jexp.jequel.expression.RowListExpression;
+import de.jexp.jequel.expression.SearchCondition;
+import de.jexp.jequel.expression.SimpleListExpression;
+import de.jexp.jequel.expression.StringExpression;
+import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
 import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.logical.BooleanListExpression;
 import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
-import de.jexp.jequel.expression.CompoundExpression;
-import de.jexp.jequel.expression.ConstantExpression;
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.ExpressionAlias;
 import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
 import de.jexp.jequel.expression.numeric.NumericLiteral;
 import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
 import de.jexp.jequel.expression.visitor.ExpressionFormat;
-import de.jexp.jequel.expression.SearchCondition;
-import de.jexp.jequel.expression.ParamExpression;
-import de.jexp.jequel.expression.RowListExpression;
-import de.jexp.jequel.expression.SimpleListExpression;
-import de.jexp.jequel.expression.StringExpression;
-import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.Operator;
 import de.jexp.jequel.literals.SelectKeyword;
 import de.jexp.jequel.literals.SqlKeyword;
-import de.jexp.jequel.sql.SqlModel;
 import de.jexp.jequel.sql.Sql;
+import de.jexp.jequel.sql.SqlModel;
 import de.jexp.jequel.table.BaseTable;
 import de.jexp.jequel.table.Field;
 import de.jexp.jequel.table.ForeignKey;
 import de.jexp.jequel.table.JoinTable;
 import de.jexp.jequel.table.TableField;
-import de.jexp.jequel.table.visitor.TableFormat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +40,7 @@ import java.util.LinkedList;
 
 import static org.apache.commons.lang3.StringUtils.join;
 
-public class Sql92Format implements ExpressionFormat, TableFormat, SqlModel.SqlFormat {
+public class Sql92Format implements ExpressionFormat, SqlModel.SqlFormat {
 
     protected String parenthese(String expressionString) {
         return "(" + expressionString + ")";
@@ -270,7 +268,7 @@ public class Sql92Format implements ExpressionFormat, TableFormat, SqlModel.SqlF
 
     public String visit(SqlModel.Select select) {
         if (!select.hasValues()) {
-            return "";
+            return "select *";
         }
         return "select " + visit((SimpleListExpression) select);
     }

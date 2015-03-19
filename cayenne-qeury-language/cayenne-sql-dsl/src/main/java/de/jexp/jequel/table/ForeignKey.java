@@ -5,12 +5,12 @@ public class ForeignKey<T> extends TableField<T> {
     private FieldReference<T> reference;
 
     ForeignKey(Table table, Field<T> field) {
-        super(table);
+        super(table, field.getJdbcType());
         this.field = field;
     }
 
     public ForeignKey(Table table, FieldReference<T> reference) {
-        super(table);
+        super(table, Integer.MIN_VALUE); // TODO find type here
         this.reference = reference;
     }
 

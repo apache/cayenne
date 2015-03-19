@@ -32,6 +32,8 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SqlDslAction;
+import org.apache.cayenne.query.SqlQuery;
 
 /**
  * A factory of default SQLActions. Adapters usually subclass JdbcActionBuilder to provide
@@ -71,10 +73,10 @@ public class JdbcActionBuilder implements SQLActionVisitor {
         return new SelectAction(query, dataNode);
     }
 
-//    @Override
-//    public <T> SQLAction objectSelectAction(DslObjectSelect<T> query) {
-//        return new DslObjectSelectAction<T>(query, dataNode);
-//    }
+    @Override
+    public SqlDslAction sqlDslAction(SqlQuery query) {
+        return new SqlDslAction(query, dataNode);
+    }
 
     @Override
     public SQLAction sqlAction(SQLTemplate query) {

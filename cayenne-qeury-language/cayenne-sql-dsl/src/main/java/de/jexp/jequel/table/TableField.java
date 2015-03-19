@@ -2,21 +2,25 @@ package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.AbstractExpression;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.table.visitor.TableVisitor;
 
 public class TableField<T> extends AbstractExpression implements Field<T> {
+
     private final Table table;
+    private final int jdbcType;
 
     private String name;
-    private boolean primaryKey;
 
-    protected TableField(Table table) {
-        this(null, table);
+    private boolean primaryKey;
+    private boolean mandatory;
+
+    protected TableField(Table table, int jdbcType) {
+        this(null, table, jdbcType);
     }
 
-    protected TableField(String name, Table table) {
+    protected TableField(String name, Table table, int jdbcType) {
         this.name = name;
         this.table = table;
+        this.jdbcType = jdbcType;
     }
 
     public FieldAlias<T> as(String alias) {
@@ -24,15 +28,11 @@ public class TableField<T> extends AbstractExpression implements Field<T> {
     }
 
     public String toString() {
-        return accept(TABLE_FORMAT);
+        return accept(EXPRESSION_FORMAT);
     }
 
-    public <R> R accept(TableVisitor<R> tableVisitor) {
-        return tableVisitor.visit(this);
-    }
-
-    public <R> R accept(ExpressionVisitor<R> expressionVisitor) {
-        throw new UnsupportedOperationException("accept only for TableVisitor");
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 
     public String getTableName() {
@@ -63,9 +63,24 @@ public class TableField<T> extends AbstractExpression implements Field<T> {
         return (E) this;
     }
 
+    public <E extends TableField<T>> E mandatory() {
+        this.mandatory = true;
+        return (E) this;
+    }
+
     @Override
     public boolean isPrimaryKey() {
         return primaryKey;
+    }
+
+    @Override
+    public int getJdbcType() {
+        return jdbcType;
+    }
+
+    @Override
+    public boolean isMandatory() {
+        return mandatory;
     }
 
     @Override
