@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.query.sqldsl.SqlDslAction;
+import org.apache.cayenne.query.sqldsl.SqlQuery;
+
 /**
  * A factory interface to create standard SQLActions for a set of standard queries.
  * Instances of SQLActionVisitor are passed by Cayenne to a Query in

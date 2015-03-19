@@ -32,8 +32,8 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SqlDslAction;
-import org.apache.cayenne.query.SqlQuery;
+import org.apache.cayenne.query.sqldsl.SqlDslAction;
+import org.apache.cayenne.query.sqldsl.SqlQuery;
 
 /**
  * A factory of default SQLActions. Adapters usually subclass JdbcActionBuilder to provide

@@ -41,7 +41,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 1.1
  */
-class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable {
+public class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable {
 
 	private static final long serialVersionUID = 5129792493303459115L;
 
