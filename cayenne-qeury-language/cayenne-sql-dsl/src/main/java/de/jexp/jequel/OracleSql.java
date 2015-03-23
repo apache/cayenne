@@ -1,7 +1,6 @@
 package de.jexp.jequel;
 
 import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.visitor.ExpressionFormat;
 import de.jexp.jequel.sql.Sql;
 
 public class OracleSql extends Sql {

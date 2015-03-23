@@ -3,6 +3,8 @@ package de.jexp.jequel.sql;
 import static de.jexp.jequel.sql.Expressions.*;
 import static de.jexp.jequel.sql.Sql.*;
 import static de.jexp.jequel.tables.TEST_TABLES.*;
+
+import de.jexp.jequel.Sql92Format;
 import junit.framework.TestCase;
 
 public class SqlFragmentTest extends TestCase {
@@ -16,7 +18,7 @@ public class SqlFragmentTest extends TestCase {
 
         assertEquals("select ARTICLE.ARTICLE_NO, ARTICLE_COLOR.ARTICLE_OID from ARTICLE_COLOR, ARTICLE where" +
                 " ARTICLE_COLOR.OID = ARTICLE.OID and ARTICLE.OID is not NULL"
-                , ARTICLE_COLORS.toString());
+                , ARTICLE_COLORS.accept(new Sql92Format()));
     }
 
     public void testFragmentPart() {
@@ -27,14 +29,15 @@ public class SqlFragmentTest extends TestCase {
 
         assertEquals("select ARTICLE.ARTICLE_NO, ARTICLE_COLOR.ARTICLE_OID from ARTICLE_COLOR where" +
                 " ARTICLE_COLOR.OID = ARTICLE.OID and ARTICLE.OID is not NULL"
-                , ARTICLE_COLORS.toString());
-        assertEquals("ARTICLE.OID is not NULL", NOT_NULL_FRAGMENT.getWhere().toString());
+                , ARTICLE_COLORS.accept(new Sql92Format()));
+        assertEquals("where ARTICLE.OID is not NULL",
+                NOT_NULL_FRAGMENT.where().accept(new Sql92Format()));
 
         ARTICLE_COLORS.where().and(TRUE.eq(FALSE));
 
-        assertEquals("ARTICLE.OID is not NULL", NOT_NULL_FRAGMENT.getWhere().toString());
+        assertEquals("where ARTICLE.OID is not NULL", NOT_NULL_FRAGMENT.getWhere().accept(new Sql92Format()));
         assertEquals("select ARTICLE.ARTICLE_NO, ARTICLE_COLOR.ARTICLE_OID from ARTICLE_COLOR where" +
                 " ARTICLE_COLOR.OID = ARTICLE.OID and ARTICLE.OID is not NULL and TRUE = FALSE",
-                ARTICLE_COLORS.toString());
+                ARTICLE_COLORS.accept(new Sql92Format()));
     }
 }

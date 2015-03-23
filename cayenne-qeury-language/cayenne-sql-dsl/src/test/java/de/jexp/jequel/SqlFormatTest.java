@@ -14,13 +14,13 @@ public class SqlFormatTest {
 
     @Test
     public void testSql92() {
-        String sql92String = new Sql92().append(sql).accept((SqlDsl.SqlVisitor<? extends String>) new Sql92Format());
+        String sql92String = new Sql92().append(sql).accept(new Sql92Format());
         assertEquals("select ARTICLE2.OID from ARTICLE as ARTICLE2 where ARTICLE2.OID is not NULL", sql92String);
     }
 
     @Test
     public void testOracleSql() {
-        String oracleString = new OracleSql().append(sql).accept((SqlDsl.SqlVisitor<? extends String>) new Sql92Format());
+        String oracleString = new OracleSql().append(sql).accept(new OracleSqlFormat());
         assertEquals("select ARTICLE2.OID from ARTICLE ARTICLE2 where ARTICLE2.OID is not NULL", oracleString);
     }
 }

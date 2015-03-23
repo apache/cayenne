@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.table.types;
+package de.jexp.jequel.expression.types;
 
-import de.jexp.jequel.table.ITable;
+import de.jexp.jequel.expression.ITable;
 
 import java.sql.Types;
 

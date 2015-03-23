@@ -1,4 +1,4 @@
-package de.jexp.jequel.table;
+package de.jexp.jequel.expression;
 
 public class ForeignKey<T> extends Column<T> {
     private IColumn<T> column;

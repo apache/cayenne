@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package de.jexp.jequel.expression.visitor;
+package de.jexp.jequel.expression;
 
 import de.jexp.jequel.expression.BinaryExpression;
 import de.jexp.jequel.expression.BooleanBinaryExpression;

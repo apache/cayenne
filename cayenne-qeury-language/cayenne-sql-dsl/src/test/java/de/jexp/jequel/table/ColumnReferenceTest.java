@@ -1,5 +1,6 @@
 package de.jexp.jequel.table;
 
+import de.jexp.jequel.expression.FieldReference;
 import de.jexp.jequel.tables.TEST_TABLES;
 import junit.framework.TestCase;
 

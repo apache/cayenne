@@ -3,8 +3,6 @@
  */
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-
 public class StringLiteral extends StringAbstractExpression implements LiteralExpression<String> {
     private final String value;
 

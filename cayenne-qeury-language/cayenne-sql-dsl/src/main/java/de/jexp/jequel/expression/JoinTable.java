@@ -1,9 +1,5 @@
-package de.jexp.jequel.table;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.BooleanExpression;
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.LiteralExpression;
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.sql.SqlDsl;
 
 public class JoinTable extends Table<Table> {

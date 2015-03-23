@@ -20,10 +20,17 @@ public abstract class Expressions {
     }
 
     public static BooleanExpression exits(Object expression) {
+        if (expression instanceof SqlDsl.ToSql) {
+            return EXPRESSIONS.exits(((SqlDsl.ToSql) expression).toSql());
+        }
         return EXPRESSIONS.exits(expression);
     }
 
     public static BooleanExpression notExits(Object expression) {
+        if (expression instanceof SqlDsl.ToSql) {
+            return EXPRESSIONS.exits(((SqlDsl.ToSql) expression).toSql());
+        }
+
         return EXPRESSIONS.notExits(expression);
     }
 

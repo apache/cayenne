@@ -5,8 +5,8 @@ import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.ExpressionProcessor;
 import de.jexp.jequel.sql.Sql;
 import de.jexp.jequel.sql.SqlModel;
-import de.jexp.jequel.table.IColumn;
-import de.jexp.jequel.table.ITable;
+import de.jexp.jequel.expression.IColumn;
+import de.jexp.jequel.expression.ITable;
 
 import java.util.ArrayList;
 import java.util.Collection;

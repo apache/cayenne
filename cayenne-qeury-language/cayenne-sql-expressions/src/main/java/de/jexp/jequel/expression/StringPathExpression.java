@@ -1,7 +1,5 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-
 public class StringPathExpression extends StringAbstractExpression implements PathExpression {
     private final String path;
 

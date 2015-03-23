@@ -22,9 +22,9 @@ import de.jexp.jequel.SqlString;
 import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.table.ITable;
-import de.jexp.jequel.table.JoinTable;
-import de.jexp.jequel.table.Table;
+import de.jexp.jequel.expression.ExpressionVisitor;
+import de.jexp.jequel.expression.JoinTable;
+import de.jexp.jequel.expression.Table;
 
 /**
  * @since 4.0
@@ -64,7 +64,7 @@ public interface SqlDsl {
 
     }
 
-    interface SqlVisitor<R> {
+    interface SqlVisitor<R> extends ExpressionVisitor<R> {
         R visit(SqlModel.SelectPartColumnListExpression sqlPartColumnTupleExpression);
 
         R visit(SqlModel.Select select);

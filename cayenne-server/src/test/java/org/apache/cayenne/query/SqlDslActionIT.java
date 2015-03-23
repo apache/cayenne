@@ -22,7 +22,7 @@ package org.apache.cayenne.query;
 import de.jexp.jequel.sql.Sql;
 import de.jexp.jequel.table.Table;
 import de.jexp.jequel.table.IColumn;
-import de.jexp.jequel.table.types.NUMERIC;
+import de.jexp.jequel.expression.types.NUMERIC;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.NewTableHelper;
 import org.apache.cayenne.ObjectContext;

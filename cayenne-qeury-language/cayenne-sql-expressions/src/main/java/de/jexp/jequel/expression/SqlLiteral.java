@@ -1,7 +1,5 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-
 public class SqlLiteral extends AbstractExpression implements LiteralExpression<String> {
 
     private final String sql;

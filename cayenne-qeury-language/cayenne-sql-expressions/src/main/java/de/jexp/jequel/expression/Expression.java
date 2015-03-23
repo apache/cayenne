@@ -1,12 +1,10 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.Sql92ExpressionFormatter;
-import de.jexp.jequel.expression.visitor.ExpressionFormat;
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.Sql92ExpressionVisitor;
 
-public interface Expression {
+public interface Expression extends ExpressionVisitable {
 
-    ExpressionFormat EXPRESSION_FORMAT = new Sql92ExpressionFormatter();
+    Sql92ExpressionVisitor EXPRESSION_FORMAT = new Sql92ExpressionVisitor();
 
     BooleanExpression eq(Object expression);
 
@@ -32,8 +30,6 @@ public interface Expression {
 
     /* TODO going to remove this method, visitor functionality should be enough */
     <K> void process(ExpressionProcessor<K> expressionProcessor);
-
-    <R> R accept(ExpressionVisitor<R> visitor);
 
     ExpressionsFactory factory();
 

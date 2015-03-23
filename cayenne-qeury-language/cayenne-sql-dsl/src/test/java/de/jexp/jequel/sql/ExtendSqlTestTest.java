@@ -3,11 +3,13 @@ package de.jexp.jequel.sql;
 import static de.jexp.jequel.sql.Expressions.*;
 import static de.jexp.jequel.sql.Sql.*;
 import static de.jexp.jequel.tables.TEST_TABLES.*;
+
+import de.jexp.jequel.Sql92Format;
 import junit.framework.TestCase;
 
 public class ExtendSqlTestTest extends TestCase {
     public void testExtendSqlTest() {
-        final Sql sql = (Sql) Select(ARTICLE.OID); // empty select
+        Sql sql = (Sql) Select(ARTICLE.OID); // empty select
 
         // fill dynamically, use control logic to select
 
@@ -28,6 +30,6 @@ public class ExtendSqlTestTest extends TestCase {
                 " group by ARTICLE.ARTICLE_NO" +
                 " having ARTICLE.ARTICLE_NO >= 1000" +
                 " order by ARTICLE.ARTICLE_NO",
-                sql.toString());
+                sql.accept(new Sql92Format()));
     }
 }

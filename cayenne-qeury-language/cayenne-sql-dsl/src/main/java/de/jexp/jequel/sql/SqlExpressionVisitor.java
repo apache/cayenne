@@ -19,10 +19,10 @@
 
 package de.jexp.jequel.sql;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.table.Table;
-import de.jexp.jequel.table.IColumn;
-import de.jexp.jequel.table.JoinTable;
+import de.jexp.jequel.expression.ExpressionVisitor;
+import de.jexp.jequel.expression.Table;
+import de.jexp.jequel.expression.IColumn;
+import de.jexp.jequel.expression.JoinTable;
 
 public interface SqlExpressionVisitor<R> extends ExpressionVisitor<R> {
 

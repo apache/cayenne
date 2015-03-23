@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 
-public class Sql92ExpressionFormatterTest {
+public class Sql92ExpressionVisitorTest {
 
     private Expressions e = new Expressions(new DefaultExpressionsFactory());
 

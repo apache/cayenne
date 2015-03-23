@@ -1,4 +1,4 @@
-package de.jexp.jequel.table;
+package de.jexp.jequel.expression;
 
 public class FieldReference<T> {
 

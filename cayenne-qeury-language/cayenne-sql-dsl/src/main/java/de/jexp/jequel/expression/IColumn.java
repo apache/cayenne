@@ -1,7 +1,4 @@
-package de.jexp.jequel.table;
-
-import de.jexp.jequel.expression.Alias;
-import de.jexp.jequel.expression.PathExpression;
+package de.jexp.jequel.expression;
 
 public interface IColumn<JavaType> extends TablePart, PathExpression<IColumn>, Alias<IColumn<JavaType>> {
 

@@ -19,9 +19,6 @@
 
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.literals.Operator;
-
 public class BooleanBinaryExpression extends BooleanAbstractExpression {
     private final BinaryExpression<Expression> binaryExpression;
 

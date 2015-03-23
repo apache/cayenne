@@ -1,8 +1,6 @@
-package de.jexp.jequel.table;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.AbstractExpression;
-import de.jexp.jequel.expression.Aliased;
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.sql.SqlDsl;
 
 public class Column<JavaType> extends AbstractExpression implements IColumn<JavaType> {
 
@@ -94,5 +92,34 @@ public class Column<JavaType> extends AbstractExpression implements IColumn<Java
     @Override
     public String getValue() {
         return getTableName() + "." + getName();
+    }
+
+    @Override
+    public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
+        return sqlVisitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Column column = (Column) o;
+
+        if (jdbcType != column.jdbcType) return false;
+        if (mandatory != column.mandatory) return false;
+        if (primaryKey != column.primaryKey) return false;
+        if (!name.equals(column.name)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = jdbcType;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (primaryKey ? 1 : 0);
+        result = 31 * result + (mandatory ? 1 : 0);
+        return result;
     }
 }

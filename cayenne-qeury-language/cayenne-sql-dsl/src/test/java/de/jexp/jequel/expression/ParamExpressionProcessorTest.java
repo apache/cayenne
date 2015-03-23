@@ -1,6 +1,8 @@
 package de.jexp.jequel.expression;
 
 import static de.jexp.jequel.sql.Expressions.*;
+
+import de.jexp.jequel.Sql92Format;
 import de.jexp.jequel.processor.ParameterCollectorProcessor;
 import de.jexp.jequel.sql.Sql;
 
@@ -24,7 +26,7 @@ public class ParamExpressionProcessorTest extends TestCase {
                 " where (ARTICLE.ARTICLE_NO > ?" + // TODO brackets shouldn't be here
                 " and ARTICLE_COLOR.OID = :article)" +
                 " or ARTICLE.OID in (:article_oid)",
-                sql.toString());
+                sql.accept(new Sql92Format()));
 
         ParameterCollectorProcessor paramsCollector = new ParameterCollectorProcessor();
         paramsCollector.process(sql.getWhere().getBooleanExpression());

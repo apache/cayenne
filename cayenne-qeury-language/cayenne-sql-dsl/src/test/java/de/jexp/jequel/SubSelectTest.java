@@ -22,7 +22,7 @@ public class SubSelectTest extends TestCase {
 
         assertEquals("sub select",
                 "select ARTICLE.OID from ARTICLE where not(exists(" +
-                        "(select 1 from ARTICLE as ARTICLE2 where ARTICLE2.OID = ARTICLE.OID and ARTICLE2.ARTICLE_NO is NULL)" +
+                        "select 1 from ARTICLE as ARTICLE2 where ARTICLE2.OID = ARTICLE.OID and ARTICLE2.ARTICLE_NO is NULL" +
                         "))",
                 sqlString.accept(SQL_92_FORMAT));
 

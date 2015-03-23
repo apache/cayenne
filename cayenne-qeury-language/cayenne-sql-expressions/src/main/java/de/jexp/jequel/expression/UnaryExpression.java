@@ -1,6 +1,5 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.UnaryOperator;
 
 public class UnaryExpression<E extends Expression> extends AbstractExpression {

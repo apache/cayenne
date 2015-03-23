@@ -18,7 +18,6 @@
  */
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.Operator;
 
 import java.util.ArrayList;

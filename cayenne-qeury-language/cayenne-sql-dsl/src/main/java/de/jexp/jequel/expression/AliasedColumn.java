@@ -16,11 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.table;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.AbstractExpression;
-import de.jexp.jequel.expression.Aliased;
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.sql.SqlDsl;
 
 /**
  * @since 4.0
@@ -83,6 +81,11 @@ public class AliasedColumn<JavaType> extends AbstractExpression implements IColu
     @Override
     public String getAlias() {
         return alias;
+    }
+
+    @Override
+    public <R> R accept(SqlDsl.SqlVisitor<R> visitor) {
+        return visitor.visit((Aliased<? extends Expression>) this);
     }
 
     @Override

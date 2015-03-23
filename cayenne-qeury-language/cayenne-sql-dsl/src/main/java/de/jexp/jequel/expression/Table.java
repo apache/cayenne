@@ -1,18 +1,16 @@
-package de.jexp.jequel.table;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.AbstractExpression;
-import de.jexp.jequel.expression.Aliased;
-import de.jexp.jequel.expression.PathExpression;
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.sql.SqlDsl;
-import de.jexp.jequel.table.types.BIGINT;
-import de.jexp.jequel.table.types.INTEGER;
+import de.jexp.jequel.expression.types.BIGINT;
+import de.jexp.jequel.expression.types.INTEGER;
 
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  *
@@ -40,6 +38,9 @@ public class Table<A extends Table> extends AbstractExpression implements ITable
         try {
             A a = (A) getClass().newInstance();
             a.setAlias(alias);
+            a.factory(factory());
+
+            return a;
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -49,7 +50,7 @@ public class Table<A extends Table> extends AbstractExpression implements ITable
     }
 
     public String getName() {
-        return tableName;
+        return isBlank(alias) ? tableName : alias;
     }
 
     public Column field(int jdbcType) {
@@ -77,9 +78,14 @@ public class Table<A extends Table> extends AbstractExpression implements ITable
     }
 
     private IColumn getForeignKey(IColumn pkColumn) {
+        String pkTable = pkColumn.getTable().getTableName();
+
         for (IColumn column : getFields().values()) {
-            if (column instanceof ForeignKey && ((ForeignKey) column).references(pkColumn)) {
-                return column;
+            if (column instanceof ForeignKey) {
+                ForeignKey key = (ForeignKey) column;
+                if (key.getColumn().getTableName().equals(pkTable) && key.references(pkColumn)) {
+                    return column;
+                }
             }
         }
         return null;
@@ -168,10 +174,10 @@ public class Table<A extends Table> extends AbstractExpression implements ITable
 
     @Override
     public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
-        return sqlVisitor.visit(this);
+        return sqlVisitor.visit((Aliased<? extends Expression>) this);
     }
 
-    private void setAlias(String alias) {
+    protected void setAlias(String alias) {
         this.alias = alias;
     }
 

@@ -26,12 +26,13 @@ public class JoinTest extends TestCase {
 
     public void testDoubleJoinSql() {
         ARTICLE ARTICLE2 = ARTICLE.as("ARTICLE2");
-        SqlString sql = Select(ARTICLE.OID).from(ARTICLE.join(ARTICLE_COLOR).join(ARTICLE2)
-                .on(ARTICLE2.OID.eq(ARTICLE_COLOR.ARTICLE_OID)));
+        SqlString sql = Select(ARTICLE.OID)
+                         .from(ARTICLE.join(ARTICLE_COLOR).join(ARTICLE2).on(ARTICLE2.OID.eq(ARTICLE_COLOR.ARTICLE_OID)));
 
-        assertEquals("select ARTICLE.OID from (ARTICLE join ARTICLE_COLOR" +
-                " on (ARTICLE.OID = ARTICLE_COLOR.ARTICLE_OID))" +
-                " join ARTICLE as ARTICLE2 on (ARTICLE2.OID = ARTICLE_COLOR.ARTICLE_OID)",
+        assertEquals("select ARTICLE.OID "
+                        + "from ARTICLE "
+                        + "join ARTICLE_COLOR on (ARTICLE.OID = ARTICLE_COLOR.ARTICLE_OID) "
+                        + "join ARTICLE as ARTICLE2 on (ARTICLE2.OID = ARTICLE_COLOR.ARTICLE_OID)",
                 sql.accept(SQL_92_FORMAT));
     }
 

@@ -3,8 +3,6 @@
  */
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-
 /*
 * TODO: Alex, split it to 2 classes with named and unnamed param
 * */

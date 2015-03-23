@@ -1,6 +1,5 @@
-package de.jexp.jequel.table;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.PathExpression;
 import de.jexp.jequel.sql.SqlModel;
 
 import java.util.Map;

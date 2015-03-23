@@ -5,7 +5,7 @@ import de.jexp.jequel.expression.AbstractExpression;
 import de.jexp.jequel.expression.BooleanExpression;
 import de.jexp.jequel.expression.DefaultExpressionsFactory;
 import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.expression.ExpressionVisitor;
 import de.jexp.jequel.literals.SelectKeyword;
 import de.jexp.jequel.sql.SqlDsl.GroupBy;
 import de.jexp.jequel.sql.SqlDsl.OrderBy;
@@ -13,7 +13,7 @@ import de.jexp.jequel.sql.SqlModel.Having;
 import de.jexp.jequel.sql.SqlModel.Select;
 import de.jexp.jequel.sql.SqlModel.SelectPartColumnListExpression;
 import de.jexp.jequel.sql.SqlModel.Where;
-import de.jexp.jequel.table.Table;
+import de.jexp.jequel.expression.Table;
 
 import static java.util.Arrays.asList;
 

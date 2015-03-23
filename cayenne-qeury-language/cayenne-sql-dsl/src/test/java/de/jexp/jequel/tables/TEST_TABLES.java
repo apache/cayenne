@@ -1,9 +1,9 @@
 package de.jexp.jequel.tables;
 
-import de.jexp.jequel.table.Table;
-import de.jexp.jequel.table.IColumn;
-import de.jexp.jequel.table.types.INTEGER;
-import de.jexp.jequel.table.types.NUMERIC;
+import de.jexp.jequel.expression.Table;
+import de.jexp.jequel.expression.IColumn;
+import de.jexp.jequel.expression.types.INTEGER;
+import de.jexp.jequel.expression.types.NUMERIC;
 
 public interface TEST_TABLES {
     ARTICLE ARTICLE = new ARTICLE();

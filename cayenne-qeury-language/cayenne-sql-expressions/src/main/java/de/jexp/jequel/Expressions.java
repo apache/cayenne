@@ -26,12 +26,19 @@ public class Expressions {
         return factory.createBoolean(NOT, expression);
     }
 
-    public BooleanExpression exits(Object expression) {
-        return factory.createBoolean(EXISTS, e(expression));
+    public BooleanExpression exits(Expression expression) {
+        return factory.createBoolean(EXISTS, expression);
     }
 
+    public BooleanExpression exits(Object expression) {
+        return exits(e(expression));
+    }
+
+    public BooleanExpression notExits(Expression expression) {
+        return factory.createBoolean(NOT_EXISTS, expression);
+    }
     public BooleanExpression notExits(Object expression) {
-        return factory.createBoolean(NOT_EXISTS, e(expression));
+        return notExits(e(expression));
     }
 
     // TODO numericExpr als Param

@@ -34,7 +34,7 @@ import de.jexp.jequel.expression.PathExpression;
 import de.jexp.jequel.expression.SqlLiteral;
 import de.jexp.jequel.expression.StringLiteral;
 import de.jexp.jequel.expression.UnaryExpression;
-import de.jexp.jequel.expression.visitor.ExpressionFormat;
+import de.jexp.jequel.expression.ExpressionVisitor;
 import de.jexp.jequel.literals.Operator;
 import de.jexp.jequel.literals.SqlKeyword;
 
@@ -48,7 +48,7 @@ import static org.apache.commons.lang3.StringUtils.join;
 /**
  * @since 4.0
  */
-public class Sql92ExpressionFormatter implements ExpressionFormat {
+public class Sql92ExpressionVisitor implements ExpressionVisitor<String> {
 
     @Override
     public String visit(NumericLiteral numericLiteral) {
@@ -206,13 +206,7 @@ public class Sql92ExpressionFormatter implements ExpressionFormat {
         return "(" + expressionString + ")";
     }
 
-    @Override
-    public String formatAround(String expressionString, Expression expression) {
-        return expressionString;
-    }
-
     /** Helpers  **/
-
     public String visit(SqlKeyword operator) {
         String sqlKeyword = operator.getSqlKeyword();
         if (sqlKeyword != null) {

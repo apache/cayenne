@@ -18,8 +18,6 @@
  */
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-
 /**
 * @since 4.0
 */

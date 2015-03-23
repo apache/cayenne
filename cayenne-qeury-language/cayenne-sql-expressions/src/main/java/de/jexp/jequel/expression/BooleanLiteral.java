@@ -19,8 +19,6 @@
 
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-
 public class BooleanLiteral extends BooleanAbstractExpression implements LiteralExpression<Boolean> {
     public static final BooleanLiteral TRUE = new BooleanLiteral(true);
     public static final BooleanLiteral FALSE = new BooleanLiteral(false);

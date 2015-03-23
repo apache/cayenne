@@ -1,6 +1,6 @@
 package de.jexp.jequel;
 
-import de.jexp.jequel.table.IColumn;
+import de.jexp.jequel.expression.IColumn;
 import org.junit.Test;
 
 import static de.jexp.jequel.sql.Sql.Select;

@@ -7,7 +7,7 @@ import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.processor.AbstractExpressionProcessor;
 import de.jexp.jequel.sql.SqlModel;
 import de.jexp.jequel.sql.Sql;
-import de.jexp.jequel.table.IColumn;
+import de.jexp.jequel.expression.IColumn;
 
 import java.util.ArrayList;
 import java.util.Collection;

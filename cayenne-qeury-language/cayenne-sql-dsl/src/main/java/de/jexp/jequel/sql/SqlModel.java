@@ -98,7 +98,7 @@ public interface SqlModel {
     }
 
     class Select extends SimpleListExpression implements SqlDsl.SqlVisitable {
-        public Select(Expression... expressions) {
+        public Select(Expression ... expressions) {
             super(Delimeter.COMMA, expressions);
         }
 

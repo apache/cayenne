@@ -1,9 +1,9 @@
-package de.jexp.jequel.table.types;
+package de.jexp.jequel.expression.types;
 
 import de.jexp.jequel.expression.NumericExpression;
 import de.jexp.jequel.literals.Operator;
-import de.jexp.jequel.table.ITable;
-import de.jexp.jequel.table.Column;
+import de.jexp.jequel.expression.ITable;
+import de.jexp.jequel.expression.Column;
 
 import java.sql.Types;
 

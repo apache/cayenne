@@ -1,34 +1,30 @@
 package de.jexp.jequel;
 
-import de.jexp.jequel.expression.Aliased;
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.SearchCondition;
-import de.jexp.jequel.expression.SimpleListExpression;
+import de.jexp.jequel.expression.*;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.SelectKeyword;
 import de.jexp.jequel.sql.Sql;
 import de.jexp.jequel.sql.SqlDsl;
-import de.jexp.jequel.sql.SqlModel;
 import de.jexp.jequel.sql.SqlModel.From;
 import de.jexp.jequel.sql.SqlModel.Having;
 import de.jexp.jequel.sql.SqlModel.Select;
 import de.jexp.jequel.sql.SqlModel.SelectPartColumnListExpression;
 import de.jexp.jequel.sql.SqlModel.Where;
-import de.jexp.jequel.table.ITable;
-import de.jexp.jequel.table.Table;
-import de.jexp.jequel.table.IColumn;
-import de.jexp.jequel.table.JoinTable;
+import de.jexp.jequel.expression.Table;
+import de.jexp.jequel.expression.IColumn;
+import de.jexp.jequel.expression.JoinTable;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.join;
 
-public class Sql92Format implements SqlDsl.SqlVisitor<String> {
+public class Sql92Format extends Sql92ExpressionVisitor implements SqlDsl.SqlVisitor<String> {
 
-    private final Sql92ExpressionFormatter expVisitor = new Sql92ExpressionFormatter();
+    protected final Sql92ExpressionVisitor expVisitor = new Sql92ExpressionVisitor();
 
     protected <T> String visit(T constantValue) {
         return constantValue.toString();
@@ -68,7 +64,16 @@ public class Sql92Format implements SqlDsl.SqlVisitor<String> {
             return "select *";
         }
 
-        return "select " + select.accept(expVisitor);
+        String res = "select ";
+        List<String> ee = new ArrayList<String>();
+        for (Expression expression : select.getExpressions()) {
+            if (expression instanceof SqlDsl.SqlVisitable) {
+                ee.add(((SqlDsl.SqlVisitable) expression).accept(this));
+            } else {
+                ee.add(expression.accept(this));
+            }
+        }
+        return res + join(ee, Delimeter.COMMA.getSqlKeyword());
     }
 
     public String visit(Where where) {
@@ -128,7 +133,7 @@ public class Sql92Format implements SqlDsl.SqlVisitor<String> {
         );
     }
 
-    private String joinNotNull(Delimeter space, SqlDsl.SqlVisitable... visitables) {
+    private String joinNotNull(Delimeter space, SqlDsl.SqlVisitable ... visitables) {
         return joinNotNull(space, asList(visitables));
     }
 
