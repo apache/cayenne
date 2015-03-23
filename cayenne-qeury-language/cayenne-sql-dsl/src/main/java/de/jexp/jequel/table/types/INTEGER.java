@@ -18,7 +18,7 @@
  */
 package de.jexp.jequel.table.types;
 
-import de.jexp.jequel.table.Table;
+import de.jexp.jequel.table.ITable;
 
 import java.sql.Types;
 
@@ -26,11 +26,11 @@ import java.sql.Types;
  * @since 4.0
  */
 public class INTEGER extends NUMERIC {
-    public INTEGER(Table table) {
+    public INTEGER(ITable table) {
         super(null, table, Types.INTEGER);
     }
 
-    public INTEGER(String name, Table table) {
+    public INTEGER(String name, ITable table) {
         super(null, table, Types.INTEGER);
     }
 }

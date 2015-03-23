@@ -19,78 +19,55 @@
 
 package de.jexp.jequel.sql;
 
-import de.jexp.jequel.Sql92Format;
+import de.jexp.jequel.expression.Alias;
+import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.AppendableExpression;
-import de.jexp.jequel.expression.DelegatingFormat;
 import de.jexp.jequel.expression.Expression;
+import de.jexp.jequel.expression.PathExpression;
 import de.jexp.jequel.expression.SearchCondition;
 import de.jexp.jequel.expression.SimpleListExpression;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.SelectKeyword;
-import de.jexp.jequel.table.Table;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public interface SqlModel {
 
-    interface Yahoo {
-        interface Functions {}
+    /**
+     * From what we can do selection:
+     *      Table
+     *      View
+     *      SubSelect
+     *
+     * */
+    interface FromSource<T extends FromSource> extends Expression, Alias<T>, SqlDsl.SqlVisitable {
 
-        class Select {
-            public Selectable[] selectable;
-            public From from;
-            public BooleanExp where;
-            public Order[] orderBy;
-            public Column[] groupBy;
-            public BooleanExp having;
-        }
+        List<PathExpression> columns();
 
-        interface Selectable {}
-
-        class Column implements Selectable {}
-        interface Expression extends Selectable {}
-        interface StringExp extends Expression {
-            StringExp concat(StringExp exp);
-        }
-        interface NumericExp extends Expression {}
-        interface DateTimeExp extends Expression {}
-        interface IntervalExp extends Expression {}
-        interface BooleanExp extends Expression {
-            enum Literal { TRUE, FALSE }
-
-            BooleanExp not(BooleanExp exp);
-            BooleanExp and(BooleanExp exp);
-            BooleanExp or(BooleanExp exp);
-
-            BooleanExp is(Literal exp);
-            BooleanExp isNot(Literal exp);
-        }
-
-
-        interface From {}
-
-        class Table implements From {}
-        class Join implements From {
-            public Table primaryKeyTable;
-            public Table foreignKeyTable;
-            public BooleanExp joinCondition;
-        }
-        class SubSelect extends Select implements From {}
-
-        enum OrderType { ASC, DESC}
-        class Order {
-            public Column column;
-            public OrderType type;
-        }
     }
 
-    class From extends SimpleListExpression implements SqlDsl.SqlVisitable {
+    class From implements SqlDsl.SqlVisitable {
 
-        protected From(Table ... expressions) {
-            super(Delimeter.COMMA, expressions);
+        private final List<FromSource> sources;
+
+        protected From(FromSource ... sources) {
+            this.sources = new LinkedList<FromSource>(asList(sources));
         }
 
         @Override
         public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
             return sqlVisitor.visit(this);
+        }
+
+        public List<FromSource> getSources() {
+            return sources;
+        }
+
+        public void append(List<FromSource> sources) {
+            this.sources.addAll(sources);
         }
     }
 
@@ -111,10 +88,6 @@ public interface SqlModel {
             this.selectKeyword = selectKeyword;
         }
 
-        public String toString() {
-            return accept(SQL_FORMAT);
-        }
-
         public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
             return sqlVisitor.visit(this);
         }
@@ -129,60 +102,26 @@ public interface SqlModel {
             super(Delimeter.COMMA, expressions);
         }
 
-        public String toString() {
-            return accept(SelectPartExpression.SQL_FORMAT);
-        }
-
         public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
             return sqlVisitor.visit(this);
         }
     }
 
     interface SelectPartExpression<T extends Expression> extends AppendableExpression<T>, SqlDsl.SqlVisitable {
-        SqlExpressionFormat SQL_FORMAT = new SqlExpressionFormat(new Sql92Format());
-
         SelectKeyword getSelectKeyword();
     }
 
-    class Where extends SearchCondition { }
-
-    class Having extends SearchCondition { }
-
-
-    class SqlExpressionFormat extends DelegatingFormat<SqlDsl.SqlFormat> implements SqlDsl.SqlFormat {
-
-        public SqlExpressionFormat(SqlDsl.SqlFormat format) {
-            super(format);
-        }
-
+    class Where extends SearchCondition {
         @Override
-        public String visit(SelectPartColumnListExpression sqlPartColumnTupleExpression) {
-            return formatAround(getFormat().visit(sqlPartColumnTupleExpression), sqlPartColumnTupleExpression);
+        public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
+            return sqlVisitor.visit(this);
         }
+    }
 
+    class Having extends SearchCondition {
         @Override
-        public String visit(Select select) {
-            return formatAround(getFormat().visit(select), select);
-        }
-
-        @Override
-        public String visit(Where where) {
-            return formatAround(getFormat().visit(where), where);
-        }
-
-        @Override
-        public String visit(Having having) {
-            return formatAround(getFormat().visit(having), having);
-        }
-
-        @Override
-        public String visit(From from) {
-            return formatAround(getFormat().visit(from), from);
-        }
-
-        @Override
-        public String visit(Sql sql) {
-            return formatAround(getFormat().visit(sql), sql);
+        public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
+            return sqlVisitor.visit(this);
         }
     }
 

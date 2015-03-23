@@ -20,16 +20,16 @@
 package de.jexp.jequel.sql;
 
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.table.BaseTable;
-import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.Table;
+import de.jexp.jequel.table.IColumn;
 import de.jexp.jequel.table.JoinTable;
 
 public interface SqlExpressionVisitor<R> extends ExpressionVisitor<R> {
 
-    <T> R visit(Field<T> field);
+    <T> R visit(IColumn<T> column);
 
     R visit(JoinTable joinTable);
 
-    R visit(BaseTable table);
+    R visit(Table table);
 
 }

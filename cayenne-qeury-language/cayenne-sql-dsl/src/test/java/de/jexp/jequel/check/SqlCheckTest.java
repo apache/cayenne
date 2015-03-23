@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class SqlCheckTest extends TestCase {
-    public void testFromSymbols() {
+/*    public void testFromSymbols() {
         Sql sql = Select().from(ARTICLE).where(ARTICLE.OID.isNull()).toSql();
         Collection<String> fromSymbols = new SqlChecker(sql).getFromSymbols();
         assertEquals(Arrays.asList(ARTICLE.getName()), fromSymbols);
@@ -50,7 +50,7 @@ public class SqlCheckTest extends TestCase {
         Assert.assertEquals("missing tables", Arrays.asList(ARTICLE_COLOR.getName()), checkResult.getMissingTables());
         List<String> expected = Arrays.asList(ARTICLE.getName());
         Assert.assertEquals("used tables", expected, checkResult.getUsedTables());
-    }
+    }*/
 
     public void testCheckGroupBy() {
         Sql sql = Select(ARTICLE.OID, ARTICLE_COLOR.ARTICLE_OID).from().groupBy(ARTICLE.OID).toSql();

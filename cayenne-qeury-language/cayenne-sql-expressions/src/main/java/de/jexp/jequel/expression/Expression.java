@@ -1,13 +1,12 @@
 package de.jexp.jequel.expression;
 
 import de.jexp.jequel.Sql92ExpressionFormatter;
-import de.jexp.jequel.expression.visitor.DelegatingExpressionFormat;
+import de.jexp.jequel.expression.visitor.ExpressionFormat;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
 public interface Expression {
 
-    /* this expression format are used in expressins in toString method */
-    DelegatingExpressionFormat EXPRESSION_FORMAT = new DelegatingExpressionFormat(new Sql92ExpressionFormatter());
+    ExpressionFormat EXPRESSION_FORMAT = new Sql92ExpressionFormatter();
 
     BooleanExpression eq(Object expression);
 

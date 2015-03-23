@@ -27,7 +27,7 @@ public class ParamExpressionProcessorTest extends TestCase {
                 sql.toString());
 
         ParameterCollectorProcessor paramsCollector = new ParameterCollectorProcessor();
-        paramsCollector.process(sql);
+        paramsCollector.process(sql.getWhere().getBooleanExpression());
         List<ParamExpression> params = paramsCollector.getResult();
         assertEquals(3, params.size());
         ParamExpression<Number> param0 = params.get(0);

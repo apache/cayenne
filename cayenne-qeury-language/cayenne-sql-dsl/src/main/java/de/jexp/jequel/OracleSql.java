@@ -5,7 +5,7 @@ import de.jexp.jequel.expression.visitor.ExpressionFormat;
 import de.jexp.jequel.sql.Sql;
 
 public class OracleSql extends Sql {
-    private static final ExpressionFormat ORACLE_SQL_FORMAT = new OracleSqlFormat();
+    private static final OracleSqlFormat ORACLE_SQL_FORMAT = new OracleSqlFormat();
 
     protected OracleSql(Expression... selectFields) {
         super(selectFields);

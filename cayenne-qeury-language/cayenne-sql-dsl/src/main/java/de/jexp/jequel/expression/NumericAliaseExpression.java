@@ -18,60 +18,78 @@
  */
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.literals.Operator;
-
-import static de.jexp.jequel.literals.Operator.*;
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.sql.SqlDsl;
 
 /**
-* @since 4.0
-*/
-abstract class NumericAbstractExpression extends AbstractExpression implements NumericExpression {
+ * @since 4.0
+ */
+public class NumericAliaseExpression extends AbstractExpression implements NumericExpression, Aliased<NumericExpression>, SqlDsl.SqlVisitable {
+    private final NumericExpression expression;
+    private final String alias;
+
+    public NumericAliaseExpression(NumericExpression expression, String alias) {
+        this.expression = expression;
+        this.alias = alias;
+    }
+
+    @Override
+    public NumericExpression getAliased() {
+        return expression;
+    }
+
+    @Override
+    public String getAlias() {
+        return alias;
+    }
 
     @Override
     public NumericExpression plus(NumericExpression expression) {
-        return exp(PLUS, expression);
+        return this.expression.plus(expression);
     }
 
     @Override
     public NumericExpression plus(Number expression) {
-        return exp(PLUS, expression);
+        return this.expression.plus(expression);
     }
 
     @Override
     public NumericExpression minus(NumericExpression expression) {
-        return exp(MINUS, expression);
+        return this.expression.minus(expression);
     }
 
     @Override
     public NumericExpression minus(Number expression) {
-        return exp(MINUS, expression);
+        return this.expression.minus(expression);
     }
 
     @Override
     public NumericExpression times(NumericExpression expression) {
-        return exp(TIMES, expression);
+        return this.expression.times(expression);
     }
 
     @Override
     public NumericExpression times(Number expression) {
-        return exp(TIMES, expression);
+        return this.expression.times(expression);
     }
 
     @Override
     public NumericExpression by(NumericExpression expression) {
-        return exp(BY, expression);
+        return this.expression.by(expression);
     }
 
     @Override
     public NumericExpression by(Number expression) {
-        return exp(BY, expression);
+        return this.expression.by(expression);
     }
 
-    protected NumericExpression exp(Operator operator, NumericExpression expression) {
-        return factory().createNumeric(operator, this, expression);
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return expression.accept(visitor);
     }
 
-    protected NumericExpression exp(Operator operator, Number number) {
-        return exp(operator, factory().createNumeric(number));
+    @Override
+    public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
+        return sqlVisitor.visit(this);
     }
 }

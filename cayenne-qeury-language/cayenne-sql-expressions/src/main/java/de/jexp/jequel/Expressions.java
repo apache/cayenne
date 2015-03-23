@@ -134,11 +134,11 @@ public class Expressions {
         return factory.<Collection<T>>createParam(asList(paramValues));
     }
 
-    public VariableNumericLiteralExpression pathNumeric(String path) {
-        return factory.pathNumeric(path);
+    public NumericPathExpression pathNumeric(String path) {
+        return factory.createNumericPath(path);
     }
 
-    public VariableExpression path(String path) {
+    public PathExpression path(String path) {
         return factory.path(path);
     }
 

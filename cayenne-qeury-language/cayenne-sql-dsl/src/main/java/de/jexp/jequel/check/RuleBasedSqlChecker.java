@@ -4,8 +4,9 @@ import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.ExpressionProcessor;
 import de.jexp.jequel.sql.Sql;
-import de.jexp.jequel.table.Field;
-import de.jexp.jequel.table.Table;
+import de.jexp.jequel.sql.SqlModel;
+import de.jexp.jequel.table.IColumn;
+import de.jexp.jequel.table.ITable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +23,8 @@ public class RuleBasedSqlChecker {
         }
 
         public void check(Expression expression) {
-            if (expression instanceof Field) {
-                if (((Field) expression).getTableName().equals(relationName)) {
+            if (expression instanceof IColumn) {
+                if (((IColumn) expression).getTableName().equals(relationName)) {
                     setSatisfied();
                 }
             }
@@ -37,7 +38,9 @@ public class RuleBasedSqlChecker {
         this.sql = sql;
     }
 
-    public TableUsageCheckResult checkTableUses() {
+/* TODO
+
+public TableUsageCheckResult checkTableUses() {
         Collection<String> relationNames = getRelationNames();
         TableUsageCheckResult tableUsageCheckResult = new TableUsageCheckResult(relationNames);
         for (String relationName : relationNames) {
@@ -49,24 +52,24 @@ public class RuleBasedSqlChecker {
             }
         }
         return null;
-    }
+    }*/
 
     protected Collection<String> getRelationNames() {
         Collection<String> relationNames = new ArrayList<String>(10);
-        for (Expression relation : sql.getFrom().getExpressions()) {
+        for (SqlModel.FromSource relation : sql.getFrom().getSources()) {
             relationNames.add(getRelationName(relation));
         }
         return relationNames;
     }
 
-    protected String getRelationName(Expression relation) {
+    protected String getRelationName(SqlModel.FromSource relation) {
         String relationName = null;
         if (relation instanceof Aliased) {
             Aliased aliased = (Aliased) relation;
             if (aliased.getAlias() != null) {
                 relationName = aliased.getAlias();
-            } else if (aliased instanceof Table) {
-                relationName = ((Table) aliased).getName();
+            } else if (aliased instanceof ITable) {
+                relationName = ((ITable) aliased).getName();
             }
         }
         return relationName;

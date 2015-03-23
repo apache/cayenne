@@ -18,28 +18,9 @@
  */
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.literals.Operator;
-
 /**
-* @since 4.0
-*/
-abstract class StringAbstractExpression extends AbstractExpression implements StringExpression {
+ * @since 4.0
+ */
+public interface PathExpression<E extends Expression> extends LiteralExpression<String> {
 
-    @Override
-    public BooleanExpression like(StringExpression expression) {
-        return factory().createBoolean(Operator.LIKE, this, expression);
-    }
-
-    public BooleanExpression like(String string) {
-        return like(factory().create(string));
-    }
-
-    @Override
-    public BooleanExpression likeIgnoreCase(StringExpression expression) {
-        return factory().createBoolean(Operator.LIKE, this, expression);
-    }
-
-    public BooleanExpression likeIgnoreCase(String string) {
-        return likeIgnoreCase(factory().create(string));
-    }
 }

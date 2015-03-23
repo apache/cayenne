@@ -1,17 +1,12 @@
 package de.jexp.jequel;
 
-import de.jexp.jequel.expression.RowListExpression;
-import de.jexp.jequel.sql.Sql;
-import static de.jexp.jequel.sql.Sql.*;
-
-import de.jexp.jequel.sql.SqlDsl;
-import de.jexp.jequel.table.FieldAlias;
-import static de.jexp.jequel.tables.TEST_TABLES.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-
-import junit.framework.TestCase;
+import de.jexp.jequel.table.IColumn;
 import org.junit.Test;
+
+import static de.jexp.jequel.sql.Sql.Select;
+import static de.jexp.jequel.tables.TEST_TABLES.ARTICLE;
+import static de.jexp.jequel.tables.TEST_TABLES.ARTICLE_COLOR;
+import static org.junit.Assert.assertEquals;
 
 public class AliasTest {
     private static final Sql92Format SQL_92_FORMAT = new Sql92Format();
@@ -19,7 +14,7 @@ public class AliasTest {
     @Test
     public void testAliasSql() {
         ARTICLE ARTICLE2 = ARTICLE.as("ARTICLE2");
-        FieldAlias ARTICLE_COLOR_OID = ARTICLE_COLOR.OID.as("ARTICLE_COLOR_OID");
+        IColumn ARTICLE_COLOR_OID = ARTICLE_COLOR.OID.as("ARTICLE_COLOR_OID");
 
         SqlString sql = Select(ARTICLE2.OID, ARTICLE_COLOR_OID)
                 .from(ARTICLE2, ARTICLE_COLOR)
@@ -41,14 +36,5 @@ public class AliasTest {
         assertEquals("select article2.OID, ARTICLE_COLOR.OID as ARTICLE_COLOR_OID" +
                 " from ARTICLE as article2, ARTICLE_COLOR" +
                 " where article2.OID = ARTICLE_COLOR.ARTICLE_OID", sql.accept(SQL_92_FORMAT));
-    }
-
-    @Test
-    public void testSqlAlias() {
-        Sql sql = Select(ARTICLE.ARTICLE_NO).toSql();
-        RowListExpression sqlAlias = sql.as("sql_alias");
-        assertSame(sql, sqlAlias.getAliased());
-        assertSame("sql_alias", sqlAlias.getAlias());
-        assertEquals("select ARTICLE.ARTICLE_NO as sql_alias", sqlAlias.accept(SQL_92_FORMAT));
     }
 }

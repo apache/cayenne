@@ -26,13 +26,14 @@ import de.jexp.jequel.literals.UnaryOperator;
  * @since 4.0
  */
 public interface ExpressionsFactory {
-    <V> ConstantExpression<V> createConstantExpression(V value);
 
     NumericLiteral createNumeric(Number value);
 
     NumericUnaryExpression createNumeric(UnaryOperator operator, NumericExpression first);
 
-    NumericBinaryExpression createNumeric(NumericExpression first, Operator operator, NumericExpression second);
+    NumericBinaryExpression createNumeric(Operator operator, NumericExpression first, NumericExpression second);
+
+    NumericPathExpression createNumericPath(String path);
 
     BooleanLiteral boolTrue();
 
@@ -42,9 +43,9 @@ public interface ExpressionsFactory {
 
     BooleanUnaryExpression createBoolean(UnaryOperator operator, Expression first);
 
-    BooleanBinaryExpression createBoolean(Expression first, Operator operator, Expression second);
+    BooleanBinaryExpression createBoolean(Operator operator, Expression first, Expression second);
 
-    BooleanListExpression createBoolean(Operator operator, BooleanExpression... expressions);
+    BooleanListExpression createBooleanList(Operator operator, BooleanExpression... expressions);
 
     StringLiteral create(String value);
 
@@ -52,7 +53,7 @@ public interface ExpressionsFactory {
 
     <E extends Expression> BinaryExpression<E> createBinary(E first, Operator operator, E second);
 
-    <A extends RowListExpression> RowListExpression<A> create(Delimeter delim, Expression... expressions);
+    SimpleListExpression create(Delimeter delim, Expression... expressions);
 
     <V> LiteralExpression<V> create(V value);
 
@@ -62,11 +63,7 @@ public interface ExpressionsFactory {
 
     <T> ParamExpression<T> createParam(T paramValue);
 
-    VariableNumericLiteralExpression pathNumeric(String path);
-
-    VariableExpression path(String path);
+    PathExpression path(String path);
 
     SqlLiteral sql(String sql);
-
-
 }

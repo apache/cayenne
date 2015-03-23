@@ -19,10 +19,12 @@
 package de.jexp.jequel.sql;
 
 import de.jexp.jequel.SqlString;
+import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.RowListExpression;
-import de.jexp.jequel.expression.visitor.Format;
+import de.jexp.jequel.table.ITable;
+import de.jexp.jequel.table.JoinTable;
+import de.jexp.jequel.table.Table;
 
 /**
  * @since 4.0
@@ -34,7 +36,7 @@ public interface SqlDsl {
     }
 
     interface Select extends ToSql {
-        From from(RowListExpression... tableReferences);
+        From from(SqlModel.FromSource... tableReferences);
     }
 
     interface From extends SqlString, ToSql {
@@ -62,9 +64,6 @@ public interface SqlDsl {
 
     }
 
-    interface SqlFormat extends SqlVisitor<String>, Format {
-    }
-
     interface SqlVisitor<R> {
         R visit(SqlModel.SelectPartColumnListExpression sqlPartColumnTupleExpression);
 
@@ -77,6 +76,12 @@ public interface SqlDsl {
         R visit(SqlModel.From from);
 
         R visit(Sql sql);
+
+        <T extends Expression> R visit(Aliased<T> aliased);
+
+        R visit(JoinTable table);
+
+        R visit(Table aTable);
     }
 
     interface SqlVisitable {

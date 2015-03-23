@@ -2,10 +2,10 @@ package de.jexp.jequel.expression;
 
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
-public class VariableStringExpression extends AbstractExpression implements VariableExpression {
+public class StringPathExpression extends StringAbstractExpression implements PathExpression {
     private final String path;
 
-    protected VariableStringExpression(String path) {
+    protected StringPathExpression(String path) {
         this.path = path;
     }
 

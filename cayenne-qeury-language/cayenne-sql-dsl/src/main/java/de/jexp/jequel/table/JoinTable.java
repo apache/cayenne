@@ -4,13 +4,14 @@ import de.jexp.jequel.expression.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.LiteralExpression;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.sql.SqlDsl;
 
-public class JoinTable extends BaseTable<BaseTable> {
-    private final BaseTable first;
-    private final BaseTable second;
+public class JoinTable extends Table<Table> {
+    private final Table first;
+    private final Table second;
     private Expression joinOnExpression;
 
-    public JoinTable(BaseTable first, BaseTable second) {
+    public JoinTable(Table first, Table second) {
         this.first = first;
         this.second = second;
     }
@@ -20,19 +21,23 @@ public class JoinTable extends BaseTable<BaseTable> {
     }
 
     public <R> R accept(ExpressionVisitor<R> visitor) {
-        return visitor.visit((LiteralExpression<? extends Object>) this);
+        return visitor.visit(this);
     }
 
+    @Override
+    public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
+        return sqlVisitor.visit(this);
+    }
 
-    public BaseTable getFirst() {
+    public Table getFirst() {
         return first;
     }
 
-    public BaseTable getSecond() {
+    public Table getSecond() {
         return second;
     }
 
-    public Field getOid() {
+    public IColumn getOid() {
         return second.getOid(); // first.getOid() // TODO speculative
     }
 
@@ -46,7 +51,7 @@ public class JoinTable extends BaseTable<BaseTable> {
             return joinOnExpression;
         }
 
-        Field foreignKey = second.getForeignKey(first);
+        IColumn foreignKey = second.getForeignKey(first);
         if (foreignKey != null) {
             joinOnExpression = first.getOid().eq(foreignKey);
         } else {

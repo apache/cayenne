@@ -20,8 +20,8 @@
 package org.apache.cayenne.query;
 
 import de.jexp.jequel.sql.Sql;
-import de.jexp.jequel.table.BaseTable;
-import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.Table;
+import de.jexp.jequel.table.IColumn;
 import de.jexp.jequel.table.types.NUMERIC;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.NewTableHelper;
@@ -57,10 +57,10 @@ import static org.junit.Assert.*;
 public class SqlDslActionIT extends ServerCase {
 
     public static final ARTIST ARTIST = new ARTIST();
-    public static class ARTIST extends BaseTable<ARTIST> {
+    public static class ARTIST extends Table<ARTIST> {
         public NUMERIC ARTIST_ID = integer().primaryKey();
-        public Field<String> ARTIST_NAME = character(254).mandatory();
-        public Field<Date> DATE_OF_BIRTH = date();
+        public IColumn<String> ARTIST_NAME = character(254).mandatory();
+        public IColumn<Date> DATE_OF_BIRTH = date();
 
         {
             initFields();

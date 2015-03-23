@@ -1,27 +1,25 @@
 package de.jexp.jequel.table.types;
 
-import de.jexp.jequel.expression.NumericBinaryExpression;
 import de.jexp.jequel.expression.NumericExpression;
-import de.jexp.jequel.expression.NumericLiteral;
 import de.jexp.jequel.literals.Operator;
-import de.jexp.jequel.table.Table;
-import de.jexp.jequel.table.TableField;
+import de.jexp.jequel.table.ITable;
+import de.jexp.jequel.table.Column;
 
 import java.sql.Types;
 
 import static de.jexp.jequel.literals.Operator.*;
 
-public class NUMERIC extends TableField<Integer> implements NumericExpression {
+public class NUMERIC extends Column<Integer> implements NumericExpression {
 
-    public NUMERIC(Table table) {
+    public NUMERIC(ITable table) {
         this(null, table, Types.INTEGER);
     }
 
-    public NUMERIC(String name, Table table) {
+    public NUMERIC(String name, ITable table) {
         this(name, table, Types.INTEGER);
     }
 
-    public NUMERIC(String name, Table table, int jdbcType) {
+    public NUMERIC(String name, ITable table, int jdbcType) {
         super(name, table, jdbcType);
     }
 
@@ -66,7 +64,7 @@ public class NUMERIC extends TableField<Integer> implements NumericExpression {
     }
 
     protected NumericExpression exp(Operator operator, NumericExpression expression) {
-        return factory().createNumeric(this, operator, expression);
+        return factory().createNumeric(operator, this, expression);
     }
 
     protected NumericExpression exp(Operator operator, Number number) {

@@ -26,22 +26,22 @@ import de.jexp.jequel.literals.Operator;
 public abstract class BooleanAbstractExpression extends AbstractExpression implements BooleanExpression {
     @Override
     public BooleanExpression and(BooleanExpression expression) {
-        return factory().createBoolean(Operator.AND, this, expression);
+        return factory().createBooleanList(Operator.AND, this, expression);
     }
 
     @Override
     public BooleanExpression or(BooleanExpression expression) {
-        return factory().createBoolean(Operator.OR, this, expression);
+        return factory().createBooleanList(Operator.OR, this, expression);
     }
 
     @Override
     public BooleanExpression is(BooleanLiteral expression) {
-        return factory().createBoolean(this, Operator.IS, expression);
+        return factory().createBoolean(Operator.IS, this, expression);
     }
 
     @Override
     public BooleanExpression isNot(BooleanLiteral expression) {
-        return factory().createBoolean(this, Operator.IS_NOT, expression);
+        return factory().createBoolean(Operator.IS_NOT, this, expression);
     }
 
     public String toString() {

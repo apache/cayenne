@@ -5,7 +5,7 @@ import de.jexp.jequel.expression.visitor.ExpressionFormat;
 import de.jexp.jequel.sql.Sql;
 
 public class Sql92 extends Sql {
-    private static final ExpressionFormat SQL_92_FORMAT = new Sql92Format();
+    private static final Sql92Format SQL_92_FORMAT = new Sql92Format();
 
     protected Sql92(Expression... selectFields) {
         super(selectFields);

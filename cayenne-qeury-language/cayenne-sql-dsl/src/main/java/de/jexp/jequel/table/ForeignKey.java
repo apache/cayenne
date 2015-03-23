@@ -1,28 +1,28 @@
 package de.jexp.jequel.table;
 
-public class ForeignKey<T> extends TableField<T> {
-    private Field<T> field;
+public class ForeignKey<T> extends Column<T> {
+    private IColumn<T> column;
     private FieldReference<T> reference;
 
-    ForeignKey(Table table, Field<T> field) {
-        super(table, field.getJdbcType());
-        this.field = field;
+    ForeignKey(ITable table, IColumn<T> column) {
+        super(table, column.getJdbcType());
+        this.column = column;
     }
 
-    public ForeignKey(Table table, FieldReference<T> reference) {
+    public ForeignKey(ITable table, FieldReference<T> reference) {
         super(table, Integer.MIN_VALUE); // TODO find type here
         this.reference = reference;
     }
 
-    public Field<T> getField() {
-        if (field != null) {
-            return field;
+    public IColumn<T> getColumn() {
+        if (column != null) {
+            return column;
         }
-        field = reference.resolve();
-        return field;
+        column = reference.resolve();
+        return column;
     }
 
-    public boolean references(Field<T> other) {
-        return getField().equals(other);
+    public boolean references(IColumn<T> other) {
+        return getColumn().equals(other);
     }
 }

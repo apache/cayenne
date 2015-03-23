@@ -1,5 +1,6 @@
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.Operator;
 
 public abstract class AbstractExpression implements Expression {
@@ -50,21 +51,31 @@ public abstract class AbstractExpression implements Expression {
 
     @Override
     public BooleanExpression in(Object... expressions) {
-        return createBinaryBooleanExpression(Operator.IN, factory().create(expressions));
+        Expression[] e = new Expression[expressions.length];
+        for (int i = 0; i < expressions.length; i++) {
+            Object expression = expressions[i];
+            if (expression instanceof Expression) {
+                e[i] = (Expression) expression;
+            } else {
+                e[i] = factory().create(expression);
+            }
+        }
+
+        return createBinaryBooleanExpression(Operator.IN, factory().create(Delimeter.COMMA, e));
     }
 
     @Override
     public BooleanExpression isNull() {
-        return factory().createBoolean(this, Operator.IS, BooleanLiteral.NULL);
+        return factory().createBoolean(Operator.IS, this, BooleanLiteral.NULL);
     }
 
     @Override
     public BooleanExpression isNotNull() {
-        return factory().createBoolean(this, Operator.IS_NOT, BooleanLiteral.NULL);
+        return factory().createBoolean(Operator.IS_NOT, this, BooleanLiteral.NULL);
     }
 
     protected BooleanBinaryExpression createBinaryBooleanExpression(Operator operator, Expression expression) {
-        return factory().createBoolean(this, operator, expression);
+        return factory().createBoolean(operator, this, expression);
     }
 
     protected BooleanBinaryExpression createBinaryBooleanExpression(Operator operator, Object expression) {

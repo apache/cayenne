@@ -1,8 +1,6 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-
-public class ConstantExpression<V> extends AbstractExpression implements LiteralExpression<V> {
+public abstract class ConstantExpression<V> extends AbstractExpression implements LiteralExpression<V> {
     private final V value;
     private final String literal;
 
@@ -11,17 +9,8 @@ public class ConstantExpression<V> extends AbstractExpression implements Literal
         this.literal = literal;
     }
 
-    protected ConstantExpression(String literal) {
-        this(literal, null);
-    }
-
     public String toString() {
         return accept(EXPRESSION_FORMAT);
-    }
-
-    @Override
-    public <R> R accept(ExpressionVisitor<R> visitor) {
-        return visitor.visit(this);
     }
 
     public String getLiteral() {

@@ -18,8 +18,8 @@
  */
 package org.apache.cayenne;
 
-import de.jexp.jequel.table.BaseTable;
-import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.Table;
+import de.jexp.jequel.table.IColumn;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
@@ -29,14 +29,14 @@ import java.util.Map;
  * @since 4.0
  */
 public class NewTableHelper extends TableHelper {
-    public NewTableHelper(DBHelper dbHelper, BaseTable<?> table) {
+    public NewTableHelper(DBHelper dbHelper, Table<?> table) {
         super(dbHelper, table.getName());
 
-        Map<String, Field<?>> fields = table.getFields();
+        Map<String, IColumn<?>> fields = table.getFields();
         String[] columns = new String[fields.size()];
         int[] types = new int[fields.size()];
         int i = 0;
-        for (Field<?> entry : fields.values()) {
+        for (IColumn<?> entry : fields.values()) {
             columns[i] = entry.getName();
             types[i] = entry.getJdbcType();
             i++;

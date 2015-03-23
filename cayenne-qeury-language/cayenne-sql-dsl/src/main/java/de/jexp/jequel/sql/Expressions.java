@@ -111,11 +111,11 @@ public abstract class Expressions {
         return EXPRESSIONS.param(paramValues);
     }
 
-    public static VariableNumericLiteralExpression pathNumeric(String path) {
+    public static NumericPathExpression pathNumeric(String path) {
         return EXPRESSIONS.pathNumeric(path);
     }
 
-    public static VariableExpression path(String path) {
+    public static PathExpression path(String path) {
         return EXPRESSIONS.path(path);
     }
 

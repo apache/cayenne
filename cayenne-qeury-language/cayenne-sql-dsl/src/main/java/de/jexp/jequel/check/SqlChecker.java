@@ -7,7 +7,7 @@ import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.processor.AbstractExpressionProcessor;
 import de.jexp.jequel.sql.SqlModel;
 import de.jexp.jequel.sql.Sql;
-import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.IColumn;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,11 +24,11 @@ public class SqlChecker {
         this.sql = sql;
     }
 
-    public TableUsageCheckResult checkUsedTables() {
+/*    public TableUsageCheckResult checkUsedTables() {
         TableUsageCheckResult checkResult = new TableUsageCheckResult(getFromSymbols());
         checkResult.addUsedTables(getUsedTables());
         return checkResult;
-    }
+    }*/
 
     // group by, check fields in having
     // check usage in select only with NumericUnaryExpressions
@@ -60,6 +60,7 @@ public class SqlChecker {
         return groupByExpressions;
     }
 
+/*
     public Collection<String> getFromSymbols() {
         return getSymbols(sql.getFrom());
     }
@@ -73,6 +74,7 @@ public class SqlChecker {
         collector.process(sql.getHaving());
         return collector.getResult();
     }
+*/
 
     public static Collection<String> getSymbols(Expression expression) {
         ExpressionProcessor<Collection<String>> symbolCollector = new SymbolCollector();
@@ -125,8 +127,8 @@ public class SqlChecker {
         private final Collection<String> tables = new HashSet<String>();
 
         public void doProcess(Expression expression) {
-            if (expression instanceof Field) {
-                tables.add(((Field) expression).getTableName());
+            if (expression instanceof IColumn) {
+                tables.add(((IColumn) expression).getTableName());
             }
         }
 

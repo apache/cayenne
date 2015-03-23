@@ -10,7 +10,7 @@ import de.jexp.jequel.expression.DelegatingFormat;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.ExpressionAlias;
 import de.jexp.jequel.expression.ParamExpression;
-import de.jexp.jequel.expression.RowListExpression;
+import de.jexp.jequel.expression.SimpleListExpression;
 import de.jexp.jequel.expression.StringLiteral;
 import de.jexp.jequel.expression.UnaryExpression;
 import de.jexp.jequel.expression.NumericBinaryExpression;
@@ -67,7 +67,7 @@ public class DelegatingExpressionFormat extends DelegatingFormat<ExpressionForma
         return formatAround(getFormat().visit(expression), expression);
     }
 
-    public String visit(RowListExpression expression) {
+    public String visit(SimpleListExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 

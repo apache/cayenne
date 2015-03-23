@@ -1,13 +1,12 @@
 package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.AbstractExpression;
-import de.jexp.jequel.expression.DefaultExpressionsFactory;
+import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
-public class TableField<T> extends AbstractExpression implements
-        Field<T> {
+public class Column<JavaType> extends AbstractExpression implements IColumn<JavaType> {
 
-    private final Table table;
+    private final ITable table;
     private final int jdbcType;
 
     private String name;
@@ -15,11 +14,11 @@ public class TableField<T> extends AbstractExpression implements
     private boolean primaryKey;
     private boolean mandatory;
 
-    protected TableField(Table table, int jdbcType) {
+    protected Column(ITable table, int jdbcType) {
         this(null, table, jdbcType);
     }
 
-    protected TableField(String name, Table table, int jdbcType) {
+    protected Column(String name, ITable table, int jdbcType) {
         this.name = name;
         this.table = table;
         this.jdbcType = jdbcType;
@@ -27,8 +26,8 @@ public class TableField<T> extends AbstractExpression implements
         factory(EXPRESSIONS_FACTORY);
     }
 
-    public FieldAlias<T> as(String alias) {
-        return new FieldAlias<T>(this, alias);
+    public IColumn<JavaType> as(String alias) {
+        return new AliasedColumn<JavaType>(this, alias);
     }
 
     public String toString() {
@@ -40,11 +39,7 @@ public class TableField<T> extends AbstractExpression implements
     }
 
     public String getTableName() {
-        return table.getTableName();
-    }
-
-    public Field resolve() {
-        return table.resolve().getField(name);
+        return table.getName();
     }
 
     void initName(String name) {
@@ -62,12 +57,12 @@ public class TableField<T> extends AbstractExpression implements
         return name;
     }
 
-    public <E extends TableField<T>> E primaryKey() {
+    public <E extends Column> E primaryKey() {
         this.primaryKey = true;
         return (E) this;
     }
 
-    public <E extends TableField<T>> E mandatory() {
+    public <E extends Column> E mandatory() {
         this.mandatory = true;
         return (E) this;
     }
@@ -88,12 +83,12 @@ public class TableField<T> extends AbstractExpression implements
     }
 
     @Override
-    public Table getTable() {
+    public ITable getTable() {
         return table;
     }
 
-    public Field<T> foreignKey(Field<T> reference) {
-        return new ForeignKey<T>(getTable(), reference);
+    public IColumn<JavaType> foreignKey(IColumn reference) {
+        return new ForeignKey<JavaType>(getTable(), reference);
     }
 
     @Override

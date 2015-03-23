@@ -18,7 +18,7 @@
  */
 package de.jexp.jequel.table.types;
 
-import de.jexp.jequel.table.Table;
+import de.jexp.jequel.table.ITable;
 
 import java.sql.Types;
 
@@ -26,11 +26,11 @@ import java.sql.Types;
  * @since 4.0
  */
 public class BIGINT extends NUMERIC {
-    public BIGINT(Table table) {
+    public BIGINT(ITable table) {
         super(null, table, Types.BIGINT);
     }
 
-    public BIGINT(String name, Table table) {
+    public BIGINT(String name, ITable table) {
         super(name, table, Types.BIGINT);
     }
 }

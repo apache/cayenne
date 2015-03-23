@@ -16,11 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package de.jexp.jequel.expression;
 
-/**
- * @since 4.0
- */
-public interface VariableExpression extends LiteralExpression<String> {
+import de.jexp.jequel.sql.SqlDsl;
 
+public abstract class SearchCondition implements SqlDsl.SqlVisitable {
+    private BooleanExpression expr = null;
+
+    public BooleanExpression and(BooleanExpression expression) {
+        if (this.expr == null) {
+            this.expr = expression;
+        } else {
+            this.expr = expr.and(expression);
+        }
+
+        return this.expr;
+    }
+
+    public BooleanExpression getBooleanExpression() {
+        return expr;
+    }
 }
