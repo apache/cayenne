@@ -1,7 +1,6 @@
 package de.jexp.jequel.expression;
 
 import de.jexp.jequel.Sql92ExpressionFormatter;
-import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.visitor.DelegatingExpressionFormat;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
@@ -22,7 +21,7 @@ public interface Expression {
 
     BooleanExpression ne(Object expression);
 
-    BooleanExpression between(Object start, Object end);
+    <E> BooleanExpression between(E start, E end);
 
     BooleanExpression isNull();
 
@@ -31,9 +30,6 @@ public interface Expression {
     BooleanExpression in(Expression subQuery);
 
     BooleanExpression in(Object... expressions);
-
-    /* String operations */
-    BooleanExpression like(Object expression);
 
     /* TODO going to remove this method, visitor functionality should be enough */
     <K> void process(ExpressionProcessor<K> expressionProcessor);

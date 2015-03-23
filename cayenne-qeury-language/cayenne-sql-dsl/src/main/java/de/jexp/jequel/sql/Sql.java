@@ -1,21 +1,28 @@
 package de.jexp.jequel.sql;
 
 import de.jexp.jequel.literals.Delimeter;
-import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.expression.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.RowListExpression;
 import de.jexp.jequel.literals.SelectKeyword;
+import de.jexp.jequel.sql.SqlDsl.From;
+import de.jexp.jequel.sql.SqlDsl.GroupBy;
+import de.jexp.jequel.sql.SqlDsl.OrderBy;
+import de.jexp.jequel.sql.SqlModel.Having;
+import de.jexp.jequel.sql.SqlModel.Select;
+import de.jexp.jequel.sql.SqlModel.SelectPartColumnListExpression;
+import de.jexp.jequel.sql.SqlModel.Where;
 import de.jexp.jequel.table.BaseTable;
 import de.jexp.jequel.table.Table;
 
-public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From, SqlDsl.Where, SqlDsl.OrderBy, SqlDsl.GroupBy, SqlDsl.Having {
+public class Sql extends RowListExpression implements SqlDsl.Select, From, SqlDsl.Where, OrderBy, GroupBy, SqlDsl.Having {
 
-    private final SqlModel.Select select = new SqlModel.Select();
-    private final SqlModel.SelectPartColumnListExpression from = new SqlModel.SelectPartColumnListExpression(SelectKeyword.FROM);
-    private final SqlModel.Where where = new SqlModel.Where();
-    private final SqlModel.SelectPartColumnListExpression groupBy = new SqlModel.SelectPartColumnListExpression(SelectKeyword.GROUP_BY);
-    private final SqlModel.Having having = new SqlModel.Having();
-    private final SqlModel.SelectPartColumnListExpression orderBy = new SqlModel.SelectPartColumnListExpression(SelectKeyword.ORDER_BY);
+    private final Select select = new Select();
+    private final SelectPartColumnListExpression from = new SelectPartColumnListExpression(SelectKeyword.FROM);
+    private final Where where = new Where();
+    private final SelectPartColumnListExpression groupBy = new SelectPartColumnListExpression(SelectKeyword.GROUP_BY);
+    private final Having having = new Having();
+    private final SelectPartColumnListExpression orderBy = new SelectPartColumnListExpression(SelectKeyword.ORDER_BY);
 
     protected Sql(Expression... selectFields) {
         super(Delimeter.SPACE);
@@ -28,7 +35,7 @@ public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From
         return this;
     }
 
-    public static SqlDsl.From Select(BaseTable table) {
+    public static From Select(RowListExpression table) {
         return new Sql().from(table);
     }
 
@@ -36,7 +43,7 @@ public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From
         return new Sql(fields);
     }
 
-    public SqlDsl.From select(Expression... fields) {
+    public From select(Expression... fields) {
         this.select.append(fields);
         return this;
     }
@@ -45,22 +52,24 @@ public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From
         return new Sql(fields);
     }
 
-    public SqlDsl.From from(RowListExpression... tables) {
+    @Override
+    public From from(RowListExpression... tables) {
         this.from.append(tables);
         return this;
     }
 
+    @Override
     public SqlDsl.Where where(BooleanExpression where) {
         this.where.and(where);
         return this;
     }
 
-    public SqlDsl.OrderBy orderBy(Expression... orderBy) {
+    public OrderBy orderBy(Expression... orderBy) {
         this.orderBy.append(orderBy);
         return this;
     }
 
-    public SqlDsl.GroupBy groupBy(Expression... groupBy) {
+    public GroupBy groupBy(Expression... groupBy) {
         this.groupBy.append(groupBy);
         return this;
     }
@@ -70,21 +79,21 @@ public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From
         return this;
     }
 
-    public SqlModel.Where where() {
+    public Where where() {
         return where;
     }
 
-    public Sql append(SqlModel.Where where) {
+    public Sql append(Where where) {
         this.where.and(where.getBooleanExpression());
 
         return this;
     }
 
-    public SqlModel.Having having() {
+    public Having having() {
         return having;
     }
 
-    public Sql append(SqlModel.Having having) {
+    public Sql append(Having having) {
         this.having.and(having.getBooleanExpression());
 
         return this;
@@ -100,29 +109,33 @@ public class Sql extends RowListExpression implements SqlDsl.Select, SqlDsl.From
         return this;
     }
 
-    public SqlModel.Select getSelect() {
+    public Select getSelect() {
         return select;
     }
 
-    public SqlModel.SelectPartColumnListExpression getFrom() {
+    public SelectPartColumnListExpression getFrom() {
         return from;
     }
 
-    public SqlModel.Where getWhere() {
+    public Where getWhere() {
         return where;
     }
 
-    public SqlModel.SelectPartColumnListExpression getGroupBy() {
+    public SelectPartColumnListExpression getGroupBy() {
         return groupBy;
     }
 
-    public SqlModel.Having getHaving() {
+    public Having getHaving() {
         return having;
     }
 
-    public SqlModel.SelectPartColumnListExpression getOrderBy() {
+    public SelectPartColumnListExpression getOrderBy() {
         return orderBy;
     }
 
+    @Override
+    public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
+        return sqlVisitor.visit(this);
+    }
 }
 

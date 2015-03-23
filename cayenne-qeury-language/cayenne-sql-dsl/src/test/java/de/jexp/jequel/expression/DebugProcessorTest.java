@@ -1,6 +1,5 @@
 package de.jexp.jequel.expression;
 
-import static de.jexp.jequel.expression.Expressions.*;
 import de.jexp.jequel.processor.DebugExpressionProcessor;
 import de.jexp.jequel.sql.Sql;
 import static de.jexp.jequel.sql.Sql.*;

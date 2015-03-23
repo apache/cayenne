@@ -7,7 +7,7 @@ public class UnaryExpression<E extends Expression> extends AbstractExpression {
     private final UnaryOperator operator;
     private final E exp;
 
-    public UnaryExpression(UnaryOperator operator, E exp) {
+    protected UnaryExpression(UnaryOperator operator, E exp) {
         this.exp = exp;
         this.operator = operator;
     }

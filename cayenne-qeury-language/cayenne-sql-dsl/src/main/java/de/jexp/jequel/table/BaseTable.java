@@ -2,6 +2,7 @@ package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.Aliased;
 import de.jexp.jequel.expression.RowListExpression;
+import de.jexp.jequel.expression.VariableExpression;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.table.types.BIGINT;
@@ -38,7 +39,7 @@ public class BaseTable<A extends BaseTable> extends RowListExpression<A> impleme
     }
 
     public <R> R accept(ExpressionVisitor<R> visitor) {
-        return visitor.visit(this);
+        return visitor.visit((VariableExpression) this);
     }
 
     public String getAlias() {
@@ -119,10 +120,12 @@ public class BaseTable<A extends BaseTable> extends RowListExpression<A> impleme
         return getField(OID_COLUMN);
     }
 
+    @Override
     public Field getField(String name) {
         return getFields().get(name.toUpperCase());
     }
 
+    @Override
     public Map<String, Field<?>> getFields() {
         if (fields.isEmpty()) {
             initFields();
@@ -181,5 +184,10 @@ public class BaseTable<A extends BaseTable> extends RowListExpression<A> impleme
 
     protected TableField<Timestamp> timestamp() {
         return field(Types.TIMESTAMP);
+    }
+
+    @Override
+    public String getValue() {
+        return getName();
     }
 }

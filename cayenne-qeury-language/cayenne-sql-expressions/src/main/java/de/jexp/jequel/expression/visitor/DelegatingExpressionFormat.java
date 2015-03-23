@@ -19,27 +19,15 @@
 
 package de.jexp.jequel.expression.visitor;
 
-import de.jexp.jequel.expression.BinaryExpression;
-import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
-import de.jexp.jequel.expression.logical.BooleanListExpression;
-import de.jexp.jequel.expression.logical.BooleanLiteral;
-import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
-import de.jexp.jequel.expression.CompoundExpression;
-import de.jexp.jequel.expression.ConstantExpression;
-import de.jexp.jequel.expression.DelegatingFormat;
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.ExpressionAlias;
-import de.jexp.jequel.expression.SearchCondition;
-import de.jexp.jequel.expression.ParamExpression;
-import de.jexp.jequel.expression.RowListExpression;
-import de.jexp.jequel.expression.StringExpression;
-import de.jexp.jequel.expression.UnaryExpression;
-import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
-import de.jexp.jequel.expression.numeric.NumericLiteral;
-import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
-import de.jexp.jequel.table.BaseTable;
-import de.jexp.jequel.table.Field;
-import de.jexp.jequel.table.JoinTable;
+import de.jexp.jequel.expression.*;
+import de.jexp.jequel.expression.BooleanBinaryExpression;
+import de.jexp.jequel.expression.BooleanListExpression;
+import de.jexp.jequel.expression.BooleanLiteral;
+import de.jexp.jequel.expression.BooleanUnaryExpression;
+import de.jexp.jequel.expression.StringLiteral;
+import de.jexp.jequel.expression.NumericBinaryExpression;
+import de.jexp.jequel.expression.NumericLiteral;
+import de.jexp.jequel.expression.NumericUnaryExpression;
 
 public class DelegatingExpressionFormat extends DelegatingFormat<ExpressionFormat> implements ExpressionFormat {
 
@@ -47,38 +35,47 @@ public class DelegatingExpressionFormat extends DelegatingFormat<ExpressionForma
         super(format);
     }
 
-    public <V> String visit(ConstantExpression<V> expression) {
+    @Override
+    public <V> String visit(LiteralExpression<V> constantExpression) {
+        return formatAround(getFormat().visit(constantExpression), constantExpression);
+    }
+
+    @Override
+    public String visit(NumericLiteral numericLiteral) {
+        return formatAround(getFormat().visit(numericLiteral), numericLiteral);
+    }
+
+    @Override
+    public String visit(BooleanLiteral booleanConstantExpression) {
+        return formatAround(getFormat().visit(booleanConstantExpression), booleanConstantExpression);
+    }
+
+    @Override
+    public String visit(StringLiteral expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
-    public String visit(NumericLiteral expression) {
-        return formatAround(getFormat().visit(expression), expression);
-    }
-
-    public String visit(BooleanLiteral expression) {
-        return formatAround(getFormat().visit(expression), expression);
-    }
-
-    public String visit(StringExpression expression) {
-        return formatAround(getFormat().visit(expression), expression);
-    }
-
+    @Override
     public String visit(UnaryExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
+    @Override
     public String visit(BooleanUnaryExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
+    @Override
     public String visit(NumericUnaryExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
+    @Override
     public String visit(BinaryExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
+    @Override
     public String visit(BooleanBinaryExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
@@ -88,38 +85,34 @@ public class DelegatingExpressionFormat extends DelegatingFormat<ExpressionForma
         return formatAround(getFormat().visit(binaryExpression), binaryExpression);
     }
 
+    @Override
     public String visit(NumericBinaryExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
+    @Override
     public String visit(CompoundExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
+    @Override
     public String visit(RowListExpression expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
+    @Override
     public <T> String visit(ParamExpression<T> expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
+    @Override
     public <E extends Expression> String visit(ExpressionAlias<E> expression) {
         return formatAround(getFormat().visit(expression), expression);
     }
 
     @Override
-    public <T> String visit(Field<T> field) {
-        return formatAround(getFormat().visit(field), field);
+    public <T> String visit(VariableExpression path) {
+        return formatAround(getFormat().visit(path), path);
     }
 
-    @Override
-    public String visit(JoinTable joinTable) {
-        return formatAround(getFormat().visit(joinTable), joinTable);
-    }
-
-    @Override
-    public String visit(BaseTable table) {
-        return formatAround(getFormat().visit(table), table);
-    }
 }

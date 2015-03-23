@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.expression.numeric;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.AbstractExpression;
 import de.jexp.jequel.literals.Operator;
 
 import static de.jexp.jequel.literals.Operator.*;
@@ -26,7 +25,7 @@ import static de.jexp.jequel.literals.Operator.*;
 /**
 * @since 4.0
 */
-abstract class AbstractNumericExpression extends AbstractExpression implements NumericExpression {
+abstract class NumericAbstractExpression extends AbstractExpression implements NumericExpression {
 
     @Override
     public NumericExpression plus(NumericExpression expression) {
@@ -69,10 +68,10 @@ abstract class AbstractNumericExpression extends AbstractExpression implements N
     }
 
     protected NumericExpression exp(Operator operator, NumericExpression expression) {
-        return new NumericBinaryExpression(this, operator, expression);
+        return factory().createNumeric(this, operator, expression);
     }
 
     protected NumericExpression exp(Operator operator, Number number) {
-        return exp(operator, new NumericLiteral(number));
+        return exp(operator, factory().createNumeric(number));
     }
 }

@@ -16,36 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.expression.numeric;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.BinaryExpression;
-import de.jexp.jequel.expression.ExpressionProcessor;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.literals.Operator;
 
 /**
 * @since 4.0
 */
-public class NumericBinaryExpression extends AbstractNumericExpression {
-    private final BinaryExpression<NumericExpression> binaryExpression;
+public class NumericLiteral extends NumericAbstractExpression implements LiteralExpression<Number> {
+    private final Number value;
 
-    public NumericBinaryExpression(NumericExpression first, Operator operator, NumericExpression second) {
-        this.binaryExpression = new BinaryExpression<NumericExpression>(first, operator, second);
-    }
+    protected NumericLiteral(Number value) {
+        if (value == null) {
+            throw new IllegalArgumentException("null can't be numeric literal");
+        }
 
-    public <R> R accept(ExpressionVisitor<R> visitor) {
-        return visitor.visit(this);
+        this.value = value;
     }
 
     public String toString() {
         return accept(EXPRESSION_FORMAT);
     }
 
-    public BinaryExpression getBinaryExpression() {
-        return binaryExpression;
+    @Override
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 
-    public <K> void process(ExpressionProcessor<K> expressionProcessor) {
-        expressionProcessor.process(getBinaryExpression());
+    @Override
+    public Number getValue() {
+        return value;
     }
 }

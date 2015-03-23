@@ -19,19 +19,18 @@
 package de.jexp.jequel.expression.visitor;
 
 import de.jexp.jequel.expression.BinaryExpression;
-import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
-import de.jexp.jequel.expression.logical.BooleanLiteral;
-import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
+import de.jexp.jequel.expression.BooleanBinaryExpression;
+import de.jexp.jequel.expression.BooleanLiteral;
+import de.jexp.jequel.expression.BooleanUnaryExpression;
 import de.jexp.jequel.expression.CompoundExpression;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.ExpressionAlias;
-import de.jexp.jequel.expression.SearchCondition;
 import de.jexp.jequel.expression.ParamExpression;
 import de.jexp.jequel.expression.RowListExpression;
-import de.jexp.jequel.expression.StringExpression;
+import de.jexp.jequel.expression.StringLiteral;
 import de.jexp.jequel.expression.UnaryExpression;
-import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
-import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
+import de.jexp.jequel.expression.NumericBinaryExpression;
+import de.jexp.jequel.expression.NumericUnaryExpression;
 
 /**
  * TODO
@@ -59,7 +58,7 @@ public class TraversalVisitor<R> extends DefaultExpressionVisitor<R> {
     }
 
     @Override
-    public R visit(StringExpression stringExpression) {
+    public R visit(StringLiteral stringLiteral) {
         return null;
     }
 

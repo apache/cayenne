@@ -12,7 +12,7 @@ public class BinaryExpression<E extends Expression> extends AbstractExpression {
     private final Operator operator;
     private final E second;
 
-    public BinaryExpression(E first, Operator operator, E second) {
+    protected BinaryExpression(E first, Operator operator, E second) {
         this.first = first;
         this.operator = operator;
         this.second = second;
@@ -47,7 +47,7 @@ public class BinaryExpression<E extends Expression> extends AbstractExpression {
     }
 
     public boolean oneIsNull() {
-        return first == Expressions.NULL || second == Expressions.NULL;
+        return first == factory().boolNull() || second == factory().boolNull();
     }
 
     public Collection<? extends Expression> getExpressions() {

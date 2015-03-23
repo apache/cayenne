@@ -17,30 +17,30 @@
  * under the License.
  */
 
-package de.jexp.jequel.expression.logical;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.BinaryExpression;
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.ExpressionProcessor;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.literals.Operator;
+import de.jexp.jequel.literals.UnaryOperator;
 
-public class BooleanBinaryExpression extends AbstractBooleanExpression {
-    private final BinaryExpression<Expression> binaryExpression;
+/**
+ * TODO: only boolean UnaryOperator should be acceptable
+ * NOT
+ * EXISTS
+ * NOT_EXISTS
+ * */
+public class BooleanUnaryExpression extends BooleanAbstractExpression {
+    private final UnaryExpression<Expression> unaryExpression;
 
-    public BooleanBinaryExpression(Expression first, Operator operator, Expression second) {
-        this.binaryExpression = new BinaryExpression<Expression>(first, operator, second);
+    protected BooleanUnaryExpression(UnaryOperator operator, Expression first) {
+        this.unaryExpression = new UnaryExpression<Expression>(operator, first);
     }
 
+    public UnaryExpression getUnaryExpression() {
+        return unaryExpression;
+    }
+
+    @Override
     public <R> R accept(ExpressionVisitor<R> visitor) {
         return visitor.visit(this);
-    }
-
-    public BinaryExpression<Expression> getBinaryExpression() {
-        return binaryExpression;
-    }
-
-    public <K> void process(ExpressionProcessor<K> expressionProcessor) {
-        expressionProcessor.process(getBinaryExpression());
     }
 }

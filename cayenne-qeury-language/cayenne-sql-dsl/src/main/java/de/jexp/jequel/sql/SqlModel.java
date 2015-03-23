@@ -25,9 +25,9 @@ import de.jexp.jequel.expression.DelegatingFormat;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.SearchCondition;
 import de.jexp.jequel.expression.SimpleListExpression;
-import de.jexp.jequel.expression.visitor.Format;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.SelectKeyword;
+import de.jexp.jequel.table.Table;
 
 public interface SqlModel {
 
@@ -82,7 +82,17 @@ public interface SqlModel {
         }
     }
 
-    class From { }
+    class From extends SimpleListExpression implements SqlDsl.SqlVisitable {
+
+        protected From(Table ... expressions) {
+            super(Delimeter.COMMA, expressions);
+        }
+
+        @Override
+        public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
+            return sqlVisitor.visit(this);
+        }
+    }
 
     class OrderBy {}
 
@@ -105,7 +115,7 @@ public interface SqlModel {
             return accept(SQL_FORMAT);
         }
 
-        public <R> R accept(SqlVisitor<R> sqlVisitor) {
+        public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
             return sqlVisitor.visit(this);
         }
 
@@ -114,7 +124,7 @@ public interface SqlModel {
         }
     }
 
-    class Select extends SimpleListExpression implements SqlVisitable {
+    class Select extends SimpleListExpression implements SqlDsl.SqlVisitable {
         public Select(Expression... expressions) {
             super(Delimeter.COMMA, expressions);
         }
@@ -123,12 +133,12 @@ public interface SqlModel {
             return accept(SelectPartExpression.SQL_FORMAT);
         }
 
-        public <R> R accept(SqlVisitor<R> sqlVisitor) {
+        public <R> R accept(SqlDsl.SqlVisitor<R> sqlVisitor) {
             return sqlVisitor.visit(this);
         }
     }
 
-    interface SelectPartExpression<T extends Expression> extends AppendableExpression<T>, SqlVisitable {
+    interface SelectPartExpression<T extends Expression> extends AppendableExpression<T>, SqlDsl.SqlVisitable {
         SqlExpressionFormat SQL_FORMAT = new SqlExpressionFormat(new Sql92Format());
 
         SelectKeyword getSelectKeyword();
@@ -139,9 +149,9 @@ public interface SqlModel {
     class Having extends SearchCondition { }
 
 
-    class SqlExpressionFormat extends DelegatingFormat<SqlFormat> implements SqlFormat {
+    class SqlExpressionFormat extends DelegatingFormat<SqlDsl.SqlFormat> implements SqlDsl.SqlFormat {
 
-        public SqlExpressionFormat(SqlFormat format) {
+        public SqlExpressionFormat(SqlDsl.SqlFormat format) {
             super(format);
         }
 
@@ -164,22 +174,16 @@ public interface SqlModel {
         public String visit(Having having) {
             return formatAround(getFormat().visit(having), having);
         }
+
+        @Override
+        public String visit(From from) {
+            return formatAround(getFormat().visit(from), from);
+        }
+
+        @Override
+        public String visit(Sql sql) {
+            return formatAround(getFormat().visit(sql), sql);
+        }
     }
 
-    interface SqlFormat extends SqlVisitor<String>, Format {
-    }
-
-    interface SqlVisitor<R> {
-        R visit(SelectPartColumnListExpression sqlPartColumnTupleExpression);
-
-        R visit(Select select);
-
-        R visit(Where where);
-
-        R visit(Having having);
-    }
-
-    interface SqlVisitable {
-        <R> R accept(SqlVisitor<R> sqlVisitor);
-    }
 }

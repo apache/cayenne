@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package de.jexp.jequel.expression.logical;
+package de.jexp.jequel.expression;
 
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
-public class BooleanLiteral extends AbstractBooleanExpression {
+public class BooleanLiteral extends BooleanAbstractExpression implements LiteralExpression<Boolean> {
     public static final BooleanLiteral TRUE = new BooleanLiteral(true);
     public static final BooleanLiteral FALSE = new BooleanLiteral(false);
     public static final BooleanLiteral NULL = new BooleanLiteral(null) {
@@ -52,10 +52,12 @@ public class BooleanLiteral extends AbstractBooleanExpression {
         throw new UnsupportedOperationException("'isNot' operation applicable only at non literal boolean expression ");
     }
 
+    @Override
     public <R> R accept(ExpressionVisitor<R> visitor) {
         return visitor.visit(this);
     }
 
+    @Override
     public Boolean getValue() {
         return value;
     }

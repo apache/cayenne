@@ -1,7 +1,8 @@
 package de.jexp.jequel.table;
 
-import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.expression.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
+import de.jexp.jequel.expression.LiteralExpression;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
 public class JoinTable extends BaseTable<BaseTable> {
@@ -19,7 +20,7 @@ public class JoinTable extends BaseTable<BaseTable> {
     }
 
     public <R> R accept(ExpressionVisitor<R> visitor) {
-        return visitor.visit(this);
+        return visitor.visit((LiteralExpression<? extends Object>) this);
     }
 
 

@@ -17,9 +17,7 @@
  * under the License.
  */
 
-package de.jexp.jequel.expression.logical;
-
-import de.jexp.jequel.expression.Expression;
+package de.jexp.jequel.expression;
 
 public interface BooleanExpression extends Expression {
     BooleanExpression and(BooleanExpression expression);

@@ -1,9 +1,7 @@
 package de.jexp.jequel.expression;
 
-import static de.jexp.jequel.expression.Expressions.*;
+import static de.jexp.jequel.sql.Expressions.*;
 
-import de.jexp.jequel.expression.logical.BooleanExpression;
-import de.jexp.jequel.expression.numeric.NumericLiteral;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -11,8 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ExpressionsTest extends TestCase {
+
+
     public void testNumericConversion() {
-        NumericLiteral expression = (NumericLiteral) e(1);
+        LiteralExpression<Number> expression = e((Number) 1);
         assertEquals(1, expression.getValue().intValue());
     }
 
@@ -27,7 +27,7 @@ public class ExpressionsTest extends TestCase {
     }
 
     public void testStringConversion() {
-        StringExpression expression = (StringExpression) e("abc");
+        StringLiteral expression = (StringLiteral) e("abc");
         assertEquals("abc", expression.getValue());
         assertEquals("'abc'", expression.toString());
     }

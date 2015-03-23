@@ -16,33 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package de.jexp.jequel.expression;
 
-package de.jexp.jequel.expression.logical;
-
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.UnaryExpression;
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.literals.UnaryOperator;
+import de.jexp.jequel.literals.Operator;
 
 /**
- * TODO: only boolean UnaryOperator should be acceptable
- * NOT
- * EXISTS
- * NOT_EXISTS
- * */
-public class BooleanUnaryExpression extends AbstractBooleanExpression {
-    private final UnaryExpression<Expression> unaryExpression;
+* @since 4.0
+*/
+abstract class StringAbstractExpression extends AbstractExpression implements StringExpressions {
 
-    public BooleanUnaryExpression(UnaryOperator operator, Expression first) {
-        this.unaryExpression = new UnaryExpression<Expression>(operator, first);
+    @Override
+    public BooleanExpression like(StringExpressions expression) {
+        return factory().createBoolean(this, Operator.LIKE, expression);
     }
 
-    public UnaryExpression getUnaryExpression() {
-        return unaryExpression;
+    public BooleanExpression like(String string) {
+        return like(factory().create(string));
     }
 
     @Override
-    public <R> R accept(ExpressionVisitor<R> visitor) {
-        return visitor.visit(this);
+    public BooleanExpression likeIgnoreCase(StringExpressions expression) {
+        return factory().createBoolean(this, Operator.LIKE, expression);
+    }
+
+    public BooleanExpression likeIgnoreCase(String string) {
+        return likeIgnoreCase(factory().create(string));
     }
 }

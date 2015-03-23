@@ -16,10 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.expression.logical;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.ExpressionProcessor;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.Operator;
 
@@ -31,7 +29,7 @@ import static java.util.Arrays.asList;
 /**
  * @since 4.0
  */
-public class BooleanListExpression extends AbstractBooleanExpression {
+public class BooleanListExpression extends BooleanAbstractExpression {
 
     private final List<BooleanExpression> expressions;
     private final Operator operator;

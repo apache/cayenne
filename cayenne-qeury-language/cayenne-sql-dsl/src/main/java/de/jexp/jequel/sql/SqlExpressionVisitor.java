@@ -16,28 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.expression.numeric;
 
-import de.jexp.jequel.expression.Expression;
+package de.jexp.jequel.sql;
 
-/**
- * TODO all operation should take Numeric.Expression or Number
- * */
-public interface NumericExpression extends Expression {
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+import de.jexp.jequel.table.BaseTable;
+import de.jexp.jequel.table.Field;
+import de.jexp.jequel.table.JoinTable;
 
-    NumericExpression plus(NumericExpression expression);
+public interface SqlExpressionVisitor<R> extends ExpressionVisitor<R> {
 
-    NumericExpression plus(Number expression);
+    <T> R visit(Field<T> field);
 
-    NumericExpression minus(NumericExpression expression);
+    R visit(JoinTable joinTable);
 
-    NumericExpression minus(Number expression);
+    R visit(BaseTable table);
 
-    NumericExpression times(NumericExpression expression);
-
-    NumericExpression times(Number expression);
-
-    NumericExpression by(NumericExpression expression);
-
-    NumericExpression by(Number expression);
 }

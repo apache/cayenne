@@ -18,24 +18,7 @@
  */
 package de.jexp.jequel;
 
-import de.jexp.jequel.expression.BinaryExpression;
-import de.jexp.jequel.expression.CompoundExpression;
-import de.jexp.jequel.expression.ConstantExpression;
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.ExpressionAlias;
-import de.jexp.jequel.expression.ParamExpression;
-import de.jexp.jequel.expression.PathExpression;
-import de.jexp.jequel.expression.RowListExpression;
-import de.jexp.jequel.expression.StringExpression;
-import de.jexp.jequel.expression.UnaryExpression;
-import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
-import de.jexp.jequel.expression.logical.BooleanExpression;
-import de.jexp.jequel.expression.logical.BooleanListExpression;
-import de.jexp.jequel.expression.logical.BooleanLiteral;
-import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
-import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
-import de.jexp.jequel.expression.numeric.NumericLiteral;
-import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
+import de.jexp.jequel.expression.*;
 import de.jexp.jequel.expression.visitor.ExpressionFormat;
 import de.jexp.jequel.literals.Operator;
 import de.jexp.jequel.literals.SqlKeyword;
@@ -53,12 +36,7 @@ import static org.apache.commons.lang3.StringUtils.join;
 public class Sql92ExpressionFormatter implements ExpressionFormat {
 
     @Override
-    public <V> String visit(ConstantExpression<V> constantExpression) {
-        String literal = constantExpression.getLiteral();
-        if (literal != null) {
-            return literal;
-        }
-
+    public <V> String visit(LiteralExpression<V> constantExpression) {
         return constantExpression.getValue().toString();
     }
 
@@ -119,8 +97,8 @@ public class Sql92ExpressionFormatter implements ExpressionFormat {
     }
 
     @Override
-    public String visit(StringExpression stringExpression) {
-        return "'" + visit((ConstantExpression<String>) stringExpression) + "'";
+    public String visit(StringLiteral stringLiteral) {
+        return "'" + visit((LiteralExpression<String>) stringLiteral) + "'";
     }
 
     @Override
@@ -215,8 +193,8 @@ public class Sql92ExpressionFormatter implements ExpressionFormat {
     }
 
     @Override
-    public <T> String visit(PathExpression field) {
-        return null;
+    public <T> String visit(VariableExpression field) {
+        return field.getValue();
     }
 
     protected String parenthese(String expressionString) {
@@ -225,7 +203,7 @@ public class Sql92ExpressionFormatter implements ExpressionFormat {
 
     @Override
     public String formatAround(String expressionString, Expression expression) {
-        return null;
+        return expressionString;
     }
 
     /** Helpers  **/

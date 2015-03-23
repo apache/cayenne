@@ -19,16 +19,17 @@
 package de.jexp.jequel.sql;
 
 import de.jexp.jequel.SqlString;
-import de.jexp.jequel.expression.logical.BooleanExpression;
+import de.jexp.jequel.expression.BooleanExpression;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.RowListExpression;
+import de.jexp.jequel.expression.visitor.Format;
 
 /**
  * @since 4.0
  */
 public interface SqlDsl {
 
-    interface ToSql {
+    interface ToSql extends SqlVisitable {
         Sql toSql();
     }
 
@@ -59,5 +60,26 @@ public interface SqlDsl {
 
     interface Having extends SqlString, ToSql {
 
+    }
+
+    interface SqlFormat extends SqlVisitor<String>, Format {
+    }
+
+    interface SqlVisitor<R> {
+        R visit(SqlModel.SelectPartColumnListExpression sqlPartColumnTupleExpression);
+
+        R visit(SqlModel.Select select);
+
+        R visit(SqlModel.Where where);
+
+        R visit(SqlModel.Having having);
+
+        R visit(SqlModel.From from);
+
+        R visit(Sql sql);
+    }
+
+    interface SqlVisitable {
+        <R> R accept(SqlVisitor<R> sqlVisitor);
     }
 }

@@ -18,14 +18,6 @@
  */
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
-import de.jexp.jequel.expression.logical.BooleanListExpression;
-import de.jexp.jequel.expression.logical.BooleanLiteral;
-import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
-import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
-import de.jexp.jequel.expression.numeric.NumericExpression;
-import de.jexp.jequel.expression.numeric.NumericLiteral;
-import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
 import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.Operator;
 import de.jexp.jequel.literals.UnaryOperator;
@@ -52,9 +44,9 @@ public interface ExpressionsFactory {
 
     BooleanBinaryExpression createBoolean(Expression first, Operator operator, Expression second);
 
-    BooleanListExpression createBoolean(BooleanListExpression binaryExpression);
+    BooleanListExpression createBoolean(Operator operator, BooleanExpression... expressions);
 
-    StringExpression create(StringExpression stringExpression);
+    StringLiteral create(String value);
 
     <E extends Expression> UnaryExpression<E> createUnary(UnaryOperator operator, E exp);
 
@@ -62,6 +54,19 @@ public interface ExpressionsFactory {
 
     <A extends RowListExpression> RowListExpression<A> create(Delimeter delim, Expression... expressions);
 
-    <T> ParamExpression<T> create(String paramName, T paramValue);
-    
+    <V> LiteralExpression<V> create(V value);
+
+    ParamExpression createParam(String paramName);
+
+    <T> ParamExpression<T> createParam(String paramName, T paramValue);
+
+    <T> ParamExpression<T> createParam(T paramValue);
+
+    VariableNumericLiteralExpression pathNumeric(String path);
+
+    VariableExpression path(String path);
+
+    SqlLiteral sql(String sql);
+
+
 }

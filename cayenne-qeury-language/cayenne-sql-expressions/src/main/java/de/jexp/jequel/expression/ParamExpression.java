@@ -10,15 +10,15 @@ import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 * */
 public class ParamExpression<T> extends ConstantExpression<T> {
 
-    public ParamExpression(String paramName) {
+    protected ParamExpression(String paramName) {
         super(paramName, null);
     }
 
-    public ParamExpression(String paramName, T paramValue) {
+    protected ParamExpression(String paramName, T paramValue) {
         super(paramName, paramValue);
     }
 
-    public ParamExpression(T paramValue) {
+    protected ParamExpression(T paramValue) {
         super(null, paramValue);
     }
 
@@ -26,6 +26,7 @@ public class ParamExpression<T> extends ConstantExpression<T> {
         return accept(EXPRESSION_FORMAT);
     }
 
+    @Override
     public <R> R accept(ExpressionVisitor<R> expressionVisitor) {
         return expressionVisitor.visit(this);
     }

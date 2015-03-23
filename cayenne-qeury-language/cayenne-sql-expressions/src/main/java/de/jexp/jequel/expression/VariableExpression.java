@@ -16,33 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.expression.numeric;
-
-import de.jexp.jequel.expression.visitor.ExpressionVisitor;
+package de.jexp.jequel.expression;
 
 /**
-* @since 4.0
-*/
-public class NumericLiteral extends AbstractNumericExpression {
-    private final Number value;
+ * @since 4.0
+ */
+public interface VariableExpression extends LiteralExpression<String> {
 
-    public NumericLiteral(Number value) {
-        if (value == null) {
-            throw new IllegalArgumentException("null can't be numeric literal");
-        }
-
-        this.value = value;
-    }
-
-    public String toString() {
-        return accept(EXPRESSION_FORMAT);
-    }
-
-    public <R> R accept(ExpressionVisitor<R> expressionVisitor) {
-        return expressionVisitor.visit(this);
-    }
-
-    public Number getValue() {
-        return value;
-    }
 }

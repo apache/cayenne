@@ -1,6 +1,8 @@
 package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.DefaultExpressionAlias;
+import de.jexp.jequel.expression.Expression;
+import de.jexp.jequel.expression.ExpressionAlias;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
 public class FieldAlias<T> extends DefaultExpressionAlias<Field<T>> implements Field<T> {
@@ -8,18 +10,22 @@ public class FieldAlias<T> extends DefaultExpressionAlias<Field<T>> implements F
         super(aliased, alias);
     }
 
+    @Override
     public String getTableName() {
         return getAliased().getTableName();
     }
 
+    @Override
     public Field resolve() {
         return getAliased().resolve();
     }
 
+    @Override
     public String getName() {
         return getAliased().getName();
     }
 
+    @Override
     public boolean isPrimaryKey() {
         return getAliased().isPrimaryKey();
     }
@@ -29,6 +35,7 @@ public class FieldAlias<T> extends DefaultExpressionAlias<Field<T>> implements F
         return getAliased().isMandatory();
     }
 
+    @Override
     public Table getTable() {
         return getAliased().getTable();
     }
@@ -39,15 +46,22 @@ public class FieldAlias<T> extends DefaultExpressionAlias<Field<T>> implements F
     }
 
     // TODO return Field<T>
+    @Override
     public FieldAlias<T> as(String alias) {
         return new FieldAlias<T>(getAliased(), alias);
     }
 
+    @Override
     public <R> R accept(ExpressionVisitor<R> visitor) {
-        return visitor.visit((Field<?>) this);
+        return visitor.visit((ExpressionAlias<? extends Expression>) this);
     }
 
     public String toString() {
         return accept(EXPRESSION_FORMAT);
+    }
+
+    @Override
+    public String getValue() {
+        return getTableName() + "." + getAlias();
     }
 }

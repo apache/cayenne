@@ -1,54 +1,56 @@
 package de.jexp.jequel.expression;
 
-import static de.jexp.jequel.expression.Expressions.*;
-
-import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
-import de.jexp.jequel.expression.logical.BooleanExpression;
-import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.literals.Operator;
 
 public abstract class AbstractExpression implements Expression {
     private ExpressionsFactory factory;
 
+    @Override
     public BooleanExpression eq(Object expression) {
         return createBinaryBooleanExpression(Operator.EQ, expression);
     }
 
+    @Override
     public BooleanExpression ge(Object expression) {
         return createBinaryBooleanExpression(Operator.GE, expression);
     }
 
+    @Override
     public BooleanExpression gt(Object expression) {
         return createBinaryBooleanExpression(Operator.GT, expression);
     }
 
+    @Override
     public BooleanExpression lt(Object expression) {
         return createBinaryBooleanExpression(Operator.LT, expression);
     }
 
+    @Override
     public BooleanExpression le(Object expression) {
         return createBinaryBooleanExpression(Operator.LE, expression);
     }
 
+    @Override
     public BooleanExpression ne(Object expression) {
         return createBinaryBooleanExpression(Operator.NE, expression);
     }
 
-    public BooleanExpression between(Object start, Object end) {
-        BooleanExpression andExpression = createBinaryBooleanExpression(e(start), Operator.AND, end);
-        return createBinaryBooleanExpression(Operator.BETWEEN, andExpression);
+    @Override
+    public <E> BooleanExpression between(E start, E end) {
+        LiteralExpression<E> e1 = factory().create(start);
+        LiteralExpression<E> e2 = factory().create(end);
+        return createBinaryBooleanExpression(Operator.BETWEEN,
+                factory().createBinary(e1, Operator.AND, e2));
     }
 
-    public BooleanExpression like(Object expression) {
-        return createBinaryBooleanExpression(Operator.LIKE, expression);
-    }
-
+    @Override
     public BooleanExpression in(Expression subQuery) {
         return createBinaryBooleanExpression(Operator.IN, subQuery);
     }
 
+    @Override
     public BooleanExpression in(Object... expressions) {
-        return createBinaryBooleanExpression(Operator.IN, e(expressions));
+        return createBinaryBooleanExpression(Operator.IN, factory().create(expressions));
     }
 
     @Override
@@ -61,19 +63,24 @@ public abstract class AbstractExpression implements Expression {
         return factory().createBoolean(this, Operator.IS_NOT, BooleanLiteral.NULL);
     }
 
-    protected BooleanBinaryExpression createBinaryBooleanExpression(Operator operator, Object expression) {
-        return createBinaryBooleanExpression(this, operator, expression);
+    protected BooleanBinaryExpression createBinaryBooleanExpression(Operator operator, Expression expression) {
+        return factory().createBoolean(this, operator, expression);
     }
 
-    protected static BooleanBinaryExpression createBinaryBooleanExpression(Expression first, Operator operator, Object expression) {
-        return new BooleanBinaryExpression(first, operator, e(expression));
+    protected BooleanBinaryExpression createBinaryBooleanExpression(Operator operator, Object expression) {
+        if (expression instanceof Expression) {
+            return createBinaryBooleanExpression(operator, (Expression) expression);
+        }
+        return createBinaryBooleanExpression(operator, factory().create(expression));
     }
 
     public <K> void process(ExpressionProcessor<K> expressionProcessor) {
     }
 
-    public void setFactory(ExpressionsFactory factory) {
+    protected <T extends Expression> T factory(ExpressionsFactory factory) {
         this.factory = factory;
+
+        return (T) this;
     }
 
     @Override

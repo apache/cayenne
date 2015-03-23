@@ -1,12 +1,14 @@
 package de.jexp.jequel;
 
-import static de.jexp.jequel.expression.Expressions.*;
+import static de.jexp.jequel.sql.Expressions.*;
 import static de.jexp.jequel.sql.Sql.*;
 import de.jexp.jequel.tables.TEST_TABLES;
 import static de.jexp.jequel.tables.TEST_TABLES.*;
 import junit.framework.TestCase;
 
 public class SubSelectTest extends TestCase {
+    private static final Sql92Format SQL_92_FORMAT = new Sql92Format();
+
     public void testSubSelect() {
         ARTICLE ARTICLE2 = ARTICLE.as("ARTICLE2");
         SqlString sqlString = Select(ARTICLE.OID)
@@ -22,7 +24,7 @@ public class SubSelectTest extends TestCase {
                 "select ARTICLE.OID from ARTICLE where not(exists(" +
                         "(select 1 from ARTICLE as ARTICLE2 where ARTICLE2.OID = ARTICLE.OID and ARTICLE2.ARTICLE_NO is NULL)" +
                         "))",
-                sqlString.toString());
+                sqlString.accept(SQL_92_FORMAT));
 
     }
 
@@ -43,6 +45,6 @@ public class SubSelectTest extends TestCase {
                         "from ARTICLE_EAN as ARTICLE_EAN2 " +
                         "where ARTICLE_EAN2.EAN = '1234567890123' " +
                         "and ARTICLE_EAN.ARTICLE_OID = ARTICLE_EAN2.ARTICLE_OID)"
-                , sqlString.toString());
+                , sqlString.accept(SQL_92_FORMAT));
     }
 }

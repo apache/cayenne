@@ -17,7 +17,7 @@ public class SimpleListExpression extends AbstractExpression implements Compound
     private final Collection<Expression> expressions = new ArrayList<Expression>();
     private final Delimeter delim;
 
-    protected SimpleListExpression(Delimeter delim, Collection<Expression> expressions) {
+    public SimpleListExpression(Delimeter delim, Collection<Expression> expressions) {
         this.expressions.addAll(expressions);
         this.delim = delim;
     }

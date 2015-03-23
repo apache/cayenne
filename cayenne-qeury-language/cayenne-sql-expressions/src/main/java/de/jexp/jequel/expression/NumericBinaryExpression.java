@@ -16,36 +16,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.expression.logical;
+package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.AbstractExpression;
+import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 import de.jexp.jequel.literals.Operator;
 
 /**
- * @since 4.0
- */
-public abstract class AbstractBooleanExpression extends AbstractExpression implements BooleanExpression {
-    @Override
-    public BooleanExpression and(BooleanExpression expression) {
-        return new BooleanListExpression(Operator.AND, this, expression);
+* @since 4.0
+*/
+public class NumericBinaryExpression extends NumericAbstractExpression {
+    private final BinaryExpression<NumericExpression> binaryExpression;
+
+    protected NumericBinaryExpression(BinaryExpression<NumericExpression> binaryExpression) {
+        this.binaryExpression = binaryExpression;
     }
 
     @Override
-    public BooleanExpression or(BooleanExpression expression) {
-        return new BooleanListExpression(Operator.OR, this, expression);
+    protected <T extends Expression> T factory(ExpressionsFactory factory) {
+        return binaryExpression.factory(factory);
     }
 
     @Override
-    public BooleanExpression is(BooleanLiteral expression) {
-        return new BooleanBinaryExpression(this, Operator.IS, expression);
+    public ExpressionsFactory factory() {
+        return binaryExpression.factory();
     }
 
-    @Override
-    public BooleanExpression isNot(BooleanLiteral expression) {
-        return new BooleanBinaryExpression(this, Operator.IS_NOT, expression);
+    public <R> R accept(ExpressionVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 
     public String toString() {
         return accept(EXPRESSION_FORMAT);
+    }
+
+    public BinaryExpression getBinaryExpression() {
+        return binaryExpression;
+    }
+
+    public <K> void process(ExpressionProcessor<K> expressionProcessor) {
+        expressionProcessor.process(getBinaryExpression());
     }
 }

@@ -1,6 +1,6 @@
 package de.jexp.jequel.check;
 
-import static de.jexp.jequel.expression.Expressions.*;
+import static de.jexp.jequel.sql.Expressions.*;
 import de.jexp.jequel.sql.Sql;
 import static de.jexp.jequel.sql.Sql.*;
 import static de.jexp.jequel.tables.TEST_TABLES.*;

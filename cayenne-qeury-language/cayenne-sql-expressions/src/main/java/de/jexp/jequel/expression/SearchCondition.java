@@ -19,15 +19,12 @@
 
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.logical.AbstractBooleanExpression;
-import de.jexp.jequel.expression.logical.BooleanExpression;
-import de.jexp.jequel.expression.logical.BooleanLiteral;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
 /**
  * TODO I wanna it also will be immutable
  * */
-public class SearchCondition extends AbstractBooleanExpression {
+public class SearchCondition extends BooleanAbstractExpression {
     private BooleanExpression expr = BooleanLiteral.NULL;
 
     @Override

@@ -19,26 +19,10 @@
 
 package de.jexp.jequel.expression.visitor;
 
-import de.jexp.jequel.expression.BinaryExpression;
-import de.jexp.jequel.expression.CompoundExpression;
-import de.jexp.jequel.expression.ConstantExpression;
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.ExpressionAlias;
-import de.jexp.jequel.expression.ParamExpression;
-import de.jexp.jequel.expression.PathExpression;
-import de.jexp.jequel.expression.RowListExpression;
-import de.jexp.jequel.expression.StringExpression;
-import de.jexp.jequel.expression.UnaryExpression;
-import de.jexp.jequel.expression.logical.BooleanBinaryExpression;
-import de.jexp.jequel.expression.logical.BooleanListExpression;
-import de.jexp.jequel.expression.logical.BooleanLiteral;
-import de.jexp.jequel.expression.logical.BooleanUnaryExpression;
-import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
-import de.jexp.jequel.expression.numeric.NumericLiteral;
-import de.jexp.jequel.expression.numeric.NumericUnaryExpression;
+import de.jexp.jequel.expression.*;
 
 public interface ExpressionVisitor<R> {
-    <V> R visit(ConstantExpression<V> constantExpression);
+    <V> R visit(LiteralExpression<V> constantExpression);
 
     R visit(NumericLiteral numericLiteral);
 
@@ -54,7 +38,7 @@ public interface ExpressionVisitor<R> {
 
     R visit(BooleanListExpression binaryExpression);
 
-    R visit(StringExpression stringExpression);
+    R visit(StringLiteral stringLiteral);
 
     R visit(UnaryExpression unaryExpression);
 
@@ -70,7 +54,7 @@ public interface ExpressionVisitor<R> {
 
     /* TableVisitor */
 
-    <T> R visit(PathExpression field);
+    <T> R visit(VariableExpression field);
     /*
     <T> R visit(Field<T> field);
 

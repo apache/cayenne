@@ -18,8 +18,33 @@
  */
 package de.jexp.jequel.expression;
 
+import de.jexp.jequel.literals.Operator;
+
 /**
  * @since 4.0
  */
-public interface PathExpression extends Expression {
+public abstract class BooleanAbstractExpression extends AbstractExpression implements BooleanExpression {
+    @Override
+    public BooleanExpression and(BooleanExpression expression) {
+        return factory().createBoolean(Operator.AND, this, expression);
+    }
+
+    @Override
+    public BooleanExpression or(BooleanExpression expression) {
+        return factory().createBoolean(Operator.OR, this, expression);
+    }
+
+    @Override
+    public BooleanExpression is(BooleanLiteral expression) {
+        return factory().createBoolean(this, Operator.IS, expression);
+    }
+
+    @Override
+    public BooleanExpression isNot(BooleanLiteral expression) {
+        return factory().createBoolean(this, Operator.IS_NOT, expression);
+    }
+
+    public String toString() {
+        return accept(EXPRESSION_FORMAT);
+    }
 }

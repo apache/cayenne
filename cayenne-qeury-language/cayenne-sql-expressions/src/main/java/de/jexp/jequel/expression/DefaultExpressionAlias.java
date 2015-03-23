@@ -1,14 +1,12 @@
 package de.jexp.jequel.expression;
 
-import de.jexp.jequel.expression.logical.BooleanExpression;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.sql.SqlDsl;
 
 public class DefaultExpressionAlias<E extends Expression> implements ExpressionAlias<E> {
     private final E aliased;
     private final String alias;
 
-    public DefaultExpressionAlias(E aliased, String alias) {
+    protected DefaultExpressionAlias(E aliased, String alias) {
         this.aliased = aliased;
         this.alias = alias;
     }
@@ -30,6 +28,11 @@ public class DefaultExpressionAlias<E extends Expression> implements ExpressionA
     }
 
     @Override
+    public ExpressionsFactory factory() {
+        return aliased.factory();
+    }
+
+    @Override
     public BooleanExpression isNull() {
         return aliased.isNull();
     }
@@ -37,6 +40,11 @@ public class DefaultExpressionAlias<E extends Expression> implements ExpressionA
     @Override
     public BooleanExpression isNotNull() {
         return aliased.isNotNull();
+    }
+
+    @Override
+    public BooleanExpression in(Expression subQuery) {
+        return aliased.in(subQuery);
     }
 
     public <K> void process(ExpressionProcessor<K> expressionProcessor) {
@@ -67,21 +75,12 @@ public class DefaultExpressionAlias<E extends Expression> implements ExpressionA
         return aliased.ne(expression);
     }
 
-    public BooleanExpression between(Object start, Object end) {
+    public <E> BooleanExpression between(E start, E end) {
         return aliased.between(start, end);
-    }
-
-    @Override
-    public BooleanExpression in(SqlDsl.ToSql subQuery) {
-        return aliased.in(subQuery);
     }
 
     public BooleanExpression in(Object... expressions) {
         return aliased.in(expressions);
-    }
-
-    public BooleanExpression like(Object expression) {
-        return aliased.like(expression);
     }
 
 }

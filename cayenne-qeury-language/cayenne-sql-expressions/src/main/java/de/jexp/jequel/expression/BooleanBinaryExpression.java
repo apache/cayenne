@@ -16,39 +16,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package de.jexp.jequel.expression.numeric;
 
-import de.jexp.jequel.expression.ExpressionProcessor;
-import de.jexp.jequel.expression.UnaryExpression;
+package de.jexp.jequel.expression;
+
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
-import de.jexp.jequel.literals.UnaryOperator;
+import de.jexp.jequel.literals.Operator;
 
-/**
- * TODO: Unary operations and aggregation function are completely different things and should be separated
- *
- * @since 4.0
- */
-public class NumericUnaryExpression extends AbstractNumericExpression {
-    private final UnaryExpression<NumericExpression> unaryExpression;
+public class BooleanBinaryExpression extends BooleanAbstractExpression {
+    private final BinaryExpression<Expression> binaryExpression;
 
-    public NumericUnaryExpression(UnaryOperator operator, NumericExpression first) {
-        this.unaryExpression = new UnaryExpression<NumericExpression>(operator, first);
-    }
-
-    public String toString() {
-        return EXPRESSION_FORMAT.visit(this);
-    }
-
-    public <K> void process(ExpressionProcessor<K> expressionProcessor) {
-        expressionProcessor.process(getUnaryExpression());
+    protected BooleanBinaryExpression(BinaryExpression<Expression> exp) {
+        this.binaryExpression = exp;
     }
 
     @Override
+    protected <T extends Expression> T factory(ExpressionsFactory factory) {
+        return binaryExpression.factory(factory);
+    }
+
+    @Override
+    public ExpressionsFactory factory() {
+        return binaryExpression.factory();
+    }
+
     public <R> R accept(ExpressionVisitor<R> visitor) {
         return visitor.visit(this);
     }
 
-    public UnaryExpression getUnaryExpression() {
-        return unaryExpression;
+    public BinaryExpression<Expression> getBinaryExpression() {
+        return binaryExpression;
+    }
+
+    public <K> void process(ExpressionProcessor<K> expressionProcessor) {
+        expressionProcessor.process(getBinaryExpression());
     }
 }

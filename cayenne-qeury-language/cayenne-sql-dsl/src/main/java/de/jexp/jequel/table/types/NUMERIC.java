@@ -1,8 +1,8 @@
 package de.jexp.jequel.table.types;
 
-import de.jexp.jequel.expression.numeric.NumericBinaryExpression;
-import de.jexp.jequel.expression.numeric.NumericExpression;
-import de.jexp.jequel.expression.numeric.NumericLiteral;
+import de.jexp.jequel.expression.NumericBinaryExpression;
+import de.jexp.jequel.expression.NumericExpression;
+import de.jexp.jequel.expression.NumericLiteral;
 import de.jexp.jequel.literals.Operator;
 import de.jexp.jequel.table.Table;
 import de.jexp.jequel.table.TableField;
@@ -66,10 +66,10 @@ public class NUMERIC extends TableField<Integer> implements NumericExpression {
     }
 
     protected NumericExpression exp(Operator operator, NumericExpression expression) {
-        return new NumericBinaryExpression(this, operator, expression);
+        return factory().createNumeric(this, operator, expression);
     }
 
     protected NumericExpression exp(Operator operator, Number number) {
-        return exp(operator, new NumericLiteral(number));
+        return exp(operator, factory().createNumeric(number));
     }
 }

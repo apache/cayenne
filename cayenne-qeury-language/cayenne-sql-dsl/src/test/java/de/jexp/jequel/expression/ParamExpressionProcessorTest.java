@@ -1,6 +1,6 @@
 package de.jexp.jequel.expression;
 
-import static de.jexp.jequel.expression.Expressions.*;
+import static de.jexp.jequel.sql.Expressions.*;
 import de.jexp.jequel.processor.ParameterCollectorProcessor;
 import de.jexp.jequel.sql.Sql;
 
@@ -16,12 +16,12 @@ public class ParamExpressionProcessorTest extends TestCase {
     public void testParamExpressionProcessor() {
         Sql sql = Sql.Select(ARTICLE.OID)
                        .from(ARTICLE)
-                      .where(ARTICLE.ARTICLE_NO.like(param(1))
+                      .where(ARTICLE.ARTICLE_NO.gt(param(1))
                               .and(ARTICLE_COLOR.OID.eq(named("article")))
                               .or(ARTICLE.OID.in(named("article_oid", Arrays.asList(1, 2, 3))))).toSql();
 
         assertEquals("select ARTICLE.OID from ARTICLE" +
-                " where (ARTICLE.ARTICLE_NO like ?" + // TODO brackets shouldn't be here
+                " where (ARTICLE.ARTICLE_NO > ?" + // TODO brackets shouldn't be here
                 " and ARTICLE_COLOR.OID = :article)" +
                 " or ARTICLE.OID in (:article_oid)",
                 sql.toString());

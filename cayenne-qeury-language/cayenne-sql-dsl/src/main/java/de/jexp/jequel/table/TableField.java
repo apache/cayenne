@@ -1,9 +1,11 @@
 package de.jexp.jequel.table;
 
 import de.jexp.jequel.expression.AbstractExpression;
+import de.jexp.jequel.expression.DefaultExpressionsFactory;
 import de.jexp.jequel.expression.visitor.ExpressionVisitor;
 
-public class TableField<T> extends AbstractExpression implements Field<T> {
+public class TableField<T> extends AbstractExpression implements
+        Field<T> {
 
     private final Table table;
     private final int jdbcType;
@@ -21,6 +23,8 @@ public class TableField<T> extends AbstractExpression implements Field<T> {
         this.name = name;
         this.table = table;
         this.jdbcType = jdbcType;
+
+        factory(EXPRESSIONS_FACTORY);
     }
 
     public FieldAlias<T> as(String alias) {
@@ -90,5 +94,10 @@ public class TableField<T> extends AbstractExpression implements Field<T> {
 
     public Field<T> foreignKey(Field<T> reference) {
         return new ForeignKey<T>(getTable(), reference);
+    }
+
+    @Override
+    public String getValue() {
+        return getTableName() + "." + getName();
     }
 }
