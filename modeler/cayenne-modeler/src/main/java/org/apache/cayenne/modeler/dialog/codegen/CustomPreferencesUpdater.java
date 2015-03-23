@@ -35,7 +35,8 @@ public class CustomPreferencesUpdater {
         PAIRS,
         USE_PACKAGE_PATH,
         MODE,
-        OUTPUT_PATTERN
+        OUTPUT_PATTERN,
+        CREATE_PROPERTY_NAMES
     }
 
     private static final String OVERWRITE = "overwrite";
@@ -43,6 +44,7 @@ public class CustomPreferencesUpdater {
     private static final String USE_PACKAGE_PATH = "usePackagePath";
     private static final String MODE = "mode";
     private static final String OUTPUT_PATTERN = "outputPattern";
+    private static final String CREATE_PROPERTY_NAMES = "createPropertyNames";
 
     private Map<DataMap, DataMapDefaults> mapPreferences;
 
@@ -107,6 +109,13 @@ public class CustomPreferencesUpdater {
         updatePreferences(Property.OUTPUT_PATTERN, outputPattern);
     }
 
+    public Boolean getCreatePropertyNames() {
+        return (Boolean) getProperty(Property.CREATE_PROPERTY_NAMES);
+    }
+
+    public void setCreatePropertyNames(Boolean createPropertyNames) {
+        updatePreferences(Property.CREATE_PROPERTY_NAMES, createPropertyNames);
+    }
 
     private Object getProperty(Property property) {
         Object obj = null;
@@ -135,6 +144,9 @@ public class CustomPreferencesUpdater {
                     break;
                 case USE_PACKAGE_PATH:
                     obj = entry.getValue().getBooleanProperty(USE_PACKAGE_PATH);
+                    break;
+                case CREATE_PROPERTY_NAMES:
+                    obj = entry.getValue().getBooleanProperty(CREATE_PROPERTY_NAMES);
                     break;
                 default:
                     throw new IllegalArgumentException("Bad type property: " + property);
@@ -169,6 +181,9 @@ public class CustomPreferencesUpdater {
                     break;
                 case USE_PACKAGE_PATH:
                     entry.getValue().setBooleanProperty(USE_PACKAGE_PATH, (Boolean) value);
+                    break;
+                case CREATE_PROPERTY_NAMES:
+                    entry.getValue().setBooleanProperty(CREATE_PROPERTY_NAMES, (Boolean) value);
                     break;
                 default:
                     throw new IllegalArgumentException("Bad type property: " + property);

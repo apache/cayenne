@@ -23,12 +23,15 @@ import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.JToolBar;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -138,19 +141,25 @@ public class LogConsole extends CayenneController {
     }
     
     protected void initBindings() {
-        view.getClearButton().addActionListener(new ActionListener() {
+    	view.getMenuButton().addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+            	view.getMenu().show(view, view.getMenuButton().getX(),view.getMenuButton().getY()+view.getMenuButton().getHeight());
+            }
+        });
+    	
+        view.getClearItem().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 clear();
             }
         });
         
-        view.getCopyButton().addActionListener(new ActionListener() {
+        view.getCopyItem().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 copy();
             }
         });
         
-        view.getDockButton().addActionListener(new ActionListener() {
+        view.getDockItem().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 /**
                  * Log console should be visible
@@ -162,7 +171,9 @@ public class LogConsole extends CayenneController {
             }
         });
     }
-    
+    /*public void showMenu(){
+    	view.menu
+    }*/
     /**
      * Clears the console
      */
@@ -175,7 +186,7 @@ public class LogConsole extends CayenneController {
      */
     private void appear() {
         if (!getConsoleProperty(DOCKED_PROPERTY)) {
-            view.getDockButton().setText("Dock");
+            view.getDockItem().setText("Dock");
             
             if (logWindow == null) {
                 logWindow = new LogConsoleWindow(this);
@@ -190,7 +201,7 @@ public class LogConsole extends CayenneController {
             logWindow.setVisible(true);
         }
         else {
-            view.getDockButton().setText("Undock");
+            view.getDockItem().setText("Undock");
             Application.getFrame().setDockComponent(view);
         }
     }

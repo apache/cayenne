@@ -16,12 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.testdo.unsupported_distinct_types;
+package org.apache.cayenne.datafactory;
 
-import org.apache.cayenne.testdo.unsupported_distinct_types.auto._Customer;
-
-public class Customer extends _Customer {
-
-    private static final long serialVersionUID = 1L; 
-
+/**
+ * @since 4.0
+ */
+public class CombinedValueProvider {
 }

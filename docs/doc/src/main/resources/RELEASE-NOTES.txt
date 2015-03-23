@@ -9,13 +9,26 @@ https://issues.apache.org/jira/browse/CAY
 
 Changes/New Features:
 ----------------------------------
-Release: 4.0.M2
-Date: 
+Release: 4.0.M3
+Date:
 ----------------------------------
 Changes/New Features:
 
-CAY-1980 'mvn cayenne-modeler:run' seems to be broken in 4.0
-CAY-1984 cdbimport doesn't flatten many to many relationships
+CAY-1991 More control over generated String property names
+CAY-1992 Allow to exclude DataMap java class from Modeler class generation
+
+Bug Fixes:
+
+CAY-1987 Widen types before performing in-memory evaluation of qualifiers using j.l.Number subclasses
+CAY-1990 Incorrect display of the raw SQL query in Modeler
+
+----------------------------------
+Release: 4.0.M2
+Date: March 18, 2015
+----------------------------------
+Changes/New Features:
+
+CAY-1267 Some changes to LogDialog
 CAY-1826 Merge Entity Attributes and Relationships tabs together with one toolbar.
 CAY-1839 Allow to link DataMaps to DataNodes from DataNode editor.
 CAY-1841 Filters for Left-hand project navigator
@@ -80,9 +93,11 @@ CAY-1968 SQLSelect cleanup and omissions
 CAY-1971 Variants of Property.like(..) : contains(..), startsWith(..), endsWith(..)
 CAY-1972 A property to override DataSources of multi-module projects 
 CAY-1981 Add support of JDBC 4.0 N-types (nchar, nvarchar, longnvarchar, nclob)
+CAY-1984 cdbimport doesn't flatten many to many relationships
 
 Bug Fixes:
 
+CAy-1988 ServerRuntimeBuilder: synthetic DataNode does not have domain's DataMaps linked
 CAY-1480 Implement cross-db functional expressions
 CAY-1695 Unexpected null value in bidirectional one-to-one prefetch 
 CAY-1736 IllegalArgumentException when synchronizing entities in the Modeler
@@ -112,10 +127,11 @@ CAY-1973 error while generating classes
 CAY-1974 Copy/Paste DbEntiry throws exception
 CAY-1978 ESCAPE clause should be included in LIKE parenthesis
 CAY-1979 Prefetches on Many-to-Many Relationships with Longvarchar
+CAY-1980 'mvn cayenne-modeler:run' seems to be broken in 4.0
 
 ----------------------------------
 Release: 3.2M1
-Date: 
+Date: July 19, 2013
 ----------------------------------
 Changes/New Features:
 

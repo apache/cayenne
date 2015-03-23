@@ -435,7 +435,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                     e.getDomain() != null
                             ? e.getDomain()
                             : (DataChannelDescriptor) mediator.getProject().getRootNode(),
-                    e.getQuery()
+                    e.getQuery().getDataMap(), e.getQuery()
             };
 
             updateNode(path);

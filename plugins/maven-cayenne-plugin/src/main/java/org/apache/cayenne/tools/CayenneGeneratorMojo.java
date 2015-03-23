@@ -191,6 +191,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 */
 	private boolean usePkgPath;
 
+    /**
+     * If set to <code>true</code>, will generate String Property names.
+     * Default is <code>false</code>.
+     *
+     * @parameter createPropertyNames="createPropertyNames" default-value="false"
+     */
+    private boolean createPropertyNames;
+
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
 		// TODO: (KJM 11/2/06) The destDir really should be added as a
@@ -278,6 +286,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		action.setEmbeddableSuperTemplate(embeddableSuperTemplate);
 		action.setEmbeddableTemplate(embeddableTemplate);
 		action.setUsePkgPath(usePkgPath);
+        action.setCreatePropertyNames(createPropertyNames);
 
 		return action;
 	}

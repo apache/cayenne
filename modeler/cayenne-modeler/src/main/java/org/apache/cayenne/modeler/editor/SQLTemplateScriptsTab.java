@@ -19,14 +19,23 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.DbAdapterInfo;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
+import org.apache.cayenne.util.Util;
+import org.syntax.jedit.JEditTextArea;
+import org.syntax.jedit.KeywordMap;
+import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
+import org.syntax.jedit.tokenmarker.SQLTokenMarker;
+import org.syntax.jedit.tokenmarker.Token;
+import org.syntax.jedit.tokenmarker.TokenMarker;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -40,24 +49,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-
-import org.apache.cayenne.configuration.event.QueryEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.util.Util;
-import org.syntax.jedit.JEditTextArea;
-import org.syntax.jedit.KeywordMap;
-import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
-import org.syntax.jedit.tokenmarker.SQLTokenMarker;
-import org.syntax.jedit.tokenmarker.Token;
-import org.syntax.jedit.tokenmarker.TokenMarker;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A panel for configuring SQL scripts of a SQL template.
@@ -140,10 +139,11 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
         scripts.setModel(new DefaultComboBoxModel(keys.toArray()));
         
         scriptArea = Application.getWidgetFactory().createJEditTextArea();
-        
+
         scriptArea.setTokenMarker(SQL_TEMPLATE_MARKER);
         scriptArea.getDocument().addDocumentListener(this);
-        
+        scriptArea.getPainter().setFont(SQLSyntaxConstants.DEFAULT_FONT);
+
         // assemble
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(

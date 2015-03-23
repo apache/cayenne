@@ -22,6 +22,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.map.DataMap;
 
 /**
  * @since 4.0
@@ -39,6 +40,11 @@ class SyntheticNodeDataDomainProvider extends DataDomainProvider {
 			DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
 
 			DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(ServerRuntimeBuilder.DEFAULT_NAME);
+
+			for (DataMap map : dataDomain.getDataMaps()) {
+				nodeDescriptor.getDataMapNames().add(map.getName());
+			}
+
 			nodeDescriptor.setDataChannelDescriptor(channelDescriptor);
 
 			DataNode node = addDataNode(dataDomain, nodeDescriptor);
