@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.object.model;
+package org.apache.cayenne.query.oqldsl.model;
 
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.query.object.model.visitor.ObjectQueryVisitable;
-import org.apache.cayenne.query.object.model.visitor.ObjectQueryVisitor;
+import org.apache.cayenne.query.oqldsl.model.visitor.ObjectQueryVisitable;
+import org.apache.cayenne.query.oqldsl.model.visitor.ObjectQueryVisitor;
 
 import javax.annotation.concurrent.Immutable;
 

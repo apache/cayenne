@@ -1,11 +1,7 @@
 package de.jexp.jequel.sql;
 
 import de.jexp.jequel.Sql92Format;
-import de.jexp.jequel.expression.AbstractExpression;
-import de.jexp.jequel.expression.BooleanExpression;
-import de.jexp.jequel.expression.DefaultExpressionsFactory;
-import de.jexp.jequel.expression.Expression;
-import de.jexp.jequel.expression.ExpressionVisitor;
+import de.jexp.jequel.expression.*;
 import de.jexp.jequel.literals.SelectKeyword;
 import de.jexp.jequel.sql.SqlDsl.GroupBy;
 import de.jexp.jequel.sql.SqlDsl.OrderBy;
@@ -13,7 +9,6 @@ import de.jexp.jequel.sql.SqlModel.Having;
 import de.jexp.jequel.sql.SqlModel.Select;
 import de.jexp.jequel.sql.SqlModel.SelectPartColumnListExpression;
 import de.jexp.jequel.sql.SqlModel.Where;
-import de.jexp.jequel.expression.Table;
 
 import static java.util.Arrays.asList;
 
@@ -115,6 +110,19 @@ public class Sql extends AbstractExpression implements SqlDsl.Select, SqlDsl.Fro
         having.and(sql.having.getBooleanExpression());
         orderBy.append(sql.orderBy.getExpressions());
         return this;
+    }
+
+    @Override
+    public <K> void process(ExpressionProcessor<K> expressionProcessor) {
+        select.process(expressionProcessor);
+
+        if (where.getBooleanExpression() != null) {
+            where.getBooleanExpression().process(expressionProcessor);
+        }
+
+        if (having.getBooleanExpression() != null) {
+            having.getBooleanExpression().process(expressionProcessor);
+        }
     }
 
     public Select getSelect() {

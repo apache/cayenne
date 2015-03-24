@@ -16,23 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.object.model.visitor;
-
-import org.apache.cayenne.query.object.model.From;
-import org.apache.cayenne.query.object.model.Select;
-import org.apache.cayenne.query.object.model.SelectResult;
+package org.apache.cayenne.query.oqldsl.model.visitor;
 
 /**
 * @since 4.0
 */
-public interface ObjectQueryVisitor<R> {
-    R visit(Select select);
+public interface ObjectQueryVisitable {
 
-    R visit(SelectResult.SelectFrom selectEntity);
-
-    R visit(SelectResult.SelectAttr selectAttr);
-
-    R visit(From.Entity from);
-
-    R visit(From.Relation from);
+    <R> R accept(ObjectQueryVisitor<R> visitor);
 }

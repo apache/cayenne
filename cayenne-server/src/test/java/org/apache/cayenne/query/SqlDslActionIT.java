@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.query;
 
+import de.jexp.jequel.expression.IColumn;
+import de.jexp.jequel.expression.Table;
 import de.jexp.jequel.sql.Sql;
-import de.jexp.jequel.table.Table;
-import de.jexp.jequel.table.IColumn;
 import de.jexp.jequel.expression.types.NUMERIC;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.NewTableHelper;
@@ -44,7 +44,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.util.List;
 
-import static de.jexp.jequel.expression.Expressions.param;
+import static de.jexp.jequel.sql.Expressions.param;
 import static org.junit.Assert.*;
 
 /**

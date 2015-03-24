@@ -16,21 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.object.dsl;
+package org.apache.cayenne.query.oqldsl.model.visitor;
 
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.object.model.ToModel;
+import org.apache.cayenne.query.oqldsl.model.From;
+import org.apache.cayenne.query.oqldsl.model.Select;
+import org.apache.cayenne.query.oqldsl.model.SelectResult;
 
 /**
  * @since 4.0
  */
-public interface Dsl {
+public class DefaultObjectQueryVisitor<R> implements ObjectQueryVisitor<R> {
 
-    interface Select {
-        From from(ObjEntity entity);
+    @Override
+    public R visit(Select select) {
+        return null;
     }
 
-    interface From extends ToModel {
+    @Override
+    public R visit(SelectResult.SelectFrom selectEntity) {
+        return null;
+    }
 
+    @Override
+    public R visit(SelectResult.SelectAttr selectAttr) {
+        return null;
+    }
+
+    @Override
+    public R visit(From.Entity from) {
+        return null;
+    }
+
+    @Override
+    public R visit(From.Relation from) {
+        return null;
     }
 }

@@ -18,8 +18,8 @@
  */
 package org.apache.cayenne;
 
-import de.jexp.jequel.table.Table;
-import de.jexp.jequel.table.IColumn;
+import de.jexp.jequel.expression.IColumn;
+import de.jexp.jequel.expression.Table;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
@@ -32,7 +32,7 @@ public class NewTableHelper extends TableHelper {
     public NewTableHelper(DBHelper dbHelper, Table<?> table) {
         super(dbHelper, table.getName());
 
-        Map<String, IColumn<?>> fields = table.getFields();
+        Map<String, IColumn> fields = table.getFields();
         String[] columns = new String[fields.size()];
         int[] types = new int[fields.size()];
         int i = 0;

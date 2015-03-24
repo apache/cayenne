@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.object.model;
+package org.apache.cayenne.query.oqldsl.model;
 
-import org.apache.cayenne.query.object.model.java.JavaEntity;
-import org.apache.cayenne.query.object.model.java.JavaRelationship;
-import org.apache.cayenne.query.object.model.visitor.ObjectQueryVisitable;
-import org.apache.cayenne.query.object.model.visitor.ObjectQueryVisitor;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.oqldsl.model.visitor.ObjectQueryVisitable;
+import org.apache.cayenne.query.oqldsl.model.visitor.ObjectQueryVisitor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -34,7 +34,7 @@ public interface From extends ObjectQueryVisitable {
 
     String name();
 
-    JavaEntity entity();
+    ObjEntity entity();
 
     /**
      * Unique key of from clause within the query. It can be table name
@@ -84,9 +84,9 @@ public interface From extends ObjectQueryVisitable {
     @Immutable
     class Relation extends BaseFrom {
         public final From joinTo;
-        public final JavaRelationship rel;
+        public final ObjRelationship rel;
 
-        public Relation(String name, From joinTo, JavaRelationship rel) {
+        public Relation(String name, From joinTo, ObjRelationship rel) {
             super(name);
             this.joinTo = joinTo;
             this.rel = rel;
@@ -98,7 +98,7 @@ public interface From extends ObjectQueryVisitable {
         }
 
         @Override
-        public JavaEntity entity() {
+        public ObjEntity entity() {
             return rel.getTargetEntity();
         }
 
@@ -116,15 +116,15 @@ public interface From extends ObjectQueryVisitable {
 
     @Immutable
     class Entity extends BaseFrom {
-        public final JavaEntity entity;
+        public final ObjEntity entity;
 
-        public Entity(String name, JavaEntity entity) {
+        public Entity(String name, ObjEntity entity) {
             super(name);
             this.entity = entity;
         }
 
         @Override
-        public JavaEntity entity() {
+        public ObjEntity entity() {
             return entity;
         }
 

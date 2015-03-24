@@ -16,16 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query;
+package org.apache.cayenne.query.oqldsl;
 
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.object.model.From;
-import org.apache.cayenne.query.object.model.Select;
-import org.apache.cayenne.query.object.model.SelectResult;
+import org.apache.cayenne.query.oqldsl.model.From;
+import org.apache.cayenne.query.oqldsl.model.From.Relation;
+import org.apache.cayenne.query.oqldsl.model.Select;
+import org.apache.cayenne.query.oqldsl.model.SelectResult;
+import org.apache.cayenne.query.oqldsl.model.SelectResult.SelectAttr;
+import org.apache.cayenne.query.oqldsl.model.SelectResult.SelectFrom;
 import org.apache.commons.collections.Transformer;
 
 import javax.annotation.Nullable;
@@ -57,7 +60,7 @@ import java.util.Set;
  * @since 4.0
  */
 @NotThreadSafe
-public class NormalizedObjectQueryBuilder {
+public class NormalizedOqlQueryBuilder {
 
     /**
      * original select list store what originally user want to extract,
@@ -84,16 +87,16 @@ public class NormalizedObjectQueryBuilder {
 
     public void addSelectResult(From from) {
         for (ObjAttribute attr : from.entity().getAttributes()) {
-            normalizedSelectList.add(new SelectResult.SelectAttr(from, attr));
+            normalizedSelectList.add(new SelectAttr(from, attr));
         }
 
-        originalSelectList.add(new SelectResult.SelectFrom(from));
+        originalSelectList.add(new SelectFrom(from));
     }
 
     @Nullable
     public From addFrom(From from, ObjRelationship rel) {
         String joinExpr = from.name() + "." + rel.getName(); // TODO duplicate functionality: expression key from From.Relation
-        From existingFrom = this.expressionsToFrom.get(joinExpr);
+        From existingFrom = expressionsToFrom.get(joinExpr);
         if (existingFrom != null) {
             return existingFrom;
         }
@@ -103,13 +106,13 @@ public class NormalizedObjectQueryBuilder {
                                 rel.getName(),
                                 from.name() + rel.getName());
 
-        return addFrom(new From.Relation(name, from, rel));
+        return addFrom(new Relation(name, from, rel));
     }
 
     public From addFrom(From from) {
         this.from.add(from);
-        this.expressionsToFrom.put(from.tableExpression(), from);
-        this.nameToFrom.add(from.name());
+        expressionsToFrom.put(from.tableExpression(), from);
+        nameToFrom.add(from.name());
 
         //from.entity().resolvePathComponents()
         //addWhere(from.entity().getDeclaredQualifier()); // TODO how path relations resolved here? what is the root?

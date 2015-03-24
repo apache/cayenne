@@ -16,42 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.object.model.visitor;
+package org.apache.cayenne.query.oqldsl.dsl;
 
-import org.apache.cayenne.query.object.model.From;
-import org.apache.cayenne.query.object.model.Select;
-import org.apache.cayenne.query.object.model.SelectResult;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.oqldsl.model.ToModel;
 
 /**
- * This visitor aware about select query tree and can go thought all nodes.
- *
- * It should be used in order to apply
- *
  * @since 4.0
  */
-public class TraverseVisitor<R> implements ObjectQueryVisitor<R> {
-    @Override
-    public R visit(Select select) {
-        return null;
+public interface Dsl {
+
+    interface Select {
+        From from(ObjEntity entity);
     }
 
-    @Override
-    public R visit(SelectResult.SelectFrom selectEntity) {
-        return null;
-    }
+    interface From extends ToModel {
 
-    @Override
-    public R visit(SelectResult.SelectAttr selectAttr) {
-        return null;
-    }
-
-    @Override
-    public R visit(From.Entity from) {
-        return null;
-    }
-
-    @Override
-    public R visit(From.Relation from) {
-        return null;
     }
 }

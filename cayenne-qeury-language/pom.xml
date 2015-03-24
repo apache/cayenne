@@ -36,7 +36,7 @@
     <modules>
         <module>cayenne-sql-expressions</module>
         <module>cayenne-sql-dsl</module>
-        <module>cayenne-oql-dsl</module>
+        <!--<module>cayenne-oql-dsl</module>-->
         <!--<module>cayenne-sql-dsl-executor</module>-->
         <!--<module>cayenne-sql-dsl-generator-old</module>-->
         <!--<module>cayenne-sql-dsl-generator-maven</module>-->

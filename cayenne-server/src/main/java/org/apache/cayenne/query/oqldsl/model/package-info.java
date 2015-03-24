@@ -16,14 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.object.model;
 
-/**
- * This interface defined for QueryModel builder and primarily expected that
- * will be used in dsl package in order to mark end point in query construction.
- *
- * @since 4.0
- */
-public interface ToModel {
-    Select toQuery();
-}
+ /**
+  * Object Query Model works entirely on object layer
+  *
+  * it should have and dependencies to db layer and any other dependencies to cayenne subsystems
+  *
+  * @since 4.0
+  */
+package org.apache.cayenne.query.oqldsl.model;

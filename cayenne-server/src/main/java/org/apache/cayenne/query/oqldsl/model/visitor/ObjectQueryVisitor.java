@@ -16,39 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.object.model.visitor;
+package org.apache.cayenne.query.oqldsl.model.visitor;
 
-import org.apache.cayenne.query.object.model.From;
-import org.apache.cayenne.query.object.model.Select;
-import org.apache.cayenne.query.object.model.SelectResult;
+import org.apache.cayenne.query.oqldsl.model.From;
+import org.apache.cayenne.query.oqldsl.model.Select;
+import org.apache.cayenne.query.oqldsl.model.SelectResult;
 
 /**
- * @since 4.0
- */
-public class DefaultObjectQueryVisitor<R> implements ObjectQueryVisitor<R> {
+* @since 4.0
+*/
+public interface ObjectQueryVisitor<R> {
+    R visit(Select select);
 
-    @Override
-    public R visit(Select select) {
-        return null;
-    }
+    R visit(SelectResult.SelectFrom selectEntity);
 
-    @Override
-    public R visit(SelectResult.SelectFrom selectEntity) {
-        return null;
-    }
+    R visit(SelectResult.SelectAttr selectAttr);
 
-    @Override
-    public R visit(SelectResult.SelectAttr selectAttr) {
-        return null;
-    }
+    R visit(From.Entity from);
 
-    @Override
-    public R visit(From.Entity from) {
-        return null;
-    }
-
-    @Override
-    public R visit(From.Relation from) {
-        return null;
-    }
+    R visit(From.Relation from);
 }

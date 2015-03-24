@@ -16,11 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query.object.model.visitor;
+package org.apache.cayenne.query.oqldsl.model;
 
 /**
-* @since 4.0
-*/
-public interface ObjectQueryVisitable {
-    <R> R accept(ObjectQueryVisitor<R> visitor);
+ * This interface defined for QueryModel builder and primarily expected that
+ * will be used in dsl package in order to mark end point in query construction.
+ *
+ * @since 4.0
+ */
+public interface ToModel {
+    Select toQuery();
 }

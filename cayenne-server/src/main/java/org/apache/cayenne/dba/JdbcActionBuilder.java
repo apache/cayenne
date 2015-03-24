@@ -32,6 +32,8 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.oqldsl.OqlDslAction;
+import org.apache.cayenne.query.oqldsl.OqlQuery;
 import org.apache.cayenne.query.sqldsl.SqlDslAction;
 import org.apache.cayenne.query.sqldsl.SqlQuery;
 
@@ -76,6 +78,11 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     @Override
     public SqlDslAction sqlDslAction(SqlQuery query) {
         return new SqlDslAction(query, dataNode);
+    }
+
+    @Override
+    public OqlDslAction oqlDslAction(OqlQuery query) {
+        return new OqlDslAction(query, dataNode);
     }
 
     @Override

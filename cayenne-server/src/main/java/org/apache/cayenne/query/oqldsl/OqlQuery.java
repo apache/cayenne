@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.cayenne.query;
+package org.apache.cayenne.query.oqldsl;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -26,20 +26,21 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.query.object.dsl.Dsl;
-import org.apache.cayenne.query.object.model.From;
-import org.apache.cayenne.query.object.model.SelectResult;
+import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.oqldsl.dsl.Dsl;
+import org.apache.cayenne.query.oqldsl.model.From;
+import org.apache.cayenne.query.oqldsl.model.SelectResult;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.Collections;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 /**
  * @since 4.0
  */
-public class DslObjectSelect<T> implements Select<T>, Dsl.Select {
+public class OqlQuery<T> extends AbstractQuery implements Select<T>, Dsl.Select {
 
     private String name;
 
@@ -49,16 +50,17 @@ public class DslObjectSelect<T> implements Select<T>, Dsl.Select {
      */
     private DataMap dataMap;
 
-    private final org.apache.cayenne.query.object.model.Select select;
+    private final org.apache.cayenne.query.oqldsl.model.Select select;
 
-    public static <T> DslObjectSelect<T> select(ObjEntity entity) {
-        return new DslObjectSelect<T>(entity);
+    public static <T> OqlQuery<T> select(ObjEntity entity) {
+        return new OqlQuery<T>(entity);
     }
 
-    public DslObjectSelect(ObjEntity entity) {
+    public OqlQuery(ObjEntity entity) {
         this.name = "a"; // TODO
+        this.root = entity;
         From.Entity from = new From.Entity(name, entity);
-        this.select = new org.apache.cayenne.query.object.model.Select(
+        this.select = new org.apache.cayenne.query.oqldsl.model.Select(
                 singletonList((SelectResult) new SelectResult.SelectFrom(from)),
                 singletonList((From) from),
                 Collections.<Expression>emptyList()
@@ -105,17 +107,6 @@ public class DslObjectSelect<T> implements Select<T>, Dsl.Select {
     }
 
     /**
-     * Returns default select parameters.
-     *
-     * @since 1.2
-     */
-    public QueryMetadata getMetaData(EntityResolver resolver) {
-        BaseQueryMetadata md = new BaseQueryMetadata();
-//        md.resolve(getRoot(), resolver, getName());
-        return md;
-    }
-
-    /**
      * Sets the root of the query
      *
      * @param value The new root
@@ -144,7 +135,7 @@ public class DslObjectSelect<T> implements Select<T>, Dsl.Select {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-//                .append("root", root)
+                .append("root", root)
                 .append("name", getName())
                 .toString();
     }
@@ -156,8 +147,7 @@ public class DslObjectSelect<T> implements Select<T>, Dsl.Select {
      */
     @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
-//        return visitor.objectSelectAction(this);
-        return null;
+        return visitor.oqlDslAction(this);
     }
 
 
@@ -184,7 +174,7 @@ public class DslObjectSelect<T> implements Select<T>, Dsl.Select {
         return null;
     }
 
-    public org.apache.cayenne.query.object.model.Select getSelect() {
+    public org.apache.cayenne.query.oqldsl.model.Select getSelect() {
         return select;
     }
 }

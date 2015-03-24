@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.query.oqldsl.OqlDslAction;
+import org.apache.cayenne.query.oqldsl.OqlQuery;
 import org.apache.cayenne.query.sqldsl.SqlDslAction;
 import org.apache.cayenne.query.sqldsl.SqlQuery;
 
@@ -46,11 +48,14 @@ public interface SQLActionVisitor {
     <T> SQLAction objectSelectAction(SelectQuery<T> query);
 
     /**
-     * TODO circular dependency
-     *
      * Creates an action to execute a SelectQuery.
      */
     SqlDslAction sqlDslAction(SqlQuery query);
+
+    /**
+     * Creates an action to execute a SelectQuery.
+     */
+    OqlDslAction oqlDslAction(OqlQuery query);
 
     /**
      * Creates an action to execute a SQLTemplate.
