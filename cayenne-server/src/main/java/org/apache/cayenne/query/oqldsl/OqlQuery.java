@@ -19,21 +19,23 @@
 package org.apache.cayenne.query.oqldsl;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.query.*;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.oqldsl.dsl.Dsl;
 import org.apache.cayenne.query.oqldsl.model.From;
 import org.apache.cayenne.query.oqldsl.model.SelectResult;
+import org.apache.cayenne.query.oqldsl.model.SelectResult.SelectAttr;
+import org.apache.cayenne.query.oqldsl.model.SelectResult.SelectFrom;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Collections.singletonList;
 
@@ -50,21 +52,64 @@ public class OqlQuery<T> extends AbstractQuery implements Select<T>, Dsl.Select 
      */
     private DataMap dataMap;
 
-    private final org.apache.cayenne.query.oqldsl.model.Select select;
+    private final NormalizedOqlQueryBuilder queryBuilder = new NormalizedOqlQueryBuilder();
 
-    public static <T> OqlQuery<T> select(ObjEntity entity) {
-        return new OqlQuery<T>(entity);
+    public OqlQuery() {
+
     }
 
     public OqlQuery(ObjEntity entity) {
-        this.name = "a"; // TODO
         this.root = entity;
-        From.Entity from = new From.Entity(name, entity);
-        this.select = new org.apache.cayenne.query.oqldsl.model.Select(
-                singletonList((SelectResult) new SelectResult.SelectFrom(from)),
-                singletonList((From) from),
-                Collections.<Expression>emptyList()
-        );
+
+        From.Entity from = queryBuilder.guessNameIfAny(new From.Entity(name, entity));
+
+        queryBuilder.addSelectResult(from)
+                    .addFrom(from);
+    }
+
+    /**
+     *
+     * @param selectResults - here ugly interface ConfigurationNode but expected OqlExpression
+     *                      you should be able to pass obj-entity, obj-attribute and compound expression
+     *                      (i.e. aggregation function)
+     * @param <T>
+     *           Select result type - not used for now :(
+     * @return
+     */
+    public static <T> OqlQuery<T> select(ConfigurationNode ... selectResults) {
+        final OqlQuery<T> query = new OqlQuery<T>();
+
+        for (ConfigurationNode selectResult : selectResults) {
+            selectResult.acceptVisitor(new BaseConfigurationNodeVisitor<SelectResult>() {
+
+                private Map<ObjEntity, SelectFrom> entityMap = new HashMap<ObjEntity, SelectFrom>();
+
+                @Override
+                public SelectFrom visitObjEntity(ObjEntity entity) {
+                    SelectFrom from = entityMap.get(entity);
+                    if (from != null) {
+                        return from;
+                    }
+
+                    SelectFrom result = new SelectFrom(new From.Entity(null, entity));
+                    entityMap.put(entity, from);
+                    query.queryBuilder.addSelectResult(result);
+                    return result;
+                }
+
+                @Override
+                public SelectResult visitObjAttribute(ObjAttribute attribute) {
+                    SelectFrom from = visitObjEntity(attribute.getEntity());
+
+                    SelectAttr result = new SelectAttr(from.from, attribute);
+                    query.queryBuilder.addSelectResult(result);
+                    return result;
+                }
+            });
+        }
+
+
+        return query;
     }
 
     /**
@@ -115,13 +160,13 @@ public class OqlQuery<T> extends AbstractQuery implements Select<T>, Dsl.Select 
      */
     public void setRoot(Object value) {
         // sanity check
-        if (!((value instanceof String)
-                || (value instanceof ObjEntity)
-                || (value instanceof DbEntity)
-                || (value instanceof Class)
-                || (value instanceof Procedure) || (value instanceof DataMap))) {
+        if (!(value instanceof String
+                || value instanceof ObjEntity
+                || value instanceof DbEntity
+                || value instanceof Class
+                || value instanceof Procedure || value instanceof DataMap)) {
 
-            String rootClass = (value != null) ? value.getClass().getName() : "null";
+            String rootClass = value != null ? value.getClass().getName() : "null";
 
             throw new IllegalArgumentException(
                     getClass().getName()
@@ -175,6 +220,6 @@ public class OqlQuery<T> extends AbstractQuery implements Select<T>, Dsl.Select 
     }
 
     public org.apache.cayenne.query.oqldsl.model.Select getSelect() {
-        return select;
+        return queryBuilder.buildSelect();
     }
 }

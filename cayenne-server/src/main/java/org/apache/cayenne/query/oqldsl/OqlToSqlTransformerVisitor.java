@@ -21,9 +21,7 @@ package org.apache.cayenne.query.oqldsl;
 import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.StringPathExpression;
 import de.jexp.jequel.sql.Sql;
-import de.jexp.jequel.sql.SqlModel;
 import de.jexp.jequel.sql.SqlModel.FromSource;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.oqldsl.model.From;
 import org.apache.cayenne.query.oqldsl.model.From.Entity;
 import org.apache.cayenne.query.oqldsl.model.From.Relation;
@@ -33,18 +31,12 @@ import org.apache.cayenne.query.oqldsl.model.SelectResult.SelectAttr;
 import org.apache.cayenne.query.oqldsl.model.SelectResult.SelectFrom;
 import org.apache.cayenne.query.oqldsl.model.visitor.ObjectQueryVisitor;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @since 4.0
  */
 public class OqlToSqlTransformerVisitor implements ObjectQueryVisitor<Expression> {
-    private final DataMap dataMap;
-
-    public OqlToSqlTransformerVisitor(DataMap dataMap) {
-        this.dataMap = dataMap;
-    }
 
     @Override
     public Expression visit(Select select) {
@@ -79,13 +71,18 @@ public class OqlToSqlTransformerVisitor implements ObjectQueryVisitor<Expression
     }
 
     @Override
-    public Expression visit(SelectAttr selectAttr) {
-        return null;
+    public Expression visit(final SelectAttr selectAttr) {
+        return new StringPathExpression(selectAttr.from.name()) {
+            @Override
+            public String getValue() {
+                return selectAttr.from.name() + "." + selectAttr.attr.getName();
+            }
+        };
     }
 
     @Override
     public Expression visit(Entity from) {
-        return new DbEntityFromSource(from.entity().getDbEntity());
+        return new DbEntityFromSource(from.entity().getDbEntity(), from.name());
     }
 
     @Override

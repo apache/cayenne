@@ -82,7 +82,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
 
     @Override
     public OqlDslAction oqlDslAction(OqlQuery query) {
-        return new OqlDslAction(query, dataNode);
+        return new OqlDslAction(this, query, dataNode);
     }
 
     @Override

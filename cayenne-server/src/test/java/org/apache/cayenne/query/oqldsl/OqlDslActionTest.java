@@ -60,33 +60,6 @@ public class OqlDslActionTest extends ServerCase {
     }
 
     @Test
-    public void testDoubleRegistration() {
-
-        DataObject object = new Artist();
-        assertNull(object.getObjectId());
-
-        context.registerNewObject(object);
-        ObjectId tempID = object.getObjectId();
-        assertNotNull(tempID);
-        assertTrue(tempID.isTemporary());
-        assertSame(context, object.getObjectContext());
-
-        // double registration in the same context should be quietly ignored
-        context.registerNewObject(object);
-        assertSame(tempID, object.getObjectId());
-        assertSame(object, context.getGraphManager().getNode(tempID));
-
-        // registering in another context should throw an exception
-        ObjectContext anotherContext = runtime.newContext();
-        try {
-            anotherContext.registerNewObject(object);
-            fail("registerNewObject should've failed - object is already in another context");
-        } catch (IllegalStateException e) {
-            // expected
-        }
-    }
-
-    @Test
     public void testCommitChangesInBatch() {
 
         Artist a1 = context.newObject(Artist.class);

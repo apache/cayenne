@@ -27,7 +27,7 @@ import org.apache.cayenne.query.oqldsl.model.Select;
  */
 public class OqlToSqlTransformer {
 
-    Sql transform(Select oql, DataMap dataMap) {
-        return (Sql) oql.accept(new OqlToSqlTransformerVisitor(dataMap));
+    Sql transform(Select oql) {
+        return (Sql) oql.accept(new OqlToSqlTransformerVisitor());
     }
 }

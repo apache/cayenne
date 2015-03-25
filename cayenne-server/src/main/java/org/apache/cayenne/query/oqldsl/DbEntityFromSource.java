@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.query.oqldsl;
 
+import de.jexp.jequel.expression.Aliased;
+import de.jexp.jequel.expression.Expression;
 import de.jexp.jequel.expression.PathExpression;
 import de.jexp.jequel.expression.StringPathExpression;
-import de.jexp.jequel.sql.SqlDsl;
 import de.jexp.jequel.sql.SqlDsl.SqlVisitor;
-import de.jexp.jequel.sql.SqlModel;
 import de.jexp.jequel.sql.SqlModel.FromSource;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.commons.lang3.NotImplementedException;
@@ -32,10 +32,13 @@ import java.util.List;
 /**
  * @since 4.0
  */
-public class DbEntityFromSource<T extends FromSource> extends StringPathExpression implements FromSource<T> {
+public class DbEntityFromSource<T extends DbEntityFromSource> extends StringPathExpression implements FromSource<T> {
 
-    protected DbEntityFromSource(DbEntity entity) {
+    private final String alias;
+
+    protected DbEntityFromSource(DbEntity entity, String alias) {
         super(entity.getName());
+        this.alias = alias;
     }
 
     @Override
@@ -50,6 +53,27 @@ public class DbEntityFromSource<T extends FromSource> extends StringPathExpressi
 
     @Override
     public <R> R accept(SqlVisitor<R> sqlVisitor) {
-        return sqlVisitor.visit(this);
+        return sqlVisitor.visit(new ExpressionAliased(this, alias));
+    }
+
+    private class ExpressionAliased implements Aliased<Expression> {
+
+        private final Expression expression;
+        private final String alias;
+
+        private ExpressionAliased(Expression expression, String alias) {
+            this.expression = expression;
+            this.alias = alias;
+        }
+
+        @Override
+        public Expression getAliased() {
+            return expression;
+        }
+
+        @Override
+        public String getAlias() {
+            return alias;
+        }
     }
 }

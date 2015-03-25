@@ -47,6 +47,10 @@
             <artifactId>cayenne-sql-expressions</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

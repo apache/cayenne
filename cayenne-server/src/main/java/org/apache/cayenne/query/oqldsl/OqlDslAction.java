@@ -22,6 +22,7 @@ import de.jexp.jequel.sql.Sql;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.BaseSQLAction;
+import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.sqldsl.SqlDslAction;
 import org.apache.cayenne.query.sqldsl.SqlQuery;
 
@@ -29,81 +30,42 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * Oql execution class. Here we do following steps:
+ *  1) transform object-select into sql-select
+ *  2) execute sql-select
+ *
+ * Here also probably will be necessary to add reverse mapping from db-layer result to obj-layer but currently
+ * all this stuff handled by observer/readers and upper layer DataNode (???)
+ *
  * @since 4.0
  */
 public class OqlDslAction extends BaseSQLAction {
 
-    protected OqlQuery<?> query;
+    private final OqlQuery<?> query;
+    private final SQLActionVisitor actionVisitor;
 
     /**
      * @since 4.0
      */
-    public OqlDslAction(OqlQuery<?> query, DataNode dataNode) {
+    public OqlDslAction(SQLActionVisitor actionVisitor, OqlQuery<?> query, DataNode dataNode) {
         super(dataNode);
+        this.actionVisitor = actionVisitor;
         this.query = query;
     }
 
     @Override
     public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        Sql sql = new OqlToSqlTransformer().transform(query.getSelect(), query.getDataMap());
+        Sql sql = getOqlToSqlTransformer().transform(query.getSelect());
 
-        // TODO do it trought visitor
-        new SqlDslAction(new SqlQuery(sql), dataNode).performAction(connection, observer);
+        new SqlQuery(sql).createSQLAction(actionVisitor).performAction(connection, observer);
+    }
 
-
-
-        /*PreparedStatement prepStmt = translator.createStatement();
-
-        ResultSet rs;
-
-        // need to run in try-catch block to close statement properly if
-        // exception happens
-        try {
-            rs = prepStmt.executeQuery();
-        } catch (Exception ex) {
-            prepStmt.close();
-            throw ex;
-        }
-
-        QueryMetadata md = query.getMetaData(dataNode.getEntityResolver());
-        RowDescriptor descriptor = new RowDescriptorBuilder()
-                .setColumns(translator.getResultColumns())
-                .getDescriptor(dataNode.getAdapter().getExtendedTypes());
-
-        RowReader<?> rowReader = dataNode.rowReader(descriptor, md, Collections.<ObjAttribute, ColumnDescriptor>emptyMap());
-
-        JDBCResultIterator workerIterator = new JDBCResultIterator(prepStmt, rs, rowReader);
-        ResultIterator it = workerIterator;
-
-        if (observer.isIteratedResult()) {
-            it = new ConnectionAwareResultIterator(it, connection) {
-                @Override
-                protected void doClose() {
-                    super.doClose();
-                }
-            };
-        }
-
-        // TODO: Should do something about closing ResultSet and
-        // PreparedStatement in this
-        // method, instead of relying on DefaultResultIterator to do that later
-        if (observer.isIteratedResult()) {
-            try {
-                observer.nextRows(query, it);
-            } catch (Exception ex) {
-                it.close();
-                throw ex;
-            }
-        } else {
-            List<DataRow> resultRows;
-            try {
-                resultRows = it.allRows();
-            } finally {
-                it.close();
-            }
-
-            observer.nextRows(query, resultRows);
-        }*/
+    /**
+     * Since all execution logic straight forward I expect that transformer is the only thing that
+     * can be useful to customize
+     * */
+    protected OqlToSqlTransformer getOqlToSqlTransformer() {
+        return new OqlToSqlTransformer();
     }
 }

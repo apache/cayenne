@@ -5,6 +5,8 @@ import de.jexp.jequel.literals.Delimeter;
 import de.jexp.jequel.literals.SelectKeyword;
 import de.jexp.jequel.sql.Sql;
 import de.jexp.jequel.sql.SqlDsl;
+import de.jexp.jequel.sql.SqlDsl.SqlVisitable;
+import de.jexp.jequel.sql.SqlDsl.SqlVisitor;
 import de.jexp.jequel.sql.SqlModel.From;
 import de.jexp.jequel.sql.SqlModel.Having;
 import de.jexp.jequel.sql.SqlModel.Select;
@@ -13,7 +15,9 @@ import de.jexp.jequel.sql.SqlModel.Where;
 import de.jexp.jequel.expression.Table;
 import de.jexp.jequel.expression.IColumn;
 import de.jexp.jequel.expression.JoinTable;
-import org.apache.commons.lang3.StringUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +26,9 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.join;
 
-public class Sql92Format extends Sql92ExpressionVisitor implements SqlDsl.SqlVisitor<String> {
+public class Sql92Format extends Sql92ExpressionVisitor implements SqlVisitor<String> {
+
+    private static final Log LOG = LogFactory.getLog(Sql92Format.class);
 
     protected final Sql92ExpressionVisitor expVisitor = new Sql92ExpressionVisitor();
 
@@ -64,16 +70,18 @@ public class Sql92Format extends Sql92ExpressionVisitor implements SqlDsl.SqlVis
             return "select *";
         }
 
-        String res = "select ";
         List<String> ee = new ArrayList<String>();
         for (Expression expression : select.getExpressions()) {
-            if (expression instanceof SqlDsl.SqlVisitable) {
-                ee.add(((SqlDsl.SqlVisitable) expression).accept(this));
+            if (expression == null) {
+                LOG.debug("null expression in [" + join(select.getExpressions(), ", ") + "]");
+
+            } else if (expression instanceof SqlVisitable) {
+                ee.add(((SqlVisitable) expression).accept(this));
             } else {
                 ee.add(expression.accept(this));
             }
         }
-        return res + join(ee, Delimeter.COMMA.getSqlKeyword());
+        return "select " + join(ee, Delimeter.COMMA.getSqlKeyword());
     }
 
     public String visit(Where where) {
@@ -133,19 +141,19 @@ public class Sql92Format extends Sql92ExpressionVisitor implements SqlDsl.SqlVis
         );
     }
 
-    private String joinNotNull(Delimeter space, SqlDsl.SqlVisitable ... visitables) {
+    private String joinNotNull(Delimeter space, SqlVisitable ... visitables) {
         return joinNotNull(space, asList(visitables));
     }
 
-    private String joinNotNull(Delimeter space, Iterable<? extends SqlDsl.SqlVisitable> visitables) {
+    private String joinNotNull(Delimeter space, Iterable<? extends SqlVisitable> visitables) {
         ArrayList<String> list = new ArrayList<String>();
-        for (SqlDsl.SqlVisitable visitable : visitables) {
+        for (SqlVisitable visitable : visitables) {
             String expStr = visitable.accept(this);
             if (!isBlank(expStr)) {
                 list.add(expStr);
             }
         }
 
-        return StringUtils.join(list, space.getSqlKeyword());
+        return join(list, space.getSqlKeyword());
     }
 }

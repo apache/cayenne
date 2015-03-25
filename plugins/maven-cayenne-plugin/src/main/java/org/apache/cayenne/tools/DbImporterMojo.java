@@ -22,6 +22,8 @@ import java.io.File;
 
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -37,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+
+import javax.sql.DataSource;
 
 /**
  * Maven mojo to reverse engineer datamap from DB.

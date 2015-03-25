@@ -24,6 +24,7 @@ import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.oqldsl.model.From;
+import org.apache.cayenne.query.oqldsl.model.From.Entity;
 import org.apache.cayenne.query.oqldsl.model.From.Relation;
 import org.apache.cayenne.query.oqldsl.model.Select;
 import org.apache.cayenne.query.oqldsl.model.SelectResult;
@@ -39,6 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Normalize means that we still use only object-query terminology but we expand all syntax shortcuts.
@@ -85,12 +88,25 @@ public class NormalizedOqlQueryBuilder {
      * */
     private final LinkedList<Expression> where = new LinkedList<Expression>();
 
-    public void addSelectResult(From from) {
+    public NormalizedOqlQueryBuilder addSelectResult(SelectResult.SelectAttr res) {
+        normalizedSelectList.add(res);
+        originalSelectList.add(res);
+
+        return this;
+    }
+
+    public NormalizedOqlQueryBuilder addSelectResult(SelectResult.SelectFrom res) {
+        return addSelectResult(res.from);
+    }
+
+    public NormalizedOqlQueryBuilder addSelectResult(From from) {
         for (ObjAttribute attr : from.entity().getAttributes()) {
             normalizedSelectList.add(new SelectAttr(from, attr));
         }
 
         originalSelectList.add(new SelectFrom(from));
+
+        return this;
     }
 
     @Nullable
@@ -118,6 +134,12 @@ public class NormalizedOqlQueryBuilder {
         //addWhere(from.entity().getDeclaredQualifier()); // TODO how path relations resolved here? what is the root?
 
         return from;
+    }
+
+    public Entity guessNameIfAny(Entity from) {
+        String entityName = from.entity().getName();
+
+        return new Entity(guessName(entityName.substring(0, 1).toLowerCase(), entityName), from.entity());
     }
 
     protected String guessName(String ... names) {
