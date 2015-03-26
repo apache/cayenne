@@ -19,8 +19,10 @@ CAY-1992 Allow to exclude DataMap java class from Modeler class generation
 
 Bug Fixes:
 
+CAY-1977 Cleanup Modeler reverse engineering functionality
 CAY-1987 Widen types before performing in-memory evaluation of qualifiers using j.l.Number subclasses
 CAY-1990 Incorrect display of the raw SQL query in Modeler
+CAY-1993 Reverse Engineering does not work with PostgreSQL database
 
 ----------------------------------
 Release: 4.0.M2

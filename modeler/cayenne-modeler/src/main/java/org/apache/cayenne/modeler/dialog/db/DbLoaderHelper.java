@@ -80,6 +80,7 @@ public class DbLoaderHelper {
     protected List<String> schemas;
     protected List<String> catalogs;
     protected DbImportConfiguration config;
+    protected DbAdapter adapter;
 
     private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
 
@@ -107,6 +108,7 @@ public class DbLoaderHelper {
         } catch (Throwable th) {
             processException(th, "Error creating DbLoader.");
         }
+        this.adapter = adapter;
     }
 
     public void setStoppingReverseEngineering(boolean stopReverseEngineering) {
@@ -126,8 +128,10 @@ public class DbLoaderHelper {
         stoppingReverseEngineering = false;
 
         // load catalogs...
-        LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
-        loadCatalogsTask.startAndWait();
+        if (adapter.supportsCatalogsOnReverseEngineering()) {
+            LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
+            loadCatalogsTask.startAndWait();
+        }
 
         if (stoppingReverseEngineering) {
             return;
