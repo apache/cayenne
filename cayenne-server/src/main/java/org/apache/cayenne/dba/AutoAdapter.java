@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.dba;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
@@ -37,6 +33,10 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * A DbAdapter that automatically detects the kind of database it is running on and
@@ -112,6 +112,11 @@ public class AutoAdapter implements DbAdapter {
     @Override
     public boolean supportsUniqueConstraints() {
         return getAdapter().supportsUniqueConstraints();
+    }
+
+    @Override
+    public boolean supportsCatalogsOnReverseEngineering() {
+        return getAdapter().supportsCatalogsOnReverseEngineering();
     }
 
     @Override

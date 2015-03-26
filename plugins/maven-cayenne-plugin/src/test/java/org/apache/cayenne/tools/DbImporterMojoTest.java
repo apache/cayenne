@@ -18,7 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import org.apache.cayenne.test.jdbc.SQLReader;
+import org.apache.cayenne.test.resource.ResourceUtil;
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
+import org.apache.cayenne.tools.dbimport.config.Catalog;
+import org.apache.cayenne.tools.dbimport.config.IncludeTable;
+import org.apache.cayenne.tools.dbimport.config.Schema;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.codehaus.plexus.util.FileUtils;
+import org.custommonkey.xmlunit.DetailedDiff;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,22 +47,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 
-import org.apache.cayenne.test.jdbc.SQLReader;
-import org.apache.cayenne.test.resource.ResourceUtil;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
-import org.apache.cayenne.tools.dbimport.config.Catalog;
-import org.apache.cayenne.tools.dbimport.config.IncludeTable;
-import org.apache.cayenne.tools.dbimport.config.Schema;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.codehaus.plexus.util.FileUtils;
-import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.xml.sax.SAXException;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 
 public class DbImporterMojoTest extends AbstractMojoTestCase {
@@ -231,6 +232,25 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
         assertEquals("includeColumn-03", catalog.getIncludeColumns().iterator().next().getPattern());
         assertEquals("excludeColumn-03", catalog.getExcludeColumns().iterator().next().getPattern());
+    }
+
+    @Test
+    public void testSupportsCatalogsOnReverseEngineering() throws Exception {
+        DbImporterMojo cdbImport = getCdbImport("dbimport/testSupportsCatalogsOnReverseEngineering-pom.xml");
+        cdbImport.getReverseEngineering().addCatalog(new Catalog("DbImporterMojoTest2"));
+
+        Exception exceptedException = null;
+        String exceptedMessage = "Your database does not support catalogs on reverse engineering. " +
+                "It allows to connect to only one at the moment. Please don't note catalogs as param.";
+
+        try {
+            cdbImport.execute();
+        } catch (MojoExecutionException ex) {
+            exceptedException = ex;
+        }
+
+        assertNotNull(exceptedException);
+        assertEquals(exceptedException.getCause().getMessage(), exceptedMessage);
     }
 
     private void test(String name) throws Exception {

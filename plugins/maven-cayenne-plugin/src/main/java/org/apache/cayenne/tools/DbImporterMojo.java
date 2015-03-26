@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -37,6 +39,9 @@ import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+
+import javax.sql.DataSource;
+import java.io.File;
 
 /**
  * Maven mojo to reverse engineer datamap from DB.
@@ -245,6 +250,8 @@ public class DbImporterMojo extends AbstractMojo {
         config.setLogger(logger);
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
+        validateDbImportConfiguration(config, injector);
+
         try {
             injector.getInstance(DbImportAction.class).execute(config);
         } catch (Exception ex) {
@@ -258,6 +265,27 @@ public class DbImporterMojo extends AbstractMojo {
 
             getLog().error(message);
             throw new MojoExecutionException(message, th);
+        }
+    }
+
+    private void validateDbImportConfiguration(DbImportConfiguration config, Injector injector) throws MojoExecutionException {
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
+        DataSource dataSource = null;
+        DbAdapter adapter = null;
+
+        try {
+            dataSource = injector.getInstance(DataSourceFactory.class).getDataSource(dataNodeDescriptor);
+            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(dataNodeDescriptor, dataSource);
+
+            if (!adapter.supportsCatalogsOnReverseEngineering() &&
+                    reverseEngineering.getCatalogs() != null && !reverseEngineering.getCatalogs().isEmpty()) {
+                String message = "Your database does not support catalogs on reverse engineering. " +
+                        "It allows to connect to only one at the moment. Please don't note catalogs as param.";
+                throw new MojoExecutionException(message);
+            }
+        } catch (Exception e) {
+            throw new MojoExecutionException("Error creating DataSource ("
+                    + dataSource + ") or DbAdapter (" + adapter + ") for DataNodeDescriptor (" + dataNodeDescriptor + ")", e);
         }
     }
 
