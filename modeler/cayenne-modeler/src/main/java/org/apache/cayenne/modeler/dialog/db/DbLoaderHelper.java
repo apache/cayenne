@@ -85,6 +85,7 @@ public class DbLoaderHelper {
     protected boolean meaningfulPk;
     protected List<String> schemas;
     protected List<String> catalogs;
+    protected DbAdapter adapter;
 
     private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
 
@@ -103,6 +104,7 @@ public class DbLoaderHelper {
         } catch (SQLException e) {
             logObj.warn("Error getting catalog.", e);
         }
+        this.adapter = adapter;
         this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
     }
 
@@ -123,8 +125,10 @@ public class DbLoaderHelper {
         stoppingReverseEngineering = false;
 
         // load catalogs...
-        LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
-        loadCatalogsTask.startAndWait();
+        if (adapter.supportsCatalogsOnReverseEngineering()) {
+            LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
+            loadCatalogsTask.startAndWait();
+        }
 
         if (stoppingReverseEngineering) {
             return;

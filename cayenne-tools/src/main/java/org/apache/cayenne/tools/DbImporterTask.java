@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
 import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FilterFactory;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.naming.DefaultNameGenerator;
@@ -45,6 +47,9 @@ import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+
+import javax.sql.DataSource;
+import java.io.File;
 
 public class DbImporterTask extends Task {
 
@@ -78,6 +83,8 @@ public class DbImporterTask extends Task {
 
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
+        validateDbImportConfiguration(config, injector);
+
         try {
             injector.getInstance(DbImportAction.class).execute(config);
         } catch (Exception ex) {
@@ -94,6 +101,27 @@ public class DbImporterTask extends Task {
         }
         finally {
             injector.shutdown();
+        }
+    }
+
+    private void validateDbImportConfiguration(DbImportConfiguration config, Injector injector) throws BuildException {
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
+        DataSource dataSource = null;
+        DbAdapter adapter = null;
+
+        try {
+            dataSource = injector.getInstance(DataSourceFactory.class).getDataSource(dataNodeDescriptor);
+            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(dataNodeDescriptor, dataSource);
+
+            if (!adapter.supportsCatalogsOnReverseEngineering() &&
+                    reverseEngineering.getCatalogs() != null && !reverseEngineering.getCatalogs().isEmpty()) {
+                String message = "Your database does not support catalogs on reverse engineering. " +
+                        "It allows to connect to only one at the moment. Please don't note catalogs as param.";
+                throw new BuildException(message);
+            }
+        } catch (Exception e) {
+            throw new BuildException("Error creating DataSource ("
+                    + dataSource + ") or DbAdapter (" + adapter + ") for DataNodeDescriptor (" + dataNodeDescriptor + ")", e);
         }
     }
 
