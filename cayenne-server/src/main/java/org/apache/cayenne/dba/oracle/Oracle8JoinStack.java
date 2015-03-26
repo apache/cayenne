@@ -36,8 +36,8 @@ import org.apache.cayenne.map.DbRelationship;
 // cloned from OpenBaseJoin stack... need better strategies of reuse...
 class Oracle8JoinStack extends JoinStack {
 
-    Oracle8JoinStack(DbAdapter dbAdapter, DataMap dataMap, QueryAssembler assembler) {
-        super(dbAdapter, dataMap, assembler);
+    Oracle8JoinStack(DbAdapter dbAdapter, QueryAssembler assembler) {
+        super(dbAdapter, assembler);
     }
 
     @Override

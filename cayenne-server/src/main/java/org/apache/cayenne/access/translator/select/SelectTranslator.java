@@ -89,7 +89,7 @@ public class SelectTranslator extends QueryAssembler {
         super(query, dataNode, connection);
     }
 
-    public JoinStack getJoinStack() {
+    private JoinStack getJoinStack() {
         if (joinStack == null) {
             joinStack = createJoinStack();
         }
@@ -110,7 +110,7 @@ public class SelectTranslator extends QueryAssembler {
     boolean forcingDistinct;
 
     protected JoinStack createJoinStack() {
-        return new JoinStack(getAdapter(), queryMetadata.getDataMap(), this);
+        return new JoinStack(getAdapter(), this);
     }
 
     /**

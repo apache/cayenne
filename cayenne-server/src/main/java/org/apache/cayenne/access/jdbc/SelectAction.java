@@ -67,8 +67,7 @@ public class SelectAction extends BaseSQLAction {
         PreparedStatement prepStmt = translator.createStatement();
 
         // TODO: ugly... 'createSqlString' is already called inside
-        // 'createStatement', but calling it here again to store for logging
-        // purposes
+        // 'createStatement', but calling it here again to store for logging purposes
         final String sqlString = translator.createSqlString();
 
         ResultSet rs;

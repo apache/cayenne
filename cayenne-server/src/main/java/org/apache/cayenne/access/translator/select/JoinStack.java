@@ -56,7 +56,7 @@ public class JoinStack {
      */
     private QualifierTranslator qualifierTranslator;
 
-    protected JoinStack(DbAdapter dbAdapter, DataMap dataMap, QueryAssembler assembler) {
+    protected JoinStack(DbAdapter dbAdapter, QueryAssembler assembler) {
         this.rootNode = new JoinTreeNode(this);
         this.rootNode.setTargetTableAlias(newAlias());
 
