@@ -22,6 +22,7 @@ Bug Fixes:
 CAY-1987 Widen types before performing in-memory evaluation of qualifiers using j.l.Number subclasses
 CAY-1990 Incorrect display of the raw SQL query in Modeler
 CAY-1993 Reverse Engineering does not work with PostgreSQL database
+CAY-1994 Modeler Migration Tool Shows No Changes
 
 ----------------------------------
 Release: 4.0.M2
