@@ -36,6 +36,7 @@ ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType('org.apache.cayenne.exp.Property')}##
+${importUtils.addType('java.util.Collection')}##
 #foreach( $attr in ${object.DeclaredAttributes} )
 $importUtils.addType(${attr.Type})##
 #end
