@@ -19,21 +19,11 @@
 
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.Types;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -54,6 +44,18 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SelectQueryIT extends ServerCase {
@@ -487,6 +489,65 @@ public class SelectQueryIT extends ServerCase {
 		List<?> objects = context.performQuery(query);
 		assertEquals(1, objects.size());
 	}
+
+    @Test
+    public void testSelect() throws Exception {
+        createArtistsDataSet();
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        List<?> objects = query.select(context);
+        assertEquals(20, objects.size());
+    }
+
+    @Test
+    public void testSelectOne() throws Exception {
+        createArtistsDataSet();
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        Expression qual = ExpressionFactory.matchExp("artistName", "artist1");
+        query.setQualifier(qual);
+
+        Artist artist = (Artist) query.selectOne(context);
+        assertEquals("artist1", artist.getArtistName());
+    }
+
+    @Test
+    public void testIterate() throws Exception {
+        createArtistsDataSet();
+
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+        final int[] count = new int[1];
+        q1.iterate(context, new ResultIteratorCallback<Artist>() {
+
+            @Override
+            public void next(Artist object) {
+                assertNotNull(object.getArtistName());
+                count[0]++;
+            }
+        });
+
+        assertEquals(20, count[0]);
+    }
+
+    @Test
+    public void testIterator() throws Exception {
+        createArtistsDataSet();
+
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+        ResultIterator<Artist> it = q1.iterator(context);
+
+        try {
+            int count = 0;
+
+            for (Artist a : it) {
+                count++;
+            }
+
+            assertEquals(20, count);
+        } finally {
+            it.close();
+        }
+    }
 
 	/**
 	 * Tests that all queries specified in prefetch are executed in a more

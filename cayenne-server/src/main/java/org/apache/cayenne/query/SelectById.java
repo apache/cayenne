@@ -18,19 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static java.util.Collections.singletonMap;
-import static org.apache.cayenne.exp.ExpressionFactory.matchAllDbExp;
-
-import java.util.Collection;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.singletonMap;
+import static org.apache.cayenne.exp.ExpressionFactory.matchAllDbExp;
 
 /**
  * A query to select single objects by id.
@@ -125,20 +128,32 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		}
 	}
 
-	/**
-	 * Selects a single object using provided context. The query is expected to
-	 * match zero or one object. It returns null if no objects were matched. If
-	 * query matched more than one object, {@link CayenneRuntimeException} is
-	 * thrown. Since we are selecting by ID, multiple matched objects likely
-	 * indicate a database referential integrity problem.
-	 * <p>
-	 * Essentially the inversion of "ObjectContext.selectOne(Select)".
-	 */
+
+    @Override
+    public List<T> select(ObjectContext context) {
+        return context.select(this);
+    }
+
+    /**
+     * Since we are selecting by ID, multiple matched objects likely
+     * indicate a database referential integrity problem.
+     */
+    @Override
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
 	}
 
-	/**
+    @Override
+    public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+        context.iterate((Select<T>) this, callback);
+    }
+
+    @Override
+    public ResultIterator<T> iterator(ObjectContext context) {
+        return context.iterator(this);
+    }
+
+    /**
 	 * Instructs Cayenne to look for query results in the "local" cache when
 	 * running the query. This is a short-hand notation for:
 	 * 

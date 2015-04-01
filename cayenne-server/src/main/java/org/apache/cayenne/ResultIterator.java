@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import java.io.Closeable;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ import java.util.List;
  * {@link ObjectContext#iterate(org.apache.cayenne.query.Select, ResultIteratorCallback)}
  * method that handles resource management.
  */
-public interface ResultIterator<T> extends Iterable<T> {
+public interface ResultIterator<T> extends Iterable<T>, Closeable {
 
     /**
      * Returns all yet unread rows from ResultSet without closing it.

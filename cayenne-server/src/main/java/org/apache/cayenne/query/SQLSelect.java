@@ -18,19 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.ResultIteratorCallback;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.SQLResult;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.SQLResult;
 
 /**
  * A selecting query based on raw SQL and featuring fluent API.
@@ -112,27 +114,27 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		this.pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
 	}
 
-	/**
-	 * Selects objects using provided context. Essentially the inversion of
-	 * "ObjectContext.select(query)".
-	 */
+    @Override
 	public List<T> select(ObjectContext context) {
 		return context.select(this);
 	}
 
-	/**
-	 * Selects a single object using provided context. The query is expected to
-	 * match zero or one object. It returns null if no objects were matched. If
-	 * query matched more than one object, {@link CayenneRuntimeException} is
-	 * thrown.
-	 * <p>
-	 * Essentially the inversion of "ObjectContext.selectOne(Select)".
-	 */
+    @Override
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
 	}
 
-	/**
+    @Override
+    public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+        context.iterate((Select<T>) this, callback);
+    }
+
+    @Override
+    public ResultIterator<T> iterator(ObjectContext context) {
+        return context.iterator(this);
+    }
+
+    /**
 	 * Selects a single object using provided context. The query itself can
 	 * match any number of objects, but will return only the first one. It
 	 * returns null if no objects were matched.

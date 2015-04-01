@@ -19,14 +19,14 @@
 
 package org.apache.cayenne;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A Cayenne object facade to a persistent store. Instances of ObjectContext are
@@ -206,8 +206,9 @@ public interface ObjectContext extends DataChannel, Serializable {
      * Creates a ResultIterator based on the provided query. It is usually
      * backed by an open result set and is useful for processing of large data
      * sets, preserving a constant memory footprint. The caller must wrap
-     * iteration in try/finally and close the ResultIterator explicitly. Or use
-     * {@link #iterate(Select, ResultIteratorCallback)} as an alternative.
+     * iteration in try/finally (or try-with-resources for Java 1.7 and higher) and
+     * close the ResultIterator explicitly.
+     * Or use {@link #iterate(Select, ResultIteratorCallback)} as an alternative.
      * 
      * @since 4.0
      */
