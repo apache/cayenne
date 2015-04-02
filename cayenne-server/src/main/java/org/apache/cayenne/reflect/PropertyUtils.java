@@ -322,8 +322,7 @@ public class PropertyUtils {
 			Object value = object;
 			for (Accessor accessor : accessors) {
 				if (value == null) {
-					throw new IllegalArgumentException("Null object at the end of the segment '" + accessor.getName()
-							+ "'");
+					return null;
 				}
 
 				value = accessor.getValue(value);

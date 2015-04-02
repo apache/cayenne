@@ -77,6 +77,16 @@ public class PropertyUtilsTest {
 		accessor.setValue(o2, b1);
 		assertSame(b1, o2.getRelated().getByteArrayField());
 	}
+	
+	@Test
+	public void testCreateAccessorNested_Null() {
+
+		Accessor accessor = PropertyUtils.createAccessor(TstJavaBean.class, "related.byteArrayField");
+		assertNotNull(accessor);
+
+		TstJavaBean o1 = createBean();
+		assertNull(accessor.getValue(o1));
+	}
 
 	@Test
 	public void testGetProperty() {
