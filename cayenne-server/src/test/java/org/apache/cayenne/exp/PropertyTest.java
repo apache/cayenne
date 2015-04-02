@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -69,16 +70,8 @@ public class PropertyTest {
 	public void testGetFromNestedNull() {
 		TstJavaBean bean = new TstJavaBean();
 		bean.setObjectField(null);
-		final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
-		try {
-			OBJECT_FIELD_INT_FIELD.getFrom(bean);
-			fail();
-		} catch (Exception e) {
-			Throwable rootException = Util.unwindException(e);
-			if (!(rootException instanceof UnresolvablePathException)) {
-				fail();
-			}
-		}
+		Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
+		assertNull(OBJECT_FIELD_INT_FIELD.getFrom(bean));
 	}
 
 	@Test
