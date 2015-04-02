@@ -24,6 +24,7 @@ CAY-1990 Incorrect display of the raw SQL query in Modeler
 CAY-1993 Reverse Engineering does not work with PostgreSQL database
 CAY-1994 Modeler Migration Tool Shows No Changes
 CAY-1997 Difference in NULL handling inside the path between PropertyUtils and DataObject.readNestedProperty
+CAY-1998 Speeding up PropertyUtils
 
 ----------------------------------
 Release: 4.0.M2
