@@ -22,6 +22,7 @@ package org.apache.cayenne.reflect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -44,9 +45,9 @@ import org.junit.Test;
 public class PropertyUtilsTest {
 
 	@Test
-	public void testCreateAccessor() {
+	public void testAccessor() {
 
-		Accessor accessor = PropertyUtils.createAccessor(TstJavaBean.class, "byteArrayField");
+		Accessor accessor = PropertyUtils.accessor("byteArrayField");
 		assertNotNull(accessor);
 
 		TstJavaBean o1 = createBean();
@@ -60,9 +61,29 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testCreateAccessorNested() {
+	public void testAccessor_Cache() {
 
-		Accessor accessor = PropertyUtils.createAccessor(TstJavaBean.class, "related.byteArrayField");
+		Accessor accessor = PropertyUtils.accessor("p1");
+		assertNotNull(accessor);
+		assertSame(accessor, PropertyUtils.accessor("p1"));
+		assertSame(accessor, PropertyUtils.accessor("p1"));
+		assertNotSame(accessor, PropertyUtils.accessor("p2"));
+	}
+	
+	@Test
+	public void testAccessor_CacheNested() {
+
+		Accessor accessor = PropertyUtils.accessor("p1.p2");
+		assertNotNull(accessor);
+		assertSame(accessor, PropertyUtils.accessor("p1.p2"));
+		assertNotSame(accessor, PropertyUtils.accessor("p1"));
+		assertNotSame(accessor, PropertyUtils.accessor("p2"));
+	}
+
+	@Test
+	public void testAccessorNested() {
+
+		Accessor accessor = PropertyUtils.accessor("related.byteArrayField");
 		assertNotNull(accessor);
 
 		TstJavaBean o1 = createBean();
@@ -77,11 +98,11 @@ public class PropertyUtilsTest {
 		accessor.setValue(o2, b1);
 		assertSame(b1, o2.getRelated().getByteArrayField());
 	}
-	
-	@Test
-	public void testCreateAccessorNested_Null() {
 
-		Accessor accessor = PropertyUtils.createAccessor(TstJavaBean.class, "related.byteArrayField");
+	@Test
+	public void testAccessorNested_Null() {
+
+		Accessor accessor = PropertyUtils.accessor("related.byteArrayField");
 		assertNotNull(accessor);
 
 		TstJavaBean o1 = createBean();
@@ -138,6 +159,24 @@ public class PropertyUtilsTest {
 		assertSame(o1.get("objectField"), PropertyUtils.getProperty(o1, "objectField"));
 		assertSame(o1.get("stringField"), PropertyUtils.getProperty(o1, "stringField"));
 		assertEquals(o1.get("booleanField"), PropertyUtils.getProperty(o1, "booleanField"));
+	}
+
+	@Test
+	public void testSetProperty_Nested() {
+		TstJavaBean o1 = createBean();
+		TstJavaBean o1related = new TstJavaBean();
+		o1related.setIntegerField(Integer.valueOf(44));
+		o1.setRelated(o1related);
+
+		PropertyUtils.setProperty(o1, "related.integerField", 55);
+		assertEquals(Integer.valueOf(55), o1related.getIntegerField());
+	}
+
+	@Test
+	public void testSetProperty_Null() {
+		TstJavaBean o1 = createBean();
+
+		PropertyUtils.setProperty(o1, "related.integerField", 55);
 	}
 
 	@Test

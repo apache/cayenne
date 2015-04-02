@@ -19,21 +19,12 @@
 
 package org.apache.cayenne.reflect;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.Util;
 
 /**
  * Utility methods to quickly access object properties. This class supports
@@ -45,34 +36,84 @@ import org.apache.cayenne.util.Util;
  */
 public class PropertyUtils {
 
+	private static final ConcurrentMap<String, Accessor> PATH_ACCESSORS = new ConcurrentHashMap<String, Accessor>();
+	private static final ConcurrentMap<Class<?>, ConcurrentMap<String, Accessor>> SEGMENT_ACCESSORS = new ConcurrentHashMap<Class<?>, ConcurrentMap<String, Accessor>>();
+
 	/**
 	 * Compiles an accessor that can be used for fast access for the nested
 	 * property of the objects of a given class.
 	 * 
-	 * @since 3.0
+	 * @since 4.0
 	 */
-	public static Accessor createAccessor(Class<?> objectClass, String nestedPropertyName) {
-		if (objectClass == null) {
-			throw new IllegalArgumentException("Null class.");
+	public static Accessor accessor(String nestedPropertyName) {
+
+		if (nestedPropertyName == null) {
+			throw new IllegalArgumentException("Null property name.");
 		}
 
-		if (Util.isEmptyString(nestedPropertyName)) {
-			throw new IllegalArgumentException("Null or empty property name.");
+		if (nestedPropertyName.length() == 0) {
+			throw new IllegalArgumentException("Empty property name.");
 		}
 
-		StringTokenizer path = new StringTokenizer(nestedPropertyName, Entity.PATH_SEPARATOR);
+		// PathAccessor is simply a chain of path segment wrappers. The actual
+		// accessor is resolved (with caching) during evaluation. Otherwise we
+		// won't be able to handle subclasses of declared property types...
 
-		if (path.countTokens() == 1) {
-			return new BeanAccessor(objectClass, nestedPropertyName, null);
-		}
+		// TODO: perhaps Java 7 MethodHandles are the answer to truly "compiled"
+		// path accessor?
 
-		NestedBeanAccessor accessor = new NestedBeanAccessor(nestedPropertyName);
-		while (path.hasMoreTokens()) {
-			String token = path.nextToken();
-			accessor.addAccessor(new BeanAccessor(objectClass, token, null));
+		return compilePathAccessor(nestedPropertyName);
+	}
+
+	static Accessor compilePathAccessor(String path) {
+
+		Accessor accessor = PATH_ACCESSORS.get(path);
+
+		if (accessor == null) {
+
+			int dot = path.indexOf(Entity.PATH_SEPARATOR);
+			if (dot == 0 || dot == path.length() - 1) {
+				throw new IllegalArgumentException("Invalid path: " + path);
+			}
+
+			String segment = dot < 0 ? path : path.substring(0, dot);
+			Accessor remainingAccessor = dot < 0 ? null : compilePathAccessor(path.substring(dot + 1));
+			Accessor newAccessor = new PathAccessor(segment, remainingAccessor);
+
+			Accessor existingAccessor = PATH_ACCESSORS.putIfAbsent(path, newAccessor);
+			accessor = existingAccessor != null ? existingAccessor : newAccessor;
 		}
 
 		return accessor;
+	}
+
+	static Accessor getOrCreateSegmentAccessor(Class<?> objectClass, String propertyName) {
+		ConcurrentMap<String, Accessor> forType = SEGMENT_ACCESSORS.get(objectClass);
+		if (forType == null) {
+
+			ConcurrentMap<String, Accessor> newPropAccessors = new ConcurrentHashMap<String, Accessor>();
+			ConcurrentMap<String, Accessor> existingPropAccessors = SEGMENT_ACCESSORS.putIfAbsent(objectClass,
+					newPropAccessors);
+			forType = existingPropAccessors != null ? existingPropAccessors : newPropAccessors;
+		}
+
+		Accessor a = forType.get(propertyName);
+		if (a == null) {
+			Accessor newA = createSegmentAccessor(objectClass, propertyName);
+			Accessor existingA = forType.putIfAbsent(propertyName, newA);
+			a = existingA != null ? existingA : newA;
+		}
+
+		return a;
+	}
+
+	static Accessor createSegmentAccessor(Class<?> objectClass, String propertyName) {
+
+		if (Map.class.isAssignableFrom(objectClass)) {
+			return new MapAccessor(propertyName);
+		} else {
+			return new BeanAccessor(objectClass, propertyName, null);
+		}
 	}
 
 	/**
@@ -80,38 +121,7 @@ public class PropertyUtils {
 	 * addition - a property can be a dot-separated property name path.
 	 */
 	public static Object getProperty(Object object, String nestedPropertyName) throws CayenneRuntimeException {
-
-		if (object == null) {
-			throw new IllegalArgumentException("Null object.");
-		}
-
-		if (Util.isEmptyString(nestedPropertyName)) {
-			throw new IllegalArgumentException("Null or empty property name.");
-		}
-
-		StringTokenizer path = new StringTokenizer(nestedPropertyName, Entity.PATH_SEPARATOR);
-		int len = path.countTokens();
-
-		Object value = object;
-		String pathSegment = null;
-
-		try {
-			for (int i = 1; i <= len; i++) {
-				pathSegment = path.nextToken();
-
-				if (value == null) {
-					return null;
-				}
-
-				value = getSimpleProperty(value, pathSegment);
-			}
-
-			return value;
-		} catch (Exception e) {
-			String objectType = value != null ? value.getClass().getName() : "<null>";
-			throw new CayenneRuntimeException("Error reading property segment '" + pathSegment + "' in path '"
-					+ nestedPropertyName + "' for type " + objectType, e);
-		}
+		return accessor(nestedPropertyName).getValue(object);
 	}
 
 	/**
@@ -123,111 +133,7 @@ public class PropertyUtils {
 	 */
 	public static void setProperty(Object object, String nestedPropertyName, Object value)
 			throws CayenneRuntimeException {
-
-		if (object == null) {
-			throw new IllegalArgumentException("Null object.");
-		}
-
-		if (Util.isEmptyString(nestedPropertyName)) {
-			throw new IllegalArgumentException("Null or invalid property name.");
-		}
-
-		int dot = nestedPropertyName.lastIndexOf(Entity.PATH_SEPARATOR);
-		String lastSegment;
-		if (dot > 0) {
-			lastSegment = nestedPropertyName.substring(dot + 1);
-			String pathSegment = nestedPropertyName.substring(0, dot);
-			Object intermediateObject = getProperty(object, pathSegment);
-
-			if (intermediateObject == null) {
-				throw new UnresolvablePathException("Null value in the middle of the path, failed on " + pathSegment
-						+ " from " + object);
-			} else {
-				object = intermediateObject;
-			}
-		} else {
-			lastSegment = nestedPropertyName;
-		}
-
-		try {
-			setSimpleProperty(object, lastSegment, value);
-		} catch (Exception e) {
-			throw new CayenneRuntimeException("Error setting property segment '" + lastSegment + "' in path '"
-					+ nestedPropertyName + "'" + " to value '" + value + "' for object '" + object + "'", e);
-		}
-
-	}
-
-	static Object getSimpleProperty(Object object, String pathSegment) throws IntrospectionException,
-			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-
-		PropertyDescriptor descriptor = getPropertyDescriptor(object.getClass(), pathSegment);
-
-		if (descriptor != null) {
-			Method reader = descriptor.getReadMethod();
-
-			if (reader == null) {
-				throw new IntrospectionException("Unreadable property '" + pathSegment + "'");
-			}
-
-			return reader.invoke(object, (Object[]) null);
-		}
-		// note that Map has two traditional bean properties - 'empty' and
-		// 'class', so
-		// do a check here only after descriptor lookup failed.
-		else if (object instanceof Map) {
-			return ((Map<?, ?>) object).get(pathSegment);
-		} else {
-			throw new IntrospectionException("No property '" + pathSegment + "' found in class "
-					+ object.getClass().getName());
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static void setSimpleProperty(Object object, String pathSegment, Object value) throws IntrospectionException,
-			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-
-		PropertyDescriptor descriptor = getPropertyDescriptor(object.getClass(), pathSegment);
-
-		if (descriptor != null) {
-			Method writer = descriptor.getWriteMethod();
-
-			if (writer == null) {
-				throw new IntrospectionException("Unwritable property '" + pathSegment + "'");
-			}
-
-			// do basic conversions
-			Converter<?> converter = ConverterFactory.factory.getConverter(descriptor.getPropertyType());
-			value = (converter != null) ? converter.convert(value, (Class) descriptor.getPropertyType()) : value;
-
-			// set
-			writer.invoke(object, value);
-		}
-		// note that Map has two traditional bean properties - 'empty' and
-		// 'class', so
-		// do a check here only after descriptor lookup failed.
-		else if (object instanceof Map) {
-			((Map) object).put(pathSegment, value);
-		} else {
-			throw new IntrospectionException("No property '" + pathSegment + "' found in class "
-					+ object.getClass().getName());
-		}
-	}
-
-	static PropertyDescriptor getPropertyDescriptor(Class<?> beanClass, String propertyName)
-			throws IntrospectionException {
-		// bean info is cached by introspector, so this should have reasonable
-		// performance...
-		BeanInfo info = Introspector.getBeanInfo(beanClass);
-		PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
-
-		for (PropertyDescriptor descriptor : descriptors) {
-			if (propertyName.equals(descriptor.getName())) {
-				return descriptor;
-			}
-		}
-
-		return null;
+		accessor(nestedPropertyName).setValue(object, value);
 	}
 
 	/**
@@ -295,54 +201,44 @@ public class PropertyUtils {
 		super();
 	}
 
-	static final class NestedBeanAccessor implements Accessor {
+	static final class PathAccessor implements Accessor {
 
-		private static final long serialVersionUID = -6592741135509067043L;
+		private static final long serialVersionUID = 2056090443413498626L;
 
-		private Collection<Accessor> accessors;
-		private String name;
+		private String segmentName;
+		private Accessor nextAccessor;
 
-		NestedBeanAccessor(String name) {
-			accessors = new ArrayList<Accessor>();
-			this.name = name;
-		}
-
-		void addAccessor(Accessor accessor) {
-			accessors.add(accessor);
+		public PathAccessor(String segmentName, Accessor nextAccessor) {
+			this.segmentName = segmentName;
+			this.nextAccessor = nextAccessor;
 		}
 
 		@Override
 		public String getName() {
-			return name;
+			return segmentName;
 		}
 
 		@Override
 		public Object getValue(Object object) throws PropertyException {
-
-			Object value = object;
-			for (Accessor accessor : accessors) {
-				if (value == null) {
-					return null;
-				}
-
-				value = accessor.getValue(value);
+			if (object == null) {
+				return null;
 			}
 
-			return value;
+			Object value = getOrCreateSegmentAccessor(object.getClass(), segmentName).getValue(object);
+			return nextAccessor != null ? nextAccessor.getValue(value) : value;
 		}
 
 		@Override
 		public void setValue(Object object, Object newValue) throws PropertyException {
-			Object value = object;
-			Iterator<Accessor> accessors = this.accessors.iterator();
-			while (accessors.hasNext()) {
-				Accessor accessor = accessors.next();
+			if (object == null) {
+				return;
+			}
 
-				if (accessors.hasNext()) {
-					value = accessor.getValue(value);
-				} else {
-					accessor.setValue(value, newValue);
-				}
+			Accessor segmentAccessor = getOrCreateSegmentAccessor(object.getClass(), segmentName);
+			if (nextAccessor != null) {
+				nextAccessor.setValue(segmentAccessor.getValue(object), newValue);
+			} else {
+				segmentAccessor.setValue(object, newValue);
 			}
 		}
 	}
