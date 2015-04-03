@@ -202,6 +202,27 @@ public class SQLSelectIT extends ServerCase {
 	}
 
     @Test
+    public void test_SelectFirst() throws Exception {
+        createPaintingsDataSet();
+
+        Painting p = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_TITLE").selectFirst(context);
+
+        assertNotNull(p);
+        assertEquals("painting1", p.getPaintingTitle());
+    }
+
+    @Test
+    public void test_SelectFirstByContext() throws Exception {
+        createPaintingsDataSet();
+
+        SQLSelect<Painting> q = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_TITLE");
+        Painting p = context.selectFirst(q);
+
+        assertNotNull(p);
+        assertEquals("painting1", p.getPaintingTitle());
+    }
+
+    @Test
     public void test_Iterate() throws Exception {
         createPaintingsDataSet();
 

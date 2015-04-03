@@ -154,6 +154,16 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertEquals("artist13", a.getArtistName());
 	}
 
+    @Test
+    public void test_SelectFirstByContext() throws Exception {
+        createArtistsDataSet();
+
+        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13"));
+        Artist a = context.selectFirst(q);
+        assertNotNull(a);
+        assertEquals("artist13", a.getArtistName());
+    }
+
 	@Test
 	public void test_SelectFirst_NoMatch() throws Exception {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13")).selectFirst(context);

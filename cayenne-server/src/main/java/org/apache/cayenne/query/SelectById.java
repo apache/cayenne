@@ -143,6 +143,15 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return context.selectOne(this);
 	}
 
+    /**
+     * Since we are selecting by ID, we don't need to limit fetch size.
+     * Multiple matched objects likely indicate a database referential integrity problem.
+     */
+    @Override
+    public T selectFirst(ObjectContext context) {
+        return selectFirst(context);
+    }
+
     @Override
     public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
         context.iterate((Select<T>) this, callback);

@@ -512,6 +512,30 @@ public class SelectQueryIT extends ServerCase {
     }
 
     @Test
+    public void testSelectFirst() throws Exception {
+        createArtistsDataSet();
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.addOrdering(new Ordering(Artist.ARTIST_NAME.getName()));
+        Artist artist = (Artist) query.selectFirst(context);
+
+        assertNotNull(artist);
+        assertEquals("artist1", artist.getArtistName());
+    }
+
+    @Test
+    public void testSelectFirstByContext() throws Exception {
+        createArtistsDataSet();
+
+        SelectQuery query = new SelectQuery(Artist.class);
+        query.addOrdering(new Ordering(Artist.ARTIST_NAME.getName()));
+        Artist artist = (Artist) context.selectFirst(query);
+
+        assertNotNull(artist);
+        assertEquals("artist1", artist.getArtistName());
+    }
+
+    @Test
     public void testIterate() throws Exception {
         createArtistsDataSet();
 

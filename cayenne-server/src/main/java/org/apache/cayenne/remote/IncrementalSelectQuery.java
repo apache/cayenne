@@ -355,6 +355,11 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
     }
 
     @Override
+    public T selectFirst(ObjectContext context) {
+        return query.selectFirst(context);
+    }
+
+    @Override
     public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
         query.iterate(context, callback);
     }

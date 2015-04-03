@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.CayenneRuntime;
@@ -49,6 +42,13 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.ObjectContextGraphAction;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A common base superclass for Cayenne ObjectContext implementors.
@@ -321,6 +321,16 @@ public abstract class BaseContext implements ObjectContext {
         }
 
         return objects.get(0);
+    }
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public <T> T selectFirst(Select<T> query) {
+        List<T> objects = select(query);
+
+        return (objects == null || objects.isEmpty()) ? null : objects.get(0);
     }
 
     /**

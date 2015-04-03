@@ -665,6 +665,11 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
     @Override
+    public T selectFirst(ObjectContext context) {
+        return context.selectFirst(limit(1));
+    }
+
+    @Override
     public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
         context.iterate((Select<T>) this, callback);
     }
@@ -673,22 +678,5 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
     public ResultIterator<T> iterator(ObjectContext context) {
         return context.iterator(this);
     }
-
-	/**
-	 * Selects a single object using provided context. The query itself can
-	 * match any number of objects, but will return only the first one. It
-	 * returns null if no objects were matched.
-	 * <p>
-	 * If it matched more than one object, the first object from the list is
-	 * returned. This makes 'selectFirst' different from
-	 * {@link #selectOne(ObjectContext)}, which would throw in this situation.
-	 * 'selectFirst' is useful e.g. when the query is ordered and we only want
-	 * to see the first object (e.g. "most recent news article"), etc.
-	 * <p>
-	 * This method is equivalent to calling "limit(1).selectOne(context)".
-	 */
-	public T selectFirst(ObjectContext context) {
-		return limit(1).selectOne(context);
-	}
 
 }

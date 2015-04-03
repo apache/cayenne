@@ -318,6 +318,12 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
     }
 
     @Override
+    public T selectFirst(ObjectContext context) {
+        setFetchLimit(1);
+        return context.selectFirst(this);
+    }
+
+    @Override
     public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
         context.iterate((Select<T>) this, callback);
     }
