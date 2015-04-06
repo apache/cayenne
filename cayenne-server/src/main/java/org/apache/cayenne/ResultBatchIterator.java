@@ -20,7 +20,6 @@
 package org.apache.cayenne;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -70,7 +69,7 @@ public class ResultBatchIterator<T> implements Iterable<List<T>>, Iterator<List<
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         delegate.close();
     }
 
