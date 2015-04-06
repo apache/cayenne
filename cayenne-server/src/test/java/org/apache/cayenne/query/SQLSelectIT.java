@@ -265,17 +265,17 @@ public class SQLSelectIT extends ServerCase {
         createPaintingsDataSet();
 
         ResultBatchIterator<Painting> it = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
-                .columnNameCaps(CapsStrategy.UPPER).batchIterator(context, 7);
+                .columnNameCaps(CapsStrategy.UPPER).batchIterator(context, 5);
 
         try {
-            List<Painting> firstBatch = it.nextBatch();
-            assertEquals(7, firstBatch.size());
+            int count = 0;
 
-            List<Painting> secondBatch = it.nextBatch();
-            assertEquals(7, secondBatch.size());
+            for (List<Painting> paintingList : it) {
+                count++;
+                assertEquals(5, paintingList.size());
+            }
 
-            List<Painting> thirdBatch = it.nextBatch();
-            assertEquals(6, thirdBatch.size());
+            assertEquals(4, count);
         } finally {
             it.close();
         }

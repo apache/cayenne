@@ -155,6 +155,12 @@ public class DataContextIT extends ServerCase {
         tArtist.insert(33007, "artist21");
     }
 
+    protected void createLargeArtistsDataSet() throws Exception {
+        for (int i = 1; i <= 20; i++) {
+            tArtist.insert(i, "artist" + i);
+        }
+    }
+
     protected void createArtistsAndPaintingsDataSet() throws Exception {
         createArtistsDataSet();
 
@@ -677,19 +683,20 @@ public class DataContextIT extends ServerCase {
 
     @Test
     public void testBatchIterator() throws Exception {
-        createArtistsDataSet();
+        createLargeArtistsDataSet();
 
         SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+        ResultBatchIterator<Artist> it = context.batchIterator(q1, 5);
 
-        ResultBatchIterator<Artist> it = context.batchIterator(q1, 4);
         try {
+            int count = 0;
 
-            List<Artist> firstBatch = it.nextBatch();
-            assertEquals(4, firstBatch.size());
+            for (List<Artist> artistList : it) {
+                count++;
+                assertEquals(5, artistList.size());
+            }
 
-            List<Artist> secondBatch = it.nextBatch();
-            assertEquals(3, secondBatch.size());
-
+            assertEquals(4, count);
         } finally {
             it.close();
         }

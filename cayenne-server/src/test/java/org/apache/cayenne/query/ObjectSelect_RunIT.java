@@ -115,17 +115,17 @@ public class ObjectSelect_RunIT extends ServerCase {
     public void test_BatchIterator() throws Exception {
         createArtistsDataSet();
 
-        ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 7);
+        ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5);
 
         try {
-            List<Artist> firstBatch = it.nextBatch();
-            assertEquals(7, firstBatch.size());
+            int count = 0;
 
-            List<Artist> secondBatch = it.nextBatch();
-            assertEquals(7, secondBatch.size());
+            for (List<Artist> artistList : it) {
+                count++;
+                assertEquals(5, artistList.size());
+            }
 
-            List<Artist> thirdBatch = it.nextBatch();
-            assertEquals(6, thirdBatch.size());
+            assertEquals(4, count);
         } finally {
             it.close();
         }

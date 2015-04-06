@@ -33,41 +33,40 @@ import java.util.List;
  *
  * @since 4.0
  */
-public class ResultBatchIterator<T> implements Iterable<T>, Closeable {
+public class ResultBatchIterator<T> implements Iterable<List<T>>, Iterator<List<T>>, Closeable {
 
-    private ResultIterator delegate;
-    private int size;
+    private final ResultIterator delegate;
+    private final int size;
 
     public ResultBatchIterator(ResultIterator delegate, int size) {
         this.delegate = delegate;
         this.size = size;
     }
 
-    /**
-     * Returns the next batch of result rows, depending on the query and batch size, may be a
-     * List of scalar values, DataRows, or Object[] arrays containing a mix of scalars and DataRows.
-     *
-     * @since 4.0
-     */
-    public List<T> nextBatch() {
-        List<T> objects = new ArrayList<T>(size);
-        int i = 0;
+    @Override
+    public Iterator<List<T>> iterator() {
+        return this;
+    }
 
-        while (i < size) {
-            if (delegate.hasNextRow()) {
-                objects.add((T) delegate.nextRow());
-                i++;
-            } else {
-                break;
-            }
+    @Override
+    public boolean hasNext() {
+        return delegate.hasNextRow();
+    }
+
+    @Override
+    public List<T> next() {
+        List<T> objects = new ArrayList<T>(size);
+
+        for (int i = 0; i < size && hasNext(); i++) {
+            objects.add((T) delegate.nextRow());
         }
 
         return objects;
-    };
+    }
 
     @Override
-    public Iterator<T> iterator() {
-        return delegate.iterator();
+    public void remove() {
+        throw new UnsupportedOperationException("Remove not supported.");
     }
 
     @Override
@@ -78,5 +77,4 @@ public class ResultBatchIterator<T> implements Iterable<T>, Closeable {
     public int getBatchSize() {
         return size;
     }
-
 }
