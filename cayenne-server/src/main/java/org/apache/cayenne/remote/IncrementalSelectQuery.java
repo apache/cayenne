@@ -19,6 +19,7 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.IncrementalFaultList;
@@ -367,5 +368,10 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
     @Override
     public ResultIterator<T> iterator(ObjectContext context) {
         return query.iterator(context);
+    }
+
+    @Override
+    public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+        return query.batchIterator(context, size);
     }
 }

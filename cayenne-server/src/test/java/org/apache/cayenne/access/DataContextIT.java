@@ -25,6 +25,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.conn.PoolManager;
@@ -669,6 +670,26 @@ public class DataContextIT extends ServerCase {
             }
 
             assertEquals(7, count);
+        } finally {
+            it.close();
+        }
+    }
+
+    @Test
+    public void testBatchIterator() throws Exception {
+        createArtistsDataSet();
+
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+
+        ResultBatchIterator<Artist> it = context.batchIterator(q1, 4);
+        try {
+
+            List<Artist> firstBatch = it.nextBatch();
+            assertEquals(4, firstBatch.size());
+
+            List<Artist> secondBatch = it.nextBatch();
+            assertEquals(3, secondBatch.size());
+
         } finally {
             it.close();
         }

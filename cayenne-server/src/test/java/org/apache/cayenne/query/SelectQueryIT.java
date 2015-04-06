@@ -22,6 +22,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.di.Inject;
@@ -568,6 +569,27 @@ public class SelectQueryIT extends ServerCase {
             }
 
             assertEquals(20, count);
+        } finally {
+            it.close();
+        }
+    }
+
+    @Test
+    public void testBatchIterator() throws Exception {
+        createArtistsDataSet();
+
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+        ResultBatchIterator<Artist> it = q1.batchIterator(context, 7);
+
+        try {
+            List<Artist> firstBatch = it.nextBatch();
+            assertEquals(7, firstBatch.size());
+
+            List<Artist> secondBatch = it.nextBatch();
+            assertEquals(7, secondBatch.size());
+
+            List<Artist> thirdBatch = it.nextBatch();
+            assertEquals(6, thirdBatch.size());
         } finally {
             it.close();
         }

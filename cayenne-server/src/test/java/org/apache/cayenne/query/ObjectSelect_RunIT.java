@@ -20,6 +20,7 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.DataContext;
@@ -105,6 +106,26 @@ public class ObjectSelect_RunIT extends ServerCase {
             }
 
             assertEquals(20, count);
+        } finally {
+            it.close();
+        }
+    }
+
+    @Test
+    public void test_BatchIterator() throws Exception {
+        createArtistsDataSet();
+
+        ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 7);
+
+        try {
+            List<Artist> firstBatch = it.nextBatch();
+            assertEquals(7, firstBatch.size());
+
+            List<Artist> secondBatch = it.nextBatch();
+            assertEquals(7, secondBatch.size());
+
+            List<Artist> thirdBatch = it.nextBatch();
+            assertEquals(6, thirdBatch.size());
         } finally {
             it.close();
         }

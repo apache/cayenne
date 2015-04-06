@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.map.DataMap;
@@ -139,7 +140,12 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
         return context.iterator(this);
     }
 
-	public boolean isFetchingDataRows() {
+    @Override
+    public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+        return context.batchIterator(this, size);
+    }
+
+    public boolean isFetchingDataRows() {
 		return persistentType == null;
 	}
 

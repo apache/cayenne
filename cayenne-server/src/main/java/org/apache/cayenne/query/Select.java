@@ -20,6 +20,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 
@@ -95,4 +96,15 @@ public interface Select<T> extends Query {
      * @since 4.0
      */
     <T> ResultIterator<T> iterator(ObjectContext context);
+
+    /**
+     * Creates a ResultBatchIterator based on the provided context and batch size. It is usually
+     * backed by an open result set and is useful for processing of large data
+     * sets, preserving a constant memory footprint. The caller must wrap
+     * iteration in try/finally (or try-with-resources for Java 1.7 and higher) and
+     * close the ResultBatchIterator explicitly.
+     *
+     * @since 4.0
+     */
+    <T> ResultBatchIterator<T> batchIterator(ObjectContext context, int size);
 }

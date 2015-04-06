@@ -352,6 +352,11 @@ public abstract class BaseContext implements ObjectContext {
     public abstract <T> ResultIterator<T> iterator(Select<T> query);
 
     @Override
+    public <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size) {
+        return new ResultBatchIterator<T>(iterator(query), size);
+    }
+
+    @Override
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
 

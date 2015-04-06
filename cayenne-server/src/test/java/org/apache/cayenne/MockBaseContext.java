@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
+
+import java.util.Collection;
+import java.util.List;
 
 public class MockBaseContext extends BaseContext {
 
@@ -113,6 +113,11 @@ public class MockBaseContext extends BaseContext {
 
     @Override
     public <T> ResultIterator<T> iterator(Select<T> query) {
+        return null;
+    }
+
+    @Override
+    public <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size) {
         return null;
     }
 

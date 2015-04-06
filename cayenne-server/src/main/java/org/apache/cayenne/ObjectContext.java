@@ -234,6 +234,17 @@ public interface ObjectContext extends DataChannel, Serializable {
     <T> ResultIterator<T> iterator(Select<T> query);
 
     /**
+     * Creates a ResultBatchIterator based on the provided query and batch size. It is usually
+     * backed by an open result set and is useful for processing of large data
+     * sets, preserving a constant memory footprint. The caller must wrap
+     * iteration in try/finally (or try-with-resources for Java 1.7 and higher) and
+     * close the ResultBatchIterator explicitly.
+     *
+     * @since 4.0
+     */
+    <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size);
+
+    /**
      * Executes any kind of query providing the result in a form of
      * QueryResponse.
      */

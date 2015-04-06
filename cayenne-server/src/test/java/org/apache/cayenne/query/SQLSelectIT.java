@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.DataContext;
@@ -254,6 +255,27 @@ public class SQLSelectIT extends ServerCase {
             }
 
             assertEquals(20, count);
+        } finally {
+            it.close();
+        }
+    }
+
+    @Test
+    public void test_BatchIterator() throws Exception {
+        createPaintingsDataSet();
+
+        ResultBatchIterator<Painting> it = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
+                .columnNameCaps(CapsStrategy.UPPER).batchIterator(context, 7);
+
+        try {
+            List<Painting> firstBatch = it.nextBatch();
+            assertEquals(7, firstBatch.size());
+
+            List<Painting> secondBatch = it.nextBatch();
+            assertEquals(7, secondBatch.size());
+
+            List<Painting> thirdBatch = it.nextBatch();
+            assertEquals(6, thirdBatch.size());
         } finally {
             it.close();
         }
