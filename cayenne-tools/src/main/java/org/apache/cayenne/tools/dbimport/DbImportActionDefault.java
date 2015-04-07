@@ -151,13 +151,13 @@ public class DbImportActionDefault implements DbImportAction {
     }
 
     private void relationshipsSanity(DataMap executed) {
-        // obj relationships sanity
         for (ObjEntity objEntity : executed.getObjEntities()) {
-            for (ObjRelationship objRelationship : objEntity.getRelationships()) {
-                if (objRelationship.getSourceEntity() == null
-                        || objRelationship.getTargetEntity() == null) {
-                    logger.error("Incorrect obj relationship: " + objRelationship);
-                    objEntity.removeRelationship(objRelationship.getName());
+            List<ObjRelationship> rels = new LinkedList<ObjRelationship>(objEntity.getRelationships());
+            for (ObjRelationship rel : rels) {
+                if (rel.getSourceEntity() == null || rel.getTargetEntity() == null) {
+                    logger.error("Incorrect obj relationship source or target entity is null: " + rel);
+
+                    objEntity.removeRelationship(rel.getName());
                 }
             }
         }

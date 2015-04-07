@@ -18,18 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.exp.parser.PatternMatchNode;
-import org.apache.cayenne.reflect.TstJavaBean;
-import org.apache.cayenne.reflect.UnresolvablePathException;
-import org.apache.cayenne.util.Util;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.cayenne.exp.parser.PatternMatchNode;
+import org.apache.cayenne.reflect.TstJavaBean;
+import org.junit.Test;
 
 public class PropertyTest {
 
@@ -69,16 +67,8 @@ public class PropertyTest {
 	public void testGetFromNestedNull() {
 		TstJavaBean bean = new TstJavaBean();
 		bean.setObjectField(null);
-		final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
-		try {
-			OBJECT_FIELD_INT_FIELD.getFrom(bean);
-			fail();
-		} catch (Exception e) {
-			Throwable rootException = Util.unwindException(e);
-			if (!(rootException instanceof UnresolvablePathException)) {
-				fail();
-			}
-		}
+		Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
+		assertNull(OBJECT_FIELD_INT_FIELD.getFrom(bean));
 	}
 
 	@Test
@@ -119,15 +109,7 @@ public class PropertyTest {
 		TstJavaBean bean = new TstJavaBean();
 		bean.setObjectField(null);
 		final Property<Integer> OBJECT_FIELD_INT_FIELD = new Property<Integer>("objectField.intField");
-		try {
-			OBJECT_FIELD_INT_FIELD.setIn(bean, 7);
-			fail();
-		} catch (Exception e) {
-			Throwable rootException = Util.unwindException(e);
-			if (!(rootException instanceof UnresolvablePathException)) {
-				fail();
-			}
-		}
+		OBJECT_FIELD_INT_FIELD.setIn(bean, 7);
 	}
 
 	@Test

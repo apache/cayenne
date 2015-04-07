@@ -18,20 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A selecting query providing chainable API. Can be viewed as an alternative to
@@ -597,7 +600,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
 	}
 
-	public String[] getCacheGroups() {
+    public String[] getCacheGroups() {
 		return cacheGroups;
 	}
 
@@ -652,41 +655,33 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		return prefetches;
 	}
 
-	/**
-	 * Selects objects using provided context. Essentially the inversion of
-	 * "ObjectContext.select(query)".
-	 */
-	public List<T> select(ObjectContext context) {
+    @Override
+    public List<T> select(ObjectContext context) {
 		return context.select(this);
 	}
 
-	/**
-	 * Selects a single object using provided context. The query is expected to
-	 * match zero or one object. It returns null if no objects were matched. If
-	 * query matched more than one object, {@link CayenneRuntimeException} is
-	 * thrown.
-	 * <p>
-	 * Essentially the inversion of "ObjectContext.selectOne(Select)".
-	 */
-	public T selectOne(ObjectContext context) {
+    @Override
+    public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
 	}
 
-	/**
-	 * Selects a single object using provided context. The query itself can
-	 * match any number of objects, but will return only the first one. It
-	 * returns null if no objects were matched.
-	 * <p>
-	 * If it matched more than one object, the first object from the list is
-	 * returned. This makes 'selectFirst' different from
-	 * {@link #selectOne(ObjectContext)}, which would throw in this situation.
-	 * 'selectFirst' is useful e.g. when the query is ordered and we only want
-	 * to see the first object (e.g. "most recent news article"), etc.
-	 * <p>
-	 * This method is equivalent to calling "limit(1).selectOne(context)".
-	 */
-	public T selectFirst(ObjectContext context) {
-		return limit(1).selectOne(context);
-	}
+    @Override
+    public T selectFirst(ObjectContext context) {
+        return context.selectFirst(limit(1));
+    }
 
+    @Override
+    public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+        context.iterate((Select<T>) this, callback);
+    }
+
+    @Override
+    public ResultIterator<T> iterator(ObjectContext context) {
+        return context.iterator(this);
+    }
+
+    @Override
+    public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+        return context.batchIterator(this, size);
+    }
 }
