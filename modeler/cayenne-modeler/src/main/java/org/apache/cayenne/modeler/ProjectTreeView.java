@@ -96,6 +96,7 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import java.awt.Rectangle;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -150,7 +151,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                         for (int i = 0; i < paths.length; i++) {
                             projectPaths[i] = createProjectPath(paths[i]);
 
-                            if(i>0 && paths[i].getParentPath() != paths[i-1].getParentPath()) {
+                            TreePath parentPath = paths[i].getParentPath();
+                            if(i>0 && parentPath != null && !parentPath.equals(paths[i - 1].getParentPath())) {
                                 commonParentPath = false;
                             }
                         }
@@ -187,13 +189,17 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             @Override
             public void treeWillExpand(TreeExpansionEvent e) throws ExpandVetoException {
                 TreePath path = e.getPath();
-                processSelection(path);
+                if (!isPathSelected(path) && !isSelectionEmpty()) {
+                    setSelectionPath(path);
+                }
             }
 
             @Override
             public void treeWillCollapse(TreeExpansionEvent e) throws ExpandVetoException {
                 TreePath path = e.getPath();
-                processSelection(path);
+                if (!isPathSelected(path) && !isSelectionEmpty()) {
+                    setSelectionPath(path);
+                }
             }
         };
 
@@ -218,6 +224,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         mediator.addProcedureDisplayListener(this);
         mediator.addQueryListener(this);
         mediator.addQueryDisplayListener(this);
+        mediator.addMultipleObjectsDisplayListener(this);
 
         mediator.getApplication().getActionManager().setupCutCopyPaste(
                 this,
@@ -363,9 +370,35 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         });
     }
 
-    public void currentObjectsChanged(
-            MultipleObjectsDisplayEvent e,
-            Application application) {
+    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
+        if (e.getSource() == this || e.getParentNode() == null) {
+            return;
+        }
+
+        ConfigurationNode[] nodes = e.getNodes();
+        TreePath[] treePaths = new TreePath[nodes.length];
+
+        for (int i = 0; i < nodes.length; i++) {
+            DefaultMutableTreeNode treeNode = getProjectModel().getNodeForObjectPath(new Object[] {e.getParentNode(), nodes[i]});
+            if (treeNode != null) {
+                treePaths[i] = new TreePath(treeNode.getPath());
+            } else if (e.getParentNode() == nodes[i]) {
+                treeNode = getProjectModel().getNodeForObjectPath(new Object[] {e.getParentNode()});
+                treePaths[i] = new TreePath(treeNode.getPath());
+            }
+        }
+
+        if (!isVisible(treePaths[0])) {
+            makeVisible(treePaths[0]);
+
+            Rectangle bounds = getPathBounds(treePaths[0]);
+            if (bounds != null) {
+                bounds.height = getVisibleRect().height;
+                scrollRectToVisible(bounds);
+            }
+        }
+
+        setSelectionPaths(treePaths);
     }
 
     public void procedureAdded(ProcedureEvent e) {
@@ -772,7 +805,17 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     /** Makes node current, visible and selected. */
     protected void showNode(DefaultMutableTreeNode node) {
         TreePath path = new TreePath(node.getPath());
-        scrollPathToVisible(path);
+
+        if (!isVisible(path)) {
+            makeVisible(path);
+
+            Rectangle bounds = getPathBounds(path);
+            if (bounds != null) {
+                bounds.height = getVisibleRect().height;
+                scrollRectToVisible(bounds);
+            }
+        }
+
         setSelectionPath(path);
     }
 

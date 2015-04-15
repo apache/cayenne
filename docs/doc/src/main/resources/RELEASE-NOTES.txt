@@ -17,6 +17,7 @@ Changes/New Features:
 CAY-1991 More control over generated String property names
 CAY-1992 Allow to exclude DataMap java class from Modeler class generation
 CAY-1995 Add support for iterators to Select
+CAY-2001 Saving a display state of Project
 
 Bug Fixes:
 
