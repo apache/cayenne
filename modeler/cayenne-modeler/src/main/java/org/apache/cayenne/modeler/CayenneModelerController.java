@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.modeler.util.ProjectStateUtil;
+import org.apache.cayenne.modeler.util.state.ProjectStateUtil;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -56,6 +56,8 @@ import java.util.prefs.Preferences;
  * Controller of the main application frame.
  */
 public class CayenneModelerController extends CayenneController {
+
+    private static final ProjectStateUtil PROJECT_STATE_UTIL = new ProjectStateUtil();
 
     protected ProjectController projectController;
 
@@ -107,7 +109,7 @@ public class CayenneModelerController extends CayenneController {
         frame.addWindowListener(new WindowAdapter() {
 
             public void windowClosing(WindowEvent e) {
-                ProjectStateUtil.saveLastState(projectController);
+                PROJECT_STATE_UTIL.saveLastState(projectController);
                 getApplication().getActionManager().getAction(ExitAction.class).exit();
             }
         });
@@ -190,7 +192,7 @@ public class CayenneModelerController extends CayenneController {
      * Action method invoked on project closing.
      */
     public void projectClosedAction() {
-        ProjectStateUtil.saveLastState(projectController);
+        PROJECT_STATE_UTIL.saveLastState(projectController);
 
         // --- update view
         frame.setView(null);
@@ -241,7 +243,7 @@ public class CayenneModelerController extends CayenneController {
             frame.fireRecentFileListChanged();
         }
 
-        ProjectStateUtil.fireLastState(projectController);
+        PROJECT_STATE_UTIL.fireLastState(projectController);
 
         // for validation purposes combine load failures with post-load validation (not
         // sure if that'll cause duplicate messages?).
