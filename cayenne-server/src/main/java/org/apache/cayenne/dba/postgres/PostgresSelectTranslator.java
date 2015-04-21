@@ -55,7 +55,7 @@ class PostgresSelectTranslator extends SelectTranslator {
 	}
 
 	/**
-	 * @since 3.1.1
+	 * @since 4.0
 	 */
 	@Override
 	protected String buildDistinctStatement() {

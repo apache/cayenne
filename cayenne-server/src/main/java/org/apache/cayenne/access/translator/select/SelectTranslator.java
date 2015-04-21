@@ -219,7 +219,7 @@ public class SelectTranslator extends QueryAssembler {
 	 * improve performance.
 	 *
 	 * @return string representing the DISTINCT statement
-	 * @since 3.1.1
+	 * @since 4.0
 	 */
 	protected String buildDistinctStatement() {
 		return "DISTINCT";
