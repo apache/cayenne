@@ -70,11 +70,13 @@ public class SelectQueryIT extends ServerCase {
 	private UnitDbAdapter accessStackAdapter;
 
 	private TableHelper tArtist;
+	private TableHelper tPainting;
 
 	@Before
 	public void before() {
 		this.tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
 				.setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
+		tPainting = new TableHelper(dbHelper, "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
 	}
 
 	protected void createArtistsDataSet() throws Exception {
@@ -89,6 +91,22 @@ public class SelectQueryIT extends ServerCase {
 	protected void createArtistsWildcardDataSet() throws Exception {
 		tArtist.insert(1, "_X", null);
 		tArtist.insert(2, "Y_", null);
+	}
+
+	@Test
+	public void testSelect_QualfierOnToMany() throws Exception {
+
+		tArtist.insert(1, "A1", new java.sql.Date(System.currentTimeMillis()));
+		tPainting.insert(4, 1, "P1");
+		tPainting.insert(5, 1, "P2");
+		tPainting.insert(6, null, "P3");
+
+		List<Artist> objects = SelectQuery.query(Artist.class,
+				Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("P%")).select(context);
+
+		// make sure no duplicate objects are returned when matching on a
+		// to-many relationship
+		assertEquals(1, objects.size());
 	}
 
 	@Test

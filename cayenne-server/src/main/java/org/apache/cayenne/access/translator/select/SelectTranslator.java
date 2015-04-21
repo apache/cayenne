@@ -157,7 +157,7 @@ public class SelectTranslator extends QueryAssembler {
             }
 
             if (!suppressingDistinct) {
-                queryBuf.append("DISTINCT ");
+            	queryBuf.append(buildDistinctStatement() + " ");
             }
         }
 
@@ -212,6 +212,17 @@ public class SelectTranslator extends QueryAssembler {
         cachedSqlString = queryBuf.toString();
         return cachedSqlString;
     }
+    
+	/**
+	 * Allows subclasses to insert their own dialect of DISTINCT statement to
+	 * improve performance.
+	 *
+	 * @return string representing the DISTINCT statement
+	 * @since 3.1.1
+	 */
+	protected String buildDistinctStatement() {
+		return "DISTINCT";
+	}
 
     /**
      * @since 3.1
