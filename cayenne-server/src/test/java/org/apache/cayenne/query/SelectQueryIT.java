@@ -19,6 +19,17 @@
 
 package org.apache.cayenne.query;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -46,18 +57,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SelectQueryIT extends ServerCase {
 
@@ -74,9 +73,8 @@ public class SelectQueryIT extends ServerCase {
 
 	@Before
 	public void before() {
-		this.tArtist = new TableHelper(dbHelper, "ARTIST")
-                .setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
-                .setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
+		this.tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
+				.setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
 	}
 
 	protected void createArtistsDataSet() throws Exception {
@@ -91,45 +89,6 @@ public class SelectQueryIT extends ServerCase {
 	protected void createArtistsWildcardDataSet() throws Exception {
 		tArtist.insert(1, "_X", null);
 		tArtist.insert(2, "Y_", null);
-	}
-
-	@Test
-	public void testSetQualifier() {
-		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-		assertNull(query.getQualifier());
-
-		Expression qual = ExpressionFactory.expressionOfType(Expression.AND);
-		query.setQualifier(qual);
-		assertNotNull(query.getQualifier());
-		assertSame(qual, query.getQualifier());
-	}
-
-	@Test
-	public void testAndQualifier() {
-		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-		assertNull(query.getQualifier());
-
-		Expression e1 = ExpressionFactory.expressionOfType(Expression.EQUAL_TO);
-		query.andQualifier(e1);
-		assertSame(e1, query.getQualifier());
-
-		Expression e2 = ExpressionFactory.expressionOfType(Expression.NOT_EQUAL_TO);
-		query.andQualifier(e2);
-		assertEquals(Expression.AND, query.getQualifier().getType());
-	}
-
-	@Test
-	public void testOrQualifier() {
-		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-		assertNull(query.getQualifier());
-
-		Expression e1 = ExpressionFactory.expressionOfType(Expression.EQUAL_TO);
-		query.orQualifier(e1);
-		assertSame(e1, query.getQualifier());
-
-		Expression e2 = ExpressionFactory.expressionOfType(Expression.NOT_EQUAL_TO);
-		query.orQualifier(e2);
-		assertEquals(Expression.OR, query.getQualifier().getType());
 	}
 
 	@Test
@@ -491,109 +450,110 @@ public class SelectQueryIT extends ServerCase {
 		assertEquals(1, objects.size());
 	}
 
-    @Test
-    public void testSelect() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void testSelect() throws Exception {
+		createArtistsDataSet();
 
-        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-        List<?> objects = query.select(context);
-        assertEquals(20, objects.size());
-    }
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		List<?> objects = query.select(context);
+		assertEquals(20, objects.size());
+	}
 
-    @Test
-    public void testSelectOne() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void testSelectOne() throws Exception {
+		createArtistsDataSet();
 
-        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-        Expression qual = ExpressionFactory.matchExp("artistName", "artist1");
-        query.setQualifier(qual);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		Expression qual = ExpressionFactory.matchExp("artistName", "artist1");
+		query.setQualifier(qual);
 
-        Artist artist = (Artist) query.selectOne(context);
-        assertEquals("artist1", artist.getArtistName());
-    }
+		Artist artist = (Artist) query.selectOne(context);
+		assertEquals("artist1", artist.getArtistName());
+	}
 
-    @Test
-    public void testSelectFirst() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void testSelectFirst() throws Exception {
+		createArtistsDataSet();
 
-        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-        query.addOrdering(new Ordering(Artist.ARTIST_NAME.getName()));
-        Artist artist = (Artist) query.selectFirst(context);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		query.addOrdering(new Ordering(Artist.ARTIST_NAME.getName()));
+		Artist artist = (Artist) query.selectFirst(context);
 
-        assertNotNull(artist);
-        assertEquals("artist1", artist.getArtistName());
-    }
+		assertNotNull(artist);
+		assertEquals("artist1", artist.getArtistName());
+	}
 
-    @Test
-    public void testSelectFirstByContext() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void testSelectFirstByContext() throws Exception {
+		createArtistsDataSet();
 
-        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-        query.addOrdering(new Ordering(Artist.ARTIST_NAME.getName()));
-        Artist artist = (Artist) context.selectFirst(query);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		query.addOrdering(new Ordering(Artist.ARTIST_NAME.getName()));
+		Artist artist = (Artist) context.selectFirst(query);
 
-        assertNotNull(artist);
-        assertEquals("artist1", artist.getArtistName());
-    }
+		assertNotNull(artist);
+		assertEquals("artist1", artist.getArtistName());
+	}
 
-    @Test
-    public void testIterate() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void testIterate() throws Exception {
+		createArtistsDataSet();
 
-        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-        final int[] count = new int[1];
-        q1.iterate(context, new ResultIteratorCallback<Artist>() {
+		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+		final int[] count = new int[1];
+		q1.iterate(context, new ResultIteratorCallback<Artist>() {
 
-            @Override
-            public void next(Artist object) {
-                assertNotNull(object.getArtistName());
-                count[0]++;
-            }
-        });
+			@Override
+			public void next(Artist object) {
+				assertNotNull(object.getArtistName());
+				count[0]++;
+			}
+		});
 
-        assertEquals(20, count[0]);
-    }
+		assertEquals(20, count[0]);
+	}
 
-    @Test
-    public void testIterator() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void testIterator() throws Exception {
+		createArtistsDataSet();
 
-        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-        ResultIterator<Artist> it = q1.iterator(context);
+		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+		ResultIterator<Artist> it = q1.iterator(context);
 
-        try {
-            int count = 0;
+		try {
+			int count = 0;
 
-            for (@SuppressWarnings("unused") Artist a : it) {
-                count++;
-            }
+			for (@SuppressWarnings("unused")
+			Artist a : it) {
+				count++;
+			}
 
-            assertEquals(20, count);
-        } finally {
-            it.close();
-        }
-    }
+			assertEquals(20, count);
+		} finally {
+			it.close();
+		}
+	}
 
-    @Test
-    public void testBatchIterator() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void testBatchIterator() throws Exception {
+		createArtistsDataSet();
 
-        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-        ResultBatchIterator<Artist> it = q1.batchIterator(context, 5);
+		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+		ResultBatchIterator<Artist> it = q1.batchIterator(context, 5);
 
-        try {
-            int count = 0;
+		try {
+			int count = 0;
 
-            for (List<Artist> artistList : it) {
-                count++;
-                assertEquals(5, artistList.size());
-            }
+			for (List<Artist> artistList : it) {
+				count++;
+				assertEquals(5, artistList.size());
+			}
 
-            assertEquals(4, count);
-        } finally {
-            it.close();
-        }
-    }
+			assertEquals(4, count);
+		} finally {
+			it.close();
+		}
+	}
 
 	/**
 	 * Tests that all queries specified in prefetch are executed in a more

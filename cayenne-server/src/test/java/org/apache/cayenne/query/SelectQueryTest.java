@@ -41,114 +41,150 @@ import org.junit.Test;
 
 public class SelectQueryTest {
 
-	private SelectQuery<?> q;
+	private SelectQuery<?> query;
 
 	@Before
 	public void before() {
-		this.q = new SelectQuery<Object>();
+		this.query = new SelectQuery<Object>();
 	}
 
 	@Test
 	public void testAddPrefetch() {
 
-		assertNull(q.getPrefetchTree());
-		q.addPrefetch("a.b.c");
-		assertNotNull(q.getPrefetchTree());
-		assertEquals(1, q.getPrefetchTree().nonPhantomNodes().size());
-		assertNotNull(q.getPrefetchTree().getNode("a.b.c"));
+		assertNull(query.getPrefetchTree());
+		query.addPrefetch("a.b.c");
+		assertNotNull(query.getPrefetchTree());
+		assertEquals(1, query.getPrefetchTree().nonPhantomNodes().size());
+		assertNotNull(query.getPrefetchTree().getNode("a.b.c"));
 	}
 
 	@Test
 	public void testAddPrefetchDuplicates() {
 
-		q.addPrefetch("a.b.c");
-		q.addPrefetch("a.b.c");
+		query.addPrefetch("a.b.c");
+		query.addPrefetch("a.b.c");
 
-		assertEquals(1, q.getPrefetchTree().nonPhantomNodes().size());
+		assertEquals(1, query.getPrefetchTree().nonPhantomNodes().size());
 	}
 
 	@Test
 	public void testClearPrefetches() {
 
-		q.addPrefetch("abc");
-		q.addPrefetch("xyz");
-		assertNotNull(q.getPrefetchTree());
+		query.addPrefetch("abc");
+		query.addPrefetch("xyz");
+		assertNotNull(query.getPrefetchTree());
 
-		q.clearPrefetches();
-		assertNull(q.getPrefetchTree());
+		query.clearPrefetches();
+		assertNull(query.getPrefetchTree());
 	}
 
 	@Test
 	public void testPageSize() throws Exception {
-		q.setPageSize(10);
-		assertEquals(10, q.getPageSize());
+		query.setPageSize(10);
+		assertEquals(10, query.getPageSize());
 	}
 
 	@Test
 	public void testAddOrdering1() throws Exception {
 		Ordering ord = new Ordering();
-		q.addOrdering(ord);
-		assertEquals(1, q.getOrderings().size());
-		assertSame(ord, q.getOrderings().get(0));
+		query.addOrdering(ord);
+		assertEquals(1, query.getOrderings().size());
+		assertSame(ord, query.getOrderings().get(0));
 	}
 
 	@Test
 	public void testAddOrdering2() throws Exception {
 		String path = "a.b.c";
-		q.addOrdering(path, SortOrder.DESCENDING);
-		assertEquals(1, q.getOrderings().size());
+		query.addOrdering(path, SortOrder.DESCENDING);
+		assertEquals(1, query.getOrderings().size());
 
-		Ordering ord = q.getOrderings().get(0);
+		Ordering ord = query.getOrderings().get(0);
 		assertEquals(path, ord.getSortSpec().getOperand(0));
 		assertEquals(false, ord.isAscending());
 	}
 
 	@Test
 	public void testDistinct() throws Exception {
-		assertFalse(q.isDistinct());
-		q.setDistinct(true);
-		assertTrue(q.isDistinct());
+		assertFalse(query.isDistinct());
+		query.setDistinct(true);
+		assertTrue(query.isDistinct());
 	}
 
 	@Test
 	public void testQueryWithParams1() {
-		q.setRoot(Artist.class);
-		q.setDistinct(true);
+		query.setRoot(Artist.class);
+		query.setDistinct(true);
 
-		SelectQuery<?> q1 = q.queryWithParameters(new HashMap<String, Object>(), true);
-		assertSame(q.getRoot(), q1.getRoot());
-		assertEquals(q.isDistinct(), q1.isDistinct());
+		SelectQuery<?> q1 = query.queryWithParameters(new HashMap<String, Object>(), true);
+		assertSame(query.getRoot(), q1.getRoot());
+		assertEquals(query.isDistinct(), q1.isDistinct());
 		assertNull(q1.getQualifier());
 	}
 
 	@Test
 	public void testQueryWithParams2() throws Exception {
-		q.setRoot(Artist.class);
+		query.setRoot(Artist.class);
 
 		List<Expression> list = new ArrayList<Expression>();
 		list.add(ExpressionFactory.matchExp("k1", new ExpressionParameter("test1")));
 		list.add(ExpressionFactory.matchExp("k2", new ExpressionParameter("test2")));
 		list.add(ExpressionFactory.matchExp("k3", new ExpressionParameter("test3")));
 		list.add(ExpressionFactory.matchExp("k4", new ExpressionParameter("test4")));
-		q.setQualifier(ExpressionFactory.joinExp(Expression.OR, list));
+		query.setQualifier(ExpressionFactory.joinExp(Expression.OR, list));
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("test2", "abc");
 		params.put("test3", "xyz");
-		SelectQuery<?> q1 = q.queryWithParameters(params, true);
-		assertSame(q.getRoot(), q1.getRoot());
+		SelectQuery<?> q1 = query.queryWithParameters(params, true);
+		assertSame(query.getRoot(), q1.getRoot());
 		assertNotNull(q1.getQualifier());
-		assertTrue(q1.getQualifier() != q.getQualifier());
+		assertTrue(q1.getQualifier() != query.getQualifier());
 	}
 
 	@Test
 	public void testQueryWithParamsSkipName() {
-		q.setRoot(Artist.class);
-		q.setDistinct(true);
-		q.setName("name");
+		query.setRoot(Artist.class);
+		query.setDistinct(true);
+		query.setName("name");
 
-		SelectQuery<?> q1 = q.queryWithParameters(Collections.<String, Object> emptyMap());
-		assertEquals("name", q.getName());
+		SelectQuery<?> q1 = query.queryWithParameters(Collections.<String, Object> emptyMap());
+		assertEquals("name", query.getName());
 		assertNull(q1.getName());
+	}
+	
+	@Test
+	public void testAndQualifier() {
+		assertNull(query.getQualifier());
+
+		Expression e1 = ExpressionFactory.expressionOfType(Expression.EQUAL_TO);
+		query.andQualifier(e1);
+		assertSame(e1, query.getQualifier());
+
+		Expression e2 = ExpressionFactory.expressionOfType(Expression.NOT_EQUAL_TO);
+		query.andQualifier(e2);
+		assertEquals(Expression.AND, query.getQualifier().getType());
+	}
+
+	@Test
+	public void testOrQualifier() {
+		assertNull(query.getQualifier());
+
+		Expression e1 = ExpressionFactory.expressionOfType(Expression.EQUAL_TO);
+		query.orQualifier(e1);
+		assertSame(e1, query.getQualifier());
+
+		Expression e2 = ExpressionFactory.expressionOfType(Expression.NOT_EQUAL_TO);
+		query.orQualifier(e2);
+		assertEquals(Expression.OR, query.getQualifier().getType());
+	}
+	
+	@Test
+	public void testSetQualifier() {
+		assertNull(query.getQualifier());
+
+		Expression qual = ExpressionFactory.expressionOfType(Expression.AND);
+		query.setQualifier(qual);
+		assertNotNull(query.getQualifier());
+		assertSame(qual, query.getQualifier());
 	}
 }
