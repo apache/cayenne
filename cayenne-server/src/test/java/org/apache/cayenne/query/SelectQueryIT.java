@@ -166,8 +166,8 @@ public class SelectQueryIT extends ServerCase {
 		createArtistsDataSet();
 		DbEntity artistDbEntity = context.getEntityResolver().getDbEntity("ARTIST");
 
-		SelectQuery query = new SelectQuery(artistDbEntity);
-		List<?> results = context.performQuery(query);
+		SelectQuery<DataRow> query = new SelectQuery<DataRow>(artistDbEntity);
+		List<DataRow> results = context.select(query);
 
 		assertEquals(20, results.size());
 		assertTrue(results.get(0) instanceof DataRow);
@@ -190,14 +190,14 @@ public class SelectQueryIT extends ServerCase {
 	public void testFetchOffsetWithQualifier() throws Exception {
 		createArtistsDataSet();
 		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-		query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
+		query.setQualifier(ExpressionFactory.exp("db:ARTIST_ID > 3"));
 		query.setFetchOffset(5);
 
 		List<?> objects = context.performQuery(query);
 		int size = objects.size();
 
 		SelectQuery<Artist> sizeQ = new SelectQuery<Artist>(Artist.class);
-		sizeQ.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
+		sizeQ.setQualifier(ExpressionFactory.exp("db:ARTIST_ID > 3"));
 		List<?> objects1 = context.performQuery(sizeQ);
 		int sizeAll = objects1.size();
 		assertEquals(size, sizeAll - 5);
@@ -207,7 +207,7 @@ public class SelectQueryIT extends ServerCase {
 	public void testFetchLimitWithQualifier() throws Exception {
 		createArtistsDataSet();
 		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-		query.setQualifier(Expression.fromString("db:ARTIST_ID > 3"));
+		query.setQualifier(ExpressionFactory.exp("db:ARTIST_ID > 3"));
 		query.setFetchLimit(7);
 		List<?> objects = context.performQuery(query);
 		assertEquals(7, objects.size());
@@ -386,8 +386,8 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectIn() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
-		Expression qual = Expression.fromString("artistName in ('artist1', 'artist2')");
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		Expression qual = ExpressionFactory.exp("artistName in ('artist1', 'artist2')");
 		query.setQualifier(qual);
 		List<?> objects = context.performQuery(query);
 		assertEquals(2, objects.size());
@@ -396,8 +396,8 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectParameterizedIn() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
-		Expression qual = Expression.fromString("artistName in $list");
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		Expression qual = ExpressionFactory.exp("artistName in $list");
 		query.setQualifier(qual);
 		query = query.queryWithParameters(Collections.singletonMap("list", new Object[] { "artist1", "artist2" }));
 		List<?> objects = context.performQuery(query);
@@ -407,8 +407,8 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectParameterizedEmptyIn() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
-		Expression qual = Expression.fromString("artistName in $list");
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		Expression qual = ExpressionFactory.exp("artistName in $list");
 		query.setQualifier(qual);
 		query = query.queryWithParameters(Collections.singletonMap("list", new Object[] {}));
 		List<?> objects = context.performQuery(query);
@@ -418,8 +418,8 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectParameterizedEmptyNotIn() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
-		Expression qual = Expression.fromString("artistName not in $list");
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+		Expression qual = ExpressionFactory.exp("artistName not in $list");
 		query.setQualifier(qual);
 		query = query.queryWithParameters(Collections.singletonMap("list", new Object[] {}));
 		List<?> objects = context.performQuery(query);
@@ -429,7 +429,7 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectEmptyIn() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
 		Expression qual = ExpressionFactory.inExp("artistName");
 		query.setQualifier(qual);
 		List<?> objects = context.performQuery(query);
@@ -439,7 +439,7 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectEmptyNotIn() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
 		Expression qual = ExpressionFactory.notInExp("artistName");
 		query.setQualifier(qual);
 		List<?> objects = context.performQuery(query);
@@ -449,7 +449,7 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectBooleanTrue() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
 		Expression qual = ExpressionFactory.expTrue();
 		qual = qual.andExp(ExpressionFactory.matchExp("artistName", "artist1"));
 		query.setQualifier(qual);
@@ -460,7 +460,7 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectBooleanNotTrueOr() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
 		Expression qual = ExpressionFactory.expTrue();
 		qual = qual.notExp();
 		qual = qual.orExp(ExpressionFactory.matchExp("artistName", "artist1"));
@@ -472,7 +472,7 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectBooleanFalse() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
 		Expression qual = ExpressionFactory.expFalse();
 		qual = qual.andExp(ExpressionFactory.matchExp("artistName", "artist1"));
 		query.setQualifier(qual);
@@ -483,7 +483,7 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectBooleanFalseOr() throws Exception {
 		createArtistsDataSet();
-		SelectQuery query = new SelectQuery(Artist.class);
+		SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
 		Expression qual = ExpressionFactory.expFalse();
 		qual = qual.orExp(ExpressionFactory.matchExp("artistName", "artist1"));
 		query.setQualifier(qual);
@@ -495,7 +495,7 @@ public class SelectQueryIT extends ServerCase {
     public void testSelect() throws Exception {
         createArtistsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         List<?> objects = query.select(context);
         assertEquals(20, objects.size());
     }
@@ -504,7 +504,7 @@ public class SelectQueryIT extends ServerCase {
     public void testSelectOne() throws Exception {
         createArtistsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         Expression qual = ExpressionFactory.matchExp("artistName", "artist1");
         query.setQualifier(qual);
 
@@ -516,7 +516,7 @@ public class SelectQueryIT extends ServerCase {
     public void testSelectFirst() throws Exception {
         createArtistsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         query.addOrdering(new Ordering(Artist.ARTIST_NAME.getName()));
         Artist artist = (Artist) query.selectFirst(context);
 
@@ -528,7 +528,7 @@ public class SelectQueryIT extends ServerCase {
     public void testSelectFirstByContext() throws Exception {
         createArtistsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         query.addOrdering(new Ordering(Artist.ARTIST_NAME.getName()));
         Artist artist = (Artist) context.selectFirst(query);
 
@@ -564,7 +564,7 @@ public class SelectQueryIT extends ServerCase {
         try {
             int count = 0;
 
-            for (Artist a : it) {
+            for (@SuppressWarnings("unused") Artist a : it) {
                 count++;
             }
 
@@ -684,7 +684,7 @@ public class SelectQueryIT extends ServerCase {
 		// at least makes sense)
 		Expression exp = ExpressionFactory.noMatchExp("toArtist", new Object());
 
-		SelectQuery q = new SelectQuery(Painting.class, exp);
+		SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class, exp);
 		q.addPrefetch("toArtist");
 
 		// test how prefetches are resolved in this case - this was a stumbling
