@@ -160,10 +160,6 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         return dataNodeView;
     }
     
-    public ProjectTreeView getTreePanel() {
-		return treePanel;
-	}
-
     public EditorView(ProjectController eventController) {
         this.eventController = eventController;
         this.actionManager= eventController.getApplication().getActionManager();

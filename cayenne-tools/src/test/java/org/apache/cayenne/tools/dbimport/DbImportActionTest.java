@@ -18,36 +18,6 @@
  */
 package org.apache.cayenne.tools.dbimport;
 
-import static java.util.Arrays.asList;
-import static org.apache.cayenne.merge.builders.ObjectMother.dbAttr;
-import static org.apache.cayenne.merge.builders.ObjectMother.dbEntity;
-import static org.apache.cayenne.merge.builders.ObjectMother.objAttr;
-import static org.apache.cayenne.merge.builders.ObjectMother.objEntity;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.stub;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
@@ -74,10 +44,37 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.junit.Test;
 import org.xml.sax.InputSource;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.apache.cayenne.merge.builders.ObjectMother.dbAttr;
+import static org.apache.cayenne.merge.builders.ObjectMother.dbEntity;
+import static org.apache.cayenne.merge.builders.ObjectMother.objAttr;
+import static org.apache.cayenne.merge.builders.ObjectMother.objEntity;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DbImportActionTest {
 
@@ -120,7 +117,7 @@ public class DbImportActionTest {
         when(params.initializeDataMap(any(DataMap.class))).thenReturn(DATA_MAP);
 
         final boolean[] haveWeTriedToSave = {false};
-        DbImportAction action = buildDbImportAction(new FileProjectSaver() {
+        DbImportActionDefault action = buildDbImportAction(new FileProjectSaver() {
             @Override
             public void save(Project project) {
                 haveWeTriedToSave[0] = true;
@@ -168,7 +165,7 @@ public class DbImportActionTest {
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
         final boolean[] haveWeTriedToSave = {false};
-        DbImportAction action = buildDbImportAction(new FileProjectSaver() {
+        DbImportActionDefault action = buildDbImportAction(new FileProjectSaver() {
             @Override
             public void save(Project project) {
                 haveWeTriedToSave[0] = true;
@@ -243,7 +240,7 @@ public class DbImportActionTest {
                         dbAttr("NAME").typeVarchar(100).mandatory()
                 )).build());
 
-        DbImportAction action = buildDbImportAction(log, projectSaver, mapLoader);
+        DbImportActionDefault action = buildDbImportAction(log, projectSaver, mapLoader);
 
         action.execute(params);
 
@@ -267,7 +264,7 @@ public class DbImportActionTest {
         MapLoader mapLoader = mock(MapLoader.class);
         when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(null);
 
-        DbImportAction action = buildDbImportAction(projectSaver, mapLoader);
+        DbImportActionDefault action = buildDbImportAction(projectSaver, mapLoader);
 
 		try {
 			action.execute(params);
@@ -280,7 +277,7 @@ public class DbImportActionTest {
         verify(mapLoader, never()).loadDataMap(any(InputSource.class));
     }
 
-    private DbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
+    private DbImportActionDefault buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
         Log log = mock(Log.class);
         when(log.isDebugEnabled()).thenReturn(true);
         when(log.isInfoEnabled()).thenReturn(true);
@@ -288,7 +285,7 @@ public class DbImportActionTest {
         return buildDbImportAction(log, projectSaver, mapLoader);
     }
 
-    private DbImportAction buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
+    private DbImportActionDefault buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
         DbAdapter dbAdapter = mock(DbAdapter.class);
         when(dbAdapter.mergerFactory()).thenReturn(new MergerFactory());
 
@@ -299,7 +296,7 @@ public class DbImportActionTest {
         DataSource mock = mock(DataSource.class);
         when(dataSourceFactory.getDataSource(any(DataNodeDescriptor.class))).thenReturn(mock);
 
-        return new DbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader);
+        return new DbImportActionDefault(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader);
     }
 
     @Test
@@ -307,7 +304,7 @@ public class DbImportActionTest {
         Log log = mock(Log.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
 
-        DbImportAction action = i.getInstance(DbImportAction.class);
+        DbImportActionDefault action = (DbImportActionDefault) i.getInstance(DbImportAction.class);
 
         String packagePath = getClass().getPackage().getName().replace('.', '/');
         URL packageUrl = getClass().getClassLoader().getResource(packagePath);
@@ -338,7 +335,7 @@ public class DbImportActionTest {
         tokens.add(new CreateTableToModel(null));
 
         assertEquals(asList("AddColumnToDb", "CreateTableToDb", "CreateTableToModel", "AddRelationshipToDb"),
-                toClasses(DbImportAction.sort(tokens)));
+                toClasses(DbImportActionDefault.sort(tokens)));
     }
 
     private List<String> toClasses(List<MergerToken> sort) {

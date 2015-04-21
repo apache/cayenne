@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.io.Serializable;
 
 /**
  * Defines a relationship between two entities. In a DataMap graph relationships represent
