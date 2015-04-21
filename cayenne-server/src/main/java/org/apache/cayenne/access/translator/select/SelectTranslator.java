@@ -24,6 +24,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -415,7 +416,7 @@ public class SelectTranslator extends QueryAssembler {
             // for each relationship path add PK of the target entity...
             for (String path : ((PrefetchSelectQuery) query).getResultPaths()) {
 
-                ASTDbPath pathExp = (ASTDbPath) oe.translateToDbPath(Expression.fromString(path));
+                ASTDbPath pathExp = (ASTDbPath) oe.translateToDbPath(ExpressionFactory.exp(path));
 
                 // add joins and find terminating element
 
@@ -468,7 +469,7 @@ public class SelectTranslator extends QueryAssembler {
 
                 // for each prefetch add all joins plus columns from the target
                 // entity
-                Expression prefetchExp = Expression.fromString(prefetch.getPath());
+                Expression prefetchExp = ExpressionFactory.exp(prefetch.getPath());
                 ASTDbPath dbPrefetch = (ASTDbPath) oe.translateToDbPath(prefetchExp);
 
                 resetJoinStack();
