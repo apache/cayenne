@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.conn;
 
 import java.io.PrintWriter;
@@ -30,18 +29,18 @@ import javax.sql.DataSource;
 import javax.sql.PooledConnection;
 
 /**
- * <p>PoolDataSource allows to generate pooled connections.</p>
+ * PoolDataSource allows to generate pooled connections.
  *
- * <p>It is implemented as a wrapper around a non-pooled data source object. 
- * Delegates all method calls except for "getPooledConnection" to the underlying 
- * datasource.
- * </p>
+ * <p>
+ * It is implemented as a wrapper around a non-pooled data source object.
+ * Delegates all method calls except for "getPooledConnection" to the underlying
+ * DataSource.
  * 
  */
 public class PoolDataSource implements ConnectionPoolDataSource {
+
 	private DataSource nonPooledDatasource;
 
-	/** Creates new PoolDataSource */
 	public PoolDataSource(DataSource nonPooledDatasource) {
 		this.nonPooledDatasource = nonPooledDatasource;
 	}
@@ -50,36 +49,42 @@ public class PoolDataSource implements ConnectionPoolDataSource {
 		nonPooledDatasource = new DriverDataSource(jdbcDriver, connectionUrl);
 	}
 
+	@Override
 	public int getLoginTimeout() throws SQLException {
 		return nonPooledDatasource.getLoginTimeout();
 	}
 
+	@Override
 	public void setLoginTimeout(int seconds) throws SQLException {
 		nonPooledDatasource.setLoginTimeout(seconds);
 	}
 
+	@Override
 	public PrintWriter getLogWriter() throws SQLException {
 		return nonPooledDatasource.getLogWriter();
 	}
 
+	@Override
 	public void setLogWriter(PrintWriter out) throws SQLException {
 		nonPooledDatasource.setLogWriter(out);
 	}
 
+	@Override
 	public PooledConnection getPooledConnection() throws SQLException {
 		return new PooledConnectionImpl(nonPooledDatasource, null, null);
 	}
 
+	@Override
 	public PooledConnection getPooledConnection(String user, String password) throws SQLException {
 		return new PooledConnectionImpl(nonPooledDatasource, user, password);
 	}
 
-    /**
-     * @since 3.1
-     *
-     * JDBC 4.1 compatibility under Java 1.5
-     */
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.1
+	 *
+	 *        JDBC 4.1 compatibility under Java 1.7
+	 */
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		throw new UnsupportedOperationException();
+	}
 }
