@@ -28,7 +28,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 import org.apache.cayenne.util.Util;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.KeywordMap;
@@ -52,6 +51,7 @@ import javax.swing.text.Document;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -142,7 +142,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
 
         scriptArea.setTokenMarker(SQL_TEMPLATE_MARKER);
         scriptArea.getDocument().addDocumentListener(this);
-        scriptArea.getPainter().setFont(SQLSyntaxConstants.DEFAULT_FONT);
+        scriptArea.getPainter().setFont(new Font("Verdana", Font.PLAIN, 12));
 
         // assemble
         CellConstraints cc = new CellConstraints();
