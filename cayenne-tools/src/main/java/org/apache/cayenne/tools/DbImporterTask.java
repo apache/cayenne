@@ -21,6 +21,9 @@ package org.apache.cayenne.tools;
 import java.io.File;
 
 import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
@@ -47,7 +50,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 import javax.sql.DataSource;
-import java.io.File;
 
 public class DbImporterTask extends Task {
 

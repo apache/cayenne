@@ -18,19 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
-import static org.apache.cayenne.access.loader.filters.FilterFactory.exclude;
 import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
 
-import org.apache.cayenne.access.loader.filters.DbPath;
-import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.IncludeTableFilter;
+import org.apache.cayenne.access.loader.filters.PatternFilter;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
@@ -52,11 +53,14 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
         FiltersConfig filters = getCdbImport("pom-schema-2.xml").toParameters()
                 .getDbLoaderConfig().getFiltersConfig();
 
-        DbPath path = new DbPath(null, "NHL_STATS");
-        assertEquals(Collections.singletonList(path), filters.getDbPaths());
+        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        includes.add(new IncludeTableFilter(null, new PatternFilter().exclude("^ETL_.*")));
 
-        EntityFilters filter = filters.filter(path);
-        assertEquals(filter, new EntityFilters(path, exclude("^ETL_.*"), exclude("^ETL_.*"), NULL));
+        TreeSet<Pattern> excludes = new TreeSet<Pattern>(PatternFilter.PATTERN_COMPARATOR);
+        excludes.add(PatternFilter.pattern("^ETL_.*"));
+
+        assertEquals(filters.tableFilter(null, "NHL_STATS"),
+                new TableFilter(includes, excludes));
     }
 
     @Test

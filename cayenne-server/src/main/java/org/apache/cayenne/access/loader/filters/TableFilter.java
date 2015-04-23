@@ -109,4 +109,28 @@ public class TableFilter {
 
         return res;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof TableFilter)) {
+            return false;
+        }
+
+        TableFilter that = (TableFilter) o;
+
+        return excludes.equals(that.excludes)
+                && includes.equals(that.includes);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = includes.hashCode();
+        result = 31 * result + excludes.hashCode();
+        return result;
+    }
 }

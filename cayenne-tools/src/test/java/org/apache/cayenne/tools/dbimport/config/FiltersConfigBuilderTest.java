@@ -76,11 +76,11 @@ public class FiltersConfigBuilderTest {
                 "      ExcludeTable: table2\n", engineering.toString());
     }
 
-
     @Test
     public void testCompact_03() {
         ReverseEngineering engineering = new ReverseEngineering();
-        engineering.addCatalog(new Catalog("APP"));
+        engineering.addCatalog(new Catalog("APP1"));
+        engineering.addCatalog(new Catalog("APP2"));
 
         engineering.addExcludeTable(new ExcludeTable("SYS_.*"));
         engineering.addExcludeColumn(new ExcludeColumn("calculated_.*"));
@@ -89,7 +89,12 @@ public class FiltersConfigBuilderTest {
         builder.compact();
         assertEquals(
                 "ReverseEngineering: \n" +
-                "  Catalog: APP\n" +
+                "  Catalog: APP1\n" +
+                "    Schema: null\n" +
+                "      IncludeTable: null\n" +
+                "        ExcludeColumn: calculated_.*\n" +
+                "      ExcludeTable: SYS_.*\n" +
+                "  Catalog: APP2\n" +
                 "    Schema: null\n" +
                 "      IncludeTable: null\n" +
                 "        ExcludeColumn: calculated_.*\n" +

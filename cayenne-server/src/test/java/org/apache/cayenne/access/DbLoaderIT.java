@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.sql.Types;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,15 +106,15 @@ public class DbLoaderIT extends ServerCase {
 
         String tableLabel = adapter.tableTypeForTable();
 
-        Collection<DbEntity> tables = loader.getTables(new DbLoaderConfiguration(), new String[] { tableLabel })
+        Collection<Pair<DbEntity, PatternFilter>> tables = loader.getTables(new DbLoaderConfiguration(), new String[] { tableLabel })
                 .values().iterator().next().values();
 
         assertNotNull(tables);
 
         boolean foundArtist = false;
 
-        for (DbEntity table : tables) {
-            if ("ARTIST".equalsIgnoreCase(table.getName())) {
+        for (Pair<DbEntity, PatternFilter> table : tables) {
+            if ("ARTIST".equalsIgnoreCase(table.getKey().getName())) {
                 foundArtist = true;
                 break;
             }
@@ -127,9 +129,9 @@ public class DbLoaderIT extends ServerCase {
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(
                 FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
-        Map<DbEntity, PatternFilter> tables = loader.getTables(
+        Map<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>> tables = loader.getTables(
                 config,
-                new String[]{ adapter.tableTypeForTable()});
+                new String[]{adapter.tableTypeForTable()});
 
         assertNotNull(tables);
         assertTrue(tables.isEmpty());
@@ -141,9 +143,9 @@ public class DbLoaderIT extends ServerCase {
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(
                 FiltersConfig.create(null, "WRONG", TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
-        Map<DbEntity, PatternFilter> tables = loader.getTables(
+        Map<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>> tables = loader.getTables(
                 config,
-                new String[]{ adapter.tableTypeForTable()});
+                new String[]{adapter.tableTypeForTable()});
 
         assertNotNull(tables);
         assertTrue(tables.isEmpty());
@@ -157,7 +159,7 @@ public class DbLoaderIT extends ServerCase {
 
         loader.setCreatingMeaningfulPK(true);
 
-        Map<DbEntity, PatternFilter> testLoader = loader.getTables(CONFIG, tableLabel);
+        Map<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>> testLoader = loader.getTables(CONFIG, tableLabel);
         if (testLoader.isEmpty()) {
             testLoader = loader.getTables(CONFIG, tableLabel);
         }
@@ -191,7 +193,7 @@ public class DbLoaderIT extends ServerCase {
         String tableLabel = adapter.tableTypeForTable();
 
         // *** TESTING THIS ***
-        List<DbEntity> entities = loader.loadDbEntities(map, loader.getTables(CONFIG, new String[]{tableLabel}), CONFIG);
+        List<DbEntity> entities = loader.loadDbEntities(map, CONFIG, loader.getTables(CONFIG, new String[]{tableLabel}));
 
         assertDbEntities(map);
 
@@ -200,12 +202,14 @@ public class DbLoaderIT extends ServerCase {
         }
 
         // *** TESTING THIS ***
-        HashMap<DbPath, Map<String, DbEntity>> tables = new HashMap<DbPath, Map<String, DbEntity>>();
-        HashMap<String, DbEntity> value = new HashMap<String, DbEntity>();
+        Map<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>> tables =
+                new HashMap<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>>();
+
+        Map<String, Pair<DbEntity, PatternFilter>> value = new HashMap<String, Pair<DbEntity, PatternFilter>>();
         for (DbEntity e : entities) {
-            value.put(e.getName(), e);
+            value.put(e.getName(), Pair.of(e, PatternFilter.INCLUDE_EVERYTHING));
         }
-        tables.put(new DbPath(), value);
+        tables.put(Pair.of((String) null, (String) null), value);
         loader.loadDbRelationships(CONFIG, tables);
 
         if (supportsFK) {

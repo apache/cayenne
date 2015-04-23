@@ -175,8 +175,8 @@ public final class FiltersConfigBuilder {
     private void compactSchemas() {
         for (Catalog catalog : engineering.getCatalogs()) {
             catalog.getSchemas().addAll(engineering.getSchemas());
-            engineering.setSchemas(null);
         }
+        engineering.setSchemas(null);
     }
 
     private void compactProcedureFilter() {

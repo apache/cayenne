@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.LoggingDbLoaderDelegate;
-import org.apache.cayenne.access.loader.filters.DbPath;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.Attribute;
@@ -113,7 +112,7 @@ public class DbMerger {
     private Collection<DbEntity> filter(DataMap existing, FiltersConfig filtersConfig) {
         Collection<DbEntity> existingFiltered = new LinkedList<DbEntity>();
         for (DbEntity entity : existing.getDbEntities()) {
-            if (filtersConfig.filter(DbPath.build(entity)).tableFilter().isInclude(entity)) {
+            if (filtersConfig.tableFilter(entity.getCatalog(), entity.getSchema()).isIncludeTable(entity.getName()) != null) {
                 existingFiltered.add(entity);
             }
         }
