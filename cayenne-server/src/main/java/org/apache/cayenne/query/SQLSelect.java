@@ -297,10 +297,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * </pre>
 	 */
 	public SQLSelect<T> localCache(String... cacheGroups) {
-		cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-		cacheGroups(cacheGroups);
-
-		return this;
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
 	}
 
 	/**
@@ -312,8 +309,8 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * </pre>
 	 */
 	public SQLSelect<T> sharedCache(String... cacheGroups) {
-		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE).cacheGroups(cacheGroups);
-	}
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
+    }
 
 	public QueryCacheStrategy getCacheStrategy() {
 		return cacheStrategy;
