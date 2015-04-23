@@ -95,4 +95,16 @@ public class Catalog extends FilterContainer {
         }
         return true;
     }
+
+    public StringBuilder toString(StringBuilder res, String prefix) {
+        res.append(prefix).append("Catalog: ").append(name).append("\n");
+
+        if (!isBlank(schemas)) {
+            for (Schema schema : schemas) {
+                schema.toString(res, prefix + "  ");
+            }
+        }
+
+        return super.toString(res, prefix + "  ");
+    }
 }

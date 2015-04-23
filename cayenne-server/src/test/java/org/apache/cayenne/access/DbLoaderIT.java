@@ -22,8 +22,12 @@ package org.apache.cayenne.access;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
+import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.PatternFilter;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -42,10 +46,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Types;
-import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -104,13 +104,13 @@ public class DbLoaderIT extends ServerCase {
 
         String tableLabel = adapter.tableTypeForTable();
 
-        List<DbEntity> tables = loader.getTables(new DbLoaderConfiguration(), new String[] { tableLabel });
+        Map<DbEntity, PatternFilter> tables = loader.getTables(new DbLoaderConfiguration(), new String[]{tableLabel});
 
         assertNotNull(tables);
 
         boolean foundArtist = false;
 
-        for (DbEntity table : tables) {
+        for (DbEntity table : tables.keySet()) {
             if ("ARTIST".equalsIgnoreCase(table.getName())) {
                 foundArtist = true;
                 break;
@@ -121,6 +121,34 @@ public class DbLoaderIT extends ServerCase {
     }
 
     @Test
+    public void testGetTablesWithWrongCatalog() throws Exception {
+
+        DbLoaderConfiguration config = new DbLoaderConfiguration();
+        config.setFiltersConfig(
+                FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
+        Map<DbEntity, PatternFilter> tables = loader.getTables(
+                config,
+                new String[]{ adapter.tableTypeForTable()});
+
+        assertNotNull(tables);
+        assertTrue(tables.isEmpty());
+    }
+
+    @Test
+    public void testGetTablesWithWrongSchema() throws Exception {
+
+        DbLoaderConfiguration config = new DbLoaderConfiguration();
+        config.setFiltersConfig(
+                FiltersConfig.create(null, "WRONG", TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
+        Map<DbEntity, PatternFilter> tables = loader.getTables(
+                config,
+                new String[]{ adapter.tableTypeForTable()});
+
+        assertNotNull(tables);
+        assertTrue(tables.isEmpty());
+    }
+
+    @Test
     public void testLoadWithMeaningfulPK() throws Exception {
 
         DataMap map = new DataMap();
@@ -128,12 +156,12 @@ public class DbLoaderIT extends ServerCase {
 
         loader.setCreatingMeaningfulPK(true);
 
-        List<DbEntity> testLoader = loader.getTables(CONFIG, tableLabel);
+        Map<DbEntity, PatternFilter> testLoader = loader.getTables(CONFIG, tableLabel);
         if (testLoader.isEmpty()) {
             testLoader = loader.getTables(CONFIG, tableLabel);
         }
 
-        List<DbEntity> entities = loader.loadDbEntities(map, CONFIG, testLoader);
+        List<DbEntity> entities = loader.loadDbEntities(map, testLoader, CONFIG);
         loader.loadObjEntities(map, CONFIG, entities);
 
         ObjEntity artist = map.getObjEntity("Artist");
@@ -162,7 +190,7 @@ public class DbLoaderIT extends ServerCase {
         String tableLabel = adapter.tableTypeForTable();
 
         // *** TESTING THIS ***
-        List<DbEntity> entities = loader.loadDbEntities(map, CONFIG, loader.getTables(CONFIG, new String[]{tableLabel}));
+        List<DbEntity> entities = loader.loadDbEntities(map, loader.getTables(CONFIG, new String[]{tableLabel}), CONFIG);
 
         assertDbEntities(map);
 

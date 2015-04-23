@@ -113,4 +113,32 @@ public class FilterContainer {
             && includeTables.isEmpty()     && excludeTables.isEmpty()
             && includeProcedures.isEmpty() && excludeProcedures.isEmpty();
     }
+
+    public static boolean isBlank(Collection<?> collection) {
+        return collection == null || collection.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return toString(new StringBuilder(), "").toString();
+    }
+
+    public StringBuilder toString(StringBuilder res, String prefix) {
+        appendCollection(res, prefix, includeTables);
+        appendCollection(res, prefix, excludeTables);
+        appendCollection(res, prefix, includeColumns);
+        appendCollection(res, prefix, excludeColumns);
+        appendCollection(res, prefix, includeProcedures);
+        appendCollection(res, prefix, excludeProcedures);
+
+        return res;
+    }
+
+    protected void appendCollection(StringBuilder res, String prefix, Collection<? extends PatternParam> collection) {
+        if (!isBlank(collection)) {
+            for (PatternParam item : collection) {
+                item.toString(res, prefix);
+            }
+        }
+    }
 }

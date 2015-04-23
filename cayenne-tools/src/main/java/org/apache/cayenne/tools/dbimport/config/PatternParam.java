@@ -69,6 +69,11 @@ public class PatternParam {
 
     @Override
     public String toString() {
-        return "RegExp(" + pattern + ")";
+        return toString(new StringBuilder(), "").toString();
+    }
+
+    public StringBuilder toString(StringBuilder res, String s) {
+        res.append(s).append(getClass().getSimpleName()).append(": ").append(pattern).append("\n");
+        return res;
     }
 }

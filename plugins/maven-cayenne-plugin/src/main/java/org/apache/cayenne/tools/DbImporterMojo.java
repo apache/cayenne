@@ -20,8 +20,7 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 
-import org.apache.cayenne.access.loader.filters.EntityFilters;
-import org.apache.cayenne.access.loader.filters.FilterFactory;
+import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -140,7 +139,7 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private boolean usePrimitives;
 
-    private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
+    private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
 
     /**
      * If true, would use primitives instead of numeric and boolean classes.
@@ -156,6 +155,7 @@ public class DbImporterMojo extends AbstractMojo {
      * @deprecated since 4.0 renamed to "schema"
      */
     private String schemaName;
+    private DbImportConfiguration config;
 
     private void setSchemaName(String schemaName) {
         getLog().warn("'schemaName' property is deprecated. Use 'schema' instead");
@@ -203,7 +203,7 @@ public class DbImporterMojo extends AbstractMojo {
     private String importProcedures;
 
     public void setImportProcedures(boolean importProcedures) {
-        filterBuilder.setProceduresFilters(importProcedures ? FilterFactory.TRUE : FilterFactory.NULL);
+        filterBuilder.setProceduresFilters(importProcedures);
     }
 
     /**
@@ -261,7 +261,11 @@ public class DbImporterMojo extends AbstractMojo {
     }
 
     DbImportConfiguration toParameters() {
-        DbImportConfiguration config = new DbImportConfiguration();
+        if (config != null) {
+            return config;
+        }
+
+        config = new DbImportConfiguration();
         config.setAdapter(adapter);
         config.setDefaultPackage(defaultPackage);
         config.setDriver(driver);
@@ -274,7 +278,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setUsername(username);
         config.setUsePrimitives(usePrimitives);
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
-                .add(filterBuilder.build()).filtersConfig());
+                .add(filterBuilder).filtersConfig());
         return config;
     }
 

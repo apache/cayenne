@@ -19,25 +19,12 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.loader.filters.EntityFilters;
-import org.apache.cayenne.access.loader.filters.FilterFactory;
-import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
@@ -60,7 +47,13 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
+import javax.swing.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Stateful helper class that encapsulates access to DbLoader.
@@ -89,7 +82,7 @@ public class DbLoaderHelper {
     protected boolean meaningfulPk;
     protected List<String> schemas;
 
-    private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
+    private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
 
     protected String loadStatusNote;
 
@@ -176,7 +169,7 @@ public class DbLoaderHelper {
 
         this.filterBuilder.schema(dialog.getSelectedSchema());
         this.filterBuilder.includeTables(dialog.getTableNamePattern());
-        this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures() ? FilterFactory.TRUE : FilterFactory.NULL);
+        this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures());
         this.filterBuilder.includeProcedures(dialog.getProcedureNamePattern());
 
         this.meaningfulPk = dialog.isMeaningfulPk();
@@ -387,14 +380,15 @@ public class DbLoaderHelper {
         }
 
         private void importingProcedures() {
-            if (!filterBuilder.proceduresFilters().equals(NULL)) {
+            if (!filterBuilder.isLoadProcedures()) {
                 return;
             }
 
             loadStatusNote = "Importing procedures...";
             try {
                 DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-                configuration.setFiltersConfig(new FiltersConfig(filterBuilder.build()));
+                configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
+                        .add(filterBuilder).filtersConfig());
 
                 loader.loadProcedures(dataMap, new DbLoaderConfiguration());
             } catch (Throwable th) {
@@ -411,7 +405,7 @@ public class DbLoaderHelper {
                
                 DbLoaderConfiguration configuration = new DbLoaderConfiguration();
                 configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
-                        .add(filterBuilder.build()).filtersConfig());
+                        .add(filterBuilder).filtersConfig());
                 loader.load(dataMap, configuration);
 
                 /**

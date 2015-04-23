@@ -24,7 +24,7 @@ import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.DbLoaderDelegate;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.access.loader.NameFilter;
-import org.apache.cayenne.access.loader.filters.DbPath;
+import org.apache.cayenne.access.loader.filters.CatalogFilter;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -256,12 +256,12 @@ public class DbImportConfiguration {
             dataMap.setDefaultPackage(defaultPackage);
         }
 
-        List<DbPath> dbPaths = dbLoaderConfiguration.getFiltersConfig().getDbPaths();
-        if (!dbPaths.isEmpty()) {
+        CatalogFilter[] catalogs = dbLoaderConfiguration.getFiltersConfig().catalogs;
+        if (catalogs.length > 0) {
             // do not override default catalog of existing DataMap unless it is
             // explicitly requested by the plugin caller, and the provided catalog is
             // not a pattern
-            String catalog = dbPaths.get(0).catalog;
+            String catalog = catalogs[0].name;
             if (isNotEmpty(catalog) && catalog.indexOf('%') < 0) {
                 dataMap.setDefaultCatalog(catalog);
             }
@@ -269,7 +269,7 @@ public class DbImportConfiguration {
             // do not override default schema of existing DataMap unless it is
             // explicitly requested by the plugin caller, and the provided schema is
             // not a pattern
-            String schema = dbPaths.get(0).schema;
+            String schema = catalogs[0].schemas[0].name;
             if (isNotEmpty(schema) && schema.indexOf('%') < 0) {
                 dataMap.setDefaultSchema(schema);
             }

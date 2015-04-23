@@ -18,24 +18,32 @@
  ****************************************************************/
 package org.apache.cayenne.access.loader.filters;
 
-import java.util.regex.Pattern;
-
 /**
- * @since 4.0
- */
-public class ExcludeFilter extends IncludeFilter {
+* @since 4.0.
+*/
+public class SchemaFilter {
+    public final String name;
+    public final TableFilter tables;
+    public final PatternFilter procedures;
 
-    ExcludeFilter(Pattern pattern) {
-        super(pattern);
-    }
-
-    @Override
-    public boolean isInclude(String obj) {
-        return !super.isInclude(obj);
+    public SchemaFilter(String name, TableFilter tables, PatternFilter procedures) {
+        this.name = name;
+        this.tables = tables;
+        this.procedures = procedures;
     }
 
     @Override
     public String toString() {
-        return "-(" + super.getPattern() + ')';
+        return toString(new StringBuilder(), "").toString();
+    }
+
+    protected StringBuilder toString(StringBuilder res, String prefix) {
+        res.append(prefix).append("Schema: ").append(name).append("\n");
+        tables.toString(res, prefix + "  ");
+
+        res.append(prefix).append("  Procedures: ");
+        procedures.toString(res).append("\n");
+
+        return res;
     }
 }

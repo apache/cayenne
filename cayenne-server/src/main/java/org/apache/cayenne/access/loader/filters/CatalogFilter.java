@@ -18,58 +18,45 @@
  ****************************************************************/
 package org.apache.cayenne.access.loader.filters;
 
-import java.util.regex.Pattern;
+import java.util.Arrays;
 
 /**
- * @since 4.0
- */
-public class IncludeFilter implements Filter<String> {
+* @since 4.0.
+*/
+public class CatalogFilter {
+    public final String name;
+    public final SchemaFilter[] schemas;
 
-    private final Pattern pattern;
-
-    IncludeFilter(Pattern pattern) {
-        this.pattern = pattern;
-    }
-
-    @Override
-    public boolean isInclude(String obj) {
-        return pattern.matcher(obj).matches();
-    }
-
-    @Override
-    public Filter join(Filter filter) {
-        return ListFilter.create(this, filter);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+    public CatalogFilter(String name, SchemaFilter... schemas) {
+        if (schemas == null || schemas.length == 0) {
+            throw new IllegalArgumentException("schemas(" + Arrays.toString(schemas) + ") can't be null or empty");
         }
 
-        if (o instanceof ListFilter) {
-            return o.equals(this);
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        return pattern.toString().equals(((IncludeFilter) o).pattern.toString());
-
+        this.name = name;
+        this.schemas = schemas;
     }
 
-    @Override
-    public int hashCode() {
-        return pattern.hashCode();
+    public SchemaFilter getSchema(String schema) {
+        for (SchemaFilter schemaFilter : schemas) {
+            if (schemaFilter.name == null || schemaFilter.name.equals(schema)) {
+                return schemaFilter;
+            }
+        }
+
+        return null;
     }
 
     @Override
     public String toString() {
-        return "+(" + pattern + ')';
+        return toString(new StringBuilder(), "").toString();
     }
 
-    protected Pattern getPattern() {
-        return pattern;
+    public StringBuilder toString(StringBuilder res, String prefix) {
+        res.append(prefix).append("Catalog: ").append(name).append("\n");
+        for (SchemaFilter schema : schemas) {
+            schema.toString(res, prefix + "  ");
+        }
+
+        return res;
     }
 }

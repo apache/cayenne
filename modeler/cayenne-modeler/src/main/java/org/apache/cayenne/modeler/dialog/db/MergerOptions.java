@@ -19,44 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.awt.Component;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.sql.DataSource;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.loader.filters.DbPath;
-import org.apache.cayenne.access.loader.filters.EntityFilters;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.PatternFilter;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.merge.AbstractToDbToken;
-import org.apache.cayenne.merge.DbMerger;
-import org.apache.cayenne.merge.ExecutingMergerContext;
-import org.apache.cayenne.merge.MergeDirection;
-import org.apache.cayenne.merge.MergerContext;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.ModelMergeDelegate;
+import org.apache.cayenne.merge.*;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
@@ -69,6 +42,18 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
+
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
 
 public class MergerOptions extends CayenneController {
 
@@ -170,7 +155,7 @@ public class MergerOptions extends CayenneController {
             merger = new DbMerger(adapter.mergerFactory());
 
             DbLoaderConfiguration config = new DbLoaderConfiguration();
-            config.setFiltersConfig(new FiltersConfig(new EntityFilters(new DbPath(null, defaultSchema))));
+            config.setFiltersConfig(FiltersConfig.create(null, defaultSchema, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
 
             List<MergerToken> mergerTokens = merger.createMergeTokens(
                     connectionInfo.makeDataSource(getApplication().getClassLoadingService()),

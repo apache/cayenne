@@ -57,4 +57,23 @@ public class ReverseEngineering extends FilterContainer {
         this.catalogs.add(catalog);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder res = new StringBuilder();
+        res.append("ReverseEngineering: ").append("\n");
+
+        if (!isBlank(catalogs)) {
+            for (Catalog catalog : catalogs) {
+                catalog.toString(res, "  ");
+            }
+        }
+
+        if (!isBlank(schemas)) {
+            for (Schema schema : schemas) {
+                schema.toString(res, "  ");
+            }
+        }
+
+        return super.toString(res, "  ").toString();
+    }
 }

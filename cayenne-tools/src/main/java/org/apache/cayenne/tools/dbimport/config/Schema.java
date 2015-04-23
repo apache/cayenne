@@ -55,4 +55,11 @@ public class Schema extends FilterContainer {
 
         setName(name);
     }
+
+    @Override
+    public StringBuilder toString(StringBuilder res, String prefix) {
+        res.append(prefix).append("Schema: ").append(name).append("\n");
+
+        return super.toString(res, prefix + "  ");
+    }
 }

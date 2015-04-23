@@ -18,10 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.loader;
 
-import org.apache.cayenne.access.loader.filters.DbPath;
-import org.apache.cayenne.access.loader.filters.EntityFilters;
-import org.apache.cayenne.access.loader.filters.FilterFactory;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.PatternFilter;
 
 /**
  * @since 4.0
@@ -99,7 +98,7 @@ public class DbLoaderConfiguration {
     public FiltersConfig getFiltersConfig() {
         if (filtersConfig == null) {
             // this case is used often in tests where config not initialized properly
-            return new FiltersConfig(new EntityFilters(new DbPath(), FilterFactory.TRUE, FilterFactory.TRUE, FilterFactory.TRUE));
+            return FiltersConfig.create(null, null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING);
         }
         return filtersConfig;
     }

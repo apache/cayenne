@@ -123,13 +123,14 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 			mapFileCopy = mapFile;
 		}
 
-		prepareDatabase(name, cdbImport.toParameters());
+        DbImportConfiguration parameters = cdbImport.toParameters();
+        prepareDatabase(name, parameters);
 
 		try {
 			cdbImport.execute();
 			verifyResult(mapFile, mapFileCopy);
 		} finally {
-			cleanDb(cdbImport.toParameters());
+			cleanDb(parameters);
 		}
 	}
 

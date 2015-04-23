@@ -30,15 +30,16 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.ManyToManyCandidateEntity;
-import org.apache.cayenne.access.loader.filters.EntityFilters;
-import org.apache.cayenne.access.loader.filters.Filter;
-import org.apache.cayenne.access.loader.filters.FiltersConfig;
-import org.apache.cayenne.access.loader.filters.DbPath;
+import org.apache.cayenne.access.loader.filters.*;
+import org.apache.cayenne.access.loader.filters.CatalogFilter;
+import org.apache.cayenne.access.loader.filters.SchemaFilter;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
@@ -60,8 +61,6 @@ import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.EntityMergeSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static org.apache.cayenne.access.loader.filters.FilterFactory.*;
 
 /**
  * Utility class that does reverse engineering of the database. It can create
@@ -223,27 +222,29 @@ public class DbLoader {
      * @return
      * @since 3.2
      */
-    public List<DbEntity> getTables(DbLoaderConfiguration config, String[] types)
+    public Map<DbEntity, PatternFilter> getTables(DbLoaderConfiguration config, String[] types)
             throws SQLException {
 
-        List<DbEntity> tables = new LinkedList<DbEntity>();
+        Map<DbEntity, PatternFilter> tables = new HashMap<DbEntity, PatternFilter>();
         FiltersConfig filters = config.getFiltersConfig();
-        for (DbPath path : filters.pathsForQueries()) {
-            tables.addAll(getDbEntities(filters, path, types));
+        for (CatalogFilter o : filters.catalogs) {
+            for (SchemaFilter schema : o.schemas) {
+                tables.putAll(getDbEntities(filters, o.name, schema.name, types));
+            }
         }
 
         return tables;
     }
 
-    private List<DbEntity> getDbEntities(FiltersConfig filters, DbPath dbPath, String[] types) throws SQLException {
+    private Map<DbEntity, PatternFilter> getDbEntities(FiltersConfig filters, String catalog, String schema, String[] types) throws SQLException {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Read tables: catalog=" + dbPath.catalog + ", schema=" + dbPath.schema + ", types="
+            LOGGER.debug("Read tables: catalog=" + catalog + ", schema=" + schema + ", types="
                     + Arrays.toString(types));
         }
 
-        ResultSet rs = getMetaData().getTables(dbPath.catalog, dbPath.schema, WILDCARD, types);
+        ResultSet rs = getMetaData().getTables(catalog, schema, WILDCARD, types);
 
-        List<DbEntity> tables = new ArrayList<DbEntity>();
+        Map<DbEntity, PatternFilter> tables = new HashMap<DbEntity, PatternFilter>();
         try {
             while (rs.next()) {
                 // Oracle 9i and newer has a nifty recycle bin feature... but we don't
@@ -258,14 +259,15 @@ public class DbLoader {
 
                 DbEntity table = new DetectedDbEntity(name);
 
-                String catalog = rs.getString("TABLE_CAT");
-                table.setCatalog(catalog);
+                String c = rs.getString("TABLE_CAT");
+                table.setCatalog(c);
 
-                String schema = rs.getString("TABLE_SCHEM");
-                table.setSchema(schema);
+                String s = rs.getString("TABLE_SCHEM");
+                table.setSchema(s);
 
-                if (filters.filter(new DbPath(catalog, schema)).tableFilter().isInclude(table)) {
-                    tables.add(table);
+                PatternFilter filter = filters.tableFilter(c, s).isIncludeTable(table.getName());
+                if (filter != null) {
+                    tables.put(table, filter);
                 }
             }
         } finally {
@@ -276,18 +278,17 @@ public class DbLoader {
 
     /**
      * Loads dbEntities for the specified tables.
-     * 
      * @param map
      *            DataMap to be populated with DbEntities.
-     * @param config
      * @param tables
-     *            The list of org.apache.cayenne.ashwood.dbutil.Table objects
-     *            for which DbEntities must be created.  @return false if loading must be immediately aborted.
+     * @param config
      */
-    public List<DbEntity> loadDbEntities(DataMap map, DbLoaderConfiguration config, Collection<? extends DbEntity> tables) throws SQLException {
+    public List<DbEntity> loadDbEntities(DataMap map, Map<DbEntity, PatternFilter> tables, DbLoaderConfiguration config) throws SQLException {
         /** List of db entities to process. */
         List<DbEntity> dbEntityList = new ArrayList<DbEntity>();
-        for (DbEntity dbEntity : tables) {
+        for (Entry<DbEntity, PatternFilter> entry : tables.entrySet()) {
+            DbEntity dbEntity = entry.getKey();
+            PatternFilter tableFilter = entry.getValue();
 
             // Check if there already is a DbEntity under such name
             // if so, consult the delegate what to do
@@ -326,7 +327,7 @@ public class DbLoader {
             if (delegate != null) {
                 delegate.dbEntityAdded(dbEntity);
             }
-            loadDbAttributes(config.getFiltersConfig(), dbEntity);
+            loadDbAttributes(dbEntity, tableFilter);
 
             // delegate might have thrown this entity out... so check if it is still
             // around before continuing processing
@@ -347,11 +348,11 @@ public class DbLoader {
 
     }
 
-    private void getPrimaryKeysForEachTableAndStoreItInDbEntity(DataMap map, Collection<? extends DbEntity> tables)
+    private void getPrimaryKeysForEachTableAndStoreItInDbEntity(DataMap map, Map<DbEntity, PatternFilter> tables)
             throws SQLException {
 
         for (DbEntity dbEntity : map.getDbEntities()) {
-            if (!tables.contains(dbEntity)) { // TODO is it ok? equals is not overridden
+            if (tables.get(dbEntity) == null) { // TODO is it ok? equals is not overridden
                 continue;
             }
 
@@ -381,7 +382,7 @@ public class DbLoader {
         }
     }
 
-    private void loadDbAttributes(FiltersConfig filters, DbEntity dbEntity) throws SQLException {
+    private void loadDbAttributes(DbEntity dbEntity, PatternFilter columnFilter) throws SQLException {
         ResultSet rs = getMetaData().getColumns(dbEntity.getCatalog(), dbEntity.getSchema(), dbEntity.getName(), "%");
 
         try {
@@ -399,12 +400,12 @@ public class DbLoader {
 
                 DbAttribute attr = loadDbAttribute(rs);
                 attr.setEntity(dbEntity);
-                DbPath path = new DbPath(dbEntity.getCatalog(), dbEntity.getSchema(), tableName);
-                Filter<DbAttribute> filter = filters.filter(path).columnFilter();
-                if (!filter.isInclude(attr)) {
+
+                if (!columnFilter.isInclude(attr.getName())) {
                     if (LOGGER.isDebugEnabled()) {
                         LOGGER.debug("Importing: attribute '" + attr.getEntity().getName() + "." + attr.getName()
-                                + "' is skipped (Path: " + path + "; Filter: " + filter + ")");
+                                + "' is skipped (Path: " + dbEntity.getCatalog() + "/" + dbEntity.getSchema() + "/"
+                                + dbEntity.getName() + "; Filter: " + columnFilter + ")");
                     }
                     continue;
                 }
@@ -540,8 +541,10 @@ public class DbLoader {
                     String fkEntityName = key.getFKTableName();
 
                     fkEntity = map.getDbEntity(fkEntityName);
-                    DbPath path = new DbPath(entity.getCatalog(), entity.getSchema(), entity.getName());
-                    if (!config.getFiltersConfig().filter(path).tableFilter().isInclude(fkEntity)) {
+                    PatternFilter filter = config.getFiltersConfig()
+                            .tableFilter(entity.getCatalog(), entity.getSchema())
+                                .isIncludeTable(fkEntity.getName());
+                    if (filter == null) {
                         continue;
                     }
 
@@ -699,19 +702,17 @@ public class DbLoader {
      * 
      * @since 1.0.7
      * @deprecated since 4.0 use
-     *             {@link #load(org.apache.cayenne.map.DataMap, DbLoaderConfiguration, String...)}
-     *             method that supports catalogs.
      */
     @Deprecated
-	public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, DataMap dataMap) throws SQLException {
+    public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, DataMap dataMap) throws SQLException {
 
-		DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-		configuration.setFiltersConfig(new FiltersConfig(new EntityFilters(new DbPath(null, schemaPattern),
-				include(tablePattern), TRUE, NULL)));
+        DbLoaderConfiguration configuration = new DbLoaderConfiguration();
+        configuration.setFiltersConfig(FiltersConfig.create(null, schemaPattern,
+                        TableFilter.include(tablePattern), PatternFilter.INCLUDE_NOTHING));
 
-		load(dataMap, configuration);
-		return dataMap;
-	}
+        load(dataMap, configuration);
+        return dataMap;
+    }
 
     /**
      * Performs database reverse engineering and generates DataMap object that
@@ -719,8 +720,6 @@ public class DbLoader {
      * of tables to read.
      * 
      * @deprecated since 4.0 use
-     *             {@link #load(org.apache.cayenne.map.DataMap, DbLoaderConfiguration, String...)}
-     *             method that supports catalogs.
      */
     @Deprecated
     public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, String[] tableTypes, DataMap dataMap)
@@ -728,22 +727,12 @@ public class DbLoader {
         dataMap.clear();
 
         DbLoaderConfiguration config = new DbLoaderConfiguration();
-        config.setFiltersConfig(new FiltersConfig(new EntityFilters(
-                new DbPath(null, schemaPattern), transformPatternToFilter(tablePattern), TRUE, NULL)));
+        config.setFiltersConfig(FiltersConfig.create(null, schemaPattern,
+                TableFilter.include(tablePattern), PatternFilter.INCLUDE_NOTHING));
         config.setTableTypes(tableTypes);
         
         load(dataMap, config);
         return dataMap;
-    }
-
-    private Filter<String> transformPatternToFilter(String tablePattern) {
-        Filter<String> table;
-        if (tablePattern == null) {
-            table = NULL;
-        } else {
-            table = include(tablePattern.replaceAll("%", ".*"));
-        }
-        return table;
     }
 
     /**
@@ -756,7 +745,7 @@ public class DbLoader {
 	public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
 
 		String[] tableTypes = config.getTableTypes() == null ? this.getDefaultTableTypes() : config.getTableTypes();
-		List<DbEntity> entities = loadDbEntities(dataMap, config, getTables(config, tableTypes));
+		List<DbEntity> entities = loadDbEntities(dataMap, getTables(config, tableTypes), config);
 
 		if (entities != null) {
 			loadDbRelationships(dataMap, config, entities);
@@ -784,8 +773,8 @@ public class DbLoader {
     @Deprecated
     public void loadProceduresFromDB(String schemaPattern, String namePattern, DataMap dataMap) throws SQLException {
         DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-        configuration.setFiltersConfig(new FiltersConfig(new EntityFilters(
-                new DbPath(null, schemaPattern), NULL, NULL, include(namePattern))));
+        configuration.setFiltersConfig(FiltersConfig.create(null, schemaPattern,
+                        TableFilter.include(null), new PatternFilter().include(namePattern)));
 
         loadProcedures(dataMap, configuration);
     }
@@ -896,21 +885,23 @@ public class DbLoader {
         Map<String, Procedure> procedures = new HashMap<String, Procedure>();
 
         FiltersConfig filters = config.getFiltersConfig();
-        for (DbPath dbPath : filters.pathsForQueries()) {
-            if (filters.filter(dbPath).procedureFilter().equals(NULL)) {
-                continue;
-            }
+        for (CatalogFilter catalogFilter : filters.catalogs) {
+            for (SchemaFilter schema : catalogFilter.schemas) {
+                if (filters.proceduresFilter(catalogFilter.name, schema.name) == null) {
+                    continue;
+                }
 
-            procedures.putAll(loadProcedures(filters, dbPath));
+                procedures.putAll(loadProcedures(filters, catalogFilter.name, schema.name));
+            }
         }
 
         return procedures;
     }
 
-    private Map<String, Procedure> loadProcedures(FiltersConfig filters, DbPath dbPath) throws SQLException {
+    private Map<String, Procedure> loadProcedures(FiltersConfig filters, String catalog, String schema) throws SQLException {
         Map<String, Procedure> procedures = new HashMap<String, Procedure>();
         // get procedures
-        ResultSet rs = getMetaData().getProcedures(dbPath.catalog, dbPath.schema, WILDCARD);
+        ResultSet rs = getMetaData().getProcedures(catalog, schema, WILDCARD);
         try {
             while (rs.next()) {
 
@@ -919,8 +910,7 @@ public class DbLoader {
                 procedure.setCatalog(rs.getString("PROCEDURE_CAT"));
                 procedure.setSchema(rs.getString("PROCEDURE_SCHEM"));
 
-                if (filters.filter(new DbPath(procedure.getCatalog(), procedure.getSchema()))
-                                .procedureFilter().isInclude(procedure)) {
+                if (filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema()).isInclude(name)) {
                     LOGGER.info("skipping Cayenne PK procedure: " + name);
                     continue;
                 }
