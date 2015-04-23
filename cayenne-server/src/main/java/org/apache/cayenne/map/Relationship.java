@@ -91,12 +91,11 @@ public abstract class Relationship implements CayenneMapEntry, XMLSerializable,
     /**
      * Sets relationship target entity. Internally calls <code>setTargetEntityName</code>.
      */
-    public void setTargetEntity(Entity targetEntity) {
+    public void setTargetEntityName(Entity targetEntity) {
         if (targetEntity != null) {
             setTargetEntityName(targetEntity.getName());
-        }
-        else {
-            setTargetEntityName(null);
+        } else {
+            setTargetEntityName((String) null);
         }
     }
 
@@ -159,9 +158,9 @@ public abstract class Relationship implements CayenneMapEntry, XMLSerializable,
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("name", getName()).append(
-                "toMany",
-                isToMany()).toString();
+        return new ToStringBuilder(this)
+                .append("name", getName())
+                .append("toMany", isToMany()).toString();
     }
 
     /**

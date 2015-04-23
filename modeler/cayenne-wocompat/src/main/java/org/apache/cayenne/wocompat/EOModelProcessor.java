@@ -568,7 +568,7 @@ public class EOModelProcessor {
 
                     dbRel = new DbRelationship();
                     dbRel.setSourceEntity(dbSrc);
-                    dbRel.setTargetEntity(dbTarget);
+                    dbRel.setTargetEntityName(dbTarget);
                     dbRel.setToMany(toMany);
                     dbRel.setName(relName);
                     dbRel.setToDependentPK(toDependentPK);
@@ -599,7 +599,7 @@ public class EOModelProcessor {
                 ObjRelationship rel = new ObjRelationship();
                 rel.setName(relName);
                 rel.setSourceEntity(objEntity);
-                rel.setTargetEntity(target);
+                rel.setTargetEntityName(target);
                 objEntity.addRelationship(rel);
 
                 if (dbRel != null) {

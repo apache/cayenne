@@ -25,7 +25,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.join;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class IncludeTable extends PatternParam {
 

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dba.mysql;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -203,6 +205,23 @@ public class MySQLAdapter extends JdbcAdapter {
         }
 
         return super.buildAttribute(name, typeName, type, size, precision, allowNulls);
+    }
+
+    @Override
+    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale) throws SQLException, Exception {
+        super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
+    }
+
+    private int mapNTypes(int sqlType) {
+        switch (sqlType) {
+            case Types.NCHAR : return Types.CHAR;
+            case Types.NCLOB : return Types.CLOB;
+            case Types.NVARCHAR : return Types.VARCHAR;
+            case Types.LONGNVARCHAR : return Types.LONGVARCHAR;
+
+            default:
+                return sqlType;
+        }
     }
 
     /**

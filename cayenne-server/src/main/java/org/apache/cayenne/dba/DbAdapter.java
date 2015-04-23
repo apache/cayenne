@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
@@ -34,6 +29,10 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * A Cayenne extension point that abstracts the differences between specifics of
@@ -63,10 +62,17 @@ public interface DbAdapter {
 
     /**
      * Returns true if a target database supports UNIQUE constraints.
-     * 
+     *
      * @since 1.1
      */
     boolean supportsUniqueConstraints();
+
+    /**
+     * Returns true if a target database supports catalogs on reverse engineering.
+     *
+     * @since 4.0
+     */
+    boolean supportsCatalogsOnReverseEngineering();
 
     /**
      * Returns true if a target database supports key autogeneration. This

@@ -18,9 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
 import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.dba.DbAdapter;
+import java.io.File;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -37,6 +40,9 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import javax.sql.DataSource;
+import java.io.File;
+
 /**
  * Maven mojo to reverse engineer datamap from DB.
  * 
@@ -50,7 +56,7 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * DataMap XML file to use as a base for DB importing.
      * 
-     * @parameter expression="${cdbimport.map}"
+     * @parameter map="map"
      * @required
      */
     private File map;
@@ -60,7 +66,7 @@ public class DbImporterMojo extends AbstractMojo {
      * existing DataMap already has the default package, the existing package
      * will be used.
      * 
-     * @parameter expression="${cdbimport.defaultPackage}"
+     * @parameter defaultPackage="defaultPackage"
      * @since 4.0
      */
     private String defaultPackage;
@@ -70,12 +76,12 @@ public class DbImporterMojo extends AbstractMojo {
      * with the new data based on reverse engineering. Default is
      * <code>true</code>.
      * 
-     * @parameter expression="${cdbimport.overwrite}" default-value="true"
+     * @parameter overwrite="overwrite" default-value="true"
      */
     private boolean overwrite;
 
     /**
-     * @parameter expression="${cdbimport.meaningfulPkTables}"
+     * @parameter meaningfulPkTables="meaningfulPkTables"
      * @since 4.0
      */
     private String meaningfulPkTables;
@@ -87,7 +93,7 @@ public class DbImporterMojo extends AbstractMojo {
      * 
      * The default is a basic naming strategy.
      * 
-     * @parameter expression="${cdbimport.namingStrategy}"
+     * @parameter namingStrategy="namingStrategy"
      *            default-value="org.apache.cayenne.map.naming.DefaultNameGenerator"
      */
     private String namingStrategy;
@@ -97,7 +103,7 @@ public class DbImporterMojo extends AbstractMojo {
      * is optional, the default is AutoAdapter, i.e. Cayenne would try to guess
      * the DB type.
      * 
-     * @parameter expression="${cdbimport.adapter}"
+     * @parameter adapter="adapter"
      *            default-value="org.apache.cayenne.dba.AutoAdapter"
      */
     private String adapter;
@@ -105,7 +111,7 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * A class of JDBC driver to use for the target database.
      * 
-     * @parameter expression="${cdbimport.driver}"
+     * @parameter driver="driver"
      * @required
      */
     private String driver;
@@ -113,7 +119,7 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * JDBC connection URL of a target database.
      * 
-     * @parameter expression="${cdbimport.url}"
+     * @parameter url="url"
      * @required
      */
     private String url;
@@ -121,21 +127,21 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * Database user name.
      * 
-     * @parameter expression="${cdbimport.username}"
+     * @parameter username="username"
      */
     private String username;
 
     /**
      * Database user password.
      * 
-     * @parameter expression="${cdbimport.password}"
+     * @parameter password="password"
      */
     private String password;
 
     /**
      * If true, would use primitives instead of numeric and boolean classes.
      * 
-     * @parameter expression="${cdbimport.usePrimitives}" default-value="true"
+     * @parameter usePrimitives="usePrimitives" default-value="true"
      */
     private boolean usePrimitives;
 
@@ -144,14 +150,14 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * If true, would use primitives instead of numeric and boolean classes.
      *
-     * @parameter expression="${cdbimport.reverseEngineering}"
+     * @parameter reverseEngineering="reverseEngineering"
      */
     private ReverseEngineering reverseEngineering = new ReverseEngineering();
 
     /**
      * DB schema to use for DB importing.
      *
-     * @parameter expression="${cdbimport.schemaName}"
+     * @parameter schemaName="schemaName"
      * @deprecated since 4.0 renamed to "schema"
      */
     private String schemaName;
@@ -166,7 +172,7 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * DB schema to use for DB importing.
      *
-     * @parameter expression="${cdbimport.schema}"
+     * @parameter schema="schema"
      * @since 4.0
      */
     private Schema schema;
@@ -184,7 +190,7 @@ public class DbImporterMojo extends AbstractMojo {
      *
      * The default is to match against all tables.
      *
-     * @parameter expression="${cdbimport.tablePattern}"
+     * @parameter tablePattern="tablePattern"
      */
     private String tablePattern;
 
@@ -197,7 +203,7 @@ public class DbImporterMojo extends AbstractMojo {
      *
      * Default is <code>false</code>.
      *
-     * @parameter expression="${cdbimport.importProcedures}"
+     * @parameter importProcedures="importProcedures"
      *            default-value="false"
      */
     private String importProcedures;
@@ -212,7 +218,7 @@ public class DbImporterMojo extends AbstractMojo {
      *
      * The default is to match against all stored procedures.
      *
-     * @parameter expression="${cdbimport.procedurePattern}"
+     * @parameter procedurePattern="procedurePattern"
      */
     private String procedurePattern;
 
@@ -226,7 +232,7 @@ public class DbImporterMojo extends AbstractMojo {
      *
      * Default is <code>false</code>.
      *
-     * @parameter expression="${cdbimport.meaningfulPk}" default-value="false"
+     * @parameter meaningfulPk="meaningfulPk"
      * @deprecated since 4.0 use meaningfulPkTables
      */
     private boolean meaningfulPk;
@@ -242,7 +248,10 @@ public class DbImporterMojo extends AbstractMojo {
         Log logger = new MavenLogger(this);
 
         DbImportConfiguration config = toParameters();
+        config.setLogger(logger);
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+
+        validateDbImportConfiguration(config, injector);
 
         try {
             injector.getInstance(DbImportAction.class).execute(config);
@@ -257,6 +266,27 @@ public class DbImporterMojo extends AbstractMojo {
 
             getLog().error(message);
             throw new MojoExecutionException(message, th);
+        }
+    }
+
+    private void validateDbImportConfiguration(DbImportConfiguration config, Injector injector) throws MojoExecutionException {
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
+        DataSource dataSource = null;
+        DbAdapter adapter = null;
+
+        try {
+            dataSource = injector.getInstance(DataSourceFactory.class).getDataSource(dataNodeDescriptor);
+            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(dataNodeDescriptor, dataSource);
+
+            if (!adapter.supportsCatalogsOnReverseEngineering() &&
+                    reverseEngineering.getCatalogs() != null && !reverseEngineering.getCatalogs().isEmpty()) {
+                String message = "Your database does not support catalogs on reverse engineering. " +
+                        "It allows to connect to only one at the moment. Please don't note catalogs as param.";
+                throw new MojoExecutionException(message);
+            }
+        } catch (Exception e) {
+            throw new MojoExecutionException("Error creating DataSource ("
+                    + dataSource + ") or DbAdapter (" + adapter + ") for DataNodeDescriptor (" + dataNodeDescriptor + ")", e);
         }
     }
 
@@ -279,6 +309,10 @@ public class DbImporterMojo extends AbstractMojo {
         config.setUsePrimitives(usePrimitives);
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
                 .add(filterBuilder).filtersConfig());
+        config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
+        config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
+        config.setTableTypes(reverseEngineering.getTableTypes());
+
         return config;
     }
 
@@ -311,7 +345,7 @@ public class DbImporterMojo extends AbstractMojo {
      * A comma-separated list of Perl5 regex that defines tables that should be
      * included in import.
      *
-     * @parameter expression="${cdbimport.includeTables}"
+     * @parameter includeTables="includeTables"
      */
     private String includeTables;
 
@@ -323,7 +357,7 @@ public class DbImporterMojo extends AbstractMojo {
      * A comma-separated list of Perl5 regex that defines tables that should be
      * skipped from import.
      *
-     * @parameter expression="${cdbimport.excludeTables}"
+     * @parameter excludeTables="excludeTables"
      */
     private String excludeTables;
 
@@ -338,7 +372,7 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * DB schema to use for DB importing.
      *
-     * @parameter expression="${cdbimport.catalog}"
+     * @parameter catalog="catalog"
      * @since 4.0
      */
     private Catalog catalog[];

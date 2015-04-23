@@ -223,6 +223,12 @@
                                 "false", classes will be generated in "destDir" ignoring their
                                 package.</td>
                         </tr>
+                        <tr>
+                            <td><code>createPropertyNames</code></td>
+                            <td>boolean</td>
+                            <td>If set to "true", will generate String Property names.
+                                Default is "false"</td>
+                        </tr>
                     </tbody>
                 </table> Example - a typical class generation scenario, where pairs of classes are
                 generated with default Maven source destination and superclass

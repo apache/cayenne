@@ -20,6 +20,7 @@ package org.apache.cayenne.access.types;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -28,13 +29,13 @@ public class CharTypeTest {
     @Test
     public void testRightTrim() {
         CharType charType = new CharType(true, false);
-        String trimmedStr = charType.rtrim("  text    ");
-        assertTrue("Trimmed string is not valid.", trimmedStr.equals("  text"));
-        
-        trimmedStr = charType.rtrim(" text");
-        assertTrue("Trimmed string is not valid.", trimmedStr.equals(" text"));
-        
-        trimmedStr = charType.rtrim("text");
-        assertTrue("Trimmed string is not valid.", trimmedStr.equals("text"));
+
+        assertEquals(charType.rtrim("  text    "), "  text");
+        assertEquals(charType.rtrim(" text"), " text");
+        assertEquals(charType.rtrim("text"), "text");
+
+        assertEquals(charType.rtrim(" Pẹlẹ O   \n"), " Pẹlẹ O");
+        assertEquals(charType.rtrim("Привет!\n"), "Привет!");
+        assertEquals(charType.rtrim("Привет!\t"), "Привет!");
     }
 }

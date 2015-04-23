@@ -103,7 +103,7 @@ public class TypesHandler {
     }
 
     public String[] externalTypesForJdbcType(int type) {
-        return typesMap.get(Integer.valueOf(type));
+        return typesMap.get(type);
     }
 
     /** 

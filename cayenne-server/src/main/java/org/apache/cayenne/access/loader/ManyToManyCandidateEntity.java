@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.loader;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -30,6 +27,9 @@ import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class represent ObjEntity that may be optimized using flattened relationships
@@ -72,7 +72,7 @@ public class ManyToManyCandidateEntity {
      */
     public static ManyToManyCandidateEntity build(ObjEntity joinEntity) {
         ArrayList<ObjRelationship> relationships = new ArrayList<ObjRelationship>(joinEntity.getRelationships());
-        if (relationships.size() != 2) {
+        if (relationships.size() != 2 || (relationships.get(0).getDbRelationships().isEmpty() || relationships.get(1).getDbRelationships().isEmpty())) {
             return null;
         }
 
@@ -88,9 +88,9 @@ public class ManyToManyCandidateEntity {
         boolean isNotHaveAttributes = joinEntity.getAttributes().size() == 0;
 
         return isNotHaveAttributes
-                && reverseRelationship1.isToDependentPK()
-                && reverseRelationship2.isToDependentPK()
-                && !entity1.equals(entity2);
+                && reverseRelationship1 != null && reverseRelationship1.isToDependentPK()
+                && reverseRelationship2 != null && reverseRelationship2.isToDependentPK()
+                && entity1 != null && entity2 != null && !entity1.equals(entity2);
     }
 
     private void addFlattenedRelationship(ObjectNameGenerator nameGenerator, ObjEntity srcEntity, ObjEntity dstEntity,
@@ -109,14 +109,15 @@ public class ManyToManyCandidateEntity {
                 null,
                 rel2.getTargetEntity().getName(),
                 rel2.getTargetAttributes().iterator().next().getName(),
-                null);
+                null,
+                (short) 1);
 
         ObjRelationship newRelationship = new ObjRelationship();
         newRelationship.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, srcEntity,
                 nameGenerator.createDbRelationshipName(key, true)));
 
         newRelationship.setSourceEntity(srcEntity);
-        newRelationship.setTargetEntity(dstEntity);
+        newRelationship.setTargetEntityName(dstEntity);
 
         newRelationship.addDbRelationship(rel1);
         newRelationship.addDbRelationship(rel2);

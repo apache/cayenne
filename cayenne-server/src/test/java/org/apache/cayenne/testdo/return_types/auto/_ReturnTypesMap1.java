@@ -99,6 +99,13 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
         return (String)readProperty("charColumn");
     }
 
+    public void setNCharColumn(String ncharColumn) {
+        writeProperty("ncharColumn", ncharColumn);
+    }
+    public String getNCharColumn() {
+        return (String)readProperty("ncharColumn");
+    }
+
     public void setDateColumn(Date dateColumn) {
         writeProperty("dateColumn", dateColumn);
     }
@@ -141,6 +148,13 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
         return (String)readProperty("longvarcharColumn");
     }
 
+    public void setLongnvarcharColumn(String longnvarcharColumn) {
+        writeProperty("longnvarcharColumn", longnvarcharColumn);
+    }
+    public String getLongnvarcharColumn() {
+        return (String)readProperty("longnvarcharColumn");
+    }
+
     public void setNumericColumn(BigDecimal numericColumn) {
         writeProperty("numericColumn", numericColumn);
     }
@@ -181,6 +195,13 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
     }
     public Byte getTinyintColumn() {
         return (Byte)readProperty("tinyintColumn");
+    }
+
+    public void setNVarcharColumn(String nvarcharColumn) {
+        writeProperty("nvarcharColumn", nvarcharColumn);
+    }
+    public String getNVarcharColumn() {
+        return (String)readProperty("nvarcharColumn");
     }
 
     public void setVarcharColumn(String varcharColumn) {

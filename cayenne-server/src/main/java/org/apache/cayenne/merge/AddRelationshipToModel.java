@@ -19,10 +19,15 @@
 package org.apache.cayenne.merge;
 
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+
+import static org.apache.cayenne.util.Util.join;
 
 public class AddRelationshipToModel extends AbstractToModelToken.Entity {
 
+    public static final String COMMA_SEPARATOR = ", ";
+    public static final int COMMA_SEPARATOR_LENGTH = COMMA_SEPARATOR.length();
     private DbRelationship rel;
 
     public AddRelationshipToModel(DbEntity entity, DbRelationship rel) {
@@ -43,11 +48,40 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
 
     @Override
     public String getTokenValue() {
-        return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
+        String attributes = "";
+        if (rel.getJoins().size() == 1) {
+            attributes = rel.getJoins().get(0).getTargetName();
+        } else {
+            for (DbJoin dbJoin : rel.getJoins()) {
+                attributes += dbJoin.getTargetName() + COMMA_SEPARATOR;
+            }
+
+            attributes = "{" + attributes.substring(0, attributes.length() - COMMA_SEPARATOR_LENGTH) + "}";
+        }
+
+        return rel.getName() + " " + rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName() + "." + attributes;
     }
-    
+
+
+    public static String getTokenValue(DbRelationship rel) {
+        String attributes = "";
+        if (rel.getJoins().size() == 1) {
+            attributes = rel.getJoins().get(0).getTargetName();
+        } else {
+            for (DbJoin dbJoin : rel.getJoins()) {
+                attributes += dbJoin.getTargetName() + COMMA_SEPARATOR;
+            }
+
+            attributes = "{" + attributes.substring(0, attributes.length() - COMMA_SEPARATOR_LENGTH) + "}";
+        }
+
+        return rel.getName() + " " + rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName() + "." + attributes;
+    }
+
     public DbRelationship getRelationship() {
         return rel;
     }
+
+
 
 }

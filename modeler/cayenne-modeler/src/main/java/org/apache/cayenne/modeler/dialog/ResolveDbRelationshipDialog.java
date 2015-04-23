@@ -349,7 +349,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
             if (reverseRelationship == null) {
                 reverseRelationship = new DbRelationship(targetEntityName);
                 reverseRelationship.setSourceEntity(relationship.getTargetEntity());
-                reverseRelationship.setTargetEntity(relationship.getSourceEntity());
+                reverseRelationship.setTargetEntityName(relationship.getSourceEntity());
                 reverseRelationship.setToMany(!relationship.isToMany());
                 relationship.getTargetEntity().addRelationship(reverseRelationship);
 

@@ -18,6 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.loader.NamePatternMatcher;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.Query;
+import org.apache.commons.logging.Log;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.NullLogSystem;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -27,19 +40,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.access.loader.NamePatternMatcher;
-import org.apache.commons.logging.Log;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.log.NullLogSystem;
 
 public class ClassGenerationAction {
     static final String TEMPLATES_DIR_NAME = "templates/v1_2/";
@@ -81,6 +81,7 @@ public class ClassGenerationAction {
     protected long timestamp;
     protected String outputPattern;
     protected String encoding;
+    protected boolean createPropertyNames;
 
     // runtime ivars
     protected VelocityContext context;
@@ -186,6 +187,8 @@ public class ClassGenerationAction {
 
         context.put(Artifact.OBJECT_KEY, artifact.getObject());
         context.put(Artifact.STRING_UTILS_KEY, stringUtils);
+
+        context.put(Artifact.CREATE_PROPERTY_NAMES, createPropertyNames);
     }
 
     /**
@@ -351,6 +354,13 @@ public class ClassGenerationAction {
      */
     public void setOutputPattern(String outputPattern) {
         this.outputPattern = outputPattern;
+    }
+
+    /**
+     * Sets <code>createPropertyNames</code> property.
+     */
+    public void setCreatePropertyNames(boolean createPropertyNames) {
+        this.createPropertyNames = createPropertyNames;
     }
 
     /**

@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
-* @since 3.2.
+* @since 4.0.
 */
 public final class FiltersConfigBuilder {
 

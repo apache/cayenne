@@ -19,100 +19,106 @@
 
 package org.apache.cayenne.reflect;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
 /**
- * A property accessor that uses set/get methods following JavaBean naming conventions.
+ * A property accessor that uses set/get methods following JavaBean naming
+ * conventions.
  * 
  * @since 1.2
  */
 public class BeanAccessor implements Accessor {
 
-    protected String propertyName;
-    protected Method readMethod;
-    protected Method writeMethod;
-    protected Object nullValue;
+	private static final long serialVersionUID = 606253801447018099L;
 
-    public BeanAccessor(Class<?> objectClass, String propertyName, Class<?> propertyType) {
-        if (objectClass == null) {
-            throw new IllegalArgumentException("Null objectClass");
-        }
+	protected String propertyName;
+	protected Method readMethod;
+	protected Method writeMethod;
+	protected Object nullValue;
 
-        if (propertyName == null) {
-            throw new IllegalArgumentException("Null propertyName");
-        }
+	public BeanAccessor(Class<?> objectClass, String propertyName, Class<?> propertyType) {
+		if (objectClass == null) {
+			throw new IllegalArgumentException("Null objectClass");
+		}
 
-        this.propertyName = propertyName;
-        this.nullValue = PropertyUtils.defaultNullValueForType(propertyType);
+		if (propertyName == null) {
+			throw new IllegalArgumentException("Null propertyName");
+		}
 
-        try {
-            PropertyDescriptor descriptor = new PropertyDescriptor(
-                    propertyName,
-                    objectClass);
+		if (propertyName.length() == 0) {
+			throw new IllegalArgumentException("Empty propertyName");
+		}
 
-            this.readMethod = descriptor.getReadMethod();
-            this.writeMethod = descriptor.getWriteMethod();
-        }
-        catch (IntrospectionException e) {
-            throw new PropertyException("Invalid bean property: " + propertyName, this, e);
-        }
-    }
+		this.propertyName = propertyName;
+		this.nullValue = PropertyUtils.defaultNullValueForType(propertyType);
 
-    public String getName() {
-        return propertyName;
-    }
+		String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 
-    /**
-     * @since 3.0
-     */
-    public Object getValue(Object object) throws PropertyException {
-        if (readMethod == null) {
-            throw new PropertyException(
-                    "Property '" + propertyName + "' is not readable",
-                    this,
-                    object);
-        }
+		try {
+			this.readMethod = objectClass.getMethod("get" + capitalized);
+		} catch (NoSuchMethodException e) {
 
-        try {
-            return readMethod.invoke(object, (Object[]) null);
-        }
-        catch (Throwable th) {
-            throw new PropertyException(
-                    "Error reading property: " + propertyName,
-                    this,
-                    object,
-                    th);
-        }
-    }
+			// try boolean
+			try {
+				Method readMethod = objectClass.getMethod("is" + capitalized);
+				this.readMethod = (readMethod.getReturnType().equals(Boolean.TYPE)) ? readMethod : null;
+			} catch (NoSuchMethodException e1) {
+				// not readable...
+			}
+		}
 
-    /**
-     * @since 3.0
-     */
-    public void setValue(Object object, Object newValue) throws PropertyException {
+		if (readMethod == null) {
+			throw new IllegalArgumentException("Property '" + propertyName + "' is not readbale");
+		}
 
-        if (writeMethod == null) {
-            throw new PropertyException(
-                    "Property '" + propertyName + "' is not writable",
-                    this,
-                    object);
-        }
+		// TODO: compare 'propertyType' arg with readMethod.getReturnType()
 
-        // this will take care of primitives.
-        if (newValue == null) {
-            newValue = this.nullValue;
-        }
+		try {
+			this.writeMethod = objectClass.getMethod("set" + capitalized, readMethod.getReturnType());
+		} catch (NoSuchMethodException e) {
+			// read-only is supported...
+		}
+	}
 
-        try {
-            writeMethod.invoke(object, newValue);
-        }
-        catch (Throwable th) {
-            throw new PropertyException(
-                    "Error reading property: " + propertyName,
-                    this,
-                    object,
-                    th);
-        }
-    }
+	public String getName() {
+		return propertyName;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public Object getValue(Object object) throws PropertyException {
+
+		try {
+			return readMethod.invoke(object, (Object[]) null);
+		} catch (Throwable th) {
+			throw new PropertyException("Error reading property: " + propertyName, this, object, th);
+		}
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void setValue(Object object, Object newValue) throws PropertyException {
+
+		if (writeMethod == null) {
+			throw new PropertyException("Property '" + propertyName + "' is not writable", this, object);
+		}
+
+		Class type = writeMethod.getParameterTypes()[0];
+		Converter<?> converter = ConverterFactory.factory.getConverter(type);
+		newValue = (converter != null) ? converter.convert(newValue, type) : newValue;
+
+		// this will take care of primitives.
+		if (newValue == null) {
+			newValue = this.nullValue;
+		}
+
+		try {
+			writeMethod.invoke(object, newValue);
+		} catch (Throwable th) {
+			throw new PropertyException("Error reading property: " + propertyName, this, object, th);
+		}
+	}
 }

@@ -391,11 +391,11 @@ public class ObjRelationshipIT extends ServerCase {
         DbRelationship r2 = new DbRelationship("Y");
 
         r1.setSourceEntity(artistDBEntity);
-        r1.setTargetEntity(artistExhibitDBEntity);
+        r1.setTargetEntityName(artistExhibitDBEntity);
         r1.setToMany(true);
 
         r2.setSourceEntity(artistExhibitDBEntity);
-        r2.setTargetEntity(exhibitDBEntity);
+        r2.setTargetEntityName(exhibitDBEntity);
         r2.setToMany(false);
 
         ObjRelationship relationship = new ObjRelationship();
@@ -444,13 +444,13 @@ public class ObjRelationshipIT extends ServerCase {
         DbRelationship r3 = new DbRelationship("Z");
 
         r1.setSourceEntity(artistDBEntity);
-        r1.setTargetEntity(artistExhibitDBEntity);
+        r1.setTargetEntityName(artistExhibitDBEntity);
         r1.setToMany(true);
         r2.setSourceEntity(artistExhibitDBEntity);
-        r2.setTargetEntity(exhibitDBEntity);
+        r2.setTargetEntityName(exhibitDBEntity);
         r2.setToMany(false);
         r3.setSourceEntity(exhibitDBEntity);
-        r3.setTargetEntity(galleryDBEntity);
+        r3.setTargetEntityName(galleryDBEntity);
         r3.setToMany(false);
 
         ObjRelationship relationship = new ObjRelationship();
@@ -473,10 +473,10 @@ public class ObjRelationshipIT extends ServerCase {
         DbRelationship r2 = new DbRelationship("Y");
 
         r1.setSourceEntity(artistDBEntity);
-        r1.setTargetEntity(paintingDbEntity);
+        r1.setTargetEntityName(paintingDbEntity);
         r1.setToMany(true);
         r2.setSourceEntity(paintingDbEntity);
-        r2.setTargetEntity(galleryDBEntity);
+        r2.setTargetEntityName(galleryDBEntity);
         r2.setToMany(false);
 
         ObjRelationship relationship = new ObjRelationship();

@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
 import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
@@ -44,10 +42,11 @@ import java.io.FilenameFilter;
  */
 public class CayenneGeneratorMojo extends AbstractMojo {
 
-	/**
+    public static final File[] NO_FILES = new File[0];
+    /**
 	 * Path to additional DataMap XML files to use for class generation.
 	 * 
-	 * @parameter expression="${cgen.additionalMaps}"
+	 * @parameter additionalMaps="additionalMaps"
 	 */
 	private File additionalMaps;
 
@@ -55,14 +54,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Whether we are generating classes for the client tier in a Remote Object
 	 * Persistence application. Default is <code>false</code>.
 	 * 
-	 * @parameter expression="${cgen.client}" default-value="false"
+	 * @parameter client="client" default-value="false"
 	 */
 	private boolean client;
 
 	/**
 	 * Destination directory for Java classes (ignoring their package names).
 	 * 
-	 * @parameter expression="${cgen.destDir}" default-value="${project.build.sourceDirectory}"
+	 * @parameter destDir="destDir" default-value="${project.build.sourceDirectory}"
 	 */
 	private File destDir;
 
@@ -73,7 +72,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16. See Sun Java
 	 * Docs for java.nio.charset.Charset for more information.
 	 * 
-	 * @parameter expression="${cgen.encoding}"
+	 * @parameter encoding="encoding"
 	 */
 	private String encoding;
 
@@ -81,7 +80,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Entities (expressed as a perl5 regex) to exclude from template
 	 * generation. (Default is to include all entities in the DataMap).
 	 * 
-	 * @parameter expression="${cgen.excludeEntities}"
+	 * @parameter excludeEntities="excludeEntities"
 	 */
 	private String excludeEntities;
 
@@ -89,7 +88,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Entities (expressed as a perl5 regex) to include in template generation.
 	 * (Default is to include all entities in the DataMap).
 	 * 
-	 * @parameter expression="${cgen.includeEntities}"
+	 * @parameter includeEntities="includeEntities"
 	 */
 	private String includeEntities;
 
@@ -98,14 +97,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * with all generated code included in superclass (default is
 	 * <code>true</code>).
 	 * 
-	 * @parameter expression="${cgen.makePairs}" default-value="true"
+	 * @parameter makePairs="makePairs" default-value="true"
 	 */
 	private boolean makePairs;
 
 	/**
 	 * DataMap XML file to use as a base for class generation.
 	 * 
-	 * @parameter expression="${cgen.map}"
+	 * @parameter map="map"
 	 * @required
 	 */
 	private File map;
@@ -117,14 +116,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * supports specifying one-and-only-one datamap). (Default is
 	 * &quot;entity&quot;)
 	 * 
-	 * @parameter expression="${cgen.mode}" default-value="entity"
+	 * @parameter mode="mode" default-value="entity"
 	 */
 	private String mode;
 
 	/**
 	 * Name of file for generated output. (Default is &quot;*.java&quot;)
 	 * 
-	 * @parameter expression="${cgen.outputPattern}" default-value="*.java"
+	 * @parameter outputPattern="outputPattern" default-value="*.java"
 	 */
 	private String outputPattern;
 
@@ -132,7 +131,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * If set to <code>true</code>, will overwrite older versions of generated
 	 * classes. Ignored unless makepairs is set to <code>false</code>.
 	 * 
-	 * @parameter expression="${cgen.overwrite}" default-value="false"
+	 * @parameter overwrite="overwrite" default-value="false"
 	 */
 	private boolean overwrite;
 
@@ -144,7 +143,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * <code>usepkgpath</code> is set to <code>true</code>. Otherwise classes
 	 * from different packages will end up in the same directory.
 	 * 
-	 * @parameter expression="${cgen.superPkg}" 
+	 * @parameter superPkg="superPkg" 
 	 */
 	private String superPkg;
 
@@ -153,7 +152,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
 	 * omitted, default template is used.
 	 * 
-	 * @parameter expression="${cgen.superTemplate}"
+	 * @parameter superTemplate="superTemplate"
 	 */
 	private String superTemplate;
 
@@ -161,7 +160,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Location of Velocity template file for Entity class generation. If
 	 * omitted, default template is used.
 	 * 
-	 * @parameter expression="${cgen.template}"
+	 * @parameter template="template"
 	 */
 	private String template;
 
@@ -170,7 +169,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
 	 * omitted, default template is used.
 	 * 
-	 * @parameter expression="${cgen.embeddableSuperTemplate}"
+	 * @parameter embeddableSuperTemplate="embeddableSuperTemplate"
 	 */
 	private String embeddableSuperTemplate;
 
@@ -178,7 +177,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Location of Velocity template file for Embeddable class generation. If
 	 * omitted, default template is used.
 	 * 
-	 * @parameter expression="${cgen.embeddableTemplate}"
+	 * @parameter embeddableTemplate="embeddableTemplate"
 	 */
 	private String embeddableTemplate;
 
@@ -188,9 +187,17 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * <code>false</code>, classes will be generated in &quot;destDir&quot;
 	 * ignoring their package.
 	 * 
-	 * @parameter expression="${cgen.usePkgPath}" default-value="true"
+	 * @parameter usePkgPath="usePkgPath" default-value="true"
 	 */
 	private boolean usePkgPath;
+
+    /**
+     * If set to <code>true</code>, will generate String Property names.
+     * Default is <code>false</code>.
+     *
+     * @parameter createPropertyNames="createPropertyNames" default-value="false"
+     */
+    private boolean createPropertyNames;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
@@ -235,8 +242,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 */
 	protected File[] convertAdditionalDataMaps() throws Exception {
 
-		if (null == additionalMaps) {
-			return new File[0];
+		if (additionalMaps == null) {
+			return NO_FILES;
 		}
 
 		if (!additionalMaps.isDirectory()) {
@@ -247,12 +254,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
         FilenameFilter mapFilter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                if (name != null &&
-                        name.toLowerCase().endsWith(".map.xml")) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return name != null &&
+                       name.toLowerCase().endsWith(".map.xml");
             }
         };
         return additionalMaps.listFiles(mapFilter);
@@ -283,6 +286,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		action.setEmbeddableSuperTemplate(embeddableSuperTemplate);
 		action.setEmbeddableTemplate(embeddableTemplate);
 		action.setUsePkgPath(usePkgPath);
+        action.setCreatePropertyNames(createPropertyNames);
 
 		return action;
 	}

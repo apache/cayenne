@@ -156,6 +156,11 @@ public class CustomModeController extends GeneratorController {
                 "customPreferencesUpdater.outputPattern").
                 updateView();
 
+        builder.bindToStateChange(
+                view.getCreatePropertyNames(),
+                "customPreferencesUpdater.createPropertyNames").
+                updateView();
+
         updateTemplates();
     }
 
@@ -255,6 +260,7 @@ public class CustomModeController extends GeneratorController {
             generator.setOverwrite(view.getOverwrite().isSelected());
             generator.setUsePkgPath(view.getUsePackagePath().isSelected());
             generator.setMakePairs(view.getPairs().isSelected());
+            generator.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
 
             if (!Util.isEmptyString(view.getOutputPattern().getText())) {
                 generator.setOutputPattern(view.getOutputPattern().getText());

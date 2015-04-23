@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
 public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader {
 
@@ -57,6 +57,10 @@ public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader
             ReverseEngineering engineering = new ReverseEngineering();
 
             Element root = doc.getDocumentElement();
+            engineering.setSkipRelationshipsLoading(loadBoolean(root, "skipRelationshipsLoading"));
+            engineering.setSkipPrimaryKeyLoading(loadBoolean(root, "skipPrimaryKeyLoading"));
+            engineering.setTableTypes(loadTableTypes(root));
+
             engineering.setCatalogs(loadCatalogs(root));
             engineering.setSchemas(loadSchemas(root));
             engineering.setIncludeTables(loadIncludeTables(root));
@@ -77,6 +81,10 @@ public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader
 
 
         return null;
+    }
+
+    private Boolean loadBoolean(Element root, String name) {
+        return Boolean.valueOf(loadByName(root, name));
     }
 
     private Collection<ExcludeProcedure> loadExcludeProcedures(Node parent) {
@@ -148,6 +156,16 @@ public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader
             catalog.setExcludeProcedures(loadExcludeProcedures(catalogNode));
 
             res.add(catalog);
+        }
+
+        return res;
+    }
+
+    private Collection<String> loadTableTypes(Node parent) {
+        List<Node> types = getElementsByTagName(parent, "tableType");
+        Collection<String> res = new LinkedList<String>();
+        for (Node typeNode : types) {
+            res.add(loadName(typeNode));
         }
 
         return res;

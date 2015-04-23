@@ -59,7 +59,7 @@ public class SQLTemplateIT extends ServerCase {
 				Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
 	}
 
-    @Test
+	@Test
 	public void testSQLTemplateForDataMap() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
@@ -67,7 +67,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(0, result.size());
 	}
 
-    @Test
+	@Test
 	public void testSQLTemplateForDataMapWithInsert() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
@@ -79,7 +79,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(1, result.size());
 	}
 
-    @Test
+	@Test
 	public void testSQLTemplateForDataMapWithInsertException() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
@@ -97,7 +97,7 @@ public class SQLTemplateIT extends ServerCase {
 				gotRuntimeException);
 	}
 
-    @Test
+	@Test
 	public void testSQLTemplate_PositionalParams() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
@@ -112,39 +112,34 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(10005.d, tPainting.getDouble("ESTIMATED_PRICE"), 0.001);
 	}
 
-    @Test
+	@Test
 	public void testSQLTemplate_PositionalParams_RepeatingVars() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
 				+ "VALUES ($b, '$n', #bind($b 'INTEGER'))";
 
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
-		q1.setParamsArray(11, "The Fiddler", 4567);
+		q1.setParamsArray(11, "The Fiddler");
 		context.performNonSelectingQuery(q1);
 
 		assertEquals("The Fiddler", tPainting.getString("PAINTING_TITLE"));
 		assertEquals(11, tPainting.getInt("PAINTING_ID"));
-		assertEquals(4567.d, tPainting.getDouble("ESTIMATED_PRICE"), 0.001);
+		assertEquals(11.d, tPainting.getDouble("ESTIMATED_PRICE"), 0.001);
 	}
 
-    @Test
+	@Test(expected = CayenneRuntimeException.class)
 	public void testSQLTemplate_PositionalParams_ToFewParams() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
-				+ "VALUES ($b, '$n', #bind($b 'INTEGER'))";
+				+ "VALUES ($b, '$n', #bind($c 'INTEGER'))";
 
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.setParamsArray(11, "The Fiddler");
 
-		try {
-			context.performNonSelectingQuery(q1);
-			fail("Exception not thrown on parameter length mismatch");
-		} catch (CayenneRuntimeException e) {
-			// expected
-		}
+		context.performNonSelectingQuery(q1);
 	}
 
-    @Test
+	@Test
 	public void testSQLTemplate_PositionalParams_ToManyParams() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "

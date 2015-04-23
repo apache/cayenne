@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * @since 3.2.
+ * @since 4.0.
  */
-public class FilterContainer {
+public abstract class FilterContainer {
 
     private Collection<IncludeTable> includeTables = new LinkedList<IncludeTable>();
     private Collection<ExcludeTable> excludeTables = new LinkedList<ExcludeTable>();

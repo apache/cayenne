@@ -32,12 +32,12 @@ public class LegacyNameGeneratorTest {
         LegacyNameGenerator strategy = new LegacyNameGenerator();
         
         ExportedKey key = new ExportedKey("ARTIST", "ARTIST_ID", null,
-                "PAINTING", "ARTIST_ID", null);
+                "PAINTING", "ARTIST_ID", null, (short) 1);
         assertEquals(strategy.createDbRelationshipName(key, false), "toArtist"); 
         assertEquals(strategy.createDbRelationshipName(key, true), "paintingArray");
         
         key = new ExportedKey("PERSON", "PERSON_ID", null,
-                "PERSON", "MOTHER_ID", null);
+                "PERSON", "MOTHER_ID", null, (short) 1);
         assertEquals(strategy.createDbRelationshipName(key, false), "toPerson"); 
         assertEquals(strategy.createDbRelationshipName(key, true), "personArray");
         

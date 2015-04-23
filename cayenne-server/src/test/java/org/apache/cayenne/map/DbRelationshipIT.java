@@ -93,7 +93,7 @@ public class DbRelationshipIT extends ServerCase {
         DbRelationship rforward = new DbRelationship("rforward");
         e.addRelationship(rforward);
         rforward.setSourceEntity(e);
-        rforward.setTargetEntity(e);
+        rforward.setTargetEntityName(e);
 
         assertNull(rforward.getReverseRelationship());
 
@@ -109,7 +109,7 @@ public class DbRelationshipIT extends ServerCase {
         DbRelationship rback = new DbRelationship("rback");
         e.addRelationship(rback);
         rback.setSourceEntity(e);
-        rback.setTargetEntity(e);
+        rback.setTargetEntityName(e);
 
         assertNull(rforward.getReverseRelationship());
 

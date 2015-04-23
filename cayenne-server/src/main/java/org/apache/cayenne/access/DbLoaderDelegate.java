@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -30,16 +30,27 @@ import org.apache.cayenne.map.ObjEntity;
  */
 public interface DbLoaderDelegate {
 
-    /**
-     * Returns true to tell DbLoader that it is OK to overwrite DbEntity that
-     * already exists in the model. If loading process should be stopped
-     * immediately, an exception is thrown.
-     */
-    boolean overwriteDbEntity(DbEntity entity) throws CayenneException;
-
     void dbEntityAdded(DbEntity entity);
 
     void dbEntityRemoved(DbEntity entity);
+
+    /**
+     * Called before relationship loading for db-entity
+     * @param entity
+     *
+     * @return true in case you want process relationships for this entity
+     *         false otherwise
+     */
+    boolean dbRelationship(DbEntity entity);
+
+    /**
+     * Called before relationship will be added into db-entity but after it was loaded from db
+     * @param entity
+     *
+     * @return true in case you want add this relationship into entity
+     *         false otherwise
+     */
+    boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship);
 
     void objEntityAdded(ObjEntity entity);
 

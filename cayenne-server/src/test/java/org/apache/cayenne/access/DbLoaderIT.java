@@ -104,13 +104,14 @@ public class DbLoaderIT extends ServerCase {
 
         String tableLabel = adapter.tableTypeForTable();
 
-        Map<DbEntity, PatternFilter> tables = loader.getTables(new DbLoaderConfiguration(), new String[]{tableLabel});
+        Collection<DbEntity> tables = loader.getTables(new DbLoaderConfiguration(), new String[] { tableLabel })
+                .values().iterator().next().values();
 
         assertNotNull(tables);
 
         boolean foundArtist = false;
 
-        for (DbEntity table : tables.keySet()) {
+        for (DbEntity table : tables) {
             if ("ARTIST".equalsIgnoreCase(table.getName())) {
                 foundArtist = true;
                 break;
@@ -161,7 +162,7 @@ public class DbLoaderIT extends ServerCase {
             testLoader = loader.getTables(CONFIG, tableLabel);
         }
 
-        List<DbEntity> entities = loader.loadDbEntities(map, testLoader, CONFIG);
+        List<DbEntity> entities = loader.loadDbEntities(map, CONFIG, testLoader);
         loader.loadObjEntities(map, CONFIG, entities);
 
         ObjEntity artist = map.getObjEntity("Artist");
@@ -199,7 +200,13 @@ public class DbLoaderIT extends ServerCase {
         }
 
         // *** TESTING THIS ***
-        loader.loadDbRelationships(map, CONFIG, entities);
+        HashMap<DbPath, Map<String, DbEntity>> tables = new HashMap<DbPath, Map<String, DbEntity>>();
+        HashMap<String, DbEntity> value = new HashMap<String, DbEntity>();
+        for (DbEntity e : entities) {
+            value.put(e.getName(), e);
+        }
+        tables.put(new DbPath(), value);
+        loader.loadDbRelationships(CONFIG, tables);
 
         if (supportsFK) {
             Collection<DbRelationship> rels = getDbEntity(map, "ARTIST").getRelationships();
@@ -263,19 +270,14 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull("Null 'ARTIST' entity, other DbEntities: " + map.getDbEntityMap(), dae);
         assertEquals("ARTIST", dae.getName().toUpperCase());
 
-        if (accessStackAdapter.supportsCatalogs()) {
-            assertNotNull(dae.getCatalog());
-            assertEquals("CAYENNE", dae.getCatalog().toUpperCase());
-        }
-
         DbAttribute a = getDbAttribute(dae, "ARTIST_ID");
         assertNotNull(a);
         assertTrue(a.isPrimaryKey());
         assertFalse(a.isGenerated());
 
         if (adapter.supportsGeneratedKeys()) {
-            DbEntity bag = getDbEntity(map, "BAG");
-            DbAttribute id = bag.getAttribute("ID");
+            DbEntity bag = getDbEntity(map, "GENERATED_COLUMN_TEST");
+            DbAttribute id = bag.getAttribute("GENERATED_COLUMN");
             assertTrue(id.isPrimaryKey());
             assertTrue(id.isGenerated());
         }
@@ -313,12 +315,22 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull(blobAttr);
         assertTrue(msgForTypeMismatch(Types.BLOB, blobAttr), Types.BLOB == blobAttr.getType()
                 || Types.LONGVARBINARY == blobAttr.getType());
+
         DbEntity clobEnt = getDbEntity(map, "CLOB_TEST");
         assertNotNull(clobEnt);
         DbAttribute clobAttr = getDbAttribute(clobEnt, "CLOB_COL");
         assertNotNull(clobAttr);
         assertTrue(msgForTypeMismatch(Types.CLOB, clobAttr), Types.CLOB == clobAttr.getType()
                 || Types.LONGVARCHAR == clobAttr.getType());
+
+/*
+        DbEntity nclobEnt = getDbEntity(map, "NCLOB_TEST");
+        assertNotNull(nclobEnt);
+        DbAttribute nclobAttr = getDbAttribute(nclobEnt, "NCLOB_COL");
+        assertNotNull(nclobAttr);
+        assertTrue(msgForTypeMismatch(Types.NCLOB, nclobAttr), Types.NCLOB == nclobAttr.getType()
+                || Types.LONGVARCHAR == nclobAttr.getType());
+*/
     }
 
     private void assertLobObjEntities(DataMap map) {
@@ -328,12 +340,22 @@ public class DbLoaderIT extends ServerCase {
         ObjAttribute blobAttr = blobEnt.getAttribute("blobCol");
         assertNotNull("BlobTest.blobCol failed to doLoad", blobAttr);
         assertEquals("byte[]", blobAttr.getType());
+
+
         ObjEntity clobEnt = map.getObjEntity("ClobTest");
         assertNotNull(clobEnt);
         // CLOBs should be mapped as Strings by default
         ObjAttribute clobAttr = clobEnt.getAttribute("clobCol");
         assertNotNull(clobAttr);
         assertEquals(String.class.getName(), clobAttr.getType());
+
+
+        ObjEntity nclobEnt = map.getObjEntity("NclobTest");
+        assertNotNull(nclobEnt);
+        // CLOBs should be mapped as Strings by default
+        ObjAttribute nclobAttr = nclobEnt.getAttribute("nclobCol");
+        assertNotNull(nclobAttr);
+        assertEquals(String.class.getName(), nclobAttr.getType());
     }
 
     private DbEntity getDbEntity(DataMap map, String name) {
@@ -421,187 +443,4 @@ public class DbLoaderIT extends ServerCase {
     private static String attrMismatch(String attrName, String msg) {
         return "[Error loading attribute '" + attrName + "': " + msg + "]";
     }
-
-/*
-    TODO
-
-    @Test
-    public void testCreateLoader() throws Exception {
-
-        DbLoader loader = parameters.createLoader(mock(DbAdapter.class), connection,
-                mock(DbLoaderDelegate.class));
-        assertNotNull(loader);
-        assertSame(connection, loader.getConnection());
-
-        assertTrue(loader.includeTableName("dummy"));
-    }
-
-    @Test
-    public void testCreateLoader_IncludeExclude() throws Exception {
-        DbImportConfiguration parameters = new DbImportConfiguration();
-        parameters.setIncludeTables("a,b,c*");
-
-        DbLoader loader1 = parameters.createLoader(mock(DbAdapter.class), mock(Connection.class),
-                mock(DbLoaderDelegate.class));
-
-        assertFalse(loader1.includeTableName("dummy"));
-        assertFalse(loader1.includeTableName("ab"));
-        assertTrue(loader1.includeTableName("a"));
-        assertTrue(loader1.includeTableName("b"));
-        assertTrue(loader1.includeTableName("cd"));
-
-        parameters.setExcludeTables("cd");
-
-        DbLoader loader2 = parameters.createLoader(mock(DbAdapter.class), mock(Connection.class),
-                mock(DbLoaderDelegate.class));
-
-        assertFalse(loader2.includeTableName("dummy"));
-        assertFalse(loader2.includeTableName("ab"));
-        assertTrue(loader2.includeTableName("a"));
-        assertTrue(loader2.includeTableName("b"));
-        assertFalse(loader2.includeTableName("cd"));
-        assertTrue(loader2.includeTableName("cx"));
-    }
-
-
-    @Test
-    public void testCreateLoader_MeaningfulPk_Default() throws Exception {
-        DbImportConfiguration parameters = new DbImportConfiguration();
-        assertNull(parameters.getMeaningfulPkTables());
-
-        DbLoader loader1 = parameters.createLoader(mock(DbAdapter.class), mock(Connection.class),
-                mock(DbLoaderDelegate.class));
-
-        DataMap map = new DataMap();
-
-        DbEntity e1 = new DbEntity("e1");
-        DbAttribute pk = new DbAttribute("pk", Types.INTEGER, e1);
-        pk.setPrimaryKey(true);
-        e1.addAttribute(pk);
-        DbAttribute nonPk = new DbAttribute("nonPk", Types.INTEGER, e1);
-        e1.addAttribute(nonPk);
-
-        map.addDbEntity(e1);
-
-        // DbLoader is so ugly and hard to test..
-        Field dbEntityList = DbLoader.class.getDeclaredField("dbEntityList");
-        dbEntityList.setAccessible(true);
-        List<DbEntity> entities = (List<DbEntity>) dbEntityList.get(loader1);
-        entities.add(e1);
-
-        loader1.loadObjEntities(map, entities);
-
-        ObjEntity oe1 = map.getObjEntity("E1");
-        assertEquals(1, oe1.getAttributes().size());
-        assertNotNull(oe1.getAttribute("nonPk"));
-    }
-
-    @Test
-    public void testCreateLoader_MeaningfulPk_Specified() throws Exception {
-        DbImportConfiguration parameters = new DbImportConfiguration();
-        parameters.setMeaningfulPkTables("a*");
-
-        DbLoader loader1 = parameters.createLoader(mock(DbAdapter.class), mock(Connection.class),
-                mock(DbLoaderDelegate.class));
-
-        // DbLoader is so ugly and hard to test..
-        Field dbEntityList = DbLoader.class.getDeclaredField("dbEntityList");
-        dbEntityList.setAccessible(true);
-        Collection<DbEntity> entities = (List<DbEntity>) dbEntityList.get(loader1);
-
-        DataMap map = new DataMap();
-
-        DbEntity e1 = new DbEntity("e1");
-        DbAttribute pk = new DbAttribute("pk", Types.INTEGER, e1);
-        pk.setPrimaryKey(true);
-        e1.addAttribute(pk);
-        DbAttribute nonPk = new DbAttribute("nonPk", Types.INTEGER, e1);
-        e1.addAttribute(nonPk);
-
-        map.addDbEntity(e1);
-        entities.add(e1);
-
-        DbEntity a1 = new DbEntity("a1");
-        DbAttribute apk = new DbAttribute("pk", Types.INTEGER, a1);
-        apk.setPrimaryKey(true);
-        a1.addAttribute(apk);
-        DbAttribute anonPk = new DbAttribute("nonPk", Types.INTEGER, a1);
-        a1.addAttribute(anonPk);
-
-        map.addDbEntity(a1);
-        entities.add(a1);
-
-        loader1.loadObjEntities(map, entities);
-
-        ObjEntity oe1 = map.getObjEntity("E1");
-        assertEquals(1, oe1.getAttributes().size());
-        assertNotNull(oe1.getAttribute("nonPk"));
-
-        ObjEntity oe2 = map.getObjEntity("A1");
-        assertEquals(2, oe2.getAttributes().size());
-        assertNotNull(oe2.getAttribute("nonPk"));
-        assertNotNull(oe2.getAttribute("pk"));
-    }
-
-    @Test
-    public void testCreateLoader_UsePrimitives_False() throws Exception {
-        DbImportConfiguration parameters = new DbImportConfiguration();
-        parameters.setUsePrimitives(false);
-
-        DbLoader loader1 = parameters.createLoader(mock(DbAdapter.class), mock(Connection.class),
-                mock(DbLoaderDelegate.class));
-
-        DataMap map = new DataMap();
-
-        DbEntity e1 = new DbEntity("e1");
-        DbAttribute nonPk = new DbAttribute("nonPk", Types.INTEGER, e1);
-        e1.addAttribute(nonPk);
-
-        map.addDbEntity(e1);
-
-        // DbLoader is so ugly and hard to test..
-        Field dbEntityList = DbLoader.class.getDeclaredField("dbEntityList");
-        dbEntityList.setAccessible(true);
-        List<DbEntity> entities = (List<DbEntity>) dbEntityList.get(loader1);
-        entities.add(e1);
-
-        loader1.loadObjEntities(map, entities);
-
-        ObjEntity oe1 = map.getObjEntity("E1");
-
-        ObjAttribute oa1 = oe1.getAttribute("nonPk");
-        assertEquals("java.lang.Integer", oa1.getType());
-    }
-
-    @Test
-    public void testCreateLoader_UsePrimitives_True() throws Exception {
-        DbImportConfiguration parameters = new DbImportConfiguration();
-        parameters.setUsePrimitives(true);
-
-        DbLoader loader1 = parameters.createLoader(mock(DbAdapter.class), mock(Connection.class),
-                mock(DbLoaderDelegate.class));
-
-        DataMap map = new DataMap();
-
-        DbEntity e1 = new DbEntity("e1");
-        DbAttribute nonPk = new DbAttribute("nonPk", Types.INTEGER, e1);
-        e1.addAttribute(nonPk);
-
-        map.addDbEntity(e1);
-
-        // DbLoader is so ugly and hard to test..
-        Field dbEntityList = DbLoader.class.getDeclaredField("dbEntityList");
-        dbEntityList.setAccessible(true);
-        List<DbEntity> entities = (List<DbEntity>) dbEntityList.get(loader1);
-        entities.add(e1);
-
-        loader1.loadObjEntities(map, entities);
-
-        ObjEntity oe1 = map.getObjEntity("E1");
-
-        ObjAttribute oa1 = oe1.getAttribute("nonPk");
-        assertEquals("int", oa1.getType());
-    }
-*/
-
 }

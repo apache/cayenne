@@ -119,7 +119,6 @@ class LikeExpressionHelper {
 			char c = pattern.charAt(i);
 			if (c == WILDCARD_SEQUENCE || c == WILDCARD_ONE) {
 				buffer.append(escapeChar);
-				break;
 			}
 
 			buffer.append(c);

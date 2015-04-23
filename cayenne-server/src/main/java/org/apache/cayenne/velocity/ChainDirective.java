@@ -75,7 +75,7 @@ public class ChainDirective extends Directive {
         String join = (size > 1) ? (String) node.jjtGetChild(0).value(context) : "";
         String prefix = (size > 2) ? (String) node.jjtGetChild(1).value(context) : "";
 
-        // if there is a conditional prefix, use a separate buffer ofr children
+        // if there is a conditional prefix, use a separate buffer for children
         StringWriter childWriter = new StringWriter(30);
 
         int len = block.jjtGetNumChildren();

@@ -54,13 +54,7 @@ public class DbLoaderPartialIT extends ServerCase {
         loader = new DbLoader(
                 dataSourceFactory.getSharedDataSource().getConnection(),
                 adapter,
-                new DefaultDbLoaderDelegate() {
-
-                    public boolean overwriteDbEntity(DbEntity ent) throws CayenneException {
-                        return !(ent.getName().equalsIgnoreCase("ARTIST")
-                                || ent.getName().equalsIgnoreCase("PAINTING"));
-                    }
-                });
+                new DefaultDbLoaderDelegate());
     }
 
     @After

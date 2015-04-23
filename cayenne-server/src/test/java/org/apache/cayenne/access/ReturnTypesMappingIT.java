@@ -25,6 +25,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap2;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1;
+import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -40,6 +41,8 @@ import java.util.Date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Test Types mapping for selected columns
@@ -167,6 +170,9 @@ public class ReturnTypesMappingIT extends ServerCase {
 
     @Test
     public void testBLOB() throws Exception {
+        assumeTrue("In postresql blob_column has OID type, but in JAVA it converts into long not into byte.",
+                !(unitDbAdapter instanceof PostgresUnitDbAdapter));
+
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "BLOB_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
@@ -259,6 +265,23 @@ public class ReturnTypesMappingIT extends ServerCase {
     }
 
     @Test
+    public void testNCHAR() throws Exception {
+        String columnName = "NCHAR_COLUMN";
+        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+
+        String charValue = "درخت‌های جستجوی متوازن، نیازی ندارد که به صورت!";
+        test.setNCharColumn(charValue);
+        context.commitChanges();
+
+        NamedQuery q = new NamedQuery("SelectReturnTypesMap1");
+        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+        Object columnValue = testRead.get(columnName);
+        assertNotNull(columnValue);
+        assertEquals(String.class, columnValue.getClass());
+        assertEquals(charValue, columnValue);
+    }
+
+    @Test
     public void testCHAR2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -288,6 +311,33 @@ public class ReturnTypesMappingIT extends ServerCase {
             test.setClobColumn(clobValue);
             context.commitChanges();
     
+            NamedQuery q = new NamedQuery("SelectReturnTypesLobsMap1");
+            DataRow testRead = (DataRow) context.performQuery(q).get(0);
+            Object columnValue = testRead.get(columnName);
+            if (columnValue == null && testRead.containsKey(columnName.toLowerCase())) {
+                columnValue = testRead.get(columnName.toLowerCase());
+            }
+            assertNotNull(columnValue);
+            assertEquals(String.class, columnValue.getClass());
+            assertEquals(clobValue, columnValue);
+        }
+    }
+
+    @Test
+    public void testNCLOB() throws Exception {
+        if (unitDbAdapter.supportsLobs()) {
+            String columnName = "NCLOB_COLUMN";
+            ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
+
+            StringBuilder buffer = new StringBuilder();
+            for (int i = 0; i < 1000; i++) {
+                buffer.append("رودالف بیر و دد مک‌کرِیت درخت بی را زمانی که در شرکت بوئینگ [۱]، مشغول به کار بودند ابداع نمودند، اما حرف B واقعاً\" از کجا آمده؟ داگلاس کامر یک سری از احتمالات را پیشنهاد کرد:\n" +
+                        "\"Balanced,\" \"Broad,\" یا \"Bushy\" ممکن است استفاده شده‌باشند [چون همهٔ برگ‌ها در یک سطح قرار دارند]. دیگران اظهار داشتند که حرف \"B\" از کلمهٔ بوئینگ گرفته شده است [به این دلیل که پدیدآوردنده درسال 1972 در آزمایشگاه‌های تحقیقاتی علمی شرکت بوئینگ کار می‌کرد]. با این وجود پنداشتن درخت بی به عنوان درخت \"بِیِر\" نیز درخور است.[۲]");
+            }
+            String clobValue = buffer.toString();
+            test.setNClobColumn(clobValue);
+            context.commitChanges();
+
             NamedQuery q = new NamedQuery("SelectReturnTypesLobsMap1");
             DataRow testRead = (DataRow) context.performQuery(q).get(0);
             Object columnValue = testRead.get(columnName);
@@ -554,6 +604,27 @@ public class ReturnTypesMappingIT extends ServerCase {
         assertNotNull(columnValue);
         assertEquals(String.class, columnValue.getClass());
         assertEquals(longvarcharValue, columnValue);
+    }
+
+    @Test
+    public void testLONGNVARCHAR() throws Exception {
+        String columnName = "LONGNVARCHAR_COLUMN";
+        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < 500; i++) {
+            buffer.append("ی متوازن، نیازی ندارد که ب large string for tests!!!!\n");
+        }
+        String longnvarcharValue = buffer.toString();
+        test.setLongnvarcharColumn(longnvarcharValue);
+        context.commitChanges();
+
+        NamedQuery q = new NamedQuery("SelectReturnTypesMap1");
+        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+        Object columnValue = testRead.get(columnName);
+        assertNotNull(columnValue);
+        assertEquals(String.class, columnValue.getClass());
+        assertEquals(longnvarcharValue, columnValue);
     }
 
     @Test
@@ -844,6 +915,23 @@ public class ReturnTypesMappingIT extends ServerCase {
 
         String varcharValue = "VARChar string for tests!";
         test.setVarcharColumn(varcharValue);
+        context.commitChanges();
+
+        NamedQuery q = new NamedQuery("SelectReturnTypesMap1");
+        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+        Object columnValue = testRead.get(columnName);
+        assertNotNull(columnValue);
+        assertEquals(String.class, columnValue.getClass());
+        assertEquals(varcharValue, columnValue);
+    }
+
+    @Test
+    public void testNVARCHAR() throws Exception {
+        String columnName = "NVARCHAR_COLUMN";
+        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+
+        String varcharValue = "ی متوازن، نیازی ندارد که ب";
+        test.setNVarcharColumn(varcharValue);
         context.commitChanges();
 
         NamedQuery q = new NamedQuery("SelectReturnTypesMap1");

@@ -104,6 +104,7 @@ import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
+import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CircularArray;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -240,7 +241,7 @@ public class ProjectController extends CayenneController {
     protected CircularArray controllerStateHistory;
     protected int maxHistorySize = 20;
 
-    private EntityResolver entityResolver;    
+    private EntityResolver entityResolver;
 
     /**
      * Project files watcher. When project file is changed, user will be asked
@@ -388,6 +389,11 @@ public class ProjectController extends CayenneController {
         return (DataNodeDefaults) application.getCayenneProjectPreferences().getProjectDetailObject(
                 DataNodeDefaults.class, getPreferenceForDataDomain().node("DataNode").node(node.getName()));
 
+    }
+
+    public ProjectStatePreferences getProjectStatePreferences() {
+        return (ProjectStatePreferences) application.getCayenneProjectPreferences().getProjectDetailObject(
+                ProjectStatePreferences.class, getPreferenceForDataDomain());
     }
 
     public void projectOpened() {
@@ -568,6 +574,10 @@ public class ProjectController extends CayenneController {
         return currentState.parentPath;
     }
 
+    public DisplayEvent getLastDisplayEvent() {
+        return currentState.event;
+    }
+
     public void addDomainDisplayListener(DomainDisplayListener listener) {
         listenerList.add(DomainDisplayListener.class, listener);
     }
@@ -607,7 +617,7 @@ public class ProjectController extends CayenneController {
     public void removeDbEntityListener(DbEntityListener listener) {
         listenerList.remove(DbEntityListener.class, listener);
     }
-    
+
     public void addProjectOnSaveListener(ProjectOnSaveListener listener) {
     	listenerList.add(ProjectOnSaveListener.class, listener);
     }
@@ -615,7 +625,7 @@ public class ProjectController extends CayenneController {
     public void removeProjectOnSaveListener(ProjectOnSaveListener listener) {
     	listenerList.remove(ProjectOnSaveListener.class, listener);
     }
-    
+
     public void addObjEntityListener(ObjEntityListener listener) {
         listenerList.add(ObjEntityListener.class, listener);
     }
@@ -1586,7 +1596,7 @@ public class ProjectController extends CayenneController {
 
     /**
      * adds callback method manipulation listener
-     * 
+     *
      * @param listener
      *            listener
      */
@@ -1596,7 +1606,7 @@ public class ProjectController extends CayenneController {
 
     /**
      * fires callback method manipulation event
-     * 
+     *
      * @param e
      *            event
      */
@@ -1623,7 +1633,7 @@ public class ProjectController extends CayenneController {
 
     /**
      * adds listener class manipulation listener
-     * 
+     *
      * @param listener
      *            listener
      */
@@ -1633,7 +1643,7 @@ public class ProjectController extends CayenneController {
 
     /**
      * fires entity listener manipulation event
-     * 
+     *
      * @param e
      *            event
      */

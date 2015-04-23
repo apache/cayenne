@@ -136,7 +136,7 @@ public class DbRelationshipTableModel extends CayenneTableModel {
 
             // clear joins...
             rel.removeAllJoins();
-            rel.setTargetEntity(target);
+            rel.setTargetEntityName(target);
 
             RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity);
             mediator.fireDbRelationshipEvent(e);

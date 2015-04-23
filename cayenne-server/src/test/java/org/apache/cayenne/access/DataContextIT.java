@@ -25,6 +25,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.conn.PoolManager;
@@ -152,6 +153,12 @@ public class DataContextIT extends ServerCase {
         tArtist.insert(33005, "artist5");
         tArtist.insert(33006, "artist11");
         tArtist.insert(33007, "artist21");
+    }
+
+    protected void createLargeArtistsDataSet() throws Exception {
+        for (int i = 1; i <= 20; i++) {
+            tArtist.insert(i, "artist" + i);
+        }
     }
 
     protected void createArtistsAndPaintingsDataSet() throws Exception {
@@ -669,6 +676,27 @@ public class DataContextIT extends ServerCase {
             }
 
             assertEquals(7, count);
+        } finally {
+            it.close();
+        }
+    }
+
+    @Test
+    public void testBatchIterator() throws Exception {
+        createLargeArtistsDataSet();
+
+        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+        ResultBatchIterator<Artist> it = context.batchIterator(q1, 5);
+
+        try {
+            int count = 0;
+
+            for (List<Artist> artistList : it) {
+                count++;
+                assertEquals(5, artistList.size());
+            }
+
+            assertEquals(4, count);
         } finally {
             it.close();
         }

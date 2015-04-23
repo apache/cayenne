@@ -520,4 +520,47 @@ public class EJBQLQueryIT extends ServerCase {
                 + "a.artistName = a.artistName");
         assertTrue(context.performQuery(query).size() > 0);
     }
+    
+	@Test
+	public void testOrderBy() throws Exception {
+		tPainting.insert(3, null, "title0");
+		tPainting.insert(2, null, "title1");
+		tPainting.insert(1, null, "title2");
+
+		EJBQLQuery asc = new EJBQLQuery("select p from Painting p order by p.paintingTitle");
+		List<Painting> paintingsAsc = context.performQuery(asc);
+		assertEquals(3, paintingsAsc.size());
+		assertEquals("title0", paintingsAsc.get(0).getPaintingTitle());
+		assertEquals("title1", paintingsAsc.get(1).getPaintingTitle());
+		assertEquals("title2", paintingsAsc.get(2).getPaintingTitle());
+		
+		EJBQLQuery desc = new EJBQLQuery("select p from Painting p order by p.paintingTitle desc");
+		List<Painting> paintingsDesc = context.performQuery(desc);
+		assertEquals(3, paintingsDesc.size());
+		assertEquals("title2", paintingsDesc.get(0).getPaintingTitle());
+		assertEquals("title1", paintingsDesc.get(1).getPaintingTitle());
+		assertEquals("title0", paintingsDesc.get(2).getPaintingTitle());
+	}
+	
+	@Test
+	public void testOrderBy_Aggregates() throws Exception {
+		tArtist.insert(1, "a0");
+		tArtist.insert(2, "a1");
+
+		tPainting.insert(3, 1, "title0");
+		tPainting.insert(2, 1, "title1");
+		tPainting.insert(1, 2, "title2");
+
+		EJBQLQuery asc = new EJBQLQuery("select a, count(p) from Artist a INNER JOIN a.paintingArray p GROUP BY a order by count(p)");
+		List<Object[]> artistAsc = context.performQuery(asc);
+		assertEquals(2, artistAsc.size());
+		assertEquals("a1", ((Artist) artistAsc.get(0)[0]).getArtistName());
+		assertEquals("a0", ((Artist) artistAsc.get(1)[0]).getArtistName());
+		
+		EJBQLQuery desc = new EJBQLQuery("select a, count(p) from Artist a INNER JOIN a.paintingArray p GROUP BY a order by count(p) DESC");
+		List<Object[]> artistDesc = context.performQuery(desc);
+		assertEquals(2, artistDesc.size());
+		assertEquals("a0", ((Artist) artistDesc.get(0)[0]).getArtistName());
+		assertEquals("a1", ((Artist) artistDesc.get(1)[0]).getArtistName());
+	}
 }

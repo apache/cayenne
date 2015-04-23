@@ -22,6 +22,7 @@ package org.apache.cayenne.dba.postgres;
 import java.sql.Connection;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.query.Query;
 
@@ -30,27 +31,58 @@ import org.apache.cayenne.query.Query;
  */
 class PostgresSelectTranslator extends SelectTranslator {
 
-    /**
-     * @since 4.0
-     */
-    public PostgresSelectTranslator(Query query, DataNode dataNode, Connection connection) {
-        super(query, dataNode, connection);
-    }
-    
-    @Override
-    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+	/**
+	 * @since 4.0
+	 */
+	public PostgresSelectTranslator(Query query, DataNode dataNode, Connection connection) {
+		super(query, dataNode, connection);
+	}
 
-        // limit results
-        int offset = queryMetadata.getFetchOffset();
-        int limit = queryMetadata.getFetchLimit();
+	@Override
+	protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
 
-        if (limit > 0) {
-            buffer.append(" LIMIT ").append(limit);
-        }
+		// limit results
+		int offset = queryMetadata.getFetchOffset();
+		int limit = queryMetadata.getFetchLimit();
 
-        if (offset > 0) {
-            buffer.append(" OFFSET ").append(offset);
-        }
-    }
+		if (limit > 0) {
+			buffer.append(" LIMIT ").append(limit);
+		}
+
+		if (offset > 0) {
+			buffer.append(" OFFSET ").append(offset);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected String buildDistinctStatement() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("DISTINCT ");
+
+		boolean foundKey = false;
+
+		for (ColumnDescriptor column : getResultColumns()) {
+			if (column.getAttribute().isPrimaryKey()) {
+
+				if (foundKey) {
+					builder.append(", ");
+				} else {
+					builder.append("ON (");
+					foundKey = true;
+				}
+
+				builder.append(column.getQualifiedColumnName());
+			}
+		}
+
+		if (foundKey) {
+			builder.append(")");
+		}
+		
+		return builder.toString();
+	}
 
 }

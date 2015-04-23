@@ -140,14 +140,7 @@ public class BindDirective extends Directive {
 	}
 
 	protected Object getChild(InternalContextAdapter context, Node node, int i) throws MethodInvocationException {
-		Object child = (i >= 0 && i < node.jjtGetNumChildren()) ? node.jjtGetChild(i).value(context) : null;
-
-		// unwrap postional parameters
-		if (child instanceof VelocityParamSequence) {
-			child = ((VelocityParamSequence) child).next();
-		}
-
-		return child;
+		return (i >= 0 && i < node.jjtGetNumChildren()) ? node.jjtGetChild(i).value(context) : null;
 	}
 
 	/**

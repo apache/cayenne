@@ -40,11 +40,15 @@ import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Implements methods for entity merging.
  */
 public class EntityMergeSupport {
+
+    private static final Log LOG = LogFactory.getLog(EntityMergeSupport.class);
 
     private static final Map<String, String> CLASS_TO_PRIMITIVE;
 
@@ -162,27 +166,43 @@ public class EntityMergeSupport {
     }
 
     private boolean addMissingRelationships(ObjEntity entity) {
-        boolean changed = false;
-        for (DbRelationship dr : getRelationshipsToAdd(entity)) {
+        List<DbRelationship> relationshipsToAdd = getRelationshipsToAdd(entity);
+        if (relationshipsToAdd.isEmpty()) {
+            return false;
+        }
+
+        for (DbRelationship dr : relationshipsToAdd) {
             DbEntity targetEntity = dr.getTargetEntity();
 
-            for (Entity mappedTarget : map.getMappedEntities(targetEntity)) {
+            Collection<ObjEntity> mappedObjEntities = map.getMappedEntities(targetEntity);
+            if (!mappedObjEntities.isEmpty()) {
+                for (Entity mappedTarget : mappedObjEntities) {
+                    createObjRelationship(entity, dr, mappedTarget.getName());
+                }
+            } else {
+                LOG.warn("Can't find ObjEntity for " + dr.getTargetEntityName());
+                LOG.warn("Db Relationship (" + dr + ") will have GUESSED Obj Relationship reflection. ");
 
-                // avoid duplicate names
-                String relationshipName = nameGenerator.createObjRelationshipName(dr);
-                relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, entity, relationshipName);
-
-                ObjRelationship or = new ObjRelationship(relationshipName);
-                or.addDbRelationship(dr);
-                or.setSourceEntity(entity);
-                or.setTargetEntity(mappedTarget);
-                entity.addRelationship(or);
-
-                fireRelationshipAdded(or);
-                changed = true;
+                if (targetEntity == null) {
+                    targetEntity = new DbEntity(dr.getTargetEntityName());
+                }
+                createObjRelationship(entity, dr, nameGenerator.createObjEntityName(targetEntity));
             }
         }
-        return changed;
+        return true;
+    }
+
+    private void createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
+        String relationshipName = nameGenerator.createObjRelationshipName(dr);
+        relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, entity, relationshipName);
+
+        ObjRelationship or = new ObjRelationship(relationshipName);
+        or.addDbRelationship(dr);
+        or.setSourceEntity(entity);
+        or.setTargetEntityName(targetEntityName);
+        entity.addRelationship(or);
+
+        fireRelationshipAdded(or);
     }
 
     private boolean addMissingAttributes(ObjEntity entity) {
@@ -386,7 +406,7 @@ public class EntityMergeSupport {
      * Returns registered listeners
      */
     public EntityMergeListener[] getEntityMergeListeners() {
-        return listeners.toArray(new EntityMergeListener[0]);
+        return listeners.toArray(new EntityMergeListener[listeners.size()]);
     }
 
     /**

@@ -66,13 +66,13 @@ public class EntityMergeSupportIT extends MergeCase {
 		// create db relationships
 		DbRelationship rel1To2 = new DbRelationship("rel1To2");
 		rel1To2.setSourceEntity(dbEntity1);
-		rel1To2.setTargetEntity(dbEntity2);
+		rel1To2.setTargetEntityName(dbEntity2);
 		rel1To2.setToMany(true);
 		rel1To2.addJoin(new DbJoin(rel1To2, e1col1.getName(), e2col2.getName()));
 		dbEntity1.addRelationship(rel1To2);
 		DbRelationship rel2To1 = new DbRelationship("rel2To1");
 		rel2To1.setSourceEntity(dbEntity2);
-		rel2To1.setTargetEntity(dbEntity1);
+		rel2To1.setTargetEntityName(dbEntity1);
 		rel2To1.setToMany(false);
 		rel2To1.addJoin(new DbJoin(rel2To1, e2col2.getName(), e1col1.getName()));
 		dbEntity2.addRelationship(rel2To1);

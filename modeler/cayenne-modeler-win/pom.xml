@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.modeler</groupId>
 		<artifactId>cayenne-modeler-parent</artifactId>
-		<version>4.0.M2-SNAPSHOT</version>
+		<version>4.0.M3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>cayenne-modeler-win</artifactId>
@@ -102,6 +102,19 @@
 							</execution>
 						</executions>					
 					</plugin>
+				</plugins>
+			</build>
+		</profile>
+        <profile>
+            <id>code-quality</id>
+
+            <activation>
+                <property>
+                    <name>!fast-and-dirty</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
                     <plugin>
                         <artifactId>maven-checkstyle-plugin</artifactId>
                         <!--<configuration>
@@ -111,10 +124,10 @@
                     <plugin>
                         <artifactId>maven-pmd-plugin</artifactId>
                     </plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 	<pluginRepositories>
 		<pluginRepository>

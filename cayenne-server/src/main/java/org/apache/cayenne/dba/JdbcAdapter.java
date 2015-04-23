@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.dba;
 
-import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
@@ -52,6 +43,15 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
+
+import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A generic DbAdapter implementation. Can be used as a default adapter or as a
@@ -234,6 +234,16 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
+     * Returns true.
+     *
+     * @since 4.0
+     */
+    @Override
+    public boolean supportsCatalogsOnReverseEngineering() {
+        return true;
+    }
+
+    /**
      * @since 1.1
      */
     public void setSupportsUniqueConstraints(boolean flag) {
@@ -262,6 +272,9 @@ public class JdbcAdapter implements DbAdapter {
     static boolean supportsLength(int type) {
         return type == Types.BINARY
                 || type == Types.CHAR
+                || type == Types.NCHAR
+                || type == Types.NVARCHAR
+                || type == Types.LONGNVARCHAR
                 || type == Types.DECIMAL
                 || type == Types.DOUBLE
                 || type == Types.FLOAT
@@ -445,11 +458,12 @@ public class JdbcAdapter implements DbAdapter {
         boolean first = true;
 
         for (DbJoin join : rel.getJoins()) {
-            if (!first) {
+            if (first) {
+                first = false;
+            } else {
                 buf.append(", ");
                 refBuf.append(", ");
-            } else
-                first = false;
+            }
 
             buf.append(quotingStrategy.quotedSourceName(join));
             refBuf.append(quotingStrategy.quotedTargetName(join));

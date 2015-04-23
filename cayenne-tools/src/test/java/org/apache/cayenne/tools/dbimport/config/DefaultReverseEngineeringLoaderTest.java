@@ -27,7 +27,9 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DefaultReverseEngineeringLoaderTest {
 
@@ -195,6 +197,42 @@ public class DefaultReverseEngineeringLoaderTest {
         assertEquals("includeProcedure-01", includeProcedures.next().getPattern());
         assertEquals("includeProcedure-02", includeProcedures.next().getPattern());
         assertEquals("includeProcedure-03", includeProcedures.next().getPattern());
+    }
+
+    @Test
+    public void testSkipRelationships() throws Exception {
+        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+                .load(getResource("reverseEngineering-skipRelationshipsLoading.xml"));
+
+        assertSkipRelationshipsLoading(engineering);
+    }
+
+    public static void assertSkipRelationshipsLoading(ReverseEngineering engineering) {
+        assertTrue(engineering.getSkipRelationshipsLoading());
+    }
+
+    @Test
+    public void testSkipPrimaryKeyLoading() throws Exception {
+        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+                .load(getResource("reverseEngineering-skipPrimaryKeyLoading.xml"));
+
+        assertSkipPrimaryKeyLoading(engineering);
+    }
+
+    public static void assertSkipPrimaryKeyLoading(ReverseEngineering engineering) {
+        assertTrue(engineering.getSkipPrimaryKeyLoading());
+    }
+
+    @Test
+    public void testTableTypes() throws Exception {
+        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+                .load(getResource("reverseEngineering-tableTypes.xml"));
+
+        assertTableTypes(engineering);
+    }
+
+    public static void assertTableTypes(ReverseEngineering engineering) {
+        assertArrayEquals(engineering.getTableTypes(), new String[]{"type1", "type2", "type3"});
     }
 
     protected URLResource getResource(String file) throws MalformedURLException {

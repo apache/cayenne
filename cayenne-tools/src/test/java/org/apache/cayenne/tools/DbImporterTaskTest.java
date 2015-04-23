@@ -18,10 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchema;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +33,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.jdbc.SQLReader;
@@ -47,8 +45,11 @@ import org.apache.tools.ant.UnknownElement;
 import org.apache.tools.ant.util.FileUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 // TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
@@ -78,6 +79,16 @@ public class DbImporterTaskTest {
 	public void testLoadFlat() throws Exception {
 		assertFlat(getCdbImport("build-flat.xml").getReverseEngineering());
 	}
+
+	@Test
+	public void testSkipRelationshipsLoading() throws Exception {
+		assertSkipRelationshipsLoading(getCdbImport("build-skip-relationships-loading.xml").getReverseEngineering());
+	}
+
+    @Test
+    public void testTableTypes() throws Exception {
+        assertTableTypes(getCdbImport("build-table-types.xml").getReverseEngineering());
+    }
 
 	@Test
 	public void testIncludeTable() throws Exception {
@@ -175,7 +186,14 @@ public class DbImporterTaskTest {
 
 			DetailedDiff diff = new DetailedDiff(new Diff(control, test));
 			if (!diff.similar()) {
-				fail(diff.toString());
+                for (Difference d : ((List<Difference>) diff.getAllDifferences())) {
+
+
+                    System.out.println("-------------------------------------------");
+                    System.out.println(d.getTestNodeDetail().getNode());
+                    System.out.println(d.getControlNodeDetail().getValue());
+                }
+                fail(diff.toString());
 			}
 
 		} catch (SAXException e) {
