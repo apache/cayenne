@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.access.loader.filters.PatternFilter;
@@ -33,27 +27,21 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbLoaderIT extends ServerCase {
@@ -106,15 +94,15 @@ public class DbLoaderIT extends ServerCase {
 
         String tableLabel = adapter.tableTypeForTable();
 
-        Collection<Pair<DbEntity, PatternFilter>> tables = loader.getTables(new DbLoaderConfiguration(), new String[] { tableLabel })
-                .values().iterator().next().values();
+        List<DetectedDbEntity> tables = loader.createTableLoader(null, null, TableFilter.everything())
+                .getDbEntities(TableFilter.everything(), new String[]{tableLabel});
 
         assertNotNull(tables);
 
         boolean foundArtist = false;
 
-        for (Pair<DbEntity, PatternFilter> table : tables) {
-            if ("ARTIST".equalsIgnoreCase(table.getKey().getName())) {
+        for (DetectedDbEntity table : tables) {
+            if ("ARTIST".equalsIgnoreCase(table.getName())) {
                 foundArtist = true;
                 break;
             }
@@ -129,9 +117,9 @@ public class DbLoaderIT extends ServerCase {
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(
                 FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
-        Map<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>> tables = loader.getTables(
-                config,
-                new String[]{adapter.tableTypeForTable()});
+        List<DetectedDbEntity> tables = loader
+                .createTableLoader("WRONG", null, TableFilter.everything())
+                    .getDbEntities(TableFilter.everything(), new String[]{adapter.tableTypeForTable()});
 
         assertNotNull(tables);
         assertTrue(tables.isEmpty());
@@ -143,9 +131,9 @@ public class DbLoaderIT extends ServerCase {
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(
                 FiltersConfig.create(null, "WRONG", TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
-        Map<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>> tables = loader.getTables(
-                config,
-                new String[]{adapter.tableTypeForTable()});
+        List<DetectedDbEntity> tables = loader
+                .createTableLoader(null, "WRONG", TableFilter.everything())
+                .getDbEntities(TableFilter.everything(), new String[]{adapter.tableTypeForTable()});
 
         assertNotNull(tables);
         assertTrue(tables.isEmpty());
@@ -159,12 +147,10 @@ public class DbLoaderIT extends ServerCase {
 
         loader.setCreatingMeaningfulPK(true);
 
-        Map<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>> testLoader = loader.getTables(CONFIG, tableLabel);
-        if (testLoader.isEmpty()) {
-            testLoader = loader.getTables(CONFIG, tableLabel);
-        }
+        List<DbEntity> entities = loader
+                .createTableLoader(null, null, TableFilter.everything())
+                .loadDbEntities(map, CONFIG, tableLabel);
 
-        List<DbEntity> entities = loader.loadDbEntities(map, CONFIG, testLoader);
         loader.loadObjEntities(map, CONFIG, entities);
 
         ObjEntity artist = map.getObjEntity("Artist");
@@ -193,7 +179,10 @@ public class DbLoaderIT extends ServerCase {
         String tableLabel = adapter.tableTypeForTable();
 
         // *** TESTING THIS ***
-        List<DbEntity> entities = loader.loadDbEntities(map, CONFIG, loader.getTables(CONFIG, new String[]{tableLabel}));
+        List<DbEntity> entities = loader
+                .createTableLoader(null, null, TableFilter.everything())
+                .loadDbEntities(map, CONFIG, new String[]{adapter.tableTypeForTable()});
+
 
         assertDbEntities(map);
 
@@ -202,15 +191,7 @@ public class DbLoaderIT extends ServerCase {
         }
 
         // *** TESTING THIS ***
-        Map<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>> tables =
-                new HashMap<Pair<String, String>, Map<String, Pair<DbEntity, PatternFilter>>>();
-
-        Map<String, Pair<DbEntity, PatternFilter>> value = new HashMap<String, Pair<DbEntity, PatternFilter>>();
-        for (DbEntity e : entities) {
-            value.put(e.getName(), Pair.of(e, PatternFilter.INCLUDE_EVERYTHING));
-        }
-        tables.put(Pair.of((String) null, (String) null), value);
-        loader.loadDbRelationships(CONFIG, tables);
+        loader.loadDbRelationships(CONFIG, null, null, entities);
 
         if (supportsFK) {
             Collection<DbRelationship> rels = getDbEntity(map, "ARTIST").getRelationships();
