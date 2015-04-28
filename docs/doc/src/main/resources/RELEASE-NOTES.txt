@@ -31,6 +31,7 @@ CAY-1994 Modeler Migration Tool Shows No Changes
 CAY-1997 Difference in NULL handling inside the path between PropertyUtils and DataObject.readNestedProperty
 CAY-1998 Speeding up PropertyUtils
 CAY-1999 Unneeded Property import for superclasses with no properties
+CAY-2003 cdbimport doesn't work properly with several includeTable tags
 
 ----------------------------------
 Release: 4.0.M2
