@@ -19,40 +19,39 @@
 
 package org.apache.cayenne.dba.mysql;
 
-import java.sql.Connection;
-
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
  */
-class MySQLSelectTranslator extends SelectTranslator {
+class MySQLSelectTranslator extends DefaultSelectTranslator {
 
-    /**
-     * @since 4.0
-     */
-    public MySQLSelectTranslator(Query query, DataNode dataNode, Connection connection) {
-        super(query, dataNode, connection);
-    }
+	/**
+	 * @since 4.0
+	 */
+	public MySQLSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		super(query, adapter, entityResolver);
+	}
 
-    @Override
-    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        int offset = queryMetadata.getFetchOffset();
-        int limit = queryMetadata.getFetchLimit();
+	@Override
+	protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+		int offset = queryMetadata.getFetchOffset();
+		int limit = queryMetadata.getFetchLimit();
 
-        if (offset > 0 || limit > 0) {
-            buffer.append(" LIMIT ");
+		if (offset > 0 || limit > 0) {
+			buffer.append(" LIMIT ");
 
-            // both OFFSET and LIMIT must be present, so come up with defaults
-            // if one of
-            // them is not set by the user
-            if (limit == 0) {
-                limit = Integer.MAX_VALUE;
-            }
+			// both OFFSET and LIMIT must be present, so come up with defaults
+			// if one of
+			// them is not set by the user
+			if (limit == 0) {
+				limit = Integer.MAX_VALUE;
+			}
 
-            buffer.append(limit).append(" OFFSET ").append(offset);
-        }
-    }
+			buffer.append(limit).append(" OFFSET ").append(offset);
+		}
+	}
 }

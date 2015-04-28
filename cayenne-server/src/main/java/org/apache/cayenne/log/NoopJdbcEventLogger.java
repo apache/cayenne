@@ -20,7 +20,7 @@ package org.apache.cayenne.log;
 
 import java.util.List;
 
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -29,78 +29,96 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class NoopJdbcEventLogger implements JdbcEventLogger {
 
-    private static final NoopJdbcEventLogger instance = new NoopJdbcEventLogger();
+	private static final NoopJdbcEventLogger instance = new NoopJdbcEventLogger();
 
-    public static NoopJdbcEventLogger getInstance() {
-        return instance;
-    }
+	public static NoopJdbcEventLogger getInstance() {
+		return instance;
+	}
 
-    private NoopJdbcEventLogger() {
+	private NoopJdbcEventLogger() {
 
-    }
+	}
 
-    public void log(String message) {
-    }
+	@Override
+	public void log(String message) {
+	}
 
-    public void logConnect(String dataSource) {
-    }
+	@Override
+	public void logConnect(String dataSource) {
+	}
 
-    public void logConnect(String url, String userName, String password) {
-    }
+	@Override
+	public void logConnect(String url, String userName, String password) {
+	}
 
-    public void logPoolCreated(DataSourceInfo dsi) {
-    }
+	@Override
+	public void logPoolCreated(DataSourceInfo dsi) {
+	}
 
-    public void logConnectSuccess() {
-    }
+	@Override
+	public void logConnectSuccess() {
+	}
 
-    public void logConnectFailure(Throwable th) {
-    }
+	@Override
+	public void logConnectFailure(Throwable th) {
+	}
 
-    public void logGeneratedKey(DbAttribute attribute, Object value) {
-    }
+	@Override
+	public void logGeneratedKey(DbAttribute attribute, Object value) {
+	}
 
-    public void logQuery(String sql, List<?> params) {
-    }
+	@Override
+	public void logQuery(String sql, List<?> params) {
+	}
 
-    public void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time) {
-    }
-
-    @Override
-    @Deprecated
-    public void logQueryParameters(
-            String label,
-            List<DbAttribute> attrs,
-            List<Object> parameters,
-            boolean isInserting) {
-    }
-    
-    @Override
-    public void logQueryParameters(String label, BatchParameterBinding[] bindings) {
-    }
-
-    public void logSelectCount(int count, long time) {
-    }
-
-    public void logSelectCount(int count, long time, String sql) {
-    }
+	@Deprecated
+	@Override
+	public void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time) {
+	}
 	
-    public void logUpdateCount(int count) {
-    }
+	@Override
+	public void logQuery(String sql, ParameterBinding[] bindings, long translatedIn) {		
+	}
 
-    public void logBeginTransaction(String transactionLabel) {
-    }
+	@Override
+	@Deprecated
+	public void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) {
+	}
 
-    public void logCommitTransaction(String transactionLabel) {
-    }
+	@Override
+	public void logQueryParameters(String label, ParameterBinding[] bindings) {
+	}
 
-    public void logRollbackTransaction(String transactionLabel) {
-    }
+	@Override
+	public void logSelectCount(int count, long time) {
+	}
 
-    public void logQueryError(Throwable th) {
-    }
+	@Override
+	public void logSelectCount(int count, long time, String sql) {
+	}
 
-    public boolean isLoggable() {
-        return false;
-    }
+	@Override
+	public void logUpdateCount(int count) {
+	}
+
+	@Override
+	public void logBeginTransaction(String transactionLabel) {
+	}
+
+	@Override
+	public void logCommitTransaction(String transactionLabel) {
+	}
+
+	@Override
+	public void logRollbackTransaction(String transactionLabel) {
+	}
+
+	@Override
+	public void logQueryError(Throwable th) {
+	}
+
+	@Override
+	public boolean isLoggable() {
+		return false;
+	}
 }

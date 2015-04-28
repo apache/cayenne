@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.dba.frontbase;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -39,8 +37,8 @@ class FrontBaseActionBuilder extends JdbcActionBuilder {
         return new SelectAction(query, dataNode) {
 
             @Override
-            protected SelectTranslator createTranslator(Connection connection) {
-                return new FrontBaseSelectTranslator(query, dataNode, connection);
+            protected SelectTranslator createTranslator() {
+                return new FrontBaseSelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
             }
         };
     }

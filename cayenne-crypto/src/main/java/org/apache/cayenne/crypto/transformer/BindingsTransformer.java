@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 
 /**
  * @since 4.0
  */
 public interface BindingsTransformer {
 
-    void transform(BatchParameterBinding[] bindings);
+    void transform(ParameterBinding[] bindings);
 }

@@ -18,34 +18,32 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
-import java.io.IOException;
-
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 
 /**
- * Extends the TrimmingQualifierTranslator that Cayenne normally uses for Oracle.
- * Overrides doAppendPart() to wrap the qualifierBuffer in parentheses if it contains an
- * "OR" expression. This avoids a bug that can happen on Oracle8 if the query also
- * contains a join.
+ * Extends the TrimmingQualifierTranslator that Cayenne normally uses for
+ * Oracle. Overrides doAppendPart() to wrap the qualifierBuffer in parentheses
+ * if it contains an "OR" expression. This avoids a bug that can happen on
+ * Oracle8 if the query also contains a join.
  * 
  * @since 3.0
  */
 class Oracle8QualifierTranslator extends OracleQualifierTranslator {
 
-    public Oracle8QualifierTranslator(QueryAssembler queryAssembler) {
-        super(queryAssembler);
-    }
+	public Oracle8QualifierTranslator(QueryAssembler queryAssembler) {
+		super(queryAssembler);
+	}
 
-    @Override
-    protected void doAppendPart() throws IOException {
-        super.doAppendPart();
+	@Override
+	protected void doAppendPart() {
+		super.doAppendPart();
 
-        if (out instanceof StringBuilder) {
-            StringBuilder buffer = (StringBuilder) out;
-            if (buffer.indexOf(" OR ") != -1) {
-                buffer.insert(0, '(');
-                buffer.append(')');
-            }
-        }
-    }
+		if (out instanceof StringBuilder) {
+			StringBuilder buffer = (StringBuilder) out;
+			if (buffer.indexOf(" OR ") != -1) {
+				buffer.insert(0, '(');
+				buffer.append(')');
+			}
+		}
+	}
 }

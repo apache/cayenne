@@ -22,6 +22,7 @@ package org.apache.cayenne.access.translator.batch;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
@@ -71,23 +72,23 @@ public class DeleteBatchTranslator extends DefaultBatchTranslator {
     }
 
     @Override
-    protected BatchParameterBinding[] createBindings() {
+    protected ParameterBinding[] createBindings() {
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
         List<DbAttribute> attributes = deleteBatch.getDbAttributes();
         int len = attributes.size();
 
-        BatchParameterBinding[] bindings = new BatchParameterBinding[len];
+        ParameterBinding[] bindings = new ParameterBinding[len];
 
         for (int i = 0; i < len; i++) {
             DbAttribute a = attributes.get(i);
-            bindings[i] = new BatchParameterBinding(a);
+            bindings[i] = new ParameterBinding(a);
         }
 
         return bindings;
     }
 
     @Override
-    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
 
         int len = bindings.length;
 
@@ -95,7 +96,7 @@ public class DeleteBatchTranslator extends DefaultBatchTranslator {
 
         for (int i = 0, j = 1; i < len; i++) {
 
-            BatchParameterBinding b = bindings[i];
+            ParameterBinding b = bindings[i];
 
             // skip null attributes... they are translated as "IS NULL"
             if (deleteBatch.isNull(b.getAttribute())) {

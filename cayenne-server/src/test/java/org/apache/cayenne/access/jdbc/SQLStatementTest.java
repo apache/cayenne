@@ -31,7 +31,7 @@ public class SQLStatementTest {
 
     @Test
     public void testConstructor() throws Exception {
-        ParameterBinding[] bindings = new ParameterBinding[0];
+        SQLParameterBinding[] bindings = new SQLParameterBinding[0];
         SQLStatement statement = new SQLStatement("abc", bindings);
         assertEquals("abc", statement.getSql());
         assertSame(bindings, statement.getBindings());

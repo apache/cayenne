@@ -22,6 +22,7 @@ package org.apache.cayenne.access.translator.batch;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
@@ -78,7 +79,7 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
     }
 
     @Override
-    protected BatchParameterBinding[] createBindings() {
+    protected ParameterBinding[] createBindings() {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
@@ -87,23 +88,23 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
         int ul = updatedDbAttributes.size();
         int ql = qualifierAttributes.size();
 
-        BatchParameterBinding[] bindings = new BatchParameterBinding[ul + ql];
+        ParameterBinding[] bindings = new ParameterBinding[ul + ql];
 
         for (int i = 0; i < ul; i++) {
             DbAttribute a = updatedDbAttributes.get(i);
-            bindings[i] = new BatchParameterBinding(a);
+            bindings[i] = new ParameterBinding(a);
         }
 
         for (int i = 0; i < ql; i++) {
             DbAttribute a = qualifierAttributes.get(i);
-            bindings[ul + i] = new BatchParameterBinding(a);
+            bindings[ul + i] = new ParameterBinding(a);
         }
 
         return bindings;
     }
 
     @Override
-    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
 
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 

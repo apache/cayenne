@@ -34,102 +34,94 @@ import org.apache.cayenne.exp.parser.PatternMatchNode;
  */
 public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
 
-    public PostgresQualifierTranslator(QueryAssembler queryAssembler) {
-        super(queryAssembler, "RTRIM");
-    }
+	public PostgresQualifierTranslator(QueryAssembler queryAssembler) {
+		super(queryAssembler, "RTRIM");
+	}
 
-    @Override
-    public void startNode(Expression node, Expression parentNode) {
+	@Override
+	public void startNode(Expression node, Expression parentNode) {
 
-        if (node.getOperandCount() == 2) {
-            // binary nodes are the only ones that currently require this
-            detectObjectMatch(node);
+		if (node.getOperandCount() == 2) {
+			// binary nodes are the only ones that currently require this
+			detectObjectMatch(node);
 
-            try {
-                if (parenthesisNeeded(node, parentNode)) {
-                    out.append('(');
-                }
+			if (parenthesisNeeded(node, parentNode)) {
+				out.append('(');
+			}
 
-                // super implementation has special handling
-                // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
-                // Postgres uses ILIKE
-                // ...
-            }
-            catch (IOException ioex) {
-                throw new CayenneRuntimeException("Error appending content", ioex);
-            }
-        }
-        else {
-            super.startNode(node, parentNode);
-        }
-    }
+			// super implementation has special handling
+			// of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
+			// Postgres uses ILIKE
+			// ...
 
-    @Override
-    public void endNode(Expression node, Expression parentNode) {
-        if (node.getOperandCount() == 2) {
+		} else {
+			super.startNode(node, parentNode);
+		}
+	}
 
-            try {
-                // check if we need to use objectMatchTranslator to finish building the
-                // expression
-                if (matchingObject) {
-                    appendObjectMatch();
-                }
-                
-                if(PatternMatchNode.class.isAssignableFrom(node.getClass())) {
-                    appendLikeEscapeCharacter((PatternMatchNode) node);
-                }
+	@Override
+	public void endNode(Expression node, Expression parentNode) {
+		if (node.getOperandCount() == 2) {
 
-                if (parenthesisNeeded(node, parentNode)) {
-                    out.append(')');
-                }
+			try {
+				// check if we need to use objectMatchTranslator to finish
+				// building the
+				// expression
+				if (matchingObject) {
+					appendObjectMatch();
+				}
 
-                // super implementation has special handling
-                // of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
-                // Postgres uses ILIKE
-                // ...
-            }
-            catch (IOException ioex) {
-                throw new CayenneRuntimeException("Error appending content", ioex);
-            }
-        }
-        else {
-            super.endNode(node, parentNode);
-        }
-    }
+				if (PatternMatchNode.class.isAssignableFrom(node.getClass())) {
+					appendLikeEscapeCharacter((PatternMatchNode) node);
+				}
 
-    @Override
-    public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
-        if (!hasMoreChildren) {
-            return;
-        }
+				if (parenthesisNeeded(node, parentNode)) {
+					out.append(')');
+				}
 
-        try {
-            // use ILIKE
+				// super implementation has special handling
+				// of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
+				// Postgres uses ILIKE
+				// ...
+			} catch (IOException ioex) {
+				throw new CayenneRuntimeException("Error appending content", ioex);
+			}
+		} else {
+			super.endNode(node, parentNode);
+		}
+	}
 
-            switch (node.getType()) {
+	@Override
+	public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
+		if (!hasMoreChildren) {
+			return;
+		}
 
-                case Expression.LIKE_IGNORE_CASE:
-                    finishedChildNodeAppendExpression(node, " ILIKE ");
-                    break;
-                case Expression.NOT_LIKE_IGNORE_CASE:
-                    finishedChildNodeAppendExpression(node, " NOT ILIKE ");
-                    break;
-                default:
-                    super.finishedChild(node, childIndex, hasMoreChildren);
-            }
-        }
-        catch (IOException ioex) {
-            throw new CayenneRuntimeException("Error appending content", ioex);
-        }
-    }
+		try {
+			// use ILIKE
 
-    private void finishedChildNodeAppendExpression(Expression node, String operation)
-            throws IOException {
-        Appendable buf = matchingObject ? new StringBuilder() : this.out;
-        buf.append(operation);
-        if (matchingObject) {
-            objectMatchTranslator.setOperation(buf.toString());
-            objectMatchTranslator.setExpression(node);
-        }
-    }
+			switch (node.getType()) {
+
+			case Expression.LIKE_IGNORE_CASE:
+				finishedChildNodeAppendExpression(node, " ILIKE ");
+				break;
+			case Expression.NOT_LIKE_IGNORE_CASE:
+				finishedChildNodeAppendExpression(node, " NOT ILIKE ");
+				break;
+			default:
+				super.finishedChild(node, childIndex, hasMoreChildren);
+			}
+		} catch (IOException ioex) {
+			throw new CayenneRuntimeException("Error appending content", ioex);
+		}
+	}
+
+	private void finishedChildNodeAppendExpression(Expression node, String operation) throws IOException {
+		Appendable buf = matchingObject ? new StringBuilder() : this.out;
+		buf.append(operation);
+		if (matchingObject) {
+			objectMatchTranslator.setOperation(buf.toString());
+			objectMatchTranslator.setExpression(node);
+		}
+	}
 }

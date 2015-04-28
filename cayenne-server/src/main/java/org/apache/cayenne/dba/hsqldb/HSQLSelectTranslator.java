@@ -19,39 +19,39 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
-import java.sql.Connection;
-
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
  */
-class HSQLSelectTranslator extends SelectTranslator {
-    
-    /**
-     * @since 4.0
-     */
-    public HSQLSelectTranslator(Query query, DataNode dataNode, Connection connection) {
-        super(query, dataNode, connection);
-    }
+class HSQLSelectTranslator extends DefaultSelectTranslator {
 
-    @Override
-    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        int offset = queryMetadata.getFetchOffset();
-        int limit = queryMetadata.getFetchLimit();
+	/**
+	 * @since 4.0
+	 */
+	public HSQLSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		super(query, adapter, entityResolver);
+	}
 
-        if (offset > 0 || limit > 0) {
-            buffer.append(" LIMIT ");
+	@Override
+	protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+		int offset = queryMetadata.getFetchOffset();
+		int limit = queryMetadata.getFetchLimit();
 
-            // both OFFSET and LIMIT must be present, so come up with defaults if one of
-            // them is not set by the user
-            if (limit == 0) {
-                limit = Integer.MAX_VALUE;
-            }
+		if (offset > 0 || limit > 0) {
+			buffer.append(" LIMIT ");
 
-            buffer.append(limit).append(" OFFSET ").append(offset);
-        }
-    }
+			// both OFFSET and LIMIT must be present, so come up with defaults
+			// if one of
+			// them is not set by the user
+			if (limit == 0) {
+				limit = Integer.MAX_VALUE;
+			}
+
+			buffer.append(limit).append(" OFFSET ").append(offset);
+		}
+	}
 }

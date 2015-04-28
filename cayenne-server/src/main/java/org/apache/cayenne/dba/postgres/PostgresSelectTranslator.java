@@ -19,23 +19,22 @@
 
 package org.apache.cayenne.dba.postgres;
 
-import java.sql.Connection;
-
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
  */
-class PostgresSelectTranslator extends SelectTranslator {
+class PostgresSelectTranslator extends DefaultSelectTranslator {
 
 	/**
 	 * @since 4.0
 	 */
-	public PostgresSelectTranslator(Query query, DataNode dataNode, Connection connection) {
-		super(query, dataNode, connection);
+	public PostgresSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		super(query, adapter, entityResolver);
 	}
 
 	@Override
@@ -81,7 +80,7 @@ class PostgresSelectTranslator extends SelectTranslator {
 		if (foundKey) {
 			builder.append(")");
 		}
-		
+
 		return builder.toString();
 	}
 

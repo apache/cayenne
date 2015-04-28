@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlserver;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -32,8 +30,8 @@ public class SQLServerSelectAction extends SelectAction {
     }
 
     @Override
-    protected SelectTranslator createTranslator(Connection connection) {
-        return new SQLServerSelectTranslator(query, dataNode, connection);
+    protected SelectTranslator createTranslator() {
+        return new SQLServerSelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
     }
 
 }

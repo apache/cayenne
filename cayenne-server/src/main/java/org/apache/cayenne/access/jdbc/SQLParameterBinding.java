@@ -22,47 +22,41 @@ package org.apache.cayenne.access.jdbc;
 /**
  * Describes PreparedStatement parameter binding.
  * 
- * @since 1.1
+ * @since 4.0
  */
-public class ParameterBinding {
+public class SQLParameterBinding {
 
-    protected int jdbcType;
-    protected int scale;
-    protected Object value;
+	protected int jdbcType;
+	protected int scale;
+	protected Object value;
 
-    public ParameterBinding(Object value, int jdbcType, int scale) {
-        this.value = value;
-        this.jdbcType = jdbcType;
-        this.scale = scale;
-    }
+	public SQLParameterBinding(Object value, int jdbcType, int scale) {
+		this.value = value;
+		this.jdbcType = jdbcType;
+		this.scale = scale;
+	}
 
-    public int getJdbcType() {
-        return jdbcType;
-    }
+	public int getJdbcType() {
+		return jdbcType;
+	}
 
-    /**
-     * @since 3.0
-     */
-    public int getScale() {
-        return scale;
-    }
+	public int getScale() {
+		return scale;
+	}
 
-    public Object getValue() {
-        return value;
-    }
+	public Object getValue() {
+		return value;
+	}
 
-    public void setJdbcType(int i) {
-        jdbcType = i;
-    }
+	public void setJdbcType(int i) {
+		jdbcType = i;
+	}
 
-    /**
-     * @since 3.0
-     */
-    public void setScale(int i) {
-        scale = i;
-    }
+	public void setScale(int i) {
+		scale = i;
+	}
 
-    public void setValue(Object object) {
-        value = object;
-    }
+	public void setValue(Object object) {
+		value = object;
+	}
 }
