@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
-import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
@@ -52,14 +51,6 @@ import org.apache.commons.logging.LogFactory;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -398,7 +389,8 @@ public class DbLoaderHelper {
                 // this will be new data map so need to set configuration source
                 // for it
                 if (baseResource != null) {
-                    Resource dataMapResource = baseResource.getRelativeResource(dataMap.getName());
+                    DefaultConfigurationNameMapper nameMapper = new DefaultConfigurationNameMapper();
+                    Resource dataMapResource = baseResource.getRelativeResource(nameMapper.configurationLocation(dataMap));
                     dataMap.setConfigurationSource(dataMapResource);
                 }
                 mediator.addDataMap(Application.getFrame(), dataMap);
