@@ -18,7 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchema;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSkipRelationshipsLoading;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertTableTypes;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -46,10 +51,8 @@ import org.apache.tools.ant.util.FileUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
-import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 // TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
@@ -179,6 +182,7 @@ public class DbImporterTaskTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void verifyResult(File map, File mapFileCopy) {
 		try {
 			FileReader control = new FileReader(map.getAbsolutePath() + "-result");
