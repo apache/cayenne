@@ -18,18 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.sql.Driver;
-
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.conn.DataSourceBuilder;
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.conn.DriverDataSource;
-import org.apache.cayenne.conn.PoolDataSource;
-import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.conn.PoolingDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -47,43 +44,35 @@ import org.apache.commons.logging.LogFactory;
 // something else?
 public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 
-    private static final Log logger = LogFactory.getLog(XMLPoolingDataSourceFactory.class);
+	private static final Log logger = LogFactory.getLog(XMLPoolingDataSourceFactory.class);
 
-    @Inject
-    protected JdbcEventLogger jdbcEventLogger;
+	@Inject
+	protected JdbcEventLogger jdbcEventLogger;
 
-    @Inject
-    private RuntimeProperties properties;
+	@Inject
+	private RuntimeProperties properties;
 
-    @Inject
-    private AdhocObjectFactory objectFactory;
+	@Inject
+	private AdhocObjectFactory objectFactory;
 
-    @Override
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+	@Override
+	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
-        DataSourceInfo dataSourceDescriptor = nodeDescriptor.getDataSourceDescriptor();
+		DataSourceInfo descriptor = nodeDescriptor.getDataSourceDescriptor();
 
-        if (dataSourceDescriptor == null) {
-            String message = "Null dataSourceDescriptor for nodeDescriptor '" + nodeDescriptor.getName() + "'";
-            logger.info(message);
-            throw new ConfigurationException(message);
-        }
+		if (descriptor == null) {
+			String message = "Null dataSourceDescriptor for nodeDescriptor '" + nodeDescriptor.getName() + "'";
+			logger.info(message);
+			throw new ConfigurationException(message);
+		}
 
-        Driver driver = objectFactory.newInstance(Driver.class, dataSourceDescriptor.getJdbcDriver());
-        DriverDataSource driverDS = new DriverDataSource(driver, dataSourceDescriptor.getDataSourceUrl(),
-                dataSourceDescriptor.getUserName(), dataSourceDescriptor.getPassword());
-        driverDS.setLogger(jdbcEventLogger);
-        PoolDataSource poolDS = new PoolDataSource(driverDS);
+		long maxQueueWaitTime = properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME,
+				PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 
-        try {
-            return new PoolManager(poolDS, dataSourceDescriptor.getMinConnections(),
-                    dataSourceDescriptor.getMaxConnections(), dataSourceDescriptor.getUserName(),
-                    dataSourceDescriptor.getPassword(), properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME,
-                            PoolManager.MAX_QUEUE_WAIT_DEFAULT));
-        } catch (Exception e) {
-            jdbcEventLogger.logConnectFailure(e);
-            throw e;
-        }
-    }
+		return DataSourceBuilder.builder(objectFactory, jdbcEventLogger).driver(descriptor.getJdbcDriver())
+				.url(descriptor.getDataSourceUrl()).userName(descriptor.getUserName())
+				.password(descriptor.getPassword()).minConnections(descriptor.getMinConnections())
+				.maxConnections(descriptor.getMaxConnections()).maxQueueWaitTime(maxQueueWaitTime).build();
+	}
 
 }

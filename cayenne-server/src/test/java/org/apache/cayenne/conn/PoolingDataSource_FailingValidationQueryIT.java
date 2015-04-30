@@ -16,21 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.conn;
 
-/**
- * This interface duplicates default reflection based mechanism for receiving DI
- * events. It is not fully supported and its usage are reserved for cases when
- * for some reason it is not possible to use reflection. It is used for example
- * in {@link javax.sql.DataSource} management layer to provide compatibility
- * with java version 5.
- *
- * @since 3.1
- */
-public interface ScopeEventListener {
-	
-	/**
-	 * Similar to {@link BeforeScopeEnd}
-	 */
-	void beforeScopeEnd();
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+public class PoolingDataSource_FailingValidationQueryIT extends BasePoolingDataSourceIT {
+
+	@Override
+	protected PoolingDataSourceParameters createParameters() {
+		PoolingDataSourceParameters params = super.createParameters();
+		params.setValidationQuery("SELECT count(1) FROM NO_SUCH_TABLE");
+		return params;
+	}
+
+	@Test(expected = SQLException.class)
+	public void testGetConnection_ValidationQuery() throws Exception {
+		Connection c1 = dataSource.getConnection();
+		c1.close();
+	}
 }

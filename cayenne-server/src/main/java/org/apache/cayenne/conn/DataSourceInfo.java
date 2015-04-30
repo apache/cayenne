@@ -39,6 +39,11 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 
 	private static Log logger = LogFactory.getLog(DataSourceInfo.class);
 
+	public static final String PASSWORD_LOCATION_CLASSPATH = "classpath";
+	public static final String PASSWORD_LOCATION_EXECUTABLE = "executable";
+	public static final String PASSWORD_LOCATION_MODEL = "model";
+	public static final String PASSWORD_LOCATION_URL = "url";
+
 	protected String userName;
 	protected String password;
 	protected String jdbcDriver;
@@ -46,14 +51,6 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	protected String adapterClassName;
 	protected int minConnections = 1;
 	protected int maxConnections = 1;
-
-	// Constants for passwordLocation
-	public static final String PASSWORD_LOCATION_CLASSPATH = "classpath";
-	public static final String PASSWORD_LOCATION_EXECUTABLE = "executable";
-	public static final String PASSWORD_LOCATION_MODEL = "model";
-	public static final String PASSWORD_LOCATION_URL = "url";
-
-	// Extended parameters
 	protected String passwordEncoderClass = PlainTextPasswordEncoder.class.getName();
 	protected String passwordEncoderKey = "";
 	protected String passwordLocation = PASSWORD_LOCATION_MODEL;
@@ -64,43 +61,72 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this)
+		
+		if (obj == this) {
 			return true;
+		}
 
-		if (obj == null)
+		if (obj == null) {
 			return false;
+		}
 
-		if (obj.getClass() != this.getClass())
+		if (obj.getClass() != this.getClass()) {
 			return false;
+		}
 
 		DataSourceInfo dsi = (DataSourceInfo) obj;
 
-		if (!Util.nullSafeEquals(this.userName, dsi.userName))
+		if (!Util.nullSafeEquals(this.userName, dsi.userName)) {
 			return false;
-		if (!Util.nullSafeEquals(this.password, dsi.password))
+		}
+
+		if (!Util.nullSafeEquals(this.password, dsi.password)) {
 			return false;
-		if (!Util.nullSafeEquals(this.jdbcDriver, dsi.jdbcDriver))
+		}
+
+		if (!Util.nullSafeEquals(this.jdbcDriver, dsi.jdbcDriver)) {
 			return false;
-		if (!Util.nullSafeEquals(this.dataSourceUrl, dsi.dataSourceUrl))
+		}
+
+		if (!Util.nullSafeEquals(this.dataSourceUrl, dsi.dataSourceUrl)) {
 			return false;
-		if (!Util.nullSafeEquals(this.adapterClassName, dsi.adapterClassName))
+		}
+
+		if (!Util.nullSafeEquals(this.adapterClassName, dsi.adapterClassName)) {
 			return false;
-		if (this.minConnections != dsi.minConnections)
+		}
+
+		if (this.minConnections != dsi.minConnections) {
 			return false;
-		if (this.maxConnections != dsi.maxConnections)
+		}
+
+		if (this.maxConnections != dsi.maxConnections) {
 			return false;
-		if (!Util.nullSafeEquals(this.passwordEncoderClass, dsi.passwordEncoderClass))
+		}
+
+		if (!Util.nullSafeEquals(this.passwordEncoderClass, dsi.passwordEncoderClass)) {
 			return false;
-		if (!Util.nullSafeEquals(this.passwordEncoderKey, dsi.passwordEncoderKey))
+		}
+
+		if (!Util.nullSafeEquals(this.passwordEncoderKey, dsi.passwordEncoderKey)) {
 			return false;
-		if (!Util.nullSafeEquals(this.passwordSourceFilename, dsi.passwordSourceFilename))
+		}
+
+		if (!Util.nullSafeEquals(this.passwordSourceFilename, dsi.passwordSourceFilename)) {
 			return false;
-		if (!Util.nullSafeEquals(this.passwordSourceModel, dsi.passwordSourceModel))
+		}
+
+		if (!Util.nullSafeEquals(this.passwordSourceModel, dsi.passwordSourceModel)) {
 			return false;
-		if (!Util.nullSafeEquals(this.passwordSourceUrl, dsi.passwordSourceUrl))
+		}
+
+		if (!Util.nullSafeEquals(this.passwordSourceUrl, dsi.passwordSourceUrl)) {
 			return false;
-		if (!Util.nullSafeEquals(this.passwordLocation, dsi.passwordLocation))
+		}
+
+		if (!Util.nullSafeEquals(this.passwordLocation, dsi.passwordLocation)) {
 			return false;
+		}
 
 		return true;
 	}

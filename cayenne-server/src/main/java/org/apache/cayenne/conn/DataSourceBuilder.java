@@ -1,0 +1,135 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.conn;
+
+import java.sql.Driver;
+
+import javax.sql.DataSource;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
+
+/**
+ * A builder class that creates a default Cayenne implementation of a pooling
+ * {@link DataSource}.
+ * 
+ * @since 4.0
+ */
+public class DataSourceBuilder {
+
+	private AdhocObjectFactory objectFactory;
+	private JdbcEventLogger logger;
+	private String userName;
+	private String password;
+	private String driver;
+	private String url;
+	private PoolingDataSourceParameters poolParameters;
+
+	public static DataSourceBuilder builder(AdhocObjectFactory objectFactory, JdbcEventLogger logger) {
+		return new DataSourceBuilder(objectFactory, logger);
+	}
+
+	private DataSourceBuilder(AdhocObjectFactory objectFactory, JdbcEventLogger logger) {
+		this.objectFactory = objectFactory;
+		this.logger = logger;
+		this.logger = NoopJdbcEventLogger.getInstance();
+		this.poolParameters = new PoolingDataSourceParameters();
+
+		poolParameters.setMinConnections(1);
+		poolParameters.setMaxConnections(1);
+		poolParameters.setMaxQueueWaitTime(PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
+	}
+
+	public DataSourceBuilder userName(String userName) {
+		this.userName = userName;
+		return this;
+	}
+
+	public DataSourceBuilder password(String password) {
+		this.password = password;
+		return this;
+	}
+
+	public DataSourceBuilder driver(String driver) {
+		this.driver = driver;
+		return this;
+	}
+
+	public DataSourceBuilder url(String url) {
+		this.url = url;
+		return this;
+	}
+
+	public DataSourceBuilder minConnections(int minConnections) {
+		poolParameters.setMinConnections(minConnections);
+		return this;
+	}
+
+	public DataSourceBuilder maxConnections(int maxConnections) {
+		poolParameters.setMaxConnections(maxConnections);
+		return this;
+	}
+
+	public DataSourceBuilder maxQueueWaitTime(long maxQueueWaitTime) {
+		poolParameters.setMaxQueueWaitTime(maxQueueWaitTime);
+		return this;
+	}
+
+	public DataSource build() {
+
+		// sanity checks...
+		if (poolParameters.getMaxConnections() < 0) {
+			throw new CayenneRuntimeException("Maximum number of connections can not be negative ("
+					+ poolParameters.getMaxConnections() + ").");
+		}
+
+		if (poolParameters.getMinConnections() < 0) {
+			throw new CayenneRuntimeException("Minimum number of connections can not be negative ("
+					+ poolParameters.getMinConnections() + ").");
+		}
+
+		if (poolParameters.getMinConnections() > poolParameters.getMaxConnections()) {
+			throw new CayenneRuntimeException("Minimum number of connections can not be bigger then maximum.");
+		}
+
+		DataSource nonPooling = buildNonPoolingDataSource();
+		return buildPoolingDataSource(new PooledConnectionFactory(nonPooling));
+	}
+
+	private DataSource buildNonPoolingDataSource() {
+		Driver driver = objectFactory.newInstance(Driver.class, this.driver);
+		DriverDataSource dataSource = new DriverDataSource(driver, url, userName, password);
+		dataSource.setLogger(logger);
+		return dataSource;
+	}
+
+	private DataSource buildPoolingDataSource(PooledConnectionFactory connectionFactory) {
+		PoolingDataSource poolDS;
+		try {
+			poolDS = new PoolingDataSource(connectionFactory, poolParameters);
+		} catch (Exception e) {
+			logger.logConnectFailure(e);
+			throw new CayenneRuntimeException("Error creating DataSource", e);
+		}
+
+		return new ManagedPoolingDataSource(poolDS);
+	}
+}

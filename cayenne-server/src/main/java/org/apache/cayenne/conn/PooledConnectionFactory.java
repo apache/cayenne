@@ -29,23 +29,23 @@ import javax.sql.DataSource;
 import javax.sql.PooledConnection;
 
 /**
- * PoolDataSource allows to generate pooled connections.
- *
+ * A {@link ConnectionPoolDataSource} implementation.
  * <p>
  * It is implemented as a wrapper around a non-pooled data source object.
  * Delegates all method calls except for "getPooledConnection" to the underlying
  * DataSource.
  * 
+ * @since 4.0
  */
-public class PoolDataSource implements ConnectionPoolDataSource {
+public class PooledConnectionFactory implements ConnectionPoolDataSource {
 
 	private DataSource nonPooledDatasource;
 
-	public PoolDataSource(DataSource nonPooledDatasource) {
+	public PooledConnectionFactory(DataSource nonPooledDatasource) {
 		this.nonPooledDatasource = nonPooledDatasource;
 	}
 
-	public PoolDataSource(String jdbcDriver, String connectionUrl) throws SQLException {
+	public PooledConnectionFactory(String jdbcDriver, String connectionUrl) throws SQLException {
 		nonPooledDatasource = new DriverDataSource(jdbcDriver, connectionUrl);
 	}
 

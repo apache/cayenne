@@ -19,35 +19,49 @@
 
 package org.apache.cayenne.conn;
 
+import static org.mockito.Mockito.mock;
+
+import java.sql.SQLException;
+
+import javax.sql.ConnectionPoolDataSource;
+import javax.sql.DataSource;
+
+import org.junit.Before;
 import org.junit.Test;
 
 public class PooledConnectionImplTest {
 
-    @Test
-    public void testConnectionErrorNotificationConcurrency() throws Exception {
-        // test a case when error notification is sent to connection
-        // that has been removed from the pool, but when pool is still a 
-        // listener for its events.
-        PoolManager pm = new PoolManager(null, 0, 3, "", "") {
-            @Override
-            protected void startMaintenanceThread() {}
-        };
-        PooledConnectionImpl con = new PooledConnectionImpl();
-        con.addConnectionEventListener(pm);
-        con.connectionErrorNotification(new java.sql.SQLException("Bad SQL Exception.."));
-    }
+	private PoolingDataSource dataSource;
 
-    @Test
-    public void testConnectionClosedNotificationConcurrency() throws Exception {
-        // test a case when closed notification is sent to connection
-        // that has been removed from the pool, but when pool is still a 
-        // listener for its events.
-        PoolManager pm = new PoolManager(null, 0, 3, "", "") {
-            @Override
-            protected void startMaintenanceThread() {}
-        };
-        PooledConnectionImpl con = new PooledConnectionImpl();
-        con.addConnectionEventListener(pm);
-        con.connectionClosedNotification();
-    }
+	@Before
+	public void before() throws SQLException {
+		PoolingDataSourceParameters poolParameters = new PoolingDataSourceParameters();
+		poolParameters.setMinConnections(0);
+		poolParameters.setMaxConnections(0);
+		poolParameters.setMaxQueueWaitTime(1000);
+
+		this.dataSource = new PoolingDataSource(mock(ConnectionPoolDataSource.class), poolParameters);
+	}
+
+	@Test
+	public void testConnectionErrorNotificationConcurrency() throws Exception {
+		// test a case when error notification is sent to connection
+		// that has been removed from the pool, but when pool is still a
+		// listener for its events.
+
+		PooledConnectionImpl con = new PooledConnectionImpl(mock(DataSource.class), "un", "password");
+		con.addConnectionEventListener(dataSource);
+		con.connectionErrorNotification(new java.sql.SQLException("Bad SQL Exception.."));
+	}
+
+	@Test
+	public void testConnectionClosedNotificationConcurrency() throws Exception {
+		// test a case when closed notification is sent to connection
+		// that has been removed from the pool, but when pool is still a
+		// listener for its events.
+		PooledConnectionImpl con = new PooledConnectionImpl(mock(DataSource.class), "un", "password");
+		con.addConnectionEventListener(dataSource);
+		con.connectionClosedNotification();
+	}
+
 }

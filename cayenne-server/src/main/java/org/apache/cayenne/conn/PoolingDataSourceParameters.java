@@ -16,21 +16,49 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.conn;
 
 /**
- * This interface duplicates default reflection based mechanism for receiving DI
- * events. It is not fully supported and its usage are reserved for cases when
- * for some reason it is not possible to use reflection. It is used for example
- * in {@link javax.sql.DataSource} management layer to provide compatibility
- * with java version 5.
- *
- * @since 3.1
+ * A connection of pooling parameters used by {@link PoolingDataSource}.
+ * 
+ * @since 4.0
  */
-public interface ScopeEventListener {
-	
-	/**
-	 * Similar to {@link BeforeScopeEnd}
-	 */
-	void beforeScopeEnd();
+public class PoolingDataSourceParameters {
+
+	private String validationQuery;
+	private int minConnections;
+	private int maxConnections;
+	private long maxQueueWaitTime;
+
+	public int getMinConnections() {
+		return minConnections;
+	}
+
+	public void setMinConnections(int minConnections) {
+		this.minConnections = minConnections;
+	}
+
+	public int getMaxConnections() {
+		return maxConnections;
+	}
+
+	public void setMaxConnections(int maxConnections) {
+		this.maxConnections = maxConnections;
+	}
+
+	public long getMaxQueueWaitTime() {
+		return maxQueueWaitTime;
+	}
+
+	public void setMaxQueueWaitTime(long maxQueueWaitTime) {
+		this.maxQueueWaitTime = maxQueueWaitTime;
+	}
+
+	public String getValidationQuery() {
+		return validationQuery;
+	}
+
+	public void setValidationQuery(String validationQuery) {
+		this.validationQuery = validationQuery;
+	}
 }

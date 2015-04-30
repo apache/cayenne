@@ -32,170 +32,164 @@ import javax.sql.PooledConnection;
 import javax.sql.StatementEventListener;
 
 /**
- * PooledConnectionImpl is an implementation of a pooling wrapper for the database
- * connection as per JDBC3 spec. Most of the modern JDBC drivers should have its own
- * implementation that may be used instead of this class.
- * 
+ * PooledConnectionImpl is an implementation of a pooling wrapper for the
+ * database connection as per JDBC3 spec. Most of the modern JDBC drivers should
+ * have its own implementation that may be used instead of this class.
  */
 public class PooledConnectionImpl implements PooledConnection {
 
-    private Connection connectionObj;
-    private List<ConnectionEventListener> connectionEventListeners;
-    private boolean hadErrors;
-    private DataSource connectionSource;
-    private String userName;
-    private String password;
+	private Connection connectionObj;
+	private List<ConnectionEventListener> connectionEventListeners;
+	private boolean hadErrors;
+	private DataSource dataSource;
+	private String userName;
+	private String password;
 
-    protected PooledConnectionImpl() {
-        // TODO: maybe remove synchronization and use
-        // FastArrayList from commons-collections? After
-        // all the only listener is usually pool manager.
-        this.connectionEventListeners = Collections
-                .synchronizedList(new ArrayList<ConnectionEventListener>(10));
-    }
+	public PooledConnectionImpl(DataSource dataSource, String userName, String password) {
 
-    /** Creates new PooledConnection */
-    public PooledConnectionImpl(DataSource connectionSource, String userName,
-            String password) {
+		// TODO: maybe remove synchronization and use
+		// FastArrayList from commons-collections? After
+		// all the only listener is usually pool manager.
+		this.connectionEventListeners = Collections.synchronizedList(new ArrayList<ConnectionEventListener>(10));
 
-        this();
+		this.dataSource = dataSource;
+		this.userName = userName;
+		this.password = password;
+	}
 
-        this.connectionSource = connectionSource;
-        this.userName = userName;
-        this.password = password;
+	public void reconnect() throws SQLException {
+		if (connectionObj != null) {
+			try {
+				connectionObj.close();
+			} catch (SQLException ex) {
+				// ignore exception, since connection is expected
+				// to be in a bad state
+			} finally {
+				connectionObj = null;
+			}
+		}
 
-    }
+		connectionObj = (userName != null) ? dataSource.getConnection(userName, password) : dataSource.getConnection();
+	}
 
-    public void reconnect() throws SQLException {
-        if (connectionObj != null) {
-            try {
-                connectionObj.close();
-            }
-            catch (SQLException ex) {
-                // ignore exception, since connection is expected
-                // to be in a bad state
-            }
-            finally {
-                connectionObj = null;
-            }
-        }
+	@Override
+	public void addConnectionEventListener(ConnectionEventListener listener) {
+		synchronized (connectionEventListeners) {
+			if (!connectionEventListeners.contains(listener)) {
+				connectionEventListeners.add(listener);
+			}
+		}
+	}
 
-        connectionObj = (userName != null) ? connectionSource.getConnection(
-                userName,
-                password) : connectionSource.getConnection();
-    }
+	@Override
+	public void removeConnectionEventListener(ConnectionEventListener listener) {
+		synchronized (connectionEventListeners) {
+			connectionEventListeners.remove(listener);
+		}
+	}
 
-    public void addConnectionEventListener(ConnectionEventListener listener) {
-        synchronized (connectionEventListeners) {
-            if (!connectionEventListeners.contains(listener))
-                connectionEventListeners.add(listener);
-        }
-    }
+	@Override
+	public void close() throws SQLException {
 
-    public void removeConnectionEventListener(ConnectionEventListener listener) {
-        synchronized (connectionEventListeners) {
-            connectionEventListeners.remove(listener);
-        }
-    }
+		synchronized (connectionEventListeners) {
+			// remove all listeners
+			connectionEventListeners.clear();
+		}
 
-    public void close() throws SQLException {
+		if (connectionObj != null) {
+			try {
+				connectionObj.close();
+			} finally {
+				connectionObj = null;
+			}
+		}
+	}
 
-        synchronized (connectionEventListeners) {
-            // remove all listeners
-            connectionEventListeners.clear();
-        }
+	@Override
+	public Connection getConnection() throws SQLException {
+		if (connectionObj == null) {
+			reconnect();
+		}
 
-        if (connectionObj != null) {
-            try {
-                connectionObj.close();
-            }
-            finally {
-                connectionObj = null;
-            }
-        }
-    }
+		// set autocommit to false to return connection
+		// always in consistent state
+		if (!connectionObj.getAutoCommit()) {
 
-    public Connection getConnection() throws SQLException {
-        if (connectionObj == null) {
-            reconnect();
-        }
+			try {
+				connectionObj.setAutoCommit(true);
+			} catch (SQLException sqlEx) {
+				// try applying Sybase patch
+				ConnectionWrapper.sybaseAutoCommitPatch(connectionObj, sqlEx, true);
+			}
+		}
 
-        // set autocommit to false to return connection
-        // always in consistent state
-        if (!connectionObj.getAutoCommit()) {
+		connectionObj.clearWarnings();
+		return new ConnectionWrapper(connectionObj, this);
+	}
 
-            try {
-                connectionObj.setAutoCommit(true);
-            }
-            catch (SQLException sqlEx) {
-                // try applying Sybase patch
-                ConnectionWrapper.sybaseAutoCommitPatch(connectionObj, sqlEx, true);
-            }
-        }
+	protected void returnConnectionToThePool() throws SQLException {
+		// do not return to pool bad connections
+		if (hadErrors)
+			close();
+		else
+			// notify the listeners that connection is no longer used by
+			// application...
+			this.connectionClosedNotification();
+	}
 
-        connectionObj.clearWarnings();
-        return new ConnectionWrapper(connectionObj, this);
-    }
+	/**
+	 * This method creates and sents an event to listeners when an error occurs
+	 * in the underlying connection. Listeners can have special logic to analyze
+	 * the error and do things like closing this PooledConnection (if the error
+	 * is fatal), etc...
+	 */
+	public void connectionErrorNotification(SQLException exception) {
+		// hint for later to avoid returning bad connections to the pool
+		hadErrors = true;
 
-    protected void returnConnectionToThePool() throws SQLException {
-        // do not return to pool bad connections
-        if (hadErrors)
-            close();
-        else
-            // notify the listeners that connection is no longer used by application...
-            this.connectionClosedNotification();
-    }
+		synchronized (connectionEventListeners) {
+			if (connectionEventListeners.isEmpty()) {
+				return;
+			}
 
-    /**
-     * This method creates and sents an event to listeners when an error occurs in the
-     * underlying connection. Listeners can have special logic to analyze the error and do
-     * things like closing this PooledConnection (if the error is fatal), etc...
-     */
-    public void connectionErrorNotification(SQLException exception) {
-        // hint for later to avoid returning bad connections to the pool
-        hadErrors = true;
+			ConnectionEvent closedEvent = new ConnectionEvent(this, exception);
+			for (ConnectionEventListener nextListener : connectionEventListeners) {
+				nextListener.connectionErrorOccurred(closedEvent);
+			}
+		}
+	}
 
-        synchronized (connectionEventListeners) {
-            if (connectionEventListeners.size() == 0)
-                return;
+	/**
+	 * Creates and sends an event to listeners when a user closes
+	 * java.sql.Connection object belonging to this PooledConnection.
+	 */
+	protected void connectionClosedNotification() {
+		synchronized (connectionEventListeners) {
+			if (connectionEventListeners.size() == 0) {
+				return;
+			}
 
-            ConnectionEvent closedEvent = new ConnectionEvent(this, exception);
-            for (final ConnectionEventListener nextListener : connectionEventListeners) {
-                nextListener.connectionErrorOccurred(closedEvent);
-            }
-        }
-    }
+			ConnectionEvent closedEvent = new ConnectionEvent(this);
 
-    /**
-     * Creates and sends an event to listeners when a user closes java.sql.Connection
-     * object belonging to this PooledConnection.
-     */
-    protected void connectionClosedNotification() {
-        synchronized (connectionEventListeners) {
-            if (connectionEventListeners.size() == 0)
-                return;
+			for (ConnectionEventListener nextListener : connectionEventListeners) {
+				nextListener.connectionClosed(closedEvent);
+			}
+		}
+	}
 
-            ConnectionEvent closedEvent = new ConnectionEvent(this);
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public void addStatementEventListener(StatementEventListener listener) {
+		throw new UnsupportedOperationException("Statement events are unsupported");
+	}
 
-            for (final ConnectionEventListener nextListener : connectionEventListeners) {
-                nextListener.connectionClosed(closedEvent);
-            }
-        }
-    }
-
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public void addStatementEventListener(StatementEventListener listener) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public void removeStatementEventListener(StatementEventListener listener) {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public void removeStatementEventListener(StatementEventListener listener) {
+		throw new UnsupportedOperationException("Statement events are unsupported");
+	}
 }
