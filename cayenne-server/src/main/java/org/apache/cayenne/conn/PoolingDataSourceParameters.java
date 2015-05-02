@@ -19,7 +19,7 @@
 package org.apache.cayenne.conn;
 
 /**
- * A connection of pooling parameters used by {@link PoolingDataSource}.
+ * A collection of pooling parameters used by {@link PoolingDataSource}.
  * 
  * @since 4.0
  */

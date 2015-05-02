@@ -93,6 +93,11 @@ public class DataSourceBuilder {
 		return this;
 	}
 
+	public DataSourceBuilder validationQuery(String validationQuery) {
+		poolParameters.setValidationQuery(validationQuery);
+		return this;
+	}
+
 	public DataSource build() {
 
 		// sanity checks...
