@@ -19,7 +19,6 @@ CAY-1992 Allow to exclude DataMap java class from Modeler class generation
 CAY-1995 Add support for iterators to Select
 CAY-2001 Saving a display state of Project
 CAY-2004 EJBQL: Support for ordering on aggregate expressions
-CAY-2005 Improving generated DISTINCT performance on PostgreSQL
 CAY-2007 Refactoring SelectTranslator for better extensibility
 CAY-2008 Connection pool refactoring and validation query support in Cayenne DataSource
 

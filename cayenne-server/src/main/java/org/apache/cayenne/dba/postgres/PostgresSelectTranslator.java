@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.postgres;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
@@ -52,36 +51,4 @@ class PostgresSelectTranslator extends DefaultSelectTranslator {
 			buffer.append(" OFFSET ").append(offset);
 		}
 	}
-
-	/**
-	 * @since 4.0
-	 */
-	@Override
-	protected String buildDistinctStatement() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("DISTINCT ");
-
-		boolean foundKey = false;
-
-		for (ColumnDescriptor column : getResultColumns()) {
-			if (column.getAttribute().isPrimaryKey()) {
-
-				if (foundKey) {
-					builder.append(", ");
-				} else {
-					builder.append("ON (");
-					foundKey = true;
-				}
-
-				builder.append(column.getQualifiedColumnName());
-			}
-		}
-
-		if (foundKey) {
-			builder.append(")");
-		}
-
-		return builder.toString();
-	}
-
 }
