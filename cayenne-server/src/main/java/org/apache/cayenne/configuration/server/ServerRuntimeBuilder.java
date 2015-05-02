@@ -41,9 +41,6 @@ import org.apache.cayenne.di.Module;
  */
 public class ServerRuntimeBuilder {
 
-	/**
-	 * @since 4.0
-	 */
 	static final String DEFAULT_NAME = "cayenne";
 
 	private String name;
@@ -57,6 +54,14 @@ public class ServerRuntimeBuilder {
 	private int jdbcMinConnections;
 	private int jdbcMaxConnections;
 	private String validationQuery;
+	
+	public static ServerRuntimeBuilder builder() {
+		return new ServerRuntimeBuilder();
+	}
+	
+	public static ServerRuntimeBuilder builder(String name) {
+		return new ServerRuntimeBuilder(name);
+	}
 
 	/**
 	 * Creates an empty builder.
