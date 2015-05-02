@@ -56,6 +56,7 @@ public class ServerRuntimeBuilder {
 	private String jdbcPassword;
 	private int jdbcMinConnections;
 	private int jdbcMaxConnections;
+	private String validationQuery;
 
 	/**
 	 * Creates an empty builder.
@@ -108,6 +109,18 @@ public class ServerRuntimeBuilder {
 	public ServerRuntimeBuilder jdbcDriver(String driver) {
 		// TODO: guess the driver from URL
 		this.jdbcDriver = driver;
+		return this;
+	}
+
+	/**
+	 * Sets a validation query for the default DataSource.
+	 * 
+	 * @param validationQuery
+	 *            a SQL string that returns some result. It will be used to
+	 *            validate connections in the pool.
+	 */
+	public ServerRuntimeBuilder validationQuery(String validationQuery) {
+		this.validationQuery = validationQuery;
 		return this;
 	}
 
@@ -232,6 +245,10 @@ public class ServerRuntimeBuilder {
 
 					if (jdbcMaxConnections > 0) {
 						props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
+					}
+
+					if (validationQuery != null) {
+						props.put(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
 					}
 
 				}

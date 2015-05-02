@@ -92,6 +92,11 @@ public interface Constants {
 	public static final String JDBC_MAX_CONNECTIONS_PROPERTY = "cayenne.jdbc.max_connections";
 
 	/**
+	 * @since 4.0
+	 */
+	public static final String JDBC_VALIDATION_QUERY_PROPERTY = "cayenne.jdbc.validation_query";
+
+	/**
 	 * An integer property defining the maximum number of entries in the query
 	 * cache. Note that not all QueryCache providers may respect this property.
 	 * MapQueryCache uses it, but the rest would use alternative configuration
