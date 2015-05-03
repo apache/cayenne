@@ -56,7 +56,13 @@ public class PoolingDataSource implements DataSource {
 
 		String s = e.getMessage().toLowerCase();
 		if (s.contains("set chained command not allowed")) {
-			// TODO: the hack is ugly... should we rollback instead here?
+
+			// TODO: doing 'commit' here is extremely dangerous... we need to
+			// get a hold of Sybase instance and verify whether this issue is
+			// still there, and fix it differently (and perhaps generically) by
+			// calling 'rollback' on connections (can we do it when getting
+			// connection from the pool? returning it to the pool?)
+
 			c.commit();
 			c.setAutoCommit(autoCommit); // Shouldn't fail now.
 		} else {
