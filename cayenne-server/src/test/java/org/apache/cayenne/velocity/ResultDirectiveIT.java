@@ -49,7 +49,6 @@ public class ResultDirectiveIT extends ServerCase {
 	@Inject
 	private ServerRuntime runtime;
 
-
 	@Inject
 	protected DBHelper dbHelper;
 
@@ -73,6 +72,8 @@ public class ResultDirectiveIT extends ServerCase {
 				+ " FROM ARTIST";
 		Map<String, Object> selectResult = selectForQuery(sql);
 
+		// TODO: is that correct to use Long (coming from DbAttribute) type for
+		// ARTIST_ID instead of Integer (coming from #result(..))?
 		assertEquals(1l, selectResult.get("ARTIST_ID"));
 		assertEquals("ArtistToTestResult", selectResult.get("ARTIST_NAME").toString().trim());
 	}
