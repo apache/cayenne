@@ -44,6 +44,26 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PoolingDataSource implements DataSource {
 
+	// An old hack that fixes Sybase problems with autocommit. Used idea from
+	// Jonas org.objectweb.jonas.jdbc_xa.ConnectionImpl
+	// (http://www.objectweb.org/jonas/).
+	//
+	// If problem is not the one that can be fixed by this patch, original
+	// exception is rethrown. If exception occurs when fixing the problem, new
+	// exception is thrown.
+	//
+	static void sybaseAutoCommitPatch(Connection c, SQLException e, boolean autoCommit) throws SQLException {
+
+		String s = e.getMessage().toLowerCase();
+		if (s.contains("set chained command not allowed")) {
+			// TODO: the hack is ugly... should we rollback instead here?
+			c.commit();
+			c.setAutoCommit(autoCommit); // Shouldn't fail now.
+		} else {
+			throw e;
+		}
+	}
+
 	/**
 	 * Defines a maximum time in milliseconds that a connection request could
 	 * wait in the connection queue. After this period expires, an exception
@@ -238,8 +258,28 @@ public class PoolingDataSource implements DataSource {
 		return new PoolAwareConnection(this, createUnwrapped(), validationQuery);
 	}
 
+	/**
+	 * Creates a new connection in a consistent state.
+	 */
 	Connection createUnwrapped() throws SQLException {
-		return nonPoolingDataSource.getConnection();
+		Connection c = nonPoolingDataSource.getConnection();
+
+		// set default connection state...
+
+		// TODO: tx isolation level?
+
+		if (!c.getAutoCommit()) {
+
+			try {
+				c.setAutoCommit(true);
+			} catch (SQLException e) {
+				PoolingDataSource.sybaseAutoCommitPatch(c, e, true);
+			}
+		}
+
+		c.clearWarnings();
+
+		return c;
 	}
 
 	@Override

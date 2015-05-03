@@ -20,6 +20,7 @@
 package org.apache.cayenne.datasource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.sql.Connection;
@@ -41,6 +42,17 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 	@Test(expected = UnsupportedOperationException.class)
 	public void testGetConnectionWithUserName() throws Exception {
 		dataSource.getConnection("user", "password");
+	}
+
+	@Test
+	public void testGetConnectionAutoCommit() throws Exception {
+
+		Connection c1 = dataSource.getConnection();
+		try {
+			assertTrue("Failed to reset connection state", c1.getAutoCommit());
+		} finally {
+			c1.close();
+		}
 	}
 
 	@Test

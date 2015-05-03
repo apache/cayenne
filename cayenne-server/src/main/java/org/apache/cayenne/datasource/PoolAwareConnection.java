@@ -51,24 +51,7 @@ public class PoolAwareConnection implements Connection {
 	private Connection connection;
 	private String validationQuery;
 
-	// An old hack that fixes Sybase problems with autocommit. Used idea from
-	// Jonas org.objectweb.jonas.jdbc_xa.ConnectionImpl
-	// (http://www.objectweb.org/jonas/).
-	//
-	// If problem is not the one that can be fixed by this patch, original
-	// exception is rethrown. If exception occurs when fixing the problem, new
-	// exception is thrown.
-	//
-	static void sybaseAutoCommitPatch(Connection c, SQLException e, boolean autoCommit) throws SQLException {
-
-		String s = e.getMessage().toLowerCase();
-		if (s.contains("set chained command not allowed")) {
-			c.commit();
-			c.setAutoCommit(autoCommit); // Shouldn't fail now.
-		} else {
-			throw e;
-		}
-	}
+	
 
 	public PoolAwareConnection(PoolingDataSource parent, Connection connection, String validationQuery) {
 		this.parent = parent;
@@ -118,6 +101,8 @@ public class PoolAwareConnection implements Connection {
 			// state
 		}
 
+		// TODO: autocommit, tx isolation, and other connection settings may
+		// change when resetting connection and need to be restored...
 		try {
 			connection = parent.createUnwrapped();
 		} catch (SQLException e) {
@@ -312,8 +297,7 @@ public class PoolAwareConnection implements Connection {
 		} catch (SQLException sqlEx) {
 
 			try {
-				// apply Sybase patch
-				sybaseAutoCommitPatch(connection, sqlEx, autoCommit);
+				PoolingDataSource.sybaseAutoCommitPatch(connection, sqlEx, autoCommit);
 			} catch (SQLException patchEx) {
 				parent.retire(this);
 				throw sqlEx;
