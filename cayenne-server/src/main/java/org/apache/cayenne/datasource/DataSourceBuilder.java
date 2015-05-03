@@ -69,6 +69,7 @@ public class DataSourceBuilder {
 	}
 
 	public DataSourceBuilder driver(String driver) {
+		// TODO: guess the driver from URL
 		this.driver = driver;
 		return this;
 	}
