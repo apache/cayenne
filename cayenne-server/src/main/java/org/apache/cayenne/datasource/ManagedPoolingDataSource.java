@@ -42,20 +42,33 @@ public class ManagedPoolingDataSource implements DataSource, ScopeEventListener 
 	public ManagedPoolingDataSource(PoolingDataSource dataSource) {
 
 		this.dataSource = dataSource;
-		this.dataSourceManager = new PoolingDataSourceManager(dataSource);
+
+		// wake every 2 minutes...
+		this.dataSourceManager = new PoolingDataSourceManager(dataSource, 120000);
 
 		dataSourceManager.start();
 	}
 
+	PoolingDataSourceManager getDataSourceManager() {
+		return dataSourceManager;
+	}
+
+	/**
+	 * Calls {@link #shutdown()} to drain the underlying pool, close open
+	 * connections and block the DataSource from creating any new connections.
+	 */
 	@Override
 	public void beforeScopeEnd() {
+		shutdown();
+	}
 
+	public void shutdown() {
 		// swap the underlying DataSource to prevent further interaction with
 		// the callers
 		this.dataSource = new StoppedDataSource(dataSource);
 
 		// shut down the thread..
-		dataSourceManager.shutdown();
+		this.dataSourceManager.shutdown();
 	}
 
 	@Override

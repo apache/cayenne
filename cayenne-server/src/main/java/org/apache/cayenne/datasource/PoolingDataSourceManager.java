@@ -19,9 +19,9 @@
 package org.apache.cayenne.datasource;
 
 /**
- * Manages the state of a {@link PoolingDataSource} instance, performing
- * periodic expansion/contraction of pooled connections, and orchestrating
- * shutdown.
+ * A thread that manages the state of a {@link PoolingDataSource} instance,
+ * performing periodic expansion/contraction of pooled connections, and
+ * orchestrating shutdown.
  * 
  * @since 4.0
  */
@@ -29,19 +29,29 @@ class PoolingDataSourceManager extends Thread {
 
 	private volatile boolean shouldStop;
 	private PoolingDataSource dataSource;
+	private long managerWakeTime;
 
-	PoolingDataSourceManager(PoolingDataSource dataSource) {
-		setName("PoolManagerCleanup-" + dataSource.hashCode());
+	PoolingDataSourceManager(PoolingDataSource dataSource, long managerWakeTime) {
+		setName("PoolingDataSourceManager-" + dataSource.hashCode());
 		setDaemon(true);
 
 		this.dataSource = dataSource;
 		this.shouldStop = false;
+		this.managerWakeTime = managerWakeTime;
 	}
 
-	public void shutdown() {
+	void shutdown() {
 		shouldStop = true;
 		dataSource.shutdown();
 		interrupt();
+	}
+
+	PoolingDataSource getDataSource() {
+		return dataSource;
+	}
+
+	boolean isStopped() {
+		return shouldStop;
 	}
 
 	@Override
@@ -49,8 +59,7 @@ class PoolingDataSourceManager extends Thread {
 		while (true) {
 
 			try {
-				// don't do it too often
-				Thread.sleep(600000);
+				Thread.sleep(managerWakeTime);
 			} catch (InterruptedException iex) {
 				// ignore...
 			}
