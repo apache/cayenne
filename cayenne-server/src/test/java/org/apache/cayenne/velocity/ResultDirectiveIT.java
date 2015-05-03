@@ -25,10 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
@@ -51,11 +49,6 @@ public class ResultDirectiveIT extends ServerCase {
 	@Inject
 	private ServerRuntime runtime;
 
-	@Inject
-	private JdbcAdapter dbAdapter;
-
-	@Inject
-	private DataNode node;
 
 	@Inject
 	protected DBHelper dbHelper;
