@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.velocity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.sql.Connection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
@@ -31,17 +40,9 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.sql.Connection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Test for Result directive to check if we could use ResultDirective
@@ -59,7 +60,10 @@ public class ResultDirectiveIT extends ServerCase {
 	@Inject
 	private DataNode node;
 
-    @Test
+	@Inject
+	private ServerCaseDataSourceFactory dataSourceFactory;
+
+	@Test
 	public void testWithoutResultDirective() throws Exception {
 		String sql = "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST";
 		Map<String, Object> artist = insertArtist();
@@ -69,7 +73,7 @@ public class ResultDirectiveIT extends ServerCase {
 		assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME"));
 	}
 
-    @Test
+	@Test
 	public void testWithOnlyResultDirective() throws Exception {
 		String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer')," + " #result('ARTIST_NAME' 'java.lang.String')"
 				+ " FROM ARTIST";
@@ -80,7 +84,7 @@ public class ResultDirectiveIT extends ServerCase {
 		assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME").toString().trim());
 	}
 
-    @Test
+	@Test
 	public void testWithMixedDirectiveUse1() throws Exception {
 		String sql = "SELECT ARTIST_ID," + " #result('ARTIST_NAME' 'java.lang.String')" + " FROM ARTIST";
 		Map<String, Object> artist = insertArtist();
@@ -90,7 +94,7 @@ public class ResultDirectiveIT extends ServerCase {
 		assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME").toString().trim());
 	}
 
-    @Test
+	@Test
 	public void testWithMixedDirectiveUse2() throws Exception {
 		String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer')," + " ARTIST_NAME " + " FROM ARTIST";
 		Map<String, Object> artist = insertArtist();
@@ -128,10 +132,11 @@ public class ResultDirectiveIT extends ServerCase {
 
 		SQLTemplateAction action = new SQLTemplateAction(template, node);
 
-		Connection c = runtime.getDataDomain().getDataNodes().iterator().next().getDataSource().getConnection();
+		Connection c = dataSourceFactory.getSharedDataSource().getConnection();
 		try {
 			MockOperationObserver observer = new MockOperationObserver();
 			action.performAction(c, observer);
+			c.commit();
 
 			int[] batches = observer.countsForQuery(template);
 			assertNotNull(batches);
