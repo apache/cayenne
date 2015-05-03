@@ -16,28 +16,50 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.conn;
+package org.apache.cayenne.datasource;
 
-import org.junit.Test;
+/**
+ * Manages the state of a {@link PoolingDataSource} instance, performing
+ * periodic expansion/contraction of pooled connections, and orchestrating
+ * shutdown.
+ * 
+ * @since 4.0
+ */
+class PoolingDataSourceManager extends Thread {
 
-import java.sql.SQLException;
+	private volatile boolean shouldStop;
+	private PoolingDataSource dataSource;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+	PoolingDataSourceManager(PoolingDataSource dataSource) {
+		setName("PoolManagerCleanup-" + dataSource.hashCode());
+		setDaemon(true);
 
-public class DriverDataSourceTest {
+		this.dataSource = dataSource;
+		this.shouldStop = false;
+	}
 
-    @Test
-    public void testLazyInstantiationOfDriverClass() {
-        DriverDataSource dataSource = new DriverDataSource("does.not.exist.Driver", "jdbc:postgresql://localhost/database");
-        assertNotNull(dataSource);
-        
-        try {
-            dataSource.getConnection();
-            fail();
-        } catch (SQLException e) {
-            // expected because driver class does not exist
-        }
-    }
-    
+	public void shutdown() {
+		shouldStop = true;
+		dataSource.shutdown();
+		interrupt();
+	}
+
+	@Override
+	public void run() {
+		while (true) {
+
+			try {
+				// don't do it too often
+				Thread.sleep(600000);
+			} catch (InterruptedException iex) {
+				// ignore...
+			}
+
+			if (shouldStop) {
+				break;
+			}
+
+			dataSource.managePool();
+		}
+	}
 }

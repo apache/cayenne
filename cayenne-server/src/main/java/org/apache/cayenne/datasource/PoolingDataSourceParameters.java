@@ -16,28 +16,49 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.conn;
+package org.apache.cayenne.datasource;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+/**
+ * A collection of pooling parameters used by {@link PoolingDataSource}.
+ * 
+ * @since 4.0
+ */
+public class PoolingDataSourceParameters {
 
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;
+	private String validationQuery;
+	private int minConnections;
+	private int maxConnections;
+	private long maxQueueWaitTime;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PoolingDataSource_FailingValidationQueryIT extends BasePoolingDataSourceIT {
-
-	@Override
-	protected PoolingDataSourceParameters createParameters() {
-		PoolingDataSourceParameters params = super.createParameters();
-		params.setValidationQuery("SELECT count(1) FROM NO_SUCH_TABLE");
-		return params;
+	public int getMinConnections() {
+		return minConnections;
 	}
 
-	@Test(expected = SQLException.class)
-	public void testGetConnection_ValidationQuery() throws Exception {
-		Connection c1 = dataSource.getConnection();
-		c1.close();
+	public void setMinConnections(int minConnections) {
+		this.minConnections = minConnections;
+	}
+
+	public int getMaxConnections() {
+		return maxConnections;
+	}
+
+	public void setMaxConnections(int maxConnections) {
+		this.maxConnections = maxConnections;
+	}
+
+	public long getMaxQueueWaitTime() {
+		return maxQueueWaitTime;
+	}
+
+	public void setMaxQueueWaitTime(long maxQueueWaitTime) {
+		this.maxQueueWaitTime = maxQueueWaitTime;
+	}
+
+	public String getValidationQuery() {
+		return validationQuery;
+	}
+
+	public void setValidationQuery(String validationQuery) {
+		this.validationQuery = validationQuery;
 	}
 }

@@ -16,49 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.conn;
+package org.apache.cayenne.datasource;
 
-/**
- * A collection of pooling parameters used by {@link PoolingDataSource}.
- * 
- * @since 4.0
- */
-public class PoolingDataSourceParameters {
+import static org.junit.Assert.assertEquals;
 
-	private String validationQuery;
-	private int minConnections;
-	private int maxConnections;
-	private long maxQueueWaitTime;
+import org.apache.cayenne.datasource.PoolingDataSource;
+import org.junit.Test;
 
-	public int getMinConnections() {
-		return minConnections;
+public class PoolingDataSource_StaticsTest {
+
+	@Test
+	public void testMaxIdleConnections() {
+
+		assertEquals(1, PoolingDataSource.maxIdleConnections(1, 1));
+		assertEquals(2, PoolingDataSource.maxIdleConnections(1, 2));
+		assertEquals(1, PoolingDataSource.maxIdleConnections(0, 2));
+		assertEquals(2, PoolingDataSource.maxIdleConnections(0, 3));
+		assertEquals(2, PoolingDataSource.maxIdleConnections(0, 4));
+		assertEquals(3, PoolingDataSource.maxIdleConnections(0, 5));
+		assertEquals(6, PoolingDataSource.maxIdleConnections(5, 6));
+
 	}
 
-	public void setMinConnections(int minConnections) {
-		this.minConnections = minConnections;
-	}
-
-	public int getMaxConnections() {
-		return maxConnections;
-	}
-
-	public void setMaxConnections(int maxConnections) {
-		this.maxConnections = maxConnections;
-	}
-
-	public long getMaxQueueWaitTime() {
-		return maxQueueWaitTime;
-	}
-
-	public void setMaxQueueWaitTime(long maxQueueWaitTime) {
-		this.maxQueueWaitTime = maxQueueWaitTime;
-	}
-
-	public String getValidationQuery() {
-		return validationQuery;
-	}
-
-	public void setValidationQuery(String validationQuery) {
-		this.validationQuery = validationQuery;
-	}
 }

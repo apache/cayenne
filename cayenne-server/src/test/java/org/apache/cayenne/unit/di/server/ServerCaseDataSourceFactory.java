@@ -26,8 +26,8 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.conn.DataSourceBuilder;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;

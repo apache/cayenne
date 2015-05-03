@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.conn;
+package org.apache.cayenne.datasource;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

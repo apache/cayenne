@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;

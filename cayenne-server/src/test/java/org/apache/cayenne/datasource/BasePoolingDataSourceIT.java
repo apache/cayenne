@@ -16,11 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.conn;
+package org.apache.cayenne.datasource;
 
 import java.sql.Driver;
 import java.sql.SQLException;
 
+import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.datasource.PoolingDataSource;
+import org.apache.cayenne.datasource.PoolingDataSourceParameters;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -53,13 +56,13 @@ public class BasePoolingDataSourceIT extends ServerCase {
 		nonPooling.setLogger(logger);
 
 		PoolingDataSourceParameters poolParameters = createParameters();
-		this.dataSource = new PoolingDataSource(new PooledConnectionFactory(nonPooling), poolParameters);
+		this.dataSource = new PoolingDataSource(nonPooling, poolParameters);
 	}
 
 	@After
 	public void after() throws SQLException {
 		if (dataSource != null) {
-			dataSource.beforeScopeEnd();
+			dataSource.shutdown();
 		}
 	}
 

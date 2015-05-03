@@ -16,12 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.conn;
+package org.apache.cayenne.datasource;
 
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 
+import org.apache.cayenne.datasource.PoolingDataSourceParameters;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -39,17 +40,17 @@ public class PoolingDataSource_ValidationQueryIT extends BasePoolingDataSourceIT
 	@Test
 	public void testGetConnection_ValidationQuery() throws Exception {
 
-		assertEquals(0, dataSource.getCurrentlyInUse());
-		assertEquals(2, dataSource.getCurrentlyUnused());
+		assertEquals(2, dataSource.poolSize());
+		assertEquals(2, dataSource.availableSize());
 
-		// TODO: we are not testing much here... we really need to mock
-		// validation query execution somehow and verify that it is taken into
-		// account
-		
 		Connection c1 = dataSource.getConnection();
-		assertEquals(1, dataSource.getCurrentlyInUse());
-		assertEquals(1, dataSource.getCurrentlyUnused());
+
+		assertEquals(2, dataSource.poolSize());
+		assertEquals(1, dataSource.availableSize());
 
 		c1.close();
+
+		assertEquals(2, dataSource.poolSize());
+		assertEquals(2, dataSource.availableSize());
 	}
 }

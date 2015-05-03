@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.conn;
+package org.apache.cayenne.datasource;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -30,26 +30,32 @@ import org.apache.cayenne.di.ScopeEventListener;
 
 /**
  * A wrapper for {@link PoolingDataSourceManager} that manages the underlying
- * connection pool size, shrinking it if needed.
+ * connection pool size.
  * 
  * @since 4.0
  */
 public class ManagedPoolingDataSource implements DataSource, ScopeEventListener {
 
 	private PoolingDataSourceManager dataSourceManager;
-	private PoolingDataSource dataSource;
+	private DataSource dataSource;
 
 	public ManagedPoolingDataSource(PoolingDataSource dataSource) {
 
 		this.dataSource = dataSource;
-		this.dataSourceManager = new PoolingDataSourceManager();
+		this.dataSourceManager = new PoolingDataSourceManager(dataSource);
 
 		dataSourceManager.start();
 	}
 
 	@Override
 	public void beforeScopeEnd() {
-		dataSourceManager.shouldStop();
+
+		// swap the underlying DataSource to prevent further interaction with
+		// the callers
+		this.dataSource = new StoppedDataSource(dataSource);
+
+		// shut down the thread..
+		dataSourceManager.shutdown();
 	}
 
 	@Override
@@ -95,61 +101,7 @@ public class ManagedPoolingDataSource implements DataSource, ScopeEventListener 
 
 	// JDBC 4.1 compatibility under Java 1.6 and newer
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		throw new UnsupportedOperationException();
-	}
-
-	boolean shouldShrinkPool() {
-		int unused = dataSource.getCurrentlyUnused();
-		int used = dataSource.getCurrentlyInUse();
-		int total = unused + used;
-		int median = dataSource.getMinConnections() + 1
-				+ (dataSource.getMaxConnections() - dataSource.getMinConnections()) / 2;
-
-		return unused > 0 && total > median;
-	}
-
-	class PoolingDataSourceManager extends Thread {
-
-		private volatile boolean shouldStop;
-
-		PoolingDataSourceManager() {
-			setName("PoolManagerCleanup-" + dataSource.hashCode());
-			setDaemon(true);
-			this.shouldStop = false;
-		}
-
-		public void shouldStop() {
-			shouldStop = true;
-			interrupt();
-		}
-
-		@Override
-		public void run() {
-			while (true) {
-
-				try {
-					// don't do it too often
-					Thread.sleep(600000);
-				} catch (InterruptedException iex) {
-					// ignore...
-				}
-
-				synchronized (dataSource) {
-
-					// simple pool management - close one connection if the
-					// count is
-					// above median and there are any idle connections.
-
-					if (shouldStop) {
-						break;
-					}
-
-					if (shouldShrinkPool()) {
-						dataSource.shrinkPool(1);
-					}
-				}
-			}
-		}
+		throw new SQLFeatureNotSupportedException();
 	}
 
 }

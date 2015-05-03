@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.conn;
+package org.apache.cayenne.datasource;
 
 import java.sql.Driver;
 
@@ -115,26 +115,21 @@ public class DataSourceBuilder {
 			throw new CayenneRuntimeException("Minimum number of connections can not be bigger then maximum.");
 		}
 
-		DataSource nonPooling = buildNonPoolingDataSource();
-		return buildPoolingDataSource(new PooledConnectionFactory(nonPooling));
+		return buildManaged(buildPooling(buildNonPooling()));
 	}
 
-	private DataSource buildNonPoolingDataSource() {
+	private DataSource buildNonPooling() {
 		Driver driver = objectFactory.newInstance(Driver.class, this.driver);
 		DriverDataSource dataSource = new DriverDataSource(driver, url, userName, password);
 		dataSource.setLogger(logger);
 		return dataSource;
 	}
 
-	private DataSource buildPoolingDataSource(PooledConnectionFactory connectionFactory) {
-		PoolingDataSource poolDS;
-		try {
-			poolDS = new PoolingDataSource(connectionFactory, poolParameters);
-		} catch (Exception e) {
-			logger.logConnectFailure(e);
-			throw new CayenneRuntimeException("Error creating DataSource", e);
-		}
+	private PoolingDataSource buildPooling(DataSource nonPoolingDataSource) {
+		return new PoolingDataSource(nonPoolingDataSource, poolParameters);
+	}
 
-		return new ManagedPoolingDataSource(poolDS);
+	private DataSource buildManaged(PoolingDataSource dataSource) {
+		return new ManagedPoolingDataSource(dataSource);
 	}
 }
