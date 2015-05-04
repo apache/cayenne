@@ -18,40 +18,37 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlserver;
 
-import java.sql.Connection;
-
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
 
-public class SQLServerSelectTranslator extends SelectTranslator {
-	
-    /**
-     * @since 4.0
-     */
-    public SQLServerSelectTranslator(Query query, DataNode dataNode, Connection connection) {
-        super(query, dataNode, connection);
-    }
-    
-    @Override
-    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        QueryMetadata metadata = getQuery().getMetaData(getEntityResolver());
-        
-        int limit = metadata.getFetchLimit();
-        int offset = metadata.getFetchOffset();
-        
-        if (limit > 0) {
-        	String sql = buffer.toString();
-        	
-        	// If contains distinct insert top limit after
-        	if (sql.startsWith("SELECT DISTINCT ")) {
-        		buffer.replace(0, 15, "SELECT DISTINCT TOP " + (offset + limit));	
-        		
-        	} else {
-        		buffer.replace(0, 6, "SELECT TOP " + (offset + limit));	
-        	}
-        }
-    }
+public class SQLServerSelectTranslator extends DefaultSelectTranslator {
+
+	/**
+	 * @since 4.0
+	 */
+	public SQLServerSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		super(query, adapter, entityResolver);
+	}
+
+	@Override
+	protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+
+		int limit = queryMetadata.getFetchLimit();
+		int offset = queryMetadata.getFetchOffset();
+
+		if (limit > 0) {
+			String sql = buffer.toString();
+
+			// If contains distinct insert top limit after
+			if (sql.startsWith("SELECT DISTINCT ")) {
+				buffer.replace(0, 15, "SELECT DISTINCT TOP " + (offset + limit));
+
+			} else {
+				buffer.replace(0, 6, "SELECT TOP " + (offset + limit));
+			}
+		}
+	}
 
 }

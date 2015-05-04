@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -110,28 +110,28 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
     }
     
     @Override
-    protected BatchParameterBinding[] createBindings() {
+    protected ParameterBinding[] createBindings() {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
-        BatchParameterBinding[] bindings = new BatchParameterBinding[len];
+        ParameterBinding[] bindings = new ParameterBinding[len];
 
         for (int i = 0; i < len; i++) {
             DbAttribute attribute = dbAttributes.get(i);
-            bindings[i] = new BatchParameterBinding(attribute);
+            bindings[i] = new ParameterBinding(attribute);
         }
 
         return bindings;
     }
     
     @Override
-    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
 
         int len = bindings.length;
 
         for (int i = 0, j = 1; i < len; i++) {
 
-            BatchParameterBinding b = bindings[i];
+            ParameterBinding b = bindings[i];
 
             Object value = row.getValue(i);
             DbAttribute attribute = b.getAttribute();

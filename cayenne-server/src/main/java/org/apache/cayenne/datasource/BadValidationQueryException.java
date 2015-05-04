@@ -16,28 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.conn;
-
-import org.junit.Test;
+package org.apache.cayenne.datasource;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+/**
+ * Thrown when the pool fails to validate a fresh connection that is known to be
+ * in a good state.
+ * 
+ * @since 4.0
+ */
+public class BadValidationQueryException extends SQLException {
 
-public class DriverDataSourceTest {
+	private static final long serialVersionUID = -3690715196865727679L;
 
-    @Test
-    public void testLazyInstantiationOfDriverClass() {
-        DriverDataSource dataSource = new DriverDataSource("does.not.exist.Driver", "jdbc:postgresql://localhost/database");
-        assertNotNull(dataSource);
-        
-        try {
-            dataSource.getConnection();
-            fail();
-        } catch (SQLException e) {
-            // expected because driver class does not exist
-        }
-    }
-    
+	public BadValidationQueryException(String message) {
+		super(message);
+	}
+
+	public BadValidationQueryException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

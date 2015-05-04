@@ -12,6 +12,16 @@ UPGRADING TO 4.0.M3
   Note if you have references to @Deprecated String properties and you run cgen without "createPropertyNames" flag,
   there will be errors. Reference Jira: CAY-1991
 
+* Per CAY-2010 DataSource building methods were refactored out of ServerRuntimeBuilder and into a standalone 
+  org.apache.cayenne.datasource.DataSourceBuilder. So creating a DataSource in runtime may look like this:
+
+  DataSource ds = DataSourceBuilder.url(dbUrl).driver(dbDriver).build();
+  ServerRuntime runtime = ServerRuntimeBuilder.builder().dataSource(ds).build();
+
+* Per CAY-2008, CAY-2009 we got rid of org.apache.cayenne.conn.PoolManager and associated classes that made up a 
+  pooling DataSource. A replacement is non-blocking DataSource under org.apache.cayenne.datasource (PoolingDataSource, ManagedPoolingDataSource),
+  best assembled using org.apache.cayenne.datasource.DataSourceBuilder.
+
 
 UPGRADING TO 4.0.M2
 

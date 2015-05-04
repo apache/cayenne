@@ -19,7 +19,10 @@ CAY-1992 Allow to exclude DataMap java class from Modeler class generation
 CAY-1995 Add support for iterators to Select
 CAY-2001 Saving a display state of Project
 CAY-2004 EJBQL: Support for ordering on aggregate expressions
-CAY-2005 Improving generated DISTINCT performance on PostgreSQL
+CAY-2007 Refactoring SelectTranslator for better extensibility
+CAY-2008 Connection pool refactoring and validation query support in Cayenne DataSource
+CAY-2009 Non-blocking connection pool
+CAY-2010 Splitting DataSourceBuilder from ServerRuntimeBuilder
 
 Bug Fixes:
 
@@ -30,6 +33,7 @@ CAY-1994 Modeler Migration Tool Shows No Changes
 CAY-1997 Difference in NULL handling inside the path between PropertyUtils and DataObject.readNestedProperty
 CAY-1998 Speeding up PropertyUtils
 CAY-1999 Unneeded Property import for superclasses with no properties
+CAY-2003 cdbimport doesn't work properly with several includeTable tags
 
 ----------------------------------
 Release: 4.0.M2

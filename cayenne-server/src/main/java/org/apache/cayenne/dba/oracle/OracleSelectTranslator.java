@@ -19,75 +19,54 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 /**
  * Select translator that implements Oracle-specific optimizations.
  * 
  */
-class OracleSelectTranslator extends SelectTranslator {
-    
-    /**
-     * @since 4.0
-     */
-    public OracleSelectTranslator(Query query, DataNode dataNode, Connection connection) {
-        super(query, dataNode, connection);
-    }
+class OracleSelectTranslator extends DefaultSelectTranslator {
 
-    @Override
-    protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
-        int offset = queryMetadata.getFetchOffset();
-        int limit = queryMetadata.getFetchLimit();
+	/**
+	 * @since 4.0
+	 */
+	public OracleSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		super(query, adapter, entityResolver);
+	}
 
-        if (limit > 0 || offset > 0) {
-            int max = (limit <= 0) ? Integer.MAX_VALUE : limit + offset;
+	@Override
+	protected void appendLimitAndOffsetClauses(StringBuilder buffer) {
+		int offset = queryMetadata.getFetchOffset();
+		int limit = queryMetadata.getFetchLimit();
 
-            buffer.insert(0, "select * from ( select tid.*, ROWNUM rnum from (");
-            buffer
-                    .append(") tid where ROWNUM <=")
-                    .append(max)
-                    .append(") where rnum  > ")
-                    .append(offset);
-        }
-    }
-    
-    @Override
-    protected void appendSelectColumns(StringBuilder buffer, List<String> selectColumnExpList) {
-        
-        // we need to add aliases to all columns to make fetch
-        // limit and offset work properly on Oracle (see CAY-1266)
-        
-        // append columns (unroll the loop's first element)
-        int columnCount = selectColumnExpList.size();
-        buffer.append(selectColumnExpList.get(0)).append(" AS c0");
+		if (limit > 0 || offset > 0) {
+			int max = (limit <= 0) ? Integer.MAX_VALUE : limit + offset;
 
-        // assume there is at least 1 element
-        for (int i = 1; i < columnCount; i++) {
-            buffer.append(", ");
-            buffer
-                    .append(selectColumnExpList.get(i))
-                    .append(" AS c" + i);
-        }
-    }
+			buffer.insert(0, "select * from ( select tid.*, ROWNUM rnum from (");
+			buffer.append(") tid where ROWNUM <=").append(max).append(") where rnum  > ").append(offset);
+		}
+	}
 
-    /**
-     * Translates internal query into PreparedStatement, applying Oracle optimizations if
-     * possible.
-     */
-    @Override
-    public PreparedStatement createStatement() throws Exception {
-        String sqlStr = createSqlString();
-        logger.logQuery(sqlStr, values);
-        PreparedStatement stmt = connection.prepareStatement(sqlStr);
+	@Override
+	protected void appendSelectColumns(StringBuilder buffer, List<String> selectColumnExpList) {
 
-        initStatement(stmt);
+		// we need to add aliases to all columns to make fetch
+		// limit and offset work properly on Oracle (see CAY-1266)
 
-        return stmt;
-    }
+		// append columns (unroll the loop's first element)
+		int columnCount = selectColumnExpList.size();
+		buffer.append(selectColumnExpList.get(0)).append(" AS c0");
+
+		// assume there is at least 1 element
+		for (int i = 1; i < columnCount; i++) {
+			buffer.append(", ");
+			buffer.append(selectColumnExpList.get(i)).append(" AS c" + i);
+		}
+	}
 }

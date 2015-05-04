@@ -16,53 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.datasource;
 
-package org.apache.cayenne.access.jdbc;
+import static org.junit.Assert.assertEquals;
 
-/**
- * Describes PreparedStatement parameter binding.
- * 
- * @since 1.1
- */
-public class ParameterBinding {
+import org.apache.cayenne.datasource.PoolingDataSource;
+import org.junit.Test;
 
-    protected int jdbcType;
-    protected int scale;
-    protected Object value;
+public class PoolingDataSource_StaticsTest {
 
-    public ParameterBinding(Object value, int jdbcType, int scale) {
-        this.value = value;
-        this.jdbcType = jdbcType;
-        this.scale = scale;
-    }
+	@Test
+	public void testMaxIdleConnections() {
 
-    public int getJdbcType() {
-        return jdbcType;
-    }
+		assertEquals(1, PoolingDataSource.maxIdleConnections(1, 1));
+		assertEquals(2, PoolingDataSource.maxIdleConnections(1, 2));
+		assertEquals(1, PoolingDataSource.maxIdleConnections(0, 2));
+		assertEquals(2, PoolingDataSource.maxIdleConnections(0, 3));
+		assertEquals(2, PoolingDataSource.maxIdleConnections(0, 4));
+		assertEquals(3, PoolingDataSource.maxIdleConnections(0, 5));
+		assertEquals(6, PoolingDataSource.maxIdleConnections(5, 6));
 
-    /**
-     * @since 3.0
-     */
-    public int getScale() {
-        return scale;
-    }
+	}
 
-    public Object getValue() {
-        return value;
-    }
-
-    public void setJdbcType(int i) {
-        jdbcType = i;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public void setScale(int i) {
-        scale = i;
-    }
-
-    public void setValue(Object object) {
-        value = object;
-    }
 }

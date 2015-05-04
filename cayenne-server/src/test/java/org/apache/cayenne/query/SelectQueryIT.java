@@ -76,7 +76,8 @@ public class SelectQueryIT extends ServerCase {
 	public void before() {
 		this.tArtist = new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH")
 				.setColumnTypes(Types.BIGINT, Types.CHAR, Types.DATE);
-		tPainting = new TableHelper(dbHelper, "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
+		tPainting = new TableHelper(dbHelper, "PAINTING").setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE")
+				.setColumnTypes(Types.INTEGER, Types.BIGINT, Types.VARCHAR);
 	}
 
 	protected void createArtistsDataSet() throws Exception {

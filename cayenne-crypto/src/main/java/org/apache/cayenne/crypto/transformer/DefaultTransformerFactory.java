@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
@@ -90,7 +90,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
     }
 
     @Override
-    public BindingsTransformer encryptor(BatchParameterBinding[] bindings) {
+    public BindingsTransformer encryptor(ParameterBinding[] bindings) {
         int len = bindings.length;
         List<Integer> cryptoColumns = null;
 
@@ -115,7 +115,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
             for (int i = 0; i < dlen; i++) {
                 int pos = cryptoColumns.get(i);
-                BatchParameterBinding b = bindings[pos];
+                ParameterBinding b = bindings[pos];
                 positions[i] = pos;
                 transformers[i] = transformerFactory.encryptor(b.getAttribute());
             }

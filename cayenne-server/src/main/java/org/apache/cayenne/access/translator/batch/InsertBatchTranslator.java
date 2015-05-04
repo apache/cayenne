@@ -21,6 +21,7 @@ package org.apache.cayenne.access.translator.batch;
 
 import java.util.List;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
@@ -81,15 +82,15 @@ public class InsertBatchTranslator extends DefaultBatchTranslator {
     }
 
     @Override
-    protected BatchParameterBinding[] createBindings() {
+    protected ParameterBinding[] createBindings() {
         List<DbAttribute> attributes = query.getDbAttributes();
         int len = attributes.size();
 
-        BatchParameterBinding[] bindings = new BatchParameterBinding[len];
+        ParameterBinding[] bindings = new ParameterBinding[len];
 
         for (int i = 0; i < len; i++) {
             DbAttribute a = attributes.get(i);
-            bindings[i] = new BatchParameterBinding(a);
+            bindings[i] = new ParameterBinding(a);
 
             // include/exclude state depends on DbAttribute only and can be
             // precompiled here
@@ -106,12 +107,12 @@ public class InsertBatchTranslator extends DefaultBatchTranslator {
     }
 
     @Override
-    protected BatchParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+    protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
         int len = bindings.length;
 
         for (int i = 0, j = 1; i < len; i++) {
 
-            BatchParameterBinding b = bindings[i];
+            ParameterBinding b = bindings[i];
 
             // exclusions are permanent
             if (!b.isExcluded()) {

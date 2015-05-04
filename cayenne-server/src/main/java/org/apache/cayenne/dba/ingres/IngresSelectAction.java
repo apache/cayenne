@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.ingres;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -37,7 +35,7 @@ public class IngresSelectAction extends SelectAction {
     }
 
     @Override
-    protected SelectTranslator createTranslator(Connection connection) {
-        return new IngresSelectTranslator(query, dataNode, connection);
+    protected SelectTranslator createTranslator() {
+        return new IngresSelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
     }
 }

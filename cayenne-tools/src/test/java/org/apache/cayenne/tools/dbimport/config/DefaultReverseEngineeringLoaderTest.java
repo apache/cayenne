@@ -19,223 +19,222 @@
 
 package org.apache.cayenne.tools.dbimport.config;
 
-import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.tools.ExcludeTable;
-import org.junit.Test;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.Iterator;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.MalformedURLException;
+import java.util.Iterator;
+
+import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.tools.ExcludeTable;
+import org.junit.Test;
+
 public class DefaultReverseEngineeringLoaderTest {
 
-    @Test
-    public void testLoadCatalog() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-catalog.xml"));
+	@Test
+	public void testLoadCatalog() throws Exception {
+		ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+				.load(getResource("reverseEngineering-catalog.xml"));
 
-        assertCatalog(engineering);
-    }
+		assertCatalog(engineering);
+	}
 
-    public static void assertCatalog(ReverseEngineering engineering) {
-        Iterator<Catalog> catalogs = engineering.getCatalogs().iterator();
-        assertEquals("catalog-name-01", catalogs.next().getName());
-        assertEquals("catalog-name-02", catalogs.next().getName());
+	public static void assertCatalog(ReverseEngineering engineering) {
+		Iterator<Catalog> catalogs = engineering.getCatalogs().iterator();
+		assertEquals("catalog-name-01", catalogs.next().getName());
+		assertEquals("catalog-name-02", catalogs.next().getName());
 
-        assertCatalog(catalogs);
-    }
+		assertCatalog(catalogs);
+	}
 
-    public static void assertCatalog(Iterator<Catalog> catalogs) {
-        Catalog catalog = catalogs.next();
-        assertEquals("catalog-name-03", catalog.getName());
+	public static void assertCatalog(Iterator<Catalog> catalogs) {
+		Catalog catalog = catalogs.next();
+		assertEquals("catalog-name-03", catalog.getName());
 
-        Iterator<IncludeTable> includeTables = catalog.getIncludeTables().iterator();
-        assertEquals("includeTable-01", includeTables.next().getPattern());
-        assertEquals("includeTable-02", includeTables.next().getPattern());
+		Iterator<IncludeTable> includeTables = catalog.getIncludeTables().iterator();
+		assertEquals("includeTable-01", includeTables.next().getPattern());
+		assertEquals("includeTable-02", includeTables.next().getPattern());
 
-        IncludeTable includeTable = includeTables.next();
-        assertEquals("includeTable-03", includeTable.getPattern());
-        assertEquals("includeColumn-01", includeTable.getIncludeColumns().iterator().next().getPattern());
-        assertEquals("excludeColumn-01", includeTable.getExcludeColumns().iterator().next().getPattern());
+		IncludeTable includeTable = includeTables.next();
+		assertEquals("includeTable-03", includeTable.getPattern());
+		assertEquals("includeColumn-01", includeTable.getIncludeColumns().iterator().next().getPattern());
+		assertEquals("excludeColumn-01", includeTable.getExcludeColumns().iterator().next().getPattern());
 
-        Iterator<ExcludeTable> excludeTables = catalog.getExcludeTables().iterator();
-        assertEquals("excludeTable-01", excludeTables.next().getPattern());
-        assertEquals("excludeTable-02", excludeTables.next().getPattern());
-        assertEquals("excludeTable-03", excludeTables.next().getPattern());
+		Iterator<ExcludeTable> excludeTables = catalog.getExcludeTables().iterator();
+		assertEquals("excludeTable-01", excludeTables.next().getPattern());
+		assertEquals("excludeTable-02", excludeTables.next().getPattern());
+		assertEquals("excludeTable-03", excludeTables.next().getPattern());
 
-        Iterator<ExcludeColumn> excludeColumns = catalog.getExcludeColumns().iterator();
-        assertEquals("excludeColumn-01", excludeColumns.next().getPattern());
-        assertEquals("excludeColumn-02", excludeColumns.next().getPattern());
-        assertEquals("excludeColumn-03", excludeColumns.next().getPattern());
-        Iterator<IncludeColumn> includeColumns = catalog.getIncludeColumns().iterator();
-        assertEquals("includeColumn-01", includeColumns.next().getPattern());
-        assertEquals("includeColumn-02", includeColumns.next().getPattern());
-        assertEquals("includeColumn-03", includeColumns.next().getPattern());
+		Iterator<ExcludeColumn> excludeColumns = catalog.getExcludeColumns().iterator();
+		assertEquals("excludeColumn-01", excludeColumns.next().getPattern());
+		assertEquals("excludeColumn-02", excludeColumns.next().getPattern());
+		assertEquals("excludeColumn-03", excludeColumns.next().getPattern());
+		Iterator<IncludeColumn> includeColumns = catalog.getIncludeColumns().iterator();
+		assertEquals("includeColumn-01", includeColumns.next().getPattern());
+		assertEquals("includeColumn-02", includeColumns.next().getPattern());
+		assertEquals("includeColumn-03", includeColumns.next().getPattern());
 
-        Iterator<ExcludeProcedure> excludeProcedures = catalog.getExcludeProcedures().iterator();
-        assertEquals("excludeProcedure-01", excludeProcedures.next().getPattern());
-        assertEquals("excludeProcedure-02", excludeProcedures.next().getPattern());
-        assertEquals("excludeProcedure-03", excludeProcedures.next().getPattern());
-        Iterator<IncludeProcedure> includeProcedures = catalog.getIncludeProcedures().iterator();
-        assertEquals("includeProcedure-01", includeProcedures.next().getPattern());
-        assertEquals("includeProcedure-02", includeProcedures.next().getPattern());
-        assertEquals("includeProcedure-03", includeProcedures.next().getPattern());
-    }
+		Iterator<ExcludeProcedure> excludeProcedures = catalog.getExcludeProcedures().iterator();
+		assertEquals("excludeProcedure-01", excludeProcedures.next().getPattern());
+		assertEquals("excludeProcedure-02", excludeProcedures.next().getPattern());
+		assertEquals("excludeProcedure-03", excludeProcedures.next().getPattern());
+		Iterator<IncludeProcedure> includeProcedures = catalog.getIncludeProcedures().iterator();
+		assertEquals("includeProcedure-01", includeProcedures.next().getPattern());
+		assertEquals("includeProcedure-02", includeProcedures.next().getPattern());
+		assertEquals("includeProcedure-03", includeProcedures.next().getPattern());
+	}
 
-    @Test
-    public void testLoadSchema() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-schema.xml"));
+	@Test
+	public void testLoadSchema() throws Exception {
+		ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+				.load(getResource("reverseEngineering-schema.xml"));
 
-        assertSchema(engineering);
-    }
+		assertSchema(engineering);
+	}
 
-    public static void assertSchema(ReverseEngineering engineering) {
-        Iterator<Schema> schemas = engineering.getSchemas().iterator();
-        assertEquals("schema-name-01", schemas.next().getName());
-        assertEquals("schema-name-02", schemas.next().getName());
+	public static void assertSchema(ReverseEngineering engineering) {
+		Iterator<Schema> schemas = engineering.getSchemas().iterator();
+		assertEquals("schema-name-01", schemas.next().getName());
+		assertEquals("schema-name-02", schemas.next().getName());
 
-        Schema schema = schemas.next();
-        assertEquals("schema-name-03", schema.getName());
+		Schema schema = schemas.next();
+		assertEquals("schema-name-03", schema.getName());
 
-        assertSchemaContent(schema);
-    }
+		assertSchemaContent(schema);
+	}
 
-    public static void assertSchemaContent(Schema schema) {
-        Iterator<IncludeTable> includeTables = schema.getIncludeTables().iterator();
-        assertEquals("includeTable-01", includeTables.next().getPattern());
-        assertEquals("includeTable-02", includeTables.next().getPattern());
+	public static void assertSchemaContent(Schema schema) {
+		Iterator<IncludeTable> includeTables = schema.getIncludeTables().iterator();
+		assertEquals("includeTable-01", includeTables.next().getPattern());
+		assertEquals("includeTable-02", includeTables.next().getPattern());
 
-        IncludeTable includeTable = includeTables.next();
-        assertEquals("includeTable-03", includeTable.getPattern());
-        assertEquals("includeColumn-01", includeTable.getIncludeColumns().iterator().next().getPattern());
-        assertEquals("excludeColumn-01", includeTable.getExcludeColumns().iterator().next().getPattern());
+		IncludeTable includeTable = includeTables.next();
+		assertEquals("includeTable-03", includeTable.getPattern());
+		assertEquals("includeColumn-01", includeTable.getIncludeColumns().iterator().next().getPattern());
+		assertEquals("excludeColumn-01", includeTable.getExcludeColumns().iterator().next().getPattern());
 
-        Iterator<ExcludeTable> excludeTables = schema.getExcludeTables().iterator();
-        assertEquals("excludeTable-01", excludeTables.next().getPattern());
-        assertEquals("excludeTable-02", excludeTables.next().getPattern());
-        assertEquals("excludeTable-03", excludeTables.next().getPattern());
+		Iterator<ExcludeTable> excludeTables = schema.getExcludeTables().iterator();
+		assertEquals("excludeTable-01", excludeTables.next().getPattern());
+		assertEquals("excludeTable-02", excludeTables.next().getPattern());
+		assertEquals("excludeTable-03", excludeTables.next().getPattern());
 
-        Iterator<ExcludeColumn> excludeColumns = schema.getExcludeColumns().iterator();
-        assertEquals("excludeColumn-01", excludeColumns.next().getPattern());
-        assertEquals("excludeColumn-02", excludeColumns.next().getPattern());
-        assertEquals("excludeColumn-03", excludeColumns.next().getPattern());
-        Iterator<IncludeColumn> includeColumns = schema.getIncludeColumns().iterator();
-        assertEquals("includeColumn-01", includeColumns.next().getPattern());
-        assertEquals("includeColumn-02", includeColumns.next().getPattern());
-        assertEquals("includeColumn-03", includeColumns.next().getPattern());
+		Iterator<ExcludeColumn> excludeColumns = schema.getExcludeColumns().iterator();
+		assertEquals("excludeColumn-01", excludeColumns.next().getPattern());
+		assertEquals("excludeColumn-02", excludeColumns.next().getPattern());
+		assertEquals("excludeColumn-03", excludeColumns.next().getPattern());
+		Iterator<IncludeColumn> includeColumns = schema.getIncludeColumns().iterator();
+		assertEquals("includeColumn-01", includeColumns.next().getPattern());
+		assertEquals("includeColumn-02", includeColumns.next().getPattern());
+		assertEquals("includeColumn-03", includeColumns.next().getPattern());
 
-        Iterator<ExcludeProcedure> excludeProcedures = schema.getExcludeProcedures().iterator();
-        assertEquals("excludeProcedure-01", excludeProcedures.next().getPattern());
-        assertEquals("excludeProcedure-02", excludeProcedures.next().getPattern());
-        assertEquals("excludeProcedure-03", excludeProcedures.next().getPattern());
-        Iterator<IncludeProcedure> includeProcedures = schema.getIncludeProcedures().iterator();
-        assertEquals("includeProcedure-01", includeProcedures.next().getPattern());
-        assertEquals("includeProcedure-02", includeProcedures.next().getPattern());
-        assertEquals("includeProcedure-03", includeProcedures.next().getPattern());
-    }
+		Iterator<ExcludeProcedure> excludeProcedures = schema.getExcludeProcedures().iterator();
+		assertEquals("excludeProcedure-01", excludeProcedures.next().getPattern());
+		assertEquals("excludeProcedure-02", excludeProcedures.next().getPattern());
+		assertEquals("excludeProcedure-03", excludeProcedures.next().getPattern());
+		Iterator<IncludeProcedure> includeProcedures = schema.getIncludeProcedures().iterator();
+		assertEquals("includeProcedure-01", includeProcedures.next().getPattern());
+		assertEquals("includeProcedure-02", includeProcedures.next().getPattern());
+		assertEquals("includeProcedure-03", includeProcedures.next().getPattern());
+	}
 
-    @Test
-    public void testLoadCatalogAndSchema() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-catalog-and-schema.xml"));
+	@Test
+	public void testLoadCatalogAndSchema() throws Exception {
+		ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+				.load(getResource("reverseEngineering-catalog-and-schema.xml"));
 
-        assertCatalogAndSchema(engineering);
-    }
+		assertCatalogAndSchema(engineering);
+	}
 
-    public static void assertCatalogAndSchema(ReverseEngineering engineering) {
-        Catalog catalog = engineering.getCatalogs().iterator().next();
-        assertEquals("catalog-name", catalog.getName());
+	public static void assertCatalogAndSchema(ReverseEngineering engineering) {
+		Catalog catalog = engineering.getCatalogs().iterator().next();
+		assertEquals("catalog-name", catalog.getName());
 
-        Schema schema = catalog.getSchemas().iterator().next();
-        assertEquals("schema-name", schema.getName());
+		Schema schema = catalog.getSchemas().iterator().next();
+		assertEquals("schema-name", schema.getName());
 
-        assertSchemaContent(schema);
-    }
+		assertSchemaContent(schema);
+	}
 
-    @Test
-    public void testLoadFlat() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-flat.xml"));
+	@Test
+	public void testLoadFlat() throws Exception {
+		ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+				.load(getResource("reverseEngineering-flat.xml"));
 
-        assertFlat(engineering);
-    }
+		assertFlat(engineering);
+	}
 
-    public static void assertFlat(ReverseEngineering engineering) {
-        Iterator<IncludeTable> includeTables = engineering.getIncludeTables().iterator();
-        assertEquals("includeTable-01", includeTables.next().getPattern());
-        assertEquals("includeTable-02", includeTables.next().getPattern());
+	public static void assertFlat(ReverseEngineering engineering) {
+		Iterator<IncludeTable> includeTables = engineering.getIncludeTables().iterator();
+		assertEquals("includeTable-01", includeTables.next().getPattern());
+		assertEquals("includeTable-02", includeTables.next().getPattern());
 
-        IncludeTable includeTable = includeTables.next();
-        assertEquals("includeTable-03", includeTable.getPattern());
-        assertEquals("includeColumn-01", includeTable.getIncludeColumns().iterator().next().getPattern());
-        assertEquals("excludeColumn-01", includeTable.getExcludeColumns().iterator().next().getPattern());
+		IncludeTable includeTable = includeTables.next();
+		assertEquals("includeTable-03", includeTable.getPattern());
+		assertEquals("includeColumn-01", includeTable.getIncludeColumns().iterator().next().getPattern());
+		assertEquals("excludeColumn-01", includeTable.getExcludeColumns().iterator().next().getPattern());
 
-        Iterator<ExcludeTable> excludeTables = engineering.getExcludeTables().iterator();
-        assertEquals("excludeTable-01", excludeTables.next().getPattern());
-        assertEquals("excludeTable-02", excludeTables.next().getPattern());
-        assertEquals("excludeTable-03", excludeTables.next().getPattern());
+		Iterator<ExcludeTable> excludeTables = engineering.getExcludeTables().iterator();
+		assertEquals("excludeTable-01", excludeTables.next().getPattern());
+		assertEquals("excludeTable-02", excludeTables.next().getPattern());
+		assertEquals("excludeTable-03", excludeTables.next().getPattern());
 
-        Iterator<ExcludeColumn> excludeColumns = engineering.getExcludeColumns().iterator();
-        assertEquals("excludeColumn-01", excludeColumns.next().getPattern());
-        assertEquals("excludeColumn-02", excludeColumns.next().getPattern());
-        assertEquals("excludeColumn-03", excludeColumns.next().getPattern());
-        Iterator<IncludeColumn> includeColumns = engineering.getIncludeColumns().iterator();
-        assertEquals("includeColumn-01", includeColumns.next().getPattern());
-        assertEquals("includeColumn-02", includeColumns.next().getPattern());
-        assertEquals("includeColumn-03", includeColumns.next().getPattern());
+		Iterator<ExcludeColumn> excludeColumns = engineering.getExcludeColumns().iterator();
+		assertEquals("excludeColumn-01", excludeColumns.next().getPattern());
+		assertEquals("excludeColumn-02", excludeColumns.next().getPattern());
+		assertEquals("excludeColumn-03", excludeColumns.next().getPattern());
+		Iterator<IncludeColumn> includeColumns = engineering.getIncludeColumns().iterator();
+		assertEquals("includeColumn-01", includeColumns.next().getPattern());
+		assertEquals("includeColumn-02", includeColumns.next().getPattern());
+		assertEquals("includeColumn-03", includeColumns.next().getPattern());
 
-        Iterator<ExcludeProcedure> excludeProcedures = engineering.getExcludeProcedures().iterator();
-        assertEquals("excludeProcedure-01", excludeProcedures.next().getPattern());
-        assertEquals("excludeProcedure-02", excludeProcedures.next().getPattern());
-        assertEquals("excludeProcedure-03", excludeProcedures.next().getPattern());
-        Iterator<IncludeProcedure> includeProcedures = engineering.getIncludeProcedures().iterator();
-        assertEquals("includeProcedure-01", includeProcedures.next().getPattern());
-        assertEquals("includeProcedure-02", includeProcedures.next().getPattern());
-        assertEquals("includeProcedure-03", includeProcedures.next().getPattern());
-    }
+		Iterator<ExcludeProcedure> excludeProcedures = engineering.getExcludeProcedures().iterator();
+		assertEquals("excludeProcedure-01", excludeProcedures.next().getPattern());
+		assertEquals("excludeProcedure-02", excludeProcedures.next().getPattern());
+		assertEquals("excludeProcedure-03", excludeProcedures.next().getPattern());
+		Iterator<IncludeProcedure> includeProcedures = engineering.getIncludeProcedures().iterator();
+		assertEquals("includeProcedure-01", includeProcedures.next().getPattern());
+		assertEquals("includeProcedure-02", includeProcedures.next().getPattern());
+		assertEquals("includeProcedure-03", includeProcedures.next().getPattern());
+	}
 
-    @Test
-    public void testSkipRelationships() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-skipRelationshipsLoading.xml"));
+	@Test
+	public void testSkipRelationships() throws Exception {
+		ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+				.load(getResource("reverseEngineering-skipRelationshipsLoading.xml"));
 
-        assertSkipRelationshipsLoading(engineering);
-    }
+		assertSkipRelationshipsLoading(engineering);
+	}
 
-    public static void assertSkipRelationshipsLoading(ReverseEngineering engineering) {
-        assertTrue(engineering.getSkipRelationshipsLoading());
-    }
+	public static void assertSkipRelationshipsLoading(ReverseEngineering engineering) {
+		assertTrue(engineering.getSkipRelationshipsLoading());
+	}
 
-    @Test
-    public void testSkipPrimaryKeyLoading() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-skipPrimaryKeyLoading.xml"));
+	@Test
+	public void testSkipPrimaryKeyLoading() throws Exception {
+		ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+				.load(getResource("reverseEngineering-skipPrimaryKeyLoading.xml"));
 
-        assertSkipPrimaryKeyLoading(engineering);
-    }
+		assertSkipPrimaryKeyLoading(engineering);
+	}
 
-    public static void assertSkipPrimaryKeyLoading(ReverseEngineering engineering) {
-        assertTrue(engineering.getSkipPrimaryKeyLoading());
-    }
+	public static void assertSkipPrimaryKeyLoading(ReverseEngineering engineering) {
+		assertTrue(engineering.getSkipPrimaryKeyLoading());
+	}
 
-    @Test
-    public void testTableTypes() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-tableTypes.xml"));
+	@Test
+	public void testTableTypes() throws Exception {
+		ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
+				.load(getResource("reverseEngineering-tableTypes.xml"));
 
-        assertTableTypes(engineering);
-    }
+		assertTableTypes(engineering);
+	}
 
-    public static void assertTableTypes(ReverseEngineering engineering) {
-        assertArrayEquals(engineering.getTableTypes(), new String[]{"type1", "type2", "type3"});
-    }
+	public static void assertTableTypes(ReverseEngineering engineering) {
+		assertArrayEquals(engineering.getTableTypes(), new String[] { "type1", "type2", "type3" });
+	}
 
-    protected URLResource getResource(String file) throws MalformedURLException {
+	protected URLResource getResource(String file) throws MalformedURLException {
 		return new URLResource(getClass().getResource(file));
 	}
 

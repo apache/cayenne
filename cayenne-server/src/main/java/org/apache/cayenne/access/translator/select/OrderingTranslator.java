@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,88 +34,85 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class OrderingTranslator extends QueryAssemblerHelper {
 
-    protected List<String> orderByColumnList = new ArrayList<String>();
+	protected List<String> orderByColumnList = new ArrayList<String>();
 
-    public OrderingTranslator(QueryAssembler queryAssembler) {
-        super(queryAssembler);
-    }
+	public OrderingTranslator(QueryAssembler queryAssembler) {
+		super(queryAssembler);
+	}
 
-    /**
-     * Translates query Ordering list to SQL ORDER BY clause. Ordering list is obtained
-     * from <code>queryAssembler</code>'s query object. In a process of building of
-     * ORDER BY clause, <code>queryAssembler</code> is notified when a join needs to be
-     * added.
-     * 
-     * @since 3.0
-     */
-    @Override
-    protected void doAppendPart() throws IOException {
+	/**
+	 * Translates query Ordering list to SQL ORDER BY clause. Ordering list is
+	 * obtained from <code>queryAssembler</code>'s query object. In a process of
+	 * building of ORDER BY clause, <code>queryAssembler</code> is notified when
+	 * a join needs to be added.
+	 * 
+	 * @since 3.0
+	 */
+	@Override
+	protected void doAppendPart() {
 
-        Query q = queryAssembler.getQuery();
+		Query q = queryAssembler.getQuery();
 
-        // only select queries can have ordering...
-        if (q == null || !(q instanceof SelectQuery)) {
-            return;
-        }
+		// only select queries can have ordering...
+		if (q == null || !(q instanceof SelectQuery)) {
+			return;
+		}
 
-        Iterator<Ordering> it = ((SelectQuery<?>) q).getOrderings().iterator();
+		Iterator<Ordering> it = ((SelectQuery<?>) q).getOrderings().iterator();
 
-        Appendable mainBuffer = this.out;
+		StringBuilder mainBuffer = this.out;
 
-        try {
-            while (it.hasNext()) {
-                Ordering ord = it.next();
+		try {
+			while (it.hasNext()) {
+				Ordering ord = it.next();
 
-                // reset buffer to collect SQL for the single column, that we'll be reusing 
-                this.out = new StringBuilder();
+				// reset buffer to collect SQL for the single column, that we'll
+				// be reusing
+				this.out = new StringBuilder();
 
-                if (ord.isCaseInsensitive()) {
-                    out.append("UPPER(");
-                }
+				if (ord.isCaseInsensitive()) {
+					out.append("UPPER(");
+				}
 
-                Expression exp = ord.getSortSpec();
+				Expression exp = ord.getSortSpec();
 
-                if (exp.getType() == Expression.OBJ_PATH) {
-                    appendObjPath(exp);
-                }
-                else if (exp.getType() == Expression.DB_PATH) {
-                    appendDbPath(exp);
-                }
-                else {
-                    throw new CayenneRuntimeException("Unsupported ordering expression: "
-                            + exp);
-                }
+				if (exp.getType() == Expression.OBJ_PATH) {
+					appendObjPath(exp);
+				} else if (exp.getType() == Expression.DB_PATH) {
+					appendDbPath(exp);
+				} else {
+					throw new CayenneRuntimeException("Unsupported ordering expression: " + exp);
+				}
 
-                // Close UPPER() modifier
-                if (ord.isCaseInsensitive()) {
-                    out.append(")");
-                }
+				// Close UPPER() modifier
+				if (ord.isCaseInsensitive()) {
+					out.append(")");
+				}
 
-                String columnSQL = out.toString();
-                mainBuffer.append(columnSQL);
-                orderByColumnList.add(columnSQL);
+				String columnSQL = out.toString();
+				mainBuffer.append(columnSQL);
+				orderByColumnList.add(columnSQL);
 
-                // "ASC" is a noop, omit it from the query
-                if (!ord.isAscending()) {
-                    mainBuffer.append(" DESC");
-                }
+				// "ASC" is a noop, omit it from the query
+				if (!ord.isAscending()) {
+					mainBuffer.append(" DESC");
+				}
 
-                if (it.hasNext()) {
-                    mainBuffer.append(", ");
-                }
-            }
-        }
-        finally {
-            this.out = mainBuffer;
-        }
-    }
+				if (it.hasNext()) {
+					mainBuffer.append(", ");
+				}
+			}
+		} finally {
+			this.out = mainBuffer;
+		}
+	}
 
-    /**
-     * Returns the column expressions (not Expressions) used in the order by clause. E.g.,
-     * in the case of an case-insensitive order by, an element of the list would be
-     * <code>UPPER(&lt;column reference&gt;)</code>
-     */
-    public List<String> getOrderByColumnList() {
-        return orderByColumnList;
-    }
+	/**
+	 * Returns the column expressions (not Expressions) used in the order by
+	 * clause. E.g., in the case of an case-insensitive order by, an element of
+	 * the list would be <code>UPPER(&lt;column reference&gt;)</code>
+	 */
+	public List<String> getOrderByColumnList() {
+		return orderByColumnList;
+	}
 }

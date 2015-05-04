@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.query.BatchQueryRow;
 
 /**
@@ -36,7 +37,7 @@ public interface BatchTranslator {
     /**
      * Returns the widest possible array of bindings for this query.
      */
-    BatchParameterBinding[] getBindings();
+    ParameterBinding[] getBindings();
 
     /**
      * Updates internal bindings to be used with a given row, returning updated
@@ -46,5 +47,5 @@ public interface BatchTranslator {
      * parameter). Usually the returned array is actually the same object reused
      * for every iteration, only with changed object state.
      */
-    BatchParameterBinding[] updateBindings(BatchQueryRow row);
+    ParameterBinding[] updateBindings(BatchQueryRow row);
 }

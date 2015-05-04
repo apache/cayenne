@@ -33,7 +33,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.batch.BatchParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -53,10 +53,10 @@ public class BatchAction extends BaseSQLAction {
     protected BatchQuery query;
     protected RowDescriptor keyRowDescriptor;
 
-    private static void bind(DbAdapter adapter, PreparedStatement statement, BatchParameterBinding[] bindings)
+    private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
             throws SQLException, Exception {
 
-        for (BatchParameterBinding b : bindings) {
+        for (ParameterBinding b : bindings) {
             if (!b.isExcluded()) {
                 adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
                         .getAttribute().getScale());
@@ -114,7 +114,7 @@ public class BatchAction extends BaseSQLAction {
         try {
             for (BatchQueryRow row : query.getRows()) {
 
-                BatchParameterBinding[] bindings = translator.updateBindings(row);
+                ParameterBinding[] bindings = translator.updateBindings(row);
                 logger.logQueryParameters("batch bind", bindings);
                 bind(adapter, statement, bindings);
 
@@ -171,7 +171,7 @@ public class BatchAction extends BaseSQLAction {
         try {
             for (BatchQueryRow row : query.getRows()) {
 
-                BatchParameterBinding[] bindings = translator.updateBindings(row);
+                ParameterBinding[] bindings = translator.updateBindings(row);
                 logger.logQueryParameters("bind", bindings);
 
                 bind(adapter, statement, bindings);

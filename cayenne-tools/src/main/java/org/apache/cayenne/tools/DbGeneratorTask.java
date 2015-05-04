@@ -23,7 +23,7 @@ import java.sql.Driver;
 import java.util.Collections;
 
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
