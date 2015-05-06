@@ -63,7 +63,8 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
-	</modules>
+        <module>cayenne-joda</module>
+    </modules>
 	<issueManagement>
 		<system>jira</system>
 		<url>http://issues.apache.org/cayenne/</url>
