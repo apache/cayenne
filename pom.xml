@@ -64,7 +64,6 @@
 		<module>docs</module>
 		<module>assembly</module>
         <module>cayenne-joda</module>
-		<module>cayenne-java8</module>
 	</modules>
 	<issueManagement>
 		<system>jira</system>

@@ -29,10 +29,8 @@ public class RuntimeBase {
 
     @Before
     public void setUpRuntime() throws Exception {
-
         Module java8Module = new CayenneJava8Module();
-
-        this.runtime = new ServerRuntime("cayenne-java8-times.xml", java8Module);
+        this.runtime = new ServerRuntime("cayenne-java8.xml", java8Module);
     }
 
 }

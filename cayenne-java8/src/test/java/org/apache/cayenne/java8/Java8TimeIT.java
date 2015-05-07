@@ -33,7 +33,7 @@ import java.time.LocalTime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class Java8TimesIT extends RuntimeBase {
+public class Java8TimeIT extends RuntimeBase {
 
     @Test
     public void testJava8LocalDate() {
@@ -47,9 +47,10 @@ public class Java8TimesIT extends RuntimeBase {
 
         SelectQuery q = new SelectQuery(LocalDateTestEntity.class);
         LocalDateTestEntity testRead = (LocalDateTestEntity) context.performQuery(q).get(0);
+
         assertNotNull(testRead.getDate());
-        assertEquals(localDate, testRead.getDate());
         assertEquals(LocalDate.class, testRead.getDate().getClass());
+        assertEquals(localDate, testRead.getDate());
 
     }
 
@@ -65,9 +66,10 @@ public class Java8TimesIT extends RuntimeBase {
 
         SelectQuery q = new SelectQuery(LocalTimeTestEntity.class);
         LocalTimeTestEntity testRead = (LocalTimeTestEntity) context.performQuery(q).get(0);
+
         assertNotNull(testRead.getTime());
-        assertEquals(localTime.toSecondOfDay(), testRead.getTime().toSecondOfDay());
         assertEquals(LocalTime.class, testRead.getTime().getClass());
+        assertEquals(localTime.toSecondOfDay(), testRead.getTime().toSecondOfDay());
 
     }
 
@@ -83,9 +85,10 @@ public class Java8TimesIT extends RuntimeBase {
 
         SelectQuery q = new SelectQuery(LocalDateTimeTestEntity.class);
         LocalDateTimeTestEntity testRead = (LocalDateTimeTestEntity) context.performQuery(q).get(0);
+
         assertNotNull(testRead.getTimestamp());
-        assertEquals(localDateTime, testRead.getTimestamp());
         assertEquals(LocalDateTime.class, testRead.getTimestamp().getClass());
+        assertEquals(localDateTime, testRead.getTimestamp());
 
     }
 

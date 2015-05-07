@@ -12,15 +12,16 @@ language governing permissions and limitations under the License. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>cayenne-parent</artifactId>
         <groupId>org.apache.cayenne</groupId>
-        <version>4.0.M2-SNAPSHOT</version>
+        <version>4.0.M3-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>cayenne-java8</artifactId>
     <name>Cayenne Java8 Extensions</name>
     <packaging>jar</packaging>
+
     <dependencies>
 
         <!-- Compile dependencies -->
@@ -65,7 +66,7 @@ language governing permissions and limitations under the License. -->
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <version>${project.version}</version>
                 <configuration>
-                    <map>${project.basedir}/src/test/resources/java8-times.map.xml</map>
+                    <map>${project.basedir}/src/test/resources/java8.map.xml</map>
                     <destDir>${project.basedir}/src/test/java</destDir>
                     <defaultPackage>org.apache.cayenne.java8.db</defaultPackage>
                     <superPkg>org.apache.cayenne.java8.db.auto</superPkg>
