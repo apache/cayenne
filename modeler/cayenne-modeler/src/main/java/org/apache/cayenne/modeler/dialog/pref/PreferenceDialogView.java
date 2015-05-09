@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 
@@ -38,7 +39,7 @@ import javax.swing.JSplitPane;
 public class PreferenceDialogView extends JDialog {
 
     protected JSplitPane split;
-    protected JList list;
+    protected com.l2fprod.common.swing.JButtonBar bar;
     protected CardLayout detailLayout;
     protected Container detailPanel;
     protected JButton cancelButton;
@@ -56,16 +57,21 @@ public class PreferenceDialogView extends JDialog {
 
     private void init() {
         this.split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        this.list = new JList();
+        this.bar = new com.l2fprod.common.swing.JButtonBar(1);
         this.detailLayout = new CardLayout();
         this.detailPanel = new JPanel(detailLayout);
         this.saveButton = new JButton("Save");
         this.cancelButton = new JButton("Cancel");
 
+        
         // assemble
-
+        bar.setPreferredSize(new Dimension(120,300));
+        com.l2fprod.common.swing.plaf.blue.BlueishButtonBarUI barUi = new com.l2fprod.common.swing.plaf.blue.BlueishButtonBarUI();
+        com.l2fprod.common.swing.plaf.misc.IconPackagerButtonBarUI barUi2 = new com.l2fprod.common.swing.plaf.misc.IconPackagerButtonBarUI();
+        bar.setUI(barUi2);
         Container leftContainer = new JPanel(new BorderLayout());
-        leftContainer.add(new JScrollPane(list));
+        leftContainer.add(new JScrollPane(bar));
+        
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
@@ -83,8 +89,8 @@ public class PreferenceDialogView extends JDialog {
         setTitle("Edit Preferences");
     }
 
-    public JList getList() {
-        return list;
+    public com.l2fprod.common.swing.JButtonBar getBar() {
+        return bar;
     }
 
     public JSplitPane getSplit() {

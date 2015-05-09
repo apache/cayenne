@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -28,13 +29,17 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.pref.PreferenceEditor;
 
 /**
@@ -50,6 +55,9 @@ public class PreferenceDialog extends CayenneController {
 
     private static final String[] preferenceMenus = new String[] {
             GENERAL_KEY, DATA_SOURCES_KEY, CLASS_PATH_KEY, TEMPLATES_KEY
+    };
+    private static final String[] preferenceMenusIcons = new String[] {
+    	"icon-general.png","icon-datasource.png","icon-classpath.png","icon-template.png"
     };
 
     protected PreferenceDialogView view;
@@ -72,19 +80,26 @@ public class PreferenceDialog extends CayenneController {
     }
 
     protected void initBindings() {
-        final JList list = view.getList();
-        list.setListData(preferenceMenus);
-        list.addListSelectionListener(new ListSelectionListener() {
-
-            public void valueChanged(ListSelectionEvent e) {
-                Object selection = list.getSelectedValue();
-                if (selection != null) {
-                    view.getDetailLayout().show(
+    	
+    	final com.l2fprod.common.swing.JButtonBar bar = view.getBar();
+    	
+        for(int i=0;i<preferenceMenus.length;i++){
+        	String x = preferenceMenus[i];
+        	JButton button = new JButton(x,ModelerUtil.buildIcon(preferenceMenusIcons[i]));
+        	button.setName(x);
+        	bar.add(button);
+        }
+        
+        for(int i=0;i<bar.getComponentCount();i++){
+        	final JButton button = ((JButton)bar.getComponent(i));
+        	button.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                	view.getDetailLayout().show(
                             view.getDetailPanel(),
-                            selection.toString());
+                            button.getName().toString());
                 }
-            }
-        });
+            });
+        }
 
         view.getCancelButton().addActionListener(new ActionListener() {
 
@@ -137,7 +152,6 @@ public class PreferenceDialog extends CayenneController {
         }
 
         configure();
-        view.getList().setSelectedValue(key, true);
         view.setVisible(true);
     }
 

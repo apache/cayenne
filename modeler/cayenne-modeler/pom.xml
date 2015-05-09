@@ -112,6 +112,11 @@
 			<groupId>jgraph</groupId>
 			<artifactId>jgraph</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>l2fprod</groupId>
+			<artifactId>l2fprod-common</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 
     <profiles>
