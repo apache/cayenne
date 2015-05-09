@@ -92,6 +92,11 @@ public class PreferenceDialog extends CayenneController {
                 	view.getDetailLayout().show(
                             view.getDetailPanel(),
                             button.getName().toString());
+                	for(int i=0;i<view.getBar().getComponentCount();i++){
+                    	JButton buttonAll = ((JButton)view.getBar().getComponent(i));
+                    	if(button.getName().equals(buttonAll.getName())) buttonAll.setSelected(true);
+                    	else buttonAll.setSelected(false);
+                    }
                 }
             });
         	bar.add(button);
@@ -146,7 +151,11 @@ public class PreferenceDialog extends CayenneController {
         if (key == null) {
             key = GENERAL_KEY;
         }
-
+        
+        for(int i=0;i<view.getBar().getComponentCount();i++){
+        	JButton button = ((JButton)view.getBar().getComponent(i));
+        	if(button.getName().equals(key)) button.setSelected(true);
+        }
         configure();
         view.setVisible(true);
     }
