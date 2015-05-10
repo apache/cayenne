@@ -57,13 +57,13 @@
 		<module>cayenne-project</module>
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-crypto</module>
+		<module>cayenne-joda</module>
 		<module>itests</module>
 		<module>modeler</module>
 		<module>plugins</module>
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
-        <module>cayenne-joda</module>
 	</modules>
 	<issueManagement>
 		<system>jira</system>
