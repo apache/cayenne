@@ -22,8 +22,6 @@ import java.sql.Driver;
 import java.sql.SQLException;
 
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.datasource.PoolingDataSource;
-import org.apache.cayenne.datasource.PoolingDataSourceParameters;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -35,6 +33,8 @@ import org.junit.Before;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class BasePoolingDataSourceIT extends ServerCase {
+
+	protected static final long QUEUE_WAIT_TIME = 1000l;
 
 	@Inject
 	private DataSourceInfo dataSourceInfo;
@@ -70,7 +70,7 @@ public class BasePoolingDataSourceIT extends ServerCase {
 		PoolingDataSourceParameters poolParameters = new PoolingDataSourceParameters();
 		poolParameters.setMinConnections(2);
 		poolParameters.setMaxConnections(3);
-		poolParameters.setMaxQueueWaitTime(1000);
+		poolParameters.setMaxQueueWaitTime(QUEUE_WAIT_TIME);
 		return poolParameters;
 	}
 

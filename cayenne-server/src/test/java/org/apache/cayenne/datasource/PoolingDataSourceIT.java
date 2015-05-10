@@ -47,7 +47,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 	}
 
 	@Test
-	public void testGetConnectionAutoCommit() throws Exception {
+	public void testGetConnection_AutoCommit() throws Exception {
 
 		assertTrue(dataSource.getMaxConnections() > 0);
 
@@ -72,6 +72,41 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 				// connections
 				assertTrue(connections.contains(c));
 				assertTrue("Failed to reset connection state for reused connection", c.getAutoCommit());
+			}
+
+		} finally {
+			for (Connection c : connections) {
+				try {
+					c.close();
+				} catch (SQLException e) {
+
+				}
+			}
+		}
+	}
+
+	@Test
+	public void testGetConnection_FailOnFull() throws Exception {
+
+		assertTrue(dataSource.getMaxConnections() > 0);
+
+		List<Connection> connections = new ArrayList<Connection>();
+		try {
+
+			for (int i = 0; i < dataSource.getMaxConnections(); i++) {
+				connections.add(dataSource.getConnection());
+			}
+
+			long t0 = System.currentTimeMillis();
+			try {
+
+				dataSource.getConnection();
+				fail("Opening more connections than the pool allows succeeeded");
+			} catch (SQLException e) {
+				// expected, but check if we waited sufficiently
+
+				long t1 = System.currentTimeMillis();
+				assertTrue(t1 - t0 >= QUEUE_WAIT_TIME);
 			}
 
 		} finally {
