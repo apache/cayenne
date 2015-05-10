@@ -1,10 +1,13 @@
-package org.apache.cayenne.joda;
+package org.apache.cayenne.joda.access.types;
+
+import org.apache.cayenne.joda.access.types.LocalDateType;
 
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockPreparedStatement;
-import org.apache.cayenne.access.types.LocalDateTimeType;
-import org.joda.time.LocalDateTime;
 
+import org.joda.time.LocalDate;
+
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -30,30 +33,41 @@ import java.sql.Types;
  * **************************************************************
  */
 
-public class LocalDateTimeTypeTest extends JodaTestCase {
+public class LocalDateTypeTest extends JodaTestCase {
 
-    private LocalDateTimeType type;
+    private LocalDateType type;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        type = new LocalDateTimeType();
+        type = new LocalDateType();
     }
 
     public void testMaterializeObjectTimestamp() throws Exception {
         Object o = type.materializeObject(resultSet(new Timestamp(0)), 1, Types.TIMESTAMP);
-        assertEquals(new LocalDateTime(0), o);
+        assertEquals(new LocalDate(0), o);
+    }
+
+    public void testMaterializeObjectDate() throws Exception {
+        Object o = type.materializeObject(resultSet(new Date(0)), 1, Types.DATE);
+        assertEquals(new LocalDate(0), o);
     }
 
     public void testSetJdbcObject() throws Exception {
         PreparedStatement statement = new MockPreparedStatement(new MockConnection(), "update t set c = ?");
-        LocalDateTime date = new LocalDateTime(0);
+        LocalDate savedObject = new LocalDate(0);
 
-        type.setJdbcObject(statement, date, 1, Types.TIMESTAMP, 0);
+        type.setJdbcObject(statement, savedObject, 1, Types.DATE, 0);
 
         Object object = ((MockPreparedStatement) statement).getParameter(1);
+        assertEquals(Date.class, object.getClass());
+        assertEquals(savedObject.toDate().getTime(), ((Date) object).getTime());
+
+        type.setJdbcObject(statement, savedObject, 1, Types.TIMESTAMP, 0);
+
+        object = ((MockPreparedStatement) statement).getParameter(1);
         assertEquals(Timestamp.class, object.getClass());
-        assertEquals(date.toDate().getTime(), ((Timestamp) object).getTime());
+        assertEquals(savedObject.toDate().getTime(), ((Timestamp) object).getTime());
 
         type.setJdbcObject(statement, null, 1, Types.TIMESTAMP, 0);
 

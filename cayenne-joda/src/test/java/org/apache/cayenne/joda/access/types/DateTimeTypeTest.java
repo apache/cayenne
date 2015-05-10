@@ -1,8 +1,9 @@
-package org.apache.cayenne.joda;
+package org.apache.cayenne.joda.access.types;
 
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockPreparedStatement;
-import org.apache.cayenne.access.types.DateTimeType;
+
+import org.apache.cayenne.joda.access.types.DateTimeType;
 import org.joda.time.DateTime;
 
 import java.sql.PreparedStatement;

@@ -17,8 +17,9 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.types;
+package org.apache.cayenne.joda.access.types;
 
+import org.apache.cayenne.access.types.ExtendedType;
 import org.joda.time.DateTime;
 
 import java.sql.CallableStatement;
@@ -28,52 +29,47 @@ import java.sql.Timestamp;
 
 /**
  * Handles <code>org.joda.time.DateTime</code> type mapping.
+ * 
+ * @since 4.0
  */
 public class DateTimeType implements ExtendedType {
 
-    @Override
-    public String getClassName() {
-        return DateTime.class.getName();
-    }
+	@Override
+	public String getClassName() {
+		return DateTime.class.getName();
+	}
 
-    @Override
-    public DateTime materializeObject(ResultSet rs, int index, int type)
-            throws Exception {
-        if (rs.getTimestamp(index) != null) {
-            return new DateTime(rs.getTimestamp(index).getTime());
-        } else {
-            return null;
-        }
-    }
+	@Override
+	public DateTime materializeObject(ResultSet rs, int index, int type) throws Exception {
+		if (rs.getTimestamp(index) != null) {
+			return new DateTime(rs.getTimestamp(index).getTime());
+		} else {
+			return null;
+		}
+	}
 
-    @Override
-    public DateTime materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
-        if (rs.getTimestamp(index) != null) {
-            return new DateTime(rs.getTimestamp(index).getTime());
-        } else {
-            return null;
-        }
-    }
+	@Override
+	public DateTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
+		if (rs.getTimestamp(index) != null) {
+			return new DateTime(rs.getTimestamp(index).getTime());
+		} else {
+			return null;
+		}
+	}
 
-    @Override
-    public void setJdbcObject(
-            PreparedStatement statement,
-            Object value,
-            int pos,
-            int type,
-            int scale) throws Exception {
+	@Override
+	public void setJdbcObject(PreparedStatement statement, Object value, int pos, int type, int scale) throws Exception {
 
-        if (value == null) {
-            statement.setNull(pos, type);
-        } else {
-            Timestamp ts = new Timestamp(getMillis(value));
-            statement.setTimestamp(pos, ts);
-        }
-    }
+		if (value == null) {
+			statement.setNull(pos, type);
+		} else {
+			Timestamp ts = new Timestamp(getMillis(value));
+			statement.setTimestamp(pos, ts);
+		}
+	}
 
-    protected long getMillis(Object value) {
-        return ((DateTime) value).getMillis();
-    }
+	protected long getMillis(Object value) {
+		return ((DateTime) value).getMillis();
+	}
 
 }

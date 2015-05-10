@@ -1,8 +1,10 @@
-package org.apache.cayenne.joda;
+package org.apache.cayenne.joda.access.types;
 
-import org.apache.cayenne.access.types.LocalTimeType;
+import org.apache.cayenne.joda.access.types.LocalTimeType;
+
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockPreparedStatement;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;

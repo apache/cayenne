@@ -1,4 +1,4 @@
-package org.apache.cayenne.joda;
+package org.apache.cayenne.joda.access.types;
 
 import com.mockrunner.mock.jdbc.MockResultSet;
 import junit.framework.TestCase;
