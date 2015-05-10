@@ -15,9 +15,6 @@ public abstract class _LocalDateTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String DATE_PROPERTY = "date";
-
     public static final String ID_PK_COLUMN = "ID";
 
     public static final Property<LocalDate> DATE = new Property<LocalDate>("date");

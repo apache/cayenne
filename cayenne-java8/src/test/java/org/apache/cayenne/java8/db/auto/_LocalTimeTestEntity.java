@@ -15,9 +15,6 @@ public abstract class _LocalTimeTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String TIME_PROPERTY = "time";
-
     public static final String ID_PK_COLUMN = "ID";
 
     public static final Property<LocalTime> TIME = new Property<LocalTime>("time");
