@@ -79,18 +79,6 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	}
 
 	JoinStack joinStack;
-
-	public DefaultSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
-		super(query, adapter, entityResolver);
-	}
-
-	protected JoinStack getJoinStack() {
-		if (joinStack == null) {
-			joinStack = createJoinStack();
-		}
-		return joinStack;
-	}
-
 	List<ColumnDescriptor> resultColumns;
 	Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
 	Map<ColumnDescriptor, ObjAttribute> defaultAttributesByColumn;
@@ -103,6 +91,17 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	 * be set when joins are created using "to-many" relationships.
 	 */
 	boolean forcingDistinct;
+
+	public DefaultSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		super(query, adapter, entityResolver);
+	}
+
+	protected JoinStack getJoinStack() {
+		if (joinStack == null) {
+			joinStack = createJoinStack();
+		}
+		return joinStack;
+	}
 
 	protected JoinStack createJoinStack() {
 		return new JoinStack(getAdapter(), queryMetadata.getDataMap(), this);
