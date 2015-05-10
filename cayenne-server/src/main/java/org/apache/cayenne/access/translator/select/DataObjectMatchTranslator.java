@@ -92,7 +92,7 @@ public class DataObjectMatchTranslator {
 
     public void setDataObject(Persistent obj) {
         if (obj == null) {
-            values = Collections.EMPTY_MAP;
+            values = Collections.emptyMap();
             return;
         }
 
