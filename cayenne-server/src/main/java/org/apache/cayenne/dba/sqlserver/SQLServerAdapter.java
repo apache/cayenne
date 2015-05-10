@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.Constants;
@@ -31,14 +32,19 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * <p>Cayenne DbAdapter implementation for <a href="http://www.microsoft.com/sql/">Microsoft
- * SQL Server </a> engine. </p> <h3>Microsoft Driver Settings</h3>
+ * <p>
+ * Cayenne DbAdapter implementation for <a
+ * href="http://www.microsoft.com/sql/">Microsoft SQL Server </a> engine.
+ * </p>
+ * <h3>Microsoft Driver Settings</h3>
  * <p>
  * Sample connection settings to use with MS SQL Server are shown below:
  * 
@@ -49,16 +55,16 @@ import org.apache.cayenne.resource.ResourceLocator;
  *       sqlserver.jdbc.driver = com.microsoft.sqlserver.jdbc.SQLServerDriver
  * </pre>
  * <p>
- * <i>Note on case-sensitive LIKE: if your application requires case-sensitive LIKE
- * support, ask your DBA to configure the database to use a case-senstitive collation (one
- * with "CS" in symbolic collation name instead of "CI", e.g.
+ * <i>Note on case-sensitive LIKE: if your application requires case-sensitive
+ * LIKE support, ask your DBA to configure the database to use a case-senstitive
+ * collation (one with "CS" in symbolic collation name instead of "CI", e.g.
  * "SQL_Latin1_general_CP1_CS_AS"). </i>
  * </p>
  * <h3>jTDS Driver Settings</h3>
  * <p>
  * jTDS is an open source driver that can be downloaded from <a href=
- * "http://jtds.sourceforge.net">http://jtds.sourceforge.net </a>. It supports both
- * SQLServer and Sybase. Sample SQLServer settings are the following:
+ * "http://jtds.sourceforge.net">http://jtds.sourceforge.net </a>. It supports
+ * both SQLServer and Sybase. Sample SQLServer settings are the following:
  * </p>
  * 
  * <pre>
@@ -72,67 +78,69 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class SQLServerAdapter extends SybaseAdapter {
 
-    public static final String TRIM_FUNCTION = "RTRIM";
+	public static final String TRIM_FUNCTION = "RTRIM";
 
-    public SQLServerAdapter(
-            @Inject RuntimeProperties runtimeProperties,
-            @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-            @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject ResourceLocator resourceLocator) {
-        super(
-                runtimeProperties,
-                defaultExtendedTypes,
-                userExtendedTypes,
-                extendedTypeFactories, resourceLocator);
+	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
+			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+			@Inject ResourceLocator resourceLocator) {
+		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
 
-        // TODO: i wonder if Sybase supports generated keys...
-        // in this case we need to move this to the super.
-        this.setSupportsGeneratedKeys(true);
-        this.setSupportsBatchUpdates(true);
-    }
+		// TODO: i wonder if Sybase supports generated keys...
+		// in this case we need to move this to the super.
+		this.setSupportsGeneratedKeys(true);
+		this.setSupportsBatchUpdates(true);
+	}
 
-    /**
-     * Uses SQLServerActionBuilder to create the right action.
-     * 
-     * @since 1.2
-     */
-    @Override
-    public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new SQLServerActionBuilder(node));
-    }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
+		return new SQLServerSelectTranslator(query, this, entityResolver);
+	}
 
-    /**
-     * Returns a trimming translator.
-     */
-    @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        QualifierTranslator translator = new SQLServerTrimmingQualifierTranslator(
-                queryAssembler,
-                SQLServerAdapter.TRIM_FUNCTION);
-        translator.setCaseInsensitive(caseInsensitiveCollations);
-        return translator;
-    }
+	/**
+	 * Uses SQLServerActionBuilder to create the right action.
+	 * 
+	 * @since 1.2
+	 */
+	@Override
+	public SQLAction getAction(Query query, DataNode node) {
+		return query.createSQLAction(new SQLServerActionBuilder(node));
+	}
 
-    /**
-     * Overrides super implementation to correctly set up identity columns.
-     * 
-     * @since 1.2
-     */
-    @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+	/**
+	 * Returns a trimming translator.
+	 */
+	@Override
+	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+		QualifierTranslator translator = new SQLServerTrimmingQualifierTranslator(queryAssembler,
+				SQLServerAdapter.TRIM_FUNCTION);
+		translator.setCaseInsensitive(caseInsensitiveCollations);
+		return translator;
+	}
 
-        super.createTableAppendColumn(sqlBuffer, column);
+	/**
+	 * Overrides super implementation to correctly set up identity columns.
+	 * 
+	 * @since 1.2
+	 */
+	@Override
+	public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
 
-        if (column.isGenerated()) {
-            // current limitation - we don't allow to set identity parameters...
-            sqlBuffer.append(" IDENTITY (1, 1)");
-        }
-    }
+		super.createTableAppendColumn(sqlBuffer, column);
 
-    @Override
-    public MergerFactory mergerFactory() {
-        return new SQLServerMergerFactory();
-    }
+		if (column.isGenerated()) {
+			// current limitation - we don't allow to set identity parameters...
+			sqlBuffer.append(" IDENTITY (1, 1)");
+		}
+	}
+
+	@Override
+	public MergerFactory mergerFactory() {
+		return new SQLServerMergerFactory();
+	}
 
 }

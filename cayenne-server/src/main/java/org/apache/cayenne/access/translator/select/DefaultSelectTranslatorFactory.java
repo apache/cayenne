@@ -16,23 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dba.oracle;
+package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * @since 3.0
+ * A {@link SelectTranslator} factory that delegates translator creation to
+ * DbAdapter.
+ * 
+ * @since 4.0
  */
-class Oracle8SelectAction extends OracleSelectAction {
-
-	<T> Oracle8SelectAction(SelectQuery<T> query, DataNode dataNode) {
-		super(query, dataNode);
-	}
+public class DefaultSelectTranslatorFactory implements SelectTranslatorFactory {
 
 	@Override
-	protected SelectTranslator createTranslator() {
-		return new Oracle8SelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
+	public SelectTranslator translator(SelectQuery<?> query, DbAdapter adapter, EntityResolver entityResolver) {
+		return adapter.getSelectTranslator(query, entityResolver);
 	}
 }

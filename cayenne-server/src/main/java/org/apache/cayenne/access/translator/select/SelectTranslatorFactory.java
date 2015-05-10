@@ -16,30 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.access.translator.select;
 
-package org.apache.cayenne.dba.frontbase;
-
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
-import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 
-class FrontBaseActionBuilder extends JdbcActionBuilder {
+/**
+ * A factory for {@link SelectTranslator} objects.
+ * 
+ * @since 4.0
+ */
+public interface SelectTranslatorFactory {
 
-    FrontBaseActionBuilder(DataNode dataNode) {
-        super(dataNode);
-    }
+	/**
+	 * Creates a proper translator for a BatchQuery
+	 */
+	SelectTranslator translator(SelectQuery<?> query, DbAdapter adapter, EntityResolver entityResolver);
 
-    @Override
-    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SelectAction(query, dataNode) {
-
-            @Override
-            protected SelectTranslator createTranslator() {
-                return new FrontBaseSelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
-            }
-        };
-    }
 }

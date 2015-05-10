@@ -39,6 +39,8 @@ import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
+import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
@@ -194,6 +196,7 @@ public class DataDomainProviderTest {
 				binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
 				binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
 				binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
+				binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
 
 				binder.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
 				binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);

@@ -36,6 +36,7 @@ import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -52,9 +53,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
@@ -64,9 +67,8 @@ import org.apache.cayenne.resource.ResourceLocator;
  * <p>
  * Foreign key constraints are supported by InnoDB engine and NOT supported by
  * MyISAM engine. This adapter by default assumes MyISAM, so
- * <code>supportsFkConstraints</code> will
- * be false. Users can manually change this by calling
- * <em>setSupportsFkConstraints(true)</em> or better by using an
+ * <code>supportsFkConstraints</code> will be false. Users can manually change
+ * this by calling <em>setSupportsFkConstraints(true)</em> or better by using an
  * {@link org.apache.cayenne.dba.AutoAdapter}, i.e. not entering the adapter
  * name at all for the DataNode, letting Cayenne guess it in runtime. In the
  * later case Cayenne will check the <em>table_type</em> MySQL variable to
@@ -80,330 +82,341 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class MySQLAdapter extends JdbcAdapter {
 
-    static final String DEFAULT_STORAGE_ENGINE = "InnoDB";
-    static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "`";
-    static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
+	static final String DEFAULT_STORAGE_ENGINE = "InnoDB";
+	static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "`";
+	static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
 
-    protected String storageEngine;
-    protected boolean supportsFkConstraints;
+	protected String storageEngine;
+	protected boolean supportsFkConstraints;
 
-    public MySQLAdapter(@Inject RuntimeProperties runtimeProperties,
-            @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-            @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject ResourceLocator resourceLocator) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
+	public MySQLAdapter(@Inject RuntimeProperties runtimeProperties,
+			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+			@Inject ResourceLocator resourceLocator) {
+		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
 
-        // init defaults
-        this.storageEngine = DEFAULT_STORAGE_ENGINE;
+		// init defaults
+		this.storageEngine = DEFAULT_STORAGE_ENGINE;
 
-        setSupportsBatchUpdates(true);
-        setSupportsFkConstraints(true);
-        setSupportsUniqueConstraints(true);
-        setSupportsGeneratedKeys(true);
-    }
+		setSupportsBatchUpdates(true);
+		setSupportsFkConstraints(true);
+		setSupportsUniqueConstraints(true);
+		setSupportsGeneratedKeys(true);
+	}
 
-    void setSupportsFkConstraints(boolean flag) {
-        this.supportsFkConstraints = flag;
-    }
+	void setSupportsFkConstraints(boolean flag) {
+		this.supportsFkConstraints = flag;
+	}
 
-    @Override
-    protected QuotingStrategy createQuotingStrategy() {
-        return new DefaultQuotingStrategy("`", "`");
-    }
+	@Override
+	protected QuotingStrategy createQuotingStrategy() {
+		return new DefaultQuotingStrategy("`", "`");
+	}
 
-    @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        QualifierTranslator translator = new MySQLQualifierTranslator(queryAssembler);
-        translator.setCaseInsensitive(caseInsensitiveCollations);
-        return translator;
-    }
+	@Override
+	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
+		return new MySQLSelectTranslator(query, this, entityResolver);
+	}
 
-    /**
-     * Uses special action builder to create the right action.
-     * 
-     * @since 1.2
-     */
-    @Override
-    public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new MySQLActionBuilder(node));
-    }
+	@Override
+	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+		QualifierTranslator translator = new MySQLQualifierTranslator(queryAssembler);
+		translator.setCaseInsensitive(caseInsensitiveCollations);
+		return translator;
+	}
 
-    /**
-     * @since 3.0
-     */
-    @Override
-    public Collection<String> dropTableStatements(DbEntity table) {
-        // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK
-        // checks
-        // statement
-        StringBuilder buf = new StringBuilder();
-        QuotingStrategy context = getQuotingStrategy();
-        buf.append(context.quotedFullyQualifiedName(table));
+	/**
+	 * Uses special action builder to create the right action.
+	 * 
+	 * @since 1.2
+	 */
+	@Override
+	public SQLAction getAction(Query query, DataNode node) {
+		return query.createSQLAction(new MySQLActionBuilder(node));
+	}
 
-        return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf.toString() + " CASCADE",
-                "SET FOREIGN_KEY_CHECKS=1");
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public Collection<String> dropTableStatements(DbEntity table) {
+		// note that CASCADE is a noop as of MySQL 5.0, so we have to use FK
+		// checks
+		// statement
+		StringBuilder buf = new StringBuilder();
+		QuotingStrategy context = getQuotingStrategy();
+		buf.append(context.quotedFullyQualifiedName(table));
 
-    /**
-     * Installs appropriate ExtendedTypes used as converters for passing values
-     * between JDBC and Java layers.
-     */
-    @Override
-    protected void configureExtendedTypes(ExtendedTypeMap map) {
-        super.configureExtendedTypes(map);
+		return Arrays.asList("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf.toString() + " CASCADE",
+				"SET FOREIGN_KEY_CHECKS=1");
+	}
 
-        // must handle CLOBs as strings, otherwise there
-        // are problems with NULL clobs that are treated
-        // as empty strings... somehow this doesn't happen
-        // for BLOBs (ConnectorJ v. 3.0.9)
-        map.registerType(new CharType(false, false));
-        map.registerType(new ByteArrayType(false, false));
-    }
+	/**
+	 * Installs appropriate ExtendedTypes used as converters for passing values
+	 * between JDBC and Java layers.
+	 */
+	@Override
+	protected void configureExtendedTypes(ExtendedTypeMap map) {
+		super.configureExtendedTypes(map);
 
-    @Override
-    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int precision,
-            boolean allowNulls) {
+		// must handle CLOBs as strings, otherwise there
+		// are problems with NULL clobs that are treated
+		// as empty strings... somehow this doesn't happen
+		// for BLOBs (ConnectorJ v. 3.0.9)
+		map.registerType(new CharType(false, false));
+		map.registerType(new ByteArrayType(false, false));
+	}
 
-        if (typeName != null) {
-            typeName = typeName.toLowerCase();
-        }
+	@Override
+	public DbAttribute buildAttribute(String name, String typeName, int type, int size, int precision,
+			boolean allowNulls) {
 
-        // all LOB types are returned by the driver as OTHER... must remap them
-        // manually
-        // (at least on MySQL 3.23)
-        if (type == Types.OTHER) {
-            if ("longblob".equals(typeName)) {
-                type = Types.BLOB;
-            } else if ("mediumblob".equals(typeName)) {
-                type = Types.BLOB;
-            } else if ("blob".equals(typeName)) {
-                type = Types.BLOB;
-            } else if ("tinyblob".equals(typeName)) {
-                type = Types.VARBINARY;
-            } else if ("longtext".equals(typeName)) {
-                type = Types.CLOB;
-            } else if ("mediumtext".equals(typeName)) {
-                type = Types.CLOB;
-            } else if ("text".equals(typeName)) {
-                type = Types.CLOB;
-            } else if ("tinytext".equals(typeName)) {
-                type = Types.VARCHAR;
-            }
-        }
-        // types like "int unsigned" map to Long
-        else if (typeName != null && typeName.endsWith(" unsigned")) {
-            // per
-            // http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-type-conversions.html
-            if (typeName.equals("int unsigned") || typeName.equals("integer unsigned")
-                    || typeName.equals("mediumint unsigned")) {
-                type = Types.BIGINT;
-            }
-            // BIGINT UNSIGNED maps to BigInteger according to MySQL docs, but
-            // there is no
-            // JDBC mapping for BigInteger
-        }
+		if (typeName != null) {
+			typeName = typeName.toLowerCase();
+		}
 
-        return super.buildAttribute(name, typeName, type, size, precision, allowNulls);
-    }
+		// all LOB types are returned by the driver as OTHER... must remap them
+		// manually
+		// (at least on MySQL 3.23)
+		if (type == Types.OTHER) {
+			if ("longblob".equals(typeName)) {
+				type = Types.BLOB;
+			} else if ("mediumblob".equals(typeName)) {
+				type = Types.BLOB;
+			} else if ("blob".equals(typeName)) {
+				type = Types.BLOB;
+			} else if ("tinyblob".equals(typeName)) {
+				type = Types.VARBINARY;
+			} else if ("longtext".equals(typeName)) {
+				type = Types.CLOB;
+			} else if ("mediumtext".equals(typeName)) {
+				type = Types.CLOB;
+			} else if ("text".equals(typeName)) {
+				type = Types.CLOB;
+			} else if ("tinytext".equals(typeName)) {
+				type = Types.VARCHAR;
+			}
+		}
+		// types like "int unsigned" map to Long
+		else if (typeName != null && typeName.endsWith(" unsigned")) {
+			// per
+			// http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-type-conversions.html
+			if (typeName.equals("int unsigned") || typeName.equals("integer unsigned")
+					|| typeName.equals("mediumint unsigned")) {
+				type = Types.BIGINT;
+			}
+			// BIGINT UNSIGNED maps to BigInteger according to MySQL docs, but
+			// there is no
+			// JDBC mapping for BigInteger
+		}
 
-    @Override
-    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale) throws SQLException, Exception {
-        super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
-    }
+		return super.buildAttribute(name, typeName, type, size, precision, allowNulls);
+	}
 
-    private int mapNTypes(int sqlType) {
-        switch (sqlType) {
-            case Types.NCHAR : return Types.CHAR;
-            case Types.NCLOB : return Types.CLOB;
-            case Types.NVARCHAR : return Types.VARCHAR;
-            case Types.LONGNVARCHAR : return Types.LONGVARCHAR;
+	@Override
+	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+			throws SQLException, Exception {
+		super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
+	}
 
-            default:
-                return sqlType;
-        }
-    }
+	private int mapNTypes(int sqlType) {
+		switch (sqlType) {
+		case Types.NCHAR:
+			return Types.CHAR;
+		case Types.NCLOB:
+			return Types.CLOB;
+		case Types.NVARCHAR:
+			return Types.VARCHAR;
+		case Types.LONGNVARCHAR:
+			return Types.LONGVARCHAR;
 
-    /**
-     * Creates and returns a primary key generator. Overrides superclass
-     * implementation to return an instance of MySQLPkGenerator that does the
-     * correct table locking.
-     */
-    @Override
-    protected PkGenerator createPkGenerator() {
-        return new MySQLPkGenerator(this);
-    }
+		default:
+			return sqlType;
+		}
+	}
 
-    /**
-     * @since 3.0
-     */
-    @Override
-    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        JdbcEJBQLTranslatorFactory translatorFactory = new MySQLEJBQLTranslatorFactory();
-        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
-        return translatorFactory;
-    }
+	/**
+	 * Creates and returns a primary key generator. Overrides superclass
+	 * implementation to return an instance of MySQLPkGenerator that does the
+	 * correct table locking.
+	 */
+	@Override
+	protected PkGenerator createPkGenerator() {
+		return new MySQLPkGenerator(this);
+	}
 
-    /**
-     * Overrides super implementation to explicitly set table engine to InnoDB
-     * if FK constraints are supported by this adapter.
-     */
-    @Override
-    public String createTable(DbEntity entity) {
-        String ddlSQL = super.createTable(entity);
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+		JdbcEJBQLTranslatorFactory translatorFactory = new MySQLEJBQLTranslatorFactory();
+		translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
+		return translatorFactory;
+	}
 
-        if (storageEngine != null) {
-            ddlSQL += " ENGINE=" + storageEngine;
-        }
+	/**
+	 * Overrides super implementation to explicitly set table engine to InnoDB
+	 * if FK constraints are supported by this adapter.
+	 */
+	@Override
+	public String createTable(DbEntity entity) {
+		String ddlSQL = super.createTable(entity);
 
-        return ddlSQL;
-    }
+		if (storageEngine != null) {
+			ddlSQL += " ENGINE=" + storageEngine;
+		}
 
-    /**
-     * Customizes PK clause semantics to ensure that generated columns are in
-     * the beginning of the PK definition, as this seems to be a requirement for
-     * InnoDB tables.
-     * 
-     * @since 1.2
-     */
-    // See CAY-358 for details of the InnoDB problem
-    @Override
-    protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
+		return ddlSQL;
+	}
 
-        // must move generated to the front...
-        List<DbAttribute> pkList = new ArrayList<DbAttribute>(entity.getPrimaryKeys());
-        Collections.sort(pkList, new PKComparator());
+	/**
+	 * Customizes PK clause semantics to ensure that generated columns are in
+	 * the beginning of the PK definition, as this seems to be a requirement for
+	 * InnoDB tables.
+	 * 
+	 * @since 1.2
+	 */
+	// See CAY-358 for details of the InnoDB problem
+	@Override
+	protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
 
-        Iterator<DbAttribute> pkit = pkList.iterator();
-        if (pkit.hasNext()) {
+		// must move generated to the front...
+		List<DbAttribute> pkList = new ArrayList<DbAttribute>(entity.getPrimaryKeys());
+		Collections.sort(pkList, new PKComparator());
 
-            sqlBuffer.append(", PRIMARY KEY (");
-            boolean firstPk = true;
-            while (pkit.hasNext()) {
-                if (firstPk)
-                    firstPk = false;
-                else
-                    sqlBuffer.append(", ");
+		Iterator<DbAttribute> pkit = pkList.iterator();
+		if (pkit.hasNext()) {
 
-                DbAttribute at = pkit.next();
-                sqlBuffer.append(quotingStrategy.quotedName(at));
-            }
-            sqlBuffer.append(')');
-        }
+			sqlBuffer.append(", PRIMARY KEY (");
+			boolean firstPk = true;
+			while (pkit.hasNext()) {
+				if (firstPk)
+					firstPk = false;
+				else
+					sqlBuffer.append(", ");
 
-        // if FK constraints are supported, we must add indices to all FKs
-        // Note that according to MySQL docs, FK indexes are created
-        // automatically when
-        // constraint is defined, starting at MySQL 4.1.2
-        if (supportsFkConstraints) {
-            for (DbRelationship r : entity.getRelationships()) {
-                if (r.getJoins().size() > 0 && r.isToPK() && !r.isToDependentPK()) {
+				DbAttribute at = pkit.next();
+				sqlBuffer.append(quotingStrategy.quotedName(at));
+			}
+			sqlBuffer.append(')');
+		}
 
-                    sqlBuffer.append(", KEY (");
+		// if FK constraints are supported, we must add indices to all FKs
+		// Note that according to MySQL docs, FK indexes are created
+		// automatically when
+		// constraint is defined, starting at MySQL 4.1.2
+		if (supportsFkConstraints) {
+			for (DbRelationship r : entity.getRelationships()) {
+				if (r.getJoins().size() > 0 && r.isToPK() && !r.isToDependentPK()) {
 
-                    Iterator<DbAttribute> columns = r.getSourceAttributes().iterator();
-                    DbAttribute column = columns.next();
-                    sqlBuffer.append(quotingStrategy.quotedName(column));
+					sqlBuffer.append(", KEY (");
 
-                    while (columns.hasNext()) {
-                        column = columns.next();
-                        sqlBuffer.append(", ").append(quotingStrategy.quotedName(column));
-                    }
+					Iterator<DbAttribute> columns = r.getSourceAttributes().iterator();
+					DbAttribute column = columns.next();
+					sqlBuffer.append(quotingStrategy.quotedName(column));
 
-                    sqlBuffer.append(")");
-                }
-            }
-        }
-    }
+					while (columns.hasNext()) {
+						column = columns.next();
+						sqlBuffer.append(", ").append(quotingStrategy.quotedName(column));
+					}
 
-    /**
-     * Appends AUTO_INCREMENT clause to the column definition for generated
-     * columns.
-     */
-    @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+					sqlBuffer.append(")");
+				}
+			}
+		}
+	}
 
-        String[] types = externalTypesForJdbcType(column.getType());
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
-                    : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '" + entityName + "." + column.getName()
-                    + "': " + column.getType());
-        }
+	/**
+	 * Appends AUTO_INCREMENT clause to the column definition for generated
+	 * columns.
+	 */
+	@Override
+	public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
 
-        String type = types[0];
-        sqlBuffer.append(quotingStrategy.quotedName(column));
-        sqlBuffer.append(' ').append(type);
+		String[] types = externalTypesForJdbcType(column.getType());
+		if (types == null || types.length == 0) {
+			String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
+					: "<null>";
+			throw new CayenneRuntimeException("Undefined type for attribute '" + entityName + "." + column.getName()
+					+ "': " + column.getType());
+		}
 
-        // append size and precision (if applicable)s
-        if (typeSupportsLength(column.getType())) {
-            int len = column.getMaxLength();
+		String type = types[0];
+		sqlBuffer.append(quotingStrategy.quotedName(column));
+		sqlBuffer.append(' ').append(type);
 
-            int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
+		// append size and precision (if applicable)s
+		if (typeSupportsLength(column.getType())) {
+			int len = column.getMaxLength();
 
-            // sanity check
-            if (scale > len) {
-                scale = -1;
-            }
+			int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
 
-            if (len > 0) {
-                sqlBuffer.append('(').append(len);
+			// sanity check
+			if (scale > len) {
+				scale = -1;
+			}
 
-                if (scale >= 0) {
-                    sqlBuffer.append(", ").append(scale);
-                }
+			if (len > 0) {
+				sqlBuffer.append('(').append(len);
 
-                sqlBuffer.append(')');
-            }
-        }
+				if (scale >= 0) {
+					sqlBuffer.append(", ").append(scale);
+				}
 
-        sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
+				sqlBuffer.append(')');
+			}
+		}
 
-        if (column.isGenerated()) {
-            sqlBuffer.append(" AUTO_INCREMENT");
-        }
-    }
+		sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
 
-    @Override
-    public boolean typeSupportsLength(int type) {
-    	// As of MySQL 5.6.4 the "TIMESTAMP" and "TIME" types support length, which is the number of decimal places for fractional seconds
-    	// http://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html
-    	switch (type) {
-	    	case Types.TIMESTAMP:
-	    	case Types.TIME:
-	    		return true;
-	    	default:
-	    		return super.typeSupportsLength(type);
-    	}
-    }
-    
-    @Override
-    public MergerFactory mergerFactory() {
-        return new MySQLMergerFactory();
-    }
+		if (column.isGenerated()) {
+			sqlBuffer.append(" AUTO_INCREMENT");
+		}
+	}
 
-    final class PKComparator implements Comparator<DbAttribute> {
+	@Override
+	public boolean typeSupportsLength(int type) {
+		// As of MySQL 5.6.4 the "TIMESTAMP" and "TIME" types support length,
+		// which is the number of decimal places for fractional seconds
+		// http://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html
+		switch (type) {
+		case Types.TIMESTAMP:
+		case Types.TIME:
+			return true;
+		default:
+			return super.typeSupportsLength(type);
+		}
+	}
 
-        public int compare(DbAttribute a1, DbAttribute a2) {
-            if (a1.isGenerated() != a2.isGenerated()) {
-                return a1.isGenerated() ? -1 : 1;
-            } else {
-                return a1.getName().compareTo(a2.getName());
-            }
-        }
-    }
+	@Override
+	public MergerFactory mergerFactory() {
+		return new MySQLMergerFactory();
+	}
 
-    /**
-     * @since 3.0
-     */
-    public String getStorageEngine() {
-        return storageEngine;
-    }
+	final class PKComparator implements Comparator<DbAttribute> {
 
-    /**
-     * @since 3.0
-     */
-    public void setStorageEngine(String engine) {
-        this.storageEngine = engine;
-    }
+		public int compare(DbAttribute a1, DbAttribute a2) {
+			if (a1.isGenerated() != a2.isGenerated()) {
+				return a1.isGenerated() ? -1 : 1;
+			} else {
+				return a1.getName().compareTo(a2.getName());
+			}
+		}
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public String getStorageEngine() {
+		return storageEngine;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public void setStorageEngine(String engine) {
+		this.storageEngine = engine;
+	}
 }

@@ -31,7 +31,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -82,10 +81,6 @@ public class SelectAction extends BaseSQLAction {
 		this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
 	}
 
-	protected SelectTranslator createTranslator() {
-		return new DefaultSelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes", "resource" })
 	@Override
 	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
@@ -93,7 +88,7 @@ public class SelectAction extends BaseSQLAction {
 		final long t1 = System.currentTimeMillis();
 
 		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-		SelectTranslator translator = createTranslator();
+		SelectTranslator translator = dataNode.selectTranslator(query);
 		final String sql = translator.getSql();
 
 		ParameterBinding[] bindings = translator.getBindings();

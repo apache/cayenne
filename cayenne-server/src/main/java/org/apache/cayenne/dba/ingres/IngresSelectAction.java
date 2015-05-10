@@ -20,22 +20,16 @@ package org.apache.cayenne.dba.ingres;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.query.SelectQuery;
 
 public class IngresSelectAction extends SelectAction {
 
-    public <T> IngresSelectAction(SelectQuery<T> query, DataNode dataNode) {
-        super(query, dataNode);
-    }
+	public <T> IngresSelectAction(SelectQuery<T> query, DataNode dataNode) {
+		super(query, dataNode);
+	}
 
-    @Override
-    protected int getInMemoryOffset(int queryOffset) {
-        return 0;
-    }
-
-    @Override
-    protected SelectTranslator createTranslator() {
-        return new IngresSelectTranslator(query, dataNode.getAdapter(), dataNode.getEntityResolver());
-    }
+	@Override
+	protected int getInMemoryOffset(int queryOffset) {
+		return 0;
+	}
 }

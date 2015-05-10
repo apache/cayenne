@@ -34,6 +34,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -43,21 +44,22 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS </a>. Sample
- * connection settings to use with Oracle are shown below:
+ * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS
+ * </a>. Sample connection settings to use with Oracle are shown below:
  * 
  * <pre>
  *          test-oracle.jdbc.username = test
@@ -68,288 +70,280 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class OracleAdapter extends JdbcAdapter {
 
-    public static final String ORACLE_FLOAT = "FLOAT";
-    public static final String ORACLE_BLOB = "BLOB";
-    public static final String ORACLE_CLOB = "CLOB";
-    public static final String ORACLE_NCLOB = "NCLOB";
+	public static final String ORACLE_FLOAT = "FLOAT";
+	public static final String ORACLE_BLOB = "BLOB";
+	public static final String ORACLE_CLOB = "CLOB";
+	public static final String ORACLE_NCLOB = "NCLOB";
 
-    public static final String TRIM_FUNCTION = "RTRIM";
-    public static final String NEW_CLOB_FUNCTION = "EMPTY_CLOB()";
-    public static final String NEW_BLOB_FUNCTION = "EMPTY_BLOB()";
+	public static final String TRIM_FUNCTION = "RTRIM";
+	public static final String NEW_CLOB_FUNCTION = "EMPTY_CLOB()";
+	public static final String NEW_BLOB_FUNCTION = "EMPTY_BLOB()";
 
-    protected static boolean initDone;
-    protected static int oracleCursorType = Integer.MAX_VALUE;
+	protected static boolean initDone;
+	protected static int oracleCursorType = Integer.MAX_VALUE;
 
-    protected static boolean supportsOracleLOB;
+	protected static boolean supportsOracleLOB;
 
-    static {
-        // TODO: as CAY-234 shows, having such initialization done in a static fashion
-        // makes it untestable and any potential problems hard to reproduce. Make this
-        // an instance method (with all the affected vars) and write unit tests.
-        initDriverInformation();
-    }
+	static {
+		// TODO: as CAY-234 shows, having such initialization done in a static
+		// fashion
+		// makes it untestable and any potential problems hard to reproduce.
+		// Make this
+		// an instance method (with all the affected vars) and write unit tests.
+		initDriverInformation();
+	}
 
-    protected static void initDriverInformation() {
-        initDone = true;
+	protected static void initDriverInformation() {
+		initDone = true;
 
-        // configure static information
-        try {
-            Class<?> oraTypes = Class.forName("oracle.jdbc.driver.OracleTypes");
-            Field cursorField = oraTypes.getField("CURSOR");
-            oracleCursorType = cursorField.getInt(null);
+		// configure static information
+		try {
+			Class<?> oraTypes = Class.forName("oracle.jdbc.driver.OracleTypes");
+			Field cursorField = oraTypes.getField("CURSOR");
+			oracleCursorType = cursorField.getInt(null);
 
-            supportsOracleLOB = true;
-        }
-        catch (Throwable th) {
-            // ignoring...
-        }
-    }
+			supportsOracleLOB = true;
+		} catch (Throwable th) {
+			// ignoring...
+		}
+	}
 
-    // TODO: rename to something that looks like English ...
-    public static boolean isSupportsOracleLOB() {
-        return supportsOracleLOB;
-    }
+	// TODO: rename to something that looks like English ...
+	public static boolean isSupportsOracleLOB() {
+		return supportsOracleLOB;
+	}
 
-    /**
-     * Utility method that returns <code>true</code> if the query will update at least one
-     * BLOB or CLOB DbAttribute.
-     * 
-     * @since 1.2
-     */
-    static boolean updatesLOBColumns(BatchQuery query) {
-        boolean isInsert = query instanceof InsertBatchQuery;
-        boolean isUpdate = query instanceof UpdateBatchQuery;
+	/**
+	 * Utility method that returns <code>true</code> if the query will update at
+	 * least one BLOB or CLOB DbAttribute.
+	 * 
+	 * @since 1.2
+	 */
+	static boolean updatesLOBColumns(BatchQuery query) {
+		boolean isInsert = query instanceof InsertBatchQuery;
+		boolean isUpdate = query instanceof UpdateBatchQuery;
 
-        if (!isInsert && !isUpdate) {
-            return false;
-        }
+		if (!isInsert && !isUpdate) {
+			return false;
+		}
 
-        List<DbAttribute> updatedAttributes = (isInsert)
-                ? query.getDbAttributes()
-                : ((UpdateBatchQuery) query).getUpdatedAttributes();
+		List<DbAttribute> updatedAttributes = (isInsert) ? query.getDbAttributes() : ((UpdateBatchQuery) query)
+				.getUpdatedAttributes();
 
-        for (DbAttribute attr : updatedAttributes) {
-            int type = attr.getType();
-            if (type == Types.CLOB || type == Types.BLOB) {
-                return true;
-            }
-        }
+		for (DbAttribute attr : updatedAttributes) {
+			int type = attr.getType();
+			if (type == Types.CLOB || type == Types.BLOB) {
+				return true;
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * Returns an Oracle JDBC extension type defined in
-     * oracle.jdbc.driver.OracleTypes.CURSOR. This value is determined from Oracle driver
-     * classes via reflection in runtime, so that Cayenne code has no compile dependency
-     * on the driver. This means that calling this method when the driver is not available
-     * will result in an exception.
-     */
-    public static int getOracleCursorType() {
+	/**
+	 * Returns an Oracle JDBC extension type defined in
+	 * oracle.jdbc.driver.OracleTypes.CURSOR. This value is determined from
+	 * Oracle driver classes via reflection in runtime, so that Cayenne code has
+	 * no compile dependency on the driver. This means that calling this method
+	 * when the driver is not available will result in an exception.
+	 */
+	public static int getOracleCursorType() {
 
-        if (oracleCursorType == Integer.MAX_VALUE) {
-            throw new CayenneRuntimeException(
-                    "No information exists about oracle types. "
-                            + "Check that Oracle JDBC driver is available to the application.");
-        }
+		if (oracleCursorType == Integer.MAX_VALUE) {
+			throw new CayenneRuntimeException("No information exists about oracle types. "
+					+ "Check that Oracle JDBC driver is available to the application.");
+		}
 
-        return oracleCursorType;
-    }
+		return oracleCursorType;
+	}
 
-    public OracleAdapter(
-            @Inject RuntimeProperties runtimeProperties,
-            @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-            @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject ResourceLocator resourceLocator) {
-        super(
-                runtimeProperties,
-                defaultExtendedTypes,
-                userExtendedTypes,
-                extendedTypeFactories,
-                resourceLocator);
+	public OracleAdapter(@Inject RuntimeProperties runtimeProperties,
+			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+			@Inject ResourceLocator resourceLocator) {
+		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
 
-        // enable batch updates by default
-        setSupportsBatchUpdates(true);
-    }
+		// enable batch updates by default
+		setSupportsBatchUpdates(true);
+	}
 
-    /**
-     * @since 3.0
-     */
-    @Override
-    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
-        return new OracleEJBQLTranslatorFactory();
-    }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
+		return new OracleSelectTranslator(query, this, entityResolver);
+	}
 
-    /**
-     * Installs appropriate ExtendedTypes as converters for passing values between JDBC
-     * and Java layers.
-     */
-    @Override
-    protected void configureExtendedTypes(ExtendedTypeMap map) {
-        super.configureExtendedTypes(map);
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+		return new OracleEJBQLTranslatorFactory();
+	}
 
-        // create specially configured CharType handler
-        map.registerType(new OracleCharType());
+	/**
+	 * Installs appropriate ExtendedTypes as converters for passing values
+	 * between JDBC and Java layers.
+	 */
+	@Override
+	protected void configureExtendedTypes(ExtendedTypeMap map) {
+		super.configureExtendedTypes(map);
 
-        // create specially configured ByteArrayType handler
-        map.registerType(new OracleByteArrayType());
+		// create specially configured CharType handler
+		map.registerType(new OracleCharType());
 
-        // override date handler with Oracle handler
-        map.registerType(new OracleUtilDateType());
+		// create specially configured ByteArrayType handler
+		map.registerType(new OracleByteArrayType());
 
-        // At least on MacOS X, driver does not handle Short and Byte properly
-        map.registerType(new ShortType(true));
-        map.registerType(new ByteType(true));
-        map.registerType(new OracleBooleanType());
-    }
+		// override date handler with Oracle handler
+		map.registerType(new OracleUtilDateType());
 
-    /**
-     * Creates and returns a primary key generator. Overrides superclass implementation to
-     * return an instance of OraclePkGenerator.
-     */
-    @Override
-    protected PkGenerator createPkGenerator() {
-        return new OraclePkGenerator(this);
-    }
+		// At least on MacOS X, driver does not handle Short and Byte properly
+		map.registerType(new ShortType(true));
+		map.registerType(new ByteType(true));
+		map.registerType(new OracleBooleanType());
+	}
 
-    /**
-     * Returns a query string to drop a table corresponding to <code>ent</code> DbEntity.
-     * Changes superclass behavior to drop all related foreign key constraints.
-     * 
-     * @since 3.0
-     */
-    @Override
-    public Collection<String> dropTableStatements(DbEntity table) {
-        return Collections.singleton("DROP TABLE " + getQuotingStrategy().quotedFullyQualifiedName(table)
-                + " CASCADE CONSTRAINTS");
-    }
+	/**
+	 * Creates and returns a primary key generator. Overrides superclass
+	 * implementation to return an instance of OraclePkGenerator.
+	 */
+	@Override
+	protected PkGenerator createPkGenerator() {
+		return new OraclePkGenerator(this);
+	}
 
-    @Override
-    public void bindParameter(
-            PreparedStatement statement,
-            Object object,
-            int pos,
-            int sqlType,
-            int scale) throws SQLException, Exception {
+	/**
+	 * Returns a query string to drop a table corresponding to <code>ent</code>
+	 * DbEntity. Changes superclass behavior to drop all related foreign key
+	 * constraints.
+	 * 
+	 * @since 3.0
+	 */
+	@Override
+	public Collection<String> dropTableStatements(DbEntity table) {
+		return Collections.singleton("DROP TABLE " + getQuotingStrategy().quotedFullyQualifiedName(table)
+				+ " CASCADE CONSTRAINTS");
+	}
 
-        // Oracle doesn't support BOOLEAN even when binding NULL, so have to intercept
-        // NULL Boolean here, as super doesn't pass it through ExtendedType...
-        if (object == null && sqlType == Types.BOOLEAN) {
-            ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(
-                    Boolean.class);
-            typeProcessor.setJdbcObject(statement, object, pos, sqlType, scale);
-        }
-        else {
-            super.bindParameter(statement, object, pos, sqlType, scale);
-        }
-    }
+	@Override
+	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+			throws SQLException, Exception {
 
-    /**
-     * Fixes some reverse engineering problems. Namely if a columns is created as DECIMAL
-     * and has non-positive precision it is converted to INTEGER.
-     */
-    @Override
-    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
-        DbAttribute attr = super.buildAttribute(name, typeName, type, size, scale, allowNulls);
+		// Oracle doesn't support BOOLEAN even when binding NULL, so have to
+		// intercept
+		// NULL Boolean here, as super doesn't pass it through ExtendedType...
+		if (object == null && sqlType == Types.BOOLEAN) {
+			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(Boolean.class);
+			typeProcessor.setJdbcObject(statement, object, pos, sqlType, scale);
+		} else {
+			super.bindParameter(statement, object, pos, sqlType, scale);
+		}
+	}
 
-        if (type == Types.DECIMAL && scale <= 0) {
-            attr.setType(Types.INTEGER);
-            attr.setScale(-1);
-        } else if (type == Types.OTHER) {
-            // in this case we need to guess the attribute type
-            // based on its string value
-            if (ORACLE_FLOAT.equals(typeName)) {
-                attr.setType(Types.FLOAT);
-            } else if (ORACLE_BLOB.equals(typeName)) {
-                attr.setType(Types.BLOB);
-            } else if (ORACLE_CLOB.equals(typeName)) {
-                attr.setType(Types.CLOB);
-            } else if (ORACLE_NCLOB.equals(typeName)) {
-                attr.setType(Types.NCLOB);
-            }
-        } else if (type == Types.DATE) {
-            // Oracle DATE can store JDBC TIMESTAMP
-            if ("DATE".equals(typeName)) {
-                attr.setType(Types.TIMESTAMP);
-            }
-        }
+	/**
+	 * Fixes some reverse engineering problems. Namely if a columns is created
+	 * as DECIMAL and has non-positive precision it is converted to INTEGER.
+	 */
+	@Override
+	public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
+		DbAttribute attr = super.buildAttribute(name, typeName, type, size, scale, allowNulls);
 
-        return attr;
-    }
+		if (type == Types.DECIMAL && scale <= 0) {
+			attr.setType(Types.INTEGER);
+			attr.setScale(-1);
+		} else if (type == Types.OTHER) {
+			// in this case we need to guess the attribute type
+			// based on its string value
+			if (ORACLE_FLOAT.equals(typeName)) {
+				attr.setType(Types.FLOAT);
+			} else if (ORACLE_BLOB.equals(typeName)) {
+				attr.setType(Types.BLOB);
+			} else if (ORACLE_CLOB.equals(typeName)) {
+				attr.setType(Types.CLOB);
+			} else if (ORACLE_NCLOB.equals(typeName)) {
+				attr.setType(Types.NCLOB);
+			}
+		} else if (type == Types.DATE) {
+			// Oracle DATE can store JDBC TIMESTAMP
+			if ("DATE".equals(typeName)) {
+				attr.setType(Types.TIMESTAMP);
+			}
+		}
 
-    /**
-     * Returns a trimming translator.
-     */
-    @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        QualifierTranslator translator = new Oracle8QualifierTranslator(queryAssembler);
-        translator.setCaseInsensitive(caseInsensitiveCollations);
-        return translator;
-    }
+		return attr;
+	}
 
-    /**
-     * Uses OracleActionBuilder to create the right action.
-     * 
-     * @since 1.2
-     */
-    @Override
-    public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new OracleActionBuilder(node));
-    }
+	/**
+	 * Returns a trimming translator.
+	 */
+	@Override
+	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+		QualifierTranslator translator = new Oracle8QualifierTranslator(queryAssembler);
+		translator.setCaseInsensitive(caseInsensitiveCollations);
+		return translator;
+	}
 
-    /**
-     * @since 3.0
-     */
-    final class OracleBooleanType implements ExtendedType {
+	/**
+	 * Uses OracleActionBuilder to create the right action.
+	 * 
+	 * @since 1.2
+	 */
+	@Override
+	public SQLAction getAction(Query query, DataNode node) {
+		return query.createSQLAction(new OracleActionBuilder(node));
+	}
 
-        @Override
-        public String getClassName() {
-            return Boolean.class.getName();
-        }
+	/**
+	 * @since 3.0
+	 */
+	final class OracleBooleanType implements ExtendedType {
 
-        @Override
-        public void setJdbcObject(
-                PreparedStatement st,
-                Object val,
-                int pos,
-                int type,
-                int precision) throws Exception {
+		@Override
+		public String getClassName() {
+			return Boolean.class.getName();
+		}
 
-            // Oracle does not support Types.BOOLEAN, so we have to override user mapping
-            // unconditionally
-            if (val == null) {
-                st.setNull(pos, Types.INTEGER);
-            }
-            else {
-                boolean flag = Boolean.TRUE.equals(val);
-                st.setInt(pos, flag ? 1 : 0);
-            }
-        }
+		@Override
+		public void setJdbcObject(PreparedStatement st, Object val, int pos, int type, int precision) throws Exception {
 
-        @Override
-        public Object materializeObject(ResultSet rs, int index, int type)
-                throws Exception {
+			// Oracle does not support Types.BOOLEAN, so we have to override
+			// user mapping
+			// unconditionally
+			if (val == null) {
+				st.setNull(pos, Types.INTEGER);
+			} else {
+				boolean flag = Boolean.TRUE.equals(val);
+				st.setInt(pos, flag ? 1 : 0);
+			}
+		}
 
-            // Oracle does not support Types.BOOLEAN, so we have to override user mapping
-            // unconditionally
-            int i = rs.getInt(index);
-            return rs.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
-        }
+		@Override
+		public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
-        @Override
-        public Object materializeObject(CallableStatement st, int index, int type)
-                throws Exception {
+			// Oracle does not support Types.BOOLEAN, so we have to override
+			// user mapping
+			// unconditionally
+			int i = rs.getInt(index);
+			return rs.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
+		}
 
-            // Oracle does not support Types.BOOLEAN, so we have to override user mapping
-            // unconditionally
-            int i = st.getInt(index);
-            return st.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
-        }
-    }
+		@Override
+		public Object materializeObject(CallableStatement st, int index, int type) throws Exception {
 
-    @Override
-    public MergerFactory mergerFactory() {
-        return new OracleMergerFactory();
-    }
+			// Oracle does not support Types.BOOLEAN, so we have to override
+			// user mapping
+			// unconditionally
+			int i = st.getInt(index);
+			return st.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
+		}
+	}
+
+	@Override
+	public MergerFactory mergerFactory() {
+		return new OracleMergerFactory();
+	}
 }
