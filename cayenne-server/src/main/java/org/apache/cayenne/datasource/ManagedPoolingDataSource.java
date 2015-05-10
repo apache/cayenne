@@ -40,11 +40,13 @@ public class ManagedPoolingDataSource implements DataSource, ScopeEventListener 
 	private DataSource dataSource;
 
 	public ManagedPoolingDataSource(PoolingDataSource dataSource) {
-
-		this.dataSource = dataSource;
-
 		// wake every 2 minutes...
-		this.dataSourceManager = new PoolingDataSourceManager(dataSource, 120000);
+		this(dataSource, 120000);
+	}
+
+	public ManagedPoolingDataSource(PoolingDataSource dataSource, long managerWakeTime) {
+		this.dataSource = dataSource;
+		this.dataSourceManager = new PoolingDataSourceManager(dataSource, managerWakeTime);
 
 		dataSourceManager.start();
 	}

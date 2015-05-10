@@ -169,7 +169,9 @@ public class PoolingDataSource implements DataSource {
 
 			try {
 				PoolAwareConnection c = createUnchecked();
-				reclaim(c);
+				if (c != null) {
+					reclaim(c);
+				}
 			} catch (SQLException e) {
 				LOGGER.info("Error creating new connection when managing connection pool, ignoring", e);
 			}

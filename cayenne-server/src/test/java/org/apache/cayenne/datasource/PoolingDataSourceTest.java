@@ -126,6 +126,28 @@ public class PoolingDataSourceTest {
 	}
 
 	@Test
+	public void testManagePool_Empty() throws SQLException {
+
+		int max = 5;
+
+		params.setMinConnections(1);
+		params.setMaxConnections(max);
+		PoolingDataSource ds = new PoolingDataSource(nonPooling, params);
+
+		// opening and closing 'max' connections should fill the pool to the
+		// top...
+		Connection[] open = new Connection[max];
+		for (int i = 0; i < max; i++) {
+			open[i] = ds.getConnection();
+		}
+
+		// all connections are in use, so managePool should do nothing
+		assertEquals(max, ds.poolSize());
+		ds.managePool();
+		assertEquals(max, ds.poolSize());
+	}
+
+	@Test
 	public void testValidateUnchecked() {
 
 		final PoolAwareConnection[] connections = validConnections(4);
