@@ -27,6 +27,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -47,11 +49,39 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 	@Test
 	public void testGetConnectionAutoCommit() throws Exception {
 
-		Connection c1 = dataSource.getConnection();
+		assertTrue(dataSource.getMaxConnections() > 0);
+
+		List<Connection> connections = new ArrayList<Connection>();
 		try {
-			assertTrue("Failed to reset connection state", c1.getAutoCommit());
+
+			for (int i = 0; i < dataSource.getMaxConnections(); i++) {
+				Connection c = dataSource.getConnection();
+				assertTrue("Failed to reset connection state", c.getAutoCommit());
+				connections.add(c);
+			}
+
+			for (Connection c : connections) {
+				c.setAutoCommit(false);
+				c.close();
+			}
+
+			for (int i = 0; i < dataSource.getMaxConnections(); i++) {
+				Connection c = dataSource.getConnection();
+
+				// presumably this pass through the pool should return existing
+				// connections
+				assertTrue(connections.contains(c));
+				assertTrue("Failed to reset connection state for reused connection", c.getAutoCommit());
+			}
+
 		} finally {
-			c1.close();
+			for (Connection c : connections) {
+				try {
+					c.close();
+				} catch (SQLException e) {
+
+				}
+			}
 		}
 	}
 

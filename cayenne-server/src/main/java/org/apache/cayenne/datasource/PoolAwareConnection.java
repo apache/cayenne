@@ -51,8 +51,6 @@ public class PoolAwareConnection implements Connection {
 	private Connection connection;
 	private String validationQuery;
 
-	
-
 	public PoolAwareConnection(PoolingDataSource parent, Connection connection, String validationQuery) {
 		this.parent = parent;
 		this.connection = connection;

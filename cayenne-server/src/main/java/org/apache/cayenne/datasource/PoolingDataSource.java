@@ -88,6 +88,7 @@ public class PoolingDataSource implements DataSource {
 
 	private int maxIdleConnections;
 	private int minConnections;
+	private int maxConnections;
 	private String validationQuery;
 
 	static int maxIdleConnections(int min, int max) {
@@ -117,6 +118,7 @@ public class PoolingDataSource implements DataSource {
 		this.maxQueueWaitTime = parameters.getMaxQueueWaitTime();
 		this.validationQuery = parameters.getValidationQuery();
 		this.minConnections = minConnections;
+		this.maxConnections = maxConnections;
 		this.pool = new ConcurrentHashMap<PoolAwareConnection, Object>((int) (maxConnections / 0.75));
 		this.available = new ArrayBlockingQueue<PoolAwareConnection>(maxConnections);
 		this.poolCap = new Semaphore(maxConnections);
@@ -204,6 +206,8 @@ public class PoolingDataSource implements DataSource {
 	 */
 	void reclaim(PoolAwareConnection connection) {
 
+		// TODO: rollback any in-process tx?
+
 		// the queue may overflow potentially and we won't be able to add the
 		// object
 		if (!available.offer(connection)) {
@@ -265,12 +269,16 @@ public class PoolingDataSource implements DataSource {
 	}
 
 	/**
-	 * Creates a new connection in a consistent state.
+	 * Creates a new connection.
 	 */
 	Connection createUnwrapped() throws SQLException {
-		Connection c = nonPoolingDataSource.getConnection();
+		return nonPoolingDataSource.getConnection();
+	}
 
-		// set default connection state...
+	/**
+	 * Updates connection state to a default state.
+	 */
+	Connection resetState(Connection c) throws SQLException {
 
 		// TODO: tx isolation level?
 
@@ -284,7 +292,6 @@ public class PoolingDataSource implements DataSource {
 		}
 
 		c.clearWarnings();
-
 		return c;
 	}
 
@@ -300,17 +307,17 @@ public class PoolingDataSource implements DataSource {
 
 		c = uncheckNonBlocking(true);
 		if (c != null) {
-			return c;
+			return resetState(c);
 		}
 
 		c = createUnchecked();
 		if (c != null) {
-			return c;
+			return resetState(c);
 		}
 
 		c = uncheckBlocking(true);
 		if (c != null) {
-			return c;
+			return resetState(c);
 		}
 
 		throw new SQLException("Can't obtain connection. Request to pool timed out. Total pool size: " + pool.size());
@@ -356,5 +363,25 @@ public class PoolingDataSource implements DataSource {
 	// JDBC 4.1 compatibility under Java pre 1.7
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
+	}
+
+	String getValidationQuery() {
+		return validationQuery;
+	}
+
+	long getMaxQueueWaitTime() {
+		return maxQueueWaitTime;
+	}
+
+	int getMaxIdleConnections() {
+		return maxIdleConnections;
+	}
+
+	int getMinConnections() {
+		return minConnections;
+	}
+
+	int getMaxConnections() {
+		return maxConnections;
 	}
 }
