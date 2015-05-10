@@ -24,6 +24,7 @@ CAY-2007 Refactoring SelectTranslator for better extensibility
 CAY-2008 Connection pool refactoring and validation query support in Cayenne DataSource
 CAY-2009 Non-blocking connection pool
 CAY-2010 Splitting DataSourceBuilder from ServerRuntimeBuilder
+CAY-2011 Support for Java 8 date and time types
 
 Bug Fixes:
 
