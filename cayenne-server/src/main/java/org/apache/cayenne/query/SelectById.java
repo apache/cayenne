@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import static java.util.Collections.singletonMap;
+import static org.apache.cayenne.exp.ExpressionFactory.matchAllDbExp;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -28,13 +35,6 @@ import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Collections.singletonMap;
-import static org.apache.cayenne.exp.ExpressionFactory.matchAllDbExp;
 
 /**
  * A query to select single objects by id.
@@ -129,127 +129,126 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		}
 	}
 
+	@Override
+	public List<T> select(ObjectContext context) {
+		return context.select(this);
+	}
 
-    @Override
-    public List<T> select(ObjectContext context) {
-        return context.select(this);
-    }
-
-    /**
-     * Since we are selecting by ID, multiple matched objects likely
-     * indicate a database referential integrity problem.
-     */
-    @Override
+	/**
+	 * Since we are selecting by ID, multiple matched objects likely indicate a
+	 * database referential integrity problem.
+	 */
+	@Override
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
 	}
 
-    /**
-     * Since we are selecting by ID, we don't need to limit fetch size.
-     * Multiple matched objects likely indicate a database referential integrity problem.
-     */
-    @Override
-    public T selectFirst(ObjectContext context) {
-        return selectFirst(context);
-    }
-
-    @Override
-    public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
-        context.iterate((Select<T>) this, callback);
-    }
-
-    @Override
-    public ResultIterator<T> iterator(ObjectContext context) {
-        return context.iterator(this);
-    }
-
-    @Override
-    public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
-        return context.batchIterator(this, size);
-    }
-
-    /**
-     * Instructs Cayenne to look for query results in the "local" cache when
-     * running the query. This is a short-hand notation for:
-     *
-     * <pre>
-     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
-     * </pre>
-     *
-     * @since 4.0.M3
-     */
-    public SelectById<T> localCache(String... cacheGroups) {
-        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
-    }
-
-    /**
-     * Instructs Cayenne to look for query results in the "shared" cache when
-     * running the query. This is a short-hand notation for:
-     *
-     * <pre>
-     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
-     * </pre>
-     *
-     * @since 4.0.M3
-     */
-    public SelectById<T> sharedCache(String... cacheGroups) {
-        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
-    }
-
-    /**
-     * Instructs Cayenne to look for query results in the "local" cache when
-     * running the query. This is a short-hand notation for:
-     *
-     * @deprecated since 4.0.M3 use {@link #localCache(String...)}
-     */
-    @Deprecated
-	public SelectById<T> useLocalCache(String... cacheGroups) {
-        return localCache(cacheGroups);
+	/**
+	 * Since we are selecting by ID, we don't need to limit fetch size. Multiple
+	 * matched objects likely indicate a database referential integrity problem.
+	 */
+	@Override
+	public T selectFirst(ObjectContext context) {
+		return selectFirst(context);
 	}
 
-    /**
-     * Instructs Cayenne to look for query results in the "shared" cache when
-     * running the query. This is a short-hand notation for:
-     *
-     * @deprecated since 4.0.M3 use {@link #sharedCache(String...)}
-     */
-    @Deprecated
+	@Override
+	public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+		context.iterate((Select<T>) this, callback);
+	}
+
+	@Override
+	public ResultIterator<T> iterator(ObjectContext context) {
+		return context.iterator(this);
+	}
+
+	@Override
+	public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+		return context.batchIterator(this, size);
+	}
+
+	/**
+	 * Instructs Cayenne to look for query results in the "local" cache when
+	 * running the query. This is a short-hand notation for:
+	 *
+	 * <pre>
+	 * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
+	 * </pre>
+	 *
+	 * @since 4.0.M3
+	 */
+	public SelectById<T> localCache(String... cacheGroups) {
+		return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
+	}
+
+	/**
+	 * Instructs Cayenne to look for query results in the "shared" cache when
+	 * running the query. This is a short-hand notation for:
+	 *
+	 * <pre>
+	 * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
+	 * </pre>
+	 *
+	 * @since 4.0.M3
+	 */
+	public SelectById<T> sharedCache(String... cacheGroups) {
+		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
+	}
+
+	/**
+	 * Instructs Cayenne to look for query results in the "local" cache when
+	 * running the query. This is a short-hand notation for:
+	 *
+	 * @deprecated since 4.0.M3 use {@link #localCache(String...)}
+	 */
+	@Deprecated
+	public SelectById<T> useLocalCache(String... cacheGroups) {
+		return localCache(cacheGroups);
+	}
+
+	/**
+	 * Instructs Cayenne to look for query results in the "shared" cache when
+	 * running the query. This is a short-hand notation for:
+	 *
+	 * @deprecated since 4.0.M3 use {@link #sharedCache(String...)}
+	 */
+	@Deprecated
 	public SelectById<T> useSharedCache(String... cacheGroups) {
-        return sharedCache(cacheGroups);
+		return sharedCache(cacheGroups);
 	}
 
 	public QueryCacheStrategy getCacheStrategy() {
 		return cacheStrategy;
 	}
 
-    public SelectById<T> cacheStrategy(QueryCacheStrategy strategy, String... cacheGroups) {
-        if (this.cacheStrategy != strategy) {
-            this.cacheStrategy = strategy;
-            this.replacementQuery = null;
-        }
+	public SelectById<T> cacheStrategy(QueryCacheStrategy strategy, String... cacheGroups) {
+		if (this.cacheStrategy != strategy) {
+			this.cacheStrategy = strategy;
+			this.replacementQuery = null;
+		}
 
-        return cacheGroups(cacheGroups);
-    }
+		return cacheGroups(cacheGroups);
+	}
 
 	public String[] getCacheGroups() {
 		return cacheGroups;
 	}
 
 	public SelectById<T> cacheGroups(String... cacheGroups) {
-        this.cacheGroups = cacheGroups != null && cacheGroups.length > 0 ? cacheGroups : null;
-        this.replacementQuery = null;
+		this.cacheGroups = cacheGroups != null && cacheGroups.length > 0 ? cacheGroups : null;
+		this.replacementQuery = null;
 		return this;
 	}
 
-    public SelectById<T> cacheGroups(Collection<String> cacheGroups) {
+	public SelectById<T> cacheGroups(Collection<String> cacheGroups) {
 
-        if (cacheGroups == null) {
-            return cacheGroups((String) null);
-        }
+		if (cacheGroups == null) {
+			return cacheGroups((String) null);
+		}
 
-        String[] array = new String[cacheGroups.size()];
-        return cacheGroups(cacheGroups.toArray(array));
-    }
+		String[] array = new String[cacheGroups.size()];
+		return cacheGroups(cacheGroups.toArray(array));
+	}
 
 	public boolean isFetchingDataRows() {
 		return fetchingDataRows;
@@ -314,7 +313,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		prefetches.addPath(path).setSemantics(semantics);
 		return this;
 	}
-	
+
 	public PrefetchTreeNode getPrefetches() {
 		return prefetches;
 	}

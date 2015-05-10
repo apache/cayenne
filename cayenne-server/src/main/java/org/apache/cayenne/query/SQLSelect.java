@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -27,13 +34,6 @@ import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.SQLResult;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A selecting query based on raw SQL and featuring fluent API.
@@ -115,37 +115,37 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		this.pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
 	}
 
-    @Override
+	@Override
 	public List<T> select(ObjectContext context) {
 		return context.select(this);
 	}
 
-    @Override
+	@Override
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
 	}
 
-    @Override
-    public T selectFirst(ObjectContext context) {
-        return context.selectFirst(limit(1));
-    }
+	@Override
+	public T selectFirst(ObjectContext context) {
+		return context.selectFirst(limit(1));
+	}
 
-    @Override
-    public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
-        context.iterate((Select<T>) this, callback);
-    }
+	@Override
+	public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+		context.iterate((Select<T>) this, callback);
+	}
 
-    @Override
-    public ResultIterator<T> iterator(ObjectContext context) {
-        return context.iterator(this);
-    }
+	@Override
+	public ResultIterator<T> iterator(ObjectContext context) {
+		return context.iterator(this);
+	}
 
-    @Override
-    public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
-        return context.batchIterator(this, size);
-    }
+	@Override
+	public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+		return context.batchIterator(this, size);
+	}
 
-    public boolean isFetchingDataRows() {
+	public boolean isFetchingDataRows() {
 		return persistentType == null;
 	}
 
@@ -297,7 +297,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * </pre>
 	 */
 	public SQLSelect<T> localCache(String... cacheGroups) {
-        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
+		return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
 	}
 
 	/**
@@ -309,8 +309,8 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * </pre>
 	 */
 	public SQLSelect<T> sharedCache(String... cacheGroups) {
-        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
-    }
+		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
+	}
 
 	public QueryCacheStrategy getCacheStrategy() {
 		return cacheStrategy;

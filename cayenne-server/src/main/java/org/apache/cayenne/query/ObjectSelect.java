@@ -671,7 +671,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
     }
 
     @Override
-    public <T> void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+    public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
         context.iterate((Select<T>) this, callback);
     }
 
