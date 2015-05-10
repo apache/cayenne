@@ -19,77 +19,73 @@
 
 package org.apache.cayenne.java8;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.java8.db.LocalDateTestEntity;
-import org.apache.cayenne.java8.db.LocalDateTimeTestEntity;
-import org.apache.cayenne.java8.db.LocalTimeTestEntity;
-import org.apache.cayenne.query.SelectQuery;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.java8.db.LocalDateTestEntity;
+import org.apache.cayenne.java8.db.LocalDateTimeTestEntity;
+import org.apache.cayenne.java8.db.LocalTimeTestEntity;
+import org.apache.cayenne.query.ObjectSelect;
+import org.junit.Test;
 
 public class Java8TimeIT extends RuntimeBase {
 
-    @Test
-    public void testJava8LocalDate() {
-        ObjectContext context = runtime.newContext();
+	@Test
+	public void testJava8LocalDate() {
+		ObjectContext context = runtime.newContext();
 
-        LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
-        LocalDate localDate = LocalDate.now();
-        localDateTestEntity.setDate(localDate);
+		LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
+		LocalDate localDate = LocalDate.now();
+		localDateTestEntity.setDate(localDate);
 
-        context.commitChanges();
+		context.commitChanges();
 
-        SelectQuery q = new SelectQuery(LocalDateTestEntity.class);
-        LocalDateTestEntity testRead = (LocalDateTestEntity) context.performQuery(q).get(0);
+		LocalDateTestEntity testRead = ObjectSelect.query(LocalDateTestEntity.class).selectOne(context);
 
-        assertNotNull(testRead.getDate());
-        assertEquals(LocalDate.class, testRead.getDate().getClass());
-        assertEquals(localDate, testRead.getDate());
+		assertNotNull(testRead.getDate());
+		assertEquals(LocalDate.class, testRead.getDate().getClass());
+		assertEquals(localDate, testRead.getDate());
+	}
 
-    }
+	@Test
+	public void testJava8LocalTime() {
+		ObjectContext context = runtime.newContext();
 
-    @Test
-    public void testJava8LocalTime() {
-        ObjectContext context = runtime.newContext();
+		LocalTimeTestEntity localTimeTestEntity = context.newObject(LocalTimeTestEntity.class);
+		LocalTime localTime = LocalTime.now();
+		localTimeTestEntity.setTime(localTime);
 
-        LocalTimeTestEntity localTimeTestEntity = context.newObject(LocalTimeTestEntity.class);
-        LocalTime localTime = LocalTime.now();
-        localTimeTestEntity.setTime(localTime);
+		context.commitChanges();
 
-        context.commitChanges();
+		LocalTimeTestEntity testRead = ObjectSelect.query(LocalTimeTestEntity.class).selectOne(context);
 
-        SelectQuery q = new SelectQuery(LocalTimeTestEntity.class);
-        LocalTimeTestEntity testRead = (LocalTimeTestEntity) context.performQuery(q).get(0);
+		assertNotNull(testRead.getTime());
+		assertEquals(LocalTime.class, testRead.getTime().getClass());
+		assertEquals(localTime.toSecondOfDay(), testRead.getTime().toSecondOfDay());
 
-        assertNotNull(testRead.getTime());
-        assertEquals(LocalTime.class, testRead.getTime().getClass());
-        assertEquals(localTime.toSecondOfDay(), testRead.getTime().toSecondOfDay());
+	}
 
-    }
+	@Test
+	public void testJava8LocalDateTime() {
+		ObjectContext context = runtime.newContext();
 
-    @Test
-    public void testJava8LocalDateTime() {
-        ObjectContext context = runtime.newContext();
+		LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);
+		LocalDateTime localDateTime = LocalDateTime.now();
+		localDateTimeTestEntity.setTimestamp(localDateTime);
 
-        LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);
-        LocalDateTime localDateTime = LocalDateTime.now();
-        localDateTimeTestEntity.setTimestamp(localDateTime);
+		context.commitChanges();
 
-        context.commitChanges();
+		LocalDateTimeTestEntity testRead = ObjectSelect.query(LocalDateTimeTestEntity.class).selectOne(context);
 
-        SelectQuery q = new SelectQuery(LocalDateTimeTestEntity.class);
-        LocalDateTimeTestEntity testRead = (LocalDateTimeTestEntity) context.performQuery(q).get(0);
+		assertNotNull(testRead.getTimestamp());
+		assertEquals(LocalDateTime.class, testRead.getTimestamp().getClass());
+		assertEquals(localDateTime, testRead.getTimestamp());
 
-        assertNotNull(testRead.getTimestamp());
-        assertEquals(LocalDateTime.class, testRead.getTimestamp().getClass());
-        assertEquals(localDateTime, testRead.getTimestamp());
-
-    }
+	}
 
 }
