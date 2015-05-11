@@ -255,32 +255,11 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Resets internal prefetches to the new value, which is a single prefetch
-	 * with specified semantics.
-	 * 
-	 * @return this object
-	 */
-	public SelectById<T> prefetch(String path, int semantics) {
-		this.prefetches = PrefetchTreeNode.withPath(path, semantics);
-		return this;
-	}
-
-	/**
-	 * Resets internal prefetches to the new value.
-	 * 
-	 * @return this object
-	 */
-	public SelectById<T> prefetch(PrefetchTreeNode prefetch) {
-		this.prefetches = prefetch;
-		return this;
-	}
-
-	/**
 	 * Merges prefetch into the query prefetch tree.
 	 * 
 	 * @return this object
 	 */
-	public SelectById<T> addPrefetch(PrefetchTreeNode prefetch) {
+	public SelectById<T> prefetch(PrefetchTreeNode prefetch) {
 
 		if (prefetch == null) {
 			return this;
@@ -300,7 +279,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * 
 	 * @return this object
 	 */
-	public SelectById<T> addPrefetch(String path, int semantics) {
+	public SelectById<T> prefetch(String path, int semantics) {
 
 		if (path == null) {
 			return this;
@@ -318,6 +297,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return prefetches;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected Query createReplacementQuery(EntityResolver resolver) {
 

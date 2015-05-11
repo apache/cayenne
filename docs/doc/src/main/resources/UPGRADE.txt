@@ -22,6 +22,9 @@ UPGRADING TO 4.0.M3
   pooling DataSource. A replacement is non-blocking DataSource under org.apache.cayenne.datasource (PoolingDataSource, ManagedPoolingDataSource),
   best assembled using org.apache.cayenne.datasource.DataSourceBuilder.
 
+* Per CAY-2012 API for ObjectSelect and SelectById queries were changed to remove "reset" functionality. Methods like 'where', 'prefetch',
+  'orderBy' that would previously reset the corresponding option state now work as "append". Methods that would previously append to the
+  option state were removed as redundant. Please revisit your code if you previously relied on the reset behavior.
 
 UPGRADING TO 4.0.M2
 
