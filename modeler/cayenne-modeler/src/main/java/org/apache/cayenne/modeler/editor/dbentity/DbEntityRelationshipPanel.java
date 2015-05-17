@@ -34,6 +34,7 @@ import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
+import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialogNextPrev;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
@@ -139,10 +140,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
                     return;
                 }
 
-                // Get DbRelationship
-                DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-                DbRelationship rel = model.getRelationship(row);
-                ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(rel);
+                ResolveDbRelationshipDialogNextPrev dialog = new ResolveDbRelationshipDialogNextPrev(table, row);
                 dialog.setVisible(true);
                 dialog.dispose();
             }
