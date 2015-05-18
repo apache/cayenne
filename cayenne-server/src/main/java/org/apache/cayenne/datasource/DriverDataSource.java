@@ -32,6 +32,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -78,8 +79,9 @@ public class DriverDataSource implements DataSource {
 	 * registering the driver. "connectionUrl" on the other hand must NOT be
 	 * null.
 	 * 
-	 * @deprecated since 4.0 as class loading should not happen here. Use
-	 *             {@link #DriverDataSource(Driver, String, String, String)}.
+	 * @deprecated since 4.0 as class loading should not happen here. Use {
+	 *             {@link #DriverDataSource(Driver, String, String, String, JdbcEventLogger)}
+	 *             .
 	 */
 	@Deprecated
 	public DriverDataSource(String driverClassName, String connectionUrl) {
@@ -94,16 +96,29 @@ public class DriverDataSource implements DataSource {
 	 * null.
 	 * 
 	 * @deprecated since 4.0 as class loading should not happen here. Use
-	 *             {@link #DriverDataSource(Driver, String, String, String)}.
+	 *             {@link #DriverDataSource(Driver, String, String, String, JdbcEventLogger)}
+	 *             .
 	 */
 	@Deprecated
 	public DriverDataSource(String driverClassName, String connectionUrl, String userName, String password) {
-
 		this(loadDriver(driverClassName), connectionUrl, userName, password);
+	}
 
-		this.connectionUrl = connectionUrl;
-		this.userName = userName;
-		this.password = password;
+	/**
+	 * Creates a DriverDataSource wrapping a given Driver. If "driver" is null,
+	 * DriverDataSource will consult DriverManager for a registered driver for
+	 * the given URL. So when specifying null, a user must take care of
+	 * registering the driver. "connectionUrl" on the other hand must NOT be
+	 * null.
+	 * 
+	 * @since 1.1
+	 * @deprecated since 4.0 as class loading should not happen here. Use
+	 *             {@link #DriverDataSource(Driver, String, String, String, JdbcEventLogger)}
+	 *             .
+	 */
+	@Deprecated
+	public DriverDataSource(Driver driver, String connectionUrl, String userName, String password) {
+		this(driver, connectionUrl, userName, password, NoopJdbcEventLogger.getInstance());
 	}
 
 	/**
@@ -113,14 +128,24 @@ public class DriverDataSource implements DataSource {
 	 * registering the driver. "connectionUrl" on the other hand must NOT be
 	 * null.
 	 * 
-	 * @since 1.1
+	 * @since 4.0
 	 */
-	public DriverDataSource(Driver driver, String connectionUrl, String userName, String password) {
+	public DriverDataSource(Driver driver, String connectionUrl, String userName, String password,
+			JdbcEventLogger logger) {
+
+		if (connectionUrl == null) {
+			throw new NullPointerException("Null 'connectionUrl'");
+		}
+
+		if (logger == null) {
+			throw new NullPointerException("Null 'logger'");
+		}
 
 		this.driver = driver;
 		this.connectionUrl = connectionUrl;
 		this.userName = userName;
 		this.password = password;
+		this.logger = logger;
 	}
 
 	/**
@@ -196,52 +221,80 @@ public class DriverDataSource implements DataSource {
 		DriverManager.setLogWriter(out);
 	}
 
+	/**
+	 * @deprecated since 4.0. Connection parameters are immutable and not
+	 *             readable.
+	 */
+	@Deprecated
 	public JdbcEventLogger getLogger() {
 		return logger;
 	}
 
-	public void setLogger(JdbcEventLogger delegate) {
-		logger = delegate;
+	/**
+	 * @deprecated since 4.0. Logger is immutable.
+	 */
+	@Deprecated
+	public void setLogger(JdbcEventLogger logger) {
+		if (logger == null) {
+			throw new NullPointerException("Null 'logger'");
+		}
+
+		this.logger = logger;
 	}
 
 	/**
 	 * @since 3.0
+	 * @deprecated since 4.0. Connection parameters are immutable and not
+	 *             readable.
 	 */
+	@Deprecated
 	public String getConnectionUrl() {
 		return connectionUrl;
 	}
 
 	/**
 	 * @since 3.0
+	 * @deprecated since 4.0. Connection parameters are immutable.
 	 */
+	@Deprecated
 	public void setConnectionUrl(String connectionUrl) {
 		this.connectionUrl = connectionUrl;
 	}
 
 	/**
 	 * @since 3.0
+	 * @deprecated since 4.0. Connection parameters are immutable and not
+	 *             readable.
 	 */
+	@Deprecated
 	public String getPassword() {
 		return password;
 	}
 
 	/**
+	 * @deprecated since 4.0. Connection parameters are immutable.
 	 * @since 3.0
 	 */
+	@Deprecated
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	/**
 	 * @since 3.0
+	 * @deprecated since 4.0. Connection parameters are immutable and not
+	 *             readable.
 	 */
+	@Deprecated
 	public String getUserName() {
 		return userName;
 	}
 
 	/**
 	 * @since 3.0
+	 * @deprecated since 4.0. Connection parameters are immutable.
 	 */
+	@Deprecated
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}

@@ -165,7 +165,7 @@ public class DbGeneratorMojo extends AbstractMojo {
 
             // load driver taking custom CLASSPATH into account...
             DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,
-                    username, password);
+                    username, password, NoopJdbcEventLogger.getInstance());
 
             generator.runGenerator(dataSource);
         } catch (Exception ex) {

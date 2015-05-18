@@ -22,8 +22,6 @@ import java.sql.Driver;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.datasource.PoolingDataSource;
-import org.apache.cayenne.datasource.PoolingDataSourceParameters;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -57,8 +55,7 @@ public class PoolingDataSource_FailingValidationQueryIT extends ServerCase {
 	public void testConstructor() throws Exception {
 		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
 		DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),
-				dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
-		nonPooling.setLogger(logger);
+				dataSourceInfo.getUserName(), dataSourceInfo.getPassword(), logger);
 
 		PoolingDataSourceParameters poolParameters = createParameters();
 		new PoolingDataSource(nonPooling, poolParameters);

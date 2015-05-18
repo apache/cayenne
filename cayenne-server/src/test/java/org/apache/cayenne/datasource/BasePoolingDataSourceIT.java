@@ -52,8 +52,7 @@ public class BasePoolingDataSourceIT extends ServerCase {
 
 		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
 		DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),
-				dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
-		nonPooling.setLogger(logger);
+				dataSourceInfo.getUserName(), dataSourceInfo.getPassword(), logger);
 
 		PoolingDataSourceParameters poolParameters = createParameters();
 		this.dataSource = new PoolingDataSource(nonPooling, poolParameters);

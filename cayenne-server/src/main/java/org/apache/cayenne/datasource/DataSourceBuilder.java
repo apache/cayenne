@@ -121,9 +121,7 @@ public class DataSourceBuilder {
 
 	private DataSource buildNonPooling() {
 		Driver driver = objectFactory.newInstance(Driver.class, this.driver);
-		DriverDataSource dataSource = new DriverDataSource(driver, url, userName, password);
-		dataSource.setLogger(logger);
-		return dataSource;
+		return new DriverDataSource(driver, url, userName, password, logger);
 	}
 
 	private PoolingDataSource buildPooling(DataSource nonPoolingDataSource) {
