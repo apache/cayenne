@@ -76,9 +76,8 @@ public class ServerRuntimeBuilder {
 
 	/**
 	 * Sets a DataSource that will override any DataSources found in the
-	 * mapping. Moreover if the mapping contains no DataNodes, and the
-	 * DataSource is set with this method, the builder would create a single
-	 * default DataNode.
+	 * mapping. If the mapping contains no DataNodes, and the DataSource is set
+	 * with this method, the builder would create a single default DataNode.
 	 * 
 	 * @see DataSourceBuilder
 	 */
@@ -88,7 +87,9 @@ public class ServerRuntimeBuilder {
 	}
 
 	/**
-	 * Sets JNDI location for the default DataSource.
+	 * Sets JNDI location for the default DataSource. If the mapping contains no
+	 * DataNodes, and the DataSource is set with this method, the builder would
+	 * create a single default DataNode.
 	 */
 	public ServerRuntimeBuilder jndiDataSource(String location) {
 		this.dataSourceFactory = new FixedJNDIDataSourceFactory(location);
