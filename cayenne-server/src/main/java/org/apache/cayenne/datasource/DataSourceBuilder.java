@@ -28,8 +28,8 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 
 /**
- * A builder class that creates a default Cayenne implementation of a pooling
- * {@link DataSource}.
+ * A builder class that allows to build a {@link DataSource} with optional
+ * pooling.
  * 
  * @since 4.0
  */
@@ -49,8 +49,7 @@ public class DataSourceBuilder {
 
 	private DataSourceBuilder(AdhocObjectFactory objectFactory, JdbcEventLogger logger) {
 		this.objectFactory = objectFactory;
-		this.logger = logger;
-		this.logger = NoopJdbcEventLogger.getInstance();
+		this.logger = logger != null ? logger : NoopJdbcEventLogger.getInstance();
 		this.poolParameters = new PoolingDataSourceParameters();
 
 		poolParameters.setMinConnections(1);
