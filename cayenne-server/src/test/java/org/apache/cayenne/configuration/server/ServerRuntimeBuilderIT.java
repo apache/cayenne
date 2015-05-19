@@ -78,6 +78,33 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 	}
 
 	@Test
+	public void testConfigFree_WithDBParams() {
+
+		localRuntime = new ServerRuntimeBuilder().jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl())
+				.password(dsi.getPassword()).user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
+
+		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+		assertEquals(2, result.size());
+	}
+
+	@Test
+	public void tesConfigFree_WithDBParams() {
+
+		localRuntime = new ServerRuntimeBuilder().addConfig(CayenneProjects.TESTMAP_PROJECT)
+				.jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl()).password(dsi.getPassword())
+				.user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
+
+		DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
+		assertNotNull(map);
+
+		DataNode node = localRuntime.getDataDomain().getDefaultNode();
+		assertNotNull(node);
+		assertEquals(1, node.getDataMaps().size());
+
+		assertSame(map, node.getDataMap("testmap"));
+	}
+
+	@Test
 	public void testConfigFree_WithDataSource() {
 
 		localRuntime = new ServerRuntimeBuilder().dataSource(dataSource).build();
