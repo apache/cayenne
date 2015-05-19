@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import java.sql.Driver;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,10 +67,12 @@ public class ServerCaseDataSourceFactory {
 	}
 
 	private DataSource createDataSource() {
-		return DataSourceBuilder.builder(objectFactory).driver(dataSourceInfo.getJdbcDriver())
-				.url(dataSourceInfo.getDataSourceUrl()).userName(dataSourceInfo.getUserName())
-				.password(dataSourceInfo.getPassword()).minConnections(dataSourceInfo.getMinConnections())
-				.maxConnections(dataSourceInfo.getMaxConnections()).build();
+		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
+
+		return DataSourceBuilder.url(dataSourceInfo.getDataSourceUrl()).driver(driver)
+				.userName(dataSourceInfo.getUserName()).password(dataSourceInfo.getPassword())
+				.minConnections(dataSourceInfo.getMinConnections()).maxConnections(dataSourceInfo.getMaxConnections())
+				.build();
 	}
 
 }

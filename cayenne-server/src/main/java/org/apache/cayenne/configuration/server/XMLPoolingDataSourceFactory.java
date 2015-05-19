@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.sql.Driver;
+
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
@@ -65,8 +67,9 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 		long maxQueueWaitTime = properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME,
 				PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 
-		return DataSourceBuilder.builder(objectFactory).driver(descriptor.getJdbcDriver())
-				.url(descriptor.getDataSourceUrl()).userName(descriptor.getUserName())
+		Driver driver = objectFactory.newInstance(Driver.class, descriptor.getJdbcDriver());
+
+		return DataSourceBuilder.url(descriptor.getDataSourceUrl()).driver(driver).userName(descriptor.getUserName())
 				.password(descriptor.getPassword()).minConnections(descriptor.getMinConnections())
 				.maxConnections(descriptor.getMaxConnections()).maxQueueWaitTime(maxQueueWaitTime).build();
 	}

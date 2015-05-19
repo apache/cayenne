@@ -23,7 +23,6 @@ import java.sql.Driver;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.di.AdhocObjectFactory;
 
 /**
  * A builder class that allows to build a {@link DataSource} with optional
@@ -33,19 +32,20 @@ import org.apache.cayenne.di.AdhocObjectFactory;
  */
 public class DataSourceBuilder {
 
-	private AdhocObjectFactory objectFactory;
 	private String userName;
 	private String password;
-	private String driver;
+	private String driverClassName;
+	private Driver driver;
 	private String url;
 	private PoolingDataSourceParameters poolParameters;
 
-	public static DataSourceBuilder builder(AdhocObjectFactory objectFactory) {
-		return new DataSourceBuilder(objectFactory);
+	public static DataSourceBuilder url(String url) {
+		return new DataSourceBuilder(url);
 	}
 
-	private DataSourceBuilder(AdhocObjectFactory objectFactory) {
-		this.objectFactory = objectFactory;
+	private DataSourceBuilder(String url) {
+
+		this.url = url;
 		this.poolParameters = new PoolingDataSourceParameters();
 
 		poolParameters.setMinConnections(1);
@@ -65,12 +65,14 @@ public class DataSourceBuilder {
 
 	public DataSourceBuilder driver(String driver) {
 		// TODO: guess the driver from URL
-		this.driver = driver;
+		this.driver = null;
+		this.driverClassName = driver;
 		return this;
 	}
 
-	public DataSourceBuilder url(String url) {
-		this.url = url;
+	public DataSourceBuilder driver(Driver driver) {
+		this.driver = driver;
+		this.driverClassName = null;
 		return this;
 	}
 
@@ -115,7 +117,7 @@ public class DataSourceBuilder {
 	}
 
 	private DataSource buildNonPooling() {
-		Driver driver = objectFactory.newInstance(Driver.class, this.driver);
+		Driver driver = loadDriver();
 		return new DriverDataSource(driver, url, userName, password);
 	}
 
@@ -125,5 +127,28 @@ public class DataSourceBuilder {
 
 	private DataSource buildManaged(PoolingDataSource dataSource) {
 		return new ManagedPoolingDataSource(dataSource);
+	}
+
+	private Driver loadDriver() {
+
+		if (driver != null) {
+			return driver;
+		}
+
+		Class<?> driverClass;
+		try {
+			// note: implicitly using current class's ClassLoader ....
+			driverClass = Class.forName(driverClassName);
+		} catch (Exception ex) {
+			throw new CayenneRuntimeException("Can not load JDBC driver named '" + driverClassName + "': "
+					+ ex.getMessage());
+		}
+
+		try {
+			return (Driver) driverClass.newInstance();
+		} catch (Exception ex) {
+			throw new CayenneRuntimeException("Error instantiating driver '" + driverClassName + "': "
+					+ ex.getMessage());
+		}
 	}
 }

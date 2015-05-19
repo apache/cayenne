@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.sql.Driver;
+
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
@@ -69,7 +71,8 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
 				PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 		String validationQuery = properties.get(Constants.JDBC_VALIDATION_QUERY_PROPERTY);
 
-		return DataSourceBuilder.builder(objectFactory).driver(driverClass).url(url).userName(username)
+		Driver driver = objectFactory.newInstance(Driver.class, driverClass);
+		return DataSourceBuilder.url(url).driver(driver).userName(username)
 				.password(password).minConnections(minConnections).maxConnections(maxConnections)
 				.maxQueueWaitTime(maxQueueWaitTime).validationQuery(validationQuery).build();
 	}
