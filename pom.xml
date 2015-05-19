@@ -67,7 +67,7 @@
 	</modules>
 	<issueManagement>
 		<system>jira</system>
-		<url>http://issues.apache.org/cayenne/</url>
+		<url>https://issues.apache.org/jira/browse/CAY</url>
 	</issueManagement>
 	<inceptionYear>2001</inceptionYear>
 	<mailingLists>
