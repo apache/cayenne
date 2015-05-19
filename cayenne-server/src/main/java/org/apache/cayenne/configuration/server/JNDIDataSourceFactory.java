@@ -25,8 +25,6 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,51 +35,47 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JNDIDataSourceFactory implements DataSourceFactory {
 
-    private static final Log logger = LogFactory.getLog(JNDIDataSourceFactory.class);
-    
-    @Inject
-    protected JdbcEventLogger jdbcEventLogger;
+	private static final Log LOGGER = LogFactory.getLog(JNDIDataSourceFactory.class);
 
-    @Override
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+	@Override
+	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
-        String location = getLocation(nodeDescriptor);
+		String location = getLocation(nodeDescriptor);
 
-        try {
-            return lookupViaJNDI(location);
-        }
-        catch (Exception ex) {
-            logger.info("failed JNDI lookup of DataSource location '" + location + "'");
-            jdbcEventLogger.logConnectFailure(ex);
-            throw ex;
-        }
-    }
-    
-    protected String getLocation(DataNodeDescriptor nodeDescriptor) {
-        String location = nodeDescriptor.getParameters();
-        if (location == null) {
-            throw new CayenneRuntimeException("Null 'location' for nodeDescriptor '%s'", nodeDescriptor.getName());
-        }
+		try {
+			return lookupViaJNDI(location);
+		} catch (Exception e) {
+			LOGGER.info("*** failed JNDI lookup of DataSource at location: " + location, e);
+			throw e;
+		}
+	}
 
-        return location;
-    }
+	protected String getLocation(DataNodeDescriptor nodeDescriptor) {
+		String location = nodeDescriptor.getParameters();
+		if (location == null) {
+			throw new CayenneRuntimeException("Null 'location' for nodeDescriptor '%s'", nodeDescriptor.getName());
+		}
 
-    DataSource lookupViaJNDI(String location) throws NamingException {
-        jdbcEventLogger.logConnect(location);
+		return location;
+	}
 
-        Context context = new InitialContext();
-        DataSource dataSource;
-        try {
-            Context envContext = (Context) context.lookup("java:comp/env");
-            dataSource = (DataSource) envContext.lookup(location);
-        }
-        catch (NamingException namingEx) {
-            // try looking up the location directly...
-            dataSource = (DataSource) context.lookup(location);
-        }
+	DataSource lookupViaJNDI(String location) throws NamingException {
 
-        jdbcEventLogger.logConnectSuccess();
-        return dataSource;
-    }
+		LOGGER.info("Connecting. JNDI path: " + location);
+
+		Context context = new InitialContext();
+		DataSource dataSource;
+		try {
+			Context envContext = (Context) context.lookup("java:comp/env");
+			dataSource = (DataSource) envContext.lookup(location);
+		} catch (NamingException namingEx) {
+			// try looking up the location directly...
+			dataSource = (DataSource) context.lookup(location);
+		}
+
+		LOGGER.info("Found JNDI DataSource at location: " + location);
+
+		return dataSource;
+	}
 
 }
