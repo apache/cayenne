@@ -1,0 +1,95 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.datasource;
+
+import javax.sql.DataSource;
+
+import org.apache.cayenne.CayenneRuntimeException;
+
+/**
+ * Turns unpooled DataSource to a connection pool. Normally you won't be
+ * creating this builder explicitly. Call
+ * {@link DataSourceBuilder#pool(int, int)} method instead.
+ * 
+ * @since 4.0
+ */
+public class PoolingDataSourceBuilder {
+
+	private DataSourceBuilder nonPoolingBuilder;
+	private PoolingDataSourceParameters poolParameters;
+
+	public PoolingDataSourceBuilder(DataSourceBuilder nonPoolingBuilder) {
+		this.nonPoolingBuilder = nonPoolingBuilder;
+		this.poolParameters = new PoolingDataSourceParameters();
+
+		poolParameters.setMinConnections(1);
+		poolParameters.setMaxConnections(1);
+		poolParameters.setMaxQueueWaitTime(PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
+	}
+
+	public PoolingDataSourceBuilder minConnections(int minConnections) {
+		poolParameters.setMinConnections(minConnections);
+		return this;
+	}
+
+	public PoolingDataSourceBuilder maxConnections(int maxConnections) {
+		poolParameters.setMaxConnections(maxConnections);
+		return this;
+	}
+
+	public PoolingDataSourceBuilder maxQueueWaitTime(long maxQueueWaitTime) {
+		poolParameters.setMaxQueueWaitTime(maxQueueWaitTime);
+		return this;
+	}
+
+	public PoolingDataSourceBuilder validationQuery(String validationQuery) {
+		poolParameters.setValidationQuery(validationQuery);
+		return this;
+	}
+
+	public DataSource build() {
+
+		// sanity checks...
+		if (poolParameters.getMaxConnections() < 0) {
+			throw new CayenneRuntimeException("Maximum number of connections can not be negative ("
+					+ poolParameters.getMaxConnections() + ").");
+		}
+
+		if (poolParameters.getMinConnections() < 0) {
+			throw new CayenneRuntimeException("Minimum number of connections can not be negative ("
+					+ poolParameters.getMinConnections() + ").");
+		}
+
+		if (poolParameters.getMinConnections() > poolParameters.getMaxConnections()) {
+			throw new CayenneRuntimeException("Minimum number of connections can not be bigger then maximum.");
+		}
+
+		DataSource nonPooling = nonPoolingBuilder.build();
+		return buildManaged(buildPooling(nonPooling));
+	}
+
+	private PoolingDataSource buildPooling(DataSource nonPoolingDataSource) {
+		return new PoolingDataSource(nonPoolingDataSource, poolParameters);
+	}
+
+	private DataSource buildManaged(PoolingDataSource dataSource) {
+		return new ManagedPoolingDataSource(dataSource);
+	}
+
+}

@@ -92,6 +92,17 @@ public interface Constants {
 	public static final String JDBC_MAX_CONNECTIONS_PROPERTY = "cayenne.jdbc.max_connections";
 
 	/**
+	 * Defines a maximum time in milliseconds that a connection request could
+	 * wait in the connection queue. After this period expires, an exception
+	 * will be thrown in the calling method. A value of zero will make the
+	 * thread wait until a connection is available with no time out. Defaults to
+	 * 20 seconds.
+	 * 
+	 * @since 4.0
+	 */
+	public static final String JDBC_MAX_QUEUE_WAIT_TIME = "cayenne.jdbc.max_wait";
+	
+	/**
 	 * @since 4.0
 	 */
 	public static final String JDBC_VALIDATION_QUERY_PROPERTY = "cayenne.jdbc.validation_query";
@@ -170,8 +181,10 @@ public interface Constants {
 	 * will be thrown in the calling method. A value of zero will make the
 	 * thread wait until a connection is available with no time out. Defaults to
 	 * 20 seconds.
+	 * 
+	 * @deprecated since 4.0 renamed to {@link #JDBC_MAX_QUEUE_WAIT_TIME}. Property name is preserved.
 	 */
-	public static final String SERVER_MAX_QUEUE_WAIT_TIME = "cayenne.jdbc.max_wait";
+	public static final String SERVER_MAX_QUEUE_WAIT_TIME = JDBC_MAX_QUEUE_WAIT_TIME;
 
 	/** Defines if database uses case-insensitive collation */
 	public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";

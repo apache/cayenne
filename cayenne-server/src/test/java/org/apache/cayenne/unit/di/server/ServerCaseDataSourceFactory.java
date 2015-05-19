@@ -71,8 +71,7 @@ public class ServerCaseDataSourceFactory {
 
 		return DataSourceBuilder.url(dataSourceInfo.getDataSourceUrl()).driver(driver)
 				.userName(dataSourceInfo.getUserName()).password(dataSourceInfo.getPassword())
-				.minConnections(dataSourceInfo.getMinConnections()).maxConnections(dataSourceInfo.getMaxConnections())
-				.build();
+				.pool(dataSourceInfo.getMinConnections(), dataSourceInfo.getMaxConnections()).build();
 	}
 
 }

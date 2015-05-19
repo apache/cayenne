@@ -37,20 +37,13 @@ public class DataSourceBuilder {
 	private String driverClassName;
 	private Driver driver;
 	private String url;
-	private PoolingDataSourceParameters poolParameters;
 
 	public static DataSourceBuilder url(String url) {
 		return new DataSourceBuilder(url);
 	}
 
 	private DataSourceBuilder(String url) {
-
 		this.url = url;
-		this.poolParameters = new PoolingDataSourceParameters();
-
-		poolParameters.setMinConnections(1);
-		poolParameters.setMaxConnections(1);
-		poolParameters.setMaxQueueWaitTime(PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 	}
 
 	public DataSourceBuilder userName(String userName) {
@@ -76,57 +69,20 @@ public class DataSourceBuilder {
 		return this;
 	}
 
-	public DataSourceBuilder minConnections(int minConnections) {
-		poolParameters.setMinConnections(minConnections);
-		return this;
+	/**
+	 * Turns produced DataSource into a pooled DataSource.
+	 */
+	public PoolingDataSourceBuilder pool(int minConnection, int maxConnections) {
+		return new PoolingDataSourceBuilder(this);
 	}
 
-	public DataSourceBuilder maxConnections(int maxConnections) {
-		poolParameters.setMaxConnections(maxConnections);
-		return this;
-	}
-
-	public DataSourceBuilder maxQueueWaitTime(long maxQueueWaitTime) {
-		poolParameters.setMaxQueueWaitTime(maxQueueWaitTime);
-		return this;
-	}
-
-	public DataSourceBuilder validationQuery(String validationQuery) {
-		poolParameters.setValidationQuery(validationQuery);
-		return this;
-	}
-
+	/**
+	 * Builds a non-pooling DataSource. To create connection pool use
+	 * {@link #pool(int, int)} method.
+	 */
 	public DataSource build() {
-
-		// sanity checks...
-		if (poolParameters.getMaxConnections() < 0) {
-			throw new CayenneRuntimeException("Maximum number of connections can not be negative ("
-					+ poolParameters.getMaxConnections() + ").");
-		}
-
-		if (poolParameters.getMinConnections() < 0) {
-			throw new CayenneRuntimeException("Minimum number of connections can not be negative ("
-					+ poolParameters.getMinConnections() + ").");
-		}
-
-		if (poolParameters.getMinConnections() > poolParameters.getMaxConnections()) {
-			throw new CayenneRuntimeException("Minimum number of connections can not be bigger then maximum.");
-		}
-
-		return buildManaged(buildPooling(buildNonPooling()));
-	}
-
-	private DataSource buildNonPooling() {
 		Driver driver = loadDriver();
 		return new DriverDataSource(driver, url, userName, password);
-	}
-
-	private PoolingDataSource buildPooling(DataSource nonPoolingDataSource) {
-		return new PoolingDataSource(nonPoolingDataSource, poolParameters);
-	}
-
-	private DataSource buildManaged(PoolingDataSource dataSource) {
-		return new ManagedPoolingDataSource(dataSource);
 	}
 
 	private Driver loadDriver() {

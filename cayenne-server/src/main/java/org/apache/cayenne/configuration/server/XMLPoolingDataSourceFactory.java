@@ -64,14 +64,15 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 			throw new ConfigurationException(message);
 		}
 
-		long maxQueueWaitTime = properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME,
+		long maxQueueWaitTime = properties.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME,
 				PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 
 		Driver driver = objectFactory.newInstance(Driver.class, descriptor.getJdbcDriver());
 
 		return DataSourceBuilder.url(descriptor.getDataSourceUrl()).driver(driver).userName(descriptor.getUserName())
-				.password(descriptor.getPassword()).minConnections(descriptor.getMinConnections())
-				.maxConnections(descriptor.getMaxConnections()).maxQueueWaitTime(maxQueueWaitTime).build();
+				.password(descriptor.getPassword())
+				.pool(descriptor.getMinConnections(), descriptor.getMaxConnections())
+				.maxQueueWaitTime(maxQueueWaitTime).build();
 	}
 
 }

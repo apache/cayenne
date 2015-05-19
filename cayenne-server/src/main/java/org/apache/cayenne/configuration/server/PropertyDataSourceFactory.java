@@ -67,14 +67,14 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
 		String password = getProperty(Constants.JDBC_PASSWORD_PROPERTY, suffix);
 		int minConnections = getIntProperty(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, suffix, 1);
 		int maxConnections = getIntProperty(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, suffix, 1);
-		long maxQueueWaitTime = properties.getLong(Constants.SERVER_MAX_QUEUE_WAIT_TIME,
+		long maxQueueWaitTime = properties.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME,
 				PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 		String validationQuery = properties.get(Constants.JDBC_VALIDATION_QUERY_PROPERTY);
 
 		Driver driver = objectFactory.newInstance(Driver.class, driverClass);
-		return DataSourceBuilder.url(url).driver(driver).userName(username)
-				.password(password).minConnections(minConnections).maxConnections(maxConnections)
-				.maxQueueWaitTime(maxQueueWaitTime).validationQuery(validationQuery).build();
+		return DataSourceBuilder.url(url).driver(driver).userName(username).password(password)
+				.pool(minConnections, maxConnections).maxQueueWaitTime(maxQueueWaitTime)
+				.validationQuery(validationQuery).build();
 	}
 
 	protected int getIntProperty(String propertyName, String suffix, int defaultValue) {

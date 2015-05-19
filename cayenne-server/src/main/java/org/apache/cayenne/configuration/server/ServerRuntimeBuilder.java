@@ -54,6 +54,7 @@ public class ServerRuntimeBuilder {
 	private String jdbcPassword;
 	private int jdbcMinConnections;
 	private int jdbcMaxConnections;
+	private long maxQueueWaitTime;
 	private String validationQuery;
 
 	public static ServerRuntimeBuilder builder() {
@@ -130,6 +131,11 @@ public class ServerRuntimeBuilder {
 	 */
 	public ServerRuntimeBuilder validationQuery(String validationQuery) {
 		this.validationQuery = validationQuery;
+		return this;
+	}
+	
+	public ServerRuntimeBuilder maxQueueWaitTime(long maxQueueWaitTime) {
+		this.maxQueueWaitTime = maxQueueWaitTime;
 		return this;
 	}
 
@@ -254,6 +260,10 @@ public class ServerRuntimeBuilder {
 
 					if (jdbcMaxConnections > 0) {
 						props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
+					}
+					
+					if (maxQueueWaitTime > 0) {
+						props.put(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
 					}
 
 					if (validationQuery != null) {

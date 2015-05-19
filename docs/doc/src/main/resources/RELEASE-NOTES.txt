@@ -23,7 +23,7 @@ CAY-2004 EJBQL: Support for ordering on aggregate expressions
 CAY-2007 Refactoring SelectTranslator for better extensibility
 CAY-2008 Connection pool refactoring and validation query support in Cayenne DataSource
 CAY-2009 Non-blocking connection pool
-CAY-2010 Splitting DataSourceBuilder from ServerRuntimeBuilder
+CAY-2010 DataSourceBuilder to help users create pooling and non-pooling DataSources
 CAY-2011 Support for Java 8 date and time types
 CAY-2012 ObjectSelect, SelectById: eliminating methods that reset query state
 
