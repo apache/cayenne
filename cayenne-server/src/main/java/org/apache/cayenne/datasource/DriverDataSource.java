@@ -127,6 +127,7 @@ public class DriverDataSource implements DataSource {
 	 * Returns a new database connection, using preconfigured data to locate the
 	 * database and obtain a connection.
 	 */
+	@Override
 	public Connection getConnection() throws SQLException {
 		// login with internal credentials
 		return getConnection(userName, password);
@@ -136,6 +137,7 @@ public class DriverDataSource implements DataSource {
 	 * Returns a new database connection using provided credentials to login to
 	 * the database.
 	 */
+	@Override
 	public Connection getConnection(String userName, String password) throws SQLException {
 		try {
 
@@ -175,29 +177,28 @@ public class DriverDataSource implements DataSource {
 
 	private void logConnect(String url, String userName, String password) {
 		if (LOGGER.isInfoEnabled()) {
-			StringBuilder buf = new StringBuilder("Opening connection: ");
-
-			// append URL on the same line to make log somewhat grep-friendly
-			buf.append(url);
-			buf.append("\n\tLogin: ").append(userName);
-			buf.append("\n\tPassword: *******");
-
+			StringBuilder buf = new StringBuilder("Connecting to '").append(url).append("' as '").append(userName)
+					.append("'");
 			LOGGER.info(buf.toString());
 		}
 	}
 
+	@Override
 	public int getLoginTimeout() throws SQLException {
 		return -1;
 	}
 
+	@Override
 	public void setLoginTimeout(int seconds) throws SQLException {
 		// noop
 	}
 
+	@Override
 	public PrintWriter getLogWriter() throws SQLException {
 		return DriverManager.getLogWriter();
 	}
 
+	@Override
 	public void setLogWriter(PrintWriter out) throws SQLException {
 		DriverManager.setLogWriter(out);
 	}
