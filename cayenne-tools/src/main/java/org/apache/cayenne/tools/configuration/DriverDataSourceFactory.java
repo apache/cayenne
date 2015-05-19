@@ -28,7 +28,6 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * @since 4.0
@@ -36,11 +35,9 @@ import org.apache.cayenne.log.JdbcEventLogger;
 public class DriverDataSourceFactory implements DataSourceFactory {
 
 	private AdhocObjectFactory objectFactory;
-	private JdbcEventLogger logger;
 
-	public DriverDataSourceFactory(@Inject AdhocObjectFactory objectFactory, @Inject JdbcEventLogger logger) {
+	public DriverDataSourceFactory(@Inject AdhocObjectFactory objectFactory) {
 		this.objectFactory = objectFactory;
-		this.logger = logger;
 	}
 
 	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
@@ -51,6 +48,6 @@ public class DriverDataSourceFactory implements DataSourceFactory {
 
 		Driver driver = objectFactory.newInstance(Driver.class, properties.getJdbcDriver());
 		return new DriverDataSource(driver, properties.getDataSourceUrl(), properties.getUserName(),
-				properties.getPassword(), logger);
+				properties.getPassword());
 	}
 }

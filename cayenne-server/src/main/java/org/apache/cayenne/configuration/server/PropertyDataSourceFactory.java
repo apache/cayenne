@@ -28,7 +28,6 @@ import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.datasource.PoolingDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * A DataSourceFactrory that creates a DataSource based on system properties.
@@ -53,9 +52,6 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
 	protected RuntimeProperties properties;
 
 	@Inject
-	protected JdbcEventLogger jdbcEventLogger;
-
-	@Inject
 	private AdhocObjectFactory objectFactory;
 
 	@Override
@@ -73,8 +69,8 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
 				PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 		String validationQuery = properties.get(Constants.JDBC_VALIDATION_QUERY_PROPERTY);
 
-		return DataSourceBuilder.builder(objectFactory, jdbcEventLogger).driver(driverClass).url(url)
-				.userName(username).password(password).minConnections(minConnections).maxConnections(maxConnections)
+		return DataSourceBuilder.builder(objectFactory).driver(driverClass).url(url).userName(username)
+				.password(password).minConnections(minConnections).maxConnections(maxConnections)
 				.maxQueueWaitTime(maxQueueWaitTime).validationQuery(validationQuery).build();
 	}
 

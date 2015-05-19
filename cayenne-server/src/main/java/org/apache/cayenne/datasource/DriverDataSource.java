@@ -31,21 +31,21 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A non-pooling DataSource implementation wrapping a JDBC driver.
  */
 public class DriverDataSource implements DataSource {
 
+	private static final Log LOGGER = LogFactory.getLog(DriverDataSource.class);
+
 	protected Driver driver;
 	protected String connectionUrl;
 	protected String userName;
 	protected String password;
-
-	protected JdbcEventLogger logger;
 
 	/**
 	 * Loads JDBC driver using current thread class loader.
@@ -80,8 +80,7 @@ public class DriverDataSource implements DataSource {
 	 * null.
 	 * 
 	 * @deprecated since 4.0 as class loading should not happen here. Use {
-	 *             {@link #DriverDataSource(Driver, String, String, String, JdbcEventLogger)}
-	 *             .
+	 *             {@link #DriverDataSource(Driver, String, String, String)}.
 	 */
 	@Deprecated
 	public DriverDataSource(String driverClassName, String connectionUrl) {
@@ -96,8 +95,7 @@ public class DriverDataSource implements DataSource {
 	 * null.
 	 * 
 	 * @deprecated since 4.0 as class loading should not happen here. Use
-	 *             {@link #DriverDataSource(Driver, String, String, String, JdbcEventLogger)}
-	 *             .
+	 *             {@link #DriverDataSource(Driver, String, String, String)}.
 	 */
 	@Deprecated
 	public DriverDataSource(String driverClassName, String connectionUrl, String userName, String password) {
@@ -112,40 +110,17 @@ public class DriverDataSource implements DataSource {
 	 * null.
 	 * 
 	 * @since 1.1
-	 * @deprecated since 4.0 as class loading should not happen here. Use
-	 *             {@link #DriverDataSource(Driver, String, String, String, JdbcEventLogger)}
-	 *             .
 	 */
-	@Deprecated
 	public DriverDataSource(Driver driver, String connectionUrl, String userName, String password) {
-		this(driver, connectionUrl, userName, password, NoopJdbcEventLogger.getInstance());
-	}
-
-	/**
-	 * Creates a new DriverDataSource wrapping a given Driver. If "driver" is
-	 * null, DriverDataSource will consult DriverManager for a registered driver
-	 * for the given URL. So when specifying null, a user must take care of
-	 * registering the driver. "connectionUrl" on the other hand must NOT be
-	 * null.
-	 * 
-	 * @since 4.0
-	 */
-	public DriverDataSource(Driver driver, String connectionUrl, String userName, String password,
-			JdbcEventLogger logger) {
 
 		if (connectionUrl == null) {
 			throw new NullPointerException("Null 'connectionUrl'");
-		}
-
-		if (logger == null) {
-			throw new NullPointerException("Null 'logger'");
 		}
 
 		this.driver = driver;
 		this.connectionUrl = connectionUrl;
 		this.userName = userName;
 		this.password = password;
-		this.logger = logger;
 	}
 
 	/**
@@ -163,10 +138,8 @@ public class DriverDataSource implements DataSource {
 	 */
 	public Connection getConnection(String userName, String password) throws SQLException {
 		try {
-			if (logger != null) {
-				logger.logConnect(connectionUrl, userName, password);
-			}
 
+			logConnect(connectionUrl, userName, password);
 			Connection c = null;
 
 			if (driver == null) {
@@ -191,17 +164,25 @@ public class DriverDataSource implements DataSource {
 				throw new SQLException("Can't establish connection: " + connectionUrl);
 			}
 
-			if (logger != null) {
-				logger.logConnectSuccess();
-			}
+			LOGGER.info("+++ Connecting: SUCCESS.");
 
 			return c;
-		} catch (SQLException sqlex) {
-			if (logger != null) {
-				logger.logConnectFailure(sqlex);
-			}
+		} catch (SQLException ex) {
+			LOGGER.info("*** Connecting: FAILURE.", ex);
+			throw ex;
+		}
+	}
 
-			throw sqlex;
+	private void logConnect(String url, String userName, String password) {
+		if (LOGGER.isInfoEnabled()) {
+			StringBuilder buf = new StringBuilder("Opening connection: ");
+
+			// append URL on the same line to make log somewhat grep-friendly
+			buf.append(url);
+			buf.append("\n\tLogin: ").append(userName);
+			buf.append("\n\tPassword: *******");
+
+			LOGGER.info(buf.toString());
 		}
 	}
 
@@ -219,27 +200,6 @@ public class DriverDataSource implements DataSource {
 
 	public void setLogWriter(PrintWriter out) throws SQLException {
 		DriverManager.setLogWriter(out);
-	}
-
-	/**
-	 * @deprecated since 4.0. Connection parameters are immutable and not
-	 *             readable.
-	 */
-	@Deprecated
-	public JdbcEventLogger getLogger() {
-		return logger;
-	}
-
-	/**
-	 * @deprecated since 4.0. Logger is immutable.
-	 */
-	@Deprecated
-	public void setLogger(JdbcEventLogger logger) {
-		if (logger == null) {
-			throw new NullPointerException("Null 'logger'");
-		}
-
-		this.logger = logger;
 	}
 
 	/**

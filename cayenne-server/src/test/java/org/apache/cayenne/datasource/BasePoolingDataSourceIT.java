@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -42,9 +41,6 @@ public class BasePoolingDataSourceIT extends ServerCase {
 	@Inject
 	private AdhocObjectFactory objectFactory;
 
-	@Inject
-	private JdbcEventLogger logger;
-
 	protected PoolingDataSource dataSource;
 
 	@Before
@@ -52,7 +48,7 @@ public class BasePoolingDataSourceIT extends ServerCase {
 
 		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
 		DriverDataSource nonPooling = new DriverDataSource(driver, dataSourceInfo.getDataSourceUrl(),
-				dataSourceInfo.getUserName(), dataSourceInfo.getPassword(), logger);
+				dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
 
 		PoolingDataSourceParameters poolParameters = createParameters();
 		this.dataSource = new PoolingDataSource(nonPooling, poolParameters);

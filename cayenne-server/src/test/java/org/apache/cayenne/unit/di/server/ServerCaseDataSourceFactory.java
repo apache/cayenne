@@ -30,7 +30,6 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.JdbcEventLogger;
 
 public class ServerCaseDataSourceFactory {
 
@@ -39,12 +38,9 @@ public class ServerCaseDataSourceFactory {
 	private Map<String, DataSource> dataSources;
 	private Set<String> mapsWithDedicatedDataSource;
 	private AdhocObjectFactory objectFactory;
-	private JdbcEventLogger logger;
 
-	public ServerCaseDataSourceFactory(@Inject DataSourceInfo dataSourceInfo, @Inject AdhocObjectFactory objectFactory,
-			@Inject JdbcEventLogger logger) {
+	public ServerCaseDataSourceFactory(@Inject DataSourceInfo dataSourceInfo, @Inject AdhocObjectFactory objectFactory) {
 
-		this.logger = logger;
 		this.objectFactory = objectFactory;
 		this.dataSourceInfo = dataSourceInfo;
 		this.dataSources = new HashMap<String, DataSource>();
@@ -70,7 +66,7 @@ public class ServerCaseDataSourceFactory {
 	}
 
 	private DataSource createDataSource() {
-		return DataSourceBuilder.builder(objectFactory, logger).driver(dataSourceInfo.getJdbcDriver())
+		return DataSourceBuilder.builder(objectFactory).driver(dataSourceInfo.getJdbcDriver())
 				.url(dataSourceInfo.getDataSourceUrl()).userName(dataSourceInfo.getUserName())
 				.password(dataSourceInfo.getPassword()).minConnections(dataSourceInfo.getMinConnections())
 				.maxConnections(dataSourceInfo.getMaxConnections()).build();

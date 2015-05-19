@@ -78,7 +78,7 @@ public class DbGeneratorTask extends CayenneTask {
 
 			// load driver taking custom CLASSPATH into account...
 			DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,
-					userName, password, NoopJdbcEventLogger.getInstance());
+					userName, password);
 
 			DbAdapter adapter = getAdapter(injector, dataSource);
 

@@ -31,7 +31,6 @@ import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.pref.CayennePreference;
@@ -225,7 +224,7 @@ public class DBConnectionInfo extends CayennePreference {
 			throw new SQLException("Driver load error: " + th.getLocalizedMessage());
 		}
 
-		return new DriverDataSource(driver, getUrl(), getUserName(), getPassword(), NoopJdbcEventLogger.getInstance());
+		return new DriverDataSource(driver, getUrl(), getUserName(), getPassword());
 	}
 
 	/**

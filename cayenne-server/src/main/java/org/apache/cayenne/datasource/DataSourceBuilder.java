@@ -24,8 +24,6 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.log.NoopJdbcEventLogger;
 
 /**
  * A builder class that allows to build a {@link DataSource} with optional
@@ -36,20 +34,18 @@ import org.apache.cayenne.log.NoopJdbcEventLogger;
 public class DataSourceBuilder {
 
 	private AdhocObjectFactory objectFactory;
-	private JdbcEventLogger logger;
 	private String userName;
 	private String password;
 	private String driver;
 	private String url;
 	private PoolingDataSourceParameters poolParameters;
 
-	public static DataSourceBuilder builder(AdhocObjectFactory objectFactory, JdbcEventLogger logger) {
-		return new DataSourceBuilder(objectFactory, logger);
+	public static DataSourceBuilder builder(AdhocObjectFactory objectFactory) {
+		return new DataSourceBuilder(objectFactory);
 	}
 
-	private DataSourceBuilder(AdhocObjectFactory objectFactory, JdbcEventLogger logger) {
+	private DataSourceBuilder(AdhocObjectFactory objectFactory) {
 		this.objectFactory = objectFactory;
-		this.logger = logger != null ? logger : NoopJdbcEventLogger.getInstance();
 		this.poolParameters = new PoolingDataSourceParameters();
 
 		poolParameters.setMinConnections(1);
@@ -120,7 +116,7 @@ public class DataSourceBuilder {
 
 	private DataSource buildNonPooling() {
 		Driver driver = objectFactory.newInstance(Driver.class, this.driver);
-		return new DriverDataSource(driver, url, userName, password, logger);
+		return new DriverDataSource(driver, url, userName, password);
 	}
 
 	private PoolingDataSource buildPooling(DataSource nonPoolingDataSource) {

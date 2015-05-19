@@ -149,6 +149,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
+	@Deprecated
 	@Override
 	public void logConnect(String dataSource) {
 		if (isLoggable()) {
@@ -156,6 +157,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
+	@Deprecated
 	@Override
 	public void logConnect(String url, String userName, String password) {
 		if (isLoggable()) {
@@ -170,6 +172,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
+	@Deprecated
 	@Override
 	public void logPoolCreated(DataSourceInfo dsi) {
 		if (isLoggable()) {
@@ -200,11 +203,13 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
+	@Deprecated
 	@Override
 	public void logConnectSuccess() {
 		logger.info("+++ Connecting: SUCCESS.");
 	}
 
+	@Deprecated
 	@Override
 	public void logConnectFailure(Throwable th) {
 		logger.info("*** Connecting: FAILURE.", th);

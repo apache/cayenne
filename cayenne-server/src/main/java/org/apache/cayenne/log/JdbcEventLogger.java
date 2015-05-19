@@ -38,18 +38,39 @@ public interface JdbcEventLogger {
 
 	/**
 	 * Logs database connection event using container data source.
+	 * 
+	 * @deprecated since 4.0 connection events are logged by the DataSources
+	 *             using their own logger.
 	 */
+	@Deprecated
 	void logConnect(String dataSource);
 
+	/**
+	 * @deprecated since 4.0 connection events are logged by the DataSources
+	 *             using their own logger.
+	 */
+	@Deprecated
 	void logConnect(String url, String userName, String password);
 
 	/**
-	 * Logs database connection event.
+	 * @deprecated since 4.0 connection events are logged by the DataSources
+	 *             using their own logger.
 	 */
+	@Deprecated
 	void logPoolCreated(DataSourceInfo dsi);
 
+	/**
+	 * @deprecated since 4.0 connection events are logged by the DataSources
+	 *             using their own logger.
+	 */
+	@Deprecated
 	void logConnectSuccess();
 
+	/**
+	 * @deprecated since 4.0 connection events are logged by the DataSources
+	 *             using their own logger.
+	 */
+	@Deprecated
 	void logConnectFailure(Throwable th);
 
 	void logGeneratedKey(DbAttribute attribute, Object value);
