@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.datasource.PoolAwareConnection;
-import org.apache.cayenne.datasource.PoolingDataSource;
+import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.datasource.PoolingDataSourceParameters;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class PoolingDataSourceTest {
 
 		params.setMinConnections(1);
 		params.setMaxConnections(max);
-		PoolingDataSource ds = new PoolingDataSource(nonPooling, params);
+		UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, params);
 
 		// opening and closing 'max' connections should fill the pool to the
 		// top...
@@ -98,7 +98,7 @@ public class PoolingDataSourceTest {
 
 		params.setMinConnections(min);
 		params.setMaxConnections(min + 5);
-		PoolingDataSource ds = new PoolingDataSource(nonPooling, params);
+		UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, params);
 
 		// we start with a min number of connections
 		assertEquals(min, ds.poolSize());
@@ -132,7 +132,7 @@ public class PoolingDataSourceTest {
 
 		params.setMinConnections(1);
 		params.setMaxConnections(max);
-		PoolingDataSource ds = new PoolingDataSource(nonPooling, params);
+		UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, params);
 
 		// opening and closing 'max' connections should fill the pool to the
 		// top...
@@ -155,7 +155,7 @@ public class PoolingDataSourceTest {
 		params.setMinConnections(4);
 		params.setMaxConnections(10);
 
-		PoolingDataSource ds = new PoolingDataSource(nonPooling, params) {
+		UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, params) {
 
 			int i;
 
@@ -181,7 +181,7 @@ public class PoolingDataSourceTest {
 		int max = 5;
 		params.setMaxConnections(max);
 		params.setMaxQueueWaitTime(1000);
-		PoolingDataSource ds = new PoolingDataSource(nonPooling, params);
+		UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, params);
 
 		Connection[] unchecked = new Connection[max];
 

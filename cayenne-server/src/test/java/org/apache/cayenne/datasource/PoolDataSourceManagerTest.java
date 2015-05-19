@@ -33,12 +33,12 @@ import org.mockito.stubbing.Answer;
 
 public class PoolDataSourceManagerTest {
 
-	private PoolingDataSource mockPoolingDataSource;
+	private UnmanagedPoolingDataSource mockPoolingDataSource;
 	private PoolingDataSourceManager dataSourceManager;
 
 	@Before
 	public void before() throws SQLException {
-		this.mockPoolingDataSource = mock(PoolingDataSource.class);
+		this.mockPoolingDataSource = mock(UnmanagedPoolingDataSource.class);
 		this.dataSourceManager = new PoolingDataSourceManager(mockPoolingDataSource, 100);
 	}
 

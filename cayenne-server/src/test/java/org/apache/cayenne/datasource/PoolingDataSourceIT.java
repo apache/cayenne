@@ -157,7 +157,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 		assertEquals(2, dataSource.poolSize());
 		assertEquals(2, dataSource.availableSize());
 
-		dataSource.shutdown();
+		dataSource.close();
 
 		assertEquals(0, dataSource.poolSize());
 		assertEquals(0, dataSource.availableSize());

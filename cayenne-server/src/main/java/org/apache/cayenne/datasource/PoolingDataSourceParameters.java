@@ -19,7 +19,7 @@
 package org.apache.cayenne.datasource;
 
 /**
- * A collection of pooling parameters used by {@link PoolingDataSource}.
+ * A collection of pooling parameters used by {@link UnmanagedPoolingDataSource}.
  * 
  * @since 4.0
  */

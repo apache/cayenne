@@ -37,7 +37,7 @@ import org.junit.Test;
 public class ManagedPoolingDataSourceTest {
 
 	private Connection[] mockConnections;
-	private PoolingDataSource mockPoolingDataSource;
+	private UnmanagedPoolingDataSource mockPoolingDataSource;
 	private ManagedPoolingDataSource dataSource;
 
 	@Before
@@ -48,7 +48,7 @@ public class ManagedPoolingDataSourceTest {
 			mockConnections[i] = mock(Connection.class);
 		}
 
-		this.mockPoolingDataSource = mock(PoolingDataSource.class);
+		this.mockPoolingDataSource = mock(UnmanagedPoolingDataSource.class);
 		when(mockPoolingDataSource.getConnection()).thenReturn(mockConnections[0], mockConnections[1],
 				mockConnections[2], mockConnections[3]);
 
@@ -69,18 +69,18 @@ public class ManagedPoolingDataSourceTest {
 	}
 
 	@Test
-	public void testShutdown() throws SQLException, InterruptedException {
+	public void testClose() throws SQLException, InterruptedException {
 		assertNotNull(dataSource.getConnection());
 
 		// state before shutdown
-		verify(mockPoolingDataSource, times(0)).shutdown();
+		verify(mockPoolingDataSource, times(0)).close();
 		assertFalse(dataSource.getDataSourceManager().isStopped());
 		assertTrue(dataSource.getDataSourceManager().isAlive());
 
-		dataSource.shutdown();
+		dataSource.close();
 
 		// state after shutdown
-		verify(mockPoolingDataSource, times(1)).shutdown();
+		verify(mockPoolingDataSource, times(1)).close();
 		assertTrue(dataSource.getDataSourceManager().isStopped());
 
 		// give the thread some time to process interrupt and die

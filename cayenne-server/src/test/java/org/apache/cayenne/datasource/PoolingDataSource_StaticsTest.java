@@ -20,7 +20,7 @@ package org.apache.cayenne.datasource;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.cayenne.datasource.PoolingDataSource;
+import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.junit.Test;
 
 public class PoolingDataSource_StaticsTest {
@@ -28,13 +28,13 @@ public class PoolingDataSource_StaticsTest {
 	@Test
 	public void testMaxIdleConnections() {
 
-		assertEquals(1, PoolingDataSource.maxIdleConnections(1, 1));
-		assertEquals(2, PoolingDataSource.maxIdleConnections(1, 2));
-		assertEquals(1, PoolingDataSource.maxIdleConnections(0, 2));
-		assertEquals(2, PoolingDataSource.maxIdleConnections(0, 3));
-		assertEquals(2, PoolingDataSource.maxIdleConnections(0, 4));
-		assertEquals(3, PoolingDataSource.maxIdleConnections(0, 5));
-		assertEquals(6, PoolingDataSource.maxIdleConnections(5, 6));
+		assertEquals(1, UnmanagedPoolingDataSource.maxIdleConnections(1, 1));
+		assertEquals(2, UnmanagedPoolingDataSource.maxIdleConnections(1, 2));
+		assertEquals(1, UnmanagedPoolingDataSource.maxIdleConnections(0, 2));
+		assertEquals(2, UnmanagedPoolingDataSource.maxIdleConnections(0, 3));
+		assertEquals(2, UnmanagedPoolingDataSource.maxIdleConnections(0, 4));
+		assertEquals(3, UnmanagedPoolingDataSource.maxIdleConnections(0, 5));
+		assertEquals(6, UnmanagedPoolingDataSource.maxIdleConnections(5, 6));
 
 	}
 

@@ -41,7 +41,7 @@ public class BasePoolingDataSourceIT extends ServerCase {
 	@Inject
 	private AdhocObjectFactory objectFactory;
 
-	protected PoolingDataSource dataSource;
+	protected UnmanagedPoolingDataSource dataSource;
 
 	@Before
 	public void before() throws SQLException {
@@ -51,13 +51,13 @@ public class BasePoolingDataSourceIT extends ServerCase {
 				dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
 
 		PoolingDataSourceParameters poolParameters = createParameters();
-		this.dataSource = new PoolingDataSource(nonPooling, poolParameters);
+		this.dataSource = new UnmanagedPoolingDataSource(nonPooling, poolParameters);
 	}
 
 	@After
 	public void after() throws SQLException {
 		if (dataSource != null) {
-			dataSource.shutdown();
+			dataSource.close();
 		}
 	}
 

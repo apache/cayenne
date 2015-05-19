@@ -40,7 +40,7 @@ public class PoolingDataSourceBuilder {
 
 		poolParameters.setMinConnections(1);
 		poolParameters.setMaxConnections(1);
-		poolParameters.setMaxQueueWaitTime(PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
+		poolParameters.setMaxQueueWaitTime(UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 	}
 
 	public PoolingDataSourceBuilder minConnections(int minConnections) {
@@ -63,7 +63,11 @@ public class PoolingDataSourceBuilder {
 		return this;
 	}
 
-	public DataSource build() {
+	/**
+	 * Builds a pooling DataSource that needs to be explicitly closed by the
+	 * caller when no longer in use.
+	 */
+	public PoolingDataSource build() {
 
 		// sanity checks...
 		if (poolParameters.getMaxConnections() < 0) {
@@ -84,11 +88,11 @@ public class PoolingDataSourceBuilder {
 		return buildManaged(buildPooling(nonPooling));
 	}
 
-	private PoolingDataSource buildPooling(DataSource nonPoolingDataSource) {
-		return new PoolingDataSource(nonPoolingDataSource, poolParameters);
+	private UnmanagedPoolingDataSource buildPooling(DataSource nonPoolingDataSource) {
+		return new UnmanagedPoolingDataSource(nonPoolingDataSource, poolParameters);
 	}
 
-	private DataSource buildManaged(PoolingDataSource dataSource) {
+	private PoolingDataSource buildManaged(UnmanagedPoolingDataSource dataSource) {
 		return new ManagedPoolingDataSource(dataSource);
 	}
 

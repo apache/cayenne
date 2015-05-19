@@ -30,20 +30,20 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.apache.cayenne.datasource.PoolAwareConnection;
-import org.apache.cayenne.datasource.PoolingDataSource;
+import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
 public class PoolAwareConnectionTest {
 
-	private PoolingDataSource parentMock;
+	private UnmanagedPoolingDataSource parentMock;
 	private Connection connectionMock;
 
 	@Before
 	public void before() throws SQLException {
 		connectionMock = mock(Connection.class);
 
-		parentMock = mock(PoolingDataSource.class);
+		parentMock = mock(UnmanagedPoolingDataSource.class);
 		when(parentMock.createUnwrapped()).thenReturn(connectionMock);
 	}
 

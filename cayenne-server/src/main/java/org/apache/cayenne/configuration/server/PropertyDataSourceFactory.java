@@ -27,7 +27,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.datasource.DataSourceBuilder;
-import org.apache.cayenne.datasource.PoolingDataSource;
+import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
@@ -68,7 +68,7 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
 		int minConnections = getIntProperty(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, suffix, 1);
 		int maxConnections = getIntProperty(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, suffix, 1);
 		long maxQueueWaitTime = properties.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME,
-				PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
+				UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 		String validationQuery = properties.get(Constants.JDBC_VALIDATION_QUERY_PROPERTY);
 
 		Driver driver = objectFactory.newInstance(Driver.class, driverClass);

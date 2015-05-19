@@ -40,18 +40,18 @@ import java.util.concurrent.Executor;
 
 /**
  * A {@link Connection} wrapper that interacts with the
- * {@link PoolingDataSource}, allowing to recycle connections and track
+ * {@link UnmanagedPoolingDataSource}, allowing to recycle connections and track
  * failures.
  * 
  * @since 4.0
  */
 public class PoolAwareConnection implements Connection {
 
-	private PoolingDataSource parent;
+	private UnmanagedPoolingDataSource parent;
 	private Connection connection;
 	private String validationQuery;
 
-	public PoolAwareConnection(PoolingDataSource parent, Connection connection, String validationQuery) {
+	public PoolAwareConnection(UnmanagedPoolingDataSource parent, Connection connection, String validationQuery) {
 		this.parent = parent;
 		this.connection = connection;
 		this.validationQuery = validationQuery;
@@ -295,7 +295,7 @@ public class PoolAwareConnection implements Connection {
 		} catch (SQLException sqlEx) {
 
 			try {
-				PoolingDataSource.sybaseAutoCommitPatch(connection, sqlEx, autoCommit);
+				UnmanagedPoolingDataSource.sybaseAutoCommitPatch(connection, sqlEx, autoCommit);
 			} catch (SQLException patchEx) {
 				parent.retire(this);
 				throw sqlEx;

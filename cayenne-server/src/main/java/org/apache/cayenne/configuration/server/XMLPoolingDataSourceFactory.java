@@ -28,7 +28,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.datasource.DataSourceBuilder;
-import org.apache.cayenne.datasource.PoolingDataSource;
+import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.commons.logging.Log;
@@ -65,7 +65,7 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 		}
 
 		long maxQueueWaitTime = properties.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME,
-				PoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
+				UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 
 		Driver driver = objectFactory.newInstance(Driver.class, descriptor.getJdbcDriver());
 

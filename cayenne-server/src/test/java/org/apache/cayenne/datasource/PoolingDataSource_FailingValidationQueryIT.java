@@ -54,6 +54,10 @@ public class PoolingDataSource_FailingValidationQueryIT extends ServerCase {
 				dataSourceInfo.getUserName(), dataSourceInfo.getPassword());
 
 		PoolingDataSourceParameters poolParameters = createParameters();
-		new PoolingDataSource(nonPooling, poolParameters);
+		UnmanagedPoolingDataSource ds = new UnmanagedPoolingDataSource(nonPooling, poolParameters);
+
+		// the exception should happen in the line above... this line is to
+		// prevent compiler warnings
+		ds.close();
 	}
 }
