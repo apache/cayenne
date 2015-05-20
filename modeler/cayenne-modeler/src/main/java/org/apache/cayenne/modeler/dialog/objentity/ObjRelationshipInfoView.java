@@ -54,6 +54,8 @@ public class ObjRelationshipInfoView extends JDialog{
 
     protected JButton saveButton;
     protected JButton cancelButton;
+    protected JButton nextButton;
+    protected JButton prevButton;
     protected JButton newRelButton;
     protected JButton selectPathButton;
     
@@ -70,8 +72,10 @@ public class ObjRelationshipInfoView extends JDialog{
         
         this.widgetFactory = new DefaultWidgetFactory();
         
-        this.cancelButton = new JButton("Cancel");
-        this.saveButton = new JButton("Done");
+        this.cancelButton = new JButton("Close");
+        this.saveButton = new JButton("Save");
+        this.prevButton = new JButton("Previous");
+        this.nextButton = new JButton("Next");
         this.newRelButton = new JButton("New DbRelationship");
         this.selectPathButton = new JButton("Select Path");
         this.relationshipName= new JTextField(25);
@@ -133,7 +137,7 @@ public class ObjRelationshipInfoView extends JDialog{
 
         add(builder.getPanel(), BorderLayout.CENTER);
         add(PanelFactory.createButtonPanel(new JButton[] {
-                saveButton, cancelButton
+                prevButton, nextButton, saveButton, cancelButton
             }), BorderLayout.SOUTH);        
     }
 
@@ -145,6 +149,16 @@ public class ObjRelationshipInfoView extends JDialog{
     public JButton getCancelButton()
     {
         return cancelButton;
+    }
+    
+    public JButton getPrevButton()
+    {
+        return prevButton;
+    }
+    
+    public JButton getNextButton()
+    {
+        return nextButton;
     }
     
     public JButton getNewRelButton()
