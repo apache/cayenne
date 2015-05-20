@@ -81,7 +81,7 @@ public class ResolveDbRelationshipDialogNextPrev extends CayenneDialog {
     protected JButton prevButton;
     protected JButton nextButton;
     protected JButton saveButton;
-    protected JButton cancelButton;
+    protected JButton closeButton;
     protected int row;
 
     private boolean cancelPressed;
@@ -133,10 +133,10 @@ public class ResolveDbRelationshipDialogNextPrev extends CayenneDialog {
         nextButton = new JButton("Next");
         nextButton.setEnabled(this.editable);
 
-        saveButton = new JButton("Done");
+        saveButton = new JButton("Save");
 
-        cancelButton = new JButton("Cancel");
-        cancelButton.setEnabled(this.editable);
+        closeButton = new JButton("Close");
+        closeButton.setEnabled(this.editable);
 
         table = new AttributeTable();
 
@@ -171,7 +171,7 @@ public class ResolveDbRelationshipDialogNextPrev extends CayenneDialog {
 
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
         getContentPane().add(PanelFactory.createButtonPanel(new JButton[] {
-                prevButton, nextButton, saveButton, cancelButton
+                prevButton, nextButton, saveButton, closeButton
         }), BorderLayout.SOUTH);
     }
 
@@ -270,11 +270,10 @@ public class ResolveDbRelationshipDialogNextPrev extends CayenneDialog {
                     save();
                 }
 
-                dispose();
             }
         });
 
-        cancelButton.addActionListener(new ActionListener() {
+        closeButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 cancelPressed = true;
