@@ -201,6 +201,54 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             }
         });
     }
+    
+    private void updateVariables(ObjRelationship relationship, int row){
+    	this.relationship = relationship;
+    	this.row = row;
+    	ObjEntity target = getObjectTarget();
+        getPathBrowser().addTreeSelectionListener(this);
+        setObjectTarget(target);
+        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
+        this.relationshipName = relationship.getName();
+        view.relationshipName.setText(relationshipName);
+        this.mapKey = relationship.getMapKey();
+        this.targetCollection = relationship.getCollectionType();
+        if (targetCollection == null) {
+            targetCollection = ObjRelationship.DEFAULT_COLLECTION_TYPE;
+        }
+
+        this.objectTarget = (ObjEntity) relationship.getTargetEntity();
+        if (objectTarget != null) {
+            updateTargetCombo(objectTarget.getDbEntity());
+        }
+
+        // validate -
+        // current limitation is that an ObjRelationship must have source
+        // and target entities present, with DbEntities chosen.
+        validateCanMap();
+
+        this.targetCollections = new ArrayList<String>(4);
+        targetCollections.add(COLLECTION_TYPE_COLLECTION);
+        targetCollections.add(ObjRelationship.DEFAULT_COLLECTION_TYPE);
+        targetCollections.add(COLLECTION_TYPE_MAP);
+        targetCollections.add(COLLECTION_TYPE_SET);
+
+        for (String s : targetCollections) {
+            view.collectionTypeCombo.addItem(s);
+        }
+
+        this.mapKeys = new ArrayList<String>();
+        initMapKeys();
+
+        // setup path
+        dbRelationships = new ArrayList<DbRelationship>(relationship.getDbRelationships());
+        selectPath();
+        updateCollectionChoosers();
+
+        // add dummy last relationship if we are not connected
+        connectEnds();
+        initFromModel();
+    }
 
     void initFromModel() {
 
@@ -236,9 +284,8 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
     void takeNextRelationship(){
     	if((row+1)<table.getRowCount()){
-    		view.dispose();
         	table.select(row+1);
-        	new ObjRelationshipInfo(mediator, table, row+1).startupAction();
+        	updateVariables(((ObjRelationshipTableModel)table.getModel()).getRelationship(row+1),row+1);
     	}
     	else{
     		JOptionPane.showMessageDialog(view, "This is the last relationship.");
@@ -248,9 +295,8 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     
     void takePrevRelationship(){
     	if((row-1)>=0){
-    		view.dispose();
         	table.select(row-1);
-        	new ObjRelationshipInfo(mediator, table, row-1).startupAction();
+        	updateVariables(((ObjRelationshipTableModel)table.getModel()).getRelationship(row-1),row-1);
     	}
     	else{
     		JOptionPane.showMessageDialog(view, "This is the first relationship.");

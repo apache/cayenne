@@ -285,11 +285,11 @@ public class ResolveDbRelationshipDialogNextPrev extends CayenneDialog {
 
             public void actionPerformed(ActionEvent e) {
             	if((row+1)<tableInit.getRowCount()){
-	            	setVisible(false);
-	            	table.select(row+1);
-	            	ResolveDbRelationshipDialogNextPrev dialog = new ResolveDbRelationshipDialogNextPrev(tableInit,row+1);
-	                dialog.setVisible(true);
-	                dialog.dispose();
+            		row = row+1;
+	            	table.select(row);
+	            	relationship = ((DbRelationshipTableModel)tableInit.getModel()).getRelationship(row);
+	            	undo = new RelationshipUndoableEdit(relationship);
+	            	initWithModel(relationship);
             	}
             	else{
             		JOptionPane.showMessageDialog(nextButton.getParent(), "This is the last relationship.");
@@ -301,11 +301,11 @@ public class ResolveDbRelationshipDialogNextPrev extends CayenneDialog {
 
             public void actionPerformed(ActionEvent e) {
             	if((row-1)>=0){
-            		setVisible(false);
-	            	table.select(row-1);
-	            	ResolveDbRelationshipDialogNextPrev dialog = new ResolveDbRelationshipDialogNextPrev(tableInit,row-1);
-	                dialog.setVisible(true);
-	                dialog.dispose();
+            		row = row-1;
+	            	table.select(row);
+            		relationship = ((DbRelationshipTableModel)tableInit.getModel()).getRelationship(row);
+            		undo = new RelationshipUndoableEdit(relationship);
+	            	initWithModel(relationship);
             	}
             	else{
             		JOptionPane.showMessageDialog(nextButton.getParent(), "This is the first relationship.");
