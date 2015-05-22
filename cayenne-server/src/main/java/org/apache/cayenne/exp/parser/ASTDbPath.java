@@ -23,8 +23,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.Entity;
 
@@ -35,82 +37,102 @@ import org.apache.cayenne.map.Entity;
  */
 public class ASTDbPath extends ASTPath {
 
-    public static final String DB_PREFIX = "db:";
+	private static final long serialVersionUID = 6623715674339310782L;
 
-    ASTDbPath(int id) {
-        super(id);
-    }
+	public static final String DB_PREFIX = "db:";
 
-    public ASTDbPath() {
-        super(ExpressionParserTreeConstants.JJTDBPATH);
-    }
+	ASTDbPath(int id) {
+		super(id);
+	}
 
-    public ASTDbPath(Object value) {
-        super(ExpressionParserTreeConstants.JJTDBPATH);
-        setPath(value);
-    }
+	public ASTDbPath() {
+		super(ExpressionParserTreeConstants.JJTDBPATH);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        // TODO: implement resolving DB_PATH for DataObjects
+	public ASTDbPath(Object value) {
+		super(ExpressionParserTreeConstants.JJTDBPATH);
+		setPath(value);
+	}
 
-        if (o instanceof Entity) {
-            return evaluateEntityNode((Entity) o);
-        }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
 
-        Map<?, ?> map = toMap(o);
-        return (map != null) ? map.get(path) : null;
-    }
+		if (o instanceof Entity) {
+			return evaluateEntityNode((Entity) o);
+		}
 
-    protected Map<?, ?> toMap(Object o) {
-        if (o instanceof Map) {
-            return (Map<?, ?>) o;
-        } else if (o instanceof ObjectId) {
-            return ((ObjectId) o).getIdSnapshot();
-        } else if (o instanceof Persistent) {
-            Persistent persistent = (Persistent) o;
+		Map<?, ?> map = toMap(o);
+		return (map != null) ? map.get(path) : null;
+	}
 
-            // TODO: returns ObjectId snapshot for now.. should probably
-            // retrieve full snapshot...
-            ObjectId oid = persistent.getObjectId();
-            return (oid != null) ? oid.getIdSnapshot() : null;
-        } else {
-            return null;
-        }
-    }
+	protected Map<?, ?> toMap(Object o) {
+		if (o instanceof Map) {
+			return (Map<?, ?>) o;
+		} else if (o instanceof ObjectId) {
+			return ((ObjectId) o).getIdSnapshot();
+		} else if (o instanceof Persistent) {
+			Persistent persistent = (Persistent) o;
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        ASTDbPath copy = new ASTDbPath(id);
-        copy.path = path;
-        return copy;
-    }
+			// before reading full snapshot, check if we can use smaller ID
+			// snapshot ... it is much cheaper...
+			return persistent.getObjectContext() != null ? toMap_AttachedObject(persistent.getObjectContext(),
+					persistent) : toMap_DetachedObject(persistent);
+		} else {
+			return null;
+		}
+	}
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        // warning: non-standard EJBQL...
-        out.append(DB_PREFIX);
-        out.append(rootId);
-        out.append('.');
-        out.append(path);
-    }
+	private Map<?, ?> toMap_AttachedObject(ObjectContext context, Persistent persistent) {
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
-        out.append(DB_PREFIX).append(path);
-    }
+		// TODO: snapshotting API should not be limited to DataContext...
+		if (context instanceof DataContext) {
+			return ((DataContext) context).currentSnapshot(persistent);
+		}
 
-    @Override
-    public int getType() {
-        return Expression.DB_PATH;
-    }
+		return toMap_DetachedObject(persistent);
+	}
+
+	private Map<?, ?> toMap_DetachedObject(Persistent persistent) {
+
+		ObjectId oid = persistent.getObjectId();
+
+		// returning null here is for backwards compatibility. Should we throw
+		// instead?
+		return (oid != null) ? oid.getIdSnapshot() : null;
+	}
+
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		ASTDbPath copy = new ASTDbPath(id);
+		copy.path = path;
+		return copy;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		// warning: non-standard EJBQL...
+		out.append(DB_PREFIX);
+		out.append(rootId);
+		out.append('.');
+		out.append(path);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsString(Appendable out) throws IOException {
+		out.append(DB_PREFIX).append(path);
+	}
+
+	@Override
+	public int getType() {
+		return Expression.DB_PATH;
+	}
 }

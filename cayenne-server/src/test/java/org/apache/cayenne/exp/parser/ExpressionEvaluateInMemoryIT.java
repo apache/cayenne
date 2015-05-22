@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -76,6 +77,20 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
 		tPainting.insert(1, 1, "P1", 3000);
 		tPainting.insert(2, 2, "P2", 3000);
 		tPainting.insert(3, null, "P3", 3000);
+	}
+
+	@Test
+	public void testEvaluateDB_PATH_DataObject() {
+
+		Artist a1 = (Artist) context.newObject("Artist");
+		a1.setArtistName("a1");
+		context.commitChanges();
+
+		Expression idExp = ExpressionFactory.exp("db:ARTIST_ID");
+		assertEquals(Cayenne.longPKForObject(a1), idExp.evaluate(a1));
+
+		Expression columnExp = ExpressionFactory.exp("db:ARTIST_NAME");
+		assertEquals("a1", columnExp.evaluate(a1));
 	}
 
 	@Test
