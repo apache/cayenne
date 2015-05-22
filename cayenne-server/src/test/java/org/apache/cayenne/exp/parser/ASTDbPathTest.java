@@ -39,4 +39,6 @@ public class ASTDbPathTest {
 
         assertEquals("db:x.y", buffer.toString());
     }
+    
+    
 }
