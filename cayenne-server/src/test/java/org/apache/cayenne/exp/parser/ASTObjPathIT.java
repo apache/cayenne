@@ -37,7 +37,7 @@ public class ASTObjPathIT extends ServerCase {
 	private ObjectContext context;
 
 	@Test
-	public void testEvaluate_ObjPath_ObjEntity() {
+	public void testEvaluate_ObjEntity() {
 		ASTObjPath node = new ASTObjPath("paintingArray.paintingTitle");
 
 		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);

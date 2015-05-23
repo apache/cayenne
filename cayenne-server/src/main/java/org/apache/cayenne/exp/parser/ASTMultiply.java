@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
@@ -33,75 +32,78 @@ import org.apache.cayenne.util.ConversionUtil;
  * @since 1.1
  */
 public class ASTMultiply extends SimpleNode {
-    ASTMultiply(int id) {
-        super(id);
-    }
 
-    public ASTMultiply() {
-        super(ExpressionParserTreeConstants.JJTMULTIPLY);
-    }
+	private static final long serialVersionUID = -8146316633842448974L;
 
-    public ASTMultiply(Object[] nodes) {
-        super(ExpressionParserTreeConstants.JJTMULTIPLY);
-        int len = nodes.length;
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(nodes[i]), i);
-        }
-        
-        connectChildren();
-    }
+	ASTMultiply(int id) {
+		super(id);
+	}
 
-    public ASTMultiply(Collection nodes) {
-        super(ExpressionParserTreeConstants.JJTMULTIPLY);
-        int len = nodes.size();
-        Iterator it = nodes.iterator();
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(it.next()), i);
-        }
-    }
+	public ASTMultiply() {
+		super(ExpressionParserTreeConstants.JJTMULTIPLY);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len == 0) {
-            return null;
-        }
+	public ASTMultiply(Object[] nodes) {
+		super(ExpressionParserTreeConstants.JJTMULTIPLY);
+		int len = nodes.length;
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(wrapChild(nodes[i]), i);
+		}
 
-        BigDecimal result = null;
-        for (int i = 0; i < len; i++) {
-            BigDecimal value = ConversionUtil.toBigDecimal(evaluateChild(i, o));
+		connectChildren();
+	}
 
-            if (value == null) {
-                return null;
-            }
+	public ASTMultiply(Collection<?> nodes) {
+		super(ExpressionParserTreeConstants.JJTMULTIPLY);
+		int len = nodes.size();
+		Iterator<?> it = nodes.iterator();
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(wrapChild(it.next()), i);
+		}
+	}
 
-            result = (i == 0) ? value : result.multiply(value);
-        }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len == 0) {
+			return null;
+		}
 
-        return result;
-    }
+		BigDecimal result = null;
+		for (int i = 0; i < len; i++) {
+			BigDecimal value = ConversionUtil.toBigDecimal(evaluateChild(i, o));
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTMultiply(id);
-    }
+			if (value == null) {
+				return null;
+			}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "*";
-    }
+			result = (i == 0) ? value : result.multiply(value);
+		}
 
-    @Override
-    public int getType() {
-        return Expression.MULTIPLY;
-    }
+		return result;
+	}
 
-    @Override
-    public void jjtClose() {
-        super.jjtClose();
-        flattenTree();
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTMultiply(id);
+	}
+
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "*";
+	}
+
+	@Override
+	public int getType() {
+		return Expression.MULTIPLY;
+	}
+
+	@Override
+	public void jjtClose() {
+		super.jjtClose();
+		flattenTree();
+	}
 }

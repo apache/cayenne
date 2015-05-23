@@ -36,7 +36,7 @@ public class ASTLikeIgnoreCaseTest {
     }
     
 	@Test
-	public void testEvaluateLIKE_IGNORE_CASE() {
+	public void testEvaluate() {
 		Expression like = new ASTLikeIgnoreCase(new ASTObjPath("artistName"), "aBcD");
 		Expression notLike = new ASTNotLikeIgnoreCase(new ASTObjPath("artistName"), "aBcD");
 

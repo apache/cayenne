@@ -42,7 +42,7 @@ public class ASTDbPathIT extends ServerCase {
 	private ObjectContext context;
 
 	@Test
-	public void testEvaluate_DbPath_DataObject() {
+	public void testEvaluate_DataObject() {
 
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("a1");
@@ -56,7 +56,7 @@ public class ASTDbPathIT extends ServerCase {
 	}
 
 	@Test
-	public void testEvaluate_DbPath_DbEntity() {
+	public void testEvaluate_DbEntity() {
 		Expression e = ExpressionFactory.exp("db:paintingArray.PAINTING_TITLE");
 
 		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);

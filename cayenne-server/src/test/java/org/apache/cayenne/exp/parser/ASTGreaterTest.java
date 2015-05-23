@@ -56,31 +56,4 @@ public class ASTGreaterTest {
 		assertFalse(gtNotNull.match(noMatch));
 	}
 
-	@Test
-	public void testEvaluate_GTE() {
-		Expression e = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
-
-		Painting noMatch = new Painting();
-		noMatch.setEstimatedPrice(new BigDecimal(9999));
-		assertFalse(e.match(noMatch));
-
-		Painting match1 = new Painting();
-		match1.setEstimatedPrice(new BigDecimal(10000));
-		assertTrue(e.match(match1));
-
-		Painting match = new Painting();
-		match.setEstimatedPrice(new BigDecimal(10001));
-		assertTrue("Failed: " + e, e.match(match));
-	}
-
-	@Test
-	public void testEvaluate_GTE_Null() {
-		Expression gtNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), null);
-		Expression gtNotNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
-
-		Painting noMatch = new Painting();
-		assertFalse(gtNull.match(noMatch));
-		assertFalse(gtNotNull.match(noMatch));
-	}
-
 }

@@ -24,65 +24,67 @@ import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * "Like" expression.
- * 
  */
 public class ASTLike extends PatternMatchNode {
-    ASTLike(int id) {
-        super(id, false);
-    }
-    
-    ASTLike(int id, char escapeChar) {
-        super(id, false, escapeChar);
-    }
 
-    public ASTLike() {
-        super(ExpressionParserTreeConstants.JJTLIKE, false);
-    }
+	private static final long serialVersionUID = -238967837469085757L;
 
-    public ASTLike(ASTPath path, Object pattern) {
-        super(ExpressionParserTreeConstants.JJTLIKE, false);
-        jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(pattern), 1);
-        connectChildren();
-    }
+	ASTLike(int id) {
+		super(id, false);
+	}
 
-    public ASTLike(ASTPath path, Object pattern, char escapeChar) {
-        super(ExpressionParserTreeConstants.JJTLIKE, false, escapeChar);
-        jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(pattern), 1);
-        connectChildren();
-    }
-    
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
-        }
+	ASTLike(int id, char escapeChar) {
+		super(id, false, escapeChar);
+	}
 
-        String s1 = ConversionUtil.toString(evaluateChild(0, o));
-        if (s1 == null) {
-            return Boolean.FALSE;
-        }
+	public ASTLike() {
+		super(ExpressionParserTreeConstants.JJTLIKE, false);
+	}
 
-        return matchPattern(s1) ? Boolean.TRUE : Boolean.FALSE;
-    }
+	public ASTLike(ASTPath path, Object pattern) {
+		super(ExpressionParserTreeConstants.JJTLIKE, false);
+		jjtAddChild(path, 0);
+		jjtAddChild(new ASTScalar(pattern), 1);
+		connectChildren();
+	}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTLike(id, escapeChar);
-    }
+	public ASTLike(ASTPath path, Object pattern, char escapeChar) {
+		super(ExpressionParserTreeConstants.JJTLIKE, false, escapeChar);
+		jjtAddChild(path, 0);
+		jjtAddChild(new ASTScalar(pattern), 1);
+		connectChildren();
+	}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "like";
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len != 2) {
+			return Boolean.FALSE;
+		}
 
-    @Override
-    public int getType() {
-        return Expression.LIKE;
-    }
+		String s1 = ConversionUtil.toString(evaluateChild(0, o));
+		if (s1 == null) {
+			return Boolean.FALSE;
+		}
+
+		return matchPattern(s1) ? Boolean.TRUE : Boolean.FALSE;
+	}
+
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTLike(id, escapeChar);
+	}
+
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "like";
+	}
+
+	@Override
+	public int getType() {
+		return Expression.LIKE;
+	}
 }

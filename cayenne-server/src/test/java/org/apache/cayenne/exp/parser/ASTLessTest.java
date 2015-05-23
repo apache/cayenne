@@ -56,31 +56,4 @@ public class ASTLessTest {
 		assertFalse(ltNotNull.match(noMatch));
 	}
 
-	@Test
-	public void testEvaluate_lte() {
-		Expression e = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
-
-		Painting noMatch = new Painting();
-		noMatch.setEstimatedPrice(new BigDecimal(10001));
-		assertFalse(e.match(noMatch));
-
-		Painting match1 = new Painting();
-		match1.setEstimatedPrice(new BigDecimal(10000));
-		assertTrue(e.match(match1));
-
-		Painting match = new Painting();
-		match.setEstimatedPrice(new BigDecimal(9999));
-		assertTrue("Failed: " + e, e.match(match));
-	}
-
-	@Test
-	public void testEvaluate_lte_Null() {
-		Expression ltNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), null);
-		Expression ltNotNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
-
-		Painting noMatch = new Painting();
-		assertFalse(ltNull.match(noMatch));
-		assertFalse(ltNotNull.match(noMatch));
-	}
-
 }

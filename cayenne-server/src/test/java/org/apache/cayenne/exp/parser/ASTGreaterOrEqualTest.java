@@ -27,45 +27,33 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Test;
 
-public class ASTBetweenTest {
+public class ASTGreaterOrEqualTest {
 
 	@Test
 	public void testEvaluate() {
-		// evaluate both BETWEEN and NOT_BETWEEN
-		Expression between = new ASTBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(20d));
-		Expression notBetween = new ASTNotBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d),
-				new BigDecimal(20d));
+		Expression e = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 
 		Painting noMatch = new Painting();
-		noMatch.setEstimatedPrice(new BigDecimal(21));
-		assertFalse(between.match(noMatch));
-		assertTrue(notBetween.match(noMatch));
+		noMatch.setEstimatedPrice(new BigDecimal(9999));
+		assertFalse(e.match(noMatch));
 
 		Painting match1 = new Painting();
-		match1.setEstimatedPrice(new BigDecimal(20));
-		assertTrue(between.match(match1));
-		assertFalse(notBetween.match(match1));
+		match1.setEstimatedPrice(new BigDecimal(10000));
+		assertTrue(e.match(match1));
 
-		Painting match2 = new Painting();
-		match2.setEstimatedPrice(new BigDecimal(10));
-		assertTrue("Failed: " + between, between.match(match2));
-		assertFalse("Failed: " + notBetween, notBetween.match(match2));
-
-		Painting match3 = new Painting();
-		match3.setEstimatedPrice(new BigDecimal(11));
-		assertTrue("Failed: " + between, between.match(match3));
-		assertFalse("Failed: " + notBetween, notBetween.match(match3));
+		Painting match = new Painting();
+		match.setEstimatedPrice(new BigDecimal(10001));
+		assertTrue("Failed: " + e, e.match(match));
 	}
 
 	@Test
 	public void testEvaluate_Null() {
-		Expression btNull = new ASTBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(20d));
-		Expression btNotNull = new ASTNotBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(
-				20d));
+		Expression gtNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), null);
+		Expression gtNotNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), new BigDecimal(10000d));
 
 		Painting noMatch = new Painting();
-		assertFalse(btNull.match(noMatch));
-		assertFalse(btNotNull.match(noMatch));
+		assertFalse(gtNull.match(noMatch));
+		assertFalse(gtNotNull.match(noMatch));
 	}
 
 }
