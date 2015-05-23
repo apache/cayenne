@@ -19,105 +19,112 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.graph.GraphManager;
-import org.apache.cayenne.graph.MockGraphManager;
-import org.junit.Test;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-/**
- */
+import org.apache.cayenne.graph.GraphManager;
+import org.junit.Before;
+import org.junit.Test;
+
 public class ContextStateRecorderTest {
 
-    @Test
-    public void testDirtyNodesInState() {
+	private ObjectContextStateLog recorder;
+	private GraphManager mockGraphManager;
 
-        GraphManager map = new MockGraphManager();
-        ObjectContextStateLog recorder = new ObjectContextStateLog(map);
+	@Before
+	public void before() {
+		this.mockGraphManager = mock(GraphManager.class);
+		this.recorder = new ObjectContextStateLog(mockGraphManager);
+	}
 
-        // check for null collections
-        assertNotNull(recorder.dirtyNodes(PersistenceState.MODIFIED));
-        assertNotNull(recorder.dirtyNodes(PersistenceState.COMMITTED));
-        assertNotNull(recorder.dirtyNodes(PersistenceState.DELETED));
-        assertNotNull(recorder.dirtyNodes(PersistenceState.NEW));
-        assertNotNull(recorder.dirtyNodes(PersistenceState.TRANSIENT));
-        assertNotNull(recorder.dirtyNodes(PersistenceState.HOLLOW));
+	@Test
+	public void testDirtyNodesInState() {
 
-        assertTrue(recorder.dirtyNodes(PersistenceState.MODIFIED).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.COMMITTED).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.DELETED).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.NEW).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.TRANSIENT).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.HOLLOW).isEmpty());
+		// check for null collections
+		assertNotNull(recorder.dirtyNodes(PersistenceState.MODIFIED));
+		assertNotNull(recorder.dirtyNodes(PersistenceState.COMMITTED));
+		assertNotNull(recorder.dirtyNodes(PersistenceState.DELETED));
+		assertNotNull(recorder.dirtyNodes(PersistenceState.NEW));
+		assertNotNull(recorder.dirtyNodes(PersistenceState.TRANSIENT));
+		assertNotNull(recorder.dirtyNodes(PersistenceState.HOLLOW));
 
-        MockPersistentObject modified = new MockPersistentObject();
-        modified.setObjectId(new ObjectId("MockPersistentObject", "key", "value1"));
-        modified.setPersistenceState(PersistenceState.MODIFIED);
-        map.registerNode(modified.getObjectId(), modified);
-        recorder.nodePropertyChanged(modified.getObjectId(), "a", "b", "c");
+		assertTrue(recorder.dirtyNodes(PersistenceState.MODIFIED).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.COMMITTED).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.DELETED).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.NEW).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.TRANSIENT).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.HOLLOW).isEmpty());
 
-        assertTrue(recorder.dirtyNodes(PersistenceState.MODIFIED).contains(modified));
-        assertTrue(recorder.dirtyNodes(PersistenceState.COMMITTED).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.DELETED).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.NEW).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.TRANSIENT).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.HOLLOW).isEmpty());
+		MockPersistentObject modified = new MockPersistentObject();
+		modified.setObjectId(new ObjectId("MockPersistentObject", "key", "value1"));
+		modified.setPersistenceState(PersistenceState.MODIFIED);
+		
+		when(mockGraphManager.getNode(modified.getObjectId())).thenReturn(modified);
+		recorder.nodePropertyChanged(modified.getObjectId(), "a", "b", "c");
 
-        MockPersistentObject deleted = new MockPersistentObject();
-        deleted.setObjectId(new ObjectId("MockPersistentObject", "key", "value2"));
-        deleted.setPersistenceState(PersistenceState.DELETED);
-        map.registerNode(deleted.getObjectId(), deleted);
-        recorder.nodeRemoved(deleted.getObjectId());
+		assertTrue(recorder.dirtyNodes(PersistenceState.MODIFIED).contains(modified));
+		assertTrue(recorder.dirtyNodes(PersistenceState.COMMITTED).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.DELETED).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.NEW).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.TRANSIENT).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.HOLLOW).isEmpty());
 
-        assertTrue(recorder.dirtyNodes(PersistenceState.MODIFIED).contains(modified));
-        assertTrue(recorder.dirtyNodes(PersistenceState.COMMITTED).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.DELETED).contains(deleted));
-        assertTrue(recorder.dirtyNodes(PersistenceState.NEW).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.TRANSIENT).isEmpty());
-        assertTrue(recorder.dirtyNodes(PersistenceState.HOLLOW).isEmpty());
-    }
+		MockPersistentObject deleted = new MockPersistentObject();
+		deleted.setObjectId(new ObjectId("MockPersistentObject", "key", "value2"));
+		deleted.setPersistenceState(PersistenceState.DELETED);
+		when(mockGraphManager.getNode(deleted.getObjectId())).thenReturn(deleted);
+		recorder.nodeRemoved(deleted.getObjectId());
 
-    @Test
-    public void testDirtyNodes() {
-        GraphManager map = new MockGraphManager();
-        ObjectContextStateLog recorder = new ObjectContextStateLog(map);
+		assertTrue(recorder.dirtyNodes(PersistenceState.MODIFIED).contains(modified));
+		assertTrue(recorder.dirtyNodes(PersistenceState.COMMITTED).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.DELETED).contains(deleted));
+		assertTrue(recorder.dirtyNodes(PersistenceState.NEW).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.TRANSIENT).isEmpty());
+		assertTrue(recorder.dirtyNodes(PersistenceState.HOLLOW).isEmpty());
+	}
 
-        assertNotNull(recorder.dirtyNodes());
-        assertTrue(recorder.dirtyNodes().isEmpty());
+	@Test
+	public void testDirtyNodes() {
 
-        // introduce a fake dirty object
-        MockPersistentObject object = new MockPersistentObject();
-        object.setObjectId(new ObjectId("MockPersistentObject", "key", "value"));
-        object.setPersistenceState(PersistenceState.MODIFIED);
-        map.registerNode(object.getObjectId(), object);
-        recorder.nodePropertyChanged(object.getObjectId(), "a", "b", "c");
+		assertNotNull(recorder.dirtyNodes());
+		assertTrue(recorder.dirtyNodes().isEmpty());
 
-        assertTrue(recorder.dirtyNodes().contains(object));
+		// introduce a fake dirty object
+		MockPersistentObject object = new MockPersistentObject();
+		object.setObjectId(new ObjectId("MockPersistentObject", "key", "value"));
+		object.setPersistenceState(PersistenceState.MODIFIED);
 
-        // must go away on clear...
-        recorder.clear();
-        assertNotNull(recorder.dirtyNodes());
-        assertTrue(recorder.dirtyNodes().isEmpty());
-    }
+		when(mockGraphManager.getNode(object.getObjectId())).thenReturn(object);
 
-    @Test
-    public void testHasChanges() {
-        ObjectContextStateLog recorder = new ObjectContextStateLog(new MockGraphManager());
-        assertFalse(recorder.hasChanges());
+		recorder.nodePropertyChanged(object.getObjectId(), "a", "b", "c");
 
-        // introduce a fake dirty object
-        MockPersistentObject object = new MockPersistentObject();
-        object.setObjectId(new ObjectId("MockPersistentObject", "key", "value"));
-        object.setPersistenceState(PersistenceState.MODIFIED);
-        recorder.nodePropertyChanged(object.getObjectId(), "xyz", "a", "b");
+		assertTrue(recorder.dirtyNodes().contains(object));
 
-        assertTrue(recorder.hasChanges());
+		// must go away on clear...
+		recorder.clear();
+		assertNotNull(recorder.dirtyNodes());
+		assertTrue(recorder.dirtyNodes().isEmpty());
+	}
 
-        // must go away on clear...
-        recorder.clear();
-        assertFalse(recorder.hasChanges());
-    }
+	@Test
+	public void testHasChanges() {
+
+		assertFalse(recorder.hasChanges());
+
+		// introduce a fake dirty object
+		MockPersistentObject object = new MockPersistentObject();
+		object.setObjectId(new ObjectId("MockPersistentObject", "key", "value"));
+		object.setPersistenceState(PersistenceState.MODIFIED);
+		recorder.nodePropertyChanged(object.getObjectId(), "xyz", "a", "b");
+
+		assertTrue(recorder.hasChanges());
+
+		// must go away on clear...
+		recorder.clear();
+		assertFalse(recorder.hasChanges());
+	}
 
 }

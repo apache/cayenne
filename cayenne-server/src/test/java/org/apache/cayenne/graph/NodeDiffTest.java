@@ -19,31 +19,51 @@
 
 package org.apache.cayenne.graph;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
+
 public class NodeDiffTest {
 
-    @Test
-    public void testGetNodeId() {
-        Object id = new Object();
-        NodeDiff diff = new MockNodeDiff(id);
-        assertSame(id, diff.getNodeId());
-    }
+	@Test
+	public void testGetNodeId() {
+		Object id = new Object();
+		NodeDiff diff = new ConcreteNodeDiff(id);
+		assertSame(id, diff.getNodeId());
+	}
 
-    @Test
-    public void testCompareTo() {
-        NodeDiff d1 = new MockNodeDiff("x", 1);
-        NodeDiff d2 = new MockNodeDiff("y", 2);
-        NodeDiff d3 = new MockNodeDiff("z", 3);
-        NodeDiff d4 = new MockNodeDiff("a", 2);
+	@Test
+	public void testCompareTo() {
+		NodeDiff d1 = new ConcreteNodeDiff("x", 1);
+		NodeDiff d2 = new ConcreteNodeDiff("y", 2);
+		NodeDiff d3 = new ConcreteNodeDiff("z", 3);
+		NodeDiff d4 = new ConcreteNodeDiff("a", 2);
 
-        assertTrue(d1.compareTo(d2) < 0);
-        assertTrue(d2.compareTo(d1) > 0);
-        assertTrue(d1.compareTo(d3) < 0);
-        assertTrue(d2.compareTo(d4) == 0);
-        assertTrue(d2.compareTo(d3) < 0);
-    }
+		assertTrue(d1.compareTo(d2) < 0);
+		assertTrue(d2.compareTo(d1) > 0);
+		assertTrue(d1.compareTo(d3) < 0);
+		assertTrue(d2.compareTo(d4) == 0);
+		assertTrue(d2.compareTo(d3) < 0);
+	}
+
+	@SuppressWarnings("serial")
+	class ConcreteNodeDiff extends NodeDiff {
+
+		public ConcreteNodeDiff(Object nodeId) {
+			super(nodeId);
+		}
+
+		public ConcreteNodeDiff(Object nodeId, int diffId) {
+			super(nodeId, diffId);
+		}
+
+		@Override
+		public void apply(GraphChangeHandler tracker) {
+		}
+
+		@Override
+		public void undo(GraphChangeHandler tracker) {
+		}
+	}
 }
