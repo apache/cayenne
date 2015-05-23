@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -36,8 +35,8 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -130,13 +129,8 @@ public class ASTDbPath extends ASTPath {
 			}
 		}
 
-		SelectQuery<DataRow> query = new SelectQuery<DataRow>(finalEntity, ExpressionFactory.matchDbExp(
-				reversedPathStr.toString(), persistent));
-
-		// TODO: DbEntity root option for ObjectSelect?
-		query.setFetchingDataRows(true);
-		DataRow result = persistent.getObjectContext().selectOne(query);
-		return result;
+		return ObjectSelect.dbQuery(finalEntity.getName())
+				.where(ExpressionFactory.matchDbExp(reversedPathStr.toString(), persistent)).selectOne(context);
 	}
 
 	private Map<?, ?> toMap_AttchedObject_SingleStepPath(ObjectContext context, Persistent persistent) {
