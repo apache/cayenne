@@ -102,7 +102,7 @@ public class ASTEqualIT extends ServerCase {
 
 		context.commitChanges();
 
-		Expression e = new ASTEqual(new ASTObjPath("toArtist"), Cayenne.intPKForObject(a1));
+		Expression e = new ASTEqual(new ASTObjPath("toArtist"), Cayenne.longPKForObject(a1));
 
 		assertTrue(e.match(p1));
 		assertFalse(e.match(p2));
