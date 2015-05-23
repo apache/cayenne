@@ -27,53 +27,56 @@ import org.apache.cayenne.exp.Expression;
  * @since 1.1
  */
 public class ASTLess extends ConditionNode {
-    /**
-     * Constructor used by expression parser. Do not invoke directly.
-     */
-    ASTLess(int id) {
-        super(id);
-    }
 
-    public ASTLess() {
-        super(ExpressionParserTreeConstants.JJTLESS);
-    }
+	private static final long serialVersionUID = -3846841914847489596L;
 
-    public ASTLess(ASTPath path, Object value) {
-        super(ExpressionParserTreeConstants.JJTLESS);
-        jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(value), 1);
-        connectChildren();
-    }
+	/**
+	 * Constructor used by expression parser. Do not invoke directly.
+	 */
+	ASTLess(int id) {
+		super(id);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
-        }
+	public ASTLess() {
+		super(ExpressionParserTreeConstants.JJTLESS);
+	}
 
-        Object o1 = evaluateChild(0, o);
-        Object o2 = evaluateChild(1, o);
-        Integer c = Evaluator.evaluator(o1).compare(o1, o2);
+	public ASTLess(ASTPath path, Object value) {
+		super(ExpressionParserTreeConstants.JJTLESS);
+		jjtAddChild(path, 0);
+		jjtAddChild(new ASTScalar(value), 1);
+		connectChildren();
+	}
 
-        return c != null && c < 0 ? Boolean.TRUE : Boolean.FALSE;
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len != 2) {
+			return Boolean.FALSE;
+		}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTLess(id);
-    }
+		Object o1 = evaluateChild(0, o);
+		Object o2 = evaluateChild(1, o);
+		Integer c = Evaluator.evaluator(o1).compare(o1, o2);
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "<";
-    }
+		return c != null && c < 0 ? Boolean.TRUE : Boolean.FALSE;
+	}
 
-    @Override
-    public int getType() {
-        return Expression.LESS_THAN;
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTLess(id);
+	}
+
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "<";
+	}
+
+	@Override
+	public int getType() {
+		return Expression.LESS_THAN;
+	}
 }

@@ -29,7 +29,7 @@ import org.apache.cayenne.exp.Expression;
  * Notice that there is one ASTTrue and one ASTFalse instead of a ASTBoolean
  * with a Boolean value. The main reason for doing this is that a common
  * ASTBoolean will have operand count of 1 and that will default to a prepared
- * statmenet like " where ? and (...)", but we only need " where true and
+ * statement like " where ? and (...)", but we only need " where true and
  * (...)".
  * 
  * @see ASTTrue
@@ -37,51 +37,53 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTFalse extends ConditionNode {
 
-    /**
-     * Constructor used by expression parser. Do not invoke directly.
-     */
-    ASTFalse(int id) {
-        super(id);
-    }
+	private static final long serialVersionUID = -8441997825701749863L;
 
-    public ASTFalse() {
-        super(ExpressionParserTreeConstants.JJTFALSE);
-    }
+	/**
+	 * Constructor used by expression parser. Do not invoke directly.
+	 */
+	ASTFalse(int id) {
+		super(id);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return Boolean.FALSE;
-    }
+	public ASTFalse() {
+		super(ExpressionParserTreeConstants.JJTFALSE);
+	}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
-                + "'");
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		return Boolean.FALSE;
+	}
 
-    @Override
-    public Expression shallowCopy() {
-        return new ASTFalse(id);
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
+				+ "'");
+	}
 
-    @Override
-    public int getType() {
-        return Expression.FALSE;
-    }
+	@Override
+	public Expression shallowCopy() {
+		return new ASTFalse(id);
+	}
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
-        out.append("false");
-    }
+	@Override
+	public int getType() {
+		return Expression.FALSE;
+	}
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        out.append("false");
-    }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsString(Appendable out) throws IOException {
+		out.append("false");
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		out.append("false");
+	}
 }

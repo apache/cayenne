@@ -53,10 +53,10 @@ public class ASTDivide extends SimpleNode {
 		connectChildren();
 	}
 
-	public ASTDivide(Collection nodes) {
+	public ASTDivide(Collection<?> nodes) {
 		super(ExpressionParserTreeConstants.JJTDIVIDE);
 		int len = nodes.size();
-		Iterator it = nodes.iterator();
+		Iterator<?> it = nodes.iterator();
 		for (int i = 0; i < len; i++) {
 			jjtAddChild(wrapChild(it.next()), i);
 		}

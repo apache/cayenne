@@ -28,53 +28,55 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTLessOrEqual extends ConditionNode {
 
-    /**
-     * Constructor used by expression parser. Do not invoke directly.
-     */
-    ASTLessOrEqual(int id) {
-        super(id);
-    }
+	private static final long serialVersionUID = -710886570064202360L;
 
-    public ASTLessOrEqual() {
-        super(ExpressionParserTreeConstants.JJTLESSOREQUAL);
-    }
+	/**
+	 * Constructor used by expression parser. Do not invoke directly.
+	 */
+	ASTLessOrEqual(int id) {
+		super(id);
+	}
 
-    public ASTLessOrEqual(ASTPath path, Object value) {
-        super(ExpressionParserTreeConstants.JJTLESSOREQUAL);
-        jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(value), 1);
-        connectChildren();
-    }
+	public ASTLessOrEqual() {
+		super(ExpressionParserTreeConstants.JJTLESSOREQUAL);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
-        }
+	public ASTLessOrEqual(ASTPath path, Object value) {
+		super(ExpressionParserTreeConstants.JJTLESSOREQUAL);
+		jjtAddChild(path, 0);
+		jjtAddChild(new ASTScalar(value), 1);
+		connectChildren();
+	}
 
-        Object o1 = evaluateChild(0, o);
-        Object o2 = evaluateChild(1, o);
-        Integer c = Evaluator.evaluator(o1).compare(o1, o2);
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len != 2) {
+			return Boolean.FALSE;
+		}
 
-        return c != null && c <= 0 ? Boolean.TRUE : Boolean.FALSE;
-    }
+		Object o1 = evaluateChild(0, o);
+		Object o2 = evaluateChild(1, o);
+		Integer c = Evaluator.evaluator(o1).compare(o1, o2);
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTLessOrEqual(id);
-    }
+		return c != null && c <= 0 ? Boolean.TRUE : Boolean.FALSE;
+	}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "<=";
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTLessOrEqual(id);
+	}
 
-    @Override
-    public int getType() {
-        return Expression.LESS_THAN_EQUAL_TO;
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "<=";
+	}
+
+	@Override
+	public int getType() {
+		return Expression.LESS_THAN_EQUAL_TO;
+	}
 }

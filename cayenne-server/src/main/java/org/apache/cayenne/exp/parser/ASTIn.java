@@ -30,99 +30,102 @@ import org.apache.commons.collections.Transformer;
  */
 public class ASTIn extends ConditionNode {
 
-    /**
-     * Constructor used by expression parser. Do not invoke directly.
-     */
-    ASTIn(int id) {
-        super(id);
-    }
+	private static final long serialVersionUID = -211084571117172965L;
 
-    public ASTIn() {
-        super(ExpressionParserTreeConstants.JJTIN);
-    }
+	/**
+	 * Constructor used by expression parser. Do not invoke directly.
+	 */
+	ASTIn(int id) {
+		super(id);
+	}
 
-    public ASTIn(ASTPath path, ASTList list) {
-        super(ExpressionParserTreeConstants.JJTIN);
-        jjtAddChild(path, 0);
-        jjtAddChild(list, 1);
-        connectChildren();
-    }
+	public ASTIn() {
+		super(ExpressionParserTreeConstants.JJTIN);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
-        }
+	public ASTIn(ASTPath path, ASTList list) {
+		super(ExpressionParserTreeConstants.JJTIN);
+		jjtAddChild(path, 0);
+		jjtAddChild(list, 1);
+		connectChildren();
+	}
 
-        Object o1 = evaluateChild(0, o);
-        // TODO: what if there's a NULL inside IN list? 
-        // e.g. ASTEqual evals as "NULL == NULL"
-        if (o1 == null) {
-            return Boolean.FALSE;
-        }
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len != 2) {
+			return Boolean.FALSE;
+		}
 
-        Object[] objects = (Object[]) evaluateChild(1, o);
-        if (objects == null) {
-            return Boolean.FALSE;
-        }
+		Object o1 = evaluateChild(0, o);
+		// TODO: what if there's a NULL inside IN list?
+		// e.g. ASTEqual evals as "NULL == NULL"
+		if (o1 == null) {
+			return Boolean.FALSE;
+		}
 
-        int size = objects.length;
-        for (int i = 0; i < size; i++) {
-            if (objects[i] != null) {
-                if (o1 instanceof Collection) {
-                    // handle the case where we have a collection of objects
-                    for (Object obj : (Collection) o1) {
-                        if (Evaluator.evaluator(obj).eq(obj, objects[i])) {
-                            return Boolean.TRUE;
-                        }
-                    }
-                } else {
-                    if (Evaluator.evaluator(o1).eq(o1, objects[i])) {
-                        return Boolean.TRUE;
-                    }
-                }
-            }
-        }
+		Object[] objects = (Object[]) evaluateChild(1, o);
+		if (objects == null) {
+			return Boolean.FALSE;
+		}
 
-        return Boolean.FALSE;
-    }
+		int size = objects.length;
+		for (int i = 0; i < size; i++) {
+			if (objects[i] != null) {
+				if (o1 instanceof Collection) {
+					// handle the case where we have a collection of objects
+					for (Object obj : (Collection) o1) {
+						if (Evaluator.evaluator(obj).eq(obj, objects[i])) {
+							return Boolean.TRUE;
+						}
+					}
+				} else {
+					if (Evaluator.evaluator(o1).eq(o1, objects[i])) {
+						return Boolean.TRUE;
+					}
+				}
+			}
+		}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTIn(id);
-    }
+		return Boolean.FALSE;
+	}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "in";
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTIn(id);
+	}
 
-    @Override
-    public int getType() {
-        return Expression.IN;
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "in";
+	}
 
-    @Override
-    protected Object transformExpression(Transformer transformer) {
-        Object transformed = super.transformExpression(transformer);
+	@Override
+	public int getType() {
+		return Expression.IN;
+	}
 
-        // transform empty ASTIn to ASTFalse
-        if (transformed instanceof ASTIn) {
-            ASTIn exp = (ASTIn) transformed;
-            if (exp.jjtGetNumChildren() == 2) {
-                ASTList list = (ASTList) exp.jjtGetChild(1);
-                Object[] objects = (Object[]) list.evaluate(null);
-                if (objects.length == 0) {
-                    transformed = new ASTFalse();
-                }
-            }
-        }
+	@Override
+	protected Object transformExpression(Transformer transformer) {
+		Object transformed = super.transformExpression(transformer);
 
-        return transformed;
-    }
+		// transform empty ASTIn to ASTFalse
+		if (transformed instanceof ASTIn) {
+			ASTIn exp = (ASTIn) transformed;
+			if (exp.jjtGetNumChildren() == 2) {
+				ASTList list = (ASTList) exp.jjtGetChild(1);
+				Object[] objects = (Object[]) list.evaluate(null);
+				if (objects.length == 0) {
+					transformed = new ASTFalse();
+				}
+			}
+		}
+
+		return transformed;
+	}
 
 }
