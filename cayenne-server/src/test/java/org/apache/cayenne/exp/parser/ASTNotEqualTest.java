@@ -21,61 +21,37 @@ package org.apache.cayenne.exp.parser;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.math.BigDecimal;
-
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Test;
 
-public class ASTEqualTest {
+public class ASTNotEqualTest {
 
 	@Test
 	public void testEvaluate() {
-		Expression equalTo = new ASTEqual(new ASTObjPath("artistName"), "abc");
+		Expression notEqualTo = new ASTNotEqual(new ASTObjPath("artistName"), "abc");
 
 		Artist match = new Artist();
 		match.setArtistName("abc");
-		assertTrue(equalTo.match(match));
+		assertFalse(notEqualTo.match(match));
 
 		Artist noMatch = new Artist();
 		noMatch.setArtistName("123");
-		assertFalse("Failed: " + equalTo, equalTo.match(noMatch));
+		assertTrue("Failed: " + notEqualTo, notEqualTo.match(noMatch));
 	}
 
 	@Test
 	public void testEvaluate_Null() {
-		Expression equalToNull = new ASTEqual(new ASTObjPath("artistName"), null);
-		Expression equalToNotNull = new ASTEqual(new ASTObjPath("artistName"), "abc");
+		Expression notEqualToNull = new ASTNotEqual(new ASTObjPath("artistName"), null);
+		Expression notEqualToNotNull = new ASTNotEqual(new ASTObjPath("artistName"), "abc");
 
 		Artist match = new Artist();
-		assertTrue(equalToNull.match(match));
-		assertFalse(equalToNotNull.match(match));
+		assertFalse(notEqualToNull.match(match));
+		assertTrue(notEqualToNotNull.match(match));
 
 		Artist noMatch = new Artist();
-		noMatch.setArtistName("abc");
-		assertFalse(equalToNull.match(noMatch));
+		noMatch.setArtistName("123");
+		assertTrue("Failed: " + notEqualToNull, notEqualToNull.match(noMatch));
 	}
 
-	@Test
-	public void testEvaluate_BigDecimal() {
-		BigDecimal bd1 = new BigDecimal("2.0");
-		BigDecimal bd2 = new BigDecimal("2.0");
-		BigDecimal bd3 = new BigDecimal("2.00");
-		BigDecimal bd4 = new BigDecimal("2.01");
-
-		Expression equalTo = new ASTEqual(new ASTObjPath(Painting.ESTIMATED_PRICE.getName()), bd1);
-
-		Painting p = new Painting();
-		p.setEstimatedPrice(bd2);
-		assertTrue(equalTo.match(p));
-
-		// BigDecimals must compare regardless of the number of trailing zeros
-		// (see CAY-280)
-		p.setEstimatedPrice(bd3);
-		assertTrue(equalTo.match(p));
-
-		p.setEstimatedPrice(bd4);
-		assertFalse(equalTo.match(p));
-	}
 }

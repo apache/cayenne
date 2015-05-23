@@ -24,36 +24,38 @@ package org.apache.cayenne.graph;
  */
 public class ArcCreateOperation extends NodeDiff {
 
-    protected Object targetNodeId;
-    protected Object arcId;
+	private static final long serialVersionUID = 2497511574121718987L;
+	
+	protected Object targetNodeId;
+	protected Object arcId;
 
-    public ArcCreateOperation(Object nodeId, Object targetNodeId, Object arcId) {
-        super(nodeId);
-        this.targetNodeId = targetNodeId;
-        this.arcId = arcId;
-    }
+	public ArcCreateOperation(Object nodeId, Object targetNodeId, Object arcId) {
+		super(nodeId);
+		this.targetNodeId = targetNodeId;
+		this.arcId = arcId;
+	}
 
-    public ArcCreateOperation(Object nodeId, Object targetNodeId, Object arcId, int diffId) {
-        super(nodeId, diffId);
-        this.targetNodeId = targetNodeId;
-        this.arcId = arcId;
-    }
+	public ArcCreateOperation(Object nodeId, Object targetNodeId, Object arcId, int diffId) {
+		super(nodeId, diffId);
+		this.targetNodeId = targetNodeId;
+		this.arcId = arcId;
+	}
 
-    @Override
-    public void apply(GraphChangeHandler tracker) {
-        tracker.arcCreated(nodeId, targetNodeId, arcId);
-    }
+	@Override
+	public void apply(GraphChangeHandler tracker) {
+		tracker.arcCreated(nodeId, targetNodeId, arcId);
+	}
 
-    @Override
-    public void undo(GraphChangeHandler tracker) {
-        tracker.arcDeleted(nodeId, targetNodeId, arcId);
-    }
+	@Override
+	public void undo(GraphChangeHandler tracker) {
+		tracker.arcDeleted(nodeId, targetNodeId, arcId);
+	}
 
-    public Object getArcId() {
-        return arcId;
-    }
+	public Object getArcId() {
+		return arcId;
+	}
 
-    public Object getTargetNodeId() {
-        return targetNodeId;
-    }
+	public Object getTargetNodeId() {
+		return targetNodeId;
+	}
 }

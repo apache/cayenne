@@ -19,67 +19,14 @@
 package org.apache.cayenne.exp.parser;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
 // TODO: split it between AST* unit tests (partially done already)
 public class ExpressionEvaluateInMemoryTest {
-
-	@Test
-	public void testEvaluateNOT_EQUAL_TONull() {
-		Expression notEqualToNull = new ASTNotEqual(new ASTObjPath("artistName"), null);
-		Expression notEqualToNotNull = new ASTNotEqual(new ASTObjPath("artistName"), "abc");
-
-		Artist match = new Artist();
-		assertFalse(notEqualToNull.match(match));
-		assertTrue(notEqualToNotNull.match(match));
-
-		Artist noMatch = new Artist();
-		noMatch.setArtistName("123");
-		assertTrue("Failed: " + notEqualToNull, notEqualToNull.match(noMatch));
-	}
-
-	@Test
-	public void testEvaluateAND() {
-		Expression e1 = new ASTEqual(new ASTObjPath("artistName"), "abc");
-		Expression e2 = new ASTEqual(new ASTObjPath("artistName"), "abc");
-
-		ASTAnd e = new ASTAnd(new Object[] { e1, e2 });
-
-		Artist match = new Artist();
-		match.setArtistName("abc");
-		assertTrue(e.match(match));
-
-		Artist noMatch = new Artist();
-		noMatch.setArtistName("123");
-		assertFalse(e.match(noMatch));
-	}
-
-	@Test
-	public void testEvaluateOR() {
-		Expression e1 = new ASTEqual(new ASTObjPath("artistName"), "abc");
-		Expression e2 = new ASTEqual(new ASTObjPath("artistName"), "xyz");
-
-		ASTOr e = new ASTOr(new Object[] { e1, e2 });
-
-		Artist match1 = new Artist();
-		match1.setArtistName("abc");
-		assertTrue("Failed: " + e, e.match(match1));
-
-		Artist match2 = new Artist();
-		match2.setArtistName("xyz");
-		assertTrue("Failed: " + e, e.match(match2));
-
-		Artist noMatch = new Artist();
-		noMatch.setArtistName("123");
-		assertFalse("Failed: " + e, e.match(noMatch));
-	}
 
 	@Test
 	public void testEvaluateADD() {

@@ -32,90 +32,93 @@ import java.util.ListIterator;
  */
 public class CompoundDiff implements GraphDiff {
 
-    protected List<GraphDiff> diffs;
+	private static final long serialVersionUID = 5930690302335603082L;
 
-    /**
-     * Creates an empty CompoundDiff instance.
-     */
-    public CompoundDiff() {
-    }
+	protected List<GraphDiff> diffs;
 
-    /**
-     * Creates CompoundDiff instance. Note that a List is not cloned in this constructor,
-     * so subsequent calls to add and addAll would modify the original list.
-     */
-    public CompoundDiff(List<GraphDiff> diffs) {
-        this.diffs = diffs;
-    }
+	/**
+	 * Creates an empty CompoundDiff instance.
+	 */
+	public CompoundDiff() {
+	}
 
-    /**
-     * Returns true if this diff has no other diffs or if all of its diffs are noops.
-     */
-    public boolean isNoop() {
-        if (diffs == null || diffs.isEmpty()) {
-            return true;
-        }
+	/**
+	 * Creates CompoundDiff instance. Note that a List is not cloned in this
+	 * constructor, so subsequent calls to add and addAll would modify the
+	 * original list.
+	 */
+	public CompoundDiff(List<GraphDiff> diffs) {
+		this.diffs = diffs;
+	}
 
-        for (GraphDiff diff : diffs) {
-            if (! diff.isNoop()) {
-                return false;
-            }
-        }
-        return true;
-    }
+	/**
+	 * Returns true if this diff has no other diffs or if all of its diffs are
+	 * noops.
+	 */
+	public boolean isNoop() {
+		if (diffs == null || diffs.isEmpty()) {
+			return true;
+		}
 
-    public List<GraphDiff> getDiffs() {
-        return (diffs != null)
-                ? Collections.unmodifiableList(diffs)
-                : Collections.EMPTY_LIST;
-    }
+		for (GraphDiff diff : diffs) {
+			if (!diff.isNoop()) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    public void add(GraphDiff diff) {
-        nonNullDiffs().add(diff);
-    }
+	public List<GraphDiff> getDiffs() {
+		return (diffs != null) ? Collections.unmodifiableList(diffs) : Collections.<GraphDiff> emptyList();
+	}
 
-    public void addAll(Collection<? extends GraphDiff> diffs) {
-        nonNullDiffs().addAll(diffs);
-    }
+	public void add(GraphDiff diff) {
+		nonNullDiffs().add(diff);
+	}
 
-    /**
-     * Iterates over diffs list, calling "apply" on each individual diff.
-     */
-    public void apply(GraphChangeHandler tracker) {
-        if (diffs == null) {
-            return;
-        }
+	public void addAll(Collection<? extends GraphDiff> diffs) {
+		nonNullDiffs().addAll(diffs);
+	}
 
-        // implements a naive linear commit - simply replay stored operations
-        for (GraphDiff change : diffs) {
-            change.apply(tracker);
-        }
-    }
+	/**
+	 * Iterates over diffs list, calling "apply" on each individual diff.
+	 */
+	public void apply(GraphChangeHandler tracker) {
+		if (diffs == null) {
+			return;
+		}
 
-    /**
-     * Iterates over diffs list in reverse order, calling "apply" on each individual diff.
-     */
-    public void undo(GraphChangeHandler tracker) {
-        if (diffs == null) {
-            return;
-        }
+		// implements a naive linear commit - simply replay stored operations
+		for (GraphDiff change : diffs) {
+			change.apply(tracker);
+		}
+	}
 
-        ListIterator<GraphDiff> it = diffs.listIterator(diffs.size());
-        while (it.hasPrevious()) {
-            GraphDiff change = it.previous();
-            change.undo(tracker);
-        }
-    }
+	/**
+	 * Iterates over diffs list in reverse order, calling "apply" on each
+	 * individual diff.
+	 */
+	public void undo(GraphChangeHandler tracker) {
+		if (diffs == null) {
+			return;
+		}
 
-    List<GraphDiff> nonNullDiffs() {
-        if (diffs == null) {
-            synchronized (this) {
-                if (diffs == null) {
-                    diffs = new ArrayList<GraphDiff>();
-                }
-            }
-        }
+		ListIterator<GraphDiff> it = diffs.listIterator(diffs.size());
+		while (it.hasPrevious()) {
+			GraphDiff change = it.previous();
+			change.undo(tracker);
+		}
+	}
 
-        return diffs;
-    }
+	List<GraphDiff> nonNullDiffs() {
+		if (diffs == null) {
+			synchronized (this) {
+				if (diffs == null) {
+					diffs = new ArrayList<GraphDiff>();
+				}
+			}
+		}
+
+		return diffs;
+	}
 }

@@ -20,7 +20,6 @@
 package org.apache.cayenne.graph;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,276 +40,265 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
- * A GraphChangeHandler that loads child ObjectContext diffs into a parent ObjectContext.
- * Graph node ids are expected to be ObjectIds. This class is made public since 3.0 to be
- * used in ObjectContext synchronizing
+ * A GraphChangeHandler that loads child ObjectContext diffs into a parent
+ * ObjectContext. Graph node ids are expected to be ObjectIds. This class is
+ * made public since 3.0 to be used in ObjectContext synchronizing
  * 
  * @since 1.2
  */
 public class ChildDiffLoader implements GraphChangeHandler {
 
-    // TODO: andrus 04/05/2009 - replace with PropertyChangeProcessingStrategy enum used
-    // in ROP?
-    static final ThreadLocal<Boolean> childDiffProcessing = new ThreadLocal<Boolean>() {
+	// TODO: andrus 04/05/2009 - replace with PropertyChangeProcessingStrategy
+	// enum used
+	// in ROP?
+	static final ThreadLocal<Boolean> childDiffProcessing = new ThreadLocal<Boolean>() {
 
-        @Override
-        protected synchronized Boolean initialValue() {
-            return Boolean.FALSE;
-        }
-    };
+		@Override
+		protected synchronized Boolean initialValue() {
+			return Boolean.FALSE;
+		}
+	};
 
-    protected ObjectContext context;
+	protected ObjectContext context;
 
-    /**
-     * Returns whether child diff processing is in progress.
-     * 
-     * @since 3.0
-     */
-    public static boolean isProcessingChildDiff() {
-        return childDiffProcessing.get();
-    }
+	/**
+	 * Returns whether child diff processing is in progress.
+	 * 
+	 * @since 3.0
+	 */
+	public static boolean isProcessingChildDiff() {
+		return childDiffProcessing.get();
+	}
 
-    /**
-     * Sets whether child diff processing is in progress.
-     * 
-     * @since 3.0
-     */
-    public static void setExternalChange(Boolean flag) {
-        childDiffProcessing.set(flag);
-    }
+	/**
+	 * Sets whether child diff processing is in progress.
+	 * 
+	 * @since 3.0
+	 */
+	public static void setExternalChange(Boolean flag) {
+		childDiffProcessing.set(flag);
+	}
 
-    public ChildDiffLoader(ObjectContext context) {
-        this.context = context;
-    }
+	public ChildDiffLoader(ObjectContext context) {
+		this.context = context;
+	}
 
-    public void nodeIdChanged(Object nodeId, Object newId) {
-        throw new CayenneRuntimeException("Not supported");
-    }
+	public void nodeIdChanged(Object nodeId, Object newId) {
+		throw new CayenneRuntimeException("Not supported");
+	}
 
-    public void nodeCreated(Object nodeId) {
+	public void nodeCreated(Object nodeId) {
 
-        setExternalChange(Boolean.TRUE);
+		setExternalChange(Boolean.TRUE);
 
-        try {
-            ObjectId id = (ObjectId) nodeId;
-            if (id.getEntityName() == null) {
-                throw new NullPointerException("Null entity name in id " + id);
-            }
+		try {
+			ObjectId id = (ObjectId) nodeId;
+			if (id.getEntityName() == null) {
+				throw new NullPointerException("Null entity name in id " + id);
+			}
 
-            ObjEntity entity = context.getEntityResolver().getObjEntity(
-                    id.getEntityName());
-            if (entity == null) {
-                throw new IllegalArgumentException("Entity not mapped with Cayenne: "
-                        + id);
-            }
+			ObjEntity entity = context.getEntityResolver().getObjEntity(id.getEntityName());
+			if (entity == null) {
+				throw new IllegalArgumentException("Entity not mapped with Cayenne: " + id);
+			}
 
-            Persistent dataObject = null;
-            try {
-                dataObject = (Persistent) entity.getJavaClass().newInstance();
-            }
-            catch (Exception ex) {
-                throw new CayenneRuntimeException("Error instantiating object.", ex);
-            }
+			Persistent dataObject = null;
+			try {
+				dataObject = (Persistent) entity.getJavaClass().newInstance();
+			} catch (Exception ex) {
+				throw new CayenneRuntimeException("Error instantiating object.", ex);
+			}
 
-            dataObject.setObjectId(id);
-            context.registerNewObject(dataObject);
-        }
-        finally {
-            setExternalChange(Boolean.FALSE);
-        }
-    }
+			dataObject.setObjectId(id);
+			context.registerNewObject(dataObject);
+		} finally {
+			setExternalChange(Boolean.FALSE);
+		}
+	}
 
-    public void nodeRemoved(Object nodeId) {
-        setExternalChange(Boolean.TRUE);
-        Persistent object = findObject(nodeId);
-        if (object != null) {
-            try {
-                context.deleteObjects(object);
-            }
-            finally {
-                setExternalChange(Boolean.FALSE);
-            }
-        } else {
-            setExternalChange(Boolean.FALSE);
-        }
-    }
+	public void nodeRemoved(Object nodeId) {
+		setExternalChange(Boolean.TRUE);
+		Persistent object = findObject(nodeId);
+		if (object != null) {
+			try {
+				context.deleteObjects(object);
+			} finally {
+				setExternalChange(Boolean.FALSE);
+			}
+		} else {
+			setExternalChange(Boolean.FALSE);
+		}
+	}
 
-    public void nodePropertyChanged(
-            Object nodeId,
-            String property,
-            Object oldValue,
-            Object newValue) {
+	public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
 
-        // this change is for simple property, so no need to convert targets to server
-        // objects...
-        Persistent object = findObject(nodeId);
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                ((ObjectId) nodeId).getEntityName());
+		// this change is for simple property, so no need to convert targets to
+		// server
+		// objects...
+		Persistent object = findObject(nodeId);
+		ClassDescriptor descriptor = context.getEntityResolver()
+				.getClassDescriptor(((ObjectId) nodeId).getEntityName());
 
-        setExternalChange(Boolean.TRUE);
-        try {
-            descriptor.getProperty(property).writeProperty(object, oldValue, newValue);
-        }
-        catch (Exception e) {
-            throw new CayenneRuntimeException("Error setting property: " + property, e);
-        }
-        finally {
-            setExternalChange(Boolean.FALSE);
-        }
-    }
+		setExternalChange(Boolean.TRUE);
+		try {
+			descriptor.getProperty(property).writeProperty(object, oldValue, newValue);
+		} catch (Exception e) {
+			throw new CayenneRuntimeException("Error setting property: " + property, e);
+		} finally {
+			setExternalChange(Boolean.FALSE);
+		}
+	}
 
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+	public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
 
-        final Persistent source = findObject(nodeId);
-        final Persistent target = findObject(targetNodeId);
+		final Persistent source = findObject(nodeId);
+		final Persistent target = findObject(targetNodeId);
 
-        // if a target was later deleted, the diff for arcCreated is still preserved and
-        // can result in NULL target here.
-        if (target == null) {
-            return;
-        }
+		// if a target was later deleted, the diff for arcCreated is still
+		// preserved and
+		// can result in NULL target here.
+		if (target == null) {
+			return;
+		}
 
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                ((ObjectId) nodeId).getEntityName());
-        ArcProperty property = (ArcProperty) descriptor.getProperty(arcId.toString());
+		ClassDescriptor descriptor = context.getEntityResolver()
+				.getClassDescriptor(((ObjectId) nodeId).getEntityName());
+		ArcProperty property = (ArcProperty) descriptor.getProperty(arcId.toString());
 
-        setExternalChange(Boolean.TRUE);
-        try {
-            property.visit(new PropertyVisitor() {
+		setExternalChange(Boolean.TRUE);
+		try {
+			property.visit(new PropertyVisitor() {
 
-                public boolean visitAttribute(AttributeProperty property) {
-                    return false;
-                }
+				public boolean visitAttribute(AttributeProperty property) {
+					return false;
+				}
 
-                public boolean visitToMany(ToManyProperty property) {
-                    // connect reverse arc if the relationship is marked as "runtime"
-                    ArcProperty reverseArc = property.getComplimentaryReverseArc();
-                    boolean autoConnectReverse = reverseArc != null
-                            && reverseArc.getRelationship().isRuntime();
+				public boolean visitToMany(ToManyProperty property) {
+					// connect reverse arc if the relationship is marked as
+					// "runtime"
+					ArcProperty reverseArc = property.getComplimentaryReverseArc();
+					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
 
-                    property.addTarget(source, target, autoConnectReverse);
-                    return false;
-                }
+					property.addTarget(source, target, autoConnectReverse);
+					return false;
+				}
 
-                public boolean visitToOne(ToOneProperty property) {
-                    property.setTarget(source, target, false);
-                    return false;
-                }
-            });
-        }
-        finally {
-            setExternalChange(Boolean.FALSE);
-        }
-    }
+				public boolean visitToOne(ToOneProperty property) {
+					property.setTarget(source, target, false);
+					return false;
+				}
+			});
+		} finally {
+			setExternalChange(Boolean.FALSE);
+		}
+	}
 
-    public void arcDeleted(Object nodeId, final Object targetNodeId, Object arcId) {
-        final Persistent source = findObject(nodeId);
+	public void arcDeleted(Object nodeId, final Object targetNodeId, Object arcId) {
+		final Persistent source = findObject(nodeId);
 
-        // needed as sometime temporary objects are evoked from the context before
-        // changing their relationships
-        if (source == null) {
-            return;
-        }
+		// needed as sometime temporary objects are evoked from the context
+		// before
+		// changing their relationships
+		if (source == null) {
+			return;
+		}
 
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                ((ObjectId) nodeId).getEntityName());
-        PropertyDescriptor property = descriptor.getProperty(arcId.toString());
+		ClassDescriptor descriptor = context.getEntityResolver()
+				.getClassDescriptor(((ObjectId) nodeId).getEntityName());
+		PropertyDescriptor property = descriptor.getProperty(arcId.toString());
 
-        setExternalChange(Boolean.TRUE);
-        try {
-            property.visit(new PropertyVisitor() {
+		setExternalChange(Boolean.TRUE);
+		try {
+			property.visit(new PropertyVisitor() {
 
-                public boolean visitAttribute(AttributeProperty property) {
-                    return false;
-                }
+				public boolean visitAttribute(AttributeProperty property) {
+					return false;
+				}
 
-                public boolean visitToMany(ToManyProperty property) {
-                    // connect reverse arc if the relationship is marked as "runtime"
-                    ArcProperty reverseArc = property.getComplimentaryReverseArc();
-                    boolean autoConnectReverse = reverseArc != null
-                            && reverseArc.getRelationship().isRuntime();
+				public boolean visitToMany(ToManyProperty property) {
+					// connect reverse arc if the relationship is marked as
+					// "runtime"
+					ArcProperty reverseArc = property.getComplimentaryReverseArc();
+					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
 
-                    Persistent target = findObject(targetNodeId);
+					Persistent target = findObject(targetNodeId);
 
-                    if (target == null) {
+					if (target == null) {
 
-                        // this is usually the case when a NEW object was deleted and then
-                        // its
-                        // relationships were manipulated; so try to locate the object in
-                        // the
-                        // collection ...
-                        // the performance of this is rather dubious of course...
-                        target = findObjectInCollection(targetNodeId, property
-                                .readProperty(source));
-                    }
+						// this is usually the case when a NEW object was
+						// deleted and then
+						// its
+						// relationships were manipulated; so try to locate the
+						// object in
+						// the
+						// collection ...
+						// the performance of this is rather dubious of
+						// course...
+						target = findObjectInCollection(targetNodeId, property.readProperty(source));
+					}
 
-                    if (target == null) {
-                        // ignore?
-                    }
-                    else {
-                        property.removeTarget(source, target, autoConnectReverse);
-                    }
+					if (target == null) {
+						// ignore?
+					} else {
+						property.removeTarget(source, target, autoConnectReverse);
+					}
 
-                    return false;
-                }
+					return false;
+				}
 
-                public boolean visitToOne(ToOneProperty property) {
-                    property.setTarget(source, null, false);
-                    return false;
-                }
-            });
-        }
-        finally {
-            setExternalChange(Boolean.FALSE);
-        }
-    }
+				public boolean visitToOne(ToOneProperty property) {
+					property.setTarget(source, null, false);
+					return false;
+				}
+			});
+		} finally {
+			setExternalChange(Boolean.FALSE);
+		}
+	}
 
-    protected Persistent findObject(Object nodeId) {
-        // first do a lookup in ObjectStore; if even a hollow object is found, return it;
-        // if not - fetch.
+	protected Persistent findObject(Object nodeId) {
+		// first do a lookup in ObjectStore; if even a hollow object is found,
+		// return it;
+		// if not - fetch.
 
-        Persistent object = (Persistent) context.getGraphManager().getNode(nodeId);
-        if (object != null) {
-            return object;
-        }
+		Persistent object = (Persistent) context.getGraphManager().getNode(nodeId);
+		if (object != null) {
+			return object;
+		}
 
-        ObjectId id = (ObjectId) nodeId;
+		ObjectId id = (ObjectId) nodeId;
 
-        // this can happen if a NEW object is deleted and after that its relationships are
-        // modified
-        if (id.isTemporary()) {
-            return null;
-        }
+		// this can happen if a NEW object is deleted and after that its
+		// relationships are
+		// modified
+		if (id.isTemporary()) {
+			return null;
+		}
 
-        // skip context cache lookup, go directly to its channel
-        Query query = new ObjectIdQuery((ObjectId) nodeId);
-        QueryResponse response = context.getChannel().onQuery(context, query);
-        List objects = response.firstList();
+		// skip context cache lookup, go directly to its channel
+		Query query = new ObjectIdQuery((ObjectId) nodeId);
+		QueryResponse response = context.getChannel().onQuery(context, query);
+		List<?> objects = response.firstList();
 
-        if (objects.size() == 0) {
-            throw new CayenneRuntimeException("No object for ID exists: " + nodeId);
-        }
-        else if (objects.size() > 1) {
-            throw new CayenneRuntimeException(
-                    "Expected zero or one object, instead query matched: "
-                            + objects.size());
-        }
+		if (objects.size() == 0) {
+			throw new CayenneRuntimeException("No object for ID exists: " + nodeId);
+		} else if (objects.size() > 1) {
+			throw new CayenneRuntimeException("Expected zero or one object, instead query matched: " + objects.size());
+		}
 
-        return (Persistent) objects.get(0);
-    }
+		return (Persistent) objects.get(0);
+	}
 
-    protected Persistent findObjectInCollection(Object nodeId, Object toManyHolder) {
-        Collection c = (toManyHolder instanceof Map)
-                ? ((Map) toManyHolder).values()
-                : (Collection) toManyHolder;
-        Iterator it = c.iterator();
-        while (it.hasNext()) {
-            Persistent o = (Persistent) it.next();
-            if (nodeId.equals(o.getObjectId())) {
-                return o;
-            }
-        }
+	protected Persistent findObjectInCollection(Object nodeId, Object toManyHolder) {
+		
+		Collection<?> c = (toManyHolder instanceof Map) ? ((Map<?, ?>) toManyHolder).values() : (Collection<?>) toManyHolder;
+		for(Object o : c) {
+			Persistent p = (Persistent) o;
+			if (nodeId.equals(p.getObjectId())) {
+				return p;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 }

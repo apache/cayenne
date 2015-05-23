@@ -20,56 +20,64 @@
 package org.apache.cayenne.graph;
 
 /**
- * An abstract superclass of operations on individual nodes and arcs in a digraph.
+ * An abstract superclass of operations on individual nodes and arcs in a
+ * digraph.
  * 
  * @since 1.2
  */
 public abstract class NodeDiff implements GraphDiff, Comparable<NodeDiff> {
 
-    protected int diffId;
-    protected Object nodeId;
+	private static final long serialVersionUID = -6108147375331011556L;
+	
+	protected int diffId;
+	protected Object nodeId;
 
-    public NodeDiff(Object nodeId) {
-        this.nodeId = nodeId;
-    }
+	public NodeDiff(Object nodeId) {
+		this.nodeId = nodeId;
+	}
 
-    public NodeDiff(Object nodeId, int diffId) {
-        this.nodeId = nodeId;
-        this.diffId = diffId;
-    }
+	public NodeDiff(Object nodeId, int diffId) {
+		this.nodeId = nodeId;
+		this.diffId = diffId;
+	}
 
-    public boolean isNoop() {
-        return false;
-    }
+	@Override
+	public boolean isNoop() {
+		return false;
+	}
 
-    public abstract void apply(GraphChangeHandler tracker);
+	@Override
+	public abstract void apply(GraphChangeHandler tracker);
 
-    public abstract void undo(GraphChangeHandler tracker);
+	@Override
+	public abstract void undo(GraphChangeHandler tracker);
 
-    public Object getNodeId() {
-        return nodeId;
-    }
+	public Object getNodeId() {
+		return nodeId;
+	}
 
-    /**
-     * Returns an id of this diff that can be used for various purposes, such as
-     * identifying the order of the diff in a sequence.
-     */
-    public int getDiffId() {
-        return diffId;
-    }
+	/**
+	 * Returns an id of this diff that can be used for various purposes, such as
+	 * identifying the order of the diff in a sequence.
+	 */
+	public int getDiffId() {
+		return diffId;
+	}
 
-    /**
-     * Sets an id of this diff that can be used for various purposes, such as identifying
-     * the order of the diff in a sequence.
-     */
-    public void setDiffId(int diffId) {
-        this.diffId = diffId;
-    }
+	/**
+	 * Sets an id of this diff that can be used for various purposes, such as
+	 * identifying the order of the diff in a sequence.
+	 */
+	public void setDiffId(int diffId) {
+		this.diffId = diffId;
+	}
 
-    /**
-     * Implements a Comparable interface method to compare based on diffId property.
-     */
-    public int compareTo(NodeDiff o) {
-        return diffId - o.getDiffId();
-    }
+	/**
+	 * Implements a Comparable interface method to compare based on diffId
+	 * property.
+	 */
+	@Override
+	public int compareTo(NodeDiff o) {
+		return diffId - o.getDiffId();
+	}
 }
