@@ -27,6 +27,8 @@ import java.io.Serializable;
  * Named parameter for parameterized expressions.
  */
 public class ExpressionParameter implements Serializable {
+
+	private static final long serialVersionUID = -8324061115570177022L;
 	
 	protected String name;
 
