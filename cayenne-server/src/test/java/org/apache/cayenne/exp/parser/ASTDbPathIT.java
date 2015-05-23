@@ -19,6 +19,7 @@
 package org.apache.cayenne.exp.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.cayenne.Cayenne;
@@ -30,6 +31,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -69,4 +71,45 @@ public class ASTDbPathIT extends ServerCase {
 		assertTrue(dbTarget instanceof DbAttribute);
 	}
 
+	@Test
+	public void testEvaluate_Related_DataObject() {
+
+		Artist a1 = context.newObject(Artist.class);
+		Artist a2 = context.newObject(Artist.class);
+		Painting p1 = context.newObject(Painting.class);
+		Painting p2 = context.newObject(Painting.class);
+		Painting p3 = context.newObject(Painting.class);
+
+		a1.setArtistName("a1");
+		a2.setArtistName("a2");
+		p1.setPaintingTitle("p1");
+		p2.setPaintingTitle("p2");
+		p3.setPaintingTitle("p3");
+
+		p1.setToArtist(a1);
+		p2.setToArtist(a2);
+
+		context.commitChanges();
+
+		Expression attributeOnlyPath = new ASTDbPath("PAINTING_TITLE");
+		Expression singleStepPath = new ASTDbPath("toArtist.ARTIST_NAME");
+		Expression multiStepPath = new ASTDbPath("toArtist.paintingArray.PAINTING_TITLE");
+
+		// attribute only path
+		assertEquals(p1.getPaintingTitle(), attributeOnlyPath.evaluate(p1));
+		assertEquals(p2.getPaintingTitle(), attributeOnlyPath.evaluate(p2));
+
+		// attribute only path - not in cache
+		p1.getObjectContext().invalidateObjects(p1, p2);
+		assertEquals(p1.getPaintingTitle(), attributeOnlyPath.evaluate(p1));
+		assertEquals(p2.getPaintingTitle(), attributeOnlyPath.evaluate(p2));
+
+		// single step relationship path
+		assertEquals(a1.getArtistName(), singleStepPath.evaluate(p1));
+		assertEquals(a2.getArtistName(), singleStepPath.evaluate(p2));
+		assertNull(singleStepPath.evaluate(p3));
+
+		assertEquals(p1.getPaintingTitle(), multiStepPath.evaluate(p1));
+		assertEquals(p2.getPaintingTitle(), multiStepPath.evaluate(p2));
+	}
 }

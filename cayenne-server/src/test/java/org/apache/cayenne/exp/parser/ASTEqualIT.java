@@ -90,7 +90,7 @@ public class ASTEqualIT extends ServerCase {
 		Painting p1 = context.newObject(Painting.class);
 		Painting p2 = context.newObject(Painting.class);
 		Painting p3 = context.newObject(Painting.class);
-		
+
 		a1.setArtistName("a1");
 		a2.setArtistName("a2");
 		p1.setPaintingTitle("p1");

@@ -15,6 +15,7 @@ Date:
 Changes/New Features:
 
 CAY-1626 Add JodaTime DateTime support
+CAY-1902 Implement resolving Db paths for DataObjects
 CAY-1991 More control over generated String property names
 CAY-1992 Allow to exclude DataMap java class from Modeler class generation
 CAY-1995 Add support for iterators to Select

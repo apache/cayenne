@@ -20,15 +20,25 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Path expression traversing DB relationships and attributes.
@@ -62,7 +72,10 @@ public class ASTDbPath extends ASTPath {
 		}
 
 		Map<?, ?> map = toMap(o);
-		return (map != null) ? map.get(path) : null;
+		int finalDotIndex = path.lastIndexOf('.');
+		String finalPathComponent = finalDotIndex == -1 ? path : path.substring(finalDotIndex + 1);
+
+		return (map != null) ? map.get(finalPathComponent) : null;
 	}
 
 	protected Map<?, ?> toMap(Object o) {
@@ -71,6 +84,7 @@ public class ASTDbPath extends ASTPath {
 		} else if (o instanceof ObjectId) {
 			return ((ObjectId) o).getIdSnapshot();
 		} else if (o instanceof Persistent) {
+
 			Persistent persistent = (Persistent) o;
 
 			// before reading full snapshot, check if we can use smaller ID
@@ -83,12 +97,62 @@ public class ASTDbPath extends ASTPath {
 	}
 
 	private Map<?, ?> toMap_AttachedObject(ObjectContext context, Persistent persistent) {
+		return path.indexOf('.') >= 0 ? toMap_AttchedObject_MultiStepPath(context, persistent)
+				: toMap_AttchedObject_SingleStepPath(context, persistent);
+	}
+
+	private Map<?, ?> toMap_AttchedObject_MultiStepPath(ObjectContext context, Persistent persistent) {
+		Iterator<CayenneMapEntry> pathComponents = Cayenne.getObjEntity(persistent).getDbEntity()
+				.resolvePathComponents(this);
+		LinkedList<DbRelationship> reversedPathComponents = new LinkedList<DbRelationship>();
+
+		while (pathComponents.hasNext()) {
+			CayenneMapEntry component = pathComponents.next();
+			if (component instanceof DbRelationship) {
+				DbRelationship rel = (DbRelationship) component;
+				DbRelationship reverseRelationship = rel.getReverseRelationship();
+				if (reverseRelationship == null) {
+					reverseRelationship = rel.createReverseRelationship();
+				}
+				reversedPathComponents.addFirst(reverseRelationship);
+			} else {
+				break; // an attribute can only occur at the end of the path
+			}
+		}
+
+		DbEntity finalEntity = reversedPathComponents.get(0).getSourceEntity();
+
+		StringBuilder reversedPathStr = new StringBuilder();
+		for (int i = 0; i < reversedPathComponents.size(); i++) {
+			reversedPathStr.append(reversedPathComponents.get(i).getName());
+			if (i < reversedPathComponents.size() - 1) {
+				reversedPathStr.append('.');
+			}
+		}
+
+		SelectQuery<DataRow> query = new SelectQuery<DataRow>(finalEntity, ExpressionFactory.matchDbExp(
+				reversedPathStr.toString(), persistent));
+
+		// TODO: DbEntity root option for ObjectSelect?
+		query.setFetchingDataRows(true);
+		DataRow result = persistent.getObjectContext().selectOne(query);
+		return result;
+	}
+
+	private Map<?, ?> toMap_AttchedObject_SingleStepPath(ObjectContext context, Persistent persistent) {
+		ObjectId oid = persistent.getObjectId();
 
 		// TODO: snapshotting API should not be limited to DataContext...
 		if (context instanceof DataContext) {
 			return ((DataContext) context).currentSnapshot(persistent);
 		}
 
+		if (oid != null) {
+
+			return SelectById.dataRowQuery(persistent.getObjectId()).selectOne(context);
+		}
+
+		// fallback to ID snapshot as a last resort
 		return toMap_DetachedObject(persistent);
 	}
 
