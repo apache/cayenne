@@ -46,446 +46,449 @@ import org.apache.cayenne.util.Util;
  */
 public abstract class SimpleNode extends Expression implements Node {
 
-    protected Node parent;
-    protected Node[] children;
-    protected int id;
+	private static final long serialVersionUID = 4471832357335707557L;
+	
+	protected Node parent;
+	protected Node[] children;
+	protected int id;
 
-    /**
-     * <p>This is a utility method that can represent the supplied scalar as either an EJBQL literal into the
-     * supplied {@link java.io.PrintWriter} or is able to add the scalar to the parameters and to instead
-     * write a positional parameter to the EJBQL written to the {@link java.io.PrintWriter}.  If the parameters
-     * are null and the scalar object is not able to be represented as an EJBQL literal then the method will
-     * throw a runtime exception to indicate that it has failed to produce valid EJBQL.</p>
-     */
+	/**
+	 * <p>
+	 * This is a utility method that can represent the supplied scalar as either
+	 * an EJBQL literal into the supplied {@link java.io.PrintWriter} or is able
+	 * to add the scalar to the parameters and to instead write a positional
+	 * parameter to the EJBQL written to the {@link java.io.PrintWriter}. If the
+	 * parameters are null and the scalar object is not able to be represented
+	 * as an EJBQL literal then the method will throw a runtime exception to
+	 * indicate that it has failed to produce valid EJBQL.
+	 * </p>
+	 */
 
-    protected static void encodeScalarAsEJBQL(
-            List<Object> parameterAccumulator,
-            Appendable out,
-            Object scalar) throws IOException {
+	protected static void encodeScalarAsEJBQL(List<Object> parameterAccumulator, Appendable out, Object scalar)
+			throws IOException {
 
-        if (null==scalar) {
-            out.append("null");
-            return;
-        }
+		if (null == scalar) {
+			out.append("null");
+			return;
+		}
 
-        if (scalar instanceof Boolean) {
-            if((Boolean) scalar) {
-                out.append("true");
-            }
-            else {
-                out.append("false");
-            }
-            return;
-        }
+		if (scalar instanceof Boolean) {
+			if ((Boolean) scalar) {
+				out.append("true");
+			} else {
+				out.append("false");
+			}
+			return;
+		}
 
-        if(null!=parameterAccumulator) {
-            parameterAccumulator.add(scalar);
-            out.append('?');
-            out.append(Integer.toString(parameterAccumulator.size())); // parameters start at 1
-            return;
-        }
+		if (null != parameterAccumulator) {
+			parameterAccumulator.add(scalar);
+			out.append('?');
+			out.append(Integer.toString(parameterAccumulator.size())); // parameters
+																		// start
+																		// at 1
+			return;
+		}
 
-        if (
-                scalar instanceof Integer
-                        || scalar instanceof Long
-                        || scalar instanceof Float
-                        || scalar instanceof Double) {
-            out.append(scalar.toString());
-            return;
-        }
+		if (scalar instanceof Integer || scalar instanceof Long || scalar instanceof Float || scalar instanceof Double) {
+			out.append(scalar.toString());
+			return;
+		}
 
-        if (scalar instanceof Persistent) {
-            ObjectId id = ((Persistent) scalar).getObjectId();
-            Object encode = (id != null) ? id : scalar;
-            appendAsEscapedString(out, String.valueOf(encode));
-            return;
-        }
+		if (scalar instanceof Persistent) {
+			ObjectId id = ((Persistent) scalar).getObjectId();
+			Object encode = (id != null) ? id : scalar;
+			appendAsEscapedString(out, String.valueOf(encode));
+			return;
+		}
 
-        if (scalar instanceof Enum<?>) {
-            Enum<?> e = (Enum<?>) scalar;
-            out.append("enum:");
-            out.append(e.getClass().getName() + "." + e.name());
-            return;
-        }
+		if (scalar instanceof Enum<?>) {
+			Enum<?> e = (Enum<?>) scalar;
+			out.append("enum:");
+			out.append(e.getClass().getName() + "." + e.name());
+			return;
+		}
 
-        if (scalar instanceof String) {
-            out.append('\'');
-            appendAsEscapedString(out, scalar.toString());
-            out.append('\'');
-            return;
-        }
+		if (scalar instanceof String) {
+			out.append('\'');
+			appendAsEscapedString(out, scalar.toString());
+			out.append('\'');
+			return;
+		}
 
-        throw new IllegalStateException("the scalar type '"+scalar.getClass().getSimpleName()+"' is not supported as a scalar type in EJBQL");
-    }
+		throw new IllegalStateException("the scalar type '" + scalar.getClass().getSimpleName()
+				+ "' is not supported as a scalar type in EJBQL");
+	}
 
-    /**
-     * Utility method that encodes an object that is not an expression Node to
-     * String.
-     */
-    protected static void appendScalarAsString(Appendable out, Object scalar, char quoteChar) throws IOException {
-        boolean quote = scalar instanceof String;
+	/**
+	 * Utility method that encodes an object that is not an expression Node to
+	 * String.
+	 */
+	protected static void appendScalarAsString(Appendable out, Object scalar, char quoteChar) throws IOException {
+		boolean quote = scalar instanceof String;
 
-        if (quote) {
-            out.append(quoteChar);
-        }
+		if (quote) {
+			out.append(quoteChar);
+		}
 
-        // encode only ObjectId for Persistent, ensure that the order of keys is
-        // predictable....
+		// encode only ObjectId for Persistent, ensure that the order of keys is
+		// predictable....
 
-        // TODO: should we use UUID here?
-        if (scalar instanceof Persistent) {
-            ObjectId id = ((Persistent) scalar).getObjectId();
-            Object encode = (id != null) ? id : scalar;
-            appendAsEscapedString(out, String.valueOf(encode));
-        } else if (scalar instanceof Enum<?>) {
-            Enum<?> e = (Enum<?>) scalar;
-            out.append("enum:");
-            out.append(e.getClass().getName() + "." + e.name());
-        } else {
-            appendAsEscapedString(out, String.valueOf(scalar));
-        }
+		// TODO: should we use UUID here?
+		if (scalar instanceof Persistent) {
+			ObjectId id = ((Persistent) scalar).getObjectId();
+			Object encode = (id != null) ? id : scalar;
+			appendAsEscapedString(out, String.valueOf(encode));
+		} else if (scalar instanceof Enum<?>) {
+			Enum<?> e = (Enum<?>) scalar;
+			out.append("enum:");
+			out.append(e.getClass().getName() + "." + e.name());
+		} else {
+			appendAsEscapedString(out, String.valueOf(scalar));
+		}
 
-        if (quote) {
-            out.append(quoteChar);
-        }
-    }
+		if (quote) {
+			out.append(quoteChar);
+		}
+	}
 
-    /**
-     * Utility method that prints a string to the provided Appendable, escaping
-     * special characters.
-     */
-    protected static void appendAsEscapedString(Appendable out, String source) throws IOException {
-        int len = source.length();
-        for (int i = 0; i < len; i++) {
-            char c = source.charAt(i);
+	/**
+	 * Utility method that prints a string to the provided Appendable, escaping
+	 * special characters.
+	 */
+	protected static void appendAsEscapedString(Appendable out, String source) throws IOException {
+		int len = source.length();
+		for (int i = 0; i < len; i++) {
+			char c = source.charAt(i);
 
-            switch (c) {
-            case '\n':
-                out.append("\\n");
-                continue;
-            case '\r':
-                out.append("\\r");
-                continue;
-            case '\t':
-                out.append("\\t");
-                continue;
-            case '\b':
-                out.append("\\b");
-                continue;
-            case '\f':
-                out.append("\\f");
-                continue;
-            case '\\':
-                out.append("\\\\");
-                continue;
-            case '\'':
-                out.append("\\'");
-                continue;
-            case '\"':
-                out.append("\\\"");
-                continue;
-            default:
-                out.append(c);
-            }
-        }
-    }
+			switch (c) {
+			case '\n':
+				out.append("\\n");
+				continue;
+			case '\r':
+				out.append("\\r");
+				continue;
+			case '\t':
+				out.append("\\t");
+				continue;
+			case '\b':
+				out.append("\\b");
+				continue;
+			case '\f':
+				out.append("\\f");
+				continue;
+			case '\\':
+				out.append("\\\\");
+				continue;
+			case '\'':
+				out.append("\\'");
+				continue;
+			case '\"':
+				out.append("\\\"");
+				continue;
+			default:
+				out.append(c);
+			}
+		}
+	}
 
-    protected SimpleNode(int i) {
-        id = i;
-    }
+	protected SimpleNode(int i) {
+		id = i;
+	}
 
-    /**
-     * Always returns empty map.
-     * 
-     * @since 3.0
-     */
-    @Override
-    public Map<String, String> getPathAliases() {
-        return Collections.emptyMap();
-    }
+	/**
+	 * Always returns empty map.
+	 * 
+	 * @since 3.0
+	 */
+	@Override
+	public Map<String, String> getPathAliases() {
+		return Collections.emptyMap();
+	}
 
-    protected abstract String getExpressionOperator(int index);
+	protected abstract String getExpressionOperator(int index);
 
-    /**
-     * Returns operator for ebjql statements, which can differ for Cayenne
-     * expression operator
-     */
-    protected String getEJBQLExpressionOperator(int index) {
-        return getExpressionOperator(index);
-    }
+	/**
+	 * Returns operator for ebjql statements, which can differ for Cayenne
+	 * expression operator
+	 */
+	protected String getEJBQLExpressionOperator(int index) {
+		return getExpressionOperator(index);
+	}
 
-    @Override
-    protected boolean pruneNodeForPrunedChild(Object prunedChild) {
-        return true;
-    }
+	@Override
+	protected boolean pruneNodeForPrunedChild(Object prunedChild) {
+		return true;
+	}
 
-    /**
-     * Implemented for backwards compatibility with exp package.
-     */
-    @Override
-    public String expName() {
-        return ExpressionParserTreeConstants.jjtNodeName[id];
-    }
+	/**
+	 * Implemented for backwards compatibility with exp package.
+	 */
+	@Override
+	public String expName() {
+		return ExpressionParserTreeConstants.jjtNodeName[id];
+	}
 
-    /**
-     * Flattens the tree under this node by eliminating any children that are of
-     * the same class as this node and copying their children to this node.
-     */
-    @Override
-    protected void flattenTree() {
-        boolean shouldFlatten = false;
-        int newSize = 0;
+	/**
+	 * Flattens the tree under this node by eliminating any children that are of
+	 * the same class as this node and copying their children to this node.
+	 */
+	@Override
+	protected void flattenTree() {
+		boolean shouldFlatten = false;
+		int newSize = 0;
 
-        for (Node child : children) {
-            if (child.getClass() == getClass()) {
-                shouldFlatten = true;
-                newSize += child.jjtGetNumChildren();
-            } else {
-                newSize++;
-            }
-        }
+		for (Node child : children) {
+			if (child.getClass() == getClass()) {
+				shouldFlatten = true;
+				newSize += child.jjtGetNumChildren();
+			} else {
+				newSize++;
+			}
+		}
 
-        if (shouldFlatten) {
-            Node[] newChildren = new Node[newSize];
-            int j = 0;
+		if (shouldFlatten) {
+			Node[] newChildren = new Node[newSize];
+			int j = 0;
 
-            for (Node c : children) {
-                if (c.getClass() == getClass()) {
-                    for (int k = 0; k < c.jjtGetNumChildren(); ++k) {
-                        newChildren[j++] = c.jjtGetChild(k);
-                    }
-                } else {
-                    newChildren[j++] = c;
-                }
-            }
+			for (Node c : children) {
+				if (c.getClass() == getClass()) {
+					for (int k = 0; k < c.jjtGetNumChildren(); ++k) {
+						newChildren[j++] = c.jjtGetChild(k);
+					}
+				} else {
+					newChildren[j++] = c;
+				}
+			}
 
-            if (j != newSize) {
-                throw new ExpressionException("Assertion error: " + j + " != " + newSize);
-            }
+			if (j != newSize) {
+				throw new ExpressionException("Assertion error: " + j + " != " + newSize);
+			}
 
-            this.children = newChildren;
-        }
-    }
+			this.children = newChildren;
+		}
+	}
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsString(Appendable out) throws IOException {
 
-        if (parent != null) {
-            out.append("(");
-        }
+		if (parent != null) {
+			out.append("(");
+		}
 
-        if ((children != null) && (children.length > 0)) {
-            for (int i = 0; i < children.length; ++i) {
-                if (i > 0) {
-                    out.append(' ');
-                    out.append(getExpressionOperator(i));
-                    out.append(' ');
-                }
+		if ((children != null) && (children.length > 0)) {
+			for (int i = 0; i < children.length; ++i) {
+				if (i > 0) {
+					out.append(' ');
+					out.append(getExpressionOperator(i));
+					out.append(' ');
+				}
 
-                if (children[i] == null) {
-                    out.append("null");
-                } else {
-                    ((SimpleNode) children[i]).appendAsString(out);
-                }
-            }
-        }
+				if (children[i] == null) {
+					out.append("null");
+				} else {
+					((SimpleNode) children[i]).appendAsString(out);
+				}
+			}
+		}
 
-        if (parent != null) {
-            out.append(')');
-        }
-    }
+		if (parent != null) {
+			out.append(')');
+		}
+	}
 
-    /**
-     * @deprecated since 4.0 use {@link #appendAsString(Appendable)}.
-     */
-    @Override
-    @Deprecated
-    public void encodeAsString(PrintWriter pw) {
-        try {
-            appendAsString(pw);
-        } catch (IOException e) {
-            throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
-        }
-    }
+	/**
+	 * @deprecated since 4.0 use {@link #appendAsString(Appendable)}.
+	 */
+	@Override
+	@Deprecated
+	public void encodeAsString(PrintWriter pw) {
+		try {
+			appendAsString(pw);
+		} catch (IOException e) {
+			throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
+		}
+	}
 
-    @Override
-    public Object getOperand(int index) {
-        Node child = jjtGetChild(index);
+	@Override
+	public Object getOperand(int index) {
+		Node child = jjtGetChild(index);
 
-        // unwrap ASTScalar nodes - this is likely a temporary thing to keep it
-        // compatible
-        // with QualifierTranslator. In the future we might want to keep scalar
-        // nodes
-        // for the purpose of expression evaluation.
-        return unwrapChild(child);
-    }
+		// unwrap ASTScalar nodes - this is likely a temporary thing to keep it
+		// compatible
+		// with QualifierTranslator. In the future we might want to keep scalar
+		// nodes
+		// for the purpose of expression evaluation.
+		return unwrapChild(child);
+	}
 
-    protected Node wrapChild(Object child) {
-        // when child is null, there's no way of telling whether this is a
-        // scalar or
-        // not... fuzzy... maybe we should stop using this method - it is too
-        // generic
-        return (child instanceof Node || child == null) ? (Node) child : new ASTScalar(child);
-    }
+	protected Node wrapChild(Object child) {
+		// when child is null, there's no way of telling whether this is a
+		// scalar or
+		// not... fuzzy... maybe we should stop using this method - it is too
+		// generic
+		return (child instanceof Node || child == null) ? (Node) child : new ASTScalar(child);
+	}
 
-    protected Object unwrapChild(Node child) {
-        return (child instanceof ASTScalar) ? ((ASTScalar) child).getValue() : child;
-    }
+	protected Object unwrapChild(Node child) {
+		return (child instanceof ASTScalar) ? ((ASTScalar) child).getValue() : child;
+	}
 
-    @Override
-    public int getOperandCount() {
-        return jjtGetNumChildren();
-    }
+	@Override
+	public int getOperandCount() {
+		return jjtGetNumChildren();
+	}
 
-    @Override
-    public void setOperand(int index, Object value) {
-        Node node = (value == null || value instanceof Node) ? (Node) value : new ASTScalar(value);
-        jjtAddChild(node, index);
+	@Override
+	public void setOperand(int index, Object value) {
+		Node node = (value == null || value instanceof Node) ? (Node) value : new ASTScalar(value);
+		jjtAddChild(node, index);
 
-        // set the parent, as jjtAddChild doesn't do it...
-        if (node != null) {
-            node.jjtSetParent(this);
-        }
-    }
+		// set the parent, as jjtAddChild doesn't do it...
+		if (node != null) {
+			node.jjtSetParent(this);
+		}
+	}
 
-    public void jjtOpen() {
+	public void jjtOpen() {
 
-    }
+	}
 
-    public void jjtClose() {
+	public void jjtClose() {
 
-    }
+	}
 
-    public void jjtSetParent(Node n) {
-        parent = n;
-    }
+	public void jjtSetParent(Node n) {
+		parent = n;
+	}
 
-    public Node jjtGetParent() {
-        return parent;
-    }
+	public Node jjtGetParent() {
+		return parent;
+	}
 
-    public void jjtAddChild(Node n, int i) {
-        if (children == null) {
-            children = new Node[i + 1];
-        } else if (i >= children.length) {
-            Node c[] = new Node[i + 1];
-            System.arraycopy(children, 0, c, 0, children.length);
-            children = c;
-        }
-        children[i] = n;
-    }
+	public void jjtAddChild(Node n, int i) {
+		if (children == null) {
+			children = new Node[i + 1];
+		} else if (i >= children.length) {
+			Node c[] = new Node[i + 1];
+			System.arraycopy(children, 0, c, 0, children.length);
+			children = c;
+		}
+		children[i] = n;
+	}
 
-    public Node jjtGetChild(int i) {
-        return children[i];
-    }
+	public Node jjtGetChild(int i) {
+		return children[i];
+	}
 
-    public final int jjtGetNumChildren() {
-        return (children == null) ? 0 : children.length;
-    }
+	public final int jjtGetNumChildren() {
+		return (children == null) ? 0 : children.length;
+	}
 
-    /**
-     * Evaluates itself with object, pushing result on the stack.
-     */
-    protected abstract Object evaluateNode(Object o) throws Exception;
+	/**
+	 * Evaluates itself with object, pushing result on the stack.
+	 */
+	protected abstract Object evaluateNode(Object o) throws Exception;
 
-    /**
-     * Sets the parent to this for all children.
-     * 
-     * @since 3.0
-     */
-    protected void connectChildren() {
-        if (children != null) {
-            for (Node child : children) {
-                // although nulls are expected to be wrapped in scalar, still
-                // doing a
-                // check here to make it more robust
-                if (child != null) {
-                    child.jjtSetParent(this);
-                }
-            }
-        }
-    }
+	/**
+	 * Sets the parent to this for all children.
+	 * 
+	 * @since 3.0
+	 */
+	protected void connectChildren() {
+		if (children != null) {
+			for (Node child : children) {
+				// although nulls are expected to be wrapped in scalar, still
+				// doing a
+				// check here to make it more robust
+				if (child != null) {
+					child.jjtSetParent(this);
+				}
+			}
+		}
+	}
 
-    protected Object evaluateChild(int index, Object o) throws Exception {
-        SimpleNode node = (SimpleNode) jjtGetChild(index);
-        return node != null ? node.evaluate(o) : null;
-    }
+	protected Object evaluateChild(int index, Object o) throws Exception {
+		SimpleNode node = (SimpleNode) jjtGetChild(index);
+		return node != null ? node.evaluate(o) : null;
+	}
 
-    @Override
-    public Expression notExp() {
-        return new ASTNot(this);
-    }
+	@Override
+	public Expression notExp() {
+		return new ASTNot(this);
+	}
 
-    @Override
-    public Object evaluate(Object o) {
-        // wrap in try/catch to provide unified exception processing
-        try {
-            return evaluateNode(o);
-        } catch (Throwable th) {
-            String string = this.toString();
-            throw new ExpressionException("Error evaluating expression '" + string + "'", string,
-                    Util.unwindException(th));
-        }
-    }
+	@Override
+	public Object evaluate(Object o) {
+		// wrap in try/catch to provide unified exception processing
+		try {
+			return evaluateNode(o);
+		} catch (Throwable th) {
+			String string = this.toString();
+			throw new ExpressionException("Error evaluating expression '" + string + "'", string,
+					Util.unwindException(th));
+		}
+	}
 
-    /**
-     * @since 3.0
-     * @deprecated since 4.0 use {@link #appendAsEJBQL(Appendable, String)}.
-     */
-    @Override
-    @Deprecated
-    public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-        try {
-            appendAsEJBQL(pw, rootId);
-        } catch (IOException e) {
-            throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
-        }
-    }
+	/**
+	 * @since 3.0
+	 * @deprecated since 4.0 use {@link #appendAsEJBQL(Appendable, String)}.
+	 */
+	@Override
+	@Deprecated
+	public void encodeAsEJBQL(PrintWriter pw, String rootId) {
+		try {
+			appendAsEJBQL(pw, rootId);
+		} catch (IOException e) {
+			throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
+		}
+	}
 
-    /**
-     * @since 4.0
-     */
-    public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
-         appendAsEJBQL(null,out,rootId);
-    }
+	/**
+	 * @since 4.0
+	 */
+	public void appendAsEJBQL(Appendable out, String rootId) throws IOException {
+		appendAsEJBQL(null, out, rootId);
+	}
 
-        /**
-         * @since 4.0
-         */
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        if (parent != null) {
-            out.append("(");
-        }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		if (parent != null) {
+			out.append("(");
+		}
 
-        if ((children != null) && (children.length > 0)) {
-            appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
-        }
+		if ((children != null) && (children.length > 0)) {
+			appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
+		}
 
-        if (parent != null) {
-            out.append(')');
-        }
-    }
+		if (parent != null) {
+			out.append(')');
+		}
+	}
 
-    /**
-     * Encodes child of this node with specified index to EJBQL
-     */
-    protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        for (int i = 0; i < children.length; ++i) {
-            if (i > 0) {
-                out.append(' ');
-                out.append(getEJBQLExpressionOperator(i));
-                out.append(' ');
-            }
+	/**
+	 * Encodes child of this node with specified index to EJBQL
+	 */
+	protected void appendChildrenAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId)
+			throws IOException {
+		for (int i = 0; i < children.length; ++i) {
+			if (i > 0) {
+				out.append(' ');
+				out.append(getEJBQLExpressionOperator(i));
+				out.append(' ');
+			}
 
-            if (children[i] == null) {
-                out.append("null");
-            } else {
-                ((SimpleNode) children[i]).appendAsEJBQL(parameterAccumulator, out, rootId);
-            }
-        }
-    }
+			if (children[i] == null) {
+				out.append("null");
+			} else {
+				((SimpleNode) children[i]).appendAsEJBQL(parameterAccumulator, out, rootId);
+			}
+		}
+	}
 }

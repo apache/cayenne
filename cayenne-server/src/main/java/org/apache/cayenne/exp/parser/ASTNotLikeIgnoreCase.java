@@ -17,7 +17,6 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
@@ -28,63 +27,66 @@ import org.apache.cayenne.util.ConversionUtil;
  * 
  */
 public class ASTNotLikeIgnoreCase extends IgnoreCaseNode {
-    ASTNotLikeIgnoreCase(int id) {
-        super(id, true);
-    }
 
-    public ASTNotLikeIgnoreCase() {
-        super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true);
-    }
+	private static final long serialVersionUID = -1837593236671099985L;
 
-    public ASTNotLikeIgnoreCase(ASTPath path, Object value) {
-        super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true);
-        jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(value), 1);
-        connectChildren();
-    }
-    
-    public ASTNotLikeIgnoreCase(ASTPath path, Object value, char escapeChar) {
-        super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true, escapeChar);
-        jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(value), 1);
-        connectChildren();
-    }
+	ASTNotLikeIgnoreCase(int id) {
+		super(id, true);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
-        }
+	public ASTNotLikeIgnoreCase() {
+		super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true);
+	}
 
-        String s1 = ConversionUtil.toString(evaluateChild(0, o));
-        if (s1 == null) {
-            return Boolean.FALSE;
-        }
+	public ASTNotLikeIgnoreCase(ASTPath path, Object value) {
+		super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true);
+		jjtAddChild(path, 0);
+		jjtAddChild(new ASTScalar(value), 1);
+		connectChildren();
+	}
 
-        return matchPattern(s1) ? Boolean.FALSE : Boolean.TRUE;
-    }
+	public ASTNotLikeIgnoreCase(ASTPath path, Object value, char escapeChar) {
+		super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true, escapeChar);
+		jjtAddChild(path, 0);
+		jjtAddChild(new ASTScalar(value), 1);
+		connectChildren();
+	}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTNotLikeIgnoreCase(id);
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len != 2) {
+			return Boolean.FALSE;
+		}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "not likeIgnoreCase";
-    }
-    
-    @Override
-    protected String getEJBQLExpressionOperator(int index) {
-        return "not like";
-    }
+		String s1 = ConversionUtil.toString(evaluateChild(0, o));
+		if (s1 == null) {
+			return Boolean.FALSE;
+		}
 
-    @Override
-    public int getType() {
-        return Expression.NOT_LIKE_IGNORE_CASE;
-    }
+		return matchPattern(s1) ? Boolean.FALSE : Boolean.TRUE;
+	}
+
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTNotLikeIgnoreCase(id);
+	}
+
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "not likeIgnoreCase";
+	}
+
+	@Override
+	protected String getEJBQLExpressionOperator(int index) {
+		return "not like";
+	}
+
+	@Override
+	public int getType() {
+		return Expression.NOT_LIKE_IGNORE_CASE;
+	}
 }

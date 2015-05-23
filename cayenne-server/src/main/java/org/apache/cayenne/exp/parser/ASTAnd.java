@@ -32,86 +32,89 @@ import org.apache.cayenne.util.ConversionUtil;
  * @since 1.1
  */
 public class ASTAnd extends AggregateConditionNode implements ValueInjector {
-    /**
-     * Constructor used by expression parser. Do not invoke directly.
-     */
-    ASTAnd(int id) {
-        super(id);
-    }
 
-    public ASTAnd() {
-        super(ExpressionParserTreeConstants.JJTAND);
-    }
+	private static final long serialVersionUID = -5936206826390819160L;
 
-    public ASTAnd(Object[] nodes) {
-        super(ExpressionParserTreeConstants.JJTAND);
-        int len = nodes.length;
-        for (int i = 0; i < len; i++) {
-            jjtAddChild((Node) nodes[i], i);
-        }
-        
-        connectChildren();
-    }
+	/**
+	 * Constructor used by expression parser. Do not invoke directly.
+	 */
+	ASTAnd(int id) {
+		super(id);
+	}
 
-    public ASTAnd(Collection<? extends Node> nodes) {
-        super(ExpressionParserTreeConstants.JJTAND);
-        int len = nodes.size();
-        Iterator<? extends Node> it = nodes.iterator();
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(it.next(), i);
-        }
-        
-        connectChildren();
-    }
+	public ASTAnd() {
+		super(ExpressionParserTreeConstants.JJTAND);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len == 0) {
-            return Boolean.FALSE;
-        }
+	public ASTAnd(Object[] nodes) {
+		super(ExpressionParserTreeConstants.JJTAND);
+		int len = nodes.length;
+		for (int i = 0; i < len; i++) {
+			jjtAddChild((Node) nodes[i], i);
+		}
 
-        for (int i = 0; i < len; i++) {
-            if (!ConversionUtil.toBoolean(evaluateChild(i, o))) {
-                return Boolean.FALSE;
-            }
-        }
+		connectChildren();
+	}
 
-        return Boolean.TRUE;
-    }
+	public ASTAnd(Collection<? extends Node> nodes) {
+		super(ExpressionParserTreeConstants.JJTAND);
+		int len = nodes.size();
+		Iterator<? extends Node> it = nodes.iterator();
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(it.next(), i);
+		}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTAnd(id);
-    }
+		connectChildren();
+	}
 
-    @Override
-    public int getType() {
-        return Expression.AND;
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len == 0) {
+			return Boolean.FALSE;
+		}
 
-    @Override
-    public void jjtClose() {
-        super.jjtClose();
-        flattenTree();
-    }
+		for (int i = 0; i < len; i++) {
+			if (!ConversionUtil.toBoolean(evaluateChild(i, o))) {
+				return Boolean.FALSE;
+			}
+		}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "and";
-    }
+		return Boolean.TRUE;
+	}
 
-    public void injectValue(Object o) {
-        //iterate through all operands, inject all possible
-        int len = jjtGetNumChildren();
-        for (int i = 0; i < len; i++) {
-            Node node = jjtGetChild(i);
-            if (node instanceof ValueInjector) {
-                ((ValueInjector) node).injectValue(o);
-            }
-        }
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTAnd(id);
+	}
+
+	@Override
+	public int getType() {
+		return Expression.AND;
+	}
+
+	@Override
+	public void jjtClose() {
+		super.jjtClose();
+		flattenTree();
+	}
+
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "and";
+	}
+
+	public void injectValue(Object o) {
+		// iterate through all operands, inject all possible
+		int len = jjtGetNumChildren();
+		for (int i = 0; i < len; i++) {
+			Node node = jjtGetChild(i);
+			if (node instanceof ValueInjector) {
+				((ValueInjector) node).injectValue(o);
+			}
+		}
+	}
 }

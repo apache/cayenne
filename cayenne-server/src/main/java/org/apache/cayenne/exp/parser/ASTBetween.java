@@ -28,63 +28,65 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTBetween extends ConditionNode {
 
-    ASTBetween(int id) {
-        super(id);
-    }
+	private static final long serialVersionUID = -8739783546459651759L;
 
-    public ASTBetween() {
-        super(ExpressionParserTreeConstants.JJTBETWEEN);
-    }
+	ASTBetween(int id) {
+		super(id);
+	}
 
-    public ASTBetween(ASTPath path, Object value1, Object value2) {
-        super(ExpressionParserTreeConstants.JJTBETWEEN);
-        jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(value1), 1);
-        jjtAddChild(new ASTScalar(value2), 2);
+	public ASTBetween() {
+		super(ExpressionParserTreeConstants.JJTBETWEEN);
+	}
 
-        connectChildren();
-    }
+	public ASTBetween(ASTPath path, Object value1, Object value2) {
+		super(ExpressionParserTreeConstants.JJTBETWEEN);
+		jjtAddChild(path, 0);
+		jjtAddChild(new ASTScalar(value1), 1);
+		jjtAddChild(new ASTScalar(value2), 2);
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 3) {
-            return Boolean.FALSE;
-        }
+		connectChildren();
+	}
 
-        Object o1 = evaluateChild(0, o);
-        Object o2 = evaluateChild(1, o);
-        Object o3 = evaluateChild(2, o);
-        Evaluator e = Evaluator.evaluator(o1);
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len != 3) {
+			return Boolean.FALSE;
+		}
 
-        Integer c1 = e.compare(o1, o2);
-        if (c1 == null) {
-            return Boolean.FALSE;
-        }
+		Object o1 = evaluateChild(0, o);
+		Object o2 = evaluateChild(1, o);
+		Object o3 = evaluateChild(2, o);
+		Evaluator e = Evaluator.evaluator(o1);
 
-        Integer c2 = e.compare(o1, o3);
-        if (c2 == null) {
-            return Boolean.FALSE;
-        }
+		Integer c1 = e.compare(o1, o2);
+		if (c1 == null) {
+			return Boolean.FALSE;
+		}
 
-        return c1 >= 0 && c2 <= 0 ? Boolean.TRUE : Boolean.FALSE;
-    }
+		Integer c2 = e.compare(o1, o3);
+		if (c2 == null) {
+			return Boolean.FALSE;
+		}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTBetween(id);
-    }
+		return c1 >= 0 && c2 <= 0 ? Boolean.TRUE : Boolean.FALSE;
+	}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return (index == 2) ? "and" : "between";
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTBetween(id);
+	}
 
-    @Override
-    public int getType() {
-        return Expression.BETWEEN;
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		return (index == 2) ? "and" : "between";
+	}
+
+	@Override
+	public int getType() {
+		return Expression.BETWEEN;
+	}
 }

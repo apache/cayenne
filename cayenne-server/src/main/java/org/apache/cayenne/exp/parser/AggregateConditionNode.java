@@ -19,84 +19,80 @@
 
 package org.apache.cayenne.exp.parser;
 
-import org.apache.commons.collections.Transformer;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.commons.collections.Transformer;
 
 /**
  * Superclass of aggregated conditional nodes such as NOT, AND, OR. Performs
- * extra checks on parent and child expressions to validate conditions that
- * are not addressed in the Cayenne expressions grammar.
+ * extra checks on parent and child expressions to validate conditions that are
+ * not addressed in the Cayenne expressions grammar.
  * 
  * @since 1.1
  */
 public abstract class AggregateConditionNode extends SimpleNode {
-    AggregateConditionNode(int i) {
-        super(i);
-    }
 
-    @Override
-    protected boolean pruneNodeForPrunedChild(Object prunedChild) {
-        return false;
-    }
+	private static final long serialVersionUID = -636699350691988809L;
 
-    @Override
-    protected Object transformExpression(Transformer transformer) {
-        Object transformed = super.transformExpression(transformer);
+	AggregateConditionNode(int i) {
+		super(i);
+	}
 
-        if (!(transformed instanceof AggregateConditionNode)) {
-            return transformed;
-        }
-        
-        AggregateConditionNode condition = (AggregateConditionNode) transformed;
+	@Override
+	protected boolean pruneNodeForPrunedChild(Object prunedChild) {
+		return false;
+	}
 
-        // prune itself if the transformation resulted in 
-        // no children or a single child
-        switch (condition.getOperandCount()) {
-            case 1 :
-                if (condition instanceof ASTNot) {
-                    return condition;
-                }
-                else {
-                    return condition.getOperand(0);
-                }
-            case 0 :
-                return PRUNED_NODE;
-            default :
-                return condition;
-        }
-    }
+	@Override
+	protected Object transformExpression(Transformer transformer) {
+		Object transformed = super.transformExpression(transformer);
 
-    @Override
-    public void jjtSetParent(Node n) {
-        // this is a check that we can't handle properly
-        // in the grammar... do it here...
+		if (!(transformed instanceof AggregateConditionNode)) {
+			return transformed;
+		}
 
-        // disallow non-aggregated condition parents...
-        if (!(n instanceof AggregateConditionNode)) {
-            String label =
-                (n instanceof SimpleNode)
-                    ? ((SimpleNode) n).expName()
-                    : String.valueOf(n);
-            throw new ExpressionException(expName() + ": invalid parent - " + label);
-        }
+		AggregateConditionNode condition = (AggregateConditionNode) transformed;
 
-        super.jjtSetParent(n);
-    }
+		// prune itself if the transformation resulted in
+		// no children or a single child
+		switch (condition.getOperandCount()) {
+		case 1:
+			if (condition instanceof ASTNot) {
+				return condition;
+			} else {
+				return condition.getOperand(0);
+			}
+		case 0:
+			return PRUNED_NODE;
+		default:
+			return condition;
+		}
+	}
 
-    @Override
-    public void jjtAddChild(Node n, int i) {
-        // this is a check that we can't handle properly
-        // in the grammar... do it here...
+	@Override
+	public void jjtSetParent(Node n) {
+		// this is a check that we can't handle properly
+		// in the grammar... do it here...
 
-        // only allow conditional nodes...no scalars
-        if (!(n instanceof ConditionNode) && !(n instanceof AggregateConditionNode)) {
-            String label =
-                (n instanceof SimpleNode)
-                    ? ((SimpleNode) n).expName()
-                    : String.valueOf(n);
-            throw new ExpressionException(expName() + ": invalid child - " + label);
-        }
+		// disallow non-aggregated condition parents...
+		if (!(n instanceof AggregateConditionNode)) {
+			String label = (n instanceof SimpleNode) ? ((SimpleNode) n).expName() : String.valueOf(n);
+			throw new ExpressionException(expName() + ": invalid parent - " + label);
+		}
 
-        super.jjtAddChild(n, i);
-    }
+		super.jjtSetParent(n);
+	}
+
+	@Override
+	public void jjtAddChild(Node n, int i) {
+		// this is a check that we can't handle properly
+		// in the grammar... do it here...
+
+		// only allow conditional nodes...no scalars
+		if (!(n instanceof ConditionNode) && !(n instanceof AggregateConditionNode)) {
+			String label = (n instanceof SimpleNode) ? ((SimpleNode) n).expName() : String.valueOf(n);
+			throw new ExpressionException(expName() + ": invalid child - " + label);
+		}
+
+		super.jjtAddChild(n, i);
+	}
 }

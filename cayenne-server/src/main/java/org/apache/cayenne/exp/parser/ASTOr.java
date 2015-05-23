@@ -31,70 +31,73 @@ import org.apache.cayenne.util.ConversionUtil;
  * @since 1.1
  */
 public class ASTOr extends AggregateConditionNode {
-    ASTOr(int id) {
-        super(id);
-    }
 
-    public ASTOr() {
-        super(ExpressionParserTreeConstants.JJTOR);
-    }
+	private static final long serialVersionUID = 780157841581581297L;
 
-    public ASTOr(Object[] nodes) {
-        super(ExpressionParserTreeConstants.JJTOR);
-        int len = nodes.length;
-        for (int i = 0; i < len; i++) {
-            jjtAddChild((Node) nodes[i], i);
-        }
-        connectChildren();
-    }
+	ASTOr(int id) {
+		super(id);
+	}
 
-    public ASTOr(Collection<? extends Node> nodes) {
-        super(ExpressionParserTreeConstants.JJTOR);
-        int len = nodes.size();
-        Iterator<? extends Node> it = nodes.iterator();
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(it.next(), i);
-        }
-        connectChildren();
-    }
+	public ASTOr() {
+		super(ExpressionParserTreeConstants.JJTOR);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len == 0) {
-            return Boolean.FALSE;
-        }
+	public ASTOr(Object[] nodes) {
+		super(ExpressionParserTreeConstants.JJTOR);
+		int len = nodes.length;
+		for (int i = 0; i < len; i++) {
+			jjtAddChild((Node) nodes[i], i);
+		}
+		connectChildren();
+	}
 
-        for (int i = 0; i < len; i++) {
-            if (ConversionUtil.toBoolean(evaluateChild(i, o))) {
-                return Boolean.TRUE;
-            }
-        }
+	public ASTOr(Collection<? extends Node> nodes) {
+		super(ExpressionParserTreeConstants.JJTOR);
+		int len = nodes.size();
+		Iterator<? extends Node> it = nodes.iterator();
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(it.next(), i);
+		}
+		connectChildren();
+	}
 
-        return Boolean.FALSE;
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len == 0) {
+			return Boolean.FALSE;
+		}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTOr(id);
-    }
+		for (int i = 0; i < len; i++) {
+			if (ConversionUtil.toBoolean(evaluateChild(i, o))) {
+				return Boolean.TRUE;
+			}
+		}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "or";
-    }
+		return Boolean.FALSE;
+	}
 
-    @Override
-    public int getType() {
-        return Expression.OR;
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTOr(id);
+	}
 
-    @Override
-    public void jjtClose() {
-        super.jjtClose();
-        flattenTree();
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "or";
+	}
+
+	@Override
+	public int getType() {
+		return Expression.OR;
+	}
+
+	@Override
+	public void jjtClose() {
+		super.jjtClose();
+		flattenTree();
+	}
 }

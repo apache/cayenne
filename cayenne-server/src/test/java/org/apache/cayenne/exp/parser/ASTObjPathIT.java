@@ -18,25 +18,32 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import static org.junit.Assert.assertTrue;
+
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import java.io.IOException;
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+public class ASTObjPathIT extends ServerCase {
 
-import static org.junit.Assert.assertEquals;
+	@Inject
+	private ObjectContext context;
 
-public class ASTDbPathTest {
+	@Test
+	public void testEvaluate_ObjPath_ObjEntity() {
+		ASTObjPath node = new ASTObjPath("paintingArray.paintingTitle");
 
-    @Test
-    public void testToString() {
-        assertEquals("db:x.y", new ASTDbPath("x.y").toString());
-    }
+		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);
 
-    @Test
-    public void testAppendAsString() throws IOException {
-        StringBuilder buffer = new StringBuilder();
-        new ASTDbPath("x.y").appendAsString(buffer);
-        assertEquals("db:x.y", buffer.toString());
-    }
-    
-    
+		Object target = node.evaluate(ae);
+		assertTrue(target instanceof ObjAttribute);
+	}
+
 }

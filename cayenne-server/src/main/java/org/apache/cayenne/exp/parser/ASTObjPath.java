@@ -32,76 +32,79 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class ASTObjPath extends ASTPath {
-    private static final Log logObj = LogFactory.getLog(ASTObjPath.class);
 
-    public static final String OBJ_PREFIX = "obj:";
+	private static final long serialVersionUID = -3574281576491705706L;
 
-    /**
-     * Constructor used by expression parser. Do not invoke directly.
-     */
-    ASTObjPath(int id) {
-        super(id);
-    }
+	private static final Log LOGGER = LogFactory.getLog(ASTObjPath.class);
 
-    public ASTObjPath() {
-        super(ExpressionParserTreeConstants.JJTOBJPATH);
-    }
+	public static final String OBJ_PREFIX = "obj:";
 
-    public ASTObjPath(Object value) {
-        super(ExpressionParserTreeConstants.JJTOBJPATH);
-        setPath(value);
-    }
+	/**
+	 * Constructor used by expression parser. Do not invoke directly.
+	 */
+	ASTObjPath(int id) {
+		super(id);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return (o instanceof DataObject) ? ((DataObject) o).readNestedProperty(path)
-                : (o instanceof Entity) ? evaluateEntityNode((Entity) o) : PropertyUtils.getProperty(o, path);
-    }
+	public ASTObjPath() {
+		super(ExpressionParserTreeConstants.JJTOBJPATH);
+	}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        ASTObjPath copy = new ASTObjPath(id);
-        copy.path = path;
-        return copy;
-    }
+	public ASTObjPath(Object value) {
+		super(ExpressionParserTreeConstants.JJTOBJPATH);
+		setPath(value);
+	}
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        out.append(rootId);
-        out.append('.');
-        out.append(path);
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		return (o instanceof DataObject) ? ((DataObject) o).readNestedProperty(path)
+				: (o instanceof Entity) ? evaluateEntityNode((Entity) o) : PropertyUtils.getProperty(o, path);
+	}
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
-        out.append(path);
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		ASTObjPath copy = new ASTObjPath(id);
+		copy.path = path;
+		return copy;
+	}
 
-    @Override
-    public int getType() {
-        return Expression.OBJ_PATH;
-    }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		out.append(rootId);
+		out.append('.');
+		out.append(path);
+	}
 
-    void injectValue(Object source, Object value) {
-        if (getPath().indexOf(ObjEntity.PATH_SEPARATOR) == -1) {
-            try {
-                if (source instanceof DataObject) {
-                    ((DataObject) source).writeProperty(getPath(), value);
-                } else {
-                    PropertyUtils.setProperty(source, getPath(), value);
-                }
-            } catch (CayenneRuntimeException ex) {
-                logObj.warn("Failed to inject value " + value + " on path " + getPath() + " to " + source, ex);
-            }
-        }
-    }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsString(Appendable out) throws IOException {
+		out.append(path);
+	}
+
+	@Override
+	public int getType() {
+		return Expression.OBJ_PATH;
+	}
+
+	void injectValue(Object source, Object value) {
+		if (getPath().indexOf(ObjEntity.PATH_SEPARATOR) == -1) {
+			try {
+				if (source instanceof DataObject) {
+					((DataObject) source).writeProperty(getPath(), value);
+				} else {
+					PropertyUtils.setProperty(source, getPath(), value);
+				}
+			} catch (CayenneRuntimeException ex) {
+				LOGGER.warn("Failed to inject value " + value + " on path " + getPath() + " to " + source, ex);
+			}
+		}
+	}
 }

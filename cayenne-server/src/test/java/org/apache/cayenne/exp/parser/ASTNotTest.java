@@ -18,25 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
-import java.io.IOException;
+public class ASTNotTest {
 
-import static org.junit.Assert.assertEquals;
+	@Test
+	public void testEvaluate() {
 
-public class ASTDbPathTest {
+		Expression toNegate = ExpressionFactory.exp("artistName = 'abc'");
+		ASTNot e = new ASTNot((Node) toNegate);
 
-    @Test
-    public void testToString() {
-        assertEquals("db:x.y", new ASTDbPath("x.y").toString());
-    }
+		Artist noMatch = new Artist();
+		noMatch.setArtistName("abc");
+		assertFalse(e.match(noMatch));
 
-    @Test
-    public void testAppendAsString() throws IOException {
-        StringBuilder buffer = new StringBuilder();
-        new ASTDbPath("x.y").appendAsString(buffer);
-        assertEquals("db:x.y", buffer.toString());
-    }
-    
-    
+		Artist match = new Artist();
+		match.setArtistName("123");
+		assertTrue("Failed: " + e, e.match(match));
+	}
+
 }
