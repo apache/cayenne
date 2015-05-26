@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.util.Util;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.DatabaseMetaData;
@@ -30,8 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.util.Util;
 
 import static java.sql.Types.*;
 
@@ -120,7 +120,7 @@ public class TypesMapping {
     private static final Map<String, Integer> JAVA_SQL_ENUM = new HashMap<String, Integer>();
 
     static {
-        SQL_STRING_TYPE.put(SQL_ARRAY, ARRAY);
+//        SQL_STRING_TYPE.put(SQL_ARRAY, ARRAY);
         SQL_STRING_TYPE.put(SQL_BIGINT, BIGINT);
         SQL_STRING_TYPE.put(SQL_BINARY, BINARY);
         SQL_STRING_TYPE.put(SQL_BIT, BIT);

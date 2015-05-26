@@ -18,13 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
-import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * ExtendedTypeFactory for handling serializable objects. Returned ExtendedType is simply
@@ -34,6 +36,8 @@ import org.apache.cayenne.CayenneRuntimeException;
  */
 class SerializableTypeFactory implements ExtendedTypeFactory {
 
+    private static final Log logger = LogFactory.getLog(SerializableTypeFactory.class);
+
     private ExtendedTypeMap map;
 
     SerializableTypeFactory(ExtendedTypeMap map) {
@@ -41,8 +45,10 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
     }
 
     public ExtendedType getType(Class<?> objectClass) {
+        logger.warn("Haven't found suitable ExtendedType for class '" + objectClass.getCanonicalName() + "'. Most likely you need to define custom ExtendedType.");
 
         if (Serializable.class.isAssignableFrom(objectClass)) {
+            logger.warn("SerializableType will be used for type conversion.");
 
             // using a binary stream delegate instead of byte[] may actually speed up
             // things in some dbs, but at least byte[] type works consistently across
@@ -55,7 +61,7 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
             if (bytesType instanceof SerializableType) {
                 throw new IllegalStateException(
                         "Can't create Serializable ExtendedType for "
-                                + objectClass.getName()
+                                + objectClass.getCanonicalName()
                                 + ": no ExtendedType exists for byte[]");
             }
 
@@ -79,7 +85,7 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
 
         @Override
         public String getClassName() {
-            return javaClass.getName();
+            return javaClass.getCanonicalName();
         }
 
         @Override

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.util.Util;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,8 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.apache.cayenne.util.Util;
 
 /**
  * Stores ExtendedTypes, implementing an algorithm to determine the right type for a given
@@ -197,17 +197,7 @@ public class ExtendedTypeMap {
      * instance.
      */
     public ExtendedType getRegisteredType(Class<?> javaClass) {
-        String name = null;
-
-        if (javaClass.isArray()) {
-            // only support single dimensional arrays now
-            name = javaClass.getComponentType().getName() + "[]";
-        }
-        else {
-            name = javaClass.getName();
-        }
-
-        return getRegisteredType(name);
+        return getRegisteredType(javaClass.getCanonicalName());
     }
 
     /**
