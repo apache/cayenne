@@ -21,6 +21,8 @@ package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -33,13 +35,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
 /**
  */
 public class PreferenceDialogView extends JDialog {
 
-    protected JSplitPane split;
-    protected com.l2fprod.common.swing.JButtonBar bar;
+    protected JTabbedPane pane;
     protected CardLayout detailLayout;
     protected Container detailPanel;
     protected JButton cancelButton;
@@ -56,8 +58,7 @@ public class PreferenceDialogView extends JDialog {
     }
 
     private void init() {
-        this.split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        this.bar = new com.l2fprod.common.swing.JButtonBar(1);
+        this.pane = new JTabbedPane(JTabbedPane.LEFT);
         this.detailLayout = new CardLayout();
         this.detailPanel = new JPanel(detailLayout);
         this.saveButton = new JButton("Save");
@@ -65,35 +66,24 @@ public class PreferenceDialogView extends JDialog {
 
         
         // assemble
-        bar.setPreferredSize(new Dimension(120,300));
-        com.l2fprod.common.swing.plaf.blue.BlueishButtonBarUI barUi = new com.l2fprod.common.swing.plaf.blue.BlueishButtonBarUI();
-        bar.setUI(barUi);
-        Container leftContainer = new JPanel(new BorderLayout());
-        leftContainer.add(new JScrollPane(bar));
-        
+        pane.setBackground(Color.WHITE);
+        pane.add(detailPanel);
+        Container mainContainer = new JPanel(new BorderLayout());
+        mainContainer.add(pane);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
         buttons.add(saveButton);
 
-        Container rightContainer = new JPanel(new BorderLayout());
-        rightContainer.add(detailPanel, BorderLayout.CENTER);
-        rightContainer.add(buttons, BorderLayout.SOUTH);
-
-        split.setLeftComponent(leftContainer);
-        split.setRightComponent(rightContainer);
+        mainContainer.add(buttons, BorderLayout.SOUTH);
 
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(split, BorderLayout.CENTER);
+        getContentPane().add(mainContainer, BorderLayout.CENTER);
         setTitle("Edit Preferences");
     }
 
-    public com.l2fprod.common.swing.JButtonBar getBar() {
-        return bar;
-    }
-
-    public JSplitPane getSplit() {
-        return split;
+    public JTabbedPane getPane() {
+        return pane;
     }
 
     public Container getDetailPanel() {

@@ -30,13 +30,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -80,28 +83,23 @@ public class PreferenceDialog extends CayenneController {
     }
 
     protected void initBindings() {
+    	final JTabbedPane pane = view.getPane();
     	
-    	final com.l2fprod.common.swing.JButtonBar bar = view.getBar();
-    	
-        for(int i=0;i<preferenceMenus.length;i++){
-        	String x = preferenceMenus[i];
-        	final JButton button = new JButton(x,ModelerUtil.buildIcon(preferenceMenusIcons[i]));
-        	button.setName(x);
-        	button.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                	view.getDetailLayout().show(
-                            view.getDetailPanel(),
-                            button.getName().toString());
-                	for(int i=0;i<view.getBar().getComponentCount();i++){
-                    	JButton buttonAll = ((JButton)view.getBar().getComponent(i));
-                    	if(button.getName().equals(buttonAll.getName())) buttonAll.setSelected(true);
-                    	else buttonAll.setSelected(false);
-                    }
-                }
-            });
-        	bar.add(button);
-        }
-        
+    	for(int i=0;i<preferenceMenus.length;i++){
+    		JLabel lbl = new JLabel(preferenceMenus[i]);
+    		lbl.setIcon(ModelerUtil.buildIcon(preferenceMenusIcons[i]));
+    		lbl.setHorizontalTextPosition(SwingConstants.CENTER);
+    		lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+    		if(i!=0) pane.addTab(null,null,null);
+    		pane.setTabComponentAt(i, lbl);
+    	}
+        pane.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+            	view.getDetailLayout().show(
+                        view.getDetailPanel(),
+                        preferenceMenus[pane.getSelectedIndex()]);
+            }
+        });
         view.getCancelButton().addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -139,6 +137,7 @@ public class PreferenceDialog extends CayenneController {
 
         // this will install needed controller
         view.getDetailLayout().show(view.getDetailPanel(), DATA_SOURCES_KEY);
+        view.getPane().setSelectedIndex(1);
 
         DataSourcePreferences controller = (DataSourcePreferences) detailControllers
                 .get(DATA_SOURCES_KEY);
@@ -152,10 +151,6 @@ public class PreferenceDialog extends CayenneController {
             key = GENERAL_KEY;
         }
         
-        for(int i=0;i<view.getBar().getComponentCount();i++){
-        	JButton button = ((JButton)view.getBar().getComponent(i));
-        	if(button.getName().equals(key)) button.setSelected(true);
-        }
         configure();
         view.setVisible(true);
     }
@@ -167,7 +162,6 @@ public class PreferenceDialog extends CayenneController {
         registerPanel(CLASS_PATH_KEY, new ClasspathPreferences(this));
         registerPanel(TEMPLATES_KEY, new TemplatePreferences(this));
         view.getDetailLayout().show(view.getDetailPanel(), GENERAL_KEY);
-        // view.getSplit().setDividerLocation(150);
         view.pack();
 
         // show
