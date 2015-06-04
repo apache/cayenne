@@ -55,6 +55,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -63,11 +64,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 
 /**
  * Main display area split into the project navigation tree on the left and selected
@@ -189,10 +189,12 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
         JToolBar barPanel = new JToolBar();
         barPanel.setMinimumSize(new Dimension(75, 25));
-        barPanel.setLayout(new FlowLayout(FlowLayout.TRAILING, 1, 0));
-        barPanel.add(collapseButton);
+        barPanel.setBorder(BorderFactory.createEtchedBorder());
+        barPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        barPanel.add(Box.createHorizontalStrut(3));
         barPanel.add(filterButton);
-        barPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+        barPanel.addSeparator();
+        barPanel.add(collapseButton);
 
         treePanel = new ProjectTreeView(eventController);
         treePanel.setMinimumSize(new Dimension(75, 180));
