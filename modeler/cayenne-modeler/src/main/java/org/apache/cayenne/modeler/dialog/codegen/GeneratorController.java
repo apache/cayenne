@@ -50,6 +50,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -157,8 +158,8 @@ public abstract class GeneratorController extends CayenneController {
         }
 
         // remove generic entities...
-        Collection<ObjEntity> entities = new ArrayList<ObjEntity>(getParentController().getSelectedEntities());
-        Iterator<ObjEntity> it = entities.iterator();
+        Collection<ObjEntity> selectedEntities = new ArrayList<ObjEntity>(getParentController().getSelectedEntities());
+        Iterator<ObjEntity> it = selectedEntities.iterator();
         while (it.hasNext()) {
             if (it.next().isGeneric()) {
                 it.remove();
@@ -171,8 +172,15 @@ public abstract class GeneratorController extends CayenneController {
             ClassGenerationAction generator = newGenerator();
             generator.setArtifactsGenerationMode(mode);
             generator.setDataMap(map);
-            generator.addEntities(entities);
-            generator.addEmbeddables(getParentController().getSelectedEmbeddables());
+
+            LinkedList<ObjEntity> objEntities = new LinkedList<ObjEntity>(map.getObjEntities());
+            objEntities.retainAll(selectedEntities);
+            generator.addEntities(objEntities);
+
+            LinkedList<Embeddable> embeddables = new LinkedList<Embeddable>(map.getEmbeddables());
+            embeddables.retainAll(getParentController().getSelectedEmbeddables());
+            generator.addEmbeddables(embeddables);
+
             generator.addQueries(map.getQueries());
 
             Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
