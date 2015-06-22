@@ -26,57 +26,52 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-/**
- */
-public class JGroupsBridgeFactoryTest {
+public class JMSBridgeFactoryTest {
 
     protected Collection<EventSubject> subjects = Collections.singleton(new EventSubject("test"));
     protected String externalSubject = "subject";
 
     @Test
     public void testCreateEventBridge() throws Exception {
-        EventBridge bridge = new JavaGroupsBridgeFactory().createEventBridge(
+        EventBridge bridge = new JMSBridgeFactory().createEventBridge(
                 subjects,
                 externalSubject,
                 Collections.EMPTY_MAP);
 
         assertNotNull(bridge);
-        assertTrue(bridge instanceof JavaGroupsBridge);
+        assertTrue(bridge instanceof JMSBridge);
         assertEquals(subjects, bridge.getLocalSubjects());
         assertEquals(externalSubject, bridge.getExternalSubject());
     }
 
     @Test
     public void testUseProperties() throws Exception {
-        JavaGroupsBridgeFactory bridgeFactory = new JavaGroupsBridgeFactory();
+        JMSBridgeFactory bridgeFactory = new JMSBridgeFactory();
 
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put(JavaGroupsBridge.MCAST_ADDRESS_PROPERTY, JGroupsBridgeProviderTest.MCAST_ADDRESS_TEST);
-        properties.put(JavaGroupsBridge.MCAST_PORT_PROPERTY, JGroupsBridgeProviderTest.MCAST_PORT_TEST);
-        properties.put(JavaGroupsBridge.JGROUPS_CONFIG_URL_PROPERTY, JGroupsBridgeProviderTest.CONFIG_URL_TEST);
+        properties.put(JMSBridge.TOPIC_CONNECTION_FACTORY_PROPERTY, JMSBridgeProviderTest.TOPIC_CONNECTION_FACTORY_TEST);
 
-        JavaGroupsBridge bridge = (JavaGroupsBridge) bridgeFactory.createEventBridge(
+        JMSBridge bridge = (JMSBridge) bridgeFactory.createEventBridge(
                 subjects,
                 externalSubject,
                 properties);
 
-        assertEquals(bridge.getMulticastAddress(), JGroupsBridgeProviderTest.MCAST_ADDRESS_TEST);
-        assertEquals(bridge.getMulticastPort(), JGroupsBridgeProviderTest.MCAST_PORT_TEST);
-        assertEquals(bridge.getConfigURL(), JGroupsBridgeProviderTest.CONFIG_URL_TEST);
+        assertEquals(bridge.getTopicConnectionFactoryName(), JMSBridgeProviderTest.TOPIC_CONNECTION_FACTORY_TEST);
     }
 
     @Test
     public void testUseDefaultProperties() throws Exception {
-        JavaGroupsBridgeFactory bridgeFactory = new JavaGroupsBridgeFactory();
-        JavaGroupsBridge bridge = (JavaGroupsBridge) bridgeFactory.createEventBridge(
+        JMSBridgeFactory bridgeFactory = new JMSBridgeFactory();
+        JMSBridge bridge = (JMSBridge) bridgeFactory.createEventBridge(
                 subjects,
                 externalSubject,
                 Collections.EMPTY_MAP);
 
-        assertEquals(bridge.getMulticastAddress(), JavaGroupsBridge.MCAST_ADDRESS_DEFAULT);
-        assertEquals(bridge.getMulticastPort(), JavaGroupsBridge.MCAST_PORT_DEFAULT);
-        assertEquals(bridge.getConfigURL(), null);
+        assertEquals(bridge.getTopicConnectionFactoryName(), JMSBridge.TOPIC_CONNECTION_FACTORY_DEFAULT);
     }
+
 }

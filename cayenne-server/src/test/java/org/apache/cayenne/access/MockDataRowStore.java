@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.access;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.event.MockEventManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A "lightweight" DataRowStore.
@@ -35,7 +35,6 @@ public class MockDataRowStore extends DataRowStore {
 
     static {
         TEST_DEFAULTS.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, new Integer(10));
-        TEST_DEFAULTS.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, Boolean.FALSE);
     }
 
     public MockDataRowStore() {

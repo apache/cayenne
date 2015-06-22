@@ -199,4 +199,36 @@ public interface Constants {
 	 * */
 	public final static String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.server.query_execution_time_logging_threshold";
 
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.access.DataRowStore} properties
+     *
+     * @since 4.0
+     */
+    public static final String DATA_ROW_STORE_PROPERTIES_MAP = "cayenne.server.data_row_store";
+
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.event.JMSBridge} properties
+     *
+     * @since 4.0
+     */
+    public static final String JMS_BRIDGE_PROPERTIES_MAP = "cayenne.server.jms_bridge";
+
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.event.JavaGroupsBridge} properties
+     *
+     * @since 4.0
+     */
+    public static final String JAVA_GROUPS_BRIDGE_PROPERTIES_MAP = "cayenne.server.java_group_bridge";
+
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.event.XMPPBridgeProvider} properties
+     *
+     * @since 4.0
+     */
+    public static final String XMPP_BRIDGE_PROPERTIES_MAP = "cayenne.server.xmpp_bridge";
+
 }

@@ -19,23 +19,19 @@
 
 package org.apache.cayenne.event;
 
-import java.util.Collection;
-import java.util.Map;
+import org.apache.cayenne.di.DIRuntimeException;
 
-/**
- * Defines a factory to dynamically create EventBridge instances.
- * 
- * @since 1.1
- */
-public interface EventBridgeFactory {
+import java.util.Collections;
 
-    /**
-     * Creates an {@link EventBridge}  with the specified parameters.
-     * 
-     * @since 1.2
-     */
-    EventBridge createEventBridge(
-            Collection<EventSubject> localSubjects,
-            String externalSubject,
-            Map<String, String> properties);
+public class MockEventBridgeProvider extends EventBridgeProvider {
+
+    @Override
+    public EventBridge get() throws DIRuntimeException {
+        EventSubject snapshotEventSubject = dataDomain.getSharedSnapshotCache().getSnapshotEventSubject();
+
+        return new MockEventBridge(
+                Collections.singleton(snapshotEventSubject),
+                EventBridge.convertToExternalSubject(snapshotEventSubject),
+                Collections.EMPTY_MAP);
+    }
 }

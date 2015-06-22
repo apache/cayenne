@@ -17,25 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.event;
-
-import java.util.Collection;
-import java.util.Map;
+package org.apache.cayenne.access;
 
 /**
- * Defines a factory to dynamically create EventBridge instances.
- * 
- * @since 1.1
+ * A factory for creating {@link DataRowStore}
+ *
+ * @since 4.0
  */
-public interface EventBridgeFactory {
+public interface DataRowStoreFactory {
 
     /**
-     * Creates an {@link EventBridge}  with the specified parameters.
-     * 
-     * @since 1.2
+     * Create new {@link DataRowStore} object.
+     *
+     * @since 4.0
+     * @param name DataRowStore name. Used to identify this DataRowStore in events, etc.
+     *             Can't be null.
      */
-    EventBridge createEventBridge(
-            Collection<EventSubject> localSubjects,
-            String externalSubject,
-            Map<String, String> properties);
+    DataRowStore createDataRowStore(String name);
+
 }

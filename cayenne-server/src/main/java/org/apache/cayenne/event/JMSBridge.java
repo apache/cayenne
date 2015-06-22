@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.event;
 
-import java.io.Serializable;
-import java.util.Collection;
+import org.apache.cayenne.util.IDUtil;
 
 import javax.jms.Message;
 import javax.jms.MessageFormatException;
@@ -37,8 +36,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
-
-import org.apache.cayenne.util.IDUtil;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Implementation of EventBridge that passes and receives events via JMS (Java Messaging
@@ -49,8 +49,14 @@ import org.apache.cayenne.util.IDUtil;
  */
 public class JMSBridge extends EventBridge implements MessageListener {
 
+    // this is an OpenJMS default for the factory name. Likely it won't work with
+    // anything else
+    public static final String TOPIC_CONNECTION_FACTORY_DEFAULT = "JmsTopicConnectionFactory";
+
+    public static final String TOPIC_CONNECTION_FACTORY_PROPERTY = "cayenne.JMSBridge.topic.connection.factory";
+
     static final String VM_ID = new String(IDUtil.pseudoUniqueByteSequence16());
-    static final String VM_ID_PROPERRTY = "VM_ID";
+    static final String VM_ID_PROPERTY = "VM_ID";
 
     protected String topicConnectionFactoryName;
 
@@ -72,13 +78,28 @@ public class JMSBridge extends EventBridge implements MessageListener {
     }
 
     /**
+     * @since 4.0
+     */
+    public JMSBridge(Collection<EventSubject> localSubjects, String externalSubject, Map<String, String> properties) {
+        super(localSubjects, externalSubject);
+
+        // configure properties
+        String topicConnectionFactory = properties
+                .get(TOPIC_CONNECTION_FACTORY_PROPERTY);
+
+        this.topicConnectionFactoryName = (topicConnectionFactory != null)
+                ? topicConnectionFactory
+                : TOPIC_CONNECTION_FACTORY_DEFAULT;
+    }
+
+    /**
      * JMS MessageListener implementation. Injects received events to the EventManager
      * local event queue.
      */
     public void onMessage(Message message) {
 
         try {
-            Object vmID = message.getObjectProperty(JMSBridge.VM_ID_PROPERRTY);
+            Object vmID = message.getObjectProperty(JMSBridge.VM_ID_PROPERTY);
             if (JMSBridge.VM_ID.equals(vmID)) {
                 return;
             }
@@ -235,7 +256,7 @@ public class JMSBridge extends EventBridge implements MessageListener {
     protected void sendExternalEvent(CayenneEvent localEvent) throws Exception {
         ObjectMessage message = sendSession
                 .createObjectMessage(eventToMessageObject(localEvent));
-        message.setObjectProperty(JMSBridge.VM_ID_PROPERRTY, JMSBridge.VM_ID);
+        message.setObjectProperty(JMSBridge.VM_ID_PROPERTY, JMSBridge.VM_ID);
         publisher.publish(message);
     }
 

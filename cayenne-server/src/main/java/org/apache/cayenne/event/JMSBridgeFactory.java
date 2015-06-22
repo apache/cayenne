@@ -29,26 +29,10 @@ import java.util.Map;
  */
 public class JMSBridgeFactory implements EventBridgeFactory {
 
-    // this is an OpenJMS default for the factory name. Likely it won't work with
-    // anything else
-    public static final String TOPIC_CONNECTION_FACTORY_DEFAULT = "JmsTopicConnectionFactory";
-
-    public static final String TOPIC_CONNECTION_FACTORY_PROPERTY = "cayenne.JMSBridge.topic.connection.factory";
-
     /**
      * @since 1.2
      */
     public EventBridge createEventBridge(Collection<EventSubject> localSubjects, String externalSubject, Map<String, String> properties) {
-        JMSBridge bridge = new JMSBridge(localSubjects, externalSubject);
-
-        // configure properties
-        String topicConnectionFactory = properties
-                .get(TOPIC_CONNECTION_FACTORY_PROPERTY);
-
-        bridge.setTopicConnectionFactoryName(topicConnectionFactory != null
-                ? topicConnectionFactory
-                : TOPIC_CONNECTION_FACTORY_DEFAULT);
-
-        return bridge;
+        return new JMSBridge(localSubjects, externalSubject, properties);
     }
 }

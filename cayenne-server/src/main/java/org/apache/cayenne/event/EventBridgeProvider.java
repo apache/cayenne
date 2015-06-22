@@ -19,23 +19,13 @@
 
 package org.apache.cayenne.event;
 
-import java.util.Collection;
-import java.util.Map;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
-/**
- * Defines a factory to dynamically create EventBridge instances.
- * 
- * @since 1.1
- */
-public interface EventBridgeFactory {
+public abstract class EventBridgeProvider implements Provider<EventBridge> {
 
-    /**
-     * Creates an {@link EventBridge}  with the specified parameters.
-     * 
-     * @since 1.2
-     */
-    EventBridge createEventBridge(
-            Collection<EventSubject> localSubjects,
-            String externalSubject,
-            Map<String, String> properties);
+    @Inject
+    protected DataDomain dataDomain;
+
 }
