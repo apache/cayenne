@@ -199,6 +199,13 @@ public class ExpressionTest {
 	}
 
 	@Test
+	public void testIsNotNullEx() {
+		Expression e = Artist.ARTIST_NAME.isNotNull();
+		String ejbql = e.toEJBQL("x");
+		assertEquals("not (x.artistName is null)", ejbql);
+	}
+
+	@Test
 	public void testAndExp() {
 		Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
 		Expression e2 = ExpressionFactory.matchExp("age", 30);

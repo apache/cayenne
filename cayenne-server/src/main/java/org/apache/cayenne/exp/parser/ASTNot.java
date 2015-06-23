@@ -66,7 +66,7 @@ public class ASTNot extends AggregateConditionNode {
 		return new ASTNot(id);
 	}
 
-	@Override
+    @Override
 	public int getType() {
 		return Expression.NOT;
 	}
@@ -80,13 +80,14 @@ public class ASTNot extends AggregateConditionNode {
 		super.appendAsString(out);
 	}
 
-	/**
-	 * @since 4.0
-	 */
-	@Override
-	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-		appendAsString(out);
-	}
+    /**
+     * @since 4.0
+     */
+    @Override
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+        out.append("not ");
+        super.appendAsEJBQL(parameterAccumulator, out, rootId);
+    }
 
 	@Override
 	protected String getExpressionOperator(int index) {
