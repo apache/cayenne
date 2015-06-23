@@ -19,15 +19,13 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DataPort;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -36,6 +34,10 @@ import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * A "cdataport" Ant task implementing a frontend to DataPort allowing porting
@@ -73,8 +75,10 @@ public class DataPortTask extends CayenneTask {
         Module dataPortModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(ResourceLocator.class).toInstance(
-                        new FilesystemResourceLocator(projectFile));
+                FilesystemResourceLocator filesystemResourceLocator = new FilesystemResourceLocator(projectFile);
+                binder.bind(ResourceLocator.class).toInstance(filesystemResourceLocator);
+                binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR))
+                        .toInstance(filesystemResourceLocator);
             }
         };
 

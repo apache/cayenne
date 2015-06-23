@@ -71,7 +71,12 @@ public interface Constants {
 	 */
 	public static final String SERVER_TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
 
-	/**
+    /**
+     * A server-side DI container key for binding {@link org.apache.cayenne.resource.ResourceLocator}
+     */
+    public final static String SERVER_RESOURCE_LOCATOR = "cayenne.server.resource_locator";
+
+    /**
 	 * A server-side DI container key for the Map&lt;String, String&gt; storing
 	 * event bridge properties passed to the ROP client on bootstrap.
 	 */

@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.List;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -37,6 +33,10 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
+
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.List;
 
 /**
  * A flavor of OracleAdapter that implements workarounds for some old driver
@@ -57,7 +57,7 @@ public class Oracle8Adapter extends OracleAdapter {
 			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
 			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
 			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-			@Inject ResourceLocator resourceLocator) {
+			@Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
 		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
 	}
 

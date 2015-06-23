@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
@@ -86,6 +83,7 @@ import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
@@ -102,6 +100,9 @@ import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.velocity.VelocitySQLTemplateProcessor;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * A DI module containing all Cayenne server runtime configuration.
@@ -210,7 +211,8 @@ public class ServerModule implements Module {
 		binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
 
 		// a locator of resources, such as XML descriptors
-		binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
+        binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
+        binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
 
 		// a global properties object
 		binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);

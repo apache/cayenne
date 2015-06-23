@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.dba.h2;
 
-import java.util.List;
-
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.Constants;
@@ -31,6 +29,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.resource.ResourceLocator;
+
+import java.util.List;
 
 /**
  * DbAdapter implementation for <a href="http://www.h2database.com/">H2
@@ -51,7 +51,7 @@ public class H2Adapter extends JdbcAdapter {
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject ResourceLocator resourceLocator) {
+            @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
         setSupportsGeneratedKeys(true);
     }

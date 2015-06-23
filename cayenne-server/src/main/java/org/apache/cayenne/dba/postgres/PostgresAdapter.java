@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.dba.postgres;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
@@ -52,6 +44,14 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL
  * RDBMS </a>. Sample connection settings to use with PostgreSQL are shown
@@ -72,7 +72,7 @@ public class PostgresAdapter extends JdbcAdapter {
 			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
 			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
 			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-			@Inject ResourceLocator resourceLocator) {
+			@Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
 		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
 		setSupportsBatchUpdates(true);
 	}
