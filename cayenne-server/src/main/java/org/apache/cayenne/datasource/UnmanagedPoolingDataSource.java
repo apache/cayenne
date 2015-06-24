@@ -70,6 +70,18 @@ public class UnmanagedPoolingDataSource implements PoolingDataSource {
 		}
 	}
 
+    /**
+     * An exception indicating that a connection request waiting in the queue
+     * timed out and was unable to obtain a connection.
+     */
+    public static class ConnectionUnavailableException extends SQLException {
+        private static final long serialVersionUID = 1063973806941023165L;
+
+        public ConnectionUnavailableException(String message) {
+    		super(message);
+    	}
+    }
+    
 	/**
 	 * Defines a maximum time in milliseconds that a connection request could
 	 * wait in the connection queue. After this period expires, an exception
@@ -323,7 +335,7 @@ public class UnmanagedPoolingDataSource implements PoolingDataSource {
 			return resetState(c);
 		}
 
-		throw new SQLException("Can't obtain connection. Request to pool timed out. Total pool size: " + pool.size());
+		throw new ConnectionUnavailableException("Can't obtain connection. Request to pool timed out. Total pool size: " + pool.size());
 	}
 
 	@Override
