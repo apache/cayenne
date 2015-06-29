@@ -204,4 +204,12 @@ public interface Constants {
 	 * */
 	public final static String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.server.query_execution_time_logging_threshold";
 
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.access.DataRowStore} properties
+     *
+     * @since 4.0
+     */
+    public static final String DATA_ROW_STORE_PROPERTIES_MAP = "cayenne.server.data_row_store";
+
 }

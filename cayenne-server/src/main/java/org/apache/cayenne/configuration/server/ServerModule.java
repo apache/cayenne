@@ -20,6 +20,8 @@ package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataRowStoreFactory;
+import org.apache.cayenne.access.DefaultDataRowStoreFactory;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
@@ -190,6 +192,9 @@ public class ServerModule implements Module {
 		binder.bind(EventManager.class).to(DefaultEventManager.class);
 
 		binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
+
+        binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+        binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
 
 		// a service to provide the main stack DataDomain
 		binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
