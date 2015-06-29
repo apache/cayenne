@@ -23,13 +23,13 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
+import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.ObjectStore;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.tx.TransactionFactory;
 
@@ -45,7 +45,7 @@ public class DataContextFactory implements ObjectContextFactory {
     protected EventManager eventManager;
 
     @Inject
-    protected Injector injector;
+    protected DataRowStoreFactory dataRowStoreFactory;
     
     @Inject
     protected ObjectStoreFactory objectStoreFactory;
@@ -80,11 +80,9 @@ public class DataContextFactory implements ObjectContextFactory {
 
         // for new dataRowStores use the same name for all stores
         // it makes it easier to track the event subject
-        DataRowStore snapshotCache = (dataDomain.isSharedCacheEnabled()) ? dataDomain
-                .getSharedSnapshotCache() : new DataRowStore(
-                dataDomain.getName(),
-                dataDomain.getProperties(),
-                eventManager);
+        DataRowStore snapshotCache = (dataDomain.isSharedCacheEnabled())
+                ? dataDomain.getSharedSnapshotCache()
+                : dataRowStoreFactory.createDataRowStore(dataDomain.getName());
 
         DataContext context = newInstance(
                 parent, objectStoreFactory.createObjectStore(snapshotCache));
@@ -112,9 +110,9 @@ public class DataContextFactory implements ObjectContextFactory {
 
         // for new dataRowStores use the same name for all stores
         // it makes it easier to track the event subject
-        DataRowStore snapshotCache = (parent.isSharedCacheEnabled()) ? parent
-                .getSharedSnapshotCache() : new DataRowStore(parent.getName(), parent
-                .getProperties(), eventManager);
+        DataRowStore snapshotCache = (parent.isSharedCacheEnabled())
+                ? parent.getSharedSnapshotCache()
+                : dataRowStoreFactory.createDataRowStore(parent.getName());
 
         DataContext context = newInstance(
                 parent, objectStoreFactory.createObjectStore(snapshotCache));

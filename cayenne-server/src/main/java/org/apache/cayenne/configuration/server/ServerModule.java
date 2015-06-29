@@ -21,6 +21,8 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataRowStoreFactory;
+import org.apache.cayenne.access.DefaultDataRowStoreFactory;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.dbsync.DefaultSchemaUpdateStrategyFactory;
@@ -32,7 +34,24 @@ import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
-import org.apache.cayenne.access.types.*;
+import org.apache.cayenne.access.types.BigDecimalType;
+import org.apache.cayenne.access.types.BigIntegerType;
+import org.apache.cayenne.access.types.BooleanType;
+import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.access.types.ByteType;
+import org.apache.cayenne.access.types.CalendarType;
+import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.DateType;
+import org.apache.cayenne.access.types.DoubleType;
+import org.apache.cayenne.access.types.FloatType;
+import org.apache.cayenne.access.types.IntegerType;
+import org.apache.cayenne.access.types.LongType;
+import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.access.types.TimeType;
+import org.apache.cayenne.access.types.TimestampType;
+import org.apache.cayenne.access.types.UUIDType;
+import org.apache.cayenne.access.types.UtilDateType;
+import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
@@ -64,7 +83,12 @@ import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
-import org.apache.cayenne.di.*;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ClassLoaderManager;
+import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.ListBuilder;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -268,8 +292,9 @@ public class ServerModule implements Module {
 
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
 
-        // a service to provide the main stack DataDomain
-        binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
+		binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+        binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);// a service to provide the main stack DataDomain
+		binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
 
         binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
 

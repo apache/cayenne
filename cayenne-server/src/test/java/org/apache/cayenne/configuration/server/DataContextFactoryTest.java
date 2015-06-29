@@ -20,10 +20,13 @@ package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataRowStoreFactory;
+import org.apache.cayenne.access.DefaultDataRowStoreFactory;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
@@ -74,6 +77,8 @@ public class DataContextFactoryTest {
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+                binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
             }
         };
 
@@ -111,6 +116,8 @@ public class DataContextFactoryTest {
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+                binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
             }
         };
 

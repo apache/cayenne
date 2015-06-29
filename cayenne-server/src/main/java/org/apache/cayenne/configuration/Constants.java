@@ -264,4 +264,12 @@ public interface Constants {
     @Deprecated
     public static final String ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY = "cayenne.rop.context_lifecycle_events";
 
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.access.DataRowStore} properties
+     *
+     * @since 4.0
+     */
+    public static final String DATA_ROW_STORE_PROPERTIES_MAP = "cayenne.server.data_row_store";
+
 }
