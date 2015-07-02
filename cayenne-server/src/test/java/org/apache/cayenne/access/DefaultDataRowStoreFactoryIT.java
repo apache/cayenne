@@ -28,7 +28,11 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
+import org.apache.cayenne.event.EventBridge;
+import org.apache.cayenne.event.EventBridgeProvider;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.MockEventBridge;
+import org.apache.cayenne.event.MockEventBridgeProvider;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
@@ -44,7 +48,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
-public class DataRowStoreFactoryIT extends ServerCase {
+public class DefaultDataRowStoreFactoryIT extends ServerCase {
 
     @Test
     public void testGetDataRowStore() throws Exception {
@@ -72,6 +76,7 @@ public class DataRowStoreFactoryIT extends ServerCase {
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+                binder.bind(EventBridge.class).toProvider(EventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
                 binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP)
                         .put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(CACHE_SIZE))
@@ -102,6 +107,7 @@ public class DataRowStoreFactoryIT extends ServerCase {
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+                binder.bind(EventBridge.class).toProvider(MockEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
                 binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
             }
@@ -111,9 +117,7 @@ public class DataRowStoreFactoryIT extends ServerCase {
         DataRowStore dataStore = injector.getInstance(DataRowStoreFactory.class)
                 .createDataRowStore("test");
 
-        dataStore.stopListeners();
-        dataStore.startListeners();
-        dataStore.shutdown();
+        assertEquals(dataStore.getEventBridge().getClass(), MockEventBridge.class);
     }
 
 }
