@@ -22,6 +22,8 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DataRowStoreFactory;
+import org.apache.cayenne.access.DefaultDataRowStoreFactory;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
@@ -69,6 +71,8 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.apache.cayenne.event.EventBridge;
+import org.apache.cayenne.event.EventBridgeProvider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
@@ -206,6 +210,10 @@ public class DataDomainProviderTest {
 				binder.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
 				binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
 				binder.bind(SQLTemplateProcessor.class).toInstance(mock(SQLTemplateProcessor.class));
+
+                binder.bind(EventBridge.class).toProvider(EventBridgeProvider.class);
+                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+                binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
 			}
 		};
 

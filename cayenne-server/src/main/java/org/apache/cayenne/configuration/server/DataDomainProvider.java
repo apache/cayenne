@@ -18,14 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -45,6 +43,9 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A {@link DataChannel} provider that provides a single instance of DataDomain
@@ -122,6 +123,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 		dataDomain.setQueryCache(new NestedQueryCache(queryCache));
 		dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
 		dataDomain.setEventManager(injector.getInstance(EventManager.class));
+		dataDomain.setDataRowStoreFactory(injector.getInstance(DataRowStoreFactory.class));
 
 		dataDomain.initWithProperties(descriptor.getProperties());
 

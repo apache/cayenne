@@ -17,43 +17,34 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
+package org.apache.cayenne.event;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.event.MockEventManager;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataRowStore;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
-/**
- * A "lightweight" DataRowStore.
- */
-public class MockDataRowStore extends DataRowStore {
+public class JMSBridgeProvider implements Provider<EventBridge> {
 
-    private static final Map TEST_DEFAULTS = new HashMap();
+    @Inject
+    protected DataDomain dataDomain;
 
-    static {
-        TEST_DEFAULTS.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, new Integer(10));
-    }
+    @Inject(Constants.JMS_BRIDGE_PROPERTIES_MAP)
+    Map<String, String> properties;
 
-    public MockDataRowStore() {
-        super("mock DataRowStore", TEST_DEFAULTS, new MockEventManager());
-    }
+    @Override
+    public EventBridge get() throws DIRuntimeException {
+        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class, dataDomain.getName());;
 
-    /**
-     * A backdoor to add test snapshots.
-     */
-    public void putSnapshot(ObjectId id, DataRow snapshot) {
-        snapshots.put(id, snapshot);
-    }
-
-    public void putSnapshot(ObjectId id, Map snapshot) {
-        snapshots.put(id, new DataRow(snapshot));
-    }
-
-    public void putEmptySnapshot(ObjectId id) {
-        snapshots.put(id, new DataRow(2));
+        return new JMSBridge(
+                Collections.singleton(snapshotEventSubject),
+                EventBridge.convertToExternalSubject(snapshotEventSubject),
+                properties);
     }
 
 }

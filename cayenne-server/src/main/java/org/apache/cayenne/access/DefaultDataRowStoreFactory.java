@@ -19,9 +19,12 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 
 import java.util.Map;
@@ -34,6 +37,9 @@ import java.util.Map;
 public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
     @Inject
+    protected Injector injector;
+
+    @Inject
     protected EventManager eventManager;
 
     @Inject(Constants.DATA_ROW_STORE_PROPERTIES_MAP)
@@ -41,7 +47,19 @@ public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
     @Override
     public DataRowStore createDataRowStore(String name) throws DIRuntimeException {
-        return new DataRowStore(name, properties, eventManager);
+        DataRowStore store = new DataRowStore(
+                name,
+                properties,
+                eventManager);
+
+        try {
+            store.setEventBridge(injector.getInstance(EventBridge.class));
+            store.startListeners();
+        } catch (Exception ex) {
+            throw new CayenneRuntimeException("Error initializing DataRowStore.", ex);
+        }
+
+        return store;
     }
 
 }

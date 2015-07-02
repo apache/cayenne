@@ -22,8 +22,6 @@ package org.apache.cayenne.event;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-
 /**
  * A factory of XMPPBridge. Note that to deploy an XMPPBridge, you need to have
  * <em>smack.jar</em> library in the runtime.
@@ -32,59 +30,12 @@ import org.apache.cayenne.CayenneRuntimeException;
  */
 public class XMPPBridgeFactory implements EventBridgeFactory {
 
-    public static final String XMPP_HOST_PROPERTY = "cayenne.XMPPBridge.xmppHost";
-
-    /**
-     * An optional property, port 5222 is used as default XMPP port.
-     */
-    public static final String XMPP_PORT_PROPERTY = "cayenne.XMPPBridge.xmppPort";
-
-    /**
-     * An optional property, "conference" is used as default chat service.
-     */
-    public static final String XMPP_CHAT_SERVICE_PROPERTY = "cayenne.XMPPBridge.xmppChatService";
-
-    public static final String XMPP_SECURE_CONNECTION_PROPERTY = "cayenne.XMPPBridge.xmppSecure";
-    public static final String XMPP_LOGIN_PROPERTY = "cayenne.XMPPBridge.xmppLogin";
-    public static final String XMPP_PASSWORD_PROPERTY = "cayenne.XMPPBridge.xmppPassword";
-
     @Override
     public EventBridge createEventBridge(
             Collection<EventSubject> localSubjects,
             String externalSubject,
             Map<String, String> properties) {
-
-        String chatService = properties.get(XMPP_CHAT_SERVICE_PROPERTY);
-        String host = properties.get(XMPP_HOST_PROPERTY);
-
-        String loginId = properties.get(XMPP_LOGIN_PROPERTY);
-        String password = properties.get(XMPP_PASSWORD_PROPERTY);
-
-        String secureConnectionString = properties
-                .get(XMPP_SECURE_CONNECTION_PROPERTY);
-        boolean secureConnection = "true".equalsIgnoreCase(secureConnectionString);
-
-        String portString = properties.get(XMPP_PORT_PROPERTY);
-        int port = -1;
-        if (portString != null) {
-
-            try {
-                port = Integer.parseInt(portString);
-            }
-            catch (NumberFormatException e) {
-                throw new CayenneRuntimeException("Invalid port: " + portString);
-            }
-        }
-
-        XMPPBridge bridge = new XMPPBridge(localSubjects, externalSubject);
-
-        bridge.setXmppHost(host);
-        bridge.setXmppPort(port);
-        bridge.setChatService(chatService);
-        bridge.setSecureConnection(secureConnection);
-        bridge.setLoginId(loginId);
-        bridge.setPassword(password);
-
-        return bridge;
+        return new XMPPBridge(localSubjects, externalSubject, properties);
     }
+
 }

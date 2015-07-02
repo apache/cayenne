@@ -93,12 +93,6 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected TransactionManager transactionManager;
 
     /**
-     * @since 4.0
-     */
-    @Inject
-    protected DataRowStoreFactory dataRowStoreFactory;
-
-    /**
      * @since 3.1
      */
     protected int maxIdQualifierSize;
@@ -126,6 +120,11 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.2
      */
     protected EventManager eventManager;
+
+    /**
+     * @since 4.0
+     */
+    protected DataRowStoreFactory dataRowStoreFactory;
 
     /**
      * @since 1.2
@@ -253,6 +252,14 @@ public class DataDomain implements QueryEngine, DataChannel {
         if (sharedSnapshotCache != null) {
             sharedSnapshotCache.setEventManager(eventManager);
         }
+    }
+
+    public DataRowStoreFactory getDataRowStoreFactory() {
+        return dataRowStoreFactory;
+    }
+
+    public void setDataRowStoreFactory(DataRowStoreFactory dataRowStoreFactory) {
+        this.dataRowStoreFactory = dataRowStoreFactory;
     }
 
     /**

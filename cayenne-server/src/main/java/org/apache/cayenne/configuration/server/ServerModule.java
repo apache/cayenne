@@ -91,6 +91,8 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.DefaultEventManager;
+import org.apache.cayenne.event.EventBridgeProvider;
+import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -192,6 +194,8 @@ public class ServerModule implements Module {
 		binder.bind(EventManager.class).to(DefaultEventManager.class);
 
 		binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
+
+        binder.bind(EventBridge.class).toProvider(EventBridgeProvider.class);
 
         binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
         binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
