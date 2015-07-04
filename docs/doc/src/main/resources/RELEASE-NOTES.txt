@@ -39,6 +39,7 @@ CAY-1997 Difference in NULL handling inside the path between PropertyUtils and D
 CAY-1998 Speeding up PropertyUtils
 CAY-1999 Unneeded Property import for superclasses with no properties
 CAY-2003 cdbimport doesn't work properly with several includeTable tags
+CAY-2015 Joint prefetches combined with DisjointById prefetches return null incorrectly
 
 ----------------------------------
 Release: 4.0.M2
