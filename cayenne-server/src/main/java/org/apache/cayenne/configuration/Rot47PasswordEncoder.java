@@ -86,19 +86,4 @@ public class Rot47PasswordEncoder implements PasswordEncoding {
         return result.toString();
     }
 
-    /**
-     * Small test program to run text through the ROT-47 cipher. This program can also be
-     * run by hand to encode/decode values manually. The values passed on the command line
-     * are printed to standard out.
-     * 
-     * @param args The array of text values (on the command-line) to be run through the
-     *            ROT-47 cipher.
-     */
-    public static void main(String[] args) {
-        Rot47PasswordEncoder encoder = new Rot47PasswordEncoder();
-
-        for (String string : args) {
-            System.out.println(encoder.rotate(string));
-        }
-    }
 }
