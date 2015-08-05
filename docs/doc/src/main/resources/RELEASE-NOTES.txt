@@ -28,6 +28,7 @@ CAY-2010 DataSourceBuilder to help users create pooling and non-pooling DataSour
 CAY-2011 Support for Java 8 date and time types
 CAY-2012 ObjectSelect, SelectById: eliminating methods that reset query state
 CAY-2013 In-memory evaluation of DB expressions - non-id attributes
+CAY-2023 Decouple the use of ResourceLocator
 
 Bug Fixes:
 
