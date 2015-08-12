@@ -114,6 +114,19 @@ public class CayenneModelerController extends CayenneController {
             }
         });
 
+        // Register a hook to save the window position when quit via the app menu.
+        // This is in Mac OSX only.
+        if (System.getProperty("os.name").startsWith("Mac OS")) {
+            Runnable runner = new Runnable() {
+                @Override
+                public void run() {
+                    PROJECT_STATE_UTIL.saveLastState(projectController);
+                }
+            };
+
+            Runtime.getRuntime().addShutdownHook(new Thread(runner, "Window Prefs Hook"));
+        }
+
         new DropTarget(frame, new DropTargetAdapter() {
 
             public void drop(DropTargetDropEvent dtde) {
