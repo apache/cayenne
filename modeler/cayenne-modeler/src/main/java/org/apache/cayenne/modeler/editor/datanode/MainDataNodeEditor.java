@@ -19,18 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.datanode;
 
-import java.awt.Component;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.DefaultComboBoxModel;
-
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
@@ -54,6 +42,17 @@ import org.apache.cayenne.swing.BindingDelegate;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationException;
 
+import javax.swing.DefaultComboBoxModel;
+import java.awt.Component;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * A controller for the main tab of the DataNode editor panel.
  * 
@@ -61,10 +60,11 @@ import org.apache.cayenne.validation.ValidationException;
 public class MainDataNodeEditor extends CayenneController {
 
     protected static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
+    private static final String DBCP2_DATA_SOURCE_FACTORY = "org.apache.cayenne.configuration.server.DBCP2DataSourceFactory";
 
     final static String[] standardDataSourceFactories = new String[] {
-            XMLPoolingDataSourceFactory.class.getName(),
-            JNDIDataSourceFactory.class.getName(), DBCPDataSourceFactory.class.getName()
+            XMLPoolingDataSourceFactory.class.getName(), JNDIDataSourceFactory.class.getName(),
+            DBCPDataSourceFactory.class.getName(), DBCP2_DATA_SOURCE_FACTORY
     };
 
     final static String[] standardSchemaUpdateStrategy = new String[] {
@@ -311,6 +311,11 @@ public class MainDataNodeEditor extends CayenneController {
             }
             else if (DBCPDataSourceFactory.class.getName().equals(factoryName)) {
                 c = new DBCPDataSourceEditor(
+                        (ProjectController) getParent(),
+                        nodeChangeProcessor);
+            }
+            else if (DBCP2_DATA_SOURCE_FACTORY.equals(factoryName)) {
+                c = new DBCP2DataSourceEditor(
                         (ProjectController) getParent(),
                         nodeChangeProcessor);
             }

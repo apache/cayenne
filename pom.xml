@@ -64,7 +64,7 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
-	</modules>
+    </modules>
 	<issueManagement>
 		<system>jira</system>
 		<url>https://issues.apache.org/jira/browse/CAY</url>
@@ -1480,6 +1480,15 @@
 				<module>cayenne-java8</module>
 			</modules>
 		</profile>
+        <profile>
+            <id>cayenne-dbcp2-module-to-build</id>
+            <activation>
+                <jdk>[1.7,)</jdk>
+            </activation>
+            <modules>
+                <module>cayenne-dbcp2</module>
+            </modules>
+        </profile>
 	</profiles>
 
     <reporting>

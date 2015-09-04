@@ -6,7 +6,7 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M3
 
-* We no lobger add @Deprecated annotation to generated String property names in entity superclasses. 
+* We no longer add @Deprecated annotation to generated String property names in entity superclasses.
   Instead String property names inclusion
   became optional, controlled with "createPropertyNames" flag in cgen ("false" by default). Also a similar option
   was added to Advanced Type of CayenneModeler class generation dialog.
@@ -20,6 +20,9 @@ UPGRADING TO 4.0.M3
 * Per CAY-2012 API for ObjectSelect and SelectById queries were changed to remove "reset" functionality. Methods like 'where', 'prefetch',
   'orderBy' that would previously reset the corresponding option state now work as "append". Methods that would previously append to the
   option state were removed as redundant. Please revisit your code if you previously relied on the reset behavior.
+
+* Per CAY-2025 DBCP2DataSourceFactory does not support deprecated properties. So if you want to upgrade from commons-dbcp to commons-dbcp2,
+  you should replace all old-style properties with the newer ones.
 
 UPGRADING TO 4.0.M2
 
