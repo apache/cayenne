@@ -30,6 +30,7 @@ CAY-2012 ObjectSelect, SelectById: eliminating methods that reset query state
 CAY-2013 In-memory evaluation of DB expressions - non-id attributes
 CAY-2023 Decouple the use of ResourceLocator
 CAY-2025 Support for DBCP2
+CAY-2026 Java 7
 
 Bug Fixes:
 
