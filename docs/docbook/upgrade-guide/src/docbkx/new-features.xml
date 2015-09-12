@@ -20,7 +20,8 @@
 		RELEASE-NOTES.txt included in Cayenne download. For release-specific upgrade instructions check UPGRADE.txt.</para>
 	<section xml:id="java-version">
 		<title>Java Version</title>
-		<para>Minimum required JDK version is 1.6 or newer. Cayenne 4.0 is fully tested with Java 1.6, 1.7, 1.8. </para>
+		<para>Minimum required JDK version is 1.7 or newer. Cayenne 4.0 is fully tested with Java 1.7,
+			1.8. </para>
 		<para>The examples below often use Java 8 syntax. But those same examples should work without lambdas just as well.</para>
 	</section>
 	<section xml:id="cayenne-configuration">
