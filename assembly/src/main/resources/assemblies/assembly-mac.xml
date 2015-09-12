@@ -80,6 +80,7 @@
 				<include>org.apache.cayenne:cayenne-lifecycle</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-tools</include>
+				<include>org.apache.cayenne:cayenne-dbcp2</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
@@ -108,7 +109,6 @@
 			<outputDirectory>../../</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.modeler:cayenne-modeler-mac</include>
-				<include>org.apache.cayenne.modeler:cayenne-modeler-mac-legacy</include>
 			</includes>
 			<unpack>true</unpack>
 			<unpackOptions>

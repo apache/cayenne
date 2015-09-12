@@ -80,6 +80,7 @@
 				<include>org.apache.cayenne:cayenne-lifecycle</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-tools</include>
+				<include>org.apache.cayenne:cayenne-dbcp2</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>

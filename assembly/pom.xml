@@ -197,11 +197,6 @@
 					<artifactId>cayenne-modeler-mac</artifactId>
 					<version>${project.version}</version>
 				</dependency>
-				<dependency>
-					<groupId>org.apache.cayenne.modeler</groupId>
-					<artifactId>cayenne-modeler-mac-legacy</artifactId>
-					<version>${project.version}</version>
-				</dependency>
 			</dependencies>
 			<build>
 				<plugins>
