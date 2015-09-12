@@ -37,219 +37,193 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
 
 /**
- * A SQLAction that runs a stored procedure. Note that ProcedureAction has internal state
- * and is not thread-safe.
+ * A SQLAction that runs a stored procedure. Note that ProcedureAction has
+ * internal state and is not thread-safe.
  * 
  * @since 1.2
  */
 public class ProcedureAction extends BaseSQLAction {
 
-    protected ProcedureQuery query;
+	protected ProcedureQuery query;
 
-    /**
-     * Holds a number of ResultSets processed by the action. This value is reset to zero
-     * on every "performAction" call.
-     */
-    protected int processedResultSets;
+	/**
+	 * Holds a number of ResultSets processed by the action. This value is reset
+	 * to zero on every "performAction" call.
+	 */
+	protected int processedResultSets;
 
-    /**
-     * @since 4.0
-     */
-    public ProcedureAction(ProcedureQuery query, DataNode dataNode) {
-        super(dataNode);
-        this.query = query;
-    }
+	/**
+	 * @since 4.0
+	 */
+	public ProcedureAction(ProcedureQuery query, DataNode dataNode) {
+		super(dataNode);
+		this.query = query;
+	}
 
-    @Override
-    public void performAction(Connection connection, OperationObserver observer)
-            throws SQLException, Exception {
+	@Override
+	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        processedResultSets = 0;
+		processedResultSets = 0;
 
-        ProcedureTranslator transl = createTranslator(connection);
+		ProcedureTranslator transl = createTranslator(connection);
 
-        CallableStatement statement = (CallableStatement) transl.createStatement();
+		try (CallableStatement statement = (CallableStatement) transl.createStatement();) {
+			initStatement(statement);
 
-        try {
-            initStatement(statement);
+			// stored procedure may contain a mixture of update counts and
+			// result sets,
+			// and out parameters. Read out parameters first, then
+			// iterate until we exhaust all results
 
-            // stored procedure may contain a mixture of update counts and result sets,
-            // and out parameters. Read out parameters first, then
-            // iterate until we exhaust all results
+			// TODO: andrus, 4/2/2007 - according to the docs we should store
+			// the boolean
+			// return value of this method and avoid calling 'getMoreResults' if
+			// it is
+			// true.
+			// some db's handle this well, some don't (MySQL).
 
-            // TODO: andrus, 4/2/2007 - according to the docs we should store the boolean
-            // return value of this method and avoid calling 'getMoreResults' if it is
-            // true.
-            // some db's handle this well, some don't (MySQL).
-            
-            // 09/23/2013: almost all adapters except Oracle (and maybe a few
-            // more?) are actually using the correct strategy, so making it a
-            // default in the superclass, and isolating hack to subclasses is
-            // probably a good idea
+			// 09/23/2013: almost all adapters except Oracle (and maybe a few
+			// more?) are actually using the correct strategy, so making it a
+			// default in the superclass, and isolating hack to subclasses is
+			// probably a good idea
 
-            statement.execute();
+			statement.execute();
 
-            // read out parameters
-            readProcedureOutParameters(statement, observer);
+			// read out parameters
+			readProcedureOutParameters(statement, observer);
 
-            // read the rest of the query
-            while (true) {
-                if (statement.getMoreResults()) {
-                    ResultSet rs = statement.getResultSet();
+			// read the rest of the query
+			while (true) {
+				if (statement.getMoreResults()) {
 
-                    try {
-                        RowDescriptor descriptor = describeResultSet(
-                                rs,
-                                processedResultSets++);
-                        readResultSet(rs, descriptor, query, observer);
-                    }
-                    finally {
-                        try {
-                            rs.close();
-                        }
-                        catch (SQLException ex) {
-                        }
-                    }
-                }
-                else {
-                    int updateCount = statement.getUpdateCount();
-                    if (updateCount == -1) {
-                        break;
-                    }
-                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
-                    observer.nextCount(query, updateCount);
-                }
-            }
-        }
-        finally {
-            try {
-                statement.close();
-            }
-            catch (SQLException ex) {
+					try (ResultSet rs = statement.getResultSet();) {
+						RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
+						readResultSet(rs, descriptor, query, observer);
+					}
+				} else {
+					int updateCount = statement.getUpdateCount();
+					if (updateCount == -1) {
+						break;
+					}
+					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
+					observer.nextCount(query, updateCount);
+				}
+			}
+		}
+	}
 
-            }
-        }
-    }
+	/**
+	 * Returns the ProcedureTranslator to use for this ProcedureAction.
+	 * 
+	 * @param connection
+	 *            JDBC connection
+	 */
+	protected ProcedureTranslator createTranslator(Connection connection) {
+		ProcedureTranslator translator = new ProcedureTranslator();
+		translator.setAdapter(dataNode.getAdapter());
+		translator.setQuery(query);
+		translator.setEntityResolver(dataNode.getEntityResolver());
+		translator.setConnection(connection);
+		translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
+		return translator;
+	}
 
-    /**
-     * Returns the ProcedureTranslator to use for this ProcedureAction.
-     * 
-     * @param connection JDBC connection
-     */
-    protected ProcedureTranslator createTranslator(Connection connection) {
-        ProcedureTranslator translator = new ProcedureTranslator();
-        translator.setAdapter(dataNode.getAdapter());
-        translator.setQuery(query);
-        translator.setEntityResolver(dataNode.getEntityResolver());
-        translator.setConnection(connection);
-        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-        return translator;
-    }
+	/**
+	 * Creates a RowDescriptor for result set.
+	 * 
+	 * @param resultSet
+	 *            JDBC ResultSet
+	 * @param setIndex
+	 *            a zero-based index of the ResultSet in the query results.
+	 */
+	protected RowDescriptor describeResultSet(ResultSet resultSet, int setIndex) throws SQLException {
 
-    /**
-     * Creates a RowDescriptor for result set.
-     * 
-     * @param resultSet JDBC ResultSet
-     * @param setIndex a zero-based index of the ResultSet in the query results.
-     */
-    protected RowDescriptor describeResultSet(ResultSet resultSet, int setIndex)
-            throws SQLException {
+		if (setIndex < 0) {
+			throw new IllegalArgumentException("Expected a non-negative result set index. Got: " + setIndex);
+		}
 
-        if (setIndex < 0) {
-            throw new IllegalArgumentException(
-                    "Expected a non-negative result set index. Got: " + setIndex);
-        }
+		RowDescriptorBuilder builder = new RowDescriptorBuilder();
 
-        RowDescriptorBuilder builder = new RowDescriptorBuilder();
+		List<ColumnDescriptor[]> descriptors = query.getResultDescriptors();
 
-        List<ColumnDescriptor[]> descriptors = query.getResultDescriptors();
+		if (descriptors.isEmpty()) {
+			builder.setResultSet(resultSet);
+		} else {
 
-        if (descriptors.isEmpty()) {
-            builder.setResultSet(resultSet);
-        }
-        else {
+			// if one result is described, all of them must be present...
+			if (setIndex >= descriptors.size() || descriptors.get(setIndex) == null) {
+				throw new CayenneRuntimeException("No descriptor for result set at index '" + setIndex
+						+ "' configured.");
+			}
 
-            // if one result is described, all of them must be present...
-            if (setIndex >= descriptors.size() || descriptors.get(setIndex) == null) {
-                throw new CayenneRuntimeException(
-                        "No descriptor for result set at index '"
-                                + setIndex
-                                + "' configured.");
-            }
+			ColumnDescriptor[] columns = descriptors.get(setIndex);
+			builder.setColumns(columns);
+		}
 
-            ColumnDescriptor[] columns = descriptors.get(setIndex);
-            builder.setColumns(columns);
-        }
+		switch (query.getColumnNamesCapitalization()) {
+		case LOWER:
+			builder.useLowercaseColumnNames();
+			break;
+		case UPPER:
+			builder.useUppercaseColumnNames();
+			break;
+		}
 
-        switch (query.getColumnNamesCapitalization()) {
-            case LOWER:
-                builder.useLowercaseColumnNames();
-                break;
-            case UPPER:
-                builder.useUppercaseColumnNames();
-                break;
-        }
+		return builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
+	}
 
-        return builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
-    }
+	/**
+	 * Returns stored procedure for an internal query.
+	 */
+	protected Procedure getProcedure() {
+		return query.getMetaData(dataNode.getEntityResolver()).getProcedure();
+	}
 
-    /**
-     * Returns stored procedure for an internal query.
-     */
-    protected Procedure getProcedure() {
-        return query.getMetaData(dataNode.getEntityResolver()).getProcedure();
-    }
+	/**
+	 * Helper method that reads OUT parameters of a CallableStatement.
+	 */
+	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate)
+			throws SQLException, Exception {
 
-    /**
-     * Helper method that reads OUT parameters of a CallableStatement.
-     */
-    protected void readProcedureOutParameters(
-            CallableStatement statement,
-            OperationObserver delegate) throws SQLException, Exception {
+		long t1 = System.currentTimeMillis();
 
-        long t1 = System.currentTimeMillis();
+		// build result row...
+		DataRow result = null;
+		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
+		for (int i = 0; i < parameters.size(); i++) {
+			ProcedureParameter parameter = parameters.get(i);
 
-        // build result row...
-        DataRow result = null;
-        List<ProcedureParameter> parameters = getProcedure().getCallParameters();
-        for (int i = 0; i < parameters.size(); i++) {
-            ProcedureParameter parameter = parameters.get(i);
+			if (!parameter.isOutParam()) {
+				continue;
+			}
 
-            if (!parameter.isOutParam()) {
-                continue;
-            }
+			if (result == null) {
+				result = new DataRow(2);
+			}
 
-            if (result == null) {
-                result = new DataRow(2);
-            }
+			ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
+			ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(descriptor.getJavaClass());
+			Object val = type.materializeObject(statement, i + 1, descriptor.getJdbcType());
 
-            ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
-            ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(
-                    descriptor.getJavaClass());
-            Object val = type.materializeObject(statement, i + 1, descriptor
-                    .getJdbcType());
+			result.put(descriptor.getDataRowKey(), val);
+		}
 
-            result.put(descriptor.getDataRowKey(), val);
-        }
+		if (result != null && !result.isEmpty()) {
+			// treat out parameters as a separate data row set
+			dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
+			delegate.nextRows(query, Collections.singletonList(result));
+		}
+	}
 
-        if (result != null && !result.isEmpty()) {
-            // treat out parameters as a separate data row set
-            dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
-            delegate.nextRows(query, Collections.singletonList(result));
-        }
-    }
-
-    /**
-     * Initializes statement with query parameters
-     * 
-     * @throws Exception
-     */
-    protected void initStatement(CallableStatement statement) throws Exception {
-        int statementFetchSize = query
-                .getMetaData(dataNode.getEntityResolver())
-                .getStatementFetchSize();
-        if (statementFetchSize != 0) {
-            statement.setFetchSize(statementFetchSize);
-        }
-    }
+	/**
+	 * Initializes statement with query parameters
+	 * 
+	 * @throws Exception
+	 */
+	protected void initStatement(CallableStatement statement) throws Exception {
+		int statementFetchSize = query.getMetaData(dataNode.getEntityResolver()).getStatementFetchSize();
+		if (statementFetchSize != 0) {
+			statement.setFetchSize(statementFetchSize);
+		}
+	}
 }

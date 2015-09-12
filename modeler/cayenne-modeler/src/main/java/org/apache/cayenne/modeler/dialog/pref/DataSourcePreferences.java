@@ -271,10 +271,10 @@ public class DataSourcePreferences extends CayenneController {
 
 			// connect via Cayenne DriverDataSource - it addresses some driver
 			// issues...
-			Connection c = new DriverDataSource(driver, currentDataSource.getUrl(), currentDataSource.getUserName(),
-					currentDataSource.getPassword()).getConnection();
-			try {
-				c.close();
+
+			try (Connection c = new DriverDataSource(driver, currentDataSource.getUrl(),
+					currentDataSource.getUserName(), currentDataSource.getPassword()).getConnection();) {
+				// do nothing...
 			} catch (SQLException e) {
 				// i guess we can ignore this...
 			}

@@ -41,83 +41,61 @@ import org.apache.cayenne.map.DbKeyGenerator;
  */
 public class IngresPkGenerator extends OraclePkGenerator {
 
-    protected IngresPkGenerator(JdbcAdapter adapter) {
-        super(adapter);
-    }
+	protected IngresPkGenerator(JdbcAdapter adapter) {
+		super(adapter);
+	}
 
-    @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+	@Override
+	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
-        DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
-        String pkGeneratingSequenceName;
-        if (pkGenerator != null
-                && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null) {
-            pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        } else {
-            pkGeneratingSequenceName = sequenceName(entity);
-        }
+		DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
+		String pkGeneratingSequenceName;
+		if (pkGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
+				&& pkGenerator.getGeneratorName() != null) {
+			pkGeneratingSequenceName = pkGenerator.getGeneratorName();
+		} else {
+			pkGeneratingSequenceName = sequenceName(entity);
+		}
 
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
-                String sql = "SELECT " + pkGeneratingSequenceName + ".nextval";
-                adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + entity.getName());
-                    }
-                    return rs.getLong(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
-    }
+		try (Connection con = node.getDataSource().getConnection();) {
 
-    @Override
-    protected List<String> getExistingSequences(DataNode node) throws SQLException {
+			try (Statement st = con.createStatement();) {
+				String sql = "SELECT " + pkGeneratingSequenceName + ".nextval";
+				adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
-        // check existing sequences
-        Connection connection = node.getDataSource().getConnection();
+				try (ResultSet rs = st.executeQuery(sql);) {
+					// Object pk = null;
+					if (!rs.next()) {
+						throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
+					}
+					return rs.getLong(1);
+				}
+			}
+		}
+	}
 
-        try {
-            Statement select = connection.createStatement();
-            try {
-                String sql = "select seq_name from iisequences where seq_owner != 'DBA'";
-                adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
-                ResultSet rs = select.executeQuery(sql);
-                try {
-                    List<String> sequenceList = new ArrayList<String>();
-                    while (rs.next()) {
-                        String name = rs.getString(1);
-                        if (name != null) {
-                            sequenceList.add(name.trim());
-                        }
-                    }
-                    return sequenceList;
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                select.close();
-            }
-        }
-        finally {
-            connection.close();
-        }
-    }
+	@Override
+	protected List<String> getExistingSequences(DataNode node) throws SQLException {
+
+		// check existing sequences
+
+		try (Connection connection = node.getDataSource().getConnection();) {
+
+			try (Statement select = connection.createStatement();) {
+				String sql = "select seq_name from iisequences where seq_owner != 'DBA'";
+				adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
+
+				try (ResultSet rs = select.executeQuery(sql);) {
+					List<String> sequenceList = new ArrayList<String>();
+					while (rs.next()) {
+						String name = rs.getString(1);
+						if (name != null) {
+							sequenceList.add(name.trim());
+						}
+					}
+					return sequenceList;
+				}
+			}
+		}
+	}
 }

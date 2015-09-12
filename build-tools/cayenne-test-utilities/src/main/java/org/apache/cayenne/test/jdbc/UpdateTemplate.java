@@ -25,67 +25,52 @@ import java.util.Collection;
 
 class UpdateTemplate {
 
-    DBHelper parent;
+	DBHelper parent;
 
-    public UpdateTemplate(DBHelper parent) {
-        this.parent = parent;
-    }
+	public UpdateTemplate(DBHelper parent) {
+		this.parent = parent;
+	}
 
-    protected void bindParameters(
-            PreparedStatement statement,
-            Collection<Object> bindings,
-            Collection<Integer> bindingTypes) throws SQLException {
+	protected void bindParameters(PreparedStatement statement, Collection<Object> bindings,
+			Collection<Integer> bindingTypes) throws SQLException {
 
-        if (bindings != null && !bindings.isEmpty()) {
+		if (bindings != null && !bindings.isEmpty()) {
 
-            Object[] values = bindings.toArray();
-            Integer[] types = bindingTypes.toArray(new Integer[bindingTypes.size()]);
+			Object[] values = bindings.toArray();
+			Integer[] types = bindingTypes.toArray(new Integer[bindingTypes.size()]);
 
-            for (int i = 0; i < values.length; i++) {
+			for (int i = 0; i < values.length; i++) {
 
-                if (values[i] == null) {
-                    if (types[i] != SQLBuilder.NO_TYPE) {
-                        statement.setNull(i + 1, types[i]);
-                    }
-                    else {
-                        throw new IllegalStateException(
-                                "No type information for null value at index " + i);
-                    }
-                }
-                else {
-                    if (types[i] != SQLBuilder.NO_TYPE) {
-                        statement.setObject(i + 1, values[i], types[i]);
-                    }
-                    else {
-                        statement.setObject(i + 1, values[i]);
-                    }
-                }
-            }
-        }
-    }
+				if (values[i] == null) {
+					if (types[i] != SQLBuilder.NO_TYPE) {
+						statement.setNull(i + 1, types[i]);
+					} else {
+						throw new IllegalStateException("No type information for null value at index " + i);
+					}
+				} else {
+					if (types[i] != SQLBuilder.NO_TYPE) {
+						statement.setObject(i + 1, values[i], types[i]);
+					} else {
+						statement.setObject(i + 1, values[i]);
+					}
+				}
+			}
+		}
+	}
 
-    int execute(String sql, Collection<Object> bindings, Collection<Integer> bindingTypes)
-            throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
+	int execute(String sql, Collection<Object> bindings, Collection<Integer> bindingTypes) throws SQLException {
+		UtilityLogger.log(sql);
 
-            PreparedStatement st = c.prepareStatement(sql);
+		try (Connection c = parent.getConnection();) {
 
-            int count;
-            try {
-                bindParameters(st, bindings, bindingTypes);
-                count = st.executeUpdate();
-            }
-            finally {
-                st.close();
-            }
+			int count;
+			try (PreparedStatement st = c.prepareStatement(sql);) {
+				bindParameters(st, bindings, bindingTypes);
+				count = st.executeUpdate();
+			}
 
-            c.commit();
-            return count;
-        }
-        finally {
-            c.close();
-        }
-    }
+			c.commit();
+			return count;
+		}
+	}
 }

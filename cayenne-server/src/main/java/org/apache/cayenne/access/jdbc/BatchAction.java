@@ -49,226 +49,216 @@ import org.apache.cayenne.query.InsertBatchQuery;
  */
 public class BatchAction extends BaseSQLAction {
 
-    protected boolean runningAsBatch;
-    protected BatchQuery query;
-    protected RowDescriptor keyRowDescriptor;
+	protected boolean runningAsBatch;
+	protected BatchQuery query;
+	protected RowDescriptor keyRowDescriptor;
 
-    private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
-            throws SQLException, Exception {
+	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
+			throws SQLException, Exception {
 
-        for (ParameterBinding b : bindings) {
-            if (!b.isExcluded()) {
-                adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
-                        .getAttribute().getScale());
-            }
-        }
-    }
+		for (ParameterBinding b : bindings) {
+			if (!b.isExcluded()) {
+				adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
+						.getAttribute().getScale());
+			}
+		}
+	}
 
-    /**
-     * @since 4.0
-     */
-    public BatchAction(BatchQuery query, DataNode dataNode, boolean runningAsBatch) {
-        super(dataNode);
-        this.query = query;
-        this.runningAsBatch = runningAsBatch;
-    }
+	/**
+	 * @since 4.0
+	 */
+	public BatchAction(BatchQuery query, DataNode dataNode, boolean runningAsBatch) {
+		super(dataNode);
+		this.query = query;
+		this.runningAsBatch = runningAsBatch;
+	}
 
-    /**
-     * @return Query which originated this action
-     */
-    public BatchQuery getQuery() {
-        return query;
-    }
+	/**
+	 * @return Query which originated this action
+	 */
+	public BatchQuery getQuery() {
+		return query;
+	}
 
-    @Override
-    public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	@Override
+	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        BatchTranslator translator = createTranslator();
-        boolean generatesKeys = hasGeneratedKeys();
+		BatchTranslator translator = createTranslator();
+		boolean generatesKeys = hasGeneratedKeys();
 
-        if (runningAsBatch && !generatesKeys) {
-            runAsBatch(connection, translator, observer);
-        } else {
-            runAsIndividualQueries(connection, translator, observer, generatesKeys);
-        }
-    }
+		if (runningAsBatch && !generatesKeys) {
+			runAsBatch(connection, translator, observer);
+		} else {
+			runAsIndividualQueries(connection, translator, observer, generatesKeys);
+		}
+	}
 
-    protected BatchTranslator createTranslator() throws CayenneException {
-        return dataNode.batchTranslator(query, null);
-    }
+	protected BatchTranslator createTranslator() throws CayenneException {
+		return dataNode.batchTranslator(query, null);
+	}
 
-    protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate)
-            throws SQLException, Exception {
+	protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate)
+			throws SQLException, Exception {
 
-        String sql = translator.getSql();
-        JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-        boolean isLoggable = logger.isLoggable();
+		String sql = translator.getSql();
+		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
+		boolean isLoggable = logger.isLoggable();
 
-        // log batch SQL execution
-        logger.logQuery(sql, Collections.EMPTY_LIST);
+		// log batch SQL execution
+		logger.logQuery(sql, Collections.EMPTY_LIST);
 
-        // run batch
+		// run batch
 
-        DbAdapter adapter = dataNode.getAdapter();
-        PreparedStatement statement = con.prepareStatement(sql);
-        try {
-            for (BatchQueryRow row : query.getRows()) {
+		DbAdapter adapter = dataNode.getAdapter();
 
-                ParameterBinding[] bindings = translator.updateBindings(row);
-                logger.logQueryParameters("batch bind", bindings);
-                bind(adapter, statement, bindings);
+		try (PreparedStatement statement = con.prepareStatement(sql);) {
+			for (BatchQueryRow row : query.getRows()) {
 
-                statement.addBatch();
-            }
+				ParameterBinding[] bindings = translator.updateBindings(row);
+				logger.logQueryParameters("batch bind", bindings);
+				bind(adapter, statement, bindings);
 
-            // execute the whole batch
-            int[] results = statement.executeBatch();
-            delegate.nextBatchCount(query, results);
+				statement.addBatch();
+			}
 
-            if (isLoggable) {
-                int totalUpdateCount = 0;
-                for (int result : results) {
+			// execute the whole batch
+			int[] results = statement.executeBatch();
+			delegate.nextBatchCount(query, results);
 
-                    // this means Statement.SUCCESS_NO_INFO or
-                    // Statement.EXECUTE_FAILED
-                    if (result < 0) {
-                        totalUpdateCount = Statement.SUCCESS_NO_INFO;
-                        break;
-                    }
+			if (isLoggable) {
+				int totalUpdateCount = 0;
+				for (int result : results) {
 
-                    totalUpdateCount += result;
-                }
+					// this means Statement.SUCCESS_NO_INFO or
+					// Statement.EXECUTE_FAILED
+					if (result < 0) {
+						totalUpdateCount = Statement.SUCCESS_NO_INFO;
+						break;
+					}
 
-                logger.logUpdateCount(totalUpdateCount);
-            }
-        } finally {
-            try {
-                statement.close();
-            } catch (Exception e) {
-            }
-        }
-    }
+					totalUpdateCount += result;
+				}
 
-    /**
-     * Executes batch as individual queries over the same prepared statement.
-     */
-    protected void runAsIndividualQueries(Connection connection, BatchTranslator translator,
-            OperationObserver delegate, boolean generatesKeys) throws SQLException, Exception {
+				logger.logUpdateCount(totalUpdateCount);
+			}
+		}
+	}
 
-        JdbcEventLogger logger = dataNode.getJdbcEventLogger();
-        boolean useOptimisticLock = query.isUsingOptimisticLocking();
+	/**
+	 * Executes batch as individual queries over the same prepared statement.
+	 */
+	protected void runAsIndividualQueries(Connection connection, BatchTranslator translator,
+			OperationObserver delegate, boolean generatesKeys) throws SQLException, Exception {
 
-        String queryStr = translator.getSql();
+		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
+		boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-        // log batch SQL execution
-        logger.logQuery(queryStr, Collections.EMPTY_LIST);
+		String queryStr = translator.getSql();
 
-        // run batch queries one by one
+		// log batch SQL execution
+		logger.logQuery(queryStr, Collections.EMPTY_LIST);
 
-        DbAdapter adapter = dataNode.getAdapter();
-        PreparedStatement statement = (generatesKeys) ? connection.prepareStatement(queryStr,
-                Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(queryStr);
-        try {
-            for (BatchQueryRow row : query.getRows()) {
+		// run batch queries one by one
 
-                ParameterBinding[] bindings = translator.updateBindings(row);
-                logger.logQueryParameters("bind", bindings);
+		DbAdapter adapter = dataNode.getAdapter();
 
-                bind(adapter, statement, bindings);
+		try (PreparedStatement statement = (generatesKeys) ? connection.prepareStatement(queryStr,
+				Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(queryStr);) {
+			for (BatchQueryRow row : query.getRows()) {
 
-                int updated = statement.executeUpdate();
-                if (useOptimisticLock && updated != 1) {
-                    throw new OptimisticLockException(row.getObjectId(), query.getDbEntity(), queryStr,
-                            row.getQualifier());
-                }
+				ParameterBinding[] bindings = translator.updateBindings(row);
+				logger.logQueryParameters("bind", bindings);
 
-                delegate.nextCount(query, updated);
+				bind(adapter, statement, bindings);
 
-                if (generatesKeys) {
-                    processGeneratedKeys(statement, delegate, row);
-                }
+				int updated = statement.executeUpdate();
+				if (useOptimisticLock && updated != 1) {
+					throw new OptimisticLockException(row.getObjectId(), query.getDbEntity(), queryStr,
+							row.getQualifier());
+				}
 
-                logger.logUpdateCount(updated);
-            }
-        } finally {
-            try {
-                statement.close();
-            } catch (Exception e) {
-            }
-        }
-    }
+				delegate.nextCount(query, updated);
 
-    /**
-     * Returns whether BatchQuery generates any keys.
-     */
-    protected boolean hasGeneratedKeys() {
-        // see if we are configured to support generated keys
-        if (!dataNode.getAdapter().supportsGeneratedKeys()) {
-            return false;
-        }
+				if (generatesKeys) {
+					processGeneratedKeys(statement, delegate, row);
+				}
 
-        // see if the query needs them
-        if (query instanceof InsertBatchQuery) {
+				logger.logUpdateCount(updated);
+			}
+		}
+	}
 
-            // see if any of the generated attributes is PK
-            for (final DbAttribute attr : query.getDbEntity().getGeneratedAttributes()) {
-                if (attr.isPrimaryKey()) {
-                    return true;
-                }
-            }
-        }
+	/**
+	 * Returns whether BatchQuery generates any keys.
+	 */
+	protected boolean hasGeneratedKeys() {
+		// see if we are configured to support generated keys
+		if (!dataNode.getAdapter().supportsGeneratedKeys()) {
+			return false;
+		}
 
-        return false;
-    }
+		// see if the query needs them
+		if (query instanceof InsertBatchQuery) {
 
-    /**
-     * Implements generated keys extraction supported in JDBC 3.0 specification.
-     * 
-     * @since 4.0
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)
-            throws SQLException, CayenneException {
+			// see if any of the generated attributes is PK
+			for (final DbAttribute attr : query.getDbEntity().getGeneratedAttributes()) {
+				if (attr.isPrimaryKey()) {
+					return true;
+				}
+			}
+		}
 
-        ResultSet keysRS = statement.getGeneratedKeys();
+		return false;
+	}
 
-        // TODO: andrus, 7/4/2007 - (1) get the type of meaningful PK's from
-        // their
-        // ObjAttributes; (2) use a different form of Statement.execute -
-        // "execute(String,String[])" to be able to map generated column names
-        // (this way
-        // we can support multiple columns.. although need to check how well
-        // this works
-        // with most common drivers)
+	/**
+	 * Implements generated keys extraction supported in JDBC 3.0 specification.
+	 * 
+	 * @since 4.0
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)
+			throws SQLException, CayenneException {
 
-        RowDescriptorBuilder builder = new RowDescriptorBuilder();
+		ResultSet keysRS = statement.getGeneratedKeys();
 
-        if (this.keyRowDescriptor == null) {
-            // attempt to figure out the right descriptor from the mapping...
-            Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
-            if (generated.size() == 1) {
-                DbAttribute key = generated.iterator().next();
+		// TODO: andrus, 7/4/2007 - (1) get the type of meaningful PK's from
+		// their
+		// ObjAttributes; (2) use a different form of Statement.execute -
+		// "execute(String,String[])" to be able to map generated column names
+		// (this way
+		// we can support multiple columns.. although need to check how well
+		// this works
+		// with most common drivers)
 
-                ColumnDescriptor[] columns = new ColumnDescriptor[1];
+		RowDescriptorBuilder builder = new RowDescriptorBuilder();
 
-                // use column name from result set, but type and Java class from
-                // DB
-                // attribute
-                columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
-                columns[0].setJdbcType(key.getType());
-                columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key.getType()));
-                builder.setColumns(columns);
-            } else {
-                builder.setResultSet(keysRS);
-            }
+		if (this.keyRowDescriptor == null) {
+			// attempt to figure out the right descriptor from the mapping...
+			Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
+			if (generated.size() == 1) {
+				DbAttribute key = generated.iterator().next();
 
-            this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
-        }
+				ColumnDescriptor[] columns = new ColumnDescriptor[1];
 
-        RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()),
-                Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
-        ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
+				// use column name from result set, but type and Java class from
+				// DB
+				// attribute
+				columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
+				columns[0].setJdbcType(key.getType());
+				columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key.getType()));
+				builder.setColumns(columns);
+			} else {
+				builder.setResultSet(keysRS);
+			}
 
-        observer.nextGeneratedRows(query, iterator, row.getObjectId());
-    }
+			this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
+		}
+
+		RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()),
+				Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
+
+		observer.nextGeneratedRows(query, iterator, row.getObjectId());
+	}
 }

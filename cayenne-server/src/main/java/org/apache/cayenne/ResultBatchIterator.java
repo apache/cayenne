@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,12 +31,12 @@ import java.util.List;
  *
  * @since 4.0
  */
-public class ResultBatchIterator<T> implements Iterable<List<T>>, Iterator<List<T>>, Closeable {
+public class ResultBatchIterator<T> implements Iterable<List<T>>, Iterator<List<T>>, AutoCloseable {
 
-    private final ResultIterator delegate;
+    private final ResultIterator<T> delegate;
     private final int size;
 
-    public ResultBatchIterator(ResultIterator delegate, int size) {
+    public ResultBatchIterator(ResultIterator<T> delegate, int size) {
         this.delegate = delegate;
         this.size = size;
     }

@@ -68,20 +68,15 @@ public class PoolAwareConnection implements Connection {
 		}
 
 		try {
-			Statement statement = connection.createStatement();
-			try {
-				ResultSet rs = statement.executeQuery(validationQuery);
-				try {
+
+			try (Statement statement = connection.createStatement();) {
+
+				try (ResultSet rs = statement.executeQuery(validationQuery);) {
 
 					if (!rs.next()) {
 						throw new SQLException("Connection validation failed, no result for query: " + validationQuery);
 					}
-
-				} finally {
-					rs.close();
 				}
-			} finally {
-				statement.close();
 			}
 		} catch (SQLException e) {
 			return false;

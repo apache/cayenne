@@ -25,37 +25,26 @@ import java.sql.SQLException;
 
 abstract class ResultSetTemplate<T> {
 
-    DBHelper parent;
+	DBHelper parent;
 
-    public ResultSetTemplate(DBHelper parent) {
-        this.parent = parent;
-    }
+	public ResultSetTemplate(DBHelper parent) {
+		this.parent = parent;
+	}
 
-    abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
+	abstract T readResultSet(ResultSet rs, String sql) throws SQLException;
 
-    T execute(String sql) throws SQLException {
-        UtilityLogger.log(sql);
-        Connection c = parent.getConnection();
-        try {
+	T execute(String sql) throws SQLException {
+		UtilityLogger.log(sql);
 
-            PreparedStatement st = c.prepareStatement(sql);
+		try (Connection c = parent.getConnection();) {
 
-            try {
-                ResultSet rs = st.executeQuery();
-                try {
+			try (PreparedStatement st = c.prepareStatement(sql);) {
 
-                    return readResultSet(rs, sql);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            c.close();
-        }
-    }
+				try (ResultSet rs = st.executeQuery();) {
+
+					return readResultSet(rs, sql);
+				}
+			}
+		}
+	}
 }

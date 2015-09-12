@@ -43,262 +43,245 @@ import org.apache.cayenne.util.IDUtil;
  */
 public class OpenBasePkGenerator extends JdbcPkGenerator {
 
-    protected OpenBasePkGenerator(JdbcAdapter adapter) {
-        super(adapter);
-    }
+	protected OpenBasePkGenerator(JdbcAdapter adapter) {
+		super(adapter);
+	}
 
-    /**
-     * Returns a non-repeating primary key for a given PK attribute. Since
-     * OpenBase-specific mechanism is used, key caching is disabled. Instead a database
-     * operation is performed on every call.
-     * 
-     * @since 3.0
-     */
-    @Override
-    public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
+	/**
+	 * Returns a non-repeating primary key for a given PK attribute. Since
+	 * OpenBase-specific mechanism is used, key caching is disabled. Instead a
+	 * database operation is performed on every call.
+	 * 
+	 * @since 3.0
+	 */
+	@Override
+	public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
 
-        DbEntity entity = (DbEntity) pk.getEntity();
+		DbEntity entity = (DbEntity) pk.getEntity();
 
-        switch (pk.getType()) {
-            case Types.BINARY:
-            case Types.VARBINARY:
-                return IDUtil.pseudoUniqueSecureByteSequence(pk.getMaxLength());
-        }
+		switch (pk.getType()) {
+		case Types.BINARY:
+		case Types.VARBINARY:
+			return IDUtil.pseudoUniqueSecureByteSequence(pk.getMaxLength());
+		}
 
-        long value = longPkFromDatabase(node, entity);
+		long value = longPkFromDatabase(node, entity);
 
-        if (pk.getType() == Types.BIGINT) {
-            return Long.valueOf(value);
-        }
-        else {
-            // leaving it up to the user to ensure that PK does not exceed max int...
-            return Integer.valueOf((int) value);
-        }
-    }
+		if (pk.getType() == Types.BIGINT) {
+			return Long.valueOf(value);
+		} else {
+			// leaving it up to the user to ensure that PK does not exceed max
+			// int...
+			return Integer.valueOf((int) value);
+		}
+	}
 
-    /**
-     * Generates new (unique and non-repeating) primary key for specified DbEntity.
-     * Executed SQL looks like this:
-     * 
-     * <pre>
-     *  NEWID FOR Table Column
-     * </pre>
-     * 
-     * COLUMN must be marked as UNIQUE in order for this to work properly.
-     * 
-     * @since 3.0
-     */
-    @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+	/**
+	 * Generates new (unique and non-repeating) primary key for specified
+	 * DbEntity. Executed SQL looks like this:
+	 * 
+	 * <pre>
+	 *  NEWID FOR Table Column
+	 * </pre>
+	 * 
+	 * COLUMN must be marked as UNIQUE in order for this to work properly.
+	 * 
+	 * @since 3.0
+	 */
+	@Override
+	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
-        String sql = newIDString(entity);
-        adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
+		String sql = newIDString(entity);
+		adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
+		try (Connection con = node.getDataSource().getConnection();) {
 
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + entity.getName());
-                    }
-                    return rs.getLong(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
+			try (Statement st = con.createStatement();) {
 
-    }
+				try (ResultSet rs = st.executeQuery(sql);) {
+					// Object pk = null;
+					if (!rs.next()) {
+						throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
+					}
+					return rs.getLong(1);
+				}
+			}
+		}
+	}
 
-    /**
-     * Returns SQL string that can generate new (unique and non-repeating) primary key for
-     * specified DbEntity. No actual database operations are performed.
-     * 
-     * @since 1.2
-     */
-    protected String newIDString(DbEntity ent) {
-        if (ent.getPrimaryKeys() == null || ent.getPrimaryKeys().size() != 1) {
-            throw new CayenneRuntimeException("Error generating pk for DbEntity "
-                    + ent.getName()
-                    + ": pk must be single attribute");
-        }
-        DbAttribute primaryKeyAttribute = ent.getPrimaryKeys().iterator().next();
+	/**
+	 * Returns SQL string that can generate new (unique and non-repeating)
+	 * primary key for specified DbEntity. No actual database operations are
+	 * performed.
+	 * 
+	 * @since 1.2
+	 */
+	protected String newIDString(DbEntity ent) {
+		if (ent.getPrimaryKeys() == null || ent.getPrimaryKeys().size() != 1) {
+			throw new CayenneRuntimeException("Error generating pk for DbEntity " + ent.getName()
+					+ ": pk must be single attribute");
+		}
+		DbAttribute primaryKeyAttribute = ent.getPrimaryKeys().iterator().next();
 
-        return "NEWID FOR " + ent.getName() + ' ' + primaryKeyAttribute.getName();
-    }
+		return "NEWID FOR " + ent.getName() + ' ' + primaryKeyAttribute.getName();
+	}
 
-    @Override
-    public void createAutoPk(DataNode node, List dbEntities) throws Exception {
-        // looks like generating a PK on top of an existing one does not
-        // result in errors...
+	@Override
+	public void createAutoPk(DataNode node, List dbEntities) throws Exception {
+		// looks like generating a PK on top of an existing one does not
+		// result in errors...
 
-        // create needed sequences
-        Iterator<?> it = dbEntities.iterator();
-        while (it.hasNext()) {
-            DbEntity entity = (DbEntity) it.next();
+		// create needed sequences
+		Iterator<?> it = dbEntities.iterator();
+		while (it.hasNext()) {
+			DbEntity entity = (DbEntity) it.next();
 
-            // the caller must take care of giving us the right entities
-            // but lets check anyway
-            if (!canCreatePK(entity)) {
-                continue;
-            }
+			// the caller must take care of giving us the right entities
+			// but lets check anyway
+			if (!canCreatePK(entity)) {
+				continue;
+			}
 
-            runUpdate(node, createPKString(entity));
-            runUpdate(node, createUniquePKIndexString(entity));
-        }
-    }
+			runUpdate(node, createPKString(entity));
+			runUpdate(node, createUniquePKIndexString(entity));
+		}
+	}
 
-    /**
+	/**
      * 
      */
-    @Override
-    public List createAutoPkStatements(List dbEntities) {
-        List<String> list = new ArrayList<String>(2 * dbEntities.size());
-        Iterator<?> it = dbEntities.iterator();
-        while (it.hasNext()) {
-            DbEntity entity = (DbEntity) it.next();
+	@Override
+	public List createAutoPkStatements(List dbEntities) {
+		List<String> list = new ArrayList<String>(2 * dbEntities.size());
+		Iterator<?> it = dbEntities.iterator();
+		while (it.hasNext()) {
+			DbEntity entity = (DbEntity) it.next();
 
-            // the caller must take care of giving us the right entities
-            // but lets check anyway
-            if (!canCreatePK(entity)) {
-                continue;
-            }
+			// the caller must take care of giving us the right entities
+			// but lets check anyway
+			if (!canCreatePK(entity)) {
+				continue;
+			}
 
-            list.add(createPKString(entity));
-            list.add(createUniquePKIndexString(entity));
-        }
+			list.add(createPKString(entity));
+			list.add(createUniquePKIndexString(entity));
+		}
 
-        return list;
-    }
+		return list;
+	}
 
-    protected boolean canCreatePK(DbEntity entity) {
-        return entity.getPrimaryKeys().size() > 0;
-    }
+	protected boolean canCreatePK(DbEntity entity) {
+		return entity.getPrimaryKeys().size() > 0;
+	}
 
-    /**
+	/**
      * 
      */
-    @Override
-    public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
-        // there is no simple way to do that... probably requires
-        // editing metadata tables...
-        // Good thing is that it doesn't matter, since PK support
-        // is attached to the table itself, so if a table is dropped,
-        // it will be dropped as well
-    }
+	@Override
+	public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
+		// there is no simple way to do that... probably requires
+		// editing metadata tables...
+		// Good thing is that it doesn't matter, since PK support
+		// is attached to the table itself, so if a table is dropped,
+		// it will be dropped as well
+	}
 
-    /**
-     * Returns an empty list, since OpenBase doesn't support this operation.
-     */
-    @Override
-    public List dropAutoPkStatements(List dbEntities) {
-        return Collections.EMPTY_LIST;
-    }
+	/**
+	 * Returns an empty list, since OpenBase doesn't support this operation.
+	 */
+	@Override
+	public List dropAutoPkStatements(List dbEntities) {
+		return Collections.EMPTY_LIST;
+	}
 
-    /**
-     * Returns a String to create PK support for an entity.
-     */
-    protected String createPKString(DbEntity entity) {
-        Collection<DbAttribute> pk = entity.getPrimaryKeys();
+	/**
+	 * Returns a String to create PK support for an entity.
+	 */
+	protected String createPKString(DbEntity entity) {
+		Collection<DbAttribute> pk = entity.getPrimaryKeys();
 
-        if (pk == null || pk.size() == 0) {
-            throw new CayenneRuntimeException("Entity '"
-                    + entity.getName()
-                    + "' has no PK defined.");
-        }
+		if (pk == null || pk.size() == 0) {
+			throw new CayenneRuntimeException("Entity '" + entity.getName() + "' has no PK defined.");
+		}
 
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("CREATE PRIMARY KEY ");
-      
-        QuotingStrategy context = getAdapter().getQuotingStrategy();
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("CREATE PRIMARY KEY ");
 
-        buffer.append(context.quotedIdentifier(entity, entity.getName()));
+		QuotingStrategy context = getAdapter().getQuotingStrategy();
 
-        buffer.append(" (");
+		buffer.append(context.quotedIdentifier(entity, entity.getName()));
 
-        Iterator<DbAttribute> it = pk.iterator();
+		buffer.append(" (");
 
-        // at this point we know that there is at least on PK column
-        DbAttribute firstColumn = it.next();
-        buffer.append(context.quotedName(firstColumn));
+		Iterator<DbAttribute> it = pk.iterator();
 
-        while (it.hasNext()) {
-            DbAttribute column = it.next();
-            buffer.append(", ");
-            buffer.append(context.quotedName(column));
-        }
+		// at this point we know that there is at least on PK column
+		DbAttribute firstColumn = it.next();
+		buffer.append(context.quotedName(firstColumn));
 
-        buffer.append(")");
-        return buffer.toString();
-    }
+		while (it.hasNext()) {
+			DbAttribute column = it.next();
+			buffer.append(", ");
+			buffer.append(context.quotedName(column));
+		}
 
-    /**
-     * Returns a String to create a unique index on table primary key columns per OpenBase
-     * recommendations.
-     */
-    protected String createUniquePKIndexString(DbEntity entity) {
-        Collection<DbAttribute> pk = entity.getPrimaryKeys();
+		buffer.append(")");
+		return buffer.toString();
+	}
 
-        QuotingStrategy context = getAdapter().getQuotingStrategy();
-        if (pk == null || pk.size() == 0) {
-            throw new CayenneRuntimeException("Entity '"
-                    + entity.getName()
-                    + "' has no PK defined.");
-        }
+	/**
+	 * Returns a String to create a unique index on table primary key columns
+	 * per OpenBase recommendations.
+	 */
+	protected String createUniquePKIndexString(DbEntity entity) {
+		Collection<DbAttribute> pk = entity.getPrimaryKeys();
 
-        StringBuilder buffer = new StringBuilder();
+		QuotingStrategy context = getAdapter().getQuotingStrategy();
+		if (pk == null || pk.size() == 0) {
+			throw new CayenneRuntimeException("Entity '" + entity.getName() + "' has no PK defined.");
+		}
 
-        // compound PK doesn't work well with UNIQUE index...
-        // create a regular one in this case
-        buffer.append(pk.size() == 1 ? "CREATE UNIQUE INDEX " : "CREATE INDEX ");
+		StringBuilder buffer = new StringBuilder();
 
-        buffer.append(context.quotedIdentifier(entity, entity.getName()));
-        buffer.append(" (");
+		// compound PK doesn't work well with UNIQUE index...
+		// create a regular one in this case
+		buffer.append(pk.size() == 1 ? "CREATE UNIQUE INDEX " : "CREATE INDEX ");
 
-        Iterator<DbAttribute> it = pk.iterator();
+		buffer.append(context.quotedIdentifier(entity, entity.getName()));
+		buffer.append(" (");
 
-        // at this point we know that there is at least on PK column
-        DbAttribute firstColumn = it.next();
-        buffer.append(context.quotedName(firstColumn));
+		Iterator<DbAttribute> it = pk.iterator();
 
-        while (it.hasNext()) {
-            DbAttribute column = it.next();
-            buffer.append(", ");
-            buffer.append(context.quotedName(column));
-        }
-        buffer.append(")");
-        return buffer.toString();
-    }
+		// at this point we know that there is at least on PK column
+		DbAttribute firstColumn = it.next();
+		buffer.append(context.quotedName(firstColumn));
 
-    @Override
-    public void reset() {
-        // noop
-    }
+		while (it.hasNext()) {
+			DbAttribute column = it.next();
+			buffer.append(", ");
+			buffer.append(context.quotedName(column));
+		}
+		buffer.append(")");
+		return buffer.toString();
+	}
 
-    /**
-     * Returns zero, since PK caching is not feasible with OpenBase PK generation
-     * mechanism.
-     */
-    @Override
-    public int getPkCacheSize() {
-        return 0;
-    }
+	@Override
+	public void reset() {
+		// noop
+	}
 
-    @Override
-    public void setPkCacheSize(int pkCacheSize) {
-        // noop, no PK caching
-    }
+	/**
+	 * Returns zero, since PK caching is not feasible with OpenBase PK
+	 * generation mechanism.
+	 */
+	@Override
+	public int getPkCacheSize() {
+		return 0;
+	}
+
+	@Override
+	public void setPkCacheSize(int pkCacheSize) {
+		// noop, no PK caching
+	}
 
 }

@@ -29,98 +29,97 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * ExtendedTypeFactory for handling serializable objects. Returned ExtendedType is simply
- * an object serialization wrapper on top of byte[] ExtendedType.
+ * ExtendedTypeFactory for handling serializable objects. Returned ExtendedType
+ * is simply an object serialization wrapper on top of byte[] ExtendedType.
  * 
  * @since 3.0
  */
 class SerializableTypeFactory implements ExtendedTypeFactory {
 
-    private static final Log logger = LogFactory.getLog(SerializableTypeFactory.class);
+	private static final Log logger = LogFactory.getLog(SerializableTypeFactory.class);
 
-    private ExtendedTypeMap map;
+	private ExtendedTypeMap map;
 
-    SerializableTypeFactory(ExtendedTypeMap map) {
-        this.map = map;
-    }
+	SerializableTypeFactory(ExtendedTypeMap map) {
+		this.map = map;
+	}
 
-    public ExtendedType getType(Class<?> objectClass) {
-        logger.warn("Haven't found suitable ExtendedType for class '" + objectClass.getCanonicalName() + "'. Most likely you need to define a custom ExtendedType.");
+	public ExtendedType getType(Class<?> objectClass) {
+		logger.warn("Haven't found suitable ExtendedType for class '" + objectClass.getCanonicalName()
+				+ "'. Most likely you need to define a custom ExtendedType.");
 
-        if (Serializable.class.isAssignableFrom(objectClass)) {
-            logger.warn("SerializableType will be used for type conversion.");
+		if (Serializable.class.isAssignableFrom(objectClass)) {
+			logger.warn("SerializableType will be used for type conversion.");
 
-            // using a binary stream delegate instead of byte[] may actually speed up
-            // things in some dbs, but at least byte[] type works consistently across
-            // adapters...
+			// using a binary stream delegate instead of byte[] may actually
+			// speed up
+			// things in some dbs, but at least byte[] type works consistently
+			// across
+			// adapters...
 
-            // note - can't use "getRegisteredType" as it causes infinite recursion
-            ExtendedType bytesType = map.getExplictlyRegisteredType("byte[]");
+			// note - can't use "getRegisteredType" as it causes infinite
+			// recursion
+			ExtendedType bytesType = map.getExplictlyRegisteredType("byte[]");
 
-            // not sure if this type of recursion can occur, still worth checking
-            if (bytesType instanceof SerializableType) {
-                throw new IllegalStateException(
-                        "Can't create Serializable ExtendedType for "
-                                + objectClass.getCanonicalName()
-                                + ": no ExtendedType exists for byte[]");
-            }
+			// not sure if this type of recursion can occur, still worth
+			// checking
+			if (bytesType instanceof SerializableType) {
+				throw new IllegalStateException("Can't create Serializable ExtendedType for "
+						+ objectClass.getCanonicalName() + ": no ExtendedType exists for byte[]");
+			}
 
-            return new SerializableType(objectClass, bytesType);
-        }
+			return new SerializableType(objectClass, bytesType);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    /**
-     * A serialization wrapper on top of byte[] ExtendedType
-     */
-    final class SerializableType extends ExtendedTypeDecorator {
+	/**
+	 * A serialization wrapper on top of byte[] ExtendedType
+	 */
+	final class SerializableType extends ExtendedTypeDecorator {
 
-        private Class<?> javaClass;
+		private Class<?> javaClass;
 
-        SerializableType(Class<?> javaClass, ExtendedType bytesType) {
-            super(bytesType);
-            this.javaClass = javaClass;
-        }
+		SerializableType(Class<?> javaClass, ExtendedType bytesType) {
+			super(bytesType);
+			this.javaClass = javaClass;
+		}
 
-        @Override
-        public String getClassName() {
-            return javaClass.getCanonicalName();
-        }
+		@Override
+		public String getClassName() {
+			return javaClass.getCanonicalName();
+		}
 
-        @Override
-        Object fromJavaObject(Object object) {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
+		@Override
+		Object fromJavaObject(Object object) {
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
-                // avoid unneeded array copy...
-                @Override
-                public synchronized byte[] toByteArray() {
-                    return buf;
-                }
-            };
+				// avoid unneeded array copy...
+				@Override
+				public synchronized byte[] toByteArray() {
+					return buf;
+				}
+			};
 
-            try {
-                ObjectOutputStream out = new ObjectOutputStream(bytes);
-                out.writeObject(object);
-                out.close();
-            }
-            catch (Exception e) {
-                throw new CayenneRuntimeException("Error serializing object", e);
-            }
+			try (ObjectOutputStream out = new ObjectOutputStream(bytes);) {
+				out.writeObject(object);
+			} catch (Exception e) {
+				throw new CayenneRuntimeException("Error serializing object", e);
+			}
 
-            return bytes.toByteArray();
-        }
+			return bytes.toByteArray();
+		}
 
-        @Override
-        Object toJavaObject(Object object) {
-            byte[] bytes = (byte[]) object;
-            try {
-                return bytes != null && bytes.length > 0 ? new ObjectInputStream(
-                        new ByteArrayInputStream(bytes)).readObject() : null;
-            }
-            catch (Exception e) {
-                throw new CayenneRuntimeException("Error deserializing object", e);
-            }
-        }
-    }
+		@Override
+		Object toJavaObject(Object object) {
+			byte[] bytes = (byte[]) object;
+			try {
+				return bytes != null && bytes.length > 0 ? new ObjectInputStream(new ByteArrayInputStream(bytes))
+						.readObject() : null;
+			} catch (Exception e) {
+				throw new CayenneRuntimeException("Error deserializing object", e);
+			}
+		}
+	}
 }

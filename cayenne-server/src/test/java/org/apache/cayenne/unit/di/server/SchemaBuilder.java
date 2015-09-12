@@ -62,325 +62,328 @@ import java.util.ListIterator;
  */
 public class SchemaBuilder {
 
-    private static Log logger = LogFactory.getLog(SchemaBuilder.class);
+	private static Log logger = LogFactory.getLog(SchemaBuilder.class);
 
-    public static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
-    public static final String DEFAULT_CONNECTION_KEY = "internal_embedded_datasource";
+	public static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
+	public static final String DEFAULT_CONNECTION_KEY = "internal_embedded_datasource";
 
-    public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
+	public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
 
-    private static String[] MAPS_REQUIRING_SCHEMA_SETUP = {"testmap.map.xml", "compound.map.xml", "misc-types.map.xml", "things.map.xml", "numeric-types.map.xml", "binary-pk.map.xml", "no-pk.map.xml",
-            "lob.map.xml", "date-time.map.xml", "enum.map.xml", "extended-type.map.xml", "generated.map.xml", "mixed-persistence-strategy.map.xml", "people.map.xml", "primitive.map.xml", "inheritance.map.xml",
-            "locking.map.xml", "soft-delete.map.xml", "empty.map.xml", "relationships.map.xml", "relationships-activity.map.xml", "relationships-delete-rules.map.xml",
-            "relationships-collection-to-many.map.xml", "relationships-child-master.map.xml", "relationships-clob.map.xml",
-            "relationships-flattened.map.xml", "relationships-set-to-many.map.xml", "relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml", "return-types.map.xml", "uuid.map.xml",
-            "multi-tier.map.xml", "persistent.map.xml", "reflexive.map.xml", "delete-rules.map.xml", "lifecycles.map.xml",
-            "map-to-many.map.xml", "toone.map.xml", "meaningful-pk.map.xml", "table-primitives.map.xml",
-            "generic.map.xml", "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml",
-            "quoted-identifiers.map.xml", "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml",
-            "oneway-rels.map.xml", "unsupported-distinct-types.map.xml", "array-type.map.xml" };
+	private static String[] MAPS_REQUIRING_SCHEMA_SETUP = { "testmap.map.xml", "compound.map.xml",
+			"misc-types.map.xml", "things.map.xml", "numeric-types.map.xml", "binary-pk.map.xml", "no-pk.map.xml",
+			"lob.map.xml", "date-time.map.xml", "enum.map.xml", "extended-type.map.xml", "generated.map.xml",
+			"mixed-persistence-strategy.map.xml", "people.map.xml", "primitive.map.xml", "inheritance.map.xml",
+			"locking.map.xml", "soft-delete.map.xml", "empty.map.xml", "relationships.map.xml",
+			"relationships-activity.map.xml", "relationships-delete-rules.map.xml",
+			"relationships-collection-to-many.map.xml", "relationships-child-master.map.xml",
+			"relationships-clob.map.xml", "relationships-flattened.map.xml", "relationships-set-to-many.map.xml",
+			"relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml", "return-types.map.xml",
+			"uuid.map.xml", "multi-tier.map.xml", "persistent.map.xml", "reflexive.map.xml", "delete-rules.map.xml",
+			"lifecycles.map.xml", "map-to-many.map.xml", "toone.map.xml", "meaningful-pk.map.xml",
+			"table-primitives.map.xml", "generic.map.xml", "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml",
+			"qualified.map.xml", "quoted-identifiers.map.xml", "inheritance-single-table1.map.xml",
+			"inheritance-vertical.map.xml", "oneway-rels.map.xml", "unsupported-distinct-types.map.xml",
+			"array-type.map.xml" };
 
-    // hardcoded dependent entities that should be excluded
-    // if LOBs are not supported
-    private static final String[] EXTRA_EXCLUDED_FOR_NO_LOB = new String[] { "CLOB_DETAIL" };
+	// hardcoded dependent entities that should be excluded
+	// if LOBs are not supported
+	private static final String[] EXTRA_EXCLUDED_FOR_NO_LOB = new String[] { "CLOB_DETAIL" };
 
-    private ServerCaseDataSourceFactory dataSourceFactory;
-    private UnitDbAdapter unitDbAdapter;
-    private DbAdapter dbAdapter;
-    private DataDomain domain;
-    private JdbcEventLogger jdbcEventLogger;
+	private ServerCaseDataSourceFactory dataSourceFactory;
+	private UnitDbAdapter unitDbAdapter;
+	private DbAdapter dbAdapter;
+	private DataDomain domain;
+	private JdbcEventLogger jdbcEventLogger;
 
-    public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory, @Inject UnitDbAdapter unitDbAdapter,
-            @Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger) {
-        this.dataSourceFactory = dataSourceFactory;
-        this.unitDbAdapter = unitDbAdapter;
-        this.dbAdapter = dbAdapter;
-        this.jdbcEventLogger = jdbcEventLogger;
-    }
+	public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory, @Inject UnitDbAdapter unitDbAdapter,
+			@Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger) {
+		this.dataSourceFactory = dataSourceFactory;
+		this.unitDbAdapter = unitDbAdapter;
+		this.dbAdapter = dbAdapter;
+		this.jdbcEventLogger = jdbcEventLogger;
+	}
 
-    /**
-     * Completely rebuilds test schema.
-     */
-    // TODO - this method changes the internal state of the object ... refactor
-    public void rebuildSchema() {
+	/**
+	 * Completely rebuilds test schema.
+	 */
+	// TODO - this method changes the internal state of the object ... refactor
+	public void rebuildSchema() {
 
-        if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_KEY))) {
-            logger.info("skipping schema generation... ");
-            return;
-        }
+		if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_KEY))) {
+			logger.info("skipping schema generation... ");
+			return;
+		}
 
-        // generate schema combining all DataMaps that require schema support.
-        // Schema generation is done like that instead of per DataMap on demand
-        // to avoid conflicts when dropping and generating PK objects.
+		// generate schema combining all DataMaps that require schema support.
+		// Schema generation is done like that instead of per DataMap on demand
+		// to avoid conflicts when dropping and generating PK objects.
 
-        DataMap[] maps = new DataMap[MAPS_REQUIRING_SCHEMA_SETUP.length];
+		DataMap[] maps = new DataMap[MAPS_REQUIRING_SCHEMA_SETUP.length];
 
-        for (int i = 0; i < maps.length; i++) {
-            InputStream stream = getClass().getClassLoader().getResourceAsStream(MAPS_REQUIRING_SCHEMA_SETUP[i]);
-            InputSource in = new InputSource(stream);
-            in.setSystemId(MAPS_REQUIRING_SCHEMA_SETUP[i]);
-            maps[i] = new MapLoader().loadDataMap(in);
-        }
+		for (int i = 0; i < maps.length; i++) {
+			InputStream stream = getClass().getClassLoader().getResourceAsStream(MAPS_REQUIRING_SCHEMA_SETUP[i]);
+			InputSource in = new InputSource(stream);
+			in.setSystemId(MAPS_REQUIRING_SCHEMA_SETUP[i]);
+			maps[i] = new MapLoader().loadDataMap(in);
+		}
 
-        this.domain = new DataDomain("temp");
-        domain.setEventManager(new DefaultEventManager(2));
-        domain.setEntitySorter(new AshwoodEntitySorter());
-        domain.setQueryCache(new MapQueryCache(50));
+		this.domain = new DataDomain("temp");
+		domain.setEventManager(new DefaultEventManager(2));
+		domain.setEntitySorter(new AshwoodEntitySorter());
+		domain.setQueryCache(new MapQueryCache(50));
 
-        try {
-            for (DataMap map : maps) {
-                initNode(map);
-            }
+		try {
+			for (DataMap map : maps) {
+				initNode(map);
+			}
 
-            dropSchema();
-            dropPKSupport();
-            createSchema();
-            createPKSupport();
-        } catch (Exception e) {
-            throw new RuntimeException("Error rebuilding schema", e);
-        }
-    }
+			dropSchema();
+			dropPKSupport();
+			createSchema();
+			createPKSupport();
+		} catch (Exception e) {
+			throw new RuntimeException("Error rebuilding schema", e);
+		}
+	}
 
-    private void initNode(DataMap map) throws Exception {
+	private void initNode(DataMap map) throws Exception {
 
-        DataNode node = new DataNode(map.getName());
-        node.setJdbcEventLogger(jdbcEventLogger);
-        node.setAdapter(dbAdapter);
-        node.setDataSource(dataSourceFactory.getSharedDataSource());
+		DataNode node = new DataNode(map.getName());
+		node.setJdbcEventLogger(jdbcEventLogger);
+		node.setAdapter(dbAdapter);
+		node.setDataSource(dataSourceFactory.getSharedDataSource());
 
-        // setup test extended types
-        node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());
+		// setup test extended types
+		node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());
 
-        // tweak mapping with a delegate
-        for (Procedure proc : map.getProcedures()) {
-            unitDbAdapter.tweakProcedure(proc);
-        }
+		// tweak mapping with a delegate
+		for (Procedure proc : map.getProcedures()) {
+			unitDbAdapter.tweakProcedure(proc);
+		}
 
-        node.addDataMap(map);
+		node.addDataMap(map);
 
-        node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
-        node.setRowReaderFactory(new DefaultRowReaderFactory());
-        node.setBatchTranslatorFactory(new DefaultBatchTranslatorFactory());
-        node.setSelectTranslatorFactory(new DefaultSelectTranslatorFactory());
-        domain.addNode(node);
-    }
+		node.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
+		node.setRowReaderFactory(new DefaultRowReaderFactory());
+		node.setBatchTranslatorFactory(new DefaultBatchTranslatorFactory());
+		node.setSelectTranslatorFactory(new DefaultSelectTranslatorFactory());
+		domain.addNode(node);
+	}
 
-    /** Drops all test tables. */
-    private void dropSchema() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            dropSchema(node, node.getDataMaps().iterator().next());
-        }
-    }
+	/** Drops all test tables. */
+	private void dropSchema() throws Exception {
+		for (DataNode node : domain.getDataNodes()) {
+			dropSchema(node, node.getDataMaps().iterator().next());
+		}
+	}
 
-    /**
-     * Creates all test tables in the database.
-     */
-    private void createSchema() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            createSchema(node, node.getDataMaps().iterator().next());
-        }
-    }
+	/**
+	 * Creates all test tables in the database.
+	 */
+	private void createSchema() throws Exception {
+		for (DataNode node : domain.getDataNodes()) {
+			createSchema(node, node.getDataMaps().iterator().next());
+		}
+	}
 
-    public void dropPKSupport() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            dropPKSupport(node, node.getDataMaps().iterator().next());
-        }
-    }
+	public void dropPKSupport() throws Exception {
+		for (DataNode node : domain.getDataNodes()) {
+			dropPKSupport(node, node.getDataMaps().iterator().next());
+		}
+	}
 
-    /**
-     * Creates primary key support for all node DbEntities. Will use its
-     * facilities provided by DbAdapter to generate any necessary database
-     * objects and data for primary key support.
-     */
-    public void createPKSupport() throws Exception {
-        for (DataNode node : domain.getDataNodes()) {
-            createPKSupport(node, node.getDataMaps().iterator().next());
-        }
-    }
+	/**
+	 * Creates primary key support for all node DbEntities. Will use its
+	 * facilities provided by DbAdapter to generate any necessary database
+	 * objects and data for primary key support.
+	 */
+	public void createPKSupport() throws Exception {
+		for (DataNode node : domain.getDataNodes()) {
+			createPKSupport(node, node.getDataMaps().iterator().next());
+		}
+	}
 
-    /**
-     * Helper method that orders DbEntities to satisfy referential constraints
-     * and returns an ordered list.
-     */
-    private List<DbEntity> dbEntitiesInInsertOrder(DataNode node, DataMap map) {
-        List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
+	/**
+	 * Helper method that orders DbEntities to satisfy referential constraints
+	 * and returns an ordered list.
+	 */
+	private List<DbEntity> dbEntitiesInInsertOrder(DataNode node, DataMap map) {
+		List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
 
-        dbEntitiesFilter(entities);
+		dbEntitiesFilter(entities);
 
-        domain.getEntitySorter().sortDbEntities(entities, false);
-        return entities;
-    }
+		domain.getEntitySorter().sortDbEntities(entities, false);
+		return entities;
+	}
 
-    protected List<DbEntity> dbEntitiesInDeleteOrder(DataMap dataMap) {
-        DataMap map = domain.getDataMap(dataMap.getName());
-        List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
+	protected List<DbEntity> dbEntitiesInDeleteOrder(DataMap dataMap) {
+		DataMap map = domain.getDataMap(dataMap.getName());
+		List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
 
-        dbEntitiesFilter(entities);
+		dbEntitiesFilter(entities);
 
-        domain.getEntitySorter().sortDbEntities(entities, true);
-        return entities;
-    }
+		domain.getEntitySorter().sortDbEntities(entities, true);
+		return entities;
+	}
 
-    private void dbEntitiesFilter(List<DbEntity> entities) {
-        // filter various unsupported tests...
+	private void dbEntitiesFilter(List<DbEntity> entities) {
+		// filter various unsupported tests...
 
-        // LOBs
-        boolean excludeLOB = !unitDbAdapter.supportsLobs();
-        boolean excludeBinPK = !unitDbAdapter.supportsBinaryPK();
-        if (excludeLOB || excludeBinPK) {
+		// LOBs
+		boolean excludeLOB = !unitDbAdapter.supportsLobs();
+		boolean excludeBinPK = !unitDbAdapter.supportsBinaryPK();
+		if (excludeLOB || excludeBinPK) {
 
-            List<DbEntity> filtered = new ArrayList<DbEntity>();
+			List<DbEntity> filtered = new ArrayList<DbEntity>();
 
-            for (DbEntity ent : entities) {
+			for (DbEntity ent : entities) {
 
-                // check for LOB attributes
-                if (excludeLOB) {
-                    if (Arrays.binarySearch(EXTRA_EXCLUDED_FOR_NO_LOB, ent.getName()) >= 0) {
-                        continue;
-                    }
+				// check for LOB attributes
+				if (excludeLOB) {
+					if (Arrays.binarySearch(EXTRA_EXCLUDED_FOR_NO_LOB, ent.getName()) >= 0) {
+						continue;
+					}
 
-                    boolean hasLob = false;
-                    for (final DbAttribute attr : ent.getAttributes()) {
-                        if (attr.getType() == Types.BLOB || attr.getType() == Types.CLOB) {
-                            hasLob = true;
-                            break;
-                        }
-                    }
+					boolean hasLob = false;
+					for (final DbAttribute attr : ent.getAttributes()) {
+						if (attr.getType() == Types.BLOB || attr.getType() == Types.CLOB) {
+							hasLob = true;
+							break;
+						}
+					}
 
-                    if (hasLob) {
-                        continue;
-                    }
-                }
+					if (hasLob) {
+						continue;
+					}
+				}
 
-                // check for BIN PK
-                if (excludeBinPK) {
-                    boolean skip = false;
-                    for (final DbAttribute attr : ent.getAttributes()) {
-                        // check for BIN PK or FK to BIN Pk
-                        if (attr.getType() == Types.BINARY || attr.getType() == Types.VARBINARY
-                                || attr.getType() == Types.LONGVARBINARY) {
+				// check for BIN PK
+				if (excludeBinPK) {
+					boolean skip = false;
+					for (final DbAttribute attr : ent.getAttributes()) {
+						// check for BIN PK or FK to BIN Pk
+						if (attr.getType() == Types.BINARY || attr.getType() == Types.VARBINARY
+								|| attr.getType() == Types.LONGVARBINARY) {
 
-                            if (attr.isPrimaryKey() || attr.isForeignKey()) {
-                                skip = true;
-                                break;
-                            }
-                        }
-                    }
+							if (attr.isPrimaryKey() || attr.isForeignKey()) {
+								skip = true;
+								break;
+							}
+						}
+					}
 
-                    if (skip) {
-                        continue;
-                    }
-                }
+					if (skip) {
+						continue;
+					}
+				}
 
-                filtered.add(ent);
-            }
+				filtered.add(ent);
+			}
 
-            entities = filtered;
-        }
-    }
+			entities = filtered;
+		}
+	}
 
-    private void dropSchema(DataNode node, DataMap map) throws Exception {
-        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
-        List<DbEntity> list = dbEntitiesInInsertOrder(node, map);
+	private void dropSchema(DataNode node, DataMap map) throws Exception {
 
-        try {
-            DatabaseMetaData md = conn.getMetaData();
-            ResultSet tables = md.getTables(null, null, "%", null);
-            List<String> allTables = new ArrayList<String>();
+		List<DbEntity> list = dbEntitiesInInsertOrder(node, map);
 
-            while (tables.next()) {
-                // 'toUpperCase' is needed since most databases
-                // are case insensitive, and some will convert names to lower
-                // case
-                // (PostgreSQL)
-                String name = tables.getString("TABLE_NAME");
-                if (name != null)
-                    allTables.add(name.toUpperCase());
-            }
-            tables.close();
+		try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection();) {
 
-            unitDbAdapter.willDropTables(conn, map, allTables);
+			DatabaseMetaData md = conn.getMetaData();
+			List<String> allTables = new ArrayList<String>();
 
-            // drop all tables in the map
-            Statement stmt = conn.createStatement();
+			try (ResultSet tables = md.getTables(null, null, "%", null)) {
+				while (tables.next()) {
+					// 'toUpperCase' is needed since most databases
+					// are case insensitive, and some will convert names to
+					// lower
+					// case
+					// (PostgreSQL)
+					String name = tables.getString("TABLE_NAME");
+					if (name != null)
+						allTables.add(name.toUpperCase());
+				}
+			}
 
-            ListIterator<DbEntity> it = list.listIterator(list.size());
-            while (it.hasPrevious()) {
-                DbEntity ent = it.previous();
-                if (!allTables.contains(ent.getName().toUpperCase())) {
-                    continue;
-                }
+			unitDbAdapter.willDropTables(conn, map, allTables);
 
-                for (String dropSql : node.getAdapter().dropTableStatements(ent)) {
-                    try {
-                        logger.info(dropSql);
-                        stmt.execute(dropSql);
-                    } catch (SQLException sqe) {
-                        logger.warn("Can't drop table " + ent.getName() + ", ignoring...", sqe);
-                    }
-                }
-            }
+			// drop all tables in the map
+			try (Statement stmt = conn.createStatement();) {
 
-            unitDbAdapter.droppedTables(conn, map);
-        } finally {
-            conn.close();
-        }
+				ListIterator<DbEntity> it = list.listIterator(list.size());
+				while (it.hasPrevious()) {
+					DbEntity ent = it.previous();
+					if (!allTables.contains(ent.getName().toUpperCase())) {
+						continue;
+					}
 
-    }
+					for (String dropSql : node.getAdapter().dropTableStatements(ent)) {
+						try {
+							logger.info(dropSql);
+							stmt.execute(dropSql);
+						} catch (SQLException sqe) {
+							logger.warn("Can't drop table " + ent.getName() + ", ignoring...", sqe);
+						}
+					}
+				}
+			}
 
-    private void dropPKSupport(DataNode node, DataMap map) throws Exception {
-        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(node, map);
-        node.getAdapter().getPkGenerator().dropAutoPk(node, filteredEntities);
-    }
+			unitDbAdapter.droppedTables(conn, map);
+		}
+	}
 
-    private void createPKSupport(DataNode node, DataMap map) throws Exception {
-        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(node, map);
-        node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities);
-    }
+	private void dropPKSupport(DataNode node, DataMap map) throws Exception {
+		List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(node, map);
+		node.getAdapter().getPkGenerator().dropAutoPk(node, filteredEntities);
+	}
 
-    private void createSchema(DataNode node, DataMap map) throws Exception {
-        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
+	private void createPKSupport(DataNode node, DataMap map) throws Exception {
+		List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(node, map);
+		node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities);
+	}
 
-        try {
-            unitDbAdapter.willCreateTables(conn, map);
-            Statement stmt = conn.createStatement();
+	private void createSchema(DataNode node, DataMap map) throws Exception {
 
-            for (String query : tableCreateQueries(node, map)) {
-                logger.info(query);
-                stmt.execute(query);
-            }
-            unitDbAdapter.createdTables(conn, map);
-        } finally {
-            conn.close();
-        }
-    }
+		try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection();) {
+			unitDbAdapter.willCreateTables(conn, map);
+			try (Statement stmt = conn.createStatement();) {
 
-    /**
-     * Returns iterator of preprocessed table create queries.
-     */
-    private Collection<String> tableCreateQueries(DataNode node, DataMap map) throws Exception {
-        DbAdapter adapter = node.getAdapter();
-        DbGenerator gen = new DbGenerator(adapter, map, null, domain, jdbcEventLogger);
+				for (String query : tableCreateQueries(node, map)) {
+					logger.info(query);
+					stmt.execute(query);
+				}
+			}
+			unitDbAdapter.createdTables(conn, map);
+		}
+	}
 
-        List<DbEntity> orderedEnts = dbEntitiesInInsertOrder(node, map);
-        List<String> queries = new ArrayList<String>();
+	/**
+	 * Returns iterator of preprocessed table create queries.
+	 */
+	private Collection<String> tableCreateQueries(DataNode node, DataMap map) throws Exception {
+		DbAdapter adapter = node.getAdapter();
+		DbGenerator gen = new DbGenerator(adapter, map, null, domain, jdbcEventLogger);
 
-        // table definitions
-        for (DbEntity ent : orderedEnts) {
-            queries.add(adapter.createTable(ent));
-        }
+		List<DbEntity> orderedEnts = dbEntitiesInInsertOrder(node, map);
+		List<String> queries = new ArrayList<String>();
 
-        // FK constraints
-        for (DbEntity ent : orderedEnts) {
-            if (!unitDbAdapter.supportsFKConstraints(ent)) {
-                continue;
-            }
+		// table definitions
+		for (DbEntity ent : orderedEnts) {
+			queries.add(adapter.createTable(ent));
+		}
 
-            List<String> qs = gen.createConstraintsQueries(ent);
-            queries.addAll(qs);
-        }
+		// FK constraints
+		for (DbEntity ent : orderedEnts) {
+			if (!unitDbAdapter.supportsFKConstraints(ent)) {
+				continue;
+			}
 
-        return queries;
-    }
+			List<String> qs = gen.createConstraintsQueries(ent);
+			queries.addAll(qs);
+		}
+
+		return queries;
+	}
 
 }

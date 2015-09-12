@@ -32,155 +32,141 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 /**
- * Handles <code>java.lang.String</code>, mapping it as either of JDBC types - CLOB or
- * (VAR)CHAR. Can be configured to trim trailing spaces.
+ * Handles <code>java.lang.String</code>, mapping it as either of JDBC types -
+ * CLOB or (VAR)CHAR. Can be configured to trim trailing spaces.
  */
 public class CharType implements ExtendedType {
 
-    private static final int BUF_SIZE = 8 * 1024;
+	private static final int BUF_SIZE = 8 * 1024;
 
-    protected boolean trimmingChars;
-    protected boolean usingClobs;
+	protected boolean trimmingChars;
+	protected boolean usingClobs;
 
-    public CharType(boolean trimmingChars, boolean usingClobs) {
-        this.trimmingChars = trimmingChars;
-        this.usingClobs = usingClobs;
-    }
+	public CharType(boolean trimmingChars, boolean usingClobs) {
+		this.trimmingChars = trimmingChars;
+		this.usingClobs = usingClobs;
+	}
 
-    /**
-     * Returns "java.lang.String".
-     */
-    @Override
-    public String getClassName() {
-        return String.class.getName();
-    }
+	/**
+	 * Returns "java.lang.String".
+	 */
+	@Override
+	public String getClassName() {
+		return String.class.getName();
+	}
 
-    /** Return trimmed string. */
-    @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+	/** Return trimmed string. */
+	@Override
+	public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
 
-        if (type == Types.CLOB || type == Types.NCLOB) {
-            return isUsingClobs() ? readClob(rs.getClob(index)) : readCharStream(rs, index);
-        }
+		if (type == Types.CLOB || type == Types.NCLOB) {
+			return isUsingClobs() ? readClob(rs.getClob(index)) : readCharStream(rs, index);
+		}
 
-        return handleString(rs.getString(index), type);
-    }
+		return handleString(rs.getString(index), type);
+	}
 
-    @Override
-    public Object materializeObject(CallableStatement cs, int index, int type)
-            throws Exception {
+	@Override
+	public Object materializeObject(CallableStatement cs, int index, int type) throws Exception {
 
-        if (type == Types.CLOB || type == Types.NCLOB) {
-            if (!isUsingClobs()) {
-                throw new CayenneException(
-                        "Character streams are not supported in stored procedure parameters.");
-            }
+		if (type == Types.CLOB || type == Types.NCLOB) {
+			if (!isUsingClobs()) {
+				throw new CayenneException("Character streams are not supported in stored procedure parameters.");
+			}
 
-            return readClob(cs.getClob(index));
-        }
+			return readClob(cs.getClob(index));
+		}
 
-        return handleString(cs.getString(index), type);
-    }
+		return handleString(cs.getString(index), type);
+	}
 
-    private Object handleString(String val, int type) throws SQLException {
-        // trim CHAR type
-        if (val != null && (type == Types.CHAR || type == Types.NCHAR) && isTrimmingChars()) {
-            return rtrim(val);
-        }
+	private Object handleString(String val, int type) throws SQLException {
+		// trim CHAR type
+		if (val != null && (type == Types.CHAR || type == Types.NCHAR) && isTrimmingChars()) {
+			return rtrim(val);
+		}
 
-        return val;
-    }
+		return val;
+	}
 
-    /** Trim right spaces. */
-    protected String rtrim(String value) {
-        int end = value.length() - 1;
-        int count = end;
-        while (end >= 0 && value.charAt(end) <= ' ') {
-            end--;
-        }
-        return end == count ? value : value.substring(0, end + 1);
-    }
+	/** Trim right spaces. */
+	protected String rtrim(String value) {
+		int end = value.length() - 1;
+		int count = end;
+		while (end >= 0 && value.charAt(end) <= ' ') {
+			end--;
+		}
+		return end == count ? value : value.substring(0, end + 1);
+	}
 
-    @Override
-    public void setJdbcObject(
-            PreparedStatement st,
-            Object value,
-            int pos,
-            int type,
-            int scale) throws Exception {
+	@Override
+	public void setJdbcObject(PreparedStatement st, Object value, int pos, int type, int scale) throws Exception {
 
-        // if this is a CLOB column, set the value as "String"
-        // instead. This should work with most drivers
-        if (type == Types.CLOB || type == Types.NCLOB) {
-            st.setString(pos, (String) value);
-        } else if (scale != -1) {
-            st.setObject(pos, value, type, scale);
-        } else {
-            st.setObject(pos, value, type);
-        }
-    }
+		// if this is a CLOB column, set the value as "String"
+		// instead. This should work with most drivers
+		if (type == Types.CLOB || type == Types.NCLOB) {
+			st.setString(pos, (String) value);
+		} else if (scale != -1) {
+			st.setObject(pos, value, type, scale);
+		} else {
+			st.setObject(pos, value, type);
+		}
+	}
 
-    protected String readClob(Clob clob) throws IOException, SQLException {
-        if (clob == null) {
-            return null;
-        }
+	protected String readClob(Clob clob) throws IOException, SQLException {
+		if (clob == null) {
+			return null;
+		}
 
-        // sanity check on size
-        if (clob.length() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException(
-                    "CLOB is too big to be read as String in memory: " + clob.length());
-        }
+		// sanity check on size
+		if (clob.length() > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("CLOB is too big to be read as String in memory: " + clob.length());
+		}
 
-        int size = (int) clob.length();
-        if (size == 0) {
-            return "";
-        }
+		int size = (int) clob.length();
+		if (size == 0) {
+			return "";
+		}
 
-        return clob.getSubString(1, size);
-    }
+		return clob.getSubString(1, size);
+	}
 
-    protected String readCharStream(ResultSet rs, int index) throws IOException,
-            SQLException {
-        Reader in = rs.getCharacterStream(index);
+	protected String readCharStream(ResultSet rs, int index) throws IOException, SQLException {
+		try (Reader in = rs.getCharacterStream(index);) {
+			return in != null ? readValueStream(in, -1, BUF_SIZE) : null;
+		}
+	}
 
-        return in != null ? readValueStream(in, -1, BUF_SIZE) : null;
-    }
+	protected String readValueStream(Reader in, int streamSize, int bufSize) throws IOException {
+		char[] buf = new char[bufSize];
+		StringWriter out = streamSize > 0 ? new StringWriter(streamSize) : new StringWriter();
 
-    protected String readValueStream(Reader in, int streamSize, int bufSize)
-            throws IOException {
-        char[] buf = new char[bufSize];
-        StringWriter out = streamSize > 0 ? new StringWriter(streamSize) : new StringWriter();
+		int read;
+		while ((read = in.read(buf, 0, bufSize)) >= 0) {
+			out.write(buf, 0, read);
+		}
+		return out.toString();
+	}
 
-        try {
-            int read;
-            while ((read = in.read(buf, 0, bufSize)) >= 0) {
-                out.write(buf, 0, read);
-            }
-            return out.toString();
-        }
-        finally {
-            in.close();
-        }
-    }
+	/**
+	 * Returns <code>true</code> if 'materializeObject' method should trim
+	 * trailing spaces from the CHAR columns. This addresses an issue with some
+	 * JDBC drivers (e.g. Oracle), that return Strings for CHAR columns padded
+	 * with spaces.
+	 */
+	public boolean isTrimmingChars() {
+		return trimmingChars;
+	}
 
-    /**
-     * Returns <code>true</code> if 'materializeObject' method should trim trailing spaces
-     * from the CHAR columns. This addresses an issue with some JDBC drivers (e.g.
-     * Oracle), that return Strings for CHAR columns padded with spaces.
-     */
-    public boolean isTrimmingChars() {
-        return trimmingChars;
-    }
+	public void setTrimmingChars(boolean trimingChars) {
+		this.trimmingChars = trimingChars;
+	}
 
-    public void setTrimmingChars(boolean trimingChars) {
-        this.trimmingChars = trimingChars;
-    }
+	public boolean isUsingClobs() {
+		return usingClobs;
+	}
 
-    public boolean isUsingClobs() {
-        return usingClobs;
-    }
-
-    public void setUsingClobs(boolean usingClobs) {
-        this.usingClobs = usingClobs;
-    }
+	public void setUsingClobs(boolean usingClobs) {
+		this.usingClobs = usingClobs;
+	}
 }

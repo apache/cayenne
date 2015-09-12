@@ -39,168 +39,166 @@ import org.apache.cayenne.query.BatchQueryRow;
  */
 class Oracle8LOBBatchQueryWrapper {
 
-    protected BatchQuery query;
+	protected BatchQuery query;
 
-    protected List<DbAttribute> dbAttributes;
+	protected List<DbAttribute> dbAttributes;
 
-    // attribute list decoders
-    protected boolean[] qualifierAttributes;
-    protected boolean[] allLOBAttributes;
-    protected Object[] updatedLOBAttributes;
+	// attribute list decoders
+	protected boolean[] qualifierAttributes;
+	protected boolean[] allLOBAttributes;
+	protected Object[] updatedLOBAttributes;
 
-    Oracle8LOBBatchQueryWrapper(BatchQuery query) {
-        this.query = query;
-        this.dbAttributes = query.getDbAttributes();
+	Oracle8LOBBatchQueryWrapper(BatchQuery query) {
+		this.query = query;
+		this.dbAttributes = query.getDbAttributes();
 
-        int len = dbAttributes.size();
-        this.qualifierAttributes = new boolean[len];
-        this.allLOBAttributes = new boolean[len];
-        this.updatedLOBAttributes = new Object[len];
+		int len = dbAttributes.size();
+		this.qualifierAttributes = new boolean[len];
+		this.allLOBAttributes = new boolean[len];
+		this.updatedLOBAttributes = new Object[len];
 
-        indexQualifierAttributes();
-    }
+		indexQualifierAttributes();
+	}
 
-    /**
-     * Indexes attributes
-     */
-    protected void indexQualifierAttributes() {
-        int len = this.dbAttributes.size();
-        for (int i = 0; i < len; i++) {
-            DbAttribute attribute = this.dbAttributes.get(i);
-            int type = attribute.getType();
-            qualifierAttributes[i] = attribute.isPrimaryKey();
-            allLOBAttributes[i] = type == Types.BLOB || type == Types.CLOB;
-        }
-    }
+	/**
+	 * Indexes attributes
+	 */
+	protected void indexQualifierAttributes() {
+		int len = this.dbAttributes.size();
+		for (int i = 0; i < len; i++) {
+			DbAttribute attribute = this.dbAttributes.get(i);
+			int type = attribute.getType();
+			qualifierAttributes[i] = attribute.isPrimaryKey();
+			allLOBAttributes[i] = type == Types.BLOB || type == Types.CLOB;
+		}
+	}
 
-    /**
-     * Indexes attributes
-     */
-    void indexLOBAttributes(BatchQueryRow row) {
-        int len = updatedLOBAttributes.length;
-        for (int i = 0; i < len; i++) {
-            updatedLOBAttributes[i] = null;
+	/**
+	 * Indexes attributes
+	 */
+	void indexLOBAttributes(BatchQueryRow row) {
+		int len = updatedLOBAttributes.length;
+		for (int i = 0; i < len; i++) {
+			updatedLOBAttributes[i] = null;
 
-            if (allLOBAttributes[i]) {
-                // skip null and empty LOBs
-                Object value = row.getValue(i);
+			if (allLOBAttributes[i]) {
+				// skip null and empty LOBs
+				Object value = row.getValue(i);
 
-                if (value == null) {
-                    continue;
-                }
+				if (value == null) {
+					continue;
+				}
 
-                if (dbAttributes.get(i).getType() == Types.BLOB) {
-                    updatedLOBAttributes[i] = convertToBlobValue(value);
-                } else {
-                    updatedLOBAttributes[i] = convertToClobValue(value);
-                }
-            }
-        }
-    }
+				if (dbAttributes.get(i).getType() == Types.BLOB) {
+					updatedLOBAttributes[i] = convertToBlobValue(value);
+				} else {
+					updatedLOBAttributes[i] = convertToClobValue(value);
+				}
+			}
+		}
+	}
 
-    /**
-     * Converts value to byte[] if possible.
-     */
-    protected byte[] convertToBlobValue(Object value) {
-        if (value instanceof byte[]) {
-            byte[] bytes = (byte[]) value;
-            return bytes.length == 0 ? null : bytes;
-        } else if (value instanceof Serializable) {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
+	/**
+	 * Converts value to byte[] if possible.
+	 */
+	protected byte[] convertToBlobValue(Object value) {
+		if (value instanceof byte[]) {
+			byte[] bytes = (byte[]) value;
+			return bytes.length == 0 ? null : bytes;
+		} else if (value instanceof Serializable) {
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
-                @Override
-                public synchronized byte[] toByteArray() {
-                    return buf;
-                }
-            };
+				@Override
+				public synchronized byte[] toByteArray() {
+					return buf;
+				}
+			};
 
-            try {
-                ObjectOutputStream out = new ObjectOutputStream(bytes);
-                out.writeObject(value);
-                out.close();
-            } catch (IOException e) {
-                throw new CayenneRuntimeException("Error serializing object", e);
-            }
+			try (ObjectOutputStream out = new ObjectOutputStream(bytes);) {
+				out.writeObject(value);
+			} catch (IOException e) {
+				throw new CayenneRuntimeException("Error serializing object", e);
+			}
 
-            return bytes.toByteArray();
-        }
+			return bytes.toByteArray();
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    /**
-     * Converts to char[] or String. Both are acceptable when writing CLOBs.
-     */
-    protected Object convertToClobValue(Object value) {
+	/**
+	 * Converts to char[] or String. Both are acceptable when writing CLOBs.
+	 */
+	protected Object convertToClobValue(Object value) {
 
-        if (value instanceof char[]) {
-            char[] chars = (char[]) value;
-            return chars.length == 0 ? null : chars;
-        } else {
-            String strValue = value.toString();
-            return strValue.length() == 0 ? null : strValue;
-        }
-    }
+		if (value instanceof char[]) {
+			char[] chars = (char[]) value;
+			return chars.length == 0 ? null : chars;
+		} else {
+			String strValue = value.toString();
+			return strValue.length() == 0 ? null : strValue;
+		}
+	}
 
-    /**
-     * Returns a list of DbAttributes used in the qualifier of the query that
-     * selects a LOB row for LOB update.
-     */
-    List<DbAttribute> getDbAttributesForLOBSelectQualifier() {
+	/**
+	 * Returns a list of DbAttributes used in the qualifier of the query that
+	 * selects a LOB row for LOB update.
+	 */
+	List<DbAttribute> getDbAttributesForLOBSelectQualifier() {
 
-        int len = qualifierAttributes.length;
-        List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
+		int len = qualifierAttributes.length;
+		List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
 
-        for (int i = 0; i < len; i++) {
-            if (this.qualifierAttributes[i]) {
-                attributes.add(this.dbAttributes.get(i));
-            }
-        }
-        return attributes;
-    }
+		for (int i = 0; i < len; i++) {
+			if (this.qualifierAttributes[i]) {
+				attributes.add(this.dbAttributes.get(i));
+			}
+		}
+		return attributes;
+	}
 
-    /**
-     * Returns a list of DbAttributes that correspond to the LOB columns updated
-     * in the current row in the batch query. The list will not include LOB
-     * attributes that are null or empty.
-     */
-    List<DbAttribute> getDbAttributesForUpdatedLOBColumns() {
+	/**
+	 * Returns a list of DbAttributes that correspond to the LOB columns updated
+	 * in the current row in the batch query. The list will not include LOB
+	 * attributes that are null or empty.
+	 */
+	List<DbAttribute> getDbAttributesForUpdatedLOBColumns() {
 
-        int len = updatedLOBAttributes.length;
-        List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
+		int len = updatedLOBAttributes.length;
+		List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
 
-        for (int i = 0; i < len; i++) {
-            if (this.updatedLOBAttributes[i] != null) {
-                attributes.add(this.dbAttributes.get(i));
-            }
-        }
-        return attributes;
-    }
+		for (int i = 0; i < len; i++) {
+			if (this.updatedLOBAttributes[i] != null) {
+				attributes.add(this.dbAttributes.get(i));
+			}
+		}
+		return attributes;
+	}
 
-    List<Object> getValuesForLOBSelectQualifier(BatchQueryRow row) {
+	List<Object> getValuesForLOBSelectQualifier(BatchQueryRow row) {
 
-        int len = this.qualifierAttributes.length;
-        List<Object> values = new ArrayList<Object>(len);
-        for (int i = 0; i < len; i++) {
-            if (this.qualifierAttributes[i]) {
-                values.add(row.getValue(i));
-            }
-        }
+		int len = this.qualifierAttributes.length;
+		List<Object> values = new ArrayList<Object>(len);
+		for (int i = 0; i < len; i++) {
+			if (this.qualifierAttributes[i]) {
+				values.add(row.getValue(i));
+			}
+		}
 
-        return values;
-    }
+		return values;
+	}
 
-    List<Object> getValuesForUpdatedLOBColumns() {
+	List<Object> getValuesForUpdatedLOBColumns() {
 
-        int len = this.updatedLOBAttributes.length;
-        List<Object> values = new ArrayList<Object>(len);
-        for (int i = 0; i < len; i++) {
-            if (this.updatedLOBAttributes[i] != null) {
-                values.add(this.updatedLOBAttributes[i]);
-            }
-        }
+		int len = this.updatedLOBAttributes.length;
+		List<Object> values = new ArrayList<Object>(len);
+		for (int i = 0; i < len; i++) {
+			if (this.updatedLOBAttributes[i] != null) {
+				values.add(this.updatedLOBAttributes[i]);
+			}
+		}
 
-        return values;
-    }
+		return values;
+	}
 
 }

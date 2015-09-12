@@ -36,247 +36,229 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.wocompat.parser.Parser;
 
 /**
- * A <b>PropertyListSerialization</b> is a utility class that reads and stores files in
- * NeXT/Apple property list format. Unlike corresponding WebObjects class,
- * <code>PropertyListSerialization</code> uses standard Java collections (lists and
- * maps) to store property lists.
+ * A <b>PropertyListSerialization</b> is a utility class that reads and stores
+ * files in NeXT/Apple property list format. Unlike corresponding WebObjects
+ * class, <code>PropertyListSerialization</code> uses standard Java collections
+ * (lists and maps) to store property lists.
  * 
  */
 public class PropertyListSerialization {
 
-    /**
-     * Reads a property list file. Returns a property list object, that is normally a
-     * java.util.List or a java.util.Map, but can also be a String or a Number.
-     */
-    public static Object propertyListFromFile(File f) throws FileNotFoundException {
-        return propertyListFromFile(f, null);
-    }
+	/**
+	 * Reads a property list file. Returns a property list object, that is
+	 * normally a java.util.List or a java.util.Map, but can also be a String or
+	 * a Number.
+	 */
+	public static Object propertyListFromFile(File f) throws FileNotFoundException {
+		return propertyListFromFile(f, null);
+	}
 
-    /**
-     * Reads a property list file. Returns a property list object, that is normally a
-     * java.util.List or a java.util.Map, but can also be a String or a Number.
-     */
-    public static Object propertyListFromFile(File f, PlistDataStructureFactory factory)
-            throws FileNotFoundException {
-        if (!f.isFile()) {
-            throw new FileNotFoundException("No such file: " + f);
-        }
+	/**
+	 * Reads a property list file. Returns a property list object, that is
+	 * normally a java.util.List or a java.util.Map, but can also be a String or
+	 * a Number.
+	 */
+	public static Object propertyListFromFile(File f, PlistDataStructureFactory factory) throws FileNotFoundException {
+		if (!f.isFile()) {
+			throw new FileNotFoundException("No such file: " + f);
+		}
 
-        return new Parser(f, factory).propertyList();
-    }
+		return new Parser(f, factory).propertyList();
+	}
 
-    /**
-     * Reads a property list data from InputStream. Returns a property list o bject, that
-     * is normally a java.util.List or a java.util.Map, but can also be a String or a
-     * Number.
-     */
-    public static Object propertyListFromStream(InputStream in) {
-        return propertyListFromStream(in, null);
-    }
+	/**
+	 * Reads a property list data from InputStream. Returns a property list o
+	 * bject, that is normally a java.util.List or a java.util.Map, but can also
+	 * be a String or a Number.
+	 */
+	public static Object propertyListFromStream(InputStream in) {
+		return propertyListFromStream(in, null);
+	}
 
-    /**
-     * Reads a property list data from InputStream. Returns a property list o bject, that
-     * is normally a java.util.List or a java.util.Map, but can also be a String or a
-     * Number.
-     */
-    public static Object propertyListFromStream(
-            InputStream in,
-            PlistDataStructureFactory factory) {
-        return new Parser(in, factory).propertyList();
-    }
+	/**
+	 * Reads a property list data from InputStream. Returns a property list o
+	 * bject, that is normally a java.util.List or a java.util.Map, but can also
+	 * be a String or a Number.
+	 */
+	public static Object propertyListFromStream(InputStream in, PlistDataStructureFactory factory) {
+		return new Parser(in, factory).propertyList();
+	}
 
-    /**
-     * Saves property list to file.
-     */
-    public static void propertyListToFile(File f, Object plist) {
-        try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(f));
-            try {
-                writeObject("", out, plist);
-            }
-            finally {
-                out.close();
-            }
-        }
-        catch (IOException ioex) {
-            throw new CayenneRuntimeException("Error saving plist.", ioex);
-        }
-    }
+	/**
+	 * Saves property list to file.
+	 */
+	public static void propertyListToFile(File f, Object plist) {
+		try {
 
-    /**
-     * Saves property list to file.
-     */
-    public static void propertyListToStream(OutputStream os, Object plist) {
-        try {
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(os));
-            try {
-                writeObject("", out, plist);
-            }
-            finally {
-                out.close();
-            }
-        }
-        catch (IOException ioex) {
-            throw new CayenneRuntimeException("Error saving plist.", ioex);
-        }
-    }
+			try (BufferedWriter out = new BufferedWriter(new FileWriter(f));) {
+				writeObject("", out, plist);
+			}
+		} catch (IOException ioex) {
+			throw new CayenneRuntimeException("Error saving plist.", ioex);
+		}
+	}
 
-    /**
-     * Internal method to recursively write a property list object.
-     */
-    protected static void writeObject(String offset, Writer out, Object plist)
-            throws IOException {
-        if (plist == null) {
-            return;
-        }
+	/**
+	 * Saves property list to file.
+	 */
+	public static void propertyListToStream(OutputStream os, Object plist) {
+		try {
 
-        if (plist instanceof Collection) {
-            Collection list = (Collection) plist;
+			try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(os));) {
+				writeObject("", out, plist);
+			}
+		} catch (IOException ioex) {
+			throw new CayenneRuntimeException("Error saving plist.", ioex);
+		}
+	}
 
-            out.write('\n');
-            out.write(offset);
+	/**
+	 * Internal method to recursively write a property list object.
+	 */
+	protected static void writeObject(String offset, Writer out, Object plist) throws IOException {
+		if (plist == null) {
+			return;
+		}
 
-            if (list.size() == 0) {
-                out.write("()");
-                return;
-            }
+		if (plist instanceof Collection) {
+			Collection list = (Collection) plist;
 
-            out.write("(\n");
+			out.write('\n');
+			out.write(offset);
 
-            String childOffset = offset + "   ";
-            Iterator it = list.iterator();
-            boolean appended = false;
-            while (it.hasNext()) {
-                // Java collections can contain nulls, skip them
-                Object obj = it.next();
-                if (obj != null) {
-                    if (appended) {
-                        out.write(", \n");
-                    }
+			if (list.size() == 0) {
+				out.write("()");
+				return;
+			}
 
-                    out.write(childOffset);
-                    writeObject(childOffset, out, obj);
-                    appended = true;
-                }
-            }
+			out.write("(\n");
 
-            out.write('\n');
-            out.write(offset);
-            out.write(')');
-        }
-        else if (plist instanceof Map) {
-            Map map = (Map) plist;
-            out.write('\n');
-            out.write(offset);
+			String childOffset = offset + "   ";
+			Iterator it = list.iterator();
+			boolean appended = false;
+			while (it.hasNext()) {
+				// Java collections can contain nulls, skip them
+				Object obj = it.next();
+				if (obj != null) {
+					if (appended) {
+						out.write(", \n");
+					}
 
-            if (map.size() == 0) {
-                out.write("{}");
-                return;
-            }
+					out.write(childOffset);
+					writeObject(childOffset, out, obj);
+					appended = true;
+				}
+			}
 
-            out.write("{");
+			out.write('\n');
+			out.write(offset);
+			out.write(')');
+		} else if (plist instanceof Map) {
+			Map map = (Map) plist;
+			out.write('\n');
+			out.write(offset);
 
-            String childOffset = offset + "    ";
+			if (map.size() == 0) {
+				out.write("{}");
+				return;
+			}
 
-            Iterator it = map.entrySet().iterator();
-            while (it.hasNext()) {
-                // Java collections can contain nulls, skip them
-                Map.Entry entry = (Map.Entry) it.next();
-                Object key = entry.getKey();
-                if (key == null) {
-                    continue;
-                }
-                Object obj = entry.getValue();
-                if (obj == null) {
-                    continue;
-                }
-                out.write('\n');
-                out.write(childOffset);
-                out.write(quoteString(key.toString()));
-                out.write(" = ");
-                writeObject(childOffset, out, obj);
-                out.write(';');
-            }
+			out.write("{");
 
-            out.write('\n');
-            out.write(offset);
-            out.write('}');
-        }
-        else if (plist instanceof String) {
-            out.write(quoteString(plist.toString()));
-        }
-        else if (plist instanceof Number) {
-            out.write(plist.toString());
-        }
-        else {
-            throw new CayenneRuntimeException(
-                    "Unsupported class for property list serialization: "
-                            + plist.getClass().getName());
-        }
-    }
+			String childOffset = offset + "    ";
 
-    /**
-     * Escapes all doublequotes and backslashes.
-     */
-    protected static String escapeString(String str) {
-        char[] chars = str.toCharArray();
-        int len = chars.length;
-        StringBuilder buf = new StringBuilder(len + 3);
+			Iterator it = map.entrySet().iterator();
+			while (it.hasNext()) {
+				// Java collections can contain nulls, skip them
+				Map.Entry entry = (Map.Entry) it.next();
+				Object key = entry.getKey();
+				if (key == null) {
+					continue;
+				}
+				Object obj = entry.getValue();
+				if (obj == null) {
+					continue;
+				}
+				out.write('\n');
+				out.write(childOffset);
+				out.write(quoteString(key.toString()));
+				out.write(" = ");
+				writeObject(childOffset, out, obj);
+				out.write(';');
+			}
 
-        for (int i = 0; i < len; i++) {
-            if (chars[i] == '\"' || chars[i] == '\\') {
-                buf.append('\\');
-            }
-            buf.append(chars[i]);
-        }
+			out.write('\n');
+			out.write(offset);
+			out.write('}');
+		} else if (plist instanceof String) {
+			out.write(quoteString(plist.toString()));
+		} else if (plist instanceof Number) {
+			out.write(plist.toString());
+		} else {
+			throw new CayenneRuntimeException("Unsupported class for property list serialization: "
+					+ plist.getClass().getName());
+		}
+	}
 
-        return buf.toString();
-    }
+	/**
+	 * Escapes all doublequotes and backslashes.
+	 */
+	protected static String escapeString(String str) {
+		char[] chars = str.toCharArray();
+		int len = chars.length;
+		StringBuilder buf = new StringBuilder(len + 3);
 
-    /**
-     * Returns a quoted String, with all the escapes preprocessed. May return an unquoted
-     * String if it contains no special characters. The rule for a non-special character
-     * is the following:
-     * 
-     * <pre>
-     *       c &gt;= 'a' &amp;&amp; c &lt;= 'z'
-     *       c &gt;= 'A' &amp;&amp; c &lt;= 'Z'
-     *       c &gt;= '0' &amp;&amp; c &lt;= '9'
-     *       c == '_'
-     *       c == '$'
-     *       c == ':'
-     *       c == '.'
-     *       c == '/'
-     * </pre>
-     */
-    protected static String quoteString(String str) {
-        boolean shouldQuote = false;
+		for (int i = 0; i < len; i++) {
+			if (chars[i] == '\"' || chars[i] == '\\') {
+				buf.append('\\');
+			}
+			buf.append(chars[i]);
+		}
 
-        // scan string for special chars,
-        // if we have them, string must be quoted
+		return buf.toString();
+	}
 
-        String noQuoteExtras = "_$:./";
-        char[] chars = str.toCharArray();
-        int len = chars.length;
-        if (len == 0) {
-            shouldQuote = true;
-        }
-        for (int i = 0; !shouldQuote && i < len; i++) {
-            char c = chars[i];
+	/**
+	 * Returns a quoted String, with all the escapes preprocessed. May return an
+	 * unquoted String if it contains no special characters. The rule for a
+	 * non-special character is the following:
+	 * 
+	 * <pre>
+	 *       c &gt;= 'a' &amp;&amp; c &lt;= 'z'
+	 *       c &gt;= 'A' &amp;&amp; c &lt;= 'Z'
+	 *       c &gt;= '0' &amp;&amp; c &lt;= '9'
+	 *       c == '_'
+	 *       c == '$'
+	 *       c == ':'
+	 *       c == '.'
+	 *       c == '/'
+	 * </pre>
+	 */
+	protected static String quoteString(String str) {
+		boolean shouldQuote = false;
 
-            if ((c >= 'a' && c <= 'z')
-                    || (c >= 'A' && c <= 'Z')
-                    || (c >= '0' && c <= '9')
-                    || noQuoteExtras.indexOf(c) >= 0) {
-                continue;
-            }
+		// scan string for special chars,
+		// if we have them, string must be quoted
 
-            shouldQuote = true;
-        }
+		String noQuoteExtras = "_$:./";
+		char[] chars = str.toCharArray();
+		int len = chars.length;
+		if (len == 0) {
+			shouldQuote = true;
+		}
+		for (int i = 0; !shouldQuote && i < len; i++) {
+			char c = chars[i];
 
-        str = escapeString(str);
-        return (shouldQuote) ? '\"' + str + '\"' : str;
-    }
+			if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+					|| noQuoteExtras.indexOf(c) >= 0) {
+				continue;
+			}
 
-    
+			shouldQuote = true;
+		}
+
+		str = escapeString(str);
+		return (shouldQuote) ? '\"' + str + '\"' : str;
+	}
+
 }

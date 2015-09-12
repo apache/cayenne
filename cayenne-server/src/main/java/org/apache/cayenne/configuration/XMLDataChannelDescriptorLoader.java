@@ -82,21 +82,14 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 	 */
 	@Deprecated
 	private static String passwordFromInputStream(InputStream inputStream) {
-		BufferedReader bufferedReader = null;
 		String password = null;
 
-		try {
-			bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));) {
+
 			password = bufferedReader.readLine();
 		} catch (IOException exception) {
 			logger.warn(exception);
 		} finally {
-			try {
-				if (bufferedReader != null) {
-					bufferedReader.close();
-				}
-			} catch (Exception exception) {
-			}
 
 			try {
 				inputStream.close();

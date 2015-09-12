@@ -34,87 +34,89 @@ import java.util.*;
  * */
 public class DbAttributesPerSchemaLoader extends DbAttributesBaseLoader {
 
-    private final TableFilter filter;
+	private final TableFilter filter;
 
-    private Map<String, List<DbAttribute>> attributes;
+	private Map<String, List<DbAttribute>> attributes;
 
-    public DbAttributesPerSchemaLoader(String catalog, String schema, DatabaseMetaData metaData,
-                                       DbAdapter adapter, TableFilter filter) {
-        super(catalog, schema, metaData, adapter);
+	public DbAttributesPerSchemaLoader(String catalog, String schema, DatabaseMetaData metaData, DbAdapter adapter,
+			TableFilter filter) {
+		super(catalog, schema, metaData, adapter);
 
-        this.filter = filter;
-    }
+		this.filter = filter;
+	}
 
-    private Map<String, List<DbAttribute>> loadDbAttributes() throws SQLException {
-        Map<String, List<DbAttribute>> attributes = new HashMap<String, List<DbAttribute>>();
-        ResultSet rs = getMetaData().getColumns(getCatalog(), getSchema(), "%", "%");
-        try {
-            Set<String> columns = new HashSet<String>();
+	private Map<String, List<DbAttribute>> loadDbAttributes() throws SQLException {
+		Map<String, List<DbAttribute>> attributes = new HashMap<String, List<DbAttribute>>();
 
-            while (rs.next()) {
-                if (columns.isEmpty()) {
-                    ResultSetMetaData rsMetaData = rs.getMetaData();
-                    for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
-                        columns.add(rsMetaData.getColumnLabel(i));
-                    }
-                }
+		try (ResultSet rs = getMetaData().getColumns(getCatalog(), getSchema(), "%", "%");) {
+			Set<String> columns = new HashSet<String>();
 
-                // for a reason not quiet apparent to me, Oracle sometimes
-                // returns duplicate record sets for the same table, messing up table
-                // names. E.g. for the system table "WK$_ATTR_MAPPING" columns are
-                // returned twice - as "WK$_ATTR_MAPPING" and "WK$$_ATTR_MAPPING"... Go figure
-                String tableName = rs.getString("TABLE_NAME");
-                String columnName = rs.getString("COLUMN_NAME");
+			while (rs.next()) {
+				if (columns.isEmpty()) {
+					ResultSetMetaData rsMetaData = rs.getMetaData();
+					for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
+						columns.add(rsMetaData.getColumnLabel(i));
+					}
+				}
 
-                PatternFilter columnFilter = filter.isIncludeTable(tableName);
-                /*
-                * Here is possible optimization if filter will contain map<tableName, columnFilter>
-                *     we can replace it after tables loading since already done pattern matching once and exactly
-                *     know all tables that we want to process
-                * */
-                if (columnFilter == null || !columnFilter.isInclude(columnName)) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Skip column '" + tableName + "." + columnName
-                                + "' (Path: " + getCatalog() + "/" + getSchema() + "; Filter: " + columnFilter + ")");
-                    }
-                    continue;
-                }
+				// for a reason not quiet apparent to me, Oracle sometimes
+				// returns duplicate record sets for the same table, messing up
+				// table
+				// names. E.g. for the system table "WK$_ATTR_MAPPING" columns
+				// are
+				// returned twice - as "WK$_ATTR_MAPPING" and
+				// "WK$$_ATTR_MAPPING"... Go figure
+				String tableName = rs.getString("TABLE_NAME");
+				String columnName = rs.getString("COLUMN_NAME");
 
-                List<DbAttribute> attrs = attributes.get(tableName);
-                if (attrs == null) {
-                    attrs = new LinkedList<DbAttribute>();
+				PatternFilter columnFilter = filter.isIncludeTable(tableName);
+				/*
+				 * Here is possible optimization if filter will contain
+				 * map<tableName, columnFilter> we can replace it after tables
+				 * loading since already done pattern matching once and exactly
+				 * know all tables that we want to process
+				 */
+				if (columnFilter == null || !columnFilter.isInclude(columnName)) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Skip column '" + tableName + "." + columnName + "' (Path: " + getCatalog() + "/"
+								+ getSchema() + "; Filter: " + columnFilter + ")");
+					}
+					continue;
+				}
 
-                    attributes.put(tableName, attrs);
-                }
+				List<DbAttribute> attrs = attributes.get(tableName);
+				if (attrs == null) {
+					attrs = new LinkedList<DbAttribute>();
 
-                attrs.add(loadDbAttribute(columns, rs));
-            }
-        } finally {
-            rs.close();
-        }
+					attributes.put(tableName, attrs);
+				}
 
-        return attributes;
-    }
+				attrs.add(loadDbAttribute(columns, rs));
+			}
+		}
 
-    @Override
-    protected List<DbAttribute> loadDbAttributes(String tableName) {
-        Map<String, List<DbAttribute>> attributes = getAttributes();
-        if (attributes != null) {
-            return attributes.get(tableName);
-        }
+		return attributes;
+	}
 
-        return new LinkedList<DbAttribute>();
-    }
+	@Override
+	protected List<DbAttribute> loadDbAttributes(String tableName) {
+		Map<String, List<DbAttribute>> attributes = getAttributes();
+		if (attributes != null) {
+			return attributes.get(tableName);
+		}
 
-    public Map<String, List<DbAttribute>> getAttributes() {
-        if (attributes == null) {
-            try {
-                attributes = loadDbAttributes();
-            } catch (SQLException e) {
-                LOGGER.error(e);
-                attributes = new HashMap<String, List<DbAttribute>>();
-            }
-        }
-        return attributes;
-    }
+		return new LinkedList<DbAttribute>();
+	}
+
+	public Map<String, List<DbAttribute>> getAttributes() {
+		if (attributes == null) {
+			try {
+				attributes = loadDbAttributes();
+			} catch (SQLException e) {
+				LOGGER.error(e);
+				attributes = new HashMap<String, List<DbAttribute>>();
+			}
+		}
+		return attributes;
+	}
 }

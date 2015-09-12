@@ -269,9 +269,7 @@ public class DbGenerator {
 	public void runGenerator(DataSource ds) throws Exception {
 		this.failures = null;
 
-		Connection connection = ds.getConnection();
-
-		try {
+		try (Connection connection = ds.getConnection();) {
 
 			// drop tables
 			if (shouldDropTables) {
@@ -328,8 +326,6 @@ public class DbGenerator {
 			}
 
 			new DbGeneratorPostprocessor().execute(connection, getAdapter());
-		} finally {
-			connection.close();
 		}
 	}
 
@@ -340,9 +336,8 @@ public class DbGenerator {
 	 * @since 1.1
 	 */
 	protected boolean safeExecute(Connection connection, String sql) throws SQLException {
-		Statement statement = connection.createStatement();
 
-		try {
+		try (Statement statement = connection.createStatement();) {
 			jdbcEventLogger.logQuery(sql, null);
 			statement.execute(sql);
 			return true;
@@ -354,8 +349,6 @@ public class DbGenerator {
 			failures.addFailure(new SimpleValidationFailure(sql, ex.getMessage()));
 			jdbcEventLogger.logQueryError(ex);
 			return false;
-		} finally {
-			statement.close();
 		}
 	}
 

@@ -71,14 +71,9 @@ public class DBCPDataSourceFactory implements DataSourceFactory {
 
 	private Properties getProperties(Resource dbcp2Configuration) throws IOException {
 		Properties properties = new Properties();
-		InputStream in = dbcp2Configuration.getURL().openStream();
-		try {
+
+		try (InputStream in = dbcp2Configuration.getURL().openStream();) {
 			properties.load(in);
-		} finally {
-			try {
-				in.close();
-			} catch (IOException e) {
-			}
 		}
 
 		return properties;

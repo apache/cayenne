@@ -41,68 +41,60 @@ import org.jgraph.JGraph;
  * Action for saving graph as image
  */
 public class SaveAsImageAction extends CayenneAction {
-    private static final Log logObj = LogFactory.getLog(SaveAsImageAction.class);
-    
-    private final DataDomainGraphTab dataDomainGraphTab;
-    
-    public SaveAsImageAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
-        super("Save As Image", application);
-        this.dataDomainGraphTab = dataDomainGraphTab;
-        setEnabled(true);
-    }
-    
-    @Override
-    public String getIconName() {
-        return "icon-save-as-image.png";
-    }
-    
-    @Override
-    public void performAction(ActionEvent e) {
-        // find start directory in preferences
-        FSPath lastDir = getApplication().getFrameController().getLastDirectory();
+	private static final Log logObj = LogFactory.getLog(SaveAsImageAction.class);
 
-        // configure dialog
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        lastDir.updateChooser(chooser);
-        
-        chooser.setAcceptAllFileFilterUsed(false);
-        
-        String ext = "png";
-        chooser.addChoosableFileFilter(FileFilters.getExtensionFileFilter(ext, "PNG Images"));
-        
-        int status = chooser.showSaveDialog(Application.getFrame());
-        if (status == JFileChooser.APPROVE_OPTION) {
-            lastDir.updateFromChooser(chooser);
-            
-            String path = chooser.getSelectedFile().getPath();
-            if (!path.endsWith("." + ext)) {
-                path += "." + ext;
-            }
-            
-            try {                
-                OutputStream out = new FileOutputStream(path);
-                
-                JGraph graph = dataDomainGraphTab.getGraph();
-                BufferedImage img = graph.getImage(null, 0);
-                
-                try {
-                    ImageIO.write(img, ext, out);
-                    out.flush();
-                }
-                finally {
-                    out.close();
-                }
-            }
-            catch (IOException ex) {
-                logObj.error("Could not save image", ex);
-                JOptionPane.showMessageDialog(
-                        Application.getFrame(),
-                        "Could not save image.",
-                        "Error saving image",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
-        }
-    }
+	private final DataDomainGraphTab dataDomainGraphTab;
+
+	public SaveAsImageAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
+		super("Save As Image", application);
+		this.dataDomainGraphTab = dataDomainGraphTab;
+		setEnabled(true);
+	}
+
+	@Override
+	public String getIconName() {
+		return "icon-save-as-image.png";
+	}
+
+	@Override
+	public void performAction(ActionEvent e) {
+		// find start directory in preferences
+		FSPath lastDir = getApplication().getFrameController().getLastDirectory();
+
+		// configure dialog
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		lastDir.updateChooser(chooser);
+
+		chooser.setAcceptAllFileFilterUsed(false);
+
+		String ext = "png";
+		chooser.addChoosableFileFilter(FileFilters.getExtensionFileFilter(ext, "PNG Images"));
+
+		int status = chooser.showSaveDialog(Application.getFrame());
+		if (status == JFileChooser.APPROVE_OPTION) {
+			lastDir.updateFromChooser(chooser);
+
+			String path = chooser.getSelectedFile().getPath();
+			if (!path.endsWith("." + ext)) {
+				path += "." + ext;
+			}
+
+			try {
+
+				JGraph graph = dataDomainGraphTab.getGraph();
+				BufferedImage img = graph.getImage(null, 0);
+
+				try (OutputStream out = new FileOutputStream(path);) {
+					ImageIO.write(img, ext, out);
+					out.flush();
+				}
+
+			} catch (IOException ex) {
+				logObj.error("Could not save image", ex);
+				JOptionPane.showMessageDialog(Application.getFrame(), "Could not save image.", "Error saving image",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
 }

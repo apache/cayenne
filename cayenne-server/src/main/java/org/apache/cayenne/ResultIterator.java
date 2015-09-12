@@ -19,7 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.io.Closeable;
 import java.util.List;
 
 /**
@@ -32,7 +31,7 @@ import java.util.List;
  *
  * @since 3.0
  */
-public interface ResultIterator<T> extends Iterable<T>, Closeable {
+public interface ResultIterator<T> extends Iterable<T>, AutoCloseable {
 
     /**
      * Returns all yet unread rows from ResultSet without closing it.

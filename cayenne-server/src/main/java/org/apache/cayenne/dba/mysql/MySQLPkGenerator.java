@@ -34,171 +34,149 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class MySQLPkGenerator extends JdbcPkGenerator {
 
-    MySQLPkGenerator(JdbcAdapter adapter) {
-        super(adapter);
-    }
+	MySQLPkGenerator(JdbcAdapter adapter) {
+		super(adapter);
+	}
 
-    @Override
-    protected String dropAutoPkString() {
-        return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";
-    }
+	@Override
+	protected String dropAutoPkString() {
+		return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";
+	}
 
-    /**
-     * Overrides superclass's implementation to perform locking of the primary key lookup
-     * table.
-     * 
-     * @since 3.0
-     */
-    @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+	/**
+	 * Overrides superclass's implementation to perform locking of the primary
+	 * key lookup table.
+	 * 
+	 * @since 3.0
+	 */
+	@Override
+	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
-        // must work directly with JDBC connection, since we
-        // must unlock the AUTO_PK_SUPPORT table in case of
-        // failures.... ah..JDBC is fun...
+		// must work directly with JDBC connection, since we
+		// must unlock the AUTO_PK_SUPPORT table in case of
+		// failures.... ah..JDBC is fun...
 
-        // chained SQL exception
-        SQLException exception = null;
-        long pk = -1l;
+		// chained SQL exception
+		SQLException exception = null;
+		long pk = -1l;
 
-        Connection con = node.getDataSource().getConnection();
-        try {
+		try (Connection con = node.getDataSource().getConnection();) {
 
-            if (con.getAutoCommit()) {
-                con.setAutoCommit(false);
-            }
+			if (con.getAutoCommit()) {
+				con.setAutoCommit(false);
+			}
 
-            Statement st = con.createStatement();
+			Statement st = con.createStatement();
 
-            try {
-                pk = getLongPrimaryKey(st, entity.getName());
-                con.commit();
-            }
-            catch (SQLException pkEx) {
+			try {
+				pk = getLongPrimaryKey(st, entity.getName());
+				con.commit();
+			} catch (SQLException pkEx) {
 
-                try {
-                    con.rollback();
-                }
-                catch (SQLException e) {
+				try {
+					con.rollback();
+				} catch (SQLException e) {
 
-                }
+				}
 
-                exception = processSQLException(pkEx, exception);
-            }
-            finally {
-                // UNLOCK!
-                // THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE PRIMARY KEY
-                // TABLE!!
-                try {
-                    String unlockString = "UNLOCK TABLES";
-                    adapter.getJdbcEventLogger().logQuery(unlockString, Collections.EMPTY_LIST);
-                    st.execute(unlockString);
-                }
-                catch (SQLException unlockEx) {
-                    exception = processSQLException(unlockEx, exception);
-                }
-                finally {
-                    // close statement
-                    try {
-                        st.close();
-                    }
-                    catch (SQLException stClosingEx) {
-                        // ignoring...
-                    }
-                }
-            }
-        }
-        catch (SQLException otherEx) {
-            exception = processSQLException(otherEx, exception);
-        }
-        finally {
-            try {
-                con.close();
-            }
-            catch (SQLException closingEx) {
-                // ignoring
-            }
-        }
+				exception = processSQLException(pkEx, exception);
+			} finally {
+				// UNLOCK!
+				// THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE
+				// PRIMARY KEY
+				// TABLE!!
+				try {
+					String unlockString = "UNLOCK TABLES";
+					adapter.getJdbcEventLogger().logQuery(unlockString, Collections.EMPTY_LIST);
+					st.execute(unlockString);
+				} catch (SQLException unlockEx) {
+					exception = processSQLException(unlockEx, exception);
+				} finally {
+					// close statement
+					try {
+						st.close();
+					} catch (SQLException stClosingEx) {
+						// ignoring...
+					}
+				}
+			}
+		} catch (SQLException otherEx) {
+			exception = processSQLException(otherEx, exception);
+		}
 
-        // check errors
-        if (exception != null) {
-            throw exception;
-        }
+		// check errors
+		if (exception != null) {
+			throw exception;
+		}
 
-        return pk;
+		return pk;
 
-    }
+	}
 
-    /**
-     * Appends a new SQLException to the chain. If parent is null, uses the exception as
-     * the chain root.
-     */
-    protected SQLException processSQLException(SQLException exception, SQLException parent) {
-        if (parent == null) {
-            return exception;
-        }
+	/**
+	 * Appends a new SQLException to the chain. If parent is null, uses the
+	 * exception as the chain root.
+	 */
+	protected SQLException processSQLException(SQLException exception, SQLException parent) {
+		if (parent == null) {
+			return exception;
+		}
 
-        parent.setNextException(exception);
-        return parent;
-    }
+		parent.setNextException(exception);
+		return parent;
+	}
 
-    @Override
-    protected String pkTableCreateString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE IF NOT EXISTS AUTO_PK_SUPPORT (").append(
-                "  TABLE_NAME CHAR(100) NOT NULL,").append(
-                "  NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME)").append(")");
+	@Override
+	protected String pkTableCreateString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append("CREATE TABLE IF NOT EXISTS AUTO_PK_SUPPORT (").append("  TABLE_NAME CHAR(100) NOT NULL,")
+				.append("  NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME)").append(")");
 
-        return buf.toString();
-    }
+		return buf.toString();
+	}
 
-    /**
-     * @since 3.0
-     */
-    protected long getLongPrimaryKey(Statement statement, String entityName)
-            throws SQLException {
-        // lock
-        String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
-        adapter.getJdbcEventLogger().logQuery(lockString, Collections.EMPTY_LIST);
-        statement.execute(lockString);
+	/**
+	 * @since 3.0
+	 */
+	protected long getLongPrimaryKey(Statement statement, String entityName) throws SQLException {
+		// lock
+		String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
+		adapter.getJdbcEventLogger().logQuery(lockString, Collections.EMPTY_LIST);
+		statement.execute(lockString);
 
-        // select
+		// select
 
-        String selectString = super.pkSelectString(entityName);
-        adapter.getJdbcEventLogger().logQuery(selectString, Collections.EMPTY_LIST);
-        ResultSet rs = statement.executeQuery(selectString);
-        long pk = -1;
-        try {
-            if (!rs.next()) {
-                throw new SQLException("No rows for '" + entityName + "'");
-            }
+		String selectString = super.pkSelectString(entityName);
+		adapter.getJdbcEventLogger().logQuery(selectString, Collections.EMPTY_LIST);
+		ResultSet rs = statement.executeQuery(selectString);
+		long pk = -1;
+		try {
+			if (!rs.next()) {
+				throw new SQLException("No rows for '" + entityName + "'");
+			}
 
-            pk = rs.getLong(1);
+			pk = rs.getLong(1);
 
-            if (rs.next()) {
-                throw new SQLException("More than one row for '" + entityName + "'");
-            }
-        }
-        finally {
-            try {
-                rs.close();
-            }
-            catch (Exception ex) {
-                // ignoring...
-            }
-        }
+			if (rs.next()) {
+				throw new SQLException("More than one row for '" + entityName + "'");
+			}
+		} finally {
+			try {
+				rs.close();
+			} catch (Exception ex) {
+				// ignoring...
+			}
+		}
 
-        // update
-        String updateString = super.pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
-        adapter.getJdbcEventLogger().logQuery(updateString, Collections.EMPTY_LIST);
-        int updated = statement.executeUpdate(updateString);
-        // optimistic lock failure...
-        if (updated != 1) {
-            throw new SQLException("Error updating PK count '"
-                    + entityName
-                    + "': "
-                    + updated);
-        }
+		// update
+		String updateString = super.pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
+		adapter.getJdbcEventLogger().logQuery(updateString, Collections.EMPTY_LIST);
+		int updated = statement.executeUpdate(updateString);
+		// optimistic lock failure...
+		if (updated != 1) {
+			throw new SQLException("Error updating PK count '" + entityName + "': " + updated);
+		}
 
-        return pk;
-    }
+		return pk;
+	}
 }

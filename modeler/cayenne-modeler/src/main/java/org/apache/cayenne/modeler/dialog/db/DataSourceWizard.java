@@ -37,201 +37,188 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
 /**
- * A subclass of ConnectionWizard that tests configured DataSource, but does not keep an
- * open connection.
+ * A subclass of ConnectionWizard that tests configured DataSource, but does not
+ * keep an open connection.
  * 
  */
 public class DataSourceWizard extends CayenneController {
 
-    protected DataSourceWizardView view;
+	protected DataSourceWizardView view;
 
-    protected DBConnectionInfo altDataSource;
-    protected String altDataSourceKey;
-    protected ObjectBinding dataSourceBinding;
-    protected Map dataSources;
+	protected DBConnectionInfo altDataSource;
+	protected String altDataSourceKey;
+	protected ObjectBinding dataSourceBinding;
+	protected Map dataSources;
 
-    protected String dataSourceKey;
+	protected String dataSourceKey;
 
-    // this object is a clone of an object selected from the dropdown, as we need to allow
-    // local temporary modifications
-    protected DBConnectionInfo connectionInfo;
+	// this object is a clone of an object selected from the dropdown, as we
+	// need to allow
+	// local temporary modifications
+	protected DBConnectionInfo connectionInfo;
 
-    protected boolean canceled;
+	protected boolean canceled;
 
-    public DataSourceWizard(CayenneController parent, String title,
-            String altDataSourceKey, DBConnectionInfo altDataSource) {
-        super(parent);
+	public DataSourceWizard(CayenneController parent, String title, String altDataSourceKey,
+			DBConnectionInfo altDataSource) {
+		super(parent);
 
-        this.view = createView();
-        this.view.setTitle(title);
-        this.altDataSource = altDataSource;
-        this.altDataSourceKey = altDataSourceKey;
-        this.connectionInfo = new DBConnectionInfo();
-        
-        initBindings();
-    }
+		this.view = createView();
+		this.view.setTitle(title);
+		this.altDataSource = altDataSource;
+		this.altDataSourceKey = altDataSourceKey;
+		this.connectionInfo = new DBConnectionInfo();
 
-    /**
-     * Creates swing dialog for this wizard
-     */
-    protected DataSourceWizardView createView() {
-        return new DataSourceWizardView(this);
-    }
+		initBindings();
+	}
 
-    protected void initBindings() {
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
+	/**
+	 * Creates swing dialog for this wizard
+	 */
+	protected DataSourceWizardView createView() {
+		return new DataSourceWizardView(this);
+	}
 
-        dataSourceBinding = builder.bindToComboSelection(
-                view.getDataSources(),
-                "dataSourceKey");
+	protected void initBindings() {
+		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
 
-        builder.bindToAction(view.getCancelButton(), "cancelAction()");
-        builder.bindToAction(view.getOkButton(), "okAction()");
-        builder.bindToAction(view.getConfigButton(), "dataSourceConfigAction()");
-    }
+		dataSourceBinding = builder.bindToComboSelection(view.getDataSources(), "dataSourceKey");
 
-    public String getDataSourceKey() {
-        return dataSourceKey;
-    }
+		builder.bindToAction(view.getCancelButton(), "cancelAction()");
+		builder.bindToAction(view.getOkButton(), "okAction()");
+		builder.bindToAction(view.getConfigButton(), "dataSourceConfigAction()");
+	}
 
-    public void setDataSourceKey(String dataSourceKey) {
-        this.dataSourceKey = dataSourceKey;
+	public String getDataSourceKey() {
+		return dataSourceKey;
+	}
 
-        // update a clone object that will be used to obtain connection...
-        DBConnectionInfo currentInfo = (DBConnectionInfo) dataSources.get(dataSourceKey);
-        if (currentInfo != null) {
-            currentInfo.copyTo(connectionInfo);
-        }
-        else {
-            connectionInfo = new DBConnectionInfo();
-        }
+	public void setDataSourceKey(String dataSourceKey) {
+		this.dataSourceKey = dataSourceKey;
 
-        view.getConnectionInfo().setConnectionInfo(connectionInfo);
-    }
+		// update a clone object that will be used to obtain connection...
+		DBConnectionInfo currentInfo = (DBConnectionInfo) dataSources.get(dataSourceKey);
+		if (currentInfo != null) {
+			currentInfo.copyTo(connectionInfo);
+		} else {
+			connectionInfo = new DBConnectionInfo();
+		}
 
-    /**
-     * Main action method that pops up a dialog asking for user selection. Returns true if
-     * the selection was confirmed, false - if canceled.
-     */
-    public boolean startupAction() {
-        this.canceled = true;
+		view.getConnectionInfo().setConnectionInfo(connectionInfo);
+	}
 
-        refreshDataSources();
+	/**
+	 * Main action method that pops up a dialog asking for user selection.
+	 * Returns true if the selection was confirmed, false - if canceled.
+	 */
+	public boolean startupAction() {
+		this.canceled = true;
 
-        view.pack();
-        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        view.setModal(true);
-        makeCloseableOnEscape();
-        centerView();
-        view.setVisible(true);
+		refreshDataSources();
 
-        return !canceled;
-    }
+		view.pack();
+		view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		view.setModal(true);
+		makeCloseableOnEscape();
+		centerView();
+		view.setVisible(true);
 
-    public DBConnectionInfo getConnectionInfo() {
-        return connectionInfo;
-    }
+		return !canceled;
+	}
 
-    /**
-     * Tests that the entered information is valid and can be used to open a conneciton.
-     * Does not store the open connection.
-     */
-    public void okAction() {
-        DBConnectionInfo info = getConnectionInfo();
-        ClassLoadingService classLoader = getApplication().getClassLoadingService();
+	public DBConnectionInfo getConnectionInfo() {
+		return connectionInfo;
+	}
 
-        // try making an adapter...
-        try {
-            info.makeAdapter(classLoader);
-        }
-        catch (Throwable th) {
-            reportError("DbAdapter Error", th);
-            return;
-        }
+	/**
+	 * Tests that the entered information is valid and can be used to open a
+	 * conneciton. Does not store the open connection.
+	 */
+	public void okAction() {
+		DBConnectionInfo info = getConnectionInfo();
+		ClassLoadingService classLoader = getApplication().getClassLoadingService();
 
-        // doing connection testing...
-        // attempt opening the connection, and close it right away
-        try {
-            Connection connection = info.makeDataSource(classLoader).getConnection();
-            try {
-                connection.close();
-            }
-            catch (SQLException ex) {
-                // ignore close error
-            }
-        }
-        catch (Throwable th) {
-            reportError("Connection Error", th);
-            return;
-        }
+		// try making an adapter...
+		try {
+			info.makeAdapter(classLoader);
+		} catch (Throwable th) {
+			reportError("DbAdapter Error", th);
+			return;
+		}
 
-        // set success flag, and unblock the caller...
-        canceled = false;
-        view.dispose();
-    }
+		// doing connection testing...
+		// attempt opening the connection, and close it right away
+		try {
 
-    public void cancelAction() {
-        canceled = true;
-        view.dispose();
-    }
+			try (Connection connection = info.makeDataSource(classLoader).getConnection();) {
+				//
+			} catch (SQLException ex) {
+				// ignore close error
+			}
+		} catch (Throwable th) {
+			reportError("Connection Error", th);
+			return;
+		}
 
-    /**
-     * Opens preferences panel to allow configuration of DataSource presets.
-     */
-    public void dataSourceConfigAction() {
-        PreferenceDialog prefs = new PreferenceDialog(this);
-        prefs.showDataSourceEditorAction(dataSourceKey);
-        refreshDataSources();
-    }
+		// set success flag, and unblock the caller...
+		canceled = false;
+		view.dispose();
+	}
 
-    public Component getView() {
-        return view;
-    }
+	public void cancelAction() {
+		canceled = true;
+		view.dispose();
+	}
 
-    protected void refreshDataSources() {
-        this.dataSources = getApplication()
-                .getCayenneProjectPreferences()
-                .getDetailObject(DBConnectionInfo.class)
-                .getChildrenPreferences();
+	/**
+	 * Opens preferences panel to allow configuration of DataSource presets.
+	 */
+	public void dataSourceConfigAction() {
+		PreferenceDialog prefs = new PreferenceDialog(this);
+		prefs.showDataSourceEditorAction(dataSourceKey);
+		refreshDataSources();
+	}
 
-        // 1.2 migration fix - update data source adapter names
-        Iterator it = dataSources.values().iterator();
+	public Component getView() {
+		return view;
+	}
 
-        final String _12package = "org.objectstyle.cayenne.";
-        while (it.hasNext()) {
-            DBConnectionInfo info = (DBConnectionInfo) it.next();
-            if (info.getDbAdapter() != null && info.getDbAdapter().startsWith(_12package)) {
-                info.setDbAdapter("org.apache.cayenne."
-                        + info.getDbAdapter().substring(_12package.length()));
+	protected void refreshDataSources() {
+		this.dataSources = getApplication().getCayenneProjectPreferences().getDetailObject(DBConnectionInfo.class)
+				.getChildrenPreferences();
 
-               // info.getObjectContext().commitChanges();
-            }
-        }
+		// 1.2 migration fix - update data source adapter names
+		Iterator it = dataSources.values().iterator();
 
-        if (altDataSourceKey != null
-                && !dataSources.containsKey(altDataSourceKey)
-                && altDataSource != null) {
-            dataSources.put(altDataSourceKey, altDataSource);
-        }
+		final String _12package = "org.objectstyle.cayenne.";
+		while (it.hasNext()) {
+			DBConnectionInfo info = (DBConnectionInfo) it.next();
+			if (info.getDbAdapter() != null && info.getDbAdapter().startsWith(_12package)) {
+				info.setDbAdapter("org.apache.cayenne." + info.getDbAdapter().substring(_12package.length()));
 
-        Object[] keys = dataSources.keySet().toArray();
-        Arrays.sort(keys);
-        view.getDataSources().setModel(new DefaultComboBoxModel(keys));
+				// info.getObjectContext().commitChanges();
+			}
+		}
 
-        if (getDataSourceKey() == null) {
-            String key = null;
+		if (altDataSourceKey != null && !dataSources.containsKey(altDataSourceKey) && altDataSource != null) {
+			dataSources.put(altDataSourceKey, altDataSource);
+		}
 
-            if (altDataSourceKey != null) {
-                key = altDataSourceKey;
-            }
-            else if (keys.length > 0) {
-                key = keys[0].toString();
-            }
+		Object[] keys = dataSources.keySet().toArray();
+		Arrays.sort(keys);
+		view.getDataSources().setModel(new DefaultComboBoxModel(keys));
 
-            setDataSourceKey(key);
-            dataSourceBinding.updateView();
-        }
-    }
+		if (getDataSourceKey() == null) {
+			String key = null;
+
+			if (altDataSourceKey != null) {
+				key = altDataSourceKey;
+			} else if (keys.length > 0) {
+				key = keys[0].toString();
+			}
+
+			setDataSourceKey(key);
+			dataSourceBinding.updateView();
+		}
+	}
 }

@@ -150,7 +150,7 @@ public class DataPort {
 			if (delegate != null) {
 				query = delegate.willCleanData(this, entity, query);
 			}
-			
+
 			final int[] count = new int[] { -1 };
 
 			// perform delete query
@@ -205,10 +205,10 @@ public class DataPort {
 			Query query = (delegate != null) ? delegate.willPortEntity(this, entity, select) : select;
 
 			sourceNode.performQueries(Collections.singletonList(query), observer);
-			ResultIterator result = observer.getResultIterator();
+
 			InsertBatchQuery insert = new InsertBatchQuery(entity, INSERT_BATCH_SIZE);
 
-			try {
+			try (ResultIterator<?> result = observer.getResultIterator();) {
 
 				// Split insertions into the same table into batches.
 				// This will allow to process tables of arbitrary size
@@ -243,10 +243,6 @@ public class DataPort {
 				if (delegate != null) {
 					delegate.didPortEntity(this, entity, currentRow);
 				}
-			} finally {
-
-				// don't forget to close ResultIterator
-				result.close();
 			}
 		}
 	}

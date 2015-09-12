@@ -42,68 +42,56 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class OracleProcedureAction extends ProcedureAction {
 
-    OracleProcedureAction(ProcedureQuery query, DataNode dataNode) {
-        super(query, dataNode);
-    }
+	OracleProcedureAction(ProcedureQuery query, DataNode dataNode) {
+		super(query, dataNode);
+	}
 
-    /**
-     * Helper method that reads OUT parameters of a CallableStatement.
-     */
-    @Override
-    protected void readProcedureOutParameters(
-            CallableStatement statement,
-            OperationObserver delegate) throws SQLException, Exception {
+	/**
+	 * Helper method that reads OUT parameters of a CallableStatement.
+	 */
+	@Override
+	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate)
+			throws SQLException, Exception {
 
-        long t1 = System.currentTimeMillis();
+		long t1 = System.currentTimeMillis();
 
-        // build result row...
-        DataRow result = null;
-        List<ProcedureParameter> parameters = getProcedure().getCallParameters();
-        for (int i = 0; i < parameters.size(); i++) {
-            ProcedureParameter parameter = parameters.get(i);
+		// build result row...
+		DataRow result = null;
+		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
+		for (int i = 0; i < parameters.size(); i++) {
+			ProcedureParameter parameter = parameters.get(i);
 
-            if (!parameter.isOutParam()) {
-                continue;
-            }
+			if (!parameter.isOutParam()) {
+				continue;
+			}
 
-            // ==== start Oracle-specific part
-            if (parameter.getType() == OracleAdapter.getOracleCursorType()) {
-                ResultSet rs = (ResultSet) statement.getObject(i + 1);
+			// ==== start Oracle-specific part
+			if (parameter.getType() == OracleAdapter.getOracleCursorType()) {
 
-                try {
-                    RowDescriptor rsDescriptor = describeResultSet(
-                            rs,
-                            processedResultSets++);
-                    readResultSet(rs, rsDescriptor, query, delegate);
-                }
-                finally {
-                    try {
-                        rs.close();
-                    }
-                    catch (SQLException ex) {
-                    }
-                }
-            }
-            // ==== end Oracle-specific part
-            else {
-                if (result == null) {
-                    result = new DataRow(2);
-                }
+				try (ResultSet rs = (ResultSet) statement.getObject(i + 1);) {
+					RowDescriptor rsDescriptor = describeResultSet(rs, processedResultSets++);
+					readResultSet(rs, rsDescriptor, query, delegate);
+				}
+			}
+			// ==== end Oracle-specific part
+			else {
+				if (result == null) {
+					result = new DataRow(2);
+				}
 
-                ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
-                ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(
-                        descriptor.getJavaClass());
-                Object val = type.materializeObject(statement, i + 1, descriptor
-                        .getJdbcType());
+				ColumnDescriptor descriptor = new ColumnDescriptor(parameter);
+				ExtendedType type = dataNode.getAdapter().getExtendedTypes()
+						.getRegisteredType(descriptor.getJavaClass());
+				Object val = type.materializeObject(statement, i + 1, descriptor.getJdbcType());
 
-                result.put(descriptor.getDataRowKey(), val);
-            }
-        }
+				result.put(descriptor.getDataRowKey(), val);
+			}
+		}
 
-        if (result != null && !result.isEmpty()) {
-            // treat out parameters as a separate data row set
-            dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
-            delegate.nextRows(query, Collections.singletonList(result));
-        }
-    }
+		if (result != null && !result.isEmpty()) {
+			// treat out parameters as a separate data row set
+			dataNode.getJdbcEventLogger().logSelectCount(1, System.currentTimeMillis() - t1);
+			delegate.nextRows(query, Collections.singletonList(result));
+		}
+	}
 }

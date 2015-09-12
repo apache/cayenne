@@ -51,223 +51,201 @@ import org.apache.cayenne.util.Util;
  */
 class Oracle8LOBBatchAction implements SQLAction {
 
-    private BatchQuery query;
-    private DbAdapter adapter;
-    private JdbcEventLogger logger;
+	private BatchQuery query;
+	private DbAdapter adapter;
+	private JdbcEventLogger logger;
 
-    private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
-            throws SQLException, Exception {
+	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
+			throws SQLException, Exception {
 
-        for (ParameterBinding b : bindings) {
-            adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
-                    .getAttribute().getScale());
-        }
-    }
+		for (ParameterBinding b : bindings) {
+			adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
+					.getAttribute().getScale());
+		}
+	}
 
-    Oracle8LOBBatchAction(BatchQuery query, DbAdapter adapter, JdbcEventLogger logger) {
-        this.adapter = adapter;
-        this.query = query;
-        this.logger = logger;
-    }
+	Oracle8LOBBatchAction(BatchQuery query, DbAdapter adapter, JdbcEventLogger logger) {
+		this.adapter = adapter;
+		this.query = query;
+		this.logger = logger;
+	}
 
-    @Override
-    public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	@Override
+	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        Oracle8LOBBatchTranslator translator;
-        if (query instanceof InsertBatchQuery) {
-            translator = new Oracle8LOBInsertBatchTranslator((InsertBatchQuery) query, adapter, OracleAdapter.TRIM_FUNCTION);
-        } else if (query instanceof UpdateBatchQuery) {
-            translator = new Oracle8LOBUpdateBatchTranslator((UpdateBatchQuery) query, adapter, OracleAdapter.TRIM_FUNCTION);
-        } else {
-            throw new CayenneException("Unsupported batch type for special LOB processing: " + query);
-        }
+		Oracle8LOBBatchTranslator translator;
+		if (query instanceof InsertBatchQuery) {
+			translator = new Oracle8LOBInsertBatchTranslator((InsertBatchQuery) query, adapter,
+					OracleAdapter.TRIM_FUNCTION);
+		} else if (query instanceof UpdateBatchQuery) {
+			translator = new Oracle8LOBUpdateBatchTranslator((UpdateBatchQuery) query, adapter,
+					OracleAdapter.TRIM_FUNCTION);
+		} else {
+			throw new CayenneException("Unsupported batch type for special LOB processing: " + query);
+		}
 
-        translator.setNewBlobFunction(OracleAdapter.NEW_BLOB_FUNCTION);
-        translator.setNewClobFunction(OracleAdapter.NEW_CLOB_FUNCTION);
+		translator.setNewBlobFunction(OracleAdapter.NEW_BLOB_FUNCTION);
+		translator.setNewClobFunction(OracleAdapter.NEW_CLOB_FUNCTION);
 
-        // no batching is done, queries are translated
-        // for each batch set, since prepared statements
-        // may be different depending on whether LOBs are NULL or not..
+		// no batching is done, queries are translated
+		// for each batch set, since prepared statements
+		// may be different depending on whether LOBs are NULL or not..
 
-        Oracle8LOBBatchQueryWrapper selectQuery = new Oracle8LOBBatchQueryWrapper(query);
-        List<DbAttribute> qualifierAttributes = selectQuery.getDbAttributesForLOBSelectQualifier();
+		Oracle8LOBBatchQueryWrapper selectQuery = new Oracle8LOBBatchQueryWrapper(query);
+		List<DbAttribute> qualifierAttributes = selectQuery.getDbAttributesForLOBSelectQualifier();
 
-        for (BatchQueryRow row : query.getRows()) {
+		for (BatchQueryRow row : query.getRows()) {
 
-            selectQuery.indexLOBAttributes(row);
+			selectQuery.indexLOBAttributes(row);
 
-            int updated = 0;
-            String updateStr = translator.createSql(row);
+			int updated = 0;
+			String updateStr = translator.createSql(row);
 
-            // 1. run row update
-            logger.logQuery(updateStr, Collections.EMPTY_LIST);
-            PreparedStatement statement = connection.prepareStatement(updateStr);
-            try {
+			// 1. run row update
+			logger.logQuery(updateStr, Collections.EMPTY_LIST);
 
-                ParameterBinding[] bindings = translator.updateBindings(row);
-                logger.logQueryParameters("bind", bindings);
+			try (PreparedStatement statement = connection.prepareStatement(updateStr);) {
 
-                bind(adapter, statement, bindings);
+				ParameterBinding[] bindings = translator.updateBindings(row);
+				logger.logQueryParameters("bind", bindings);
 
-                updated = statement.executeUpdate();
-                logger.logUpdateCount(updated);
-            } finally {
-                try {
-                    statement.close();
-                } catch (Exception e) {
-                }
-            }
+				bind(adapter, statement, bindings);
 
-            // 2. run row LOB update (SELECT...FOR UPDATE and writing out LOBs)
-            processLOBRow(connection, translator, selectQuery, qualifierAttributes, row);
+				updated = statement.executeUpdate();
+				logger.logUpdateCount(updated);
+			}
 
-            // finally, notify delegate that the row was updated
-            observer.nextCount(query, updated);
-        }
-    }
+			// 2. run row LOB update (SELECT...FOR UPDATE and writing out LOBs)
+			processLOBRow(connection, translator, selectQuery, qualifierAttributes, row);
 
-    void processLOBRow(Connection con, Oracle8LOBBatchTranslator queryBuilder, Oracle8LOBBatchQueryWrapper selectQuery,
-            List<DbAttribute> qualifierAttributes, BatchQueryRow row) throws SQLException, Exception {
+			// finally, notify delegate that the row was updated
+			observer.nextCount(query, updated);
+		}
+	}
 
-        List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
-        if (lobAttributes.size() == 0) {
-            return;
-        }
+	void processLOBRow(Connection con, Oracle8LOBBatchTranslator queryBuilder, Oracle8LOBBatchQueryWrapper selectQuery,
+			List<DbAttribute> qualifierAttributes, BatchQueryRow row) throws SQLException, Exception {
 
-        boolean isLoggable = logger.isLoggable();
+		List<DbAttribute> lobAttributes = selectQuery.getDbAttributesForUpdatedLOBColumns();
+		if (lobAttributes.size() == 0) {
+			return;
+		}
 
-        List<Object> qualifierValues = selectQuery.getValuesForLOBSelectQualifier(row);
-        List<Object> lobValues = selectQuery.getValuesForUpdatedLOBColumns();
-        int parametersSize = qualifierValues.size();
-        int lobSize = lobAttributes.size();
+		boolean isLoggable = logger.isLoggable();
 
-        String selectStr = queryBuilder.createLOBSelectString(lobAttributes, qualifierAttributes);
+		List<Object> qualifierValues = selectQuery.getValuesForLOBSelectQualifier(row);
+		List<Object> lobValues = selectQuery.getValuesForUpdatedLOBColumns();
+		int parametersSize = qualifierValues.size();
+		int lobSize = lobAttributes.size();
 
-        if (isLoggable) {
-            logger.logQuery(selectStr, qualifierValues);
-            logger.logQueryParameters("write LOB", null, lobValues, false);
-        }
+		String selectStr = queryBuilder.createLOBSelectString(lobAttributes, qualifierAttributes);
 
-        PreparedStatement selectStatement = con.prepareStatement(selectStr);
-        try {
-            for (int i = 0; i < parametersSize; i++) {
-                Object value = qualifierValues.get(i);
-                DbAttribute attribute = qualifierAttributes.get(i);
+		if (isLoggable) {
+			logger.logQuery(selectStr, qualifierValues);
+			logger.logQueryParameters("write LOB", null, lobValues, false);
+		}
 
-                adapter.bindParameter(selectStatement, value, i + 1, attribute.getType(), attribute.getScale());
-            }
+		try (PreparedStatement selectStatement = con.prepareStatement(selectStr);) {
+			for (int i = 0; i < parametersSize; i++) {
+				Object value = qualifierValues.get(i);
+				DbAttribute attribute = qualifierAttributes.get(i);
 
-            ResultSet result = selectStatement.executeQuery();
+				adapter.bindParameter(selectStatement, value, i + 1, attribute.getType(), attribute.getScale());
+			}
 
-            try {
-                if (!result.next()) {
-                    throw new CayenneRuntimeException("Missing LOB row.");
-                }
+			try (ResultSet result = selectStatement.executeQuery();) {
+				if (!result.next()) {
+					throw new CayenneRuntimeException("Missing LOB row.");
+				}
 
-                // read the only expected row
+				// read the only expected row
 
-                for (int i = 0; i < lobSize; i++) {
-                    DbAttribute attribute = lobAttributes.get(i);
-                    int type = attribute.getType();
+				for (int i = 0; i < lobSize; i++) {
+					DbAttribute attribute = lobAttributes.get(i);
+					int type = attribute.getType();
 
-                    if (type == Types.CLOB) {
-                        Clob clob = result.getClob(i + 1);
-                        Object clobVal = lobValues.get(i);
+					if (type == Types.CLOB) {
+						Clob clob = result.getClob(i + 1);
+						Object clobVal = lobValues.get(i);
 
-                        if (clobVal instanceof char[]) {
-                            writeClob(clob, (char[]) clobVal);
-                        } else {
-                            writeClob(clob, clobVal.toString());
-                        }
-                    } else if (type == Types.BLOB) {
-                        Blob blob = result.getBlob(i + 1);
+						if (clobVal instanceof char[]) {
+							writeClob(clob, (char[]) clobVal);
+						} else {
+							writeClob(clob, clobVal.toString());
+						}
+					} else if (type == Types.BLOB) {
+						Blob blob = result.getBlob(i + 1);
 
-                        Object blobVal = lobValues.get(i);
-                        if (blobVal instanceof byte[]) {
-                            writeBlob(blob, (byte[]) blobVal);
-                        } else {
-                            String className = (blobVal != null) ? blobVal.getClass().getName() : null;
-                            throw new CayenneRuntimeException("Unsupported class of BLOB value: " + className);
-                        }
-                    } else {
-                        throw new CayenneRuntimeException("Only BLOB or CLOB is expected here, got: " + type);
-                    }
-                }
+						Object blobVal = lobValues.get(i);
+						if (blobVal instanceof byte[]) {
+							writeBlob(blob, (byte[]) blobVal);
+						} else {
+							String className = (blobVal != null) ? blobVal.getClass().getName() : null;
+							throw new CayenneRuntimeException("Unsupported class of BLOB value: " + className);
+						}
+					} else {
+						throw new CayenneRuntimeException("Only BLOB or CLOB is expected here, got: " + type);
+					}
+				}
 
-                if (result.next()) {
-                    throw new CayenneRuntimeException("More than one LOB row found.");
-                }
-            } finally {
-                try {
-                    result.close();
-                } catch (Exception e) {
-                }
-            }
-        } finally {
-            try {
-                selectStatement.close();
-            } catch (Exception e) {
-            }
-        }
-    }
+				if (result.next()) {
+					throw new CayenneRuntimeException("More than one LOB row found.");
+				}
+			}
+		}
+	}
 
-    /**
-     * Override the Oracle writeBlob() method to be compatible with Oracle8
-     * drivers.
-     */
-    protected void writeBlob(Blob blob, byte[] value) {
-        // Fix for CAY-1307. For Oracle8, get the method found by reflection in
-        // OracleAdapter. (Code taken from Cayenne 2.)
-        Method getBinaryStreamMethod = Oracle8Adapter.getOutputStreamFromBlobMethod();
-        try {
-            OutputStream out = (OutputStream) getBinaryStreamMethod.invoke(blob, (Object[]) null);
-            try {
-                out.write(value);
-                out.flush();
-            } finally {
-                out.close();
-            }
-        } catch (Exception e) {
-            throw new CayenneRuntimeException("Error processing BLOB.", Util.unwindException(e));
-        }
-    }
+	/**
+	 * Override the Oracle writeBlob() method to be compatible with Oracle8
+	 * drivers.
+	 */
+	protected void writeBlob(Blob blob, byte[] value) {
+		// Fix for CAY-1307. For Oracle8, get the method found by reflection in
+		// OracleAdapter. (Code taken from Cayenne 2.)
+		Method getBinaryStreamMethod = Oracle8Adapter.getOutputStreamFromBlobMethod();
+		try {
 
-    /**
-     * Override the Oracle writeClob() method to be compatible with Oracle8
-     * drivers.
-     */
-    protected void writeClob(Clob clob, char[] value) {
-        Method getWriterMethod = Oracle8Adapter.getWriterFromClobMethod();
-        try {
-            Writer out = (Writer) getWriterMethod.invoke(clob, (Object[]) null);
-            try {
-                out.write(value);
-                out.flush();
-            } finally {
-                out.close();
-            }
+			try (OutputStream out = (OutputStream) getBinaryStreamMethod.invoke(blob, (Object[]) null);) {
+				out.write(value);
+				out.flush();
+			}
+		} catch (Exception e) {
+			throw new CayenneRuntimeException("Error processing BLOB.", Util.unwindException(e));
+		}
+	}
 
-        } catch (Exception e) {
-            throw new CayenneRuntimeException("Error processing CLOB.", Util.unwindException(e));
-        }
-    }
+	/**
+	 * Override the Oracle writeClob() method to be compatible with Oracle8
+	 * drivers.
+	 */
+	protected void writeClob(Clob clob, char[] value) {
+		Method getWriterMethod = Oracle8Adapter.getWriterFromClobMethod();
+		try {
 
-    /**
-     * Override the Oracle writeClob() method to be compatible with Oracle8
-     * drivers.
-     */
-    protected void writeClob(Clob clob, String value) {
-        Method getWriterMethod = Oracle8Adapter.getWriterFromClobMethod();
-        try {
-            Writer out = (Writer) getWriterMethod.invoke(clob, (Object[]) null);
-            try {
-                out.write(value);
-                out.flush();
-            } finally {
-                out.close();
-            }
-        } catch (Exception e) {
-            throw new CayenneRuntimeException("Error processing CLOB.", Util.unwindException(e));
-        }
-    }
+			try (Writer out = (Writer) getWriterMethod.invoke(clob, (Object[]) null);) {
+				out.write(value);
+				out.flush();
+			}
+
+		} catch (Exception e) {
+			throw new CayenneRuntimeException("Error processing CLOB.", Util.unwindException(e));
+		}
+	}
+
+	/**
+	 * Override the Oracle writeClob() method to be compatible with Oracle8
+	 * drivers.
+	 */
+	protected void writeClob(Clob clob, String value) {
+		Method getWriterMethod = Oracle8Adapter.getWriterFromClobMethod();
+		try {
+
+			try (Writer out = (Writer) getWriterMethod.invoke(clob, (Object[]) null);) {
+				out.write(value);
+				out.flush();
+			}
+		} catch (Exception e) {
+			throw new CayenneRuntimeException("Error processing CLOB.", Util.unwindException(e));
+		}
+	}
 }

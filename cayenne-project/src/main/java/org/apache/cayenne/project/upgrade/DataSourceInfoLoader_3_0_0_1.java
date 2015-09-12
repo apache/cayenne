@@ -37,235 +37,192 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 /**
- * A loader of XML for the {@link DataSourceInfo} object. The loader is compatible with
- * project version 3.0.0.1 and earlier.
+ * A loader of XML for the {@link DataSourceInfo} object. The loader is
+ * compatible with project version 3.0.0.1 and earlier.
  * 
  * @since 3.1
  */
 // TODO: andrus 12.13.2009 - unused yet.. will be used in upgrade manager
 class DataSourceInfoLoader_3_0_0_1 {
 
-    public DataSourceInfo load(Resource configurationResource) throws Exception {
+	public DataSourceInfo load(Resource configurationResource) throws Exception {
 
-        if (configurationResource == null) {
-            throw new NullPointerException("Null configurationResource");
-        }
+		if (configurationResource == null) {
+			throw new NullPointerException("Null configurationResource");
+		}
 
-        DataSourceInfo dataSourceDescriptor = new DataSourceInfo();
+		DataSourceInfo dataSourceDescriptor = new DataSourceInfo();
 
-        XMLReader parser = Util.createXmlReader();
+		XMLReader parser = Util.createXmlReader();
 
-        DriverHandler handler = new DriverHandler(dataSourceDescriptor, parser);
-        parser.setContentHandler(handler);
-        parser.setErrorHandler(handler);
-        parser.parse(new InputSource(configurationResource.getURL().openStream()));
+		DriverHandler handler = new DriverHandler(dataSourceDescriptor, parser);
+		parser.setContentHandler(handler);
+		parser.setErrorHandler(handler);
+		parser.parse(new InputSource(configurationResource.getURL().openStream()));
 
-        return dataSourceDescriptor;
-    }
+		return dataSourceDescriptor;
+	}
 
-    private static String passwordFromURL(URL url) {
-        InputStream inputStream = null;
-        String password = null;
+	private static String passwordFromURL(URL url) {
+		InputStream inputStream = null;
+		String password = null;
 
-        try {
-            inputStream = url.openStream();
-            password = passwordFromInputStream(inputStream);
-        }
-        catch (IOException exception) {
-            // ignore
-        }
+		try {
+			inputStream = url.openStream();
+			password = passwordFromInputStream(inputStream);
+		} catch (IOException exception) {
+			// ignore
+		}
 
-        return password;
-    }
+		return password;
+	}
 
-    private static String passwordFromInputStream(InputStream inputStream) {
-        BufferedReader bufferedReader = null;
-        String password = null;
+	private static String passwordFromInputStream(InputStream inputStream) {
+		String password = null;
 
-        try {
-            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            password = bufferedReader.readLine();
-        }
-        catch (IOException exception) {
-            // ignoring...
-        }
-        finally {
-            try {
-                if (bufferedReader != null) {
-                    bufferedReader.close();
-                }
-            }
-            catch (Exception exception) {
-            }
+		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));) {
 
-            try {
-                inputStream.close();
-            }
-            catch (IOException exception) {
-            }
-        }
+			password = bufferedReader.readLine();
+		} catch (IOException exception) {
+			// ignoring...
+		} finally {
 
-        return password;
-    }
+			try {
+				inputStream.close();
+			} catch (IOException exception) {
+			}
+		}
 
-    private class DriverHandler extends SAXNestedTagHandler {
+		return password;
+	}
 
-        private DataSourceInfo dataSourceDescriptor;
+	private class DriverHandler extends SAXNestedTagHandler {
 
-        DriverHandler(DataSourceInfo dataSourceDescriptor, XMLReader parser) {
-            super(parser, null);
-            this.dataSourceDescriptor = dataSourceDescriptor;
-        }
+		private DataSourceInfo dataSourceDescriptor;
 
-        @Override
-        protected ContentHandler createChildTagHandler(
-                String namespaceURI,
-                String localName,
-                String name,
-                Attributes attributes) {
+		DriverHandler(DataSourceInfo dataSourceDescriptor, XMLReader parser) {
+			super(parser, null);
+			this.dataSourceDescriptor = dataSourceDescriptor;
+		}
 
-            if (localName.equals("driver")) {
-                String className = attributes.getValue("", "class");
-                dataSourceDescriptor.setJdbcDriver(className);
-                return new DriverChildrenHandler(parser, this);
-            }
+		@Override
+		protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String name,
+				Attributes attributes) {
 
-            return super.createChildTagHandler(namespaceURI, localName, name, attributes);
-        }
-    }
+			if (localName.equals("driver")) {
+				String className = attributes.getValue("", "class");
+				dataSourceDescriptor.setJdbcDriver(className);
+				return new DriverChildrenHandler(parser, this);
+			}
 
-    private class DriverChildrenHandler extends SAXNestedTagHandler {
+			return super.createChildTagHandler(namespaceURI, localName, name, attributes);
+		}
+	}
 
-        private DataSourceInfo dataSourceDescriptor;
+	private class DriverChildrenHandler extends SAXNestedTagHandler {
 
-        DriverChildrenHandler(XMLReader parser, DriverHandler parentHandler) {
-            super(parser, parentHandler);
-            this.dataSourceDescriptor = parentHandler.dataSourceDescriptor;
-        }
+		private DataSourceInfo dataSourceDescriptor;
 
-        @Override
-        protected ContentHandler createChildTagHandler(
-                String namespaceURI,
-                String localName,
-                String name,
-                Attributes attributes) {
+		DriverChildrenHandler(XMLReader parser, DriverHandler parentHandler) {
+			super(parser, parentHandler);
+			this.dataSourceDescriptor = parentHandler.dataSourceDescriptor;
+		}
 
-            if (localName.equals("login")) {
+		@Override
+		protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String name,
+				Attributes attributes) {
 
-                String encoderClass = attributes.getValue("encoderClass");
+			if (localName.equals("login")) {
 
-                String encoderKey = attributes.getValue("encoderKey");
-                if (encoderKey == null) {
-                    encoderKey = attributes.getValue("encoderSalt");
-                }
+				String encoderClass = attributes.getValue("encoderClass");
 
-                String password = attributes.getValue("password");
-                String passwordLocation = attributes.getValue("passwordLocation");
-                String passwordSource = attributes.getValue("passwordSource");
-                if (passwordSource == null) {
-                    passwordSource = DataSourceInfo.PASSWORD_LOCATION_MODEL;
-                }
+				String encoderKey = attributes.getValue("encoderKey");
+				if (encoderKey == null) {
+					encoderKey = attributes.getValue("encoderSalt");
+				}
 
-                String username = attributes.getValue("userName");
+				String password = attributes.getValue("password");
+				String passwordLocation = attributes.getValue("passwordLocation");
+				String passwordSource = attributes.getValue("passwordSource");
+				if (passwordSource == null) {
+					passwordSource = DataSourceInfo.PASSWORD_LOCATION_MODEL;
+				}
 
-                dataSourceDescriptor.setPasswordEncoderClass(encoderClass);
-                dataSourceDescriptor.setPasswordEncoderKey(encoderKey);
-                dataSourceDescriptor.setPasswordLocation(passwordLocation);
-                dataSourceDescriptor.setPasswordSource(passwordSource);
-                dataSourceDescriptor.setUserName(username);
+				String username = attributes.getValue("userName");
 
-                // Replace {} in passwordSource with encoderSalt -- useful for EXECUTABLE
-                // & URL options
-                if (encoderKey != null) {
-                    passwordSource = passwordSource.replaceAll("\\{\\}", encoderKey);
-                }
+				dataSourceDescriptor.setPasswordEncoderClass(encoderClass);
+				dataSourceDescriptor.setPasswordEncoderKey(encoderKey);
+				dataSourceDescriptor.setPasswordLocation(passwordLocation);
+				dataSourceDescriptor.setPasswordSource(passwordSource);
+				dataSourceDescriptor.setUserName(username);
 
-                PasswordEncoding passwordEncoder = dataSourceDescriptor
-                        .getPasswordEncoder();
+				// Replace {} in passwordSource with encoderSalt -- useful for
+				// EXECUTABLE
+				// & URL options
+				if (encoderKey != null) {
+					passwordSource = passwordSource.replaceAll("\\{\\}", encoderKey);
+				}
 
-                if (passwordLocation != null) {
-                    if (passwordLocation
-                            .equals(DataSourceInfo.PASSWORD_LOCATION_CLASSPATH)) {
+				PasswordEncoding passwordEncoder = dataSourceDescriptor.getPasswordEncoder();
 
-                        ClassLoader classLoader = Thread
-                                .currentThread()
-                                .getContextClassLoader();
-                        URL url = classLoader.getResource(username);
-                        if (url != null) {
-                            password = passwordFromURL(url);
-                        }
-                        else {
-                            // ignoring..
-                        }
-                    }
-                    else if (passwordLocation
-                            .equals(DataSourceInfo.PASSWORD_LOCATION_URL)) {
-                        try {
-                            password = passwordFromURL(new URL(passwordSource));
-                        }
-                        catch (MalformedURLException exception) {
-                            // ignoring...
-                        }
-                    }
-                    else if (passwordLocation
-                            .equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE)) {
-                        if (passwordSource != null) {
-                            try {
-                                Process process = Runtime.getRuntime().exec(
-                                        passwordSource);
-                                password = passwordFromInputStream(process
-                                        .getInputStream());
-                                process.waitFor();
-                            }
-                            catch (IOException exception) {
-                                // ignoring...
-                            }
-                            catch (InterruptedException exception) {
-                                // ignoring...
-                            }
-                        }
-                    }
-                }
+				if (passwordLocation != null) {
+					if (passwordLocation.equals(DataSourceInfo.PASSWORD_LOCATION_CLASSPATH)) {
 
-                if (password != null && passwordEncoder != null) {
-                    dataSourceDescriptor.setPassword(passwordEncoder.decodePassword(
-                            password,
-                            encoderKey));
-                }
-            }
-            else if (localName.equals("url")) {
-                dataSourceDescriptor.setDataSourceUrl(attributes.getValue("value"));
-            }
-            else if (localName.equals("connectionPool")) {
-                String min = attributes.getValue("min");
-                if (min != null) {
-                    try {
-                        dataSourceDescriptor.setMinConnections(Integer.parseInt(min));
-                    }
-                    catch (NumberFormatException nfex) {
-                        throw new ConfigurationException(
-                                "Non-numeric 'min' attribute '%s'",
-                                nfex,
-                                min);
-                    }
-                }
+						ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+						URL url = classLoader.getResource(username);
+						if (url != null) {
+							password = passwordFromURL(url);
+						} else {
+							// ignoring..
+						}
+					} else if (passwordLocation.equals(DataSourceInfo.PASSWORD_LOCATION_URL)) {
+						try {
+							password = passwordFromURL(new URL(passwordSource));
+						} catch (MalformedURLException exception) {
+							// ignoring...
+						}
+					} else if (passwordLocation.equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE)) {
+						if (passwordSource != null) {
+							try {
+								Process process = Runtime.getRuntime().exec(passwordSource);
+								password = passwordFromInputStream(process.getInputStream());
+								process.waitFor();
+							} catch (IOException exception) {
+								// ignoring...
+							} catch (InterruptedException exception) {
+								// ignoring...
+							}
+						}
+					}
+				}
 
-                String max = attributes.getValue("max");
-                if (max != null) {
-                    try {
-                        dataSourceDescriptor.setMaxConnections(Integer.parseInt(max));
-                    }
-                    catch (NumberFormatException nfex) {
-                        throw new ConfigurationException(
-                                "Non-numeric 'max' attribute '%s'",
-                                nfex,
-                                max);
-                    }
-                }
-            }
+				if (password != null && passwordEncoder != null) {
+					dataSourceDescriptor.setPassword(passwordEncoder.decodePassword(password, encoderKey));
+				}
+			} else if (localName.equals("url")) {
+				dataSourceDescriptor.setDataSourceUrl(attributes.getValue("value"));
+			} else if (localName.equals("connectionPool")) {
+				String min = attributes.getValue("min");
+				if (min != null) {
+					try {
+						dataSourceDescriptor.setMinConnections(Integer.parseInt(min));
+					} catch (NumberFormatException nfex) {
+						throw new ConfigurationException("Non-numeric 'min' attribute '%s'", nfex, min);
+					}
+				}
 
-            return super.createChildTagHandler(namespaceURI, localName, name, attributes);
-        }
-    }
+				String max = attributes.getValue("max");
+				if (max != null) {
+					try {
+						dataSourceDescriptor.setMaxConnections(Integer.parseInt(max));
+					} catch (NumberFormatException nfex) {
+						throw new ConfigurationException("Non-numeric 'max' attribute '%s'", nfex, max);
+					}
+				}
+			}
+
+			return super.createChildTagHandler(namespaceURI, localName, name, attributes);
+		}
+	}
 
 }

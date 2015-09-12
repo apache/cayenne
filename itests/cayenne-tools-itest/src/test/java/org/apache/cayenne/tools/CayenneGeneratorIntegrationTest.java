@@ -147,16 +147,11 @@ public class CayenneGeneratorIntegrationTest {
     }
 
     private void assertContents(File f, String className, String packageName, String extendsName) throws Exception {
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
-
-        try {
+        
+        try(BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f)))) {
             assertPackage(in, packageName);
             assertClass(in, className, extendsName);
-        } finally {
-            in.close();
-        }
-
+        } 
     }
 
     private void assertPackage(BufferedReader in, String packageName) throws Exception {

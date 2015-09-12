@@ -35,59 +35,45 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class DB2ProcedureAction extends ProcedureAction {
 
-    DB2ProcedureAction(ProcedureQuery query, DataNode dataNode) {
-        super(query, dataNode);
-    }
+	DB2ProcedureAction(ProcedureQuery query, DataNode dataNode) {
+		super(query, dataNode);
+	}
 
-    @Override
-    public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	@Override
+	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        // cloned from super except for result processing consistent with
-        // CAY-1874
-        
-        processedResultSets = 0;
+		// cloned from super except for result processing consistent with
+		// CAY-1874
 
-        ProcedureTranslator transl = createTranslator(connection);
+		processedResultSets = 0;
 
-        CallableStatement statement = (CallableStatement) transl.createStatement();
+		ProcedureTranslator transl = createTranslator(connection);
 
-        try {
-            initStatement(statement);
-            boolean hasResultSet = statement.execute();
+		try (CallableStatement statement = (CallableStatement) transl.createStatement();) {
+			initStatement(statement);
+			boolean hasResultSet = statement.execute();
 
-            // read out parameters
-            readProcedureOutParameters(statement, observer);
+			// read out parameters
+			readProcedureOutParameters(statement, observer);
 
-            // read the rest of the query
-            while (true) {
-                if (hasResultSet) {
-                    ResultSet rs = statement.getResultSet();
+			// read the rest of the query
+			while (true) {
+				if (hasResultSet) {
 
-                    try {
-                        RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
-                        readResultSet(rs, descriptor, query, observer);
-                    } finally {
-                        try {
-                            rs.close();
-                        } catch (SQLException ex) {
-                        }
-                    }
-                } else {
-                    int updateCount = statement.getUpdateCount();
-                    if (updateCount == -1) {
-                        break;
-                    }
-                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
-                    observer.nextCount(query, updateCount);
-                }
-                hasResultSet = statement.getMoreResults();
-            }
-        } finally {
-            try {
-                statement.close();
-            } catch (SQLException ex) {
-
-            }
-        }
-    }
+					try (ResultSet rs = statement.getResultSet();) {
+						RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
+						readResultSet(rs, descriptor, query, observer);
+					}
+				} else {
+					int updateCount = statement.getUpdateCount();
+					if (updateCount == -1) {
+						break;
+					}
+					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
+					observer.nextCount(query, updateCount);
+				}
+				hasResultSet = statement.getMoreResults();
+			}
+		}
+	}
 }

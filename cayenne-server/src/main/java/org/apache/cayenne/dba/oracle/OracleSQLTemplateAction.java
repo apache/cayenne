@@ -93,6 +93,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 
         private ResultSet delegate;
 
+        @Override
         public ResultSetMetaData getMetaData() throws SQLException {
             return new OracleResultSetMetadata(delegate.getMetaData());
         }
@@ -101,10 +102,12 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
             this.delegate = delegate;
         }
 
+        @Override
         public boolean absolute(int row) throws SQLException {
             return delegate.absolute(row);
         }
 
+        @Override
         public void afterLast() throws SQLException {
             delegate.afterLast();
         }

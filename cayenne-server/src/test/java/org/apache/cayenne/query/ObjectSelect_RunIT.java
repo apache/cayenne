@@ -18,6 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
@@ -32,14 +40,6 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectSelect_RunIT extends ServerCase {
@@ -75,61 +75,53 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertEquals("artist14", a.getArtistName());
 	}
 
-    @Test
-    public void test_Iterate() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void test_Iterate() throws Exception {
+		createArtistsDataSet();
 
-        final int[] count = new int[1];
-        ObjectSelect.query(Artist.class).iterate(context, new ResultIteratorCallback<Artist>() {
+		final int[] count = new int[1];
+		ObjectSelect.query(Artist.class).iterate(context, new ResultIteratorCallback<Artist>() {
 
-            @Override
-            public void next(Artist object) {
-                assertNotNull(object.getArtistName());
-                count[0]++;
-            }
-        });
+			@Override
+			public void next(Artist object) {
+				assertNotNull(object.getArtistName());
+				count[0]++;
+			}
+		});
 
-        assertEquals(20, count[0]);
-    }
+		assertEquals(20, count[0]);
+	}
 
-    @Test
-    public void test_Iterator() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void test_Iterator() throws Exception {
+		createArtistsDataSet();
 
-        ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context);
+		try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+			int count = 0;
 
-        try {
-            int count = 0;
+			for (Artist a : it) {
+				count++;
+			}
 
-            for (Artist a : it) {
-                count++;
-            }
+			assertEquals(20, count);
+		}
+	}
 
-            assertEquals(20, count);
-        } finally {
-            it.close();
-        }
-    }
+	@Test
+	public void test_BatchIterator() throws Exception {
+		createArtistsDataSet();
 
-    @Test
-    public void test_BatchIterator() throws Exception {
-        createArtistsDataSet();
+		try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5);) {
+			int count = 0;
 
-        ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5);
+			for (List<Artist> artistList : it) {
+				count++;
+				assertEquals(5, artistList.size());
+			}
 
-        try {
-            int count = 0;
-
-            for (List<Artist> artistList : it) {
-                count++;
-                assertEquals(5, artistList.size());
-            }
-
-            assertEquals(4, count);
-        } finally {
-            it.close();
-        }
-    }
+			assertEquals(4, count);
+		}
+	}
 
 	@Test
 	public void test_SelectDataRows() throws Exception {
@@ -165,7 +157,7 @@ public class ObjectSelect_RunIT extends ServerCase {
 		createArtistsDataSet();
 		ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%")).selectOne(context);
 	}
-	
+
 	@Test
 	public void test_SelectFirst() throws Exception {
 		createArtistsDataSet();
@@ -175,15 +167,15 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertEquals("artist13", a.getArtistName());
 	}
 
-    @Test
-    public void test_SelectFirstByContext() throws Exception {
-        createArtistsDataSet();
+	@Test
+	public void test_SelectFirstByContext() throws Exception {
+		createArtistsDataSet();
 
-        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13"));
-        Artist a = context.selectFirst(q);
-        assertNotNull(a);
-        assertEquals("artist13", a.getArtistName());
-    }
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13"));
+		Artist a = context.selectFirst(q);
+		assertNotNull(a);
+		assertEquals("artist13", a.getArtistName());
+	}
 
 	@Test
 	public void test_SelectFirst_NoMatch() throws Exception {
@@ -194,8 +186,9 @@ public class ObjectSelect_RunIT extends ServerCase {
 	@Test
 	public void test_SelectFirst_MoreThanOneMatch() throws Exception {
 		createArtistsDataSet();
-		
-		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%")).orderBy("db:ARTIST_ID").selectFirst(context);
+
+		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%")).orderBy("db:ARTIST_ID")
+				.selectFirst(context);
 		assertNotNull(a);
 		assertEquals("artist1", a.getArtistName());
 	}

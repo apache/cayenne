@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade.v6;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -90,10 +89,9 @@ class XMLDataChannelDescriptorLoader_V3_0_0_1 {
 		URL configurationURL = configurationSource.getURL();
 
 		List<DataChannelDescriptor> domains = new ArrayList<DataChannelDescriptor>();
-		InputStream in = null;
 
-		try {
-			in = configurationURL.openStream();
+		try (InputStream in = configurationURL.openStream();) {
+
 			XMLReader parser = Util.createXmlReader();
 
 			DomainsHandler rootHandler = new DomainsHandler(configurationSource, domains, parser);
@@ -102,14 +100,6 @@ class XMLDataChannelDescriptorLoader_V3_0_0_1 {
 			parser.parse(new InputSource(in));
 		} catch (Exception e) {
 			throw new ConfigurationException("Error loading configuration from %s", e, configurationURL);
-		} finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException ioex) {
-				logger.info("failure closing input stream for " + configurationURL + ", ignoring", ioex);
-			}
 		}
 
 		return domains;

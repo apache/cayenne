@@ -36,79 +36,68 @@ import org.apache.cayenne.query.InsertBatchQuery;
  */
 public class SQLServerBatchAction extends BatchAction {
 
-    public SQLServerBatchAction(BatchQuery batchQuery, DataNode dataNode, boolean runningAsBatch) {
-        super(batchQuery, dataNode, runningAsBatch);
-    }
+	public SQLServerBatchAction(BatchQuery batchQuery, DataNode dataNode, boolean runningAsBatch) {
+		super(batchQuery, dataNode, runningAsBatch);
+	}
 
-    @Override
-    public void performAction(Connection connection, OperationObserver observer)
-            throws SQLException, Exception {
+	@Override
+	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        // this condition checks if identity columns are present in the query and adapter
-        // is not ready to process them... e.g. if we are using a MS driver...
-        boolean identityOverride = expectsToOverrideIdentityColumns();
-        if (identityOverride) {
-            setIdentityInsert(connection, true);
-        }
+		// this condition checks if identity columns are present in the query
+		// and adapter
+		// is not ready to process them... e.g. if we are using a MS driver...
+		boolean identityOverride = expectsToOverrideIdentityColumns();
+		if (identityOverride) {
+			setIdentityInsert(connection, true);
+		}
 
-        try {
-            super.performAction(connection, observer);
-        }
-        finally {
+		try {
+			super.performAction(connection, observer);
+		} finally {
 
-            // important: turn off IDENTITY_INSERT as SQL Server won't be able to process
-            // other identity columns in the same transaction
+			// important: turn off IDENTITY_INSERT as SQL Server won't be able
+			// to process
+			// other identity columns in the same transaction
 
-            // TODO: if an error happens here this would mask the parent error
-            if (identityOverride) {
-                setIdentityInsert(connection, false);
-            }
-        }
-    }
+			// TODO: if an error happens here this would mask the parent error
+			if (identityOverride) {
+				setIdentityInsert(connection, false);
+			}
+		}
+	}
 
-    protected void setIdentityInsert(Connection connection, boolean on)
-            throws SQLException {
+	protected void setIdentityInsert(Connection connection, boolean on) throws SQLException {
 
-        String flag = on ? " ON" : " OFF";
-        String configSQL = "SET IDENTITY_INSERT "
-                + query.getDbEntity().getFullyQualifiedName()
-                + flag;
+		String flag = on ? " ON" : " OFF";
+		String configSQL = "SET IDENTITY_INSERT " + query.getDbEntity().getFullyQualifiedName() + flag;
 
-        dataNode.getJdbcEventLogger().logQuery(configSQL, Collections.EMPTY_LIST);
+		dataNode.getJdbcEventLogger().logQuery(configSQL, Collections.EMPTY_LIST);
 
-        Statement statement = connection.createStatement();
-        try {
-            statement.execute(configSQL);
-        }
-        finally {
-            try {
-                statement.close();
-            }
-            catch (Exception e) {
-            }
-        }
-    }
+		try (Statement statement = connection.createStatement();) {
+			statement.execute(configSQL);
+		}
+	}
 
-    /**
-     * Returns whether a table has identity columns.
-     */
-    protected boolean expectsToOverrideIdentityColumns() {
-        // jTDS driver supports identity columns, no need for tricks...
-        if (dataNode.getAdapter().supportsGeneratedKeys()) {
-            return false;
-        }
+	/**
+	 * Returns whether a table has identity columns.
+	 */
+	protected boolean expectsToOverrideIdentityColumns() {
+		// jTDS driver supports identity columns, no need for tricks...
+		if (dataNode.getAdapter().supportsGeneratedKeys()) {
+			return false;
+		}
 
-        if (!(query instanceof InsertBatchQuery) || query.getDbEntity() == null) {
-            return false;
-        }
+		if (!(query instanceof InsertBatchQuery) || query.getDbEntity() == null) {
+			return false;
+		}
 
-        // find identity attributes
-        for (DbAttribute attribute : query.getDbEntity().getAttributes()) {
-            if (attribute.isGenerated()) {
-                return true;
-            }
-        }
+		// find identity attributes
+		for (DbAttribute attribute : query.getDbEntity().getAttributes()) {
+			if (attribute.isGenerated()) {
+				return true;
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 }

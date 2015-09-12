@@ -537,9 +537,8 @@ public class SelectQueryIT extends ServerCase {
 		createArtistsDataSet();
 
 		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-		ResultIterator<Artist> it = q1.iterator(context);
 
-		try {
+		try (ResultIterator<Artist> it = q1.iterator(context);) {
 			int count = 0;
 
 			for (@SuppressWarnings("unused")
@@ -548,8 +547,6 @@ public class SelectQueryIT extends ServerCase {
 			}
 
 			assertEquals(20, count);
-		} finally {
-			it.close();
 		}
 	}
 
@@ -558,9 +555,8 @@ public class SelectQueryIT extends ServerCase {
 		createArtistsDataSet();
 
 		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-		ResultBatchIterator<Artist> it = q1.batchIterator(context, 5);
 
-		try {
+		try (ResultBatchIterator<Artist> it = q1.batchIterator(context, 5);) {
 			int count = 0;
 
 			for (List<Artist> artistList : it) {
@@ -569,8 +565,6 @@ public class SelectQueryIT extends ServerCase {
 			}
 
 			assertEquals(4, count);
-		} finally {
-			it.close();
 		}
 	}
 

@@ -29,40 +29,39 @@ import org.apache.cayenne.crypto.CayenneCryptoException;
  */
 class GzipEncryptor implements BytesEncryptor {
 
-    static final int GZIP_THRESHOLD = 150;
+	static final int GZIP_THRESHOLD = 150;
 
-    private BytesEncryptor delegate;
+	private BytesEncryptor delegate;
 
-    public GzipEncryptor(BytesEncryptor delegate) {
-        this.delegate = delegate;
-    }
+	public GzipEncryptor(BytesEncryptor delegate) {
+		this.delegate = delegate;
+	}
 
-    @Override
-    public byte[] encrypt(byte[] input, int outputOffset, byte[] flags) {
+	@Override
+	public byte[] encrypt(byte[] input, int outputOffset, byte[] flags) {
 
-        boolean compressed = input.length >= GZIP_THRESHOLD;
+		boolean compressed = input.length >= GZIP_THRESHOLD;
 
-        if (compressed) {
-            try {
-                input = gzip(input);
-            } catch (IOException e) {
-                // really not expecting an error here...
-                throw new CayenneCryptoException("Error compressing input", e);
-            }
-        }
+		if (compressed) {
+			try {
+				input = gzip(input);
+			} catch (IOException e) {
+				// really not expecting an error here...
+				throw new CayenneCryptoException("Error compressing input", e);
+			}
+		}
 
-        flags[0] = Header.setCompressed(flags[0], compressed);
-        return delegate.encrypt(input, outputOffset, flags);
-    }
+		flags[0] = Header.setCompressed(flags[0], compressed);
+		return delegate.encrypt(input, outputOffset, flags);
+	}
 
-    static byte[] gzip(byte[] input) throws IOException {
-        ByteArrayOutputStream zipBytes = new ByteArrayOutputStream(input.length);
-        GZIPOutputStream out = new GZIPOutputStream(zipBytes);
+	static byte[] gzip(byte[] input) throws IOException {
+		ByteArrayOutputStream zipBytes = new ByteArrayOutputStream(input.length);
+		try (GZIPOutputStream out = new GZIPOutputStream(zipBytes);) {
+			out.write(input, 0, input.length);
+		}
 
-        out.write(input, 0, input.length);
-        out.close();
-
-        return zipBytes.toByteArray();
-    }
+		return zipBytes.toByteArray();
+	}
 
 }
