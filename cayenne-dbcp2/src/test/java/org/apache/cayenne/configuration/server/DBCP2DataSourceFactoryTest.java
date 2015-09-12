@@ -35,57 +35,54 @@ import static org.junit.Assert.fail;
 
 public class DBCP2DataSourceFactoryTest {
 
-    @Test
-    public void testGetDataSource() throws Exception {
+	@Test
+	public void testGetDataSource() throws Exception {
 
-        String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(baseUrl + "/");
-        assertNotNull(url);
+		String baseUrl = getClass().getPackage().getName().replace('.', '/');
+		URL url = getClass().getClassLoader().getResource(baseUrl + "/");
+		assertNotNull(url);
 
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationSource(new URLResource(url));
-        nodeDescriptor.setParameters("testDBCP2.properties");
+		DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+		nodeDescriptor.setConfigurationSource(new URLResource(url));
+		nodeDescriptor.setParameters("testDBCP2.properties");
 
-        DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
-        DataSource dataSource = factory.getDataSource(nodeDescriptor);
-        assertNotNull(dataSource);
+		DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
+		DataSource dataSource = factory.getDataSource(nodeDescriptor);
+		assertNotNull(dataSource);
 
-        assertTrue(dataSource instanceof BasicDataSource);
-        BasicDataSource basicDataSource = (BasicDataSource) dataSource;
-        assertEquals("com.example.jdbc.Driver", basicDataSource.getDriverClassName());
-        assertEquals("jdbc:somedb://localhost/cayenne", basicDataSource.getUrl());
-        assertEquals("john", basicDataSource.getUsername());
-        assertEquals("secret", basicDataSource.getPassword());
-        assertEquals(20, basicDataSource.getMaxTotal());
-        assertEquals(5, basicDataSource.getMinIdle());
-        assertEquals(8, basicDataSource.getMaxIdle());
-        assertEquals(10000, basicDataSource.getMaxWaitMillis());
-        assertEquals("select 1 from xyz;", basicDataSource.getValidationQuery());
+		assertTrue(dataSource instanceof BasicDataSource);
+		try (BasicDataSource basicDataSource = (BasicDataSource) dataSource;) {
+			assertEquals("com.example.jdbc.Driver", basicDataSource.getDriverClassName());
+			assertEquals("jdbc:somedb://localhost/cayenne", basicDataSource.getUrl());
+			assertEquals("john", basicDataSource.getUsername());
+			assertEquals("secret", basicDataSource.getPassword());
+			assertEquals(20, basicDataSource.getMaxTotal());
+			assertEquals(5, basicDataSource.getMinIdle());
+			assertEquals(8, basicDataSource.getMaxIdle());
+			assertEquals(10000, basicDataSource.getMaxWaitMillis());
+			assertEquals("select 1 from xyz;", basicDataSource.getValidationQuery());
+		}
+	}
 
+	@Test
+	public void testGetDataSource_InvalidLocation() throws Exception {
 
-        System.out.println(DBCPDataSourceFactory.class.getName());
-    }
+		String baseUrl = getClass().getPackage().getName().replace('.', '/');
+		URL url = getClass().getClassLoader().getResource(baseUrl + "/");
+		assertNotNull(url);
 
-    @Test
-    public void testGetDataSource_InvalidLocation() throws Exception {
+		DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+		nodeDescriptor.setConfigurationSource(new URLResource(url));
+		nodeDescriptor.setParameters("testDBCP2.properties.nosuchfile");
 
-        String baseUrl = getClass().getPackage().getName().replace('.', '/');
-        URL url = getClass().getClassLoader().getResource(baseUrl + "/");
-        assertNotNull(url);
+		DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
 
-        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-        nodeDescriptor.setConfigurationSource(new URLResource(url));
-        nodeDescriptor.setParameters("testDBCP2.properties.nosuchfile");
-
-        DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
-
-        try {
-            factory.getDataSource(nodeDescriptor);
-            fail("didn't throw on absent config file");
-        }
-        catch (IOException ex) {
-            // expected
-        }
-    }
+		try {
+			factory.getDataSource(nodeDescriptor);
+			fail("didn't throw on absent config file");
+		} catch (IOException ex) {
+			// expected
+		}
+	}
 
 }
