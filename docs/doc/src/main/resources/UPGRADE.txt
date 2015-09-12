@@ -6,6 +6,9 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M3
 
+* Per CAY-2026 minimal Java version is now 1.7. If you are still need Java 1.6, you can use Cayenne 3.1 or 4.0.M2 until your
+  application is able to upgrade. 
+
 * We no longer add @Deprecated annotation to generated String property names in entity superclasses.
   Instead String property names inclusion
   became optional, controlled with "createPropertyNames" flag in cgen ("false" by default). Also a similar option
@@ -21,8 +24,20 @@ UPGRADING TO 4.0.M3
   'orderBy' that would previously reset the corresponding option state now work as "append". Methods that would previously append to the
   option state were removed as redundant. Please revisit your code if you previously relied on the reset behavior.
 
-* Per CAY-2025 DBCP2DataSourceFactory does not support deprecated properties. So if you want to upgrade from commons-dbcp to commons-dbcp2,
-  you should replace all old-style properties with the newer ones.
+* If you are using DBCPDataSourceFactory, you will need to take a few steps to upgrade:
+
+  - Per CAY-2025 and CAY-2026, DBCPDataSourceFactory is now based on DBCP2 (which is required under Java 1.7 and newer).
+  - Check your DBCP properties file to ensure it uses property names supported by DBCP. 
+    (In the past Cayenne would require prefixing those properties with 'cayenne.dbcp.'. If you still have that prefix, remove it).
+  - To use DBCPDataSourceFactory, you will now have to explicitly include an extra Cayenne module, as it is no longer in cayenne-server. 
+    E.g. if you are using Maven:
+
+    <parent>
+      <groupId>org.apache.cayenne</groupId>
+      <artifactId>cayenne-dbcp2</artifactId>
+      <version>4.0.M3</version>
+    </parent>
+ 
 
 UPGRADING TO 4.0.M2
 

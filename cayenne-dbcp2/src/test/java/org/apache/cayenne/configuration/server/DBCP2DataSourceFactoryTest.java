@@ -46,7 +46,7 @@ public class DBCP2DataSourceFactoryTest {
         nodeDescriptor.setConfigurationSource(new URLResource(url));
         nodeDescriptor.setParameters("testDBCP2.properties");
 
-        DBCP2DataSourceFactory factory = new DBCP2DataSourceFactory();
+        DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
         DataSource dataSource = factory.getDataSource(nodeDescriptor);
         assertNotNull(dataSource);
 
@@ -63,7 +63,7 @@ public class DBCP2DataSourceFactoryTest {
         assertEquals("select 1 from xyz;", basicDataSource.getValidationQuery());
 
 
-        System.out.println(DBCP2DataSourceFactory.class.getName());
+        System.out.println(DBCPDataSourceFactory.class.getName());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class DBCP2DataSourceFactoryTest {
         nodeDescriptor.setConfigurationSource(new URLResource(url));
         nodeDescriptor.setParameters("testDBCP2.properties.nosuchfile");
 
-        DBCP2DataSourceFactory factory = new DBCP2DataSourceFactory();
+        DBCPDataSourceFactory factory = new DBCPDataSourceFactory();
 
         try {
             factory.getDataSource(nodeDescriptor);

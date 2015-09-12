@@ -31,7 +31,6 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.SAXNestedTagHandler;
-import org.apache.cayenne.configuration.server.DBCPDataSourceFactory;
 import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -50,300 +49,261 @@ import org.xml.sax.XMLReader;
  */
 class XMLDataChannelDescriptorLoader_V3_0_0_1 {
 
-    private static Log logger = LogFactory
-            .getLog(XMLDataChannelDescriptorLoader_V3_0_0_1.class);
+	static final String DBCP_DATA_SOURCE_FACTORY = "org.apache.cayenne.configuration.server.DBCPDataSourceFactory";
 
-    static final String DOMAINS_TAG = "domains";
-    static final String DOMAIN_TAG = "domain";
-    static final String MAP_TAG = "map";
-    static final String NODE_TAG = "node";
-    static final String PROPERTY_TAG = "property";
-    static final String MAP_REF_TAG = "map-ref";
+	private static Log logger = LogFactory.getLog(XMLDataChannelDescriptorLoader_V3_0_0_1.class);
 
-    private static final Map<String, String> dataSourceFactoryLegacyNameMapping;
+	static final String DOMAINS_TAG = "domains";
+	static final String DOMAIN_TAG = "domain";
+	static final String MAP_TAG = "map";
+	static final String NODE_TAG = "node";
+	static final String PROPERTY_TAG = "property";
+	static final String MAP_REF_TAG = "map-ref";
 
-    static {
-        dataSourceFactoryLegacyNameMapping = new HashMap<String, String>();
-        dataSourceFactoryLegacyNameMapping.put(
-                "org.apache.cayenne.conf.DriverDataSourceFactory",
-                XMLPoolingDataSourceFactory.class.getName());
-        dataSourceFactoryLegacyNameMapping.put(
-                "org.apache.cayenne.conf.JNDIDataSourceFactory",
-                JNDIDataSourceFactory.class.getName());
-        dataSourceFactoryLegacyNameMapping.put(
-                "org.apache.cayenne.conf.DBCPDataSourceFactory",
-                DBCPDataSourceFactory.class.getName());
-    }
+	private static final Map<String, String> dataSourceFactoryLegacyNameMapping;
 
-    // implementation is statically typed and is intentionally not DI-provided
-    protected XMLDataMapLoader_V3_0_0_1 mapLoader;
-    protected XMLDataSourceInfoLoader_V3_0_0_1 dataSourceInfoLoader;
+	static {
+		dataSourceFactoryLegacyNameMapping = new HashMap<String, String>();
+		dataSourceFactoryLegacyNameMapping.put("org.apache.cayenne.conf.DriverDataSourceFactory",
+				XMLPoolingDataSourceFactory.class.getName());
+		dataSourceFactoryLegacyNameMapping.put("org.apache.cayenne.conf.JNDIDataSourceFactory",
+				JNDIDataSourceFactory.class.getName());
+		dataSourceFactoryLegacyNameMapping.put("org.apache.cayenne.conf.DBCPDataSourceFactory",
+				DBCP_DATA_SOURCE_FACTORY);
+	}
 
-    XMLDataChannelDescriptorLoader_V3_0_0_1() {
-        mapLoader = new XMLDataMapLoader_V3_0_0_1();
-        dataSourceInfoLoader = new XMLDataSourceInfoLoader_V3_0_0_1();
-    }
+	// implementation is statically typed and is intentionally not DI-provided
+	protected XMLDataMapLoader_V3_0_0_1 mapLoader;
+	protected XMLDataSourceInfoLoader_V3_0_0_1 dataSourceInfoLoader;
 
-    List<DataChannelDescriptor> load(Resource configurationSource)
-            throws ConfigurationException {
+	XMLDataChannelDescriptorLoader_V3_0_0_1() {
+		mapLoader = new XMLDataMapLoader_V3_0_0_1();
+		dataSourceInfoLoader = new XMLDataSourceInfoLoader_V3_0_0_1();
+	}
 
-        if (configurationSource == null) {
-            throw new NullPointerException("Null configurationSource");
-        }
+	List<DataChannelDescriptor> load(Resource configurationSource) throws ConfigurationException {
 
-        URL configurationURL = configurationSource.getURL();
+		if (configurationSource == null) {
+			throw new NullPointerException("Null configurationSource");
+		}
 
-        List<DataChannelDescriptor> domains = new ArrayList<DataChannelDescriptor>();
-        InputStream in = null;
+		URL configurationURL = configurationSource.getURL();
 
-        try {
-            in = configurationURL.openStream();
-            XMLReader parser = Util.createXmlReader();
+		List<DataChannelDescriptor> domains = new ArrayList<DataChannelDescriptor>();
+		InputStream in = null;
 
-            DomainsHandler rootHandler = new DomainsHandler(
-                    configurationSource,
-                    domains,
-                    parser);
-            parser.setContentHandler(rootHandler);
-            parser.setErrorHandler(rootHandler);
-            parser.parse(new InputSource(in));
-        }
-        catch (Exception e) {
-            throw new ConfigurationException(
-                    "Error loading configuration from %s",
-                    e,
-                    configurationURL);
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            }
-            catch (IOException ioex) {
-                logger.info("failure closing input stream for "
-                        + configurationURL
-                        + ", ignoring", ioex);
-            }
-        }
+		try {
+			in = configurationURL.openStream();
+			XMLReader parser = Util.createXmlReader();
 
-        return domains;
-    }
+			DomainsHandler rootHandler = new DomainsHandler(configurationSource, domains, parser);
+			parser.setContentHandler(rootHandler);
+			parser.setErrorHandler(rootHandler);
+			parser.parse(new InputSource(in));
+		} catch (Exception e) {
+			throw new ConfigurationException("Error loading configuration from %s", e, configurationURL);
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (IOException ioex) {
+				logger.info("failure closing input stream for " + configurationURL + ", ignoring", ioex);
+			}
+		}
 
-    /**
-     * Make sure the domain name is only made up of Java-identifier-safe characters.
-     */
-    protected String scrubDomainName(String name) {
-        if (name == null || name.length() == 0) {
-            return name;
-        }
+		return domains;
+	}
 
-        StringBuilder buffer = new StringBuilder(name.length());
+	/**
+	 * Make sure the domain name is only made up of Java-identifier-safe
+	 * characters.
+	 */
+	protected String scrubDomainName(String name) {
+		if (name == null || name.length() == 0) {
+			return name;
+		}
 
-        for (int i = 0; i < name.length(); i++) {
-            char c = name.charAt(i);
-            if (i == 0 && !Character.isJavaIdentifierStart(c)) {
-                buffer.append('_');
-            }
-            else if (i > 0 && !Character.isJavaIdentifierPart(c)) {
-                buffer.append('_');
-            }
-            else {
-                buffer.append(c);
-            }
-        }
+		StringBuilder buffer = new StringBuilder(name.length());
 
-        return buffer.toString();
-    }
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			if (i == 0 && !Character.isJavaIdentifierStart(c)) {
+				buffer.append('_');
+			} else if (i > 0 && !Character.isJavaIdentifierPart(c)) {
+				buffer.append('_');
+			} else {
+				buffer.append(c);
+			}
+		}
 
-    /**
-     * Converts the names of standard Cayenne-supplied DataSourceFactories from the legacy
-     * names to the current names.
-     */
-    private String convertDataSourceFactory(String dataSourceFactory) {
+		return buffer.toString();
+	}
 
-        if (dataSourceFactory == null) {
-            return null;
-        }
+	/**
+	 * Converts the names of standard Cayenne-supplied DataSourceFactories from
+	 * the legacy names to the current names.
+	 */
+	private String convertDataSourceFactory(String dataSourceFactory) {
 
-        String converted = dataSourceFactoryLegacyNameMapping.get(dataSourceFactory);
-        return converted != null ? converted : dataSourceFactory;
-    }
+		if (dataSourceFactory == null) {
+			return null;
+		}
 
-    final class DomainsHandler extends SAXNestedTagHandler {
+		String converted = dataSourceFactoryLegacyNameMapping.get(dataSourceFactory);
+		return converted != null ? converted : dataSourceFactory;
+	}
 
-        private Collection<DataChannelDescriptor> domains;
-        private Resource configurationSource;
+	final class DomainsHandler extends SAXNestedTagHandler {
 
-        DomainsHandler(Resource configurationSource,
-                Collection<DataChannelDescriptor> domains, XMLReader parser) {
-            super(parser, null);
-            this.domains = domains;
-            this.configurationSource = configurationSource;
-        }
+		private Collection<DataChannelDescriptor> domains;
+		private Resource configurationSource;
 
-        @Override
-        protected ContentHandler createChildTagHandler(
-                String namespaceURI,
-                String localName,
-                String qName,
-                Attributes attributes) {
+		DomainsHandler(Resource configurationSource, Collection<DataChannelDescriptor> domains, XMLReader parser) {
+			super(parser, null);
+			this.domains = domains;
+			this.configurationSource = configurationSource;
+		}
 
-            if (localName.equals(DOMAINS_TAG)) {
-                return new DomainsChildrenHandler(parser, this);
-            }
+		@Override
+		protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName,
+				Attributes attributes) {
 
-            return super
-                    .createChildTagHandler(namespaceURI, localName, qName, attributes);
-        }
-    }
+			if (localName.equals(DOMAINS_TAG)) {
+				return new DomainsChildrenHandler(parser, this);
+			}
 
-    final class DomainsChildrenHandler extends SAXNestedTagHandler {
+			return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
+		}
+	}
 
-        private Collection<DataChannelDescriptor> domains;
-        private Resource configurationSource;
+	final class DomainsChildrenHandler extends SAXNestedTagHandler {
 
-        DomainsChildrenHandler(XMLReader parser, DomainsHandler parent) {
-            super(parser, parent);
-            this.domains = parent.domains;
-            this.configurationSource = parent.configurationSource;
-        }
+		private Collection<DataChannelDescriptor> domains;
+		private Resource configurationSource;
 
-        @Override
-        protected ContentHandler createChildTagHandler(
-                String namespaceURI,
-                String localName,
-                String name,
-                Attributes attributes) {
+		DomainsChildrenHandler(XMLReader parser, DomainsHandler parent) {
+			super(parser, parent);
+			this.domains = parent.domains;
+			this.configurationSource = parent.configurationSource;
+		}
 
-            if (localName.equals(DOMAIN_TAG)) {
+		@Override
+		protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String name,
+				Attributes attributes) {
 
-                String domainName = attributes.getValue("", "name");
-                DataChannelDescriptor descriptor = new DataChannelDescriptor();
-                descriptor.setName(scrubDomainName(domainName));
-                descriptor.setConfigurationSource(configurationSource);
+			if (localName.equals(DOMAIN_TAG)) {
 
-                domains.add(descriptor);
-                return new DataChannelChildrenHandler(descriptor, parser, this);
-            }
+				String domainName = attributes.getValue("", "name");
+				DataChannelDescriptor descriptor = new DataChannelDescriptor();
+				descriptor.setName(scrubDomainName(domainName));
+				descriptor.setConfigurationSource(configurationSource);
 
-            logger.info(unexpectedTagMessage(localName, DOMAIN_TAG));
-            return super.createChildTagHandler(namespaceURI, localName, name, attributes);
-        }
-    }
+				domains.add(descriptor);
+				return new DataChannelChildrenHandler(descriptor, parser, this);
+			}
 
-    final class DataChannelChildrenHandler extends SAXNestedTagHandler {
+			logger.info(unexpectedTagMessage(localName, DOMAIN_TAG));
+			return super.createChildTagHandler(namespaceURI, localName, name, attributes);
+		}
+	}
 
-        private DataChannelDescriptor descriptor;
+	final class DataChannelChildrenHandler extends SAXNestedTagHandler {
 
-        DataChannelChildrenHandler(DataChannelDescriptor descriptor, XMLReader parser,
-                DomainsChildrenHandler parentHandler) {
-            super(parser, parentHandler);
-            this.descriptor = descriptor;
-        }
+		private DataChannelDescriptor descriptor;
 
-        @Override
-        protected ContentHandler createChildTagHandler(
-                String namespaceURI,
-                String localName,
-                String name,
-                Attributes attributes) {
+		DataChannelChildrenHandler(DataChannelDescriptor descriptor, XMLReader parser,
+				DomainsChildrenHandler parentHandler) {
+			super(parser, parentHandler);
+			this.descriptor = descriptor;
+		}
 
-            if (localName.equals(PROPERTY_TAG)) {
+		@Override
+		protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String name,
+				Attributes attributes) {
 
-                String key = attributes.getValue("", "name");
-                String value = attributes.getValue("", "value");
-                if (key != null && value != null) {
-                    descriptor.getProperties().put(key, value);
-                }
-            }
-            else if (localName.equals(MAP_TAG)) {
+			if (localName.equals(PROPERTY_TAG)) {
 
-                String dataMapName = attributes.getValue("", "name");
-                Resource baseResource = descriptor.getConfigurationSource();
+				String key = attributes.getValue("", "name");
+				String value = attributes.getValue("", "value");
+				if (key != null && value != null) {
+					descriptor.getProperties().put(key, value);
+				}
+			} else if (localName.equals(MAP_TAG)) {
 
-                String dataMapLocation = attributes.getValue("", "location");
-                Resource dataMapResource = baseResource
-                        .getRelativeResource(dataMapLocation);
+				String dataMapName = attributes.getValue("", "name");
+				Resource baseResource = descriptor.getConfigurationSource();
 
-                DataMap dataMap = mapLoader.load(dataMapResource);
-                dataMap.setName(dataMapName);
-                dataMap.setLocation(dataMapLocation);
-                dataMap.setConfigurationSource(dataMapResource);
+				String dataMapLocation = attributes.getValue("", "location");
+				Resource dataMapResource = baseResource.getRelativeResource(dataMapLocation);
 
-                descriptor.getDataMaps().add(dataMap);
-            }
-            else if (localName.equals(NODE_TAG)) {
+				DataMap dataMap = mapLoader.load(dataMapResource);
+				dataMap.setName(dataMapName);
+				dataMap.setLocation(dataMapLocation);
+				dataMap.setConfigurationSource(dataMapResource);
 
-                String nodeName = attributes.getValue("", "name");
-                if (nodeName == null) {
-                    // TODO: assign dummy name?
-                    throw new ConfigurationException("Error: <node> without 'name'.");
-                }
+				descriptor.getDataMaps().add(dataMap);
+			} else if (localName.equals(NODE_TAG)) {
 
-                DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
-                nodeDescriptor.setName(nodeName);
+				String nodeName = attributes.getValue("", "name");
+				if (nodeName == null) {
+					// TODO: assign dummy name?
+					throw new ConfigurationException("Error: <node> without 'name'.");
+				}
 
-                String dataSourceFactory = attributes.getValue("", "factory");
-                String dataSourceFactory6 = convertDataSourceFactory(dataSourceFactory);
-                nodeDescriptor.setDataSourceFactoryType(dataSourceFactory6);
+				DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+				nodeDescriptor.setName(nodeName);
 
-                // depending on the factory, "datasource" attribute is interpreted
-                // differently
-                String datasource = attributes.getValue("", "datasource");
-                if (XMLPoolingDataSourceFactory.class
-                        .getName()
-                        .equals(dataSourceFactory6)) {
-                    Resource baseResource = descriptor.getConfigurationSource();
-                    Resource dataNodeResource = baseResource
-                            .getRelativeResource(datasource);
-                    nodeDescriptor.setConfigurationSource(dataNodeResource);
+				String dataSourceFactory = attributes.getValue("", "factory");
+				String dataSourceFactory6 = convertDataSourceFactory(dataSourceFactory);
+				nodeDescriptor.setDataSourceFactoryType(dataSourceFactory6);
 
-                    DataSourceInfo dataSourceInfo = dataSourceInfoLoader
-                            .load(dataNodeResource);
-                    nodeDescriptor.setDataSourceDescriptor(dataSourceInfo);
-                }
-                else {
-                    nodeDescriptor.setParameters(datasource);
-                }
+				// depending on the factory, "datasource" attribute is
+				// interpreted
+				// differently
+				String datasource = attributes.getValue("", "datasource");
+				if (XMLPoolingDataSourceFactory.class.getName().equals(dataSourceFactory6)) {
+					Resource baseResource = descriptor.getConfigurationSource();
+					Resource dataNodeResource = baseResource.getRelativeResource(datasource);
+					nodeDescriptor.setConfigurationSource(dataNodeResource);
 
-                descriptor.getNodeDescriptors().add(nodeDescriptor);
-                nodeDescriptor.setAdapterType(attributes.getValue("", "adapter"));
-                nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue(
-                        "",
-                        "schema-update-strategy"));
+					DataSourceInfo dataSourceInfo = dataSourceInfoLoader.load(dataNodeResource);
+					nodeDescriptor.setDataSourceDescriptor(dataSourceInfo);
+				} else {
+					nodeDescriptor.setParameters(datasource);
+				}
 
-                return new DataNodeChildrenHandler(parser, this, nodeDescriptor);
-            }
+				descriptor.getNodeDescriptors().add(nodeDescriptor);
+				nodeDescriptor.setAdapterType(attributes.getValue("", "adapter"));
+				nodeDescriptor.setSchemaUpdateStrategyType(attributes.getValue("", "schema-update-strategy"));
 
-            return super.createChildTagHandler(namespaceURI, localName, name, attributes);
-        }
-    }
+				return new DataNodeChildrenHandler(parser, this, nodeDescriptor);
+			}
 
-    final class DataNodeChildrenHandler extends SAXNestedTagHandler {
+			return super.createChildTagHandler(namespaceURI, localName, name, attributes);
+		}
+	}
 
-        private DataNodeDescriptor nodeDescriptor;
+	final class DataNodeChildrenHandler extends SAXNestedTagHandler {
 
-        DataNodeChildrenHandler(XMLReader parser, SAXNestedTagHandler parentHandler,
-                DataNodeDescriptor nodeDescriptor) {
-            super(parser, parentHandler);
-            this.nodeDescriptor = nodeDescriptor;
-        }
+		private DataNodeDescriptor nodeDescriptor;
 
-        @Override
-        protected ContentHandler createChildTagHandler(
-                String namespaceURI,
-                String localName,
-                String name,
-                Attributes attributes) {
+		DataNodeChildrenHandler(XMLReader parser, SAXNestedTagHandler parentHandler, DataNodeDescriptor nodeDescriptor) {
+			super(parser, parentHandler);
+			this.nodeDescriptor = nodeDescriptor;
+		}
 
-            if (localName.equals(MAP_REF_TAG)) {
+		@Override
+		protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String name,
+				Attributes attributes) {
 
-                String mapName = attributes.getValue("", "name");
-                nodeDescriptor.getDataMapNames().add(mapName);
-            }
+			if (localName.equals(MAP_REF_TAG)) {
 
-            return super.createChildTagHandler(namespaceURI, localName, name, attributes);
-        }
-    }
+				String mapName = attributes.getValue("", "name");
+				nodeDescriptor.getDataMapNames().add(mapName);
+			}
+
+			return super.createChildTagHandler(namespaceURI, localName, name, attributes);
+		}
+	}
 }
