@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.remote.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
@@ -30,118 +37,106 @@ import org.apache.cayenne.remote.RemoteSession;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-
 public class BaseRemoteServiceTest {
 
-    @Test
-    public void testConstructor() throws Exception {
+	@Test
+	public void testConstructor() throws Exception {
 
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(
-                Constants.SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY,
-                MockEventBridgeFactory.class.getName());
+		Map<String, String> map = new HashMap<>();
+		map.put(Constants.SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY, MockEventBridgeFactory.class.getName());
 
-        ObjectContextFactory factory = new ObjectContextFactory() {
+		ObjectContextFactory factory = new ObjectContextFactory() {
 
-            public ObjectContext createContext(DataChannel parent) {
-                return null;
-            }
+			public ObjectContext createContext(DataChannel parent) {
+				return null;
+			}
 
-            public ObjectContext createContext() {
-                return null;
-            }
-        };
-        BaseRemoteService service = new BaseRemoteService(factory, map) {
+			public ObjectContext createContext() {
+				return null;
+			}
+		};
+		BaseRemoteService service = new BaseRemoteService(factory, map) {
 
-            @Override
-            protected ServerSession createServerSession() {
-                return null;
-            }
+			@Override
+			protected ServerSession createServerSession() {
+				return null;
+			}
 
-            @Override
-            protected ServerSession createServerSession(String name) {
-                return null;
-            }
+			@Override
+			protected ServerSession createServerSession(String name) {
+				return null;
+			}
 
-            @Override
-            protected ServerSession getServerSession() {
-                return null;
-            }
-        };
-        assertEquals(MockEventBridgeFactory.class.getName(), service
-                .getEventBridgeFactoryName());
-        assertSame(factory, service.contextFactory);
+			@Override
+			protected ServerSession getServerSession() {
+				return null;
+			}
+		};
+		assertEquals(MockEventBridgeFactory.class.getName(), service.getEventBridgeFactoryName());
+		assertSame(factory, service.contextFactory);
 
-    }
+	}
 
-    @Test
-    public void testProcessMessageExceptionSerializability() throws Throwable {
+	@Test
+	public void testProcessMessageExceptionSerializability() throws Throwable {
 
-        Map<String, String> map = new HashMap<String, String>();
-        ObjectContextFactory factory = new ObjectContextFactory() {
+		Map<String, String> map = new HashMap<>();
+		ObjectContextFactory factory = new ObjectContextFactory() {
 
-            public ObjectContext createContext(DataChannel parent) {
-                return null;
-            }
+			public ObjectContext createContext(DataChannel parent) {
+				return null;
+			}
 
-            public ObjectContext createContext() {
-                return null;
-            }
-        };
-        BaseRemoteService service = new BaseRemoteService(factory, map) {
+			public ObjectContext createContext() {
+				return null;
+			}
+		};
+		BaseRemoteService service = new BaseRemoteService(factory, map) {
 
-            @Override
-            protected ServerSession createServerSession() {
-                return new ServerSession(new RemoteSession("a"), null);
-            }
+			@Override
+			protected ServerSession createServerSession() {
+				return new ServerSession(new RemoteSession("a"), null);
+			}
 
-            @Override
-            protected ServerSession createServerSession(String name) {
-                return createServerSession();
-            }
+			@Override
+			protected ServerSession createServerSession(String name) {
+				return createServerSession();
+			}
 
-            @Override
-            protected ServerSession getServerSession() {
-                return createServerSession();
-            }
-        };
+			@Override
+			protected ServerSession getServerSession() {
+				return createServerSession();
+			}
+		};
 
-        try {
-            service.processMessage(new QueryMessage(null) {
+		try {
+			service.processMessage(new QueryMessage(null) {
 
-                @Override
-                public Query getQuery() {
-                    // serializable exception thrown
-                    throw new CayenneRuntimeException();
-                }
-            });
+				@Override
+				public Query getQuery() {
+					// serializable exception thrown
+					throw new CayenneRuntimeException();
+				}
+			});
 
-            fail("Expected to throw");
-        }
-        catch (Exception ex) {
-            Util.cloneViaSerialization(ex);
-        }
+			fail("Expected to throw");
+		} catch (Exception ex) {
+			Util.cloneViaSerialization(ex);
+		}
 
-        try {
-            service.processMessage(new QueryMessage(null) {
+		try {
+			service.processMessage(new QueryMessage(null) {
 
-                @Override
-                public Query getQuery() {
-                    // non-serializable exception thrown
-                    throw new MockUnserializableException();
-                }
-            });
+				@Override
+				public Query getQuery() {
+					// non-serializable exception thrown
+					throw new MockUnserializableException();
+				}
+			});
 
-            fail("Expected to throw");
-        }
-        catch (Exception ex) {
-            Util.cloneViaSerialization(ex);
-        }
-    }
+			fail("Expected to throw");
+		} catch (Exception ex) {
+			Util.cloneViaSerialization(ex);
+		}
+	}
 }

@@ -19,6 +19,18 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
@@ -40,18 +52,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Connection;
-import java.sql.Date;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLTemplateActionIT extends ServerCase {
@@ -109,7 +109,7 @@ public class SQLTemplateActionIT extends ServerCase {
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 		sqlTemplateCustomizer.updateSQLTemplate(template);
 
-		Map<String, Object> bindings = new HashMap<String, Object>();
+		Map<String, Object> bindings = new HashMap<>();
 		bindings.put("id", 201l);
 		template.setParameters(bindings);
 
@@ -149,7 +149,7 @@ public class SQLTemplateActionIT extends ServerCase {
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 		sqlTemplateCustomizer.updateSQLTemplate(template);
 
-		Map<String, Object> bindings = new HashMap<String, Object>();
+		Map<String, Object> bindings = new HashMap<>();
 		bindings.put("id", 101);
 		template.setParameters(bindings);
 
@@ -179,7 +179,7 @@ public class SQLTemplateActionIT extends ServerCase {
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 		sqlTemplateCustomizer.updateSQLTemplate(template);
 
-		Map<String, Object> bindings = new HashMap<String, Object>();
+		Map<String, Object> bindings = new HashMap<>();
 		bindings.put("id", 101);
 		template.setParameters(bindings);
 
@@ -209,7 +209,7 @@ public class SQLTemplateActionIT extends ServerCase {
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 		sqlTemplateCustomizer.updateSQLTemplate(template);
 
-		Map<String, Object> bindings = new HashMap<String, Object>();
+		Map<String, Object> bindings = new HashMap<>();
 		bindings.put("id", 201);
 		template.setParameters(bindings);
 
@@ -237,7 +237,7 @@ public class SQLTemplateActionIT extends ServerCase {
 				+ "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 
-		Map<String, Object> bindings = new HashMap<String, Object>();
+		Map<String, Object> bindings = new HashMap<>();
 		bindings.put("id", new Long(1));
 		bindings.put("name", "a1");
 		bindings.put("dob", new Date(System.currentTimeMillis()));
@@ -284,12 +284,12 @@ public class SQLTemplateActionIT extends ServerCase {
 				+ "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 
-		Map<String, Object> bindings1 = new HashMap<String, Object>();
+		Map<String, Object> bindings1 = new HashMap<>();
 		bindings1.put("id", new Long(1));
 		bindings1.put("name", "a1");
 		bindings1.put("dob", new Date(System.currentTimeMillis()));
 
-		Map<String, Object> bindings2 = new HashMap<String, Object>();
+		Map<String, Object> bindings2 = new HashMap<>();
 		bindings2.put("id", new Long(33));
 		bindings2.put("name", "a$$$$$");
 		bindings2.put("dob", new Date(System.currentTimeMillis()));

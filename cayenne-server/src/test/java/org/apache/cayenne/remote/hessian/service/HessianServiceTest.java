@@ -19,9 +19,13 @@
 
 package org.apache.cayenne.remote.hessian.service;
 
-import com.caucho.services.server.ServiceContext;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpSession;
+import static org.junit.Assert.assertSame;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.Constants;
@@ -29,47 +33,43 @@ import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.event.MockEventBridgeFactory;
 import org.junit.Test;
 
-import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertSame;
+import com.caucho.services.server.ServiceContext;
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpSession;
 
 public class HessianServiceTest {
 
-    @Test
-    public void testGetSession() throws Exception {
+	@Test
+	public void testGetSession() throws Exception {
 
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(
-                Constants.SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY,
-                MockEventBridgeFactory.class.getName());
+		Map<String, String> map = new HashMap<>();
+		map.put(Constants.SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY, MockEventBridgeFactory.class.getName());
 
-        ObjectContextFactory factory = new ObjectContextFactory() {
+		ObjectContextFactory factory = new ObjectContextFactory() {
 
-            public ObjectContext createContext(DataChannel parent) {
-                return null;
-            }
+			public ObjectContext createContext(DataChannel parent) {
+				return null;
+			}
 
-            public ObjectContext createContext() {
-                return null;
-            }
-        };
-        HessianService service = new HessianService(factory, map);
+			public ObjectContext createContext() {
+				return null;
+			}
+		};
+		HessianService service = new HessianService(factory, map);
 
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        HttpSession session = new MockHttpSession();
-        request.setSession(session);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		HttpSession session = new MockHttpSession();
+		request.setSession(session);
 
-        // for some eason need to call this to get session activated in the mock request
-        request.getSession();
+		// for some reason need to call this to get session activated in the
+		// mock request
+		request.getSession();
 
-        try {
-            ServiceContext.begin(request, null, null);
-            assertSame(session, service.getSession(false));
-        }
-        finally {
-            ServiceContext.end();
-        }
-    }
+		try {
+			ServiceContext.begin(request, null, null);
+			assertSame(session, service.getSession(false));
+		} finally {
+			ServiceContext.end();
+		}
+	}
 }

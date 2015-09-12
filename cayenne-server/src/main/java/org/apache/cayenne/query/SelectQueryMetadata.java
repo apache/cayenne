@@ -40,7 +40,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	@Override
 	void copyFromInfo(QueryMetadata info) {
 		super.copyFromInfo(info);
-		this.pathSplitAliases = new HashMap<String, String>(info.getPathSplitAliases());
+		this.pathSplitAliases = new HashMap<>(info.getPathSplitAliases());
 	}
 
 	<T> boolean resolve(Object root, EntityResolver resolver, SelectQuery<T> query) {
@@ -124,7 +124,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		Map<String, String> aliases = expression.getPathAliases();
 		if (!aliases.isEmpty()) {
 			if (pathSplitAliases == null) {
-				pathSplitAliases = new HashMap<String, String>();
+				pathSplitAliases = new HashMap<>();
 			}
 
 			pathSplitAliases.putAll(aliases);
@@ -160,7 +160,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		}
 
 		if (pathSplitAliases == null) {
-			pathSplitAliases = new HashMap<String, String>();
+			pathSplitAliases = new HashMap<>();
 		}
 
 		for (String alias : aliases) {

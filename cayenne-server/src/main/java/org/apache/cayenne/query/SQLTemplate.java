@@ -398,7 +398,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 		query.setDefaultTemplate(getDefaultTemplate());
 
 		if (templates != null) {
-			query.templates = new HashMap<String, String>(templates);
+			query.templates = new HashMap<>(templates);
 		}
 
 		query.metaData.copyFromInfo(this.metaData);
@@ -424,7 +424,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 		query.setDefaultTemplate(getDefaultTemplate());
 
 		if (templates != null) {
-			query.templates = new HashMap<String, String>(templates);
+			query.templates = new HashMap<>(templates);
 		}
 
 		query.metaData.copyFromInfo(this.metaData);
@@ -579,7 +579,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	 */
 	public synchronized void setTemplate(String key, String template) {
 		if (templates == null) {
-			templates = new HashMap<String, String>();
+			templates = new HashMap<>();
 		}
 
 		templates.put(key, template);
@@ -648,7 +648,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 			// are not serializable with Hessian...
 			this.parameters = new Map[parameters.length];
 			for (int i = 0; i < parameters.length; i++) {
-				this.parameters[i] = parameters[i] != null ? new HashMap<String, Object>(parameters[i])
+				this.parameters[i] = parameters[i] != null ? new HashMap<>(parameters[i])
 						: new HashMap<String, Object>();
 			}
 		}

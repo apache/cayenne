@@ -31,7 +31,7 @@ public class DefaultRuntimePropertiesTest {
 
     @Test
     public void testGet_FromMap() {
-        Map<String, String> propertiesMap = new HashMap<String, String>();
+        Map<String, String> propertiesMap = new HashMap<>();
         propertiesMap.put("key1", "v1");
 
         DefaultRuntimeProperties properties = new DefaultRuntimeProperties(propertiesMap);
@@ -45,7 +45,7 @@ public class DefaultRuntimePropertiesTest {
         String userDir = System.getProperty("user.dir");
         assertNotNull(userDir);
 
-        Map<String, String> propertiesMap = new HashMap<String, String>();
+        Map<String, String> propertiesMap = new HashMap<>();
 
         DefaultRuntimeProperties properties = new DefaultRuntimeProperties(propertiesMap);
         assertEquals(userDir, properties.get("user.dir"));
@@ -57,7 +57,7 @@ public class DefaultRuntimePropertiesTest {
         String userDir = System.getProperty("user.dir");
         assertNotNull(userDir);
 
-        Map<String, String> propertiesMap = new HashMap<String, String>();
+        Map<String, String> propertiesMap = new HashMap<>();
         propertiesMap.put("user.dir", userDir + "_altered");
 
         DefaultRuntimeProperties properties = new DefaultRuntimeProperties(propertiesMap);

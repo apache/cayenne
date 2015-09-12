@@ -213,7 +213,7 @@ public class ClasspathPreferences extends CayenneController {
     public void addChangedPreferences(String key, String value) {
         Map<String, String> map = editor.getChangedPreferences().get(preferences);
         if (map == null) {
-            map = new HashMap<String, String>();
+            map = new HashMap<>();
         }
         map.put(key, value);
         editor.getChangedPreferences().put(preferences, map);
@@ -222,7 +222,7 @@ public class ClasspathPreferences extends CayenneController {
     public void addRemovedPreferences(String key) {
         Map<String, String> map = editor.getRemovedPreferences().get(preferences);
         if (map == null) {
-            map = new HashMap<String, String>();
+            map = new HashMap<>();
         }
         map.put(key, "");
         editor.getRemovedPreferences().put(preferences, map);

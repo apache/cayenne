@@ -38,7 +38,7 @@ public class ClientCaseLifecycleManager extends ServerCaseLifecycleManager {
     @Override
     public <T> void setUp(T testCase) {
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
 
         ClientRuntimeProperty properties = testCase.getClass().getAnnotation(
                 ClientRuntimeProperty.class);

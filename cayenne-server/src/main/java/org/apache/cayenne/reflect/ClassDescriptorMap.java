@@ -43,9 +43,9 @@ public class ClassDescriptorMap {
     protected List<ClassDescriptorFactory> factories;
 
     public ClassDescriptorMap(EntityResolver resolver) {
-        this.descriptors = new HashMap<String, ClassDescriptor>();
+        this.descriptors = new HashMap<>();
         this.resolver = resolver;
-        this.factories = new ArrayList<ClassDescriptorFactory>();
+        this.factories = new ArrayList<>();
     }
 
     public EntityResolver getResolver() {

@@ -36,7 +36,7 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class FormattedCommonsJdbcEventLogger extends CommonsJdbcEventLogger {
 
-    private final static Map<String, String> KEYWORDS = new HashMap<String, String>();
+    private final static Map<String, String> KEYWORDS = new HashMap<>();
 
     static {
         KEYWORDS.put(" select ", "SELECT");

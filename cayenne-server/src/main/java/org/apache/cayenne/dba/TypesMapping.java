@@ -19,7 +19,36 @@
 
 package org.apache.cayenne.dba;
 
-import org.apache.cayenne.util.Util;
+import static java.sql.Types.ARRAY;
+import static java.sql.Types.BIGINT;
+import static java.sql.Types.BINARY;
+import static java.sql.Types.BIT;
+import static java.sql.Types.BLOB;
+import static java.sql.Types.BOOLEAN;
+import static java.sql.Types.CHAR;
+import static java.sql.Types.CLOB;
+import static java.sql.Types.DATE;
+import static java.sql.Types.DECIMAL;
+import static java.sql.Types.DOUBLE;
+import static java.sql.Types.FLOAT;
+import static java.sql.Types.INTEGER;
+import static java.sql.Types.LONGNVARCHAR;
+import static java.sql.Types.LONGVARBINARY;
+import static java.sql.Types.LONGVARCHAR;
+import static java.sql.Types.NCHAR;
+import static java.sql.Types.NCLOB;
+import static java.sql.Types.NULL;
+import static java.sql.Types.NUMERIC;
+import static java.sql.Types.NVARCHAR;
+import static java.sql.Types.OTHER;
+import static java.sql.Types.REAL;
+import static java.sql.Types.SMALLINT;
+import static java.sql.Types.SQLXML;
+import static java.sql.Types.TIME;
+import static java.sql.Types.TIMESTAMP;
+import static java.sql.Types.TINYINT;
+import static java.sql.Types.VARBINARY;
+import static java.sql.Types.VARCHAR;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -33,7 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.sql.Types.*;
+import org.apache.cayenne.util.Util;
 
 /**
  * A utility class that handles mappings of JDBC data types to the database
@@ -104,25 +133,25 @@ public class TypesMapping {
 	 * Keys: SQL string type names, Values: SQL int type definitions from
 	 * java.sql.Types
 	 */
-	private static final Map<String, Integer> SQL_STRING_TYPE = new HashMap<String, Integer>();
+	private static final Map<String, Integer> SQL_STRING_TYPE = new HashMap<>();
 
 	/**
 	 * Keys: SQL int type definitions from java.sql.Types, Values: SQL string
 	 * type names
 	 */
-	private static final Map<Integer, String> SQL_ENUM_TYPE = new HashMap<Integer, String>();
+	private static final Map<Integer, String> SQL_ENUM_TYPE = new HashMap<>();
 
 	/**
 	 * Keys: SQL int type definitions from java.sql.Types, Values: java class
 	 * names
 	 */
-	private static final Map<Integer, String> SQL_ENUM_JAVA = new HashMap<Integer, String>();
+	private static final Map<Integer, String> SQL_ENUM_JAVA = new HashMap<>();
 
 	/**
 	 * Keys: java class names, Values: SQL int type definitions from
 	 * java.sql.Types
 	 */
-	private static final Map<String, Integer> JAVA_SQL_ENUM = new HashMap<String, Integer>();
+	private static final Map<String, Integer> JAVA_SQL_ENUM = new HashMap<>();
 
 	static {
 		// SQL_STRING_TYPE.put(SQL_ARRAY, ARRAY);

@@ -176,7 +176,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	public SQLSelect<T> params(Map<String, ?> parameters) {
 
 		if (this.params == null) {
-			this.params = new HashMap<String, Object>(parameters);
+			this.params = new HashMap<>(parameters);
 		} else {
 			Map bareMap = parameters;
 			this.params.putAll(bareMap);

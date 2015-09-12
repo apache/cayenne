@@ -168,7 +168,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
     @Test
     public void testNonSelectingQueryStringMap() throws Exception {
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 300);
         parameters.put("title", "Go Figure");
         parameters.put("price", new BigDecimal("22.01"));

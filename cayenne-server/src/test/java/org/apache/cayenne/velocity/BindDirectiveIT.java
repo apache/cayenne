@@ -78,7 +78,7 @@ public class BindDirectiveIT extends ServerCase {
 
 	@Test
 	public void testBind_Timestamp() throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", new Integer(1));
 		parameters.put("name", "ArtistWithDOB");
 		Calendar cal = Calendar.getInstance();
@@ -96,7 +96,7 @@ public class BindDirectiveIT extends ServerCase {
 
 	@Test
 	public void testBind_SQLDate() throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", new Integer(1));
 		parameters.put("name", "ArtistWithDOB");
 		Calendar cal = Calendar.getInstance();
@@ -114,7 +114,7 @@ public class BindDirectiveIT extends ServerCase {
 
 	@Test
 	public void testBind_UtilDate() throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", new Integer(1));
 		parameters.put("name", "ArtistWithDOB");
 		Calendar cal = Calendar.getInstance();
@@ -159,7 +159,7 @@ public class BindDirectiveIT extends ServerCase {
 
 	@Test
 	public void testBind_NullParam() throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", new Long(1));
 		parameters.put("name", "ArtistWithoutDOB");
 		// passing null in parameter
@@ -175,7 +175,7 @@ public class BindDirectiveIT extends ServerCase {
 
 	@Test
 	public void testBind_NullParam_JDBCTypes() throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", new Long(1));
 		parameters.put("name", "ArtistWithoutDOB");
 		// passing null in parameter
@@ -191,7 +191,7 @@ public class BindDirectiveIT extends ServerCase {
 
 	@Test
 	public void testBind_SkippedParam() throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", new Long(1));
 		parameters.put("name", "ArtistWithoutDOB");
 		// skipping "dob"
@@ -206,7 +206,7 @@ public class BindDirectiveIT extends ServerCase {
 
 	@Test
 	public void testBind_SkippedParam_JDBCTypes() throws Exception {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("id", new Long(1));
 		parameters.put("name", "ArtistWithoutDOB");
 		// skipping "dob"

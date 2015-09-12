@@ -98,7 +98,7 @@ public class JceksKeySource implements KeySource {
 					+ CryptoConstants.ENCRYPTION_KEY_ALIAS);
 		}
 
-		this.keyCache = new ConcurrentHashMap<String, Key>();
+		this.keyCache = new ConcurrentHashMap<>();
 	}
 
 	private KeyStore createKeyStore(String keyStoreUrl) throws KeyStoreException, IOException,

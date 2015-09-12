@@ -431,7 +431,7 @@ public class DataContextIT extends ServerCase {
 				"INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
 						+ "VALUES ($pid, '$pt', $aid, $price)");
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("pid", new Integer(1));
 		map.put("pt", "P1");
 		map.put("aid", new Integer(33002));
@@ -457,7 +457,7 @@ public class DataContextIT extends ServerCase {
 
 		Map<String, Object>[] maps = new Map[3];
 		for (int i = 0; i < maps.length; i++) {
-			maps[i] = new HashMap<String, Object>();
+			maps[i] = new HashMap<>();
 			maps[i].put("pid", new Integer(1 + i));
 			maps[i].put("pt", "P-" + i);
 			maps[i].put("aid", new Integer(33002));

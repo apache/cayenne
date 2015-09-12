@@ -44,8 +44,8 @@ public class ServerCaseDataSourceFactory {
 
 		this.objectFactory = objectFactory;
 		this.dataSourceInfo = dataSourceInfo;
-		this.dataSources = new HashMap<String, DataSource>();
-		this.mapsWithDedicatedDataSource = new HashSet<String>(Arrays.asList("map-db1", "map-db2"));
+		this.dataSources = new HashMap<>();
+		this.mapsWithDedicatedDataSource = new HashSet<>(Arrays.asList("map-db1", "map-db2"));
 
 		this.sharedDataSource = createDataSource();
 	}

@@ -854,7 +854,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		private Object nextValue(String name) {
 
 			if (seen == null) {
-				seen = new HashMap<String, Object>();
+				seen = new HashMap<>();
 			}
 
 			Object p;

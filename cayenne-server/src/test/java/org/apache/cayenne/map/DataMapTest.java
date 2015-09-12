@@ -64,7 +64,7 @@ public class DataMapTest {
 
     @Test
     public void testInitWithProperties() {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(DataMap.CLIENT_SUPPORTED_PROPERTY, "true");
         properties.put(DataMap.DEFAULT_CLIENT_PACKAGE_PROPERTY, "aaaaa");
 

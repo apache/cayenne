@@ -181,10 +181,10 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             // add some intelligence - if we rename an entity, we should rename all links
             // to it as well
-            Map<String, String> renamedDbEntities = new HashMap<String, String>();
-            Map<String, String> renamedObjEntities = new HashMap<String, String>();
+            Map<String, String> renamedDbEntities = new HashMap<>();
+            Map<String, String> renamedObjEntities = new HashMap<>();
 
-            Map<String, String> renamedEmbeddables = new HashMap<String, String>();
+            Map<String, String> renamedEmbeddables = new HashMap<>();
 
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String oldName = dbEntity.getName();

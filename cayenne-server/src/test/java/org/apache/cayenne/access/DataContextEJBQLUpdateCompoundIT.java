@@ -72,7 +72,7 @@ public class DataContextEJBQLUpdateCompoundIT extends ServerCase {
     public void testUpdateNoQualifierToOneCompoundPK() throws Exception {
         createTwoCompoundPKTwoFK();
 
-        Map<String, String> key1 = new HashMap<String, String>();
+        Map<String, String> key1 = new HashMap<>();
         key1.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "b1");
         key1.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "b2");
         CompoundPkTestEntity object = Cayenne.objectForPK(

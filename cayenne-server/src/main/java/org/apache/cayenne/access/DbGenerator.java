@@ -155,9 +155,9 @@ public class DbGenerator {
 	 * NOT executed in this method.
 	 */
 	protected void buildStatements() {
-		dropTables = new HashMap<String, Collection<String>>();
-		createTables = new HashMap<String, String>();
-		createConstraints = new HashMap<String, List<String>>();
+		dropTables = new HashMap<>();
+		createTables = new HashMap<>();
+		createConstraints = new HashMap<>();
 
 		DbAdapter adapter = getAdapter();
 		for (final DbEntity dbe : this.dbEntitiesInInsertOrder) {

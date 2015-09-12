@@ -130,7 +130,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 	@Override
 	public SQLStatement processTemplate(String template, Map<String, ?> parameters) {
 		// have to make a copy of parameter map since we are gonna modify it..
-		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<String, Object>(
+		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<>(
 				parameters) : new HashMap<String, Object>(5);
 
 		SimpleNode parsedTemplate = parse(template);
@@ -142,7 +142,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 
 		SimpleNode parsedTemplate = parse(template);
 
-		Map<String, Object> internalParameters = new HashMap<String, Object>();
+		Map<String, Object> internalParameters = new HashMap<>();
 
 		PositionalParamMapper visitor = new PositionalParamMapper(positionalParameters, internalParameters);
 		parsedTemplate.jjtAccept(visitor, null);

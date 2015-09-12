@@ -584,7 +584,7 @@ public abstract class BaseContext implements ObjectContext {
 		if (userProperties == null) {
 			synchronized (this) {
 				if (userProperties == null) {
-					userProperties = new ConcurrentHashMap<String, Object>();
+					userProperties = new ConcurrentHashMap<>();
 				}
 			}
 		}

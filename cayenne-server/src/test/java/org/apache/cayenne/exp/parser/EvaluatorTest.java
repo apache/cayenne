@@ -265,7 +265,7 @@ public class EvaluatorTest {
     @Test
     public void testEvaluator_Persistent_MultiKey() {
 
-        Map<String, Object> lhsIdMap = new HashMap<String, Object>();
+        Map<String, Object> lhsIdMap = new HashMap<>();
         lhsIdMap.put("a", 1);
         lhsIdMap.put("b", "B");
         ObjectId lhsId = new ObjectId("X", lhsIdMap);
@@ -275,7 +275,7 @@ public class EvaluatorTest {
         Evaluator e = Evaluator.evaluator(lhs);
         assertNotNull(e);
 
-        Map<String, Object> rhsId1Map = new HashMap<String, Object>();
+        Map<String, Object> rhsId1Map = new HashMap<>();
         rhsId1Map.put("a", 1);
         rhsId1Map.put("b", "B");
         ObjectId rhsId1 = new ObjectId("X", rhsId1Map);
@@ -286,7 +286,7 @@ public class EvaluatorTest {
         assertTrue(e.eq(lhs, rhsId1));
         assertTrue(e.eq(lhs, rhsId1Map));
 
-        Map<String, Object> rhsId2Map = new HashMap<String, Object>();
+        Map<String, Object> rhsId2Map = new HashMap<>();
         rhsId2Map.put("a", 1);
         rhsId2Map.put("b", "BX");
         ObjectId rhsId2 = new ObjectId("X", rhsId2Map);

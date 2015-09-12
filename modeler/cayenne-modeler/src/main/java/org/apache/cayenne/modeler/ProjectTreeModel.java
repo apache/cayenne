@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.modeler;
 
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Map;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -28,201 +36,182 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.Query;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-
-
 /**
  * ProjectTreeModel is a model of Cayenne project tree.
  */
 public class ProjectTreeModel extends DefaultTreeModel {
 
-	private Filter filter=new Filter();
+	private Filter filter = new Filter();
 
 	/**
-     * Constructor for ProjectTreeModel.
-     */
-    public ProjectTreeModel(Project project) {
-        super(ProjectTreeFactory.wrapProjectNode(project.getRootNode()));
-    }
+	 * Constructor for ProjectTreeModel.
+	 */
+	public ProjectTreeModel(Project project) {
+		super(ProjectTreeFactory.wrapProjectNode(project.getRootNode()));
+	}
 
-    /**
-     * Re-inserts a tree node to preserve the correct ordering of items. Assumes that the
-     * tree is already ordered, except for one node.
-     */
-    public void positionNode(
-            MutableTreeNode parent,
-            DefaultMutableTreeNode treeNode,
-            Comparator comparator) {
+	/**
+	 * Re-inserts a tree node to preserve the correct ordering of items. Assumes
+	 * that the tree is already ordered, except for one node.
+	 */
+	public void positionNode(MutableTreeNode parent, DefaultMutableTreeNode treeNode, Comparator comparator) {
 
-        if (treeNode == null) {
-            return;
-        }
+		if (treeNode == null) {
+			return;
+		}
 
-        if (parent == null && treeNode != getRoot()) {
-            parent = (MutableTreeNode) treeNode.getParent();
-            if (parent == null) {
-                parent = getRootNode();
-            }
-        }
+		if (parent == null && treeNode != getRoot()) {
+			parent = (MutableTreeNode) treeNode.getParent();
+			if (parent == null) {
+				parent = getRootNode();
+			}
+		}
 
-        Object object = treeNode.getUserObject();
+		Object object = treeNode.getUserObject();
 
-        if (parent != null) {
-            int len = parent.getChildCount();
-            int ins = -1;
-            int rm = -1;
+		if (parent != null) {
+			int len = parent.getChildCount();
+			int ins = -1;
+			int rm = -1;
 
-            for (int i = 0; i < len; i++) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent
-                        .getChildAt(i);
+			for (int i = 0; i < len; i++) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent.getChildAt(i);
 
-                // remember to remove node
-                if (node == treeNode) {
-                    rm = i;
-                    continue;
-                }
+				// remember to remove node
+				if (node == treeNode) {
+					rm = i;
+					continue;
+				}
 
-                // no more insert checks
-                if (ins >= 0) {
-                    continue;
-                }
+				// no more insert checks
+				if (ins >= 0) {
+					continue;
+				}
 
-                // ObjEntities go before DbEntities
-                if (comparator.compare(object, node.getUserObject()) <= 0) {
-                    ins = i;
-                }
-            }
+				// ObjEntities go before DbEntities
+				if (comparator.compare(object, node.getUserObject()) <= 0) {
+					ins = i;
+				}
+			}
 
-            if (ins < 0) {
-                ins = len;
-            }
+			if (ins < 0) {
+				ins = len;
+			}
 
-            if (rm == ins) {
-                return;
-            }
+			if (rm == ins) {
+				return;
+			}
 
-            // remove
-            if (rm >= 0) {
-                removeNodeFromParent(treeNode);
-                if (rm < ins) {
-                    ins--;
-                }
-            }
-           try{
-            // insert
-            insertNodeInto(treeNode, parent, ins);
-           }
-           catch(NullPointerException e){
+			// remove
+			if (rm >= 0) {
+				removeNodeFromParent(treeNode);
+				if (rm < ins) {
+					ins--;
+				}
+			}
+			try {
+				// insert
+				insertNodeInto(treeNode, parent, ins);
+			} catch (NullPointerException e) {
 
-           }
-        }
-    }
+			}
+		}
+	}
 
-    /**
-     * Returns root node cast into DefaultMutableTreeNode.
-     */
-    public DefaultMutableTreeNode getRootNode() {
-        return (DefaultMutableTreeNode) super.getRoot();
-    }
+	/**
+	 * Returns root node cast into DefaultMutableTreeNode.
+	 */
+	public DefaultMutableTreeNode getRootNode() {
+		return (DefaultMutableTreeNode) super.getRoot();
+	}
 
-    public DefaultMutableTreeNode getNodeForObjectPath(Object[] path) {
-        if (path == null || path.length == 0) {
-            return null;
-        }
+	public DefaultMutableTreeNode getNodeForObjectPath(Object[] path) {
+		if (path == null || path.length == 0) {
+			return null;
+		}
 
-        DefaultMutableTreeNode currentNode = getRootNode();
+		DefaultMutableTreeNode currentNode = getRootNode();
 
-        // adjust for root node being in the path
-        int start = 0;
-        if (currentNode.getUserObject() == path[0]) {
-            start = 1;
-        }
+		// adjust for root node being in the path
+		int start = 0;
+		if (currentNode.getUserObject() == path[0]) {
+			start = 1;
+		}
 
-        for (int i = start; i < path.length; i++) {
-            DefaultMutableTreeNode foundNode = null;
-            Enumeration children = currentNode.children();
-            while (children.hasMoreElements()) {
-                DefaultMutableTreeNode child = (DefaultMutableTreeNode) children
-                        .nextElement();
-                if (child.getUserObject() == path[i]) {
-                    foundNode = child;
-                    break;
-                }
-            }
+		for (int i = start; i < path.length; i++) {
+			DefaultMutableTreeNode foundNode = null;
+			Enumeration children = currentNode.children();
+			while (children.hasMoreElements()) {
+				DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
+				if (child.getUserObject() == path[i]) {
+					foundNode = child;
+					break;
+				}
+			}
 
-            if (foundNode == null) {
-                return null;
-            }
-            else {
-                currentNode = foundNode;
-            }
-        }
+			if (foundNode == null) {
+				return null;
+			} else {
+				currentNode = foundNode;
+			}
+		}
 
-        return currentNode;
-    }
+		return currentNode;
+	}
 
+	public void setFiltered(Map<String, Boolean> filterMap) {
+		filter.setFilterMap(filterMap);
+	}
 
-    public void setFiltered(HashMap<String,Boolean> filterMap) {
-    	filter.setFilterMap(filterMap);
-    }
+	public int getChildCount(Object parent) {
+		int realCount = super.getChildCount(parent), filterCount = 0;
 
+		for (int i = 0; i < realCount; i++) {
+			DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) super.getChild(parent, i);
+			if (filter.pass(dmtn)) {
+				filterCount++;
+			}
+		}
+		return filterCount;
+	}
 
-      public int getChildCount(Object parent) {
-    	  int realCount = super.getChildCount(parent), filterCount =0;
+	public Object getChild(Object parent, int index) {
+		int cnt = -1;
+		for (int i = 0; i < super.getChildCount(parent); i++) {
+			Object child = super.getChild(parent, i);
+			if (filter.pass(child)) {
+				cnt++;
+			}
+			if (cnt == index) {
+				return child;
+			}
+		}
+		return null;
+	}
 
-    	  for (int i=0; i<realCount; i++) {
-    		  DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode)super.getChild(parent,i);
-    		  if (filter.pass(dmtn)) {
-    			  filterCount++;
-    		  }
-    	  }
-    	  return filterCount;
-      }
+	class Filter {
+		private Map<String, Boolean> filterMap;
+		boolean pass = true;
 
-      public Object getChild(Object parent, int index) {
-    	  int cnt=-1;
-    	  for (int i=0; i<super.getChildCount(parent); i++) {
-    		  Object child = super.getChild(parent,i);
-    		  if (filter.pass(child)) {
-    			  cnt++;
-    		  }
-    		  if (cnt==index) {
-    			  return child;
-    		  }
-    	  }
-    	  return null;
-      }
+		public void setFilterMap(Map<String, Boolean> filterMap) {
+			this.filterMap = filterMap;
+			pass = false;
+		}
 
-      class Filter {
-    	  private HashMap<String, Boolean> filterMap;
-    	  boolean pass=true;
+		public boolean pass(Object obj) {
+			Object root = ((DefaultMutableTreeNode) obj).getUserObject();
+			Object firstLeaf = ((DefaultMutableTreeNode) obj).getFirstLeaf().getUserObject();
 
-    	  public void setFilterMap(HashMap<String, Boolean> filterMap) {
-    		  this.filterMap=filterMap;
-    		  pass=false;
-    	  }
+			return ((pass) || (root instanceof DataMap) || (root instanceof DataNodeDescriptor)
+					|| (firstLeaf instanceof DbEntity && filterMap.get("dbEntity"))
+					|| (firstLeaf instanceof ObjEntity && filterMap.get("objEntity"))
+					|| (firstLeaf instanceof Embeddable && filterMap.get("embeddable"))
+					|| (firstLeaf instanceof Query && filterMap.get("query")) || (firstLeaf instanceof Procedure && filterMap
+					.get("procedure")));
+		}
 
-    	  public boolean pass(Object obj) {
-    		 Object root = ((DefaultMutableTreeNode) obj).getUserObject();
-    		 Object firstLeaf = ((DefaultMutableTreeNode) obj).getFirstLeaf().getUserObject();
-
-    		 return ((pass) ||
-    				 (root instanceof DataMap) ||
-    				 (root instanceof DataNodeDescriptor) ||
-    				 (firstLeaf instanceof DbEntity   && filterMap.get("dbEntity"))   ||
-    				 (firstLeaf instanceof ObjEntity  && filterMap.get("objEntity"))  ||
-    				 (firstLeaf instanceof Embeddable && filterMap.get("embeddable")) ||
-    				 (firstLeaf instanceof Query      && filterMap.get("query"))      ||
-    				 (firstLeaf instanceof Procedure  && filterMap.get("procedure")));
-    	  }
-
-    	  public boolean isFiltered() {
-    		  return pass;
-    	  }
-    	}
+		public boolean isFiltered() {
+			return pass;
+		}
+	}
 }

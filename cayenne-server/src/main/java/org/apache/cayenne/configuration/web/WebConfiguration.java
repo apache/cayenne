@@ -164,7 +164,7 @@ public class WebConfiguration {
             return Collections.EMPTY_MAP;
         }
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         while (en.hasMoreElements()) {
             String key = (String) en.nextElement();
             parameters.put(key, configuration.getInitParameter(key));

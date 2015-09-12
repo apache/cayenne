@@ -45,11 +45,11 @@ class SchemaAnalyzer {
 
 	SchemaAnalyzer() {
 		errorMessage = null;
-		mapTableInDB = new HashMap<String, String>();
-		tableNoInDB = new ArrayList<String>();
-		nameSchemaMap = new HashMap<String, Collection<String>>();
-		schemaNameMap = new HashMap<String, Collection<String>>();
-		entityTables = new HashMap<Map<String, String>, Collection<DbAttribute>>();
+		mapTableInDB = new HashMap<>();
+		tableNoInDB = new ArrayList<>();
+		nameSchemaMap = new HashMap<>();
+		schemaNameMap = new HashMap<>();
+		entityTables = new HashMap<>();
 	}
 
 	public List<String> getTableNoInDB() {
@@ -64,7 +64,7 @@ class SchemaAnalyzer {
 			String name = map.getKey();
 
 			try (ResultSet rs = md.getColumns(null, schema, name, null);) {
-				Map<String, String> schemaName = new HashMap<String, String>();
+				Map<String, String> schemaName = new HashMap<>();
 				schemaName.put(name, schema);
 				Collection<DbAttribute> atribute = entityTables.get(schemaName);
 				if (atribute == null) {
@@ -151,7 +151,7 @@ class SchemaAnalyzer {
 					tableNoInDB.add(name);
 				}
 			}
-			Map<String, String> schemaName = new HashMap<String, String>();
+			Map<String, String> schemaName = new HashMap<>();
 			schemaName.put(name, schema);
 			entityTables.put(schemaName, atributes);
 		}

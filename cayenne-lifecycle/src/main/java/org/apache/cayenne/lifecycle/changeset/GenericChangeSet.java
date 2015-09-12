@@ -69,7 +69,7 @@ public class GenericChangeSet implements ChangeSet {
                 Map<String, PropertyChange> map = changes.get(id);
 
                 if (map == null) {
-                    map = new HashMap<String, PropertyChange>();
+                    map = new HashMap<>();
                     changes.put((ObjectId) id, map);
                 }
 

@@ -30,24 +30,24 @@ import org.apache.cayenne.di.Provider;
  */
 class MapProvider implements Provider<Map<String, ?>> {
 
-    private Map<String, Provider<?>> providers;
+	private Map<String, Provider<?>> providers;
 
-    public MapProvider() {
-        this.providers = new HashMap<String, Provider<?>>();
-    }
+	public MapProvider() {
+		this.providers = new HashMap<>();
+	}
 
-    @Override
-    public Map<String, ?> get() throws DIRuntimeException {
-        Map<String, Object> map = new HashMap<String, Object>();
+	@Override
+	public Map<String, ?> get() throws DIRuntimeException {
+		Map<String, Object> map = new HashMap<>();
 
-        for (Entry<String, Provider<?>> entry : providers.entrySet()) {
-            map.put(entry.getKey(), entry.getValue().get());
-        }
+		for (Entry<String, Provider<?>> entry : providers.entrySet()) {
+			map.put(entry.getKey(), entry.getValue().get());
+		}
 
-        return map;
-    }
+		return map;
+	}
 
-    void put(String key, Provider<?> provider) {
-        providers.put(key, provider);
-    }
+	void put(String key, Provider<?> provider) {
+		providers.put(key, provider);
+	}
 }

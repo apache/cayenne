@@ -62,7 +62,7 @@ class XMLDataChannelDescriptorLoader_V3_0_0_1 {
 	private static final Map<String, String> dataSourceFactoryLegacyNameMapping;
 
 	static {
-		dataSourceFactoryLegacyNameMapping = new HashMap<String, String>();
+		dataSourceFactoryLegacyNameMapping = new HashMap<>();
 		dataSourceFactoryLegacyNameMapping.put("org.apache.cayenne.conf.DriverDataSourceFactory",
 				XMLPoolingDataSourceFactory.class.getName());
 		dataSourceFactoryLegacyNameMapping.put("org.apache.cayenne.conf.JNDIDataSourceFactory",

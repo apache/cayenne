@@ -18,9 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -182,7 +187,7 @@ public class EJBQLTranslationContext {
     String createIdAlias(String id) {
 
         if (idAliases == null) {
-            idAliases = new HashMap<String, String>();
+            idAliases = new HashMap<>();
         }
 
         for (int i = 0; i < 1000; i++) {
@@ -269,7 +274,7 @@ public class EJBQLTranslationContext {
      */
     void setAttribute(String var, Object value) {
         if (attributes == null) {
-            attributes = new HashMap<String, Object>();
+            attributes = new HashMap<>();
         }
 
         attributes.put(var, value);
@@ -375,7 +380,7 @@ public class EJBQLTranslationContext {
      */
     String bindParameter(Object value, String prefix) {
         if (boundParameters == null) {
-            boundParameters = new HashMap<String, Object>();
+            boundParameters = new HashMap<>();
         }
 
         String var = prefix + boundParameters.size();
@@ -419,7 +424,7 @@ public class EJBQLTranslationContext {
             alias = tableAliases.get(key);
         }
         else {
-            tableAliases = new HashMap<String, String>();
+            tableAliases = new HashMap<>();
             alias = null;
         }
 

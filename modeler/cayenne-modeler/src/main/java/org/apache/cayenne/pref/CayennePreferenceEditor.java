@@ -50,9 +50,9 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
 
     public CayennePreferenceEditor(CayenneProjectPreferences cayenneProjectPreferences) {
         this.cayenneProjectPreferences = cayenneProjectPreferences;
-        this.changedPreferences = new HashMap<Preferences, Map<String, String>>();
-        this.removedPreferences = new HashMap<Preferences, Map<String, String>>();
-        this.changedBooleanPreferences = new HashMap<Preferences, Map<String, Boolean>>();
+        this.changedPreferences = new HashMap<>();
+        this.removedPreferences = new HashMap<>();
+        this.changedBooleanPreferences = new HashMap<>();
         this.removedNode = new ArrayList<Preferences>();
         this.addedNode = new ArrayList<Preferences>();
     }

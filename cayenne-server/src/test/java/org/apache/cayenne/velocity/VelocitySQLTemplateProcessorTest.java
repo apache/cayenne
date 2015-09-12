@@ -171,7 +171,7 @@ public class VelocitySQLTemplateProcessorTest {
 				+ "COLUMN1 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN1')) "
 				+ "AND COLUMN2 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN2'))";
 
-		Map<String, Object> idMap = new HashMap<String, Object>();
+		Map<String, Object> idMap = new HashMap<>();
 		idMap.put("ID_COLUMN1", new Integer(3));
 		idMap.put("ID_COLUMN2", "aaa");
 		ObjectId id = new ObjectId("T", idMap);

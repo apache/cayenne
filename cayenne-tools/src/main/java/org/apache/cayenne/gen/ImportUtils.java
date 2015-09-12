@@ -34,242 +34,233 @@ import org.apache.cayenne.util.Util;
  */
 public class ImportUtils {
 
-    public static final String importOrdering[] = new String[] {
-            "java.", "javax.", "org.", "com."
-    };
+	public static final String importOrdering[] = new String[] { "java.", "javax.", "org.", "com." };
 
-    static final String primitives[] = new String[] {
-            "long", "double", "byte", "boolean", "float", "short", "int", "char"
-    };
+	static final String primitives[] = new String[] { "long", "double", "byte", "boolean", "float", "short", "int",
+			"char" };
 
-    static final String primitiveClasses[] = new String[] {
-            Long.class.getName(), Double.class.getName(), Byte.class.getName(),
-            Boolean.class.getName(), Float.class.getName(), Short.class.getName(),
-            Integer.class.getName(), Character.class.getName()
-    };
+	static final String primitiveClasses[] = new String[] { Long.class.getName(), Double.class.getName(),
+			Byte.class.getName(), Boolean.class.getName(), Float.class.getName(), Short.class.getName(),
+			Integer.class.getName(), Character.class.getName() };
 
-    static Map<String, String> classesForPrimitives = Util.toMap(
-            primitives,
-            primitiveClasses);
-    static Map<String, String> primitivesForClasses = Util.toMap(
-            primitiveClasses,
-            primitives);
+	static Map<String, String> classesForPrimitives = Util.toMap(primitives, primitiveClasses);
+	static Map<String, String> primitivesForClasses = Util.toMap(primitiveClasses, primitives);
 
-    protected Map<String, String> importTypesMap = new HashMap<String, String>();
-    protected Map<String, String> reservedImportTypesMap = new HashMap<String, String>(); // Types
-    // forced
-    // to
-    // be
-    // FQN
+	protected Map<String, String> importTypesMap = new HashMap<>();
 
-    protected String packageName;
+	// Types forced to be FQN
+	protected Map<String, String> reservedImportTypesMap = new HashMap<>();
 
-    public ImportUtils() {
-        super();
-    }
+	protected String packageName;
 
-    protected boolean canRegisterType(String typeName) {
-        // Not sure why this would ever happen, but it did
-        if (null == typeName)
-            return false;
+	public ImportUtils() {
+		super();
+	}
 
-        StringUtils stringUtils = StringUtils.getInstance();
-        String typeClassName = stringUtils.stripPackageName(typeName);
-        String typePackageName = stringUtils.stripClass(typeName);
+	protected boolean canRegisterType(String typeName) {
+		// Not sure why this would ever happen, but it did
+		if (null == typeName)
+			return false;
 
-        if (typePackageName.length() == 0)
-            return false; // disallow non-packaged types (primitives, probably)
-        if ("java.lang".equals(typePackageName))
-            return false;
+		StringUtils stringUtils = StringUtils.getInstance();
+		String typeClassName = stringUtils.stripPackageName(typeName);
+		String typePackageName = stringUtils.stripClass(typeName);
 
-        // Can only have one type -- rest must use fqn
-        if (reservedImportTypesMap.containsKey(typeClassName))
-            return false;
-        if (importTypesMap.containsKey(typeClassName))
-            return false;
+		if (typePackageName.length() == 0)
+			return false; // disallow non-packaged types (primitives, probably)
+		if ("java.lang".equals(typePackageName))
+			return false;
 
-        return true;
-    }
+		// Can only have one type -- rest must use fqn
+		if (reservedImportTypesMap.containsKey(typeClassName))
+			return false;
+		if (importTypesMap.containsKey(typeClassName))
+			return false;
 
-    /**
-     * Reserve a fully-qualified data type class name so it cannot be used by another
-     * class. No import statements will be generated for reserved types. Typically, this
-     * is the fully-qualified class name of the class being generated.
-     * 
-     * @param typeName FQ data type class name.
-     */
-    public void addReservedType(String typeName) {
-        if (!canRegisterType(typeName))
-            return;
+		return true;
+	}
 
-        StringUtils stringUtils = StringUtils.getInstance();
-        String typeClassName = stringUtils.stripPackageName(typeName);
+	/**
+	 * Reserve a fully-qualified data type class name so it cannot be used by
+	 * another class. No import statements will be generated for reserved types.
+	 * Typically, this is the fully-qualified class name of the class being
+	 * generated.
+	 * 
+	 * @param typeName
+	 *            FQ data type class name.
+	 */
+	public void addReservedType(String typeName) {
+		if (!canRegisterType(typeName))
+			return;
 
-        reservedImportTypesMap.put(typeClassName, typeName);
-    }
+		StringUtils stringUtils = StringUtils.getInstance();
+		String typeClassName = stringUtils.stripPackageName(typeName);
 
-    /**
-     * Register a fully-qualified data type class name. For example,
-     * org.apache.cayenne.CayenneDataObject.
-     * 
-     * @param typeName FQ data type class name.
-     */
-    public void addType(String typeName) {
-        if (!canRegisterType(typeName))
-            return;
+		reservedImportTypesMap.put(typeClassName, typeName);
+	}
 
-        StringUtils stringUtils = StringUtils.getInstance();
-        String typePackageName = stringUtils.stripClass(typeName);
-        String typeClassName = stringUtils.stripPackageName(typeName);
+	/**
+	 * Register a fully-qualified data type class name. For example,
+	 * org.apache.cayenne.CayenneDataObject.
+	 * 
+	 * @param typeName
+	 *            FQ data type class name.
+	 */
+	public void addType(String typeName) {
+		if (!canRegisterType(typeName))
+			return;
 
-        if (typePackageName.equals(packageName))
-            return;
+		StringUtils stringUtils = StringUtils.getInstance();
+		String typePackageName = stringUtils.stripClass(typeName);
+		String typeClassName = stringUtils.stripPackageName(typeName);
 
-        importTypesMap.put(typeClassName, typeName);
-    }
+		if (typePackageName.equals(packageName))
+			return;
 
-    /**
-     * Add the package name to use for this importUtil invocation.
-     * 
-     * @param packageName
-     */
-    public void setPackage(String packageName) {
-        this.packageName = packageName;
-    }
+		importTypesMap.put(typeClassName, typeName);
+	}
 
-    /**
-     * Performs processing similar to <code>formatJavaType(String)</code>, with special
-     * handling of primitive types and their Java class counterparts. This method allows
-     * users to make a decision whether to use primitives or not, regardless of how type
-     * is mapped.
-     */
-    public String formatJavaType(String typeName, boolean usePrimitives) {
-        if (usePrimitives) {
-            String primitive = primitivesForClasses.get(typeName);
-            return (primitive != null) ? primitive : formatJavaType(typeName);
-        }
-        else {
-            String primitiveClass = classesForPrimitives.get(typeName);
-            return (primitiveClass != null)
-                    ? formatJavaType(primitiveClass)
-                    : formatJavaType(typeName);
-        }
-    }
+	/**
+	 * Add the package name to use for this importUtil invocation.
+	 * 
+	 * @param packageName
+	 */
+	public void setPackage(String packageName) {
+		this.packageName = packageName;
+	}
 
-    /**
-     * Removes registered package and non-reserved registered type name prefixes from java
-     * types
-     */
-    public String formatJavaType(String typeName) {
-        if (typeName != null) {
-            StringUtils stringUtils = StringUtils.getInstance();
-            String typeClassName = stringUtils.stripPackageName(typeName);
+	/**
+	 * Performs processing similar to <code>formatJavaType(String)</code>, with
+	 * special handling of primitive types and their Java class counterparts.
+	 * This method allows users to make a decision whether to use primitives or
+	 * not, regardless of how type is mapped.
+	 */
+	public String formatJavaType(String typeName, boolean usePrimitives) {
+		if (usePrimitives) {
+			String primitive = primitivesForClasses.get(typeName);
+			return (primitive != null) ? primitive : formatJavaType(typeName);
+		} else {
+			String primitiveClass = classesForPrimitives.get(typeName);
+			return (primitiveClass != null) ? formatJavaType(primitiveClass) : formatJavaType(typeName);
+		}
+	}
 
-            if (!reservedImportTypesMap.containsKey(typeClassName)) {
-                if (importTypesMap.containsKey(typeClassName)) {
-                    if (typeName.equals(importTypesMap.get(typeClassName)))
-                        return typeClassName;
-                }
-            }
+	/**
+	 * Removes registered package and non-reserved registered type name prefixes
+	 * from java types
+	 */
+	public String formatJavaType(String typeName) {
+		if (typeName != null) {
+			StringUtils stringUtils = StringUtils.getInstance();
+			String typeClassName = stringUtils.stripPackageName(typeName);
 
-            String typePackageName = stringUtils.stripClass(typeName);
-            if ("java.lang".equals(typePackageName))
-                return typeClassName;
-            if ((null != packageName) && (packageName.equals(typePackageName)))
-                return typeClassName;
-        }
+			if (!reservedImportTypesMap.containsKey(typeClassName)) {
+				if (importTypesMap.containsKey(typeClassName)) {
+					if (typeName.equals(importTypesMap.get(typeClassName)))
+						return typeClassName;
+				}
+			}
 
-        return typeName;
-    }
+			String typePackageName = stringUtils.stripClass(typeName);
+			if ("java.lang".equals(typePackageName))
+				return typeClassName;
+			if ((null != packageName) && (packageName.equals(typePackageName)))
+				return typeClassName;
+		}
 
-    /**
-     * @since 3.0
-     */
-    public String formatJavaTypeAsNonBooleanPrimitive(String type) {
-        String value = ImportUtils.classesForPrimitives.get(type);
-        return formatJavaType(value != null ? value : type);
-    }
+		return typeName;
+	}
 
-    /**
-     * @since 3.0
-     */
-    public boolean isNonBooleanPrimitive(String type) {
-        return ImportUtils.classesForPrimitives.containsKey(type) && !isBoolean(type);
-    }
+	/**
+	 * @since 3.0
+	 */
+	public String formatJavaTypeAsNonBooleanPrimitive(String type) {
+		String value = ImportUtils.classesForPrimitives.get(type);
+		return formatJavaType(value != null ? value : type);
+	}
 
-    /**
-     * @since 3.0
-     */
-    public boolean isBoolean(String type) {
-        return "boolean".equals(type);
-    }
+	/**
+	 * @since 3.0
+	 */
+	public boolean isNonBooleanPrimitive(String type) {
+		return ImportUtils.classesForPrimitives.containsKey(type) && !isBoolean(type);
+	}
 
-    /**
-     * Generate package and list of import statements based on the registered types.
-     */
-    public String generate() {
-        StringBuilder outputBuffer = new StringBuilder();
+	/**
+	 * @since 3.0
+	 */
+	public boolean isBoolean(String type) {
+		return "boolean".equals(type);
+	}
 
-        if (null != packageName) {
-            outputBuffer.append("package ");
-            outputBuffer.append(packageName);
+	/**
+	 * Generate package and list of import statements based on the registered
+	 * types.
+	 */
+	public String generate() {
+		StringBuilder outputBuffer = new StringBuilder();
 
-            // Using UNIX line endings intentionally - generated Java files should look
-            // the same regardless of platform to prevent developer teams working on
-            // multiple OS's to override each other's work
-            outputBuffer.append(";\n\n");
-        }
+		if (null != packageName) {
+			outputBuffer.append("package ");
+			outputBuffer.append(packageName);
 
-        List<String> typesList = new ArrayList<String>(importTypesMap.values());
-        Collections.sort(typesList, new Comparator<String>() {
+			// Using UNIX line endings intentionally - generated Java files
+			// should look
+			// the same regardless of platform to prevent developer teams
+			// working on
+			// multiple OS's to override each other's work
+			outputBuffer.append(";\n\n");
+		}
 
-            public int compare(String s1, String s2) {
+		List<String> typesList = new ArrayList<String>(importTypesMap.values());
+		Collections.sort(typesList, new Comparator<String>() {
 
-                for (String ordering : importOrdering) {
-                    if ((s1.startsWith(ordering)) && (!s2.startsWith(ordering))) {
-                        return -1;
-                    }
-                    if ((!s1.startsWith(ordering)) && (s2.startsWith(ordering))) {
-                        return 1;
-                    }
-                }
+			public int compare(String s1, String s2) {
 
-                return s1.compareTo(s2);
-            }
-        });
+				for (String ordering : importOrdering) {
+					if ((s1.startsWith(ordering)) && (!s2.startsWith(ordering))) {
+						return -1;
+					}
+					if ((!s1.startsWith(ordering)) && (s2.startsWith(ordering))) {
+						return 1;
+					}
+				}
 
-        String lastStringPrefix = null;
-        boolean firstIteration = true;
-        for (String typeName : typesList) {
+				return s1.compareTo(s2);
+			}
+		});
 
-            if (firstIteration) {
-                firstIteration = false;
-            }
-            else {
-                outputBuffer.append('\n');
-            }
-            // Output another newline if we're in a different root package.
-            // Find root package
-            String thisStringPrefix = typeName;
-            int dotIndex = typeName.indexOf('.');
-            if (-1 != dotIndex) {
-                thisStringPrefix = typeName.substring(0, dotIndex);
-            }
-            // if this isn't the first import,
-            if (null != lastStringPrefix) {
-                // and it's different from the last import
-                if (false == thisStringPrefix.equals(lastStringPrefix)) {
-                    // output a newline; force UNIX style per comment above
-                    outputBuffer.append("\n");
-                }
-            }
-            lastStringPrefix = thisStringPrefix;
+		String lastStringPrefix = null;
+		boolean firstIteration = true;
+		for (String typeName : typesList) {
 
-            outputBuffer.append("import ");
-            outputBuffer.append(typeName);
-            outputBuffer.append(';');
-        }
+			if (firstIteration) {
+				firstIteration = false;
+			} else {
+				outputBuffer.append('\n');
+			}
+			// Output another newline if we're in a different root package.
+			// Find root package
+			String thisStringPrefix = typeName;
+			int dotIndex = typeName.indexOf('.');
+			if (-1 != dotIndex) {
+				thisStringPrefix = typeName.substring(0, dotIndex);
+			}
+			// if this isn't the first import,
+			if (null != lastStringPrefix) {
+				// and it's different from the last import
+				if (false == thisStringPrefix.equals(lastStringPrefix)) {
+					// output a newline; force UNIX style per comment above
+					outputBuffer.append("\n");
+				}
+			}
+			lastStringPrefix = thisStringPrefix;
 
-        return outputBuffer.toString();
-    }
+			outputBuffer.append("import ");
+			outputBuffer.append(typeName);
+			outputBuffer.append(';');
+		}
+
+		return outputBuffer.toString();
+	}
 }

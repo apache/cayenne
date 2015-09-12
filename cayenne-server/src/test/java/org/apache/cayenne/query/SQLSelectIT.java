@@ -364,7 +364,7 @@ public class SQLSelectIT extends ServerCase {
 		tPainting.insert(1, "painting1", 1.0);
 		tPainting.insert(2, "painting2", null);
 
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("a", null);
 		params.put("b", "painting1");
 

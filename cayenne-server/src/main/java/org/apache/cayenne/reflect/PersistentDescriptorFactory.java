@@ -215,7 +215,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             // using map instead of a Set to collect attributes, as
             // ObjEntity.getAttribute may return a decorator for attribute on
             // each call, resulting in dupes
-            final Map<String, ObjAttribute> attributes = new HashMap<String, ObjAttribute>();
+            final Map<String, ObjAttribute> attributes = new HashMap<>();
             final DbEntity dbEntity = descriptor.getEntity().getDbEntity();
 
             qualifier.traverse(new TraversalHelper() {

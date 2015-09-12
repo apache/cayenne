@@ -38,8 +38,8 @@ public class JceksKeySourceTest {
 
     @Test(expected = CayenneCryptoException.class)
     public void testConstructor_NoUrl() {
-        Map<String, String> props = new HashMap<String, String>();
-        Map<String, char[]> creds = new HashMap<String, char[]>();
+        Map<String, String> props = new HashMap<>();
+        Map<String, char[]> creds = new HashMap<>();
         new JceksKeySource(props, creds);
     }
 
@@ -49,11 +49,11 @@ public class JceksKeySourceTest {
         URL url = getClass().getResource(KS1_JCEKS);
         assertNotNull(url);
 
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put(CryptoConstants.KEYSTORE_URL, url.toExternalForm());
         props.put(CryptoConstants.ENCRYPTION_KEY_ALIAS, "k2");
 
-        Map<String, char[]> creds = new HashMap<String, char[]>();
+        Map<String, char[]> creds = new HashMap<>();
         creds.put(CryptoConstants.KEY_PASSWORD, TEST_KEY_PASS);
 
         JceksKeySource ks = new JceksKeySource(props, creds);

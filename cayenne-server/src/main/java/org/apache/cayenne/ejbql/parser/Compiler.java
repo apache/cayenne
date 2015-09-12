@@ -73,8 +73,8 @@ class Compiler {
 
     Compiler(EntityResolver resolver) {
         this.resolver = resolver;
-        this.descriptorsById = new HashMap<String, ClassDescriptor>();
-        this.incomingById = new HashMap<String, ObjRelationship>();
+        this.descriptorsById = new HashMap<>();
+        this.incomingById = new HashMap<>();
 
         this.rootDescriptorVisitor = new SelectExpressionVisitor();
         this.fromItemVisitor = new FromItemVisitor();

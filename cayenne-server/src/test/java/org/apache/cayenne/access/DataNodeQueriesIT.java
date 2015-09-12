@@ -89,7 +89,7 @@ public class DataNodeQueriesIT extends ServerCase {
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
         SQLTemplate query = new SQLTemplate(Object.class, template);
 
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 1l);
         bindings.put("name", "a1");
         bindings.put("dob", new Date(System.currentTimeMillis()));

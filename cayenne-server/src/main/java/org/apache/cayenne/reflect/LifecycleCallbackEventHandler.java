@@ -41,8 +41,8 @@ class LifecycleCallbackEventHandler {
 
     LifecycleCallbackEventHandler(EntityResolver resolver) {
         this.resolver = resolver;
-        this.listeners = new HashMap<String, Collection<AbstractCallback>>();
-        this.defaultListeners = new ArrayList<AbstractCallback>();
+        this.listeners = new HashMap<>();
+        this.defaultListeners = new ArrayList<>();
     }
 
     private boolean excludingDefaultListeners(String entityName) {

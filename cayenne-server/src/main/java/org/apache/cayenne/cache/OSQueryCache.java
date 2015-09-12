@@ -222,7 +222,7 @@ public class OSQueryCache implements QueryCache {
 
     private RefreshSpecification nonNullSpec(String name) {
         if (refreshSpecifications == null) {
-            refreshSpecifications = new HashMap<String, RefreshSpecification>();
+            refreshSpecifications = new HashMap<>();
         }
 
         RefreshSpecification spec = refreshSpecifications.get(name);

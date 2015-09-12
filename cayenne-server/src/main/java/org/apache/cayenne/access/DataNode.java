@@ -96,7 +96,7 @@ public class DataNode implements QueryEngine {
 	public DataNode(String name) {
 
 		this.name = name;
-		this.dataMaps = new HashMap<String, DataMap>();
+		this.dataMaps = new HashMap<>();
 		this.readThroughDataSource = new TransactionDataSource();
 
 		// make sure logger is not null

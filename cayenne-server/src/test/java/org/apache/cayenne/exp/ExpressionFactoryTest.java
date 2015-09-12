@@ -281,7 +281,7 @@ public class ExpressionFactoryTest {
 
 		// check for N in (1..3)
 		for (int n = 1; n <= 3; n++) {
-			Map<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 
 			// populate map
 			for (int i = 1; i <= n; i++) {

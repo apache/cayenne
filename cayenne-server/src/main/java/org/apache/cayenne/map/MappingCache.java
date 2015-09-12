@@ -54,14 +54,14 @@ class MappingCache implements MappingNamespace {
 
         this.maps = maps;
 
-        this.embeddables = new HashMap<String, Embeddable>();
-        this.queries = new HashMap<String, Query>();
-        this.dbEntities = new HashMap<String, DbEntity>();
-        this.objEntities = new HashMap<String, ObjEntity>();
-        this.objEntitiesByClassName = new HashMap<String, ObjEntity>();
-        this.procedures = new HashMap<String, Procedure>();
-        this.entityInheritanceCache = new HashMap<String, EntityInheritanceTree>();
-        this.results = new HashMap<String, SQLResult>();
+        this.embeddables = new HashMap<>();
+        this.queries = new HashMap<>();
+        this.dbEntities = new HashMap<>();
+        this.objEntities = new HashMap<>();
+        this.objEntitiesByClassName = new HashMap<>();
+        this.procedures = new HashMap<>();
+        this.entityInheritanceCache = new HashMap<>();
+        this.results = new HashMap<>();
 
         index();
     }

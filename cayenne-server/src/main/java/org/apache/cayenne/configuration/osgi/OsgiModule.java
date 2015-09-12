@@ -37,7 +37,7 @@ public class OsgiModule implements Module {
     private Map<String, ClassLoader> perTypeClassLoaders;
 
     OsgiModule() {
-        this.perTypeClassLoaders = new HashMap<String, ClassLoader>();
+        this.perTypeClassLoaders = new HashMap<>();
     }
 
     void setTypeFromProjectBundle(Class<?> typeFromProjectBundle) {

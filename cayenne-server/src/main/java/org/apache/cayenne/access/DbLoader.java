@@ -266,7 +266,7 @@ public class DbLoader {
 		}
 
 		// Get all the foreign keys referencing this table
-		Map<String, DbEntity> tablesMap = new HashMap<String, DbEntity>();
+		Map<String, DbEntity> tablesMap = new HashMap<>();
 		for (DbEntity table : tables) {
 			tablesMap.put(table.getName(), table);
 		}
@@ -377,7 +377,7 @@ public class DbLoader {
 
 	private Map<String, Set<ExportedKey>> loadExportedKeys(DbLoaderConfiguration config, String catalog, String schema,
 			Map<String, DbEntity> tables) throws SQLException {
-		Map<String, Set<ExportedKey>> keys = new HashMap<String, Set<ExportedKey>>();
+		Map<String, Set<ExportedKey>> keys = new HashMap<>();
 
 		for (DbEntity dbEntity : tables.values()) {
 			if (!delegate.dbRelationship(dbEntity)) {
@@ -392,7 +392,7 @@ public class DbLoader {
 				LOGGER.info(
 						"Error getting relationships for '" + catalog + "." + schema + "', ignoring. "
 								+ cay182Ex.getMessage(), cay182Ex);
-				return new HashMap<String, Set<ExportedKey>>();
+				return new HashMap<>();
 			}
 
 			try {
@@ -737,7 +737,7 @@ public class DbLoader {
 	}
 
 	private Map<String, Procedure> loadProcedures(DbLoaderConfiguration config) throws SQLException {
-		Map<String, Procedure> procedures = new HashMap<String, Procedure>();
+		Map<String, Procedure> procedures = new HashMap<>();
 
 		FiltersConfig filters = config.getFiltersConfig();
 		for (CatalogFilter catalog : filters.catalogs) {
@@ -755,7 +755,7 @@ public class DbLoader {
 
 	private Map<String, Procedure> loadProcedures(FiltersConfig filters, String catalog, String schema)
 			throws SQLException {
-		Map<String, Procedure> procedures = new HashMap<String, Procedure>();
+		Map<String, Procedure> procedures = new HashMap<>();
 		// get procedures
 
 		try (ResultSet rs = getMetaData().getProcedures(catalog, schema, WILDCARD);) {

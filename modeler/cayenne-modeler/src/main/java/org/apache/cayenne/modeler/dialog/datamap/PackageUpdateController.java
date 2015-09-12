@@ -95,7 +95,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     protected void updatePackage() {
         boolean doAll = isAllEntities();
 
-        Map<String, String> oldNameEmbeddableToNewName = new HashMap<String,String>();
+        Map<String, String> oldNameEmbeddableToNewName = new HashMap<>();
         
         for (Embeddable embeddable : dataMap.getEmbeddables()) {
             

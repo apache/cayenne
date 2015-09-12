@@ -171,7 +171,7 @@ public class EntityIdCoder {
                     .fromStringId(decoded));
         }
 
-        Map<String, Object> idMap = new HashMap<String, Object>(idSize);
+        Map<String, Object> idMap = new HashMap<>(idSize);
         StringTokenizer toks = new StringTokenizer(idValues, ID_SEPARATOR);
 
         if (toks.countTokens() != converters.size()) {

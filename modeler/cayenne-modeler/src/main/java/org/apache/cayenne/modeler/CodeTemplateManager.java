@@ -37,91 +37,83 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CodeTemplateManager {
 
-    public static final String STANDARD_SERVER_SUPERCLASS = "Standard Server Superclass";
-    public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
-    static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
-    static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
+	public static final String STANDARD_SERVER_SUPERCLASS = "Standard Server Superclass";
+	public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
+	static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
+	static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
 
-    public static final String NODE_NAME = "codeTemplateManager";
+	public static final String NODE_NAME = "codeTemplateManager";
 
-    protected List<String> standardSubclassTemplates;
-    protected List<String> standardSuperclassTemplates;
-    protected Map<String, String> customTemplates;
-    protected Map<String, String> standardTemplates;
+	protected List<String> standardSubclassTemplates;
+	protected List<String> standardSuperclassTemplates;
+	protected Map<String, String> customTemplates;
+	protected Map<String, String> standardTemplates;
 
-    private static Log logger = LogFactory.getLog(CodeTemplateManager.class);
+	private static Log logger = LogFactory.getLog(CodeTemplateManager.class);
 
-    public Preferences getTemplatePreferences(Application application) {
-        return application.getPreferencesNode(this.getClass(), NODE_NAME);
-    }
+	public Preferences getTemplatePreferences(Application application) {
+		return application.getPreferencesNode(this.getClass(), NODE_NAME);
+	}
 
-    public CodeTemplateManager(Application application) {
-        standardSuperclassTemplates = new ArrayList<String>(3);
+	public CodeTemplateManager(Application application) {
+		standardSuperclassTemplates = new ArrayList<String>(3);
 
-        standardSuperclassTemplates.add(STANDARD_SERVER_SUPERCLASS);
-        standardSuperclassTemplates.add(STANDARD_CLIENT_SUPERCLASS);
- 
-        standardSubclassTemplates = new ArrayList<String>(3);
-        standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
-        standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
+		standardSuperclassTemplates.add(STANDARD_SERVER_SUPERCLASS);
+		standardSuperclassTemplates.add(STANDARD_CLIENT_SUPERCLASS);
 
-        updateCustomTemplates(getTemplatePreferences(application));
+		standardSubclassTemplates = new ArrayList<String>(3);
+		standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
+		standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 
-        standardTemplates = new HashMap<String, String>();
-        standardTemplates.put(
-                STANDARD_SERVER_SUPERCLASS,
-                ClassGenerationAction.SUPERCLASS_TEMPLATE);
-        standardTemplates.put(
-                STANDARD_CLIENT_SUPERCLASS,
-                ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
-        standardTemplates.put(
-                STANDARD_SERVER_SUBCLASS,
-                ClassGenerationAction.SUBCLASS_TEMPLATE);
-        standardTemplates.put(
-                STANDARD_CLIENT_SUBCLASS,
-                ClientClassGenerationAction.SUBCLASS_TEMPLATE);
-    }
+		updateCustomTemplates(getTemplatePreferences(application));
 
-    /**
-     * Updates custom templates from preferences.
-     */
-    public void updateCustomTemplates(Preferences preference) {
-        String[] keys = null;
-        try {
-            keys = preference.childrenNames();
-        }
-        catch (BackingStoreException e) {
-            logger.warn("Error reading preferences");
-        }
-        this.customTemplates = new HashMap<String, String>(keys.length, 1);
+		standardTemplates = new HashMap<>();
+		standardTemplates.put(STANDARD_SERVER_SUPERCLASS, ClassGenerationAction.SUPERCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_CLIENT_SUPERCLASS, ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_SERVER_SUBCLASS, ClassGenerationAction.SUBCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_CLIENT_SUBCLASS, ClientClassGenerationAction.SUBCLASS_TEMPLATE);
+	}
 
-        for (int j = 0; j < keys.length; j++) {
-            FSPath path = new FSPath(preference.node(keys[j]));
-            customTemplates.put(keys[j], path.getPath());
-        }
-    }
+	/**
+	 * Updates custom templates from preferences.
+	 */
+	public void updateCustomTemplates(Preferences preference) {
+		String[] keys = null;
+		try {
+			keys = preference.childrenNames();
+		} catch (BackingStoreException e) {
+			logger.warn("Error reading preferences");
+		}
+		this.customTemplates = new HashMap<>(keys.length, 1);
 
-    // TODO: andrus, 12/5/2007 - this should also take a "pairs" parameter to correctly
-    // assign standard templates
-    public String getTemplatePath(String name) {
-        Object value = customTemplates.get(name);
-        if (value != null) {
-            return value.toString();
-        }
+		for (int j = 0; j < keys.length; j++) {
+			FSPath path = new FSPath(preference.node(keys[j]));
+			customTemplates.put(keys[j], path.getPath());
+		}
+	}
 
-        value = standardTemplates.get(name);
-        return value != null ? value.toString() : null;
-    }
+	// TODO: andrus, 12/5/2007 - this should also take a "pairs" parameter to
+	// correctly
+	// assign standard templates
+	public String getTemplatePath(String name) {
+		Object value = customTemplates.get(name);
+		if (value != null) {
+			return value.toString();
+		}
 
-    public Map<String, String> getCustomTemplates() {
-        return customTemplates;
-    }
+		value = standardTemplates.get(name);
+		return value != null ? value.toString() : null;
+	}
 
-    public List<String> getStandardSubclassTemplates() {
-        return standardSubclassTemplates;
-    }
+	public Map<String, String> getCustomTemplates() {
+		return customTemplates;
+	}
 
-    public List<String> getStandardSuperclassTemplates() {
-        return standardSuperclassTemplates;
-    }
+	public List<String> getStandardSubclassTemplates() {
+		return standardSubclassTemplates;
+	}
+
+	public List<String> getStandardSuperclassTemplates() {
+		return standardSuperclassTemplates;
+	}
 }

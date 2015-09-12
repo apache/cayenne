@@ -82,7 +82,7 @@ public class SchemaUpdateStrategyBase extends ServerCase {
 
 	protected Map<String, Boolean> tablesMap() {
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
-		Map<String, String> tables = new HashMap<String, String>();
+		Map<String, String> tables = new HashMap<>();
 
 		// add upper/lower case permutations
 		for (String name : map.getDbEntityMap().keySet()) {
@@ -90,7 +90,7 @@ public class SchemaUpdateStrategyBase extends ServerCase {
 			tables.put(name.toUpperCase(), name);
 		}
 
-		Map<String, Boolean> presentInDB = new HashMap<String, Boolean>();
+		Map<String, Boolean> presentInDB = new HashMap<>();
 		for (String name : map.getDbEntityMap().keySet()) {
 			presentInDB.put(name, false);
 		}

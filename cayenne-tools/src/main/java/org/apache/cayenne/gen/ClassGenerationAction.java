@@ -93,7 +93,7 @@ public class ClassGenerationAction {
 		this.usePkgPath = true;
 		this.makePairs = true;
 		this.context = new VelocityContext();
-		this.templateCache = new HashMap<String, Template>(5);
+		this.templateCache = new HashMap<>(5);
 
 		this.artifacts = new ArrayList<Artifact>();
 	}

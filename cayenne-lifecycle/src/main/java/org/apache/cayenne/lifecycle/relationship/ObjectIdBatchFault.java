@@ -36,104 +36,101 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * Provides lazy faulting functionality for a map of objects identified by String
- * ObjectId.
+ * Provides lazy faulting functionality for a map of objects identified by
+ * String ObjectId.
  * 
  * @since 3.1
  */
 class ObjectIdBatchFault {
 
-    private ObjectContext context;
-    private List<ObjectIdBatchSourceItem> sources;
-    private volatile Map<String, Object> resolved;
+	private ObjectContext context;
+	private List<ObjectIdBatchSourceItem> sources;
+	private volatile Map<String, Object> resolved;
 
-    ObjectIdBatchFault(ObjectContext context, List<ObjectIdBatchSourceItem> sources) {
-        this.context = context;
-        this.sources = sources;
-    }
+	ObjectIdBatchFault(ObjectContext context, List<ObjectIdBatchSourceItem> sources) {
+		this.context = context;
+		this.sources = sources;
+	}
 
-    Map<String, Object> getObjects() {
+	Map<String, Object> getObjects() {
 
-        if (resolved == null) {
+		if (resolved == null) {
 
-            synchronized (this) {
+			synchronized (this) {
 
-                if (resolved == null) {
-                    resolved = fetchObjects();
-                }
-            }
-        }
+				if (resolved == null) {
+					resolved = fetchObjects();
+				}
+			}
+		}
 
-        return resolved;
-    }
+		return resolved;
+	}
 
-    private Map<String, Object> fetchObjects() {
+	private Map<String, Object> fetchObjects() {
 
-        if (sources == null) {
-            return Collections.emptyMap();
-        }
+		if (sources == null) {
+			return Collections.emptyMap();
+		}
 
-        EntityResolver resolver = context.getEntityResolver();
+		EntityResolver resolver = context.getEntityResolver();
 
-        // simple case of one query, handle it separately for performance reasons
-        if (sources.size() == 1) {
+		// simple case of one query, handle it separately for performance
+		// reasons
+		if (sources.size() == 1) {
 
-            String uuid = sources.get(0).getId();
-            String entityName = EntityIdCoder.getEntityName(uuid);
+			String uuid = sources.get(0).getId();
+			String entityName = EntityIdCoder.getEntityName(uuid);
 
-            ObjEntity entity = resolver.getObjEntity(entityName);
-            ObjectId id = new EntityIdCoder(entity).toObjectId(uuid);
+			ObjEntity entity = resolver.getObjEntity(entityName);
+			ObjectId id = new EntityIdCoder(entity).toObjectId(uuid);
 
-            Object object = Cayenne.objectForQuery(context, new ObjectIdQuery(id));
-            if (object == null) {
-                return Collections.emptyMap();
-            }
-            else {
-                return Collections.singletonMap(uuid, object);
-            }
-        }
+			Object object = Cayenne.objectForQuery(context, new ObjectIdQuery(id));
+			if (object == null) {
+				return Collections.emptyMap();
+			} else {
+				return Collections.singletonMap(uuid, object);
+			}
+		}
 
-        Map<String, SelectQuery<DataObject>> queriesByEntity = new HashMap<String, SelectQuery<DataObject>>();
-        Map<String, EntityIdCoder> codersByEntity = new HashMap<String, EntityIdCoder>();
+		Map<String, SelectQuery<DataObject>> queriesByEntity = new HashMap<>();
+		Map<String, EntityIdCoder> codersByEntity = new HashMap<>();
 
-        for (ObjectIdBatchSourceItem source : sources) {
+		for (ObjectIdBatchSourceItem source : sources) {
 
-            String uuid = source.getId();
-            String entityName = EntityIdCoder.getEntityName(uuid);
-            EntityIdCoder coder = codersByEntity.get(entityName);
-            SelectQuery<DataObject> query;
+			String uuid = source.getId();
+			String entityName = EntityIdCoder.getEntityName(uuid);
+			EntityIdCoder coder = codersByEntity.get(entityName);
+			SelectQuery<DataObject> query;
 
-            if (coder == null) {
-                coder = new EntityIdCoder(resolver.getObjEntity(entityName));
-                codersByEntity.put(entityName, coder);
+			if (coder == null) {
+				coder = new EntityIdCoder(resolver.getObjEntity(entityName));
+				codersByEntity.put(entityName, coder);
 
-                query = new SelectQuery<DataObject>(entityName);
-                queriesByEntity.put(entityName, query);
-            }
-            else {
-                query = queriesByEntity.get(entityName);
-            }
+				query = new SelectQuery<DataObject>(entityName);
+				queriesByEntity.put(entityName, query);
+			} else {
+				query = queriesByEntity.get(entityName);
+			}
 
-            ObjectId id = coder.toObjectId(uuid);
-            Expression idExp = ExpressionFactory.matchAllDbExp(
-                    id.getIdSnapshot(),
-                    Expression.EQUAL_TO);
-            query.orQualifier(idExp);
-        }
+			ObjectId id = coder.toObjectId(uuid);
+			Expression idExp = ExpressionFactory.matchAllDbExp(id.getIdSnapshot(), Expression.EQUAL_TO);
+			query.orQualifier(idExp);
+		}
 
-        int capacity = (int) Math.ceil(sources.size() / 0.75d);
-        Map<String, Object> results = new HashMap<String, Object>(capacity);
+		int capacity = (int) Math.ceil(sources.size() / 0.75d);
+		Map<String, Object> results = new HashMap<>(capacity);
 
-        for (SelectQuery<DataObject> query : queriesByEntity.values()) {
+		for (SelectQuery<DataObject> query : queriesByEntity.values()) {
 
-            EntityIdCoder coder = codersByEntity.get(query.getRoot());
-            List<DataObject> objects = context.performQuery(query);
-            for (DataObject object : objects) {
-                String uuid = coder.toStringId(object.getObjectId());
-                results.put(uuid, object);
-            }
-        }
+			EntityIdCoder coder = codersByEntity.get(query.getRoot());
+			List<DataObject> objects = context.performQuery(query);
+			for (DataObject object : objects) {
+				String uuid = coder.toStringId(object.getObjectId());
+				results.put(uuid, object);
+			}
+		}
 
-        return results;
-    }
+		return results;
+	}
 }

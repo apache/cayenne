@@ -307,7 +307,7 @@ public class UnitDbAdapter {
     protected Map<String, Collection<String>> getConstraints(Connection conn, DataMap map,
             Collection<String> includeTables) throws SQLException {
 
-        Map<String, Collection<String>> constraintMap = new HashMap<String, Collection<String>>();
+        Map<String, Collection<String>> constraintMap = new HashMap<>();
 
         DatabaseMetaData metadata = conn.getMetaData();
 

@@ -18,36 +18,37 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogConfigurationException;
 import org.apache.commons.logging.impl.LogFactoryImpl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Factory for creating ModelerLogger instances. LogFactoryImpl is 
- * subclassed to save default behavior 
+ * Factory for creating ModelerLogger instances. LogFactoryImpl is subclassed to
+ * save default behavior
  */
 public class ModelerLogFactory extends LogFactoryImpl {
-    /**
-     * Local cache of modeler loggers
-     */
-    protected Map<String, ModelerLogger> localCache;
-    
-    public ModelerLogFactory() {
-        localCache = new HashMap<String, ModelerLogger>();
-    }
-    
-    @Override
-    public Log getInstance(String name) throws LogConfigurationException {
-        ModelerLogger local = localCache.get(name);
-        if (local == null) {
-            Log def = super.getInstance(name);
-            
-            local = new ModelerLogger(name, def);
-            localCache.put(name, local);
-        }
-        return local;
-    }
+
+	/**
+	 * Local cache of modeler loggers
+	 */
+	protected Map<String, ModelerLogger> localCache;
+
+	public ModelerLogFactory() {
+		localCache = new HashMap<>();
+	}
+
+	@Override
+	public Log getInstance(String name) throws LogConfigurationException {
+		ModelerLogger local = localCache.get(name);
+		if (local == null) {
+			Log def = super.getInstance(name);
+
+			local = new ModelerLogger(name, def);
+			localCache.put(name, local);
+		}
+		return local;
+	}
 }

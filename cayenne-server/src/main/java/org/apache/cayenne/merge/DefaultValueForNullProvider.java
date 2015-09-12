@@ -29,7 +29,7 @@ import org.apache.cayenne.map.DbEntity;
 
 public class DefaultValueForNullProvider implements ValueForNullProvider {
 
-    private Map<String, SQLParameterBinding> values = new HashMap<String, SQLParameterBinding>();
+    private Map<String, SQLParameterBinding> values = new HashMap<>();
 
     public void set(DbEntity entity, DbAttribute column, Object value, int type) {
         values.put(createKey(entity, column), new SQLParameterBinding(value, type, column

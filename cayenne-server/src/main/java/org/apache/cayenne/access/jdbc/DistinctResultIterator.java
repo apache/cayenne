@@ -164,7 +164,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
             // TODO: this can be optimized by creating an array with id keys
             // to avoid iterating over default entity attributes...
 
-            Map<String, Object> id = new HashMap<String, Object>();
+            Map<String, Object> id = new HashMap<>();
             for (final DbAttribute pk : defaultEntity.getPrimaryKeys()) {
                 id.put(pk.getName(), next.get(pk.getName()));
             }

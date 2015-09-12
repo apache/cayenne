@@ -182,7 +182,7 @@ public class PropertyUtilsTest {
 	@Test
 	public void testSetPropertyMap() {
 		Map<String, Object> o1 = createMap();
-		Map<String, Object> o2 = new HashMap<String, Object>();
+		Map<String, Object> o2 = new HashMap<>();
 
 		PropertyUtils.setProperty(o2, "byteArrayField", o1.get("byteArrayField"));
 		PropertyUtils.setProperty(o2, "integerField", o1.get("integerField"));
@@ -367,7 +367,7 @@ public class PropertyUtilsTest {
 	}
 
 	protected Map<String, Object> createMap() {
-		Map<String, Object> o1 = new HashMap<String, Object>();
+		Map<String, Object> o1 = new HashMap<>();
 		o1.put("byteArrayField", new byte[] { 1, 2, 3 });
 		o1.put("integerField", new Integer(33));
 		o1.put("intField", new Integer(-44));

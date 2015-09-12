@@ -38,7 +38,7 @@ class DbGeneratorPostprocessor {
 	private static final Map<String, HSQLDBPostprocessor> postprocessors;
 
 	static {
-		postprocessors = new HashMap<String, HSQLDBPostprocessor>();
+		postprocessors = new HashMap<>();
 		postprocessors.put(HSQLDBAdapter.class.getName(), new HSQLDBPostprocessor());
 	}
 

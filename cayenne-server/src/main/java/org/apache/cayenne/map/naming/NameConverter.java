@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
  */
 public class NameConverter {
 
-    private static final Map<String, String> SPECIAL_CHAR_TO_JAVA_MAPPING = new HashMap<String, String>();
+    private static final Map<String, String> SPECIAL_CHAR_TO_JAVA_MAPPING = new HashMap<>();
 
     static {
         SPECIAL_CHAR_TO_JAVA_MAPPING.put("#", "pound");

@@ -37,121 +37,116 @@ import org.apache.cayenne.map.DbRelationship;
  */
 public class DataObjectMatchTranslator {
 
-    protected Map<String, DbAttribute> attributes;
-    protected Map<String, Object> values;
-    protected String operation;
-    protected Expression expression;
-    protected DbRelationship relationship;
-    protected String joinSplitAlias;
+	protected Map<String, DbAttribute> attributes;
+	protected Map<String, Object> values;
+	protected String operation;
+	protected Expression expression;
+	protected DbRelationship relationship;
+	protected String joinSplitAlias;
 
-    public Expression getExpression() {
-        return expression;
-    }
+	public Expression getExpression() {
+		return expression;
+	}
 
-    public void setExpression(Expression expression) {
-        this.expression = expression;
-    }
+	public void setExpression(Expression expression) {
+		this.expression = expression;
+	}
 
-    public void reset() {
-        attributes = null;
-        values = null;
-        operation = null;
-        expression = null;
-        relationship = null;
-    }
+	public void reset() {
+		attributes = null;
+		values = null;
+		operation = null;
+		expression = null;
+		relationship = null;
+	}
 
-    /**
-     * Initializes itself to do translation of the match ending with a DbRelationship.
-     * 
-     * @since 3.0
-     */
-    public void setRelationship(DbRelationship rel, String joinSplitAlias) {
-        this.relationship = rel;
-        this.joinSplitAlias = joinSplitAlias;
-        attributes = new HashMap<String, DbAttribute>(rel.getJoins().size() * 2);
+	/**
+	 * Initializes itself to do translation of the match ending with a
+	 * DbRelationship.
+	 * 
+	 * @since 3.0
+	 */
+	public void setRelationship(DbRelationship rel, String joinSplitAlias) {
+		this.relationship = rel;
+		this.joinSplitAlias = joinSplitAlias;
+		attributes = new HashMap<>(rel.getJoins().size() * 2);
 
-        if (rel.isToMany() || !rel.isToPK()) {
+		if (rel.isToMany() || !rel.isToPK()) {
 
-            // match on target PK
-            DbEntity ent = (DbEntity) rel.getTargetEntity();
+			// match on target PK
+			DbEntity ent = (DbEntity) rel.getTargetEntity();
 
-            // index by name
-            for (DbAttribute pkAttr : ent.getPrimaryKeys()) {
-                attributes.put(pkAttr.getName(), pkAttr);
-            }
-        }
-        else {
+			// index by name
+			for (DbAttribute pkAttr : ent.getPrimaryKeys()) {
+				attributes.put(pkAttr.getName(), pkAttr);
+			}
+		} else {
 
-            // match on this FK
-            for (DbJoin join : rel.getJoins()) {
-                // index by target name
-                attributes.put(join.getTargetName(), join.getSource());
-            }
-        }
-    }
+			// match on this FK
+			for (DbJoin join : rel.getJoins()) {
+				// index by target name
+				attributes.put(join.getTargetName(), join.getSource());
+			}
+		}
+	}
 
-    public void setDataObject(Persistent obj) {
-        if (obj == null) {
-            values = Collections.emptyMap();
-            return;
-        }
+	public void setDataObject(Persistent obj) {
+		if (obj == null) {
+			values = Collections.emptyMap();
+			return;
+		}
 
-        setObjectId(obj.getObjectId());
-    }
+		setObjectId(obj.getObjectId());
+	}
 
-    /**
-     * @since 1.2
-     */
-    public void setObjectId(ObjectId id) {
-        if (id == null) {
-            throw new CayenneRuntimeException(
-                    "Null ObjectId, probably an attempt to use TRANSIENT object as a query parameter.");
-        }
-        else if (id.isTemporary()) {
-            throw new CayenneRuntimeException(
-                    "Temporary id, probably an attempt to use NEW object as a query parameter.");
-        }
-        else {
-            values = id.getIdSnapshot();
-        }
-    }
+	/**
+	 * @since 1.2
+	 */
+	public void setObjectId(ObjectId id) {
+		if (id == null) {
+			throw new CayenneRuntimeException(
+					"Null ObjectId, probably an attempt to use TRANSIENT object as a query parameter.");
+		} else if (id.isTemporary()) {
+			throw new CayenneRuntimeException(
+					"Temporary id, probably an attempt to use NEW object as a query parameter.");
+		} else {
+			values = id.getIdSnapshot();
+		}
+	}
 
-    public Iterator<String> keys() {
-        if (attributes == null) {
-            throw new IllegalStateException(
-                    "An attempt to use uninitialized DataObjectMatchTranslator: "
-                            + "[attributes: null, values: "
-                            + values
-                            + "]");
-        }
+	public Iterator<String> keys() {
+		if (attributes == null) {
+			throw new IllegalStateException("An attempt to use uninitialized DataObjectMatchTranslator: "
+					+ "[attributes: null, values: " + values + "]");
+		}
 
-        return attributes.keySet().iterator();
-    }
-    
-    /**
-     * @since 3.0
-     */
-    public String getJoinSplitAlias() {
-        return joinSplitAlias;
-    }
+		return attributes.keySet().iterator();
+	}
 
-    public DbRelationship getRelationship() {
-        return relationship;
-    }
+	/**
+	 * @since 3.0
+	 */
+	public String getJoinSplitAlias() {
+		return joinSplitAlias;
+	}
 
-    public DbAttribute getAttribute(String key) {
-        return attributes.get(key);
-    }
+	public DbRelationship getRelationship() {
+		return relationship;
+	}
 
-    public Object getValue(String key) {
-        return values.get(key);
-    }
+	public DbAttribute getAttribute(String key) {
+		return attributes.get(key);
+	}
 
-    public void setOperation(String operation) {
-        this.operation = operation;
-    }
+	public Object getValue(String key) {
+		return values.get(key);
+	}
 
-    public String getOperation() {
-        return operation;
-    }
+	public void setOperation(String operation) {
+		this.operation = operation;
+	}
+
+	public String getOperation() {
+		return operation;
+	}
 }

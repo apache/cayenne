@@ -91,8 +91,8 @@ class ObjectDiff extends NodeDiff {
             ObjEntity entity = entityResolver.getObjEntity(entityName);
             final boolean lock = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 
-            this.snapshot = new HashMap<String, Object>();
-            this.arcSnapshot = new HashMap<String, Object>();
+            this.snapshot = new HashMap<>();
+            this.arcSnapshot = new HashMap<>();
 
             classDescriptor.visitProperties(new PropertyVisitor() {
 
@@ -270,7 +270,7 @@ class ObjectDiff extends NodeDiff {
         }
 
         if (currentArcSnapshot == null) {
-            currentArcSnapshot = new HashMap<String, Object>();
+            currentArcSnapshot = new HashMap<>();
         }
 
         currentArcSnapshot.put(arcId, arcDiff.getTargetNodeId());
@@ -432,7 +432,7 @@ class ObjectDiff extends NodeDiff {
      */
     void updateArcSnapshot(String propertyName, Persistent object) {
         if (arcSnapshot == null) {
-            arcSnapshot = new HashMap<String, Object>();
+            arcSnapshot = new HashMap<>();
         }
 
         arcSnapshot.put(propertyName, object != null ? object.getObjectId() : null);

@@ -223,7 +223,7 @@ public class RowDescriptorBuilder {
     public RowDescriptorBuilder overrideColumnType(String columnName, String type) {
 
         if (typeOverrides == null) {
-            typeOverrides = new HashMap<String, String>();
+            typeOverrides = new HashMap<>();
         }
 
         typeOverrides.put(columnName, type);

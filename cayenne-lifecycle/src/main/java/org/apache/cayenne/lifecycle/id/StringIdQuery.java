@@ -109,8 +109,8 @@ public class StringIdQuery implements Query {
     protected Map<String, SelectQuery> getIdQueriesByEntity(EntityResolver resolver) {
         if (this.idQueriesByEntity == null) {
 
-            Map<String, SelectQuery> idQueriesByEntity = new HashMap<String, SelectQuery>();
-            Map<String, EntityIdCoder> codersByEntity = new HashMap<String, EntityIdCoder>();
+            Map<String, SelectQuery> idQueriesByEntity = new HashMap<>();
+            Map<String, EntityIdCoder> codersByEntity = new HashMap<>();
 
             for (String id : stringIds) {
                 String entityName = EntityIdCoder.getEntityName(id);

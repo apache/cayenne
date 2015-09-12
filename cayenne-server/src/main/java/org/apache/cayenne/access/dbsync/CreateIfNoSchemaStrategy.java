@@ -88,7 +88,7 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
 	 */
 	protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode) throws SQLException {
 		String tableLabel = dataNode.getAdapter().tableTypeForTable();
-		Map<String, Boolean> nameTables = new HashMap<String, Boolean>();
+		Map<String, Boolean> nameTables = new HashMap<>();
 
 		try (Connection con = dataNode.getDataSource().getConnection();) {
 

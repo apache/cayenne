@@ -63,7 +63,7 @@ public class NamedQuery extends IndirectQuery {
 
         // copy parameters map (among other things to make hessian serialization work).
         if (parameters != null && !parameters.isEmpty()) {
-            this.parameters = new HashMap<String, Object>(parameters);
+            this.parameters = new HashMap<>(parameters);
         }
     }
 
@@ -149,7 +149,7 @@ public class NamedQuery extends IndirectQuery {
             return Collections.EMPTY_MAP;
         }
 
-        Map<String, Object> substitutes = new HashMap<String, Object>(parameters);
+        Map<String, Object> substitutes = new HashMap<>(parameters);
 
         for (Map.Entry<String, ?> entry : parameters.entrySet()) {
             Object value = entry.getValue();

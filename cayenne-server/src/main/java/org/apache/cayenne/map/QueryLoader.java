@@ -121,7 +121,7 @@ abstract class QueryLoader {
         }
         else {
             if (adapterSql == null) {
-                adapterSql = new HashMap<String, String>();
+                adapterSql = new HashMap<>();
             }
 
             adapterSql.put(adapterClass, sql);
@@ -139,7 +139,7 @@ abstract class QueryLoader {
 
     void addProperty(String name, String value) {
         if (properties == null) {
-            properties = new HashMap<String, String>();
+            properties = new HashMap<>();
         }
 
         properties.put(name, value);

@@ -55,7 +55,7 @@ public class JdbcPkGenerator implements PkGenerator {
 	static final long DEFAULT_PK_START_VALUE = 200;
 
 	protected JdbcAdapter adapter;
-	protected ConcurrentHashMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<String, Queue<Long>>();
+	protected ConcurrentHashMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<>();
 	protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
 	protected long pkStartValue = DEFAULT_PK_START_VALUE;
 

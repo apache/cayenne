@@ -390,7 +390,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         }
         // handle generic case: numJoins > 1
         else {
-            idMap = new HashMap<String, Object>(numJoins * 2);
+            idMap = new HashMap<>(numJoins * 2);
             for (DbJoin join : joins) {
                 DbAttribute source = join.getSource();
                 Object val = srcSnapshot.get(join.getSourceName());
@@ -436,7 +436,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         }
 
         // general case
-        Map<String, Object> idMap = new HashMap<String, Object>(len * 2);
+        Map<String, Object> idMap = new HashMap<>(len * 2);
         for (DbJoin join : joins) {
             Object val = targetSnapshot.get(join.getTargetName());
             idMap.put(join.getSourceName(), val);

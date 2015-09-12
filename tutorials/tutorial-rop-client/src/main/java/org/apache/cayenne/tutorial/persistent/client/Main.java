@@ -33,7 +33,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial-rop-server/cayenne-service");
         properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
         properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");

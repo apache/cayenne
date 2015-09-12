@@ -58,7 +58,7 @@ public class ProjectFileChangeTracker extends Thread {
 
     public ProjectFileChangeTracker(ProjectController mediator) {
 
-        this.files = new ConcurrentHashMap<String, FileInfo>();
+        this.files = new ConcurrentHashMap<>();
         this.mediator = mediator;
 
         setName("cayenne-modeler-file-change-tracker");

@@ -36,8 +36,8 @@ import org.apache.cayenne.map.Entity;
  */
 public class PropertyUtils {
 
-	private static final ConcurrentMap<String, Accessor> PATH_ACCESSORS = new ConcurrentHashMap<String, Accessor>();
-	private static final ConcurrentMap<Class<?>, ConcurrentMap<String, Accessor>> SEGMENT_ACCESSORS = new ConcurrentHashMap<Class<?>, ConcurrentMap<String, Accessor>>();
+	private static final ConcurrentMap<String, Accessor> PATH_ACCESSORS = new ConcurrentHashMap<>();
+	private static final ConcurrentMap<Class<?>, ConcurrentMap<String, Accessor>> SEGMENT_ACCESSORS = new ConcurrentHashMap<>();
 
 	/**
 	 * Compiles an accessor that can be used for fast access for the nested

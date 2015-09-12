@@ -57,7 +57,7 @@ public class DefaultActionManager implements ActionManager {
 
     public DefaultActionManager(@Inject Application application) {
         initActions();
-        this.actionMap = new HashMap<String, Action>(40);
+        this.actionMap = new HashMap<>(40);
 
         registerAction(new ProjectAction(application));
         registerAction(new NewProjectAction(application)).setAlwaysOn(true);

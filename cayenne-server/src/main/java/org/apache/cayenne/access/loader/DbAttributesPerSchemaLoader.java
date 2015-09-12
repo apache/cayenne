@@ -18,16 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.access.loader;
 
-import org.apache.cayenne.access.loader.filters.PatternFilter;
-import org.apache.cayenne.access.loader.filters.TableFilter;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbAttribute;
-
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.cayenne.access.loader.filters.PatternFilter;
+import org.apache.cayenne.access.loader.filters.TableFilter;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DbAttribute;
 
 /**
  * Load all attributes for schema and return it for each table
@@ -46,7 +51,7 @@ public class DbAttributesPerSchemaLoader extends DbAttributesBaseLoader {
 	}
 
 	private Map<String, List<DbAttribute>> loadDbAttributes() throws SQLException {
-		Map<String, List<DbAttribute>> attributes = new HashMap<String, List<DbAttribute>>();
+		Map<String, List<DbAttribute>> attributes = new HashMap<>();
 
 		try (ResultSet rs = getMetaData().getColumns(getCatalog(), getSchema(), "%", "%");) {
 			Set<String> columns = new HashSet<String>();
@@ -114,7 +119,7 @@ public class DbAttributesPerSchemaLoader extends DbAttributesBaseLoader {
 				attributes = loadDbAttributes();
 			} catch (SQLException e) {
 				LOGGER.error(e);
-				attributes = new HashMap<String, List<DbAttribute>>();
+				attributes = new HashMap<>();
 			}
 		}
 		return attributes;
